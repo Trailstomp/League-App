@@ -1103,6 +1103,31 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
                         <p className="mb-4" style={{ color: style.textColor, fontFamily: style.fontFamily }}>
                             This is how your team page will look with the selected colors and fonts.
                         </p>
+                        
+                        {/* Form Preview */}
+                        <div 
+                            className="p-4 rounded-lg border mb-4"
+                            style={{ backgroundColor: style.formBackgroundColor }}
+                        >
+                            <h5 className="font-semibold mb-3" style={{ color: style.textColor, fontFamily: style.fontFamily }}>
+                                Sample Form
+                            </h5>
+                            <div className="space-y-2">
+                                <input 
+                                    type="text" 
+                                    placeholder="Player Name" 
+                                    className="w-full p-2 border rounded"
+                                    style={{ fontFamily: style.fontFamily }}
+                                />
+                                <input 
+                                    type="email" 
+                                    placeholder="Email Address" 
+                                    className="w-full p-2 border rounded"
+                                    style={{ fontFamily: style.fontFamily }}
+                                />
+                            </div>
+                        </div>
+                        
                         <button 
                             className="px-4 py-2 text-white rounded-lg text-sm font-semibold"
                             style={{ backgroundColor: style.primaryColor, fontFamily: style.fontFamily }}
