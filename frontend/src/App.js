@@ -1298,6 +1298,223 @@ const TeamCalendarManager = ({ team, teams, setTeams }) => {
     );
 };
 
+const MediaManager = ({ team, setTeams }) => {
+    const [editingMedia, setEditingMedia] = useState(null);
+    const [mediaType, setMediaType] = useState('photo');
+    
+    const handleSave = (e) => {
+        e.preventDefault();
+        const newMedia = {
+            ...editingMedia,
+            id: editingMedia.id || Date.now(),
+            type: mediaType
+        };
+
+        setTeams(currentTeams => currentTeams.map(t => {
+            if (t.id === team.id) {
+                const updatedMedia = editingMedia.id
+                    ? (t.media || []).map(media => media.id === editingMedia.id ? newMedia : media)
+                    : [...(t.media || []), newMedia];
+                return { ...t, media: updatedMedia };
+            }
+            return t;
+        }));
+        
+        setEditingMedia(null);
+    };
+
+    const handleDelete = (mediaId) => {
+        setTeams(currentTeams => currentTeams.map(t => {
+            if (t.id === team.id) {
+                return { ...t, media: (t.media || []).filter(media => media.id !== mediaId) };
+            }
+            return t;
+        }));
+    };
+
+    const media = team.media || [];
+    const photos = media.filter(m => m.type === 'photo');
+    const videos = media.filter(m => m.type === 'video');
+
+    const MediaForm = () => (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                <h3 className="text-2xl font-bold mb-4">{editingMedia?.id ? 'Edit Media' : 'Add New Media'}</h3>
+                <form onSubmit={handleSave} className="space-y-4">
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Media Type</label>
+                        <select 
+                            value={mediaType} 
+                            onChange={e => setMediaType(e.target.value)} 
+                            className="w-full p-2 border rounded"
+                        >
+                            <option value="photo">Photo</option>
+                            <option value="video">Video</option>
+                        </select>
+                    </div>
+                    
+                    {mediaType === 'photo' ? (
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Photo Upload</label>
+                            <input 
+                                type="file" 
+                                accept="image/*"
+                                onChange={(e) => {
+                                    if (e.target.files && e.target.files[0]) {
+                                        const fileUrl = URL.createObjectURL(e.target.files[0]);
+                                        setEditingMedia(prev => ({...prev, url: fileUrl}));
+                                    }
+                                }}
+                                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                            />
+                        </div>
+                    ) : (
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">YouTube URL or Video URL</label>
+                            <input 
+                                type="url" 
+                                value={editingMedia?.url || ''} 
+                                onChange={e => setEditingMedia(prev => ({...prev, url: e.target.value}))} 
+                                placeholder="https://www.youtube.com/watch?v=..." 
+                                className="w-full p-2 border rounded" 
+                                required 
+                            />
+                        </div>
+                    )}
+                    
+                    <input 
+                        type="text" 
+                        value={editingMedia?.caption || ''} 
+                        onChange={e => setEditingMedia(prev => ({...prev, caption: e.target.value}))} 
+                        placeholder="Caption/Description" 
+                        className="w-full p-2 border rounded" 
+                        required 
+                    />
+                    
+                    {editingMedia?.url && (
+                        <div className="mt-2">
+                            {mediaType === 'photo' ? (
+                                <img src={editingMedia.url} alt="Preview" className="w-full h-48 object-cover rounded-lg border" />
+                            ) : (
+                                <div className="bg-slate-100 p-4 rounded-lg">
+                                    <p className="text-sm text-slate-600">Video URL: {editingMedia.url}</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    <div className="flex justify-end space-x-2">
+                        <button type="button" onClick={() => setEditingMedia(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
+                        <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Save Media</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+
+    return (
+        <div className="max-w-6xl mx-auto">
+            {editingMedia && <MediaForm />}
+            
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-3xl font-bold text-slate-800 tracking-tight">Team Media Management</h2>
+                <button 
+                    onClick={() => setEditingMedia({url: '', caption: ''})} 
+                    className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"
+                >
+                    <Plus className="mr-2 h-4 w-4"/> Add Media
+                </button>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Photo Albums */}
+                <div className="bg-white rounded-lg shadow-md p-6">
+                    <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
+                        <Image className="mr-2" size={20} />
+                        Photo Albums ({photos.length})
+                    </h3>
+                    
+                    {photos.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {photos.map(photo => (
+                                <div key={photo.id} className="bg-slate-50 rounded-lg overflow-hidden">
+                                    <img src={photo.url} alt={photo.caption} className="w-full h-32 object-cover" />
+                                    <div className="p-3">
+                                        <p className="text-sm font-medium text-slate-800">{photo.caption}</p>
+                                        <div className="flex justify-end space-x-2 mt-2">
+                                            <button onClick={() => setEditingMedia(photo)} className="text-slate-500 hover:text-slate-700 p-1">
+                                                <Edit size={16}/>
+                                            </button>
+                                            <button onClick={() => handleDelete(photo.id)} className="text-red-500 hover:text-red-700 p-1">
+                                                <Trash2 size={16}/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-8 text-slate-500">
+                            <Image className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
+                            <p>No photos uploaded yet. Add your first photo!</p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Video Gallery */}
+                <div className="bg-white rounded-lg shadow-md p-6">
+                    <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
+                        <Video className="mr-2" size={20} />
+                        Video Gallery ({videos.length})
+                    </h3>
+                    
+                    {videos.length > 0 ? (
+                        <div className="space-y-4">
+                            {videos.map(video => (
+                                <div key={video.id} className="bg-slate-50 rounded-lg p-4">
+                                    <div className="aspect-w-16 aspect-h-9 mb-3">
+                                        {video.url.includes('youtube.com') || video.url.includes('youtu.be') ? (
+                                            <iframe 
+                                                src={video.url.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')} 
+                                                title={video.caption} 
+                                                frameBorder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowFullScreen 
+                                                className="w-full h-40 rounded"
+                                            />
+                                        ) : (
+                                            <video controls className="w-full h-40 rounded">
+                                                <source src={video.url} type="video/mp4" />
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-sm font-medium text-slate-800">{video.caption}</p>
+                                        <div className="flex space-x-2">
+                                            <button onClick={() => setEditingMedia(video)} className="text-slate-500 hover:text-slate-700 p-1">
+                                                <Edit size={16}/>
+                                            </button>
+                                            <button onClick={() => handleDelete(video.id)} className="text-red-500 hover:text-red-700 p-1">
+                                                <Trash2 size={16}/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-8 text-slate-500">
+                            <Video className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
+                            <p>No videos uploaded yet. Add your first video!</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const TeamInfoManager = ({ team, setTeams }) => {
     const [teamInfo, setTeamInfo] = useState({
         name: team.name || '',
