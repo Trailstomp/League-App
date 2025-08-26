@@ -352,33 +352,22 @@ const LeagueCalendarManager = ({ teams, setTeams }) => {
         e.preventDefault();
         const newEvent = {
             ...editingEvent,
-            id: editingEvent.id || Date.now()
+            id: editingEvent.id || Date.now(),
+            teamIds: editingEvent.teamIds || []
         };
 
-        if (selectedTeamId === 'all') {
-            // If editing event from "all" view, find the team
-            const targetTeamId = editingEvent.teamId;
-            setTeams(currentTeams => currentTeams.map(t => {
-                if (t.id === targetTeamId) {
-                    const updatedEvents = editingEvent.id
-                        ? (t.calendar || []).map(event => event.id === editingEvent.id ? newEvent : event)
-                        : [...(t.calendar || []), newEvent];
-                    return { ...t, calendar: updatedEvents };
-                }
-                return t;
-            }));
-        } else {
-            // Editing specific team
-            setTeams(currentTeams => currentTeams.map(t => {
-                if (t.id === selectedTeamId) {
-                    const updatedEvents = editingEvent.id
-                        ? (t.calendar || []).map(event => event.id === editingEvent.id ? newEvent : event)
-                        : [...(t.calendar || []), newEvent];
-                    return { ...t, calendar: updatedEvents };
-                }
-                return t;
-            }));
-        }
+        // Update each selected team's calendar
+        const teamIds = newEvent.teamIds.length > 0 ? newEvent.teamIds : [selectedTeamId];
+        setTeams(currentTeams => currentTeams.map(t => {
+            if (teamIds.includes(t.id)) {
+                const updatedEvents = editingEvent.id
+                    ? (t.calendar || []).map(event => event.id === editingEvent.id ? newEvent : event)
+                    : [...(t.calendar || []), newEvent];
+                return { ...t, calendar: updatedEvents };
+            }
+            return t;
+        }));
+        
         setEditingEvent(null);
     };
 
