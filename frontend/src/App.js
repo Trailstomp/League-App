@@ -154,7 +154,7 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
                                     <span className="font-bold text-xs text-red-400">GAME</span>
                                 </div>
                                 <div className="text-xs mb-1 text-center font-semibold" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
-                                    {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                    {item.gameDate ? new Date(item.gameDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date TBA'}
                                 </div>
                                 <div className="space-y-1">
                                     <div className="flex items-center justify-between text-sm">
