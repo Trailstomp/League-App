@@ -1420,12 +1420,16 @@ const TeamCalendarManager = ({ team, teams, setTeams }) => {
         e.preventDefault();
         const newEvent = {
             ...editingEvent,
-            id: editingEvent.id || Date.now(),
-            teamIds: [team.id] // Always this team for team-specific calendar
+            id: editingEvent.id || Date.now()
         };
 
+        // If it's a tournament or has multiple teams, add to all selected teams
+        const targetTeamIds = editingEvent.teamIds && editingEvent.teamIds.length > 0 
+            ? editingEvent.teamIds 
+            : [team.id]; // Default to current team
+
         setTeams(currentTeams => currentTeams.map(t => {
-            if (t.id === team.id) {
+            if (targetTeamIds.includes(t.id)) {
                 const updatedEvents = editingEvent.id
                     ? (t.calendar || []).map(event => event.id === editingEvent.id ? newEvent : event)
                     : [...(t.calendar || []), newEvent];
