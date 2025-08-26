@@ -739,7 +739,8 @@ const TeamCalendarManager = ({ team, teams, setTeams }) => {
         e.preventDefault();
         const newEvent = {
             ...editingEvent,
-            id: editingEvent.id || Date.now()
+            id: editingEvent.id || Date.now(),
+            teamIds: editingEvent.teamIds || []
         };
 
         const updatedEvents = editingEvent.id
@@ -747,12 +748,19 @@ const TeamCalendarManager = ({ team, teams, setTeams }) => {
             : [...events, newEvent];
 
         setEvents(updatedEvents);
+        
+        // Update each selected team's calendar
+        const teamIds = newEvent.teamIds.length > 0 ? newEvent.teamIds : [team.id];
         setTeams(currentTeams => currentTeams.map(t => {
-            if (t.id === team.id) {
-                return { ...t, calendar: updatedEvents };
+            if (teamIds.includes(t.id)) {
+                const teamEvents = editingEvent.id
+                    ? (t.calendar || []).map(event => event.id === editingEvent.id ? newEvent : event)
+                    : [...(t.calendar || []), newEvent];
+                return { ...t, calendar: teamEvents };
             }
             return t;
         }));
+        
         setEditingEvent(null);
     };
 
