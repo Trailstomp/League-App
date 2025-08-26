@@ -963,7 +963,16 @@ const TeamCalendarManager = ({ team, teams, setTeams }) => {
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-3xl font-bold text-slate-800 tracking-tight">Team Calendar Management</h2>
                  <button 
-                    onClick={() => setEditingEvent({type: 'practice', date: '', time: '', title: '', location: '', description: ''})} 
+                    onClick={() => setEditingEvent({
+                        teamIds: [team.id], 
+                        type: 'practice', 
+                        date: '', 
+                        time: '', 
+                        title: '', 
+                        location: '', 
+                        description: '',
+                        imageUrl: ''
+                    })} 
                     className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"
                 >
                     <Plus className="mr-2 h-4 w-4"/> Add Event
