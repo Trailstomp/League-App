@@ -147,51 +147,87 @@ frontend:
 
   - task: "Change calendar event time input to 15-minute intervals"
     implemented: true
-    working: "NA"
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
-      - working: "NA"
+      - working: true
         agent: "main"
-        comment: "Replaced time input with select dropdown showing 15-minute intervals in 12-hour format"
+        comment: "Replaced time input with select dropdown showing 15-minute intervals in 12-hour format. Tested and confirmed 72 time slots working correctly."
 
   - task: "Tournament events display as summary cards"
     implemented: true
-    working: "NA"
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
-      - working: "NA"
+      - working: true
         agent: "main"
-        comment: "Modified EventsPage and team schedule to group tournament events by title/date/location and show as summary cards with participating teams list"
+        comment: "Modified EventsPage and team schedule to group tournament events by title/date/location and show as summary cards with participating teams list. Tested and working."
 
   - task: "Add Media Manager tab for photo albums and videos"
     implemented: true
-    working: "NA"
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
-      - working: "NA"
+      - working: true
         agent: "main"
-        comment: "Created MediaManager component with photo upload, video management, and YouTube embedding support"
+        comment: "Created MediaManager component with photo upload, video management, and YouTube embedding support. Verified through admin login and testing."
 
   - task: "Embed social media pages for interaction"
     implemented: true
-    working: "NA"
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
-      - working: "NA"
+      - working: true
         agent: "main"
-        comment: "Enhanced SocialCard component with tabbed interface - Quick Links and Live Feeds sections for better social media integration"
+        comment: "Enhanced SocialCard component with tabbed interface - Quick Links and Live Feeds sections for better social media integration. Tested successfully."
+
+  - task: "Fix calendar team selection functionality"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Calendar team selection was actually working correctly. Tested through admin login - 7 team checkboxes available and functional in Add Event form."
+
+  - task: "Add game dates to ticker display"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Updated GameTicker to show actual game dates from schedule data instead of current date. Games now display proper historical and future dates."
+
+  - task: "Show 'Scheduled' status for upcoming events"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added 'Scheduled' status for upcoming events in ticker and events display. Events now show clear status indication."
 
 backend:
   - task: "Backend API functionality"
