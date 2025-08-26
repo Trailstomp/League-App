@@ -2585,6 +2585,7 @@ function App() {
                 </div>
                 <nav className="flex-grow">
                     <NavItem icon={<Home size={20} />} label="Home" pageName="home" />
+                    <NavItem icon={<Calendar size={20} />} label="Events & Schedule" pageName="events" />
                     <NavItem icon={<Swords size={20} />} label="Standings" pageName="standings" />
                     <NavItem icon={<Mail size={20} />} label="League Contact" pageName="league_contact" />
                     {currentUser && <NavItem icon={<MessageSquare size={20} />} label="Chat" pageName="chat" />}
