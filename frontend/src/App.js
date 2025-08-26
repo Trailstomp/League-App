@@ -67,7 +67,30 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
 
     // Combine games and upcoming events
     const allItems = useMemo(() => {
-        const games = gameTickerData.map(game => ({...game, type: 'game', itemType: 'game'}));
+        // Add date information to games from schedule
+        const gamesWithDates = gameTickerData.map(game => {
+            // Find the game in the schedule to get its date
+            let gameDate = null;
+            for (const day of [
+                { date: '2025-08-09', games: [ 
+                    { id: 1, home: 'oh10-lacrosse', away: 'american-dads', time: '1:00 PM', location: 'Dayton' },
+                    { id: 2, home: 'dayton-eagles', away: 'cincinnati-trash-pandas', time: '2:00 PM', location: 'Dayton' },
+                    { id: 3, home: 'indiana-lacers', away: 'american-dads', time: '3:00 PM', location: 'Dayton' },
+                ] },
+                { date: '2025-08-02', games: [ 
+                    { id: 6, home: 'indiana-lacers', away: 'oh10-lacrosse', time: '6:00 PM', location: 'Indy' },
+                    { id: 7, home: 'indy-sabers', away: 'dayton-eagles', time: '7:00 PM', location: 'Indy' },
+                ] },
+                { date: '2025-07-10', games: [ { id: 8, home: 'columbus-ball-hawgs', away: 'dayton-eagles', time: '7:00 PM', location: 'Columbus' } ] },
+            ]) {
+                const scheduleGame = day.games.find(g => g.id === game.id);
+                if (scheduleGame) {
+                    gameDate = day.date;
+                    break;
+                }
+            }
+            return {...game, gameDate, type: 'game', itemType: 'game'};
+        });
         
         const upcomingEvents = teams.flatMap(team => 
             (team.calendar || [])
@@ -83,7 +106,7 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
                 }))
         ).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5); // Show next 5 events
 
-        return [...games, ...upcomingEvents];
+        return [...gamesWithDates, ...upcomingEvents];
     }, [gameTickerData, teams]);
 
     useEffect(() => {
