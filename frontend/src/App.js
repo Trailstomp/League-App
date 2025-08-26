@@ -383,12 +383,15 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                     </div>
                 </div>
             </div>
-            <div className="flex border-b mb-6">
+            <div className="flex border-b mb-6 flex-wrap">
                 <TeamTab tabName="roster" label="Roster & Stats" />
                 <TeamTab tabName="schedule" label="Schedule" />
                 <TeamTab tabName="media" label="Photos & Videos" />
                 <TeamTab tabName="social" label="Social" />
                 <TeamTab tabName="contact" label="Contact" />
+                {isAuthorizedToManage && <TeamTab tabName="manage_info" label="Team Info" />}
+                {isAuthorizedToManage && <TeamTab tabName="manage_players" label="Manage Players" />}
+                {isAuthorizedToManage && <TeamTab tabName="manage_style" label="Team Style" />}
             </div>
             
             <div className="p-4 rounded-lg" style={{ backgroundColor: team.style?.backgroundColor || 'transparent' }}>
