@@ -692,9 +692,10 @@ const HomePage = ({teams, onTeamClick, leagueInfo}) => {
     );
 };
 
-const EventsPage = ({teams, leagueSchedule, onTeamClick}) => {
+const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser}) => {
     const [selectedTeamSchedule, setSelectedTeamSchedule] = useState('all');
     const getTeam = (id) => teams.find(t => t.id === id);
+    const isAdmin = currentUser && currentUser.roles.includes('admin');
     
     // Get all calendar events from all teams
     const allEvents = teams.flatMap(team => 
