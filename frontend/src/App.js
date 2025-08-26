@@ -1338,10 +1338,8 @@ function App() {
 
     const handleAdminNav = () => {
         if (!currentUser) return;
-        if (currentUser.roles.includes('admin')) {
+        if (currentUser.roles.includes('admin') || currentUser.roles.includes('coach') || currentUser.roles.includes('player/coach')) {
             navigate('admin');
-        } else if (currentUser.roles.includes('coach') || currentUser.roles.includes('player/coach')) {
-            navigate('team', currentUser.teamId);
         }
     };
 
