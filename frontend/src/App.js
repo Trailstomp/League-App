@@ -854,6 +854,372 @@ const UserManager = ({ users, setUsers, teams }) => {
     );
 };
 
+const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
+    const [selectedTeamId, setSelectedTeamId] = useState(
+        currentUser.roles.includes('admin') ? teams[0]?.id : currentUser.teamId
+    );
+    const [style, setStyle] = useState({});
+    const [saved, setSaved] = useState(false);
+
+    // Filter teams based on user role
+    const availableTeams = currentUser.roles.includes('admin') 
+        ? teams 
+        : teams.filter(t => t.id === currentUser.teamId);
+
+    const selectedTeam = teams.find(t => t.id === selectedTeamId);
+
+    // Initialize style when team changes
+    React.useEffect(() => {
+        if (selectedTeam) {
+            setStyle(selectedTeam.style || {
+                bannerUrl: '',
+                primaryColor: '#dc2626',
+                backgroundColor: '#ffffff',
+                textColor: '#000000',
+                fontFamily: 'Inter, sans-serif'
+            });
+        }
+    }, [selectedTeam]);
+
+    const handleSave = (e) => {
+        e.preventDefault();
+        setTeams(prevTeams => prevTeams.map(team => 
+            team.id === selectedTeamId ? { ...team, style } : team
+        ));
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+    };
+
+    const handleImageUpload = (e, field) => {
+        if (e.target.files && e.target.files[0]) {
+            const fileUrl = URL.createObjectURL(e.target.files[0]);
+            setStyle(prev => ({...prev, [field]: fileUrl}));
+        }
+    };
+
+    if (!selectedTeam) return <div>No team found.</div>;
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="space-y-6">
+                {currentUser.roles.includes('admin') && (
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Select Team</label>
+                        <select 
+                            value={selectedTeamId} 
+                            onChange={(e) => setSelectedTeamId(e.target.value)}
+                            className="w-full p-3 border border-slate-300 rounded-lg"
+                        >
+                            {availableTeams.map(team => (
+                                <option key={team.id} value={team.id}>{team.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
+
+                <form onSubmit={handleSave} className="space-y-6 bg-slate-50 p-6 rounded-lg">
+                    <h3 className="text-xl font-bold text-slate-800">Style Controls</h3>
+                    
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Team Logo</label>
+                        <input 
+                            type="file" 
+                            accept="image/*"
+                            onChange={(e) => handleImageUpload(e, 'logoUrl')}
+                            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                        />
+                        {selectedTeam.logo && (
+                            <img src={selectedTeam.logo} alt="Current Logo" className="w-16 h-16 mt-2 rounded-full border" />
+                        )}
+                    </div>
+
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Team Banner</label>
+                        <input 
+                            type="file" 
+                            accept="image/*"
+                            onChange={(e) => handleImageUpload(e, 'bannerUrl')}
+                            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Primary Color</label>
+                            <div className="relative">
+                                <div 
+                                    className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
+                                    style={{ backgroundColor: style.primaryColor }}
+                                >
+                                    <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+                                        {style.primaryColor}
+                                    </span>
+                                </div>
+                                <input 
+                                    type="color" 
+                                    value={style.primaryColor}
+                                    onChange={(e) => setStyle(prev => ({...prev, primaryColor: e.target.value}))}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Background Color</label>
+                            <div className="relative">
+                                <div 
+                                    className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
+                                    style={{ backgroundColor: style.backgroundColor }}
+                                >
+                                    <span className="text-slate-700 font-semibold text-sm bg-white bg-opacity-75 px-2 py-1 rounded">
+                                        {style.backgroundColor}
+                                    </span>
+                                </div>
+                                <input 
+                                    type="color" 
+                                    value={style.backgroundColor}
+                                    onChange={(e) => setStyle(prev => ({...prev, backgroundColor: e.target.value}))}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Text Color</label>
+                            <div className="relative">
+                                <div 
+                                    className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3 bg-white"
+                                >
+                                    <span 
+                                        className="font-semibold text-sm px-2 py-1 rounded"
+                                        style={{ color: style.textColor }}
+                                    >
+                                        {style.textColor} Sample Text
+                                    </span>
+                                </div>
+                                <input 
+                                    type="color" 
+                                    value={style.textColor}
+                                    onChange={(e) => setStyle(prev => ({...prev, textColor: e.target.value}))}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Font Family</label>
+                            <select 
+                                value={style.fontFamily}
+                                onChange={(e) => setStyle(prev => ({...prev, fontFamily: e.target.value}))}
+                                className="w-full p-3 border border-slate-300 rounded-lg"
+                            >
+                                <option value="Inter, sans-serif">Inter (Default)</option>
+                                <option value="'Roboto', sans-serif">Roboto</option>
+                                <option value="'Open Sans', sans-serif">Open Sans</option>
+                                <option value="'Montserrat', sans-serif">Montserrat</option>
+                                <option value="'Poppins', sans-serif">Poppins</option>
+                                <option value="'Playfair Display', serif">Playfair Display</option>
+                                <option value="'Oswald', sans-serif">Oswald (Sports)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end items-center space-x-4">
+                        {saved && <span className="text-green-600 font-semibold">✓ Saved!</span>}
+                        <button 
+                            type="submit" 
+                            className="bg-red-800 text-white px-6 py-3 rounded-lg hover:bg-red-900 font-semibold"
+                        >
+                            Save Team Style
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div className="space-y-6">
+                <h3 className="text-xl font-bold text-slate-800">Live Preview</h3>
+                <div className="border rounded-lg overflow-hidden shadow-lg">
+                    <div 
+                        className="h-32 bg-cover bg-center flex items-end p-4 relative"
+                        style={{ 
+                            backgroundImage: style.bannerUrl ? `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${style.bannerUrl})` : `linear-gradient(45deg, ${style.primaryColor}, ${style.primaryColor}dd)`,
+                            fontFamily: style.fontFamily
+                        }}
+                    >
+                        <div className="flex items-center">
+                            <img 
+                                src={selectedTeam.logo} 
+                                alt={selectedTeam.name} 
+                                className="w-16 h-16 mr-3 rounded-full bg-white p-1 shadow-lg" 
+                            />
+                            <h2 className="text-2xl font-bold text-white drop-shadow-lg" style={{ fontFamily: style.fontFamily }}>
+                                {selectedTeam.name}
+                            </h2>
+                        </div>
+                    </div>
+                    <div className="p-4" style={{ backgroundColor: style.backgroundColor, fontFamily: style.fontFamily }}>
+                        <div className="flex mb-4 border-b">
+                            <button 
+                                className="px-4 py-2 font-semibold border-b-2 transition-colors"
+                                style={{ 
+                                    borderColor: style.primaryColor, 
+                                    color: style.primaryColor,
+                                    fontFamily: style.fontFamily 
+                                }}
+                            >
+                                Active Tab
+                            </button>
+                            <button 
+                                className="px-4 py-2 font-semibold text-slate-500 border-b-2 border-transparent"
+                                style={{ fontFamily: style.fontFamily }}
+                            >
+                                Inactive Tab
+                            </button>
+                        </div>
+                        <h4 className="text-xl font-bold mb-2" style={{ color: style.textColor, fontFamily: style.fontFamily }}>
+                            Roster & Stats
+                        </h4>
+                        <p className="mb-4" style={{ color: style.textColor, fontFamily: style.fontFamily }}>
+                            This is how your team page will look with the selected colors and fonts.
+                        </p>
+                        <button 
+                            className="px-4 py-2 text-white rounded-lg text-sm font-semibold"
+                            style={{ backgroundColor: style.primaryColor, fontFamily: style.fontFamily }}
+                        >
+                            Example Button
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
+    const [style, setStyle] = useState(websiteStyle);
+    const [saved, setSaved] = useState(false);
+
+    const handleSave = (e) => {
+        e.preventDefault();
+        setWebsiteStyle(style);
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+    };
+
+    const handleLogoUpload = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            const fileUrl = URL.createObjectURL(e.target.files[0]);
+            setStyle(prev => ({...prev, logoUrl: fileUrl}));
+        }
+    };
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+                <form onSubmit={handleSave} className="space-y-6 bg-slate-50 p-6 rounded-lg">
+                    <h3 className="text-xl font-bold text-slate-800">Global Website Style</h3>
+                    
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Site Logo</label>
+                        <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={handleLogoUpload} 
+                            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                        />
+                        {style.logoUrl && (
+                            <img src={style.logoUrl} alt="Site Logo" className="h-16 mt-2 border rounded" />
+                        )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Primary Color (Sidebar)</label>
+                            <div className="relative">
+                                <div 
+                                    className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
+                                    style={{ backgroundColor: style.primaryColor }}
+                                >
+                                    <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+                                        {style.primaryColor}
+                                    </span>
+                                </div>
+                                <input 
+                                    type="color" 
+                                    value={style.primaryColor} 
+                                    onChange={(e) => setStyle(prev => ({...prev, primaryColor: e.target.value}))} 
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Accent Color (Highlights)</label>
+                            <div className="relative">
+                                <div 
+                                    className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
+                                    style={{ backgroundColor: style.accentColor }}
+                                >
+                                    <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+                                        {style.accentColor}
+                                    </span>
+                                </div>
+                                <input 
+                                    type="color" 
+                                    value={style.accentColor} 
+                                    onChange={(e) => setStyle(prev => ({...prev, accentColor: e.target.value}))} 
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end items-center space-x-4">
+                        {saved && <span className="text-green-600 font-semibold">✓ Saved!</span>}
+                        <button 
+                            type="submit" 
+                            className="bg-red-800 text-white px-6 py-3 rounded-lg hover:bg-red-900 font-semibold"
+                        >
+                            Save Website Style
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div>
+                <h3 className="text-xl font-bold text-slate-800 mb-4">Live Preview</h3>
+                <div className="border rounded-lg overflow-hidden shadow-lg bg-slate-100">
+                    <aside 
+                        className="text-white w-full py-6 px-4 space-y-4" 
+                        style={{ backgroundColor: style.primaryColor }}
+                    >
+                        <div className="flex items-center justify-center border-b border-white border-opacity-20 pb-4">
+                            <img src={style.logoUrl} alt="Logo" className="h-16" />
+                        </div>
+                        <nav className="space-y-2">
+                            <button 
+                                className="w-full flex items-center space-x-3 p-2 rounded-md text-left text-white font-semibold"
+                                style={{ backgroundColor: style.accentColor }}
+                            >
+                                <Home size={20} />
+                                <span>Selected Nav Item</span>
+                            </button>
+                            <button className="w-full flex items-center space-x-3 p-2 rounded-md text-left text-slate-300 hover:text-white">
+                                <Users size={20} />
+                                <span>Inactive Nav Item</span>
+                            </button>
+                        </nav>
+                    </aside>
+                    <div className="p-4 bg-white">
+                        <h4 className="text-lg font-bold text-slate-800 mb-2">Main Content Area</h4>
+                        <p className="text-slate-600">This preview shows how your website navigation will look with the selected colors.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameTickerData, setGameTickerData, currentUser, users, setUsers, websiteStyle, setWebsiteStyle, leagueInfo, setLeagueInfo }) => {
     const [activeTab, setActiveTab] = useState(currentUser.roles.includes('admin') ? 'users' : 'players');
     const hasPermission = (requiredRoles) => requiredRoles.some(role => currentUser.roles.includes(role));
