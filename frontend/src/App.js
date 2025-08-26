@@ -1738,6 +1738,12 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                         <ScoreManager leagueSchedule={leagueSchedule} gameTickerData={gameTickerData} setGameTickerData={setGameTickerData} teams={teams} />
                     </div>
                 )}
+                {activeTab === 'calendar' && hasPermission(['admin']) && (
+                    <div>
+                        <h2 className="text-2xl font-bold mb-4">League Calendar Management</h2>
+                        <LeagueCalendarManager teams={teams} setTeams={setTeams} />
+                    </div>
+                )}
                 {activeTab === 'team_style' && hasPermission(['admin', 'coach', 'player/coach']) && (
                     <div>
                         <h2 className="text-2xl font-bold mb-4">Team Style Management</h2>
@@ -1748,6 +1754,12 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                     <div>
                         <h2 className="text-2xl font-bold mb-4">Website Style Management</h2>
                         <WebsiteStyleManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
+                    </div>
+                )}
+                {activeTab === 'league_info' && hasPermission(['admin']) && (
+                    <div>
+                        <h2 className="text-2xl font-bold mb-4">League Information & Settings</h2>
+                        <LeagueInfoManager leagueInfo={leagueInfo} setLeagueInfo={setLeagueInfo} websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
                     </div>
                 )}
             </div>
