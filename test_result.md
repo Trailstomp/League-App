@@ -217,15 +217,17 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Test NewHomePage component functionality"
-    - "Test events page navigation and display" 
-    - "Verify team alphabetical sorting is working"
+    - "Test 15-minute time interval selection in event forms"
+    - "Test tournament summary cards display and functionality" 
+    - "Test Media Manager tab for photo/video upload and management"
+    - "Test enhanced social media integration with tabs"
+    - "Verify all new features work together properly"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
-    message: "Completed navigation updates and NewHomePage creation. Changes include: 1) Created NewHomePage component with enhanced photo gallery and improved team grid layout 2) Added events page routing to EventsPage component 3) Updated home page to use NewHomePage. Ready for testing."
+    message: "Completed all requested enhancements: 1) Changed event time input to 15-minute intervals 2) Tournament events now show as summary cards with participating teams 3) Added Media Manager tab for photo/video management with YouTube embedding 4) Enhanced social media component with tabbed interface and better integration 5) All features ready for testing."
   - agent: "testing"
     message: "Backend testing completed successfully. Created comprehensive backend_test.py and executed full API test suite. All 9 tests passed with 100% success rate. Backend is fully functional with proper API endpoints, database connectivity, and excellent response times. All services running correctly via supervisor. Backend ready for production use."
