@@ -651,17 +651,50 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick}) => {
         }))
     ).sort((a, b) => new Date(a.date) - new Date(b.date));
 
+    // Filter events
+    const filteredEvents = selectedTeamSchedule === 'all' 
+        ? allEvents 
+        : allEvents.filter(event => event.teamId === selectedTeamSchedule);
+    
+    // Group tournament events by title, date, and location
+    const groupedEvents = filteredEvents.reduce((groups, event) => {
+        if (event.type === 'tournament') {
+            const key = `${event.title}-${event.date}-${event.location}`;
+            if (!groups[key]) {
+                groups[key] = {
+                    ...event,
+                    teams: [],
+                    teamIds: []
+                };
+            }
+            groups[key].teams.push({ name: event.teamName, logo: event.teamLogo, id: event.teamId });
+            groups[key].teamIds.push(event.teamId);
+        }
+        return groups;
+    }, {});
+
+    // Create display events (individual events + tournament summaries)
+    const displayEvents = [];
+    const processedTournamentKeys = new Set();
+
+    filteredEvents.forEach(event => {
+        if (event.type === 'tournament') {
+            const key = `${event.title}-${event.date}-${event.location}`;
+            if (!processedTournamentKeys.has(key)) {
+                displayEvents.push(groupedEvents[key]);
+                processedTournamentKeys.add(key);
+            }
+        } else {
+            displayEvents.push(event);
+        }
+    });
+
     // Filter schedule
     const filteredSchedule = leagueSchedule.map(day => {
         if (selectedTeamSchedule === 'all') return day;
         const games = day.games.filter(g => g.home === selectedTeamSchedule || g.away === selectedTeamSchedule);
         return { ...day, games };
     }).filter(day => day.games.length > 0);
-    
-    // Filter events
-    const filteredEvents = selectedTeamSchedule === 'all' 
-        ? allEvents 
-        : allEvents.filter(event => event.teamId === selectedTeamSchedule);
     
     return (
         <div className="p-4 md:p-8">
@@ -682,35 +715,80 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick}) => {
                         Upcoming Events
                     </h2>
                     <div className="space-y-4">
-                        {filteredEvents.length > 0 ? filteredEvents.slice(0, 10).map(event => (
-                            <div key={`${event.teamId}-${event.id}`} className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex-grow">
-                                        <button onClick={() => onTeamClick(event.teamId)} className="flex items-center gap-2 mb-2 hover:opacity-80">
-                                            <img src={event.teamLogo} alt={event.teamName} className="w-6 h-6 rounded-full" />
-                                            <span className="font-semibold text-red-700">{event.teamName}</span>
-                                        </button>
-                                        <h3 className="font-bold text-slate-800 mb-1">{event.title}</h3>
-                                        <div className="flex items-center space-x-4 text-sm text-slate-600">
-                                            <span>{new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' })}</span>
-                                            <span>{event.time}</span>
-                                            {event.location && <span>{event.location}</span>}
+                        {displayEvents.length > 0 ? displayEvents.slice(0, 10).map(event => {
+                            if (event.teams) {
+                                // Tournament summary card
+                                return (
+                                    <div key={`tournament-${event.title}-${event.date}`} className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex-grow">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <Trophy className="text-yellow-600" size={18} />
+                                                    <h3 className="font-bold text-slate-800 text-lg">{event.title}</h3>
+                                                </div>
+                                                <div className="flex items-center space-x-4 text-sm text-slate-600 mb-3">
+                                                    <span>{new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' })}</span>
+                                                    <span>{event.time}</span>
+                                                    {event.location && <span>{event.location}</span>}
+                                                </div>
+                                                <div className="mb-2">
+                                                    <span className="text-sm font-semibold text-slate-700">Participating Teams ({event.teams.length}):</span>
+                                                </div>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {event.teams.map((team, index) => (
+                                                        <button
+                                                            key={`${team.id}-${index}`}
+                                                            onClick={() => onTeamClick(team.id)}
+                                                            className="flex items-center gap-1 bg-white px-2 py-1 rounded-full text-xs hover:shadow-md transition-shadow"
+                                                        >
+                                                            <img src={team.logo} alt={team.name} className="w-4 h-4 rounded-full" />
+                                                            <span className="text-slate-700">{team.name}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                {event.description && (
+                                                    <p className="text-sm text-slate-600 mt-2">{event.description}</p>
+                                                )}
+                                            </div>
+                                            <span className="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
+                                                TOURNAMENT
+                                            </span>
                                         </div>
-                                        {event.description && (
-                                            <p className="text-sm text-slate-600 mt-2">{event.description}</p>
-                                        )}
                                     </div>
-                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                                        event.type === 'game' ? 'bg-red-100 text-red-800' :
-                                        event.type === 'practice' ? 'bg-blue-100 text-blue-800' :
-                                        event.type === 'tournament' ? 'bg-yellow-100 text-yellow-800' :
-                                        'bg-slate-100 text-slate-800'
-                                    }`}>
-                                        {event.type}
-                                    </span>
-                                </div>
-                            </div>
-                        )) : (
+                                );
+                            } else {
+                                // Regular event card
+                                return (
+                                    <div key={`${event.teamId}-${event.id}`} className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex-grow">
+                                                <button onClick={() => onTeamClick(event.teamId)} className="flex items-center gap-2 mb-2 hover:opacity-80">
+                                                    <img src={event.teamLogo} alt={event.teamName} className="w-6 h-6 rounded-full" />
+                                                    <span className="font-semibold text-red-700">{event.teamName}</span>
+                                                </button>
+                                                <h3 className="font-bold text-slate-800 mb-1">{event.title}</h3>
+                                                <div className="flex items-center space-x-4 text-sm text-slate-600">
+                                                    <span>{new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' })}</span>
+                                                    <span>{event.time}</span>
+                                                    {event.location && <span>{event.location}</span>}
+                                                </div>
+                                                {event.description && (
+                                                    <p className="text-sm text-slate-600 mt-2">{event.description}</p>
+                                                )}
+                                            </div>
+                                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                                event.type === 'game' ? 'bg-red-100 text-red-800' :
+                                                event.type === 'practice' ? 'bg-blue-100 text-blue-800' :
+                                                event.type === 'tournament' ? 'bg-yellow-100 text-yellow-800' :
+                                                'bg-slate-100 text-slate-800'
+                                            }`}>
+                                                {event.type}
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            }
+                        }) : (
                             <div className="text-center py-8 text-slate-500">
                                 <Calendar className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
                                 <p>No upcoming events found.</p>
