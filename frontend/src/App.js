@@ -540,6 +540,352 @@ const ChatPage = ({ currentUser }) => {
     );
 };
 
+// --- ADMIN COMPONENTS ---
+const PlayerForm = ({ initialPlayer, onSave, onCancel, managedTeams, isAdmin }) => {
+    const [player, setPlayer] = useState(initialPlayer);
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setPlayer(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    };
+    const handlePositionChange = (e) => {
+        const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+        setPlayer(prev => ({ ...prev, positions: selectedOptions }));
+    };
+
+    const handleTeamChange = (e) => {
+        const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+        setPlayer(prev => ({ ...prev, teams: selectedOptions }));
+    };
+    
+    const handlePhotoChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            const fileUrl = URL.createObjectURL(e.target.files[0]);
+            setPlayer(prev => ({...prev, photo: fileUrl}));
+        }
+    };
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSave(player);
+    };
+    return (
+         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
+                <h3 className="text-2xl font-bold mb-4">{player?.id ? 'Edit Player' : 'Add New Player'}</h3>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" name="firstName" value={player.firstName || ''} onChange={handleChange} placeholder="First Name" className="w-full p-2 border rounded" required />
+                        <input type="text" name="lastName" value={player.lastName || ''} onChange={handleChange} placeholder="Last Name" className="w-full p-2 border rounded" required />
+                        <input type="text" name="nickname" value={player.nickname || ''} onChange={handleChange} placeholder="Nickname" className="w-full p-2 border rounded" />
+                        <input type="email" name="email" value={player.email || ''} onChange={handleChange} placeholder="Email" className="w-full p-2 border rounded" />
+                        <input type="tel" name="phone" value={player.phone || ''} onChange={handleChange} placeholder="Cell Phone" className="w-full p-2 border rounded" />
+                        <input type="number" name="number" value={player.number || ''} onChange={handleChange} placeholder="Player #" className="w-full p-2 border rounded" />
+                        {isAdmin && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Team(s)</label>
+                                <select multiple name="teams" value={player.teams || []} onChange={handleTeamChange} className="w-full p-2 border rounded h-24" required>
+                                    {managedTeams.filter(t => t.active).map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                                </select>
+                            </div>
+                        )}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Position(s)</label>
+                            <select multiple value={player.positions || []} onChange={handlePositionChange} className="w-full p-2 border rounded h-24" required>
+                                <option>Attack</option><option>Middie</option><option>Defense</option><option>Goalie</option>
+                            </select>
+                             <p className="text-xs text-slate-500 mt-1">Hold Ctrl/Cmd to select multiple.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Player Photo</label>
+                        <input type="file" accept="image/*" onChange={handlePhotoChange} className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"/>
+                    </div>
+                    <div className="flex items-center">
+                        <input type="checkbox" name="active" id="active" checked={player.active} onChange={handleChange} className="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500" />
+                        <label htmlFor="active" className="ml-2 block text-sm text-gray-900">Active</label>
+                    </div>
+                    <div className="flex justify-end space-x-2">
+                        <button type="button" onClick={onCancel} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
+                        <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Save Player</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    )
+}
+
+const PlayerManager = ({ players, setPlayers, teams, currentUser }) => {
+    const [editingPlayer, setEditingPlayer] = useState(null);
+    const isAdmin = currentUser.roles.includes('admin');
+    
+    const managedTeams = isAdmin
+        ? teams 
+        : teams.filter(t => t.id === currentUser.teamId);
+    const [managedTeamId, setManagedTeamId] = useState(isAdmin ? 'all' : currentUser.teamId);
+
+    const handleSave = (playerToSave) => {
+        if (playerToSave.id) {
+             setPlayers(prevPlayers => prevPlayers.map(p => p.id === playerToSave.id ? playerToSave : p));
+        } else {
+            const newPlayer = { ...playerToSave, id: Date.now() };
+            setPlayers(prevPlayers => [...prevPlayers, newPlayer]);
+        }
+        setEditingPlayer(null);
+    };
+    const teamRoster = managedTeamId === 'all' 
+        ? players 
+        : players.filter(p => p.teams.includes(managedTeamId));
+    return (
+        <div>
+            {editingPlayer && <PlayerForm 
+                initialPlayer={editingPlayer} 
+                onSave={handleSave} 
+                onCancel={() => setEditingPlayer(null)} 
+                managedTeams={managedTeams} 
+                isAdmin={isAdmin}
+            />}
+            <div className="flex justify-between items-center mb-4">
+                <div>
+                    <label htmlFor="team-select" className="mr-2 font-semibold">Manage Roster for:</label>
+                    <select id="team-select" value={managedTeamId} onChange={e => setManagedTeamId(e.target.value)} className="p-2 border rounded-md">
+                        {isAdmin && <option value="all">All Players</option>}
+                        {managedTeams.filter(t => t.active).map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                    </select>
+                </div>
+                <button onClick={() => setEditingPlayer({firstName: '', lastName: '', nickname: '', email: '', phone: '', number: '', positions: [], teams: [managedTeamId === 'all' ? managedTeams[0].id : managedTeamId], photo: '', active: true})} className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"><Plus className="mr-2 h-4 w-4"/> Add Player</button>
+            </div>
+            <ul className="mt-4 space-y-2">
+                {teamRoster.map(p => (
+                    <li key={p.id} className={`flex items-center p-3 border rounded-lg bg-white shadow-sm ${!p.active && 'opacity-50 bg-slate-100'}`}>
+                        <span className="flex-grow">{p.firstName} {p.lastName} (#{p.number}) - {Array.isArray(p.positions) ? p.positions.join(', ') : p.positions}</span>
+                        <div className="flex-shrink-0 ml-4">
+                            <button onClick={() => setEditingPlayer(p)} className="text-slate-500 hover:text-slate-700 mr-2 p-1"><Edit size={18}/></button>
+                            <button className="text-red-500 hover:text-red-700 p-1"><Trash2 size={18}/></button>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+};
+
+const TeamManager = ({ teams, setTeams }) => {
+    const [editingTeam, setEditingTeam] = useState(null);
+    const handleSave = (e) => {
+        e.preventDefault();
+        if (editingTeam.id) {
+            setTeams(teams.map(t => t.id === editingTeam.id ? editingTeam : t));
+        } else {
+            setTeams([...teams, { ...editingTeam, id: editingTeam.name.toLowerCase().replace(/\s/g, ''), wins: 0, losses: 0, ties: 0, pf: 0, pa: 0, active: true, media: [], calendar: [] }]);
+        }
+        setEditingTeam(null);
+    };
+    const toggleActive = (team) => {
+        setTeams(teams.map(t => t.id === team.id ? {...t, active: !t.active} : t));
+    };
+
+    const TeamForm = () => (
+         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+                <h3 className="text-2xl font-bold mb-4">{editingTeam?.id ? 'Edit Team' : 'Add New Team'}</h3>
+                <form onSubmit={handleSave} className="space-y-4">
+                    <input type="text" value={editingTeam.name || ''} onChange={e => setEditingTeam({...editingTeam, name: e.target.value})} placeholder="Team Name" className="w-full p-2 border rounded" required />
+                    <input type="text" value={editingTeam.logo || ''} onChange={e => setEditingTeam({...editingTeam, logo: e.target.value})} placeholder="Logo Image URL" className="w-full p-2 border rounded" required />
+                    <div className="flex justify-end space-x-2">
+                        <button type="button" onClick={() => setEditingTeam(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
+                        <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Save Team</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+    return (
+        <div>
+            {editingTeam && <TeamForm />}
+            <div className="flex justify-end mb-4">
+                <button onClick={() => setEditingTeam({name: '', logo: ''})} className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"><Plus className="mr-2 h-4 w-4"/> Add Team</button>
+            </div>
+             <ul className="mt-4 space-y-2">
+                {teams.map(t => (
+                    <li key={t.id} className={`flex items-center p-3 border rounded-lg bg-white shadow-sm ${!t.active && 'opacity-50 bg-slate-100'}`}>
+                        <div className="flex-grow flex items-center gap-3">
+                            <img src={t.logo} alt={t.name} className="w-8 h-8 rounded-full bg-white p-1" />
+                            <span className="font-semibold">{t.name}</span>
+                        </div>
+                        <div className="flex-shrink-0 ml-4">
+                            <button onClick={() => toggleActive(t)} className={`mr-2 p-1 ${t.active ? 'text-green-500' : 'text-slate-500'}`}>
+                                {t.active ? <ToggleRight size={22}/> : <ToggleLeft size={22} />}
+                            </button>
+                            <button onClick={() => setEditingTeam(t)} className="text-slate-500 hover:text-slate-700 mr-2 p-1"><Edit size={18}/></button>
+                            <button className="text-red-500 hover:text-red-700 p-1"><Trash2 size={18}/></button>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+};
+
+const ScoreManager = ({ leagueSchedule, gameTickerData, setGameTickerData, teams }) => {
+    const [scores, setScores] = useState({});
+    const handleScoreChange = (gameId, team, value) => {
+        setScores(prev => ({ ...prev, [gameId]: { ...prev[gameId], [team]: value } }));
+    };
+
+    const handleSaveScore = (game) => {
+        const gameId = game.id;
+        const homeScore = parseInt(scores[gameId]?.home, 10);
+        const awayScore = parseInt(scores[gameId]?.away, 10);
+        if (isNaN(homeScore) || isNaN(awayScore)) {
+            alert("Please enter valid scores for both teams.");
+            return;
+        }
+        
+        setGameTickerData(prevData => prevData.map(g => 
+            g.id === gameId ? { ...g, homeScore, awayScore, status: 'Final' } : g
+        ));
+    };
+
+    const getTeam = (id) => teams.find(t => t.id === id);
+    return (
+        <div>
+            {leagueSchedule.map(day => (
+                <div key={day.date} className="mb-6">
+                    <h3 className="text-lg font-semibold text-slate-700 pb-2 border-b mb-3">
+                        {new Date(day.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' })}
+                    </h3>
+                    {day.games.map(game => {
+                        const gameData = gameTickerData.find(g => g.id === game.id);
+                        const home = getTeam(game.home);
+                        const away = getTeam(game.away);
+                        if (!home || !away) return null;
+
+                        return (
+                            <div key={game.id} className="bg-white p-3 rounded-lg shadow-sm mb-2 flex items-center justify-between flex-wrap gap-2">
+                                <div className="flex-grow">
+                                    <span className="font-semibold">{home.name}</span> vs <span className="font-semibold">{away.name}</span>
+                                    <span className="text-sm text-slate-500 ml-2">({game.location})</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <input type="number" placeholder={home.logo} className="w-16 p-1 border rounded text-center" disabled={gameData?.status === 'Final'} defaultValue={gameData?.homeScore} onChange={e => handleScoreChange(game.id, 'home', e.target.value)} />
+                                    <span>-</span>
+                                    <input type="number" placeholder={away.logo} className="w-16 p-1 border rounded text-center" disabled={gameData?.status === 'Final'} defaultValue={gameData?.awayScore} onChange={e => handleScoreChange(game.id, 'away', e.target.value)} />
+                                    {gameData?.status !== 'Final' ? (
+                                        <button onClick={() => handleSaveScore(game)} className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-sm">Save</button>
+                                    ) : (
+                                        <span className="text-sm font-bold text-green-600 px-3">FINAL</span>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            ))}
+        </div>
+    );
+};
+
+const UserManager = ({ users, setUsers, teams }) => {
+    const [editingUser, setEditingUser] = useState(null);
+    const handleSave = (e) => {
+        e.preventDefault();
+        setUsers(users.map(u => u.id === editingUser.id ? editingUser : u));
+        setEditingUser(null);
+    };
+    const handleRoleChange = (role, checked) => {
+        const currentRoles = editingUser.roles || [];
+        if (checked) {
+            setEditingUser({...editingUser, roles: [...currentRoles, role]});
+        } else {
+            setEditingUser({...editingUser, roles: currentRoles.filter(r => r !== role)});
+        }
+    };
+
+    const UserForm = () => (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+                <h3 className="text-2xl font-bold mb-4">Edit User: {editingUser.name}</h3>
+                <form onSubmit={handleSave} className="space-y-4">
+                    <div>
+                        <label className="block font-semibold mb-2">Roles</label>
+                        <div className="grid grid-cols-2 gap-2">
+                           {['player', 'coach', 'player/coach', 'admin'].map(role => (
+                               <label key={role} className="flex items-center space-x-2">
+                                   <input type="checkbox" checked={editingUser.roles.includes(role)} onChange={e => handleRoleChange(role, e.target.checked)} />
+                                   <span className="capitalize">{role}</span>
+                               </label>
+                           ))}
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block font-semibold">Team</label>
+                        <select value={editingUser.teamId || ''} onChange={e => setEditingUser({...editingUser, teamId: e.target.value})} className="w-full p-2 border rounded">
+                            <option value="">(No Team)</option>
+                            {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                        </select>
+                    </div>
+                    <div className="flex justify-end space-x-2">
+                        <button type="button" onClick={() => setEditingUser(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
+                        <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+    return (
+        <div>
+            {editingUser && <UserForm />}
+            <ul className="mt-4 space-y-2">
+                {users.map(user => (
+                    <li key={user.id} className="flex items-center p-3 border rounded-lg bg-white shadow-sm">
+                        <div className="flex-grow">
+                            <p className="font-bold">{user.name}</p>
+                            <p className="text-sm text-slate-500">{user.email}</p>
+                        </div>
+                        <div className="flex-shrink-0 ml-4 flex items-center gap-4">
+                            <span className={`font-semibold capitalize px-2 py-1 rounded-full text-xs ${user.roles.length > 0 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                {user.roles.length > 0 ? user.roles.join(', ') : 'Unassigned'}
+                            </span>
+                            <button onClick={() => setEditingUser(user)} className="text-slate-500 hover:text-slate-700 p-1"><Edit size={18}/></button>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+};
+
+const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameTickerData, setGameTickerData, currentUser, users, setUsers, websiteStyle, setWebsiteStyle, leagueInfo, setLeagueInfo }) => {
+    const [activeTab, setActiveTab] = useState(currentUser.roles.includes('admin') ? 'users' : 'players');
+    const hasPermission = (requiredRoles) => requiredRoles.some(role => currentUser.roles.includes(role));
+
+    const AdminTab = ({tabName, label, requiredRoles}) => {
+        if (!hasPermission(requiredRoles)) return null;
+        return (
+            <button onClick={() => setActiveTab(tabName)} className={`px-4 py-2 rounded-t-lg font-semibold ${activeTab === tabName ? 'bg-white text-red-800' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}>
+                {label}
+            </button>
+        );
+    };
+
+    return (
+        <div className="p-4 md:p-8">
+            <h1 className="text-4xl font-bold text-slate-800 mb-6 tracking-tight">Admin Portal</h1>
+            <div className="flex border-b border-slate-300">
+                <AdminTab tabName="users" label="User Management" requiredRoles={['admin']} />
+                <AdminTab tabName="players" label="Player Management" requiredRoles={['admin', 'coach', 'player/coach']} />
+                <AdminTab tabName="teams" label="Team Management" requiredRoles={['admin']} />
+                <AdminTab tabName="scores" label="Score Entry" requiredRoles={['admin']} />
+            </div>
+            <div className="bg-white p-6 rounded-b-lg shadow-md">
+                {activeTab === 'users' && hasPermission(['admin']) && <UserManager users={users} setUsers={setUsers} teams={teams} />}
+                {activeTab === 'players' && hasPermission(['admin', 'coach', 'player/coach']) && <PlayerManager players={players} setPlayers={setPlayers} teams={teams} currentUser={currentUser} />}
+                {activeTab === 'teams' && hasPermission(['admin']) && <TeamManager teams={teams} setTeams={setTeams} />}
+                {activeTab === 'scores' && hasPermission(['admin']) && <ScoreManager leagueSchedule={leagueSchedule} gameTickerData={gameTickerData} setGameTickerData={setGameTickerData} teams={teams} />}
+            </div>
+        </div>
+    );
+};
+
 // --- Main App Component ---
 function App() {
     const [page, setPage] = useState('home');
