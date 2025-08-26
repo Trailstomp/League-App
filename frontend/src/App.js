@@ -877,10 +877,30 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                 <AdminTab tabName="scores" label="Score Entry" requiredRoles={['admin']} />
             </div>
             <div className="bg-white p-6 rounded-b-lg shadow-md">
-                {activeTab === 'users' && hasPermission(['admin']) && <UserManager users={users} setUsers={setUsers} teams={teams} />}
-                {activeTab === 'players' && hasPermission(['admin', 'coach', 'player/coach']) && <PlayerManager players={players} setPlayers={setPlayers} teams={teams} currentUser={currentUser} />}
-                {activeTab === 'teams' && hasPermission(['admin']) && <TeamManager teams={teams} setTeams={setTeams} />}
-                {activeTab === 'scores' && hasPermission(['admin']) && <ScoreManager leagueSchedule={leagueSchedule} gameTickerData={gameTickerData} setGameTickerData={setGameTickerData} teams={teams} />}
+                {activeTab === 'users' && hasPermission(['admin']) && (
+                    <div>
+                        <h2 className="text-2xl font-bold mb-4">User Management</h2>
+                        <UserManager users={users} setUsers={setUsers} teams={teams} />
+                    </div>
+                )}
+                {activeTab === 'players' && hasPermission(['admin', 'coach', 'player/coach']) && (
+                    <div>
+                        <h2 className="text-2xl font-bold mb-4">Player Management</h2>
+                        <PlayerManager players={players} setPlayers={setPlayers} teams={teams} currentUser={currentUser} />
+                    </div>
+                )}
+                {activeTab === 'teams' && hasPermission(['admin']) && (
+                    <div>
+                        <h2 className="text-2xl font-bold mb-4">Team Management</h2>
+                        <TeamManager teams={teams} setTeams={setTeams} />
+                    </div>
+                )}
+                {activeTab === 'scores' && hasPermission(['admin']) && (
+                    <div>
+                        <h2 className="text-2xl font-bold mb-4">Score Entry</h2>
+                        <ScoreManager leagueSchedule={leagueSchedule} gameTickerData={gameTickerData} setGameTickerData={setGameTickerData} teams={teams} />
+                    </div>
+                )}
             </div>
         </div>
     );
