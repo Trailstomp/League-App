@@ -1211,10 +1211,64 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                 
                 {activeTab === 'schedule' && (
                      <div className="space-y-6">
+                        {/* Team Calendar Events */}
+                        {team.calendar && team.calendar.length > 0 && (
+                            <div>
+                                <h2 className="text-xl font-semibold text-slate-700 pb-2 border-b-2 border-blue-600 mb-3">
+                                    Team Events
+                                </h2>
+                                <div className="space-y-3">
+                                    {team.calendar.map(event => (
+                                        <div key={event.id} className="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-200">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex-grow">
+                                                    <h3 className="font-bold text-slate-800">{event.title}</h3>
+                                                    <div className="flex items-center space-x-4 text-sm text-slate-600 mt-1">
+                                                        <span className="flex items-center">
+                                                            <Calendar className="mr-1 h-4 w-4"/>
+                                                            {new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}
+                                                        </span>
+                                                        <span className="flex items-center">
+                                                            {event.time}
+                                                        </span>
+                                                        {event.location && (
+                                                            <span className="flex items-center">
+                                                                <MapPin className="mr-1 h-4 w-4"/>
+                                                                {event.location}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    {event.description && (
+                                                        <p className="text-sm text-slate-600 mt-2">{event.description}</p>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center ml-4">
+                                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                                        event.type === 'game' ? 'bg-red-100 text-red-800' :
+                                                        event.type === 'practice' ? 'bg-blue-100 text-blue-800' :
+                                                        event.type === 'tournament' ? 'bg-yellow-100 text-yellow-800' :
+                                                        'bg-slate-100 text-slate-800'
+                                                    }`}>
+                                                        {event.type}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            {event.imageUrl && (
+                                                <div className="mt-3">
+                                                    <img src={event.imageUrl} alt="Event" className="w-full h-32 object-cover rounded-lg" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* League Games */}
                         {teamSchedule.map(day => (
                             <div key={day.date}>
                                 <h2 className="text-xl font-semibold text-slate-700 pb-2 border-b-2 border-red-800 mb-3">
-                                    {new Date(day.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}
+                                    League Games - {new Date(day.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}
                                 </h2>
                                 <div className="space-y-4">
                                     {day.games.map((game) => {
