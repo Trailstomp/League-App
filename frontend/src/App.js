@@ -876,7 +876,8 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
                 primaryColor: '#dc2626',
                 backgroundColor: '#ffffff',
                 textColor: '#000000',
-                fontFamily: 'Inter, sans-serif'
+                fontFamily: 'Inter, sans-serif',
+                formBackgroundColor: '#f8fafc'
             });
         }
     }, [selectedTeam]);
