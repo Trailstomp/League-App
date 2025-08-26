@@ -335,6 +335,178 @@ const StandingsPage = ({teams, onTeamClick}) => {
     );
 };
 
+const TeamCalendarManager = ({ team, teams, setTeams }) => {
+    const [editingEvent, setEditingEvent] = useState(null);
+    const [events, setEvents] = useState(team.calendar || []);
+
+    const handleSave = (e) => {
+        e.preventDefault();
+        const newEvent = {
+            ...editingEvent,
+            id: editingEvent.id || Date.now()
+        };
+
+        const updatedEvents = editingEvent.id
+            ? events.map(event => event.id === editingEvent.id ? newEvent : event)
+            : [...events, newEvent];
+
+        setEvents(updatedEvents);
+        setTeams(currentTeams => currentTeams.map(t => {
+            if (t.id === team.id) {
+                return { ...t, calendar: updatedEvents };
+            }
+            return t;
+        }));
+        setEditingEvent(null);
+    };
+
+    const handleDelete = (eventId) => {
+        const updatedEvents = events.filter(event => event.id !== eventId);
+        setEvents(updatedEvents);
+        setTeams(currentTeams => currentTeams.map(t => {
+            if (t.id === team.id) {
+                return { ...t, calendar: updatedEvents };
+            }
+            return t;
+        }));
+    };
+
+    const EventForm = () => (
+         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+                <h3 className="text-2xl font-bold mb-4">{editingEvent?.id ? 'Edit Event' : 'Add New Event'}</h3>
+                <form onSubmit={handleSave} className="space-y-4">
+                    <input 
+                        type="date" 
+                        value={editingEvent.date || ''} 
+                        onChange={e => setEditingEvent({...editingEvent, date: e.target.value})} 
+                        className="w-full p-2 border rounded" 
+                        required 
+                    />
+                    <input 
+                        type="time" 
+                        value={editingEvent.time || ''} 
+                        onChange={e => setEditingEvent({...editingEvent, time: e.target.value})} 
+                        className="w-full p-2 border rounded" 
+                        required 
+                    />
+                    <input 
+                        type="text" 
+                        value={editingEvent.title || ''} 
+                        onChange={e => setEditingEvent({...editingEvent, title: e.target.value})} 
+                        placeholder="Event Title" 
+                        className="w-full p-2 border rounded" 
+                        required 
+                    />
+                    <select 
+                        value={editingEvent.type || 'practice'} 
+                        onChange={e => setEditingEvent({...editingEvent, type: e.target.value})} 
+                        className="w-full p-2 border rounded"
+                    >
+                        <option value="practice">Practice</option>
+                        <option value="game">Game</option>
+                        <option value="scrimmage">Scrimmage</option>
+                        <option value="tournament">Tournament</option>
+                        <option value="social">Social Event</option>
+                        <option value="meeting">Team Meeting</option>
+                    </select>
+                    <input 
+                        type="text" 
+                        value={editingEvent.location || ''} 
+                        onChange={e => setEditingEvent({...editingEvent, location: e.target.value})} 
+                        placeholder="Location" 
+                        className="w-full p-2 border rounded" 
+                    />
+                    <textarea 
+                        value={editingEvent.description || ''} 
+                        onChange={e => setEditingEvent({...editingEvent, description: e.target.value})} 
+                        placeholder="Description (optional)" 
+                        className="w-full p-2 border rounded" 
+                        rows="3"
+                    />
+                    <div className="flex justify-end space-x-2">
+                        <button type="button" onClick={() => setEditingEvent(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
+                        <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Save Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+
+    return (
+        <div className="max-w-4xl mx-auto">
+            {editingEvent && <EventForm />}
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-3xl font-bold text-slate-800 tracking-tight">Team Calendar Management</h2>
+                 <button 
+                    onClick={() => setEditingEvent({type: 'practice', date: '', time: '', title: '', location: '', description: ''})} 
+                    className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"
+                >
+                    <Plus className="mr-2 h-4 w-4"/> Add Event
+                </button>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-md">
+                {events.length > 0 ? (
+                    <ul className="divide-y divide-slate-200">
+                        {events.map(event => (
+                            <li key={event.id} className="flex items-center justify-between p-4 hover:bg-slate-50">
+                                <div className="flex-grow">
+                                    <div className="flex items-center space-x-4">
+                                        <div className="text-center">
+                                            <div className="text-lg font-bold text-slate-800">
+                                                {new Date(event.date).toLocaleDateString('en-US', { day: 'numeric', timeZone: 'UTC' })}
+                                            </div>
+                                            <div className="text-sm text-slate-500">
+                                                {new Date(event.date).toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })}
+                                            </div>
+                                        </div>
+                                        <div className="flex-grow">
+                                            <h3 className="font-bold text-slate-800">{event.title}</h3>
+                                            <div className="flex items-center space-x-4 text-sm text-slate-600">
+                                                <span className="flex items-center">
+                                                    <Calendar className="mr-1 h-4 w-4"/>
+                                                    {event.time}
+                                                </span>
+                                                {event.location && (
+                                                    <span className="flex items-center">
+                                                        <MapPin className="mr-1 h-4 w-4"/>
+                                                        {event.location}
+                                                    </span>
+                                                )}
+                                                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                                    event.type === 'game' ? 'bg-red-100 text-red-800' :
+                                                    event.type === 'practice' ? 'bg-blue-100 text-blue-800' :
+                                                    event.type === 'tournament' ? 'bg-yellow-100 text-yellow-800' :
+                                                    'bg-slate-100 text-slate-800'
+                                                }`}>
+                                                    {event.type}
+                                                </span>
+                                            </div>
+                                            {event.description && (
+                                                <p className="text-sm text-slate-500 mt-1">{event.description}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <button onClick={() => setEditingEvent(event)} className="text-slate-500 hover:text-slate-700 p-1"><Edit size={18}/></button>
+                                    <button onClick={() => handleDelete(event.id)} className="text-red-500 hover:text-red-700 p-1"><Trash2 size={18}/></button>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <div className="text-center py-8 text-slate-500">
+                        <Calendar className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
+                        <p>No events scheduled yet. Add your first event!</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
 const TeamInfoManager = ({ team, setTeams }) => {
     const [teamInfo, setTeamInfo] = useState({
         name: team.name || '',
