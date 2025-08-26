@@ -217,7 +217,31 @@ frontend:
         agent: "main"
         comment: "Updated GameTicker to show actual game dates from schedule data instead of current date. Games now display proper historical and future dates."
 
-  - task: "Show 'Scheduled' status for upcoming events"
+  - task: "Fix ticker layout - move date/time to bottom left, status to bottom right"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Updated ticker layout for both games and events - date/time now on bottom left, status on bottom right. Tested and confirmed working."
+
+  - task: "Fix team calendar - add team selection capability"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Fixed TeamCalendarManager by setting isTeamSpecific=false to enable team selection. Now shows 7 team checkboxes for multi-team events like tournaments."
+
+  - task: "Add management controls directly to relevant pages"
     implemented: true
     working: true
     file: "frontend/src/App.js"
@@ -227,7 +251,7 @@ frontend:
     status_history:
       - working: true
         agent: "main"
-        comment: "Added 'Scheduled' status for upcoming events in ticker and events display. Events now show clear status indication."
+        comment: "Added admin-only management controls: 'Edit League Info' button on homepage, 'Add League Event' button on Events page. Only visible to league admins."
 
 backend:
   - task: "Backend API functionality"
