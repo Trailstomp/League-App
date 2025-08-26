@@ -339,6 +339,398 @@ const StandingsPage = ({teams, onTeamClick}) => {
     );
 };
 
+const LeagueCalendarManager = ({ teams, setTeams }) => {
+    const [selectedTeamId, setSelectedTeamId] = useState('all');
+    const [editingEvent, setEditingEvent] = useState(null);
+
+    const selectedTeam = teams.find(t => t.id === selectedTeamId);
+    const events = selectedTeamId === 'all' 
+        ? teams.flatMap(team => (team.calendar || []).map(event => ({...event, teamName: team.name, teamId: team.id})))
+        : selectedTeam?.calendar || [];
+
+    const handleSave = (e) => {
+        e.preventDefault();
+        const newEvent = {
+            ...editingEvent,
+            id: editingEvent.id || Date.now()
+        };
+
+        if (selectedTeamId === 'all') {
+            // If editing event from "all" view, find the team
+            const targetTeamId = editingEvent.teamId;
+            setTeams(currentTeams => currentTeams.map(t => {
+                if (t.id === targetTeamId) {
+                    const updatedEvents = editingEvent.id
+                        ? (t.calendar || []).map(event => event.id === editingEvent.id ? newEvent : event)
+                        : [...(t.calendar || []), newEvent];
+                    return { ...t, calendar: updatedEvents };
+                }
+                return t;
+            }));
+        } else {
+            // Editing specific team
+            setTeams(currentTeams => currentTeams.map(t => {
+                if (t.id === selectedTeamId) {
+                    const updatedEvents = editingEvent.id
+                        ? (t.calendar || []).map(event => event.id === editingEvent.id ? newEvent : event)
+                        : [...(t.calendar || []), newEvent];
+                    return { ...t, calendar: updatedEvents };
+                }
+                return t;
+            }));
+        }
+        setEditingEvent(null);
+    };
+
+    const EventForm = () => (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+                <h3 className="text-2xl font-bold mb-4">{editingEvent?.id ? 'Edit Event' : 'Add New Event'}</h3>
+                <form onSubmit={handleSave} className="space-y-4">
+                    {selectedTeamId === 'all' && (
+                        <select 
+                            value={editingEvent.teamId || ''} 
+                            onChange={e => setEditingEvent({...editingEvent, teamId: e.target.value})} 
+                            className="w-full p-2 border rounded" 
+                            required
+                        >
+                            <option value="">Select Team</option>
+                            {teams.map(team => (
+                                <option key={team.id} value={team.id}>{team.name}</option>
+                            ))}
+                        </select>
+                    )}
+                    <input type="date" value={editingEvent.date || ''} onChange={e => setEditingEvent({...editingEvent, date: e.target.value})} className="w-full p-2 border rounded" required />
+                    <input type="time" value={editingEvent.time || ''} onChange={e => setEditingEvent({...editingEvent, time: e.target.value})} className="w-full p-2 border rounded" required />
+                    <input type="text" value={editingEvent.title || ''} onChange={e => setEditingEvent({...editingEvent, title: e.target.value})} placeholder="Event Title" className="w-full p-2 border rounded" required />
+                    <select value={editingEvent.type || 'practice'} onChange={e => setEditingEvent({...editingEvent, type: e.target.value})} className="w-full p-2 border rounded">
+                        <option value="practice">Practice</option>
+                        <option value="game">Game</option>
+                        <option value="scrimmage">Scrimmage</option>
+                        <option value="tournament">Tournament</option>
+                        <option value="social">Social Event</option>
+                        <option value="meeting">Team Meeting</option>
+                    </select>
+                    <input type="text" value={editingEvent.location || ''} onChange={e => setEditingEvent({...editingEvent, location: e.target.value})} placeholder="Location" className="w-full p-2 border rounded" />
+                    <textarea value={editingEvent.description || ''} onChange={e => setEditingEvent({...editingEvent, description: e.target.value})} placeholder="Description (optional)" className="w-full p-2 border rounded" rows="3" />
+                    <div className="flex justify-end space-x-2">
+                        <button type="button" onClick={() => setEditingEvent(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
+                        <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Save Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+
+    return (
+        <div className="max-w-6xl mx-auto">
+            {editingEvent && <EventForm />}
+            <div className="flex justify-between items-center mb-6">
+                <div>
+                    <select value={selectedTeamId} onChange={e => setSelectedTeamId(e.target.value)} className="p-2 border rounded-md mr-4">
+                        <option value="all">All Teams</option>
+                        {teams.map(team => <option key={team.id} value={team.id}>{team.name}</option>)}
+                    </select>
+                </div>
+                <button 
+                    onClick={() => setEditingEvent({
+                        teamId: selectedTeamId === 'all' ? teams[0]?.id : selectedTeamId,
+                        type: 'practice', 
+                        date: '', 
+                        time: '', 
+                        title: '', 
+                        location: '', 
+                        description: ''
+                    })} 
+                    className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"
+                >
+                    <Plus className="mr-2 h-4 w-4"/> Add Event
+                </button>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-md">
+                {events.length > 0 ? (
+                    <ul className="divide-y divide-slate-200">
+                        {events.map(event => (
+                            <li key={`${event.teamId || selectedTeamId}-${event.id}`} className="flex items-center justify-between p-4 hover:bg-slate-50">
+                                <div className="flex-grow">
+                                    <div className="flex items-center space-x-4">
+                                        <div className="text-center">
+                                            <div className="text-lg font-bold text-slate-800">
+                                                {new Date(event.date).toLocaleDateString('en-US', { day: 'numeric', timeZone: 'UTC' })}
+                                            </div>
+                                            <div className="text-sm text-slate-500">
+                                                {new Date(event.date).toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })}
+                                            </div>
+                                        </div>
+                                        <div className="flex-grow">
+                                            <h3 className="font-bold text-slate-800">{event.title}</h3>
+                                            {selectedTeamId === 'all' && <p className="text-sm font-semibold text-red-700">{event.teamName}</p>}
+                                            <div className="flex items-center space-x-4 text-sm text-slate-600">
+                                                <span className="flex items-center"><Calendar className="mr-1 h-4 w-4"/>{event.time}</span>
+                                                {event.location && <span className="flex items-center"><MapPin className="mr-1 h-4 w-4"/>{event.location}</span>}
+                                                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                                    event.type === 'game' ? 'bg-red-100 text-red-800' :
+                                                    event.type === 'practice' ? 'bg-blue-100 text-blue-800' :
+                                                    event.type === 'tournament' ? 'bg-yellow-100 text-yellow-800' :
+                                                    'bg-slate-100 text-slate-800'
+                                                }`}>{event.type}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <button onClick={() => setEditingEvent({...event, teamId: event.teamId || selectedTeamId})} className="text-slate-500 hover:text-slate-700 p-1"><Edit size={18}/></button>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <div className="text-center py-8 text-slate-500">
+                        <Calendar className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
+                        <p>No events scheduled. Add the first event!</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+const LeagueInfoManager = ({ leagueInfo, setLeagueInfo, websiteStyle, setWebsiteStyle }) => {
+    const [info, setInfo] = useState({
+        name: leagueInfo.name || '',
+        contactEmail: leagueInfo.contactEmail || '',
+        description: leagueInfo.description || '',
+        location: leagueInfo.location || '',
+        founded: leagueInfo.founded || '',
+        website: leagueInfo.website || '',
+        social: {
+            twitter: leagueInfo.social?.twitter || '',
+            instagram: leagueInfo.social?.instagram || '',
+            facebook: leagueInfo.social?.facebook || ''
+        }
+    });
+    
+    const [tickerStyle, setTickerStyle] = useState({
+        tickerColor: websiteStyle.tickerColor || '#1e293b',
+        tickerItemColor: websiteStyle.tickerItemColor || '#334155', 
+        tickerBorderColor: websiteStyle.tickerBorderColor || '#475569',
+        tickerTextColor: websiteStyle.tickerTextColor || '#94a3b8'
+    });
+
+    const [saved, setSaved] = useState(false);
+
+    const handleSave = (e) => {
+        e.preventDefault();
+        setLeagueInfo(info);
+        setWebsiteStyle(prev => ({...prev, ...tickerStyle}));
+        setSaved(true);
+        setTimeout(() => setSaved(false), 3000);
+    };
+
+    const handleSocialChange = (platform, value) => {
+        setInfo(prev => ({
+            ...prev,
+            social: { ...prev.social, [platform]: value }
+        }));
+    };
+
+    return (
+        <div className="max-w-6xl mx-auto">
+            <form onSubmit={handleSave} className="space-y-8">
+                {/* League Information */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                        <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
+                            <Trophy className="mr-2" size={20} />
+                            League Information
+                        </h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">League Name</label>
+                                <input
+                                    type="text"
+                                    value={info.name}
+                                    onChange={(e) => setInfo(prev => ({...prev, name: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                    placeholder="Men's Lacrosse Beer League"
+                                />
+                            </div>
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Location/Region</label>
+                                <input
+                                    type="text"
+                                    value={info.location}
+                                    onChange={(e) => setInfo(prev => ({...prev, location: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                    placeholder="Ohio Valley Region"
+                                />
+                            </div>
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Founded Year</label>
+                                <input
+                                    type="text"
+                                    value={info.founded}
+                                    onChange={(e) => setInfo(prev => ({...prev, founded: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                    placeholder="2020"
+                                />
+                            </div>
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Website URL</label>
+                                <input
+                                    type="url"
+                                    value={info.website}
+                                    onChange={(e) => setInfo(prev => ({...prev, website: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                    placeholder="https://mlbl.org"
+                                />
+                            </div>
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Contact Email</label>
+                                <input
+                                    type="email"
+                                    value={info.contactEmail}
+                                    onChange={(e) => setInfo(prev => ({...prev, contactEmail: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                    placeholder="admin@mlbl.org"
+                                />
+                            </div>
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">League Description</label>
+                                <textarea
+                                    value={info.description}
+                                    onChange={(e) => setInfo(prev => ({...prev, description: e.target.value}))}
+                                    rows="4"
+                                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                    placeholder="Describe your league..."
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Ticker Styling */}
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                        <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
+                            <Palette className="mr-2" size={20} />
+                            Game Ticker Styling
+                        </h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Ticker Background</label>
+                                <div className="relative">
+                                    <div className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3" style={{ backgroundColor: tickerStyle.tickerColor }}>
+                                        <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+                                            {tickerStyle.tickerColor}
+                                        </span>
+                                    </div>
+                                    <input type="color" value={tickerStyle.tickerColor} onChange={(e) => setTickerStyle(prev => ({...prev, tickerColor: e.target.value}))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Game Card Background</label>
+                                <div className="relative">
+                                    <div className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3" style={{ backgroundColor: tickerStyle.tickerItemColor }}>
+                                        <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+                                            {tickerStyle.tickerItemColor}
+                                        </span>
+                                    </div>
+                                    <input type="color" value={tickerStyle.tickerItemColor} onChange={(e) => setTickerStyle(prev => ({...prev, tickerItemColor: e.target.value}))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Card Border Color</label>
+                                <div className="relative">
+                                    <div className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3" style={{ backgroundColor: tickerStyle.tickerBorderColor }}>
+                                        <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+                                            {tickerStyle.tickerBorderColor}
+                                        </span>
+                                    </div>
+                                    <input type="color" value={tickerStyle.tickerBorderColor} onChange={(e) => setTickerStyle(prev => ({...prev, tickerBorderColor: e.target.value}))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Secondary Text Color</label>
+                                <div className="relative">
+                                    <div className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3 bg-slate-800">
+                                        <span className="font-semibold text-sm px-2 py-1 rounded" style={{ color: tickerStyle.tickerTextColor }}>
+                                            {tickerStyle.tickerTextColor} Sample
+                                        </span>
+                                    </div>
+                                    <input type="color" value={tickerStyle.tickerTextColor} onChange={(e) => setTickerStyle(prev => ({...prev, tickerTextColor: e.target.value}))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Social Media */}
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
+                        <Users className="mr-2" size={20} />
+                        League Social Media
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2 flex items-center">
+                                <Twitter className="mr-2 text-blue-400" size={18} />
+                                Twitter/X
+                            </label>
+                            <input
+                                type="url"
+                                value={info.social.twitter}
+                                onChange={(e) => handleSocialChange('twitter', e.target.value)}
+                                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="https://twitter.com/mlbl"
+                            />
+                        </div>
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2 flex items-center">
+                                <Instagram className="mr-2 text-pink-500" size={18} />
+                                Instagram
+                            </label>
+                            <input
+                                type="url"
+                                value={info.social.instagram}
+                                onChange={(e) => handleSocialChange('instagram', e.target.value)}
+                                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="https://instagram.com/mlbl"
+                            />
+                        </div>
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2 flex items-center">
+                                <Facebook className="mr-2 text-blue-600" size={18} />
+                                Facebook
+                            </label>
+                            <input
+                                type="url"
+                                value={info.social.facebook}
+                                onChange={(e) => handleSocialChange('facebook', e.target.value)}
+                                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="https://facebook.com/mlbl"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Save Button */}
+                <div className="flex justify-end items-center space-x-4">
+                    {saved && (
+                        <div className="flex items-center text-green-600">
+                            <span className="mr-2">✓</span>
+                            <span className="font-semibold">League information saved successfully!</span>
+                        </div>
+                    )}
+                    <button type="submit" className="bg-red-800 text-white px-8 py-3 rounded-lg hover:bg-red-900 font-semibold flex items-center">
+                        <Settings className="mr-2" size={18} />
+                        Save League Settings
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
+};
+
 const TeamCalendarManager = ({ team, teams, setTeams }) => {
     const [editingEvent, setEditingEvent] = useState(null);
     const [events, setEvents] = useState(team.calendar || []);
