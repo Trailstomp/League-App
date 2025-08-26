@@ -1008,6 +1008,26 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
                         </div>
 
                         <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Form Background</label>
+                            <div className="relative">
+                                <div 
+                                    className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
+                                    style={{ backgroundColor: style.formBackgroundColor }}
+                                >
+                                    <span className="text-slate-700 font-semibold text-sm bg-white bg-opacity-75 px-2 py-1 rounded">
+                                        {style.formBackgroundColor}
+                                    </span>
+                                </div>
+                                <input 
+                                    type="color" 
+                                    value={style.formBackgroundColor}
+                                    onChange={(e) => setStyle(prev => ({...prev, formBackgroundColor: e.target.value}))}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
                             <label className="block font-semibold text-slate-700 mb-2">Font Family</label>
                             <select 
                                 value={style.fontFamily}
