@@ -1218,6 +1218,46 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                 />
                             </div>
                         </div>
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Page Background</label>
+                            <div className="relative">
+                                <div 
+                                    className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
+                                    style={{ backgroundColor: style.pageBackground || '#f1f5f9' }}
+                                >
+                                    <span className="text-slate-700 font-semibold text-sm bg-white bg-opacity-75 px-2 py-1 rounded">
+                                        {style.pageBackground || '#f1f5f9'}
+                                    </span>
+                                </div>
+                                <input 
+                                    type="color" 
+                                    value={style.pageBackground || '#f1f5f9'} 
+                                    onChange={(e) => setStyle(prev => ({...prev, pageBackground: e.target.value}))} 
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Form Background</label>
+                            <div className="relative">
+                                <div 
+                                    className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
+                                    style={{ backgroundColor: style.formBackground || '#ffffff' }}
+                                >
+                                    <span className="text-slate-700 font-semibold text-sm bg-black bg-opacity-25 px-2 py-1 rounded">
+                                        {style.formBackground || '#ffffff'}
+                                    </span>
+                                </div>
+                                <input 
+                                    type="color" 
+                                    value={style.formBackground || '#ffffff'} 
+                                    onChange={(e) => setStyle(prev => ({...prev, formBackground: e.target.value}))} 
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     <div className="flex justify-end items-center space-x-4">
