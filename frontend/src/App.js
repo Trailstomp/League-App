@@ -78,7 +78,8 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
                     teamName: team.name,
                     teamLogo: team.logo,
                     teamId: team.id,
-                    itemType: 'event'
+                    itemType: 'event',
+                    status: 'Scheduled' // Add scheduled status for upcoming events
                 }))
         ).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5); // Show next 5 events
 
@@ -129,6 +130,9 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
                                     <span>{item.location}</span>
                                     <span className="font-bold text-xs text-red-400">GAME</span>
                                 </div>
+                                <div className="text-xs mb-1 text-center font-semibold" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
+                                    {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </div>
                                 <div className="space-y-1">
                                     <div className="flex items-center justify-between text-sm">
                                         <button onClick={() => onTeamClick(home.id)} className="flex items-center gap-2 hover:opacity-80">
@@ -159,6 +163,9 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
                                     <span>{item.location || 'TBA'}</span>
                                     <span className="font-bold text-xs text-blue-400">EVENT</span>
                                 </div>
+                                <div className="text-xs mb-1 text-center font-semibold" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
+                                    {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}
+                                </div>
                                 <div className="space-y-1">
                                     <button onClick={() => onTeamClick(item.teamId)} className="flex items-center gap-2 hover:opacity-80 w-full">
                                         <img src={item.teamLogo} alt={item.teamName} className="w-6 h-6 rounded-full bg-white p-0.5" />
@@ -166,15 +173,11 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
                                     </button>
                                     <div className="text-sm text-white font-semibold">{item.title}</div>
                                     <div className="text-xs" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
-                                        {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })} • {item.time}
+                                        {item.time}
                                     </div>
                                 </div>
-                                <div className={`text-center text-xs font-bold mt-1 tracking-wider ${
-                                    item.type === 'practice' ? 'text-blue-400' :
-                                    item.type === 'tournament' ? 'text-yellow-400' : 
-                                    'text-green-400'
-                                }`}>
-                                    {item.type?.toUpperCase()}
+                                <div className="text-center text-xs font-bold mt-1 tracking-wider text-orange-400">
+                                    {item.status || 'SCHEDULED'}
                                 </div>
                             </div>
                         );
