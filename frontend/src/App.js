@@ -423,20 +423,48 @@ const SocialCard = ({ entity }) => {
 };
 
 // --- Page Components ---
-const NewHomePage = ({teams, onTeamClick, leagueInfo}) => {
+const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser}) => {
     const sortedTeams = teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name));
+    const isLeagueAdmin = currentUser && currentUser.roles.includes('admin');
     
     return (
         <div className="p-4 md:p-8">
             {/* Hero Section with Text Area */}
             <div className="text-center mb-12">
-                <h1 className="text-6xl font-bold text-slate-800 mb-4 tracking-tight">{leagueInfo.name}</h1>
+                <div className="flex justify-between items-start mb-4">
+                    <div className="flex-grow">
+                        <h1 className="text-6xl font-bold text-slate-800 mb-4 tracking-tight">{leagueInfo.name}</h1>
+                    </div>
+                    {isLeagueAdmin && (
+                        <div className="ml-4">
+                            <button 
+                                onClick={() => window.location.hash = 'admin-portal'}
+                                className="bg-red-800 text-white px-3 py-2 rounded text-sm hover:bg-red-900 flex items-center"
+                                title="Quick access to league management"
+                            >
+                                <Settings className="mr-1 h-4 w-4"/> Edit League Info
+                            </button>
+                        </div>
+                    )}
+                </div>
                 <div className="max-w-4xl mx-auto">
                     <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
-                        <h2 className="text-2xl font-bold text-slate-800 mb-4">Welcome to Our League</h2>
-                        <p className="text-lg text-slate-600 leading-relaxed">
-                            {leagueInfo.description || "Welcome to the premier lacrosse league featuring competitive teams from across the region. Experience the excitement, skill, and camaraderie that makes our league special. Join us for intense competition, community spirit, and unforgettable moments on the field."}
-                        </p>
+                        <div className="flex justify-between items-start">
+                            <div className="flex-grow">
+                                <h2 className="text-2xl font-bold text-slate-800 mb-4">Welcome to Our League</h2>
+                                <p className="text-lg text-slate-600 leading-relaxed">
+                                    {leagueInfo.description || "Welcome to the premier lacrosse league featuring competitive teams from across the region. Experience the excitement, skill, and camaraderie that makes our league special. Join us for intense competition, community spirit, and unforgettable moments on the field."}
+                                </p>
+                            </div>
+                            {isLeagueAdmin && (
+                                <button 
+                                    className="ml-4 text-slate-400 hover:text-slate-600"
+                                    title="Edit this text"
+                                >
+                                    <Edit className="h-4 w-4"/>
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
