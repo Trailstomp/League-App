@@ -153,10 +153,7 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
                                     <span>{item.location}</span>
                                     <span className="font-bold text-xs text-red-400">GAME</span>
                                 </div>
-                                <div className="text-xs mb-1 text-center font-semibold" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
-                                    {item.gameDate ? new Date(item.gameDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date TBA'}
-                                </div>
-                                <div className="space-y-1">
+                                <div className="space-y-1 mb-2">
                                     <div className="flex items-center justify-between text-sm">
                                         <button onClick={() => onTeamClick(home.id)} className="flex items-center gap-2 hover:opacity-80">
                                             <img src={home.logo} alt={home.name} className="w-6 h-6 rounded-full bg-white p-0.5" />
@@ -172,7 +169,12 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
                                         <span className="font-bold text-lg text-white">{item.awayScore ?? '-'}</span>
                                     </div>
                                 </div>
-                                <div className="text-center text-xs font-bold text-green-400 mt-1 tracking-wider">{item.status}</div>
+                                <div className="flex justify-between items-center text-xs">
+                                    <span className="font-semibold" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
+                                        {item.gameDate ? new Date(item.gameDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date TBA'}
+                                    </span>
+                                    <span className="font-bold text-green-400 tracking-wider">{item.status}</span>
+                                </div>
                             </div>
                         );
                     } else {
