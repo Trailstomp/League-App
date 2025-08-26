@@ -2014,48 +2014,97 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                     Team Events
                                 </h2>
                                 <div className="space-y-3">
-                                    {team.calendar.map(event => (
-                                        <div key={event.id} className="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-200">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex-grow">
-                                                    <h3 className="font-bold text-slate-800">{event.title}</h3>
-                                                    <div className="flex items-center space-x-4 text-sm text-slate-600 mt-1">
-                                                        <span className="flex items-center">
-                                                            <Calendar className="mr-1 h-4 w-4"/>
-                                                            {new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}
-                                                        </span>
-                                                        <span className="flex items-center">
-                                                            {event.time}
-                                                        </span>
-                                                        {event.location && (
-                                                            <span className="flex items-center">
-                                                                <MapPin className="mr-1 h-4 w-4"/>
-                                                                {event.location}
+                                    {team.calendar.map(event => {
+                                        if (event.type === 'tournament') {
+                                            // Tournament event - show as summary card
+                                            return (
+                                                <div key={event.id} className="bg-yellow-50 p-4 rounded-lg shadow-sm border border-yellow-200">
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex-grow">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <Trophy className="text-yellow-600" size={16} />
+                                                                <h3 className="font-bold text-slate-800">{event.title}</h3>
+                                                            </div>
+                                                            <div className="flex items-center space-x-4 text-sm text-slate-600 mt-1">
+                                                                <span className="flex items-center">
+                                                                    <Calendar className="mr-1 h-4 w-4"/>
+                                                                    {new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}
+                                                                </span>
+                                                                <span className="flex items-center">
+                                                                    {event.time}
+                                                                </span>
+                                                                {event.location && (
+                                                                    <span className="flex items-center">
+                                                                        <MapPin className="mr-1 h-4 w-4"/>
+                                                                        {event.location}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <div className="mt-2 text-sm">
+                                                                <span className="text-slate-700 font-medium">{team.name} participating in this tournament</span>
+                                                            </div>
+                                                            {event.description && (
+                                                                <p className="text-sm text-slate-600 mt-2">{event.description}</p>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex items-center ml-4">
+                                                            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
+                                                                TOURNAMENT
                                                             </span>
-                                                        )}
+                                                        </div>
                                                     </div>
-                                                    {event.description && (
-                                                        <p className="text-sm text-slate-600 mt-2">{event.description}</p>
+                                                    {event.imageUrl && (
+                                                        <div className="mt-3">
+                                                            <img src={event.imageUrl} alt="Event" className="w-full h-32 object-cover rounded-lg" />
+                                                        </div>
                                                     )}
                                                 </div>
-                                                <div className="flex items-center ml-4">
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                                        event.type === 'game' ? 'bg-red-100 text-red-800' :
-                                                        event.type === 'practice' ? 'bg-blue-100 text-blue-800' :
-                                                        event.type === 'tournament' ? 'bg-yellow-100 text-yellow-800' :
-                                                        'bg-slate-100 text-slate-800'
-                                                    }`}>
-                                                        {event.type}
-                                                    </span>
+                                            );
+                                        } else {
+                                            // Regular event
+                                            return (
+                                                <div key={event.id} className="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-200">
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex-grow">
+                                                            <h3 className="font-bold text-slate-800">{event.title}</h3>
+                                                            <div className="flex items-center space-x-4 text-sm text-slate-600 mt-1">
+                                                                <span className="flex items-center">
+                                                                    <Calendar className="mr-1 h-4 w-4"/>
+                                                                    {new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}
+                                                                </span>
+                                                                <span className="flex items-center">
+                                                                    {event.time}
+                                                                </span>
+                                                                {event.location && (
+                                                                    <span className="flex items-center">
+                                                                        <MapPin className="mr-1 h-4 w-4"/>
+                                                                        {event.location}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            {event.description && (
+                                                                <p className="text-sm text-slate-600 mt-2">{event.description}</p>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex items-center ml-4">
+                                                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                                                event.type === 'game' ? 'bg-red-100 text-red-800' :
+                                                                event.type === 'practice' ? 'bg-blue-100 text-blue-800' :
+                                                                'bg-slate-100 text-slate-800'
+                                                            }`}>
+                                                                {event.type}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    {event.imageUrl && (
+                                                        <div className="mt-3">
+                                                            <img src={event.imageUrl} alt="Event" className="w-full h-32 object-cover rounded-lg" />
+                                                        </div>
+                                                    )}
                                                 </div>
-                                            </div>
-                                            {event.imageUrl && (
-                                                <div className="mt-3">
-                                                    <img src={event.imageUrl} alt="Event" className="w-full h-32 object-cover rounded-lg" />
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
+                                            );
+                                        }
+                                    })}
                                 </div>
                             </div>
                         )}
