@@ -1461,7 +1461,7 @@ const TeamCalendarManager = ({ team, teams, setTeams }) => {
                     onSave={handleSave}
                     onCancel={() => setEditingEvent(null)}
                     teams={teams}
-                    isTeamSpecific={true}
+                    isTeamSpecific={false} // Allow team selection even from team calendar
                     currentTeamId={team.id}
                 />
             )}
