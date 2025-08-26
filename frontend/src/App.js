@@ -1708,8 +1708,10 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                 <AdminTab tabName="players" label="Player Management" requiredRoles={['admin', 'coach', 'player/coach']} />
                 <AdminTab tabName="teams" label="Team Management" requiredRoles={['admin']} />
                 <AdminTab tabName="scores" label="Score Entry" requiredRoles={['admin']} />
+                <AdminTab tabName="calendar" label="Calendar Management" requiredRoles={['admin']} />
                 <AdminTab tabName="team_style" label="Team Style" requiredRoles={['admin', 'coach', 'player/coach']} />
                 <AdminTab tabName="site_style" label="Site Style" requiredRoles={['admin']} />
+                <AdminTab tabName="league_info" label="League Info" requiredRoles={['admin']} />
             </div>
             <div className="bg-white p-6 rounded-b-lg shadow-md">
                 {activeTab === 'users' && hasPermission(['admin']) && (
