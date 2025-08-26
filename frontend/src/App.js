@@ -905,6 +905,18 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                         <ScoreManager leagueSchedule={leagueSchedule} gameTickerData={gameTickerData} setGameTickerData={setGameTickerData} teams={teams} />
                     </div>
                 )}
+                {activeTab === 'team_style' && hasPermission(['admin', 'coach', 'player/coach']) && (
+                    <div>
+                        <h2 className="text-2xl font-bold mb-4">Team Style Management</h2>
+                        <TeamStyleManager teams={teams} setTeams={setTeams} currentUser={currentUser} />
+                    </div>
+                )}
+                {activeTab === 'site_style' && hasPermission(['admin']) && (
+                    <div>
+                        <h2 className="text-2xl font-bold mb-4">Website Style Management</h2>
+                        <WebsiteStyleManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
+                    </div>
+                )}
             </div>
         </div>
     );
