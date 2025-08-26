@@ -1036,6 +1036,11 @@ function App() {
                     </div>
                 </nav>
                 <div className="p-2 border-t border-slate-700">
+                   {currentUser && (currentUser.roles.includes('admin') || currentUser.roles.includes('coach') || currentUser.roles.includes('player/coach')) && 
+                    <button onClick={handleAdminNav} className={`flex items-center space-x-3 p-2 rounded-md w-full text-left transition-colors ${page === 'admin' ? 'text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white'}`} style={{backgroundColor: page === 'admin' ? websiteStyle.accentColor : 'transparent'}}>
+                        <Crown size={20} /><span>{currentUser.roles.includes('admin') ? 'Admin Portal' : 'Team Admin'}</span>
+                    </button>
+                   }
                    {currentUser ? (
                        <button onClick={handleLogout} className="flex items-center space-x-3 p-2 rounded-md w-full text-left text-slate-300 hover:text-white" style={{'--hover-bg': websiteStyle.accentColor}}
                         onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--hover-bg)'}
