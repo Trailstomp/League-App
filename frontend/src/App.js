@@ -869,12 +869,16 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
 
     return (
         <div className="p-4 md:p-8">
-            <h1 className="text-4xl font-bold text-slate-800 mb-6 tracking-tight">Admin Portal</h1>
-            <div className="flex border-b border-slate-300">
+            <h1 className="text-4xl font-bold text-slate-800 mb-6 tracking-tight">
+                {currentUser.roles.includes('admin') ? 'Admin Portal' : 'Team Management Portal'}
+            </h1>
+            <div className="flex border-b border-slate-300 flex-wrap">
                 <AdminTab tabName="users" label="User Management" requiredRoles={['admin']} />
                 <AdminTab tabName="players" label="Player Management" requiredRoles={['admin', 'coach', 'player/coach']} />
                 <AdminTab tabName="teams" label="Team Management" requiredRoles={['admin']} />
                 <AdminTab tabName="scores" label="Score Entry" requiredRoles={['admin']} />
+                <AdminTab tabName="team_style" label="Team Style" requiredRoles={['admin', 'coach', 'player/coach']} />
+                <AdminTab tabName="site_style" label="Site Style" requiredRoles={['admin']} />
             </div>
             <div className="bg-white p-6 rounded-b-lg shadow-md">
                 {activeTab === 'users' && hasPermission(['admin']) && (
