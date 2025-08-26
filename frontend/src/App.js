@@ -472,6 +472,9 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                 
                 {activeTab === 'social' && ( <div className="max-w-2xl mx-auto"> <SocialCard entity={team} /> </div> )}
                 {activeTab === 'contact' && ( <div className="max-w-2xl mx-auto"> <ContactCard entity={team} /> </div> )}
+                {activeTab === 'manage_info' && isAuthorizedToManage && <TeamInfoManager team={team} setTeams={setTeams} />}
+                {activeTab === 'manage_players' && isAuthorizedToManage && <PlayerManager players={players} setPlayers={setPlayers} teams={[team]} currentUser={currentUser} />}
+                {activeTab === 'manage_style' && isAuthorizedToManage && <TeamStyleManager teams={[team]} setTeams={setTeams} currentUser={currentUser} />}
             </div>
         </div>
     );
