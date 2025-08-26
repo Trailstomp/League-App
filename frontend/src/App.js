@@ -65,6 +65,26 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
     const tickerRef = useRef(null);
     const [isHovering, setIsHovering] = useState(false);
 
+    // Combine games and upcoming events
+    const allItems = useMemo(() => {
+        const games = gameTickerData.map(game => ({...game, type: 'game', itemType: 'game'}));
+        
+        const upcomingEvents = teams.flatMap(team => 
+            (team.calendar || [])
+                .filter(event => new Date(event.date) >= new Date()) // Only upcoming events
+                .slice(0, 3) // Limit per team
+                .map(event => ({
+                    ...event,
+                    teamName: team.name,
+                    teamLogo: team.logo,
+                    teamId: team.id,
+                    itemType: 'event'
+                }))
+        ).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5); // Show next 5 events
+
+        return [...games, ...upcomingEvents];
+    }, [gameTickerData, teams]);
+
     useEffect(() => {
         const tickerElement = tickerRef.current;
         if (!tickerElement) return;
@@ -94,40 +114,71 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
             onMouseLeave={() => setIsHovering(false)}
         >
             <div ref={tickerRef} className="flex space-x-6 overflow-x-auto no-scrollbar">
-                {[...gameTickerData, ...gameTickerData].map((game, index) => {
-                    const home = getTeam(game.homeTeam);
-                    const away = getTeam(game.awayTeam);
-                    if (!home || !away) return null;
-                    return (
-                        <div key={index} className="flex-shrink-0 w-72 rounded-lg p-2 border" style={{ 
-                            backgroundColor: websiteStyle?.tickerItemColor || '#334155',
-                            borderColor: websiteStyle?.tickerBorderColor || '#475569'
-                        }}>
-                            <div className="text-xs mb-1 flex justify-between" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
-                                <span>{game.location}</span>
-                                <span className={`font-bold text-xs ${game.type === 'Tournament' ? 'text-yellow-400' : 'text-red-400'}`}>
-                                    {game.type === 'Tournament' ? game.tournamentName : 'Regular Season'}
-                                </span>
-                            </div>
-                            <div className="space-y-1">
-                                <div className="flex items-center justify-between text-sm">
-                                    <button onClick={() => onTeamClick(home.id)} className="flex items-center gap-2 hover:opacity-80">
-                                        <img src={home.logo} alt={home.name} className="w-6 h-6 rounded-full bg-white p-0.5" />
-                                        <span className="font-medium text-white">{home.name}</span>
-                                    </button>
-                                    <span className="font-bold text-lg text-white">{game.homeScore ?? '-'}</span>
+                {[...allItems, ...allItems].map((item, index) => {
+                    if (item.itemType === 'game') {
+                        const home = getTeam(item.homeTeam);
+                        const away = getTeam(item.awayTeam);
+                        if (!home || !away) return null;
+                        
+                        return (
+                            <div key={`game-${index}`} className="flex-shrink-0 w-72 rounded-lg p-2 border" style={{ 
+                                backgroundColor: websiteStyle?.tickerItemColor || '#334155',
+                                borderColor: websiteStyle?.tickerBorderColor || '#475569'
+                            }}>
+                                <div className="text-xs mb-1 flex justify-between" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
+                                    <span>{item.location}</span>
+                                    <span className="font-bold text-xs text-red-400">GAME</span>
                                 </div>
-                                <div className="flex items-center justify-between text-sm">
-                                    <button onClick={() => onTeamClick(away.id)} className="flex items-center gap-2 hover:opacity-80">
-                                        <img src={away.logo} alt={away.name} className="w-6 h-6 rounded-full bg-white p-0.5" />
-                                        <span className="font-medium text-white">{away.name}</span>
+                                <div className="space-y-1">
+                                    <div className="flex items-center justify-between text-sm">
+                                        <button onClick={() => onTeamClick(home.id)} className="flex items-center gap-2 hover:opacity-80">
+                                            <img src={home.logo} alt={home.name} className="w-6 h-6 rounded-full bg-white p-0.5" />
+                                            <span className="font-medium text-white">{home.name}</span>
+                                        </button>
+                                        <span className="font-bold text-lg text-white">{item.homeScore ?? '-'}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between text-sm">
+                                        <button onClick={() => onTeamClick(away.id)} className="flex items-center gap-2 hover:opacity-80">
+                                            <img src={away.logo} alt={away.name} className="w-6 h-6 rounded-full bg-white p-0.5" />
+                                            <span className="font-medium text-white">{away.name}</span>
+                                        </button>
+                                        <span className="font-bold text-lg text-white">{item.awayScore ?? '-'}</span>
+                                    </div>
+                                </div>
+                                <div className="text-center text-xs font-bold text-green-400 mt-1 tracking-wider">{item.status}</div>
+                            </div>
+                        );
+                    } else {
+                        // Event item
+                        return (
+                            <div key={`event-${index}`} className="flex-shrink-0 w-72 rounded-lg p-2 border" style={{ 
+                                backgroundColor: websiteStyle?.tickerItemColor || '#334155',
+                                borderColor: websiteStyle?.tickerBorderColor || '#475569'
+                            }}>
+                                <div className="text-xs mb-1 flex justify-between" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
+                                    <span>{item.location || 'TBA'}</span>
+                                    <span className="font-bold text-xs text-blue-400">EVENT</span>
+                                </div>
+                                <div className="space-y-1">
+                                    <button onClick={() => onTeamClick(item.teamId)} className="flex items-center gap-2 hover:opacity-80 w-full">
+                                        <img src={item.teamLogo} alt={item.teamName} className="w-6 h-6 rounded-full bg-white p-0.5" />
+                                        <span className="font-medium text-white text-left">{item.teamName}</span>
                                     </button>
-                                    <span className="font-bold text-lg text-white">{game.awayScore ?? '-'}</span>
+                                    <div className="text-sm text-white font-semibold">{item.title}</div>
+                                    <div className="text-xs" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
+                                        {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })} • {item.time}
+                                    </div>
+                                </div>
+                                <div className={`text-center text-xs font-bold mt-1 tracking-wider ${
+                                    item.type === 'practice' ? 'text-blue-400' :
+                                    item.type === 'tournament' ? 'text-yellow-400' : 
+                                    'text-green-400'
+                                }`}>
+                                    {item.type?.toUpperCase()}
                                 </div>
                             </div>
-                             <div className="text-center text-xs font-bold text-green-400 mt-1 tracking-wider">{game.status}</div>
-                        </div>
-                    );
+                        );
+                    }
                 })}
             </div>
         </div>
