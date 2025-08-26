@@ -188,21 +188,20 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
                                     <span>{item.location || 'TBA'}</span>
                                     <span className="font-bold text-xs text-blue-400">EVENT</span>
                                 </div>
-                                <div className="text-xs mb-1 text-center font-semibold" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
-                                    {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}
-                                </div>
-                                <div className="space-y-1">
+                                <div className="space-y-1 mb-2">
                                     <button onClick={() => onTeamClick(item.teamId)} className="flex items-center gap-2 hover:opacity-80 w-full">
                                         <img src={item.teamLogo} alt={item.teamName} className="w-6 h-6 rounded-full bg-white p-0.5" />
                                         <span className="font-medium text-white text-left">{item.teamName}</span>
                                     </button>
                                     <div className="text-sm text-white font-semibold">{item.title}</div>
-                                    <div className="text-xs" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
-                                        {item.time}
-                                    </div>
                                 </div>
-                                <div className="text-center text-xs font-bold mt-1 tracking-wider text-orange-400">
-                                    {item.status || 'SCHEDULED'}
+                                <div className="flex justify-between items-center text-xs">
+                                    <span className="font-semibold" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
+                                        {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })} • {item.time}
+                                    </span>
+                                    <span className="font-bold tracking-wider text-orange-400">
+                                        {item.status || 'SCHEDULED'}
+                                    </span>
                                 </div>
                             </div>
                         );
