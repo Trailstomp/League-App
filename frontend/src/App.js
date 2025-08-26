@@ -371,125 +371,18 @@ const LeagueCalendarManager = ({ teams, setTeams }) => {
         setEditingEvent(null);
     };
 
-    const EventForm = () => (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <h3 className="text-2xl font-bold mb-4">{editingEvent?.id ? 'Edit Event' : 'Add New Event'}</h3>
-                <form onSubmit={handleSave} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input 
-                            type="date" 
-                            value={editingEvent?.date || ''} 
-                            onChange={e => setEditingEvent(prev => ({...prev, date: e.target.value}))} 
-                            className="w-full p-2 border rounded" 
-                            required 
-                        />
-                        <input 
-                            type="time" 
-                            value={editingEvent?.time || ''} 
-                            onChange={e => setEditingEvent(prev => ({...prev, time: e.target.value}))} 
-                            className="w-full p-2 border rounded" 
-                            required 
-                        />
-                    </div>
-                    <input 
-                        type="text" 
-                        value={editingEvent?.title || ''} 
-                        onChange={e => setEditingEvent(prev => ({...prev, title: e.target.value}))} 
-                        placeholder="Event Title" 
-                        className="w-full p-2 border rounded" 
-                        required 
-                    />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <select 
-                            value={editingEvent?.type || 'practice'} 
-                            onChange={e => setEditingEvent(prev => ({...prev, type: e.target.value}))} 
-                            className="w-full p-2 border rounded"
-                        >
-                            <option value="practice">Practice</option>
-                            <option value="game">Game</option>
-                            <option value="scrimmage">Scrimmage</option>
-                            <option value="tournament">Tournament</option>
-                            <option value="social">Social Event</option>
-                            <option value="meeting">Team Meeting</option>
-                        </select>
-                        <input 
-                            type="text" 
-                            value={editingEvent?.location || ''} 
-                            onChange={e => setEditingEvent(prev => ({...prev, location: e.target.value}))} 
-                            placeholder="Location" 
-                            className="w-full p-2 border rounded" 
-                        />
-                    </div>
-                    <textarea 
-                        value={editingEvent?.description || ''} 
-                        onChange={e => setEditingEvent(prev => ({...prev, description: e.target.value}))} 
-                        placeholder="Description (optional)" 
-                        className="w-full p-2 border rounded" 
-                        rows="3"
-                    />
-
-                    {/* Team Selection */}
-                    <div>
-                        <label className="block font-semibold text-slate-700 mb-2">Teams</label>
-                        <div className="border rounded-lg p-3 max-h-32 overflow-y-auto bg-slate-50">
-                            <div className="grid grid-cols-1 gap-2">
-                                {teams.map(team => (
-                                    <label key={team.id} className="flex items-center space-x-2 hover:bg-white p-1 rounded">
-                                        <input
-                                            type="checkbox"
-                                            checked={(editingEvent?.teamIds || []).includes(team.id)}
-                                            onChange={(e) => {
-                                                const teamIds = editingEvent?.teamIds || [];
-                                                const newTeamIds = e.target.checked
-                                                    ? [...teamIds, team.id]
-                                                    : teamIds.filter(id => id !== team.id);
-                                                setEditingEvent(prev => ({...prev, teamIds: newTeamIds}));
-                                            }}
-                                            className="rounded"
-                                        />
-                                        <img src={team.logo} alt={team.name} className="w-6 h-6 rounded-full" />
-                                        <span className="text-sm font-medium">{team.name}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-                        <p className="text-xs text-slate-500 mt-1">Select which team(s) this event applies to</p>
-                    </div>
-
-                    {/* Photo Upload */}
-                    <div>
-                        <label className="block font-semibold text-slate-700 mb-2">Event Photo</label>
-                        <input 
-                            type="file" 
-                            accept="image/*"
-                            onChange={(e) => {
-                                if (e.target.files && e.target.files[0]) {
-                                    const fileUrl = URL.createObjectURL(e.target.files[0]);
-                                    setEditingEvent(prev => ({...prev, imageUrl: fileUrl}));
-                                }
-                            }}
-                            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
-                        />
-                        {editingEvent?.imageUrl && (
-                            <div className="mt-2">
-                                <img src={editingEvent.imageUrl} alt="Event preview" className="w-full h-32 object-cover rounded-lg border" />
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="flex justify-end space-x-2">
-                        <button type="button" onClick={() => setEditingEvent(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
-                        <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Save Event</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
-
     return (
         <div className="max-w-6xl mx-auto">
-            {editingEvent && <EventForm />}
+            {editingEvent && (
+                <EventForm 
+                    editingEvent={editingEvent}
+                    setEditingEvent={setEditingEvent}
+                    onSave={handleSave}
+                    onCancel={() => setEditingEvent(null)}
+                    teams={teams}
+                    isTeamSpecific={false}
+                />
+            )}
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <select value={selectedTeamId} onChange={e => setSelectedTeamId(e.target.value)} className="p-2 border rounded-md mr-4">
@@ -546,7 +439,7 @@ const LeagueCalendarManager = ({ teams, setTeams }) => {
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    <button onClick={() => setEditingEvent({...event, teamId: event.teamId || selectedTeamId})} className="text-slate-500 hover:text-slate-700 p-1"><Edit size={18}/></button>
+                                    <button onClick={() => setEditingEvent({...event, teamIds: event.teamIds || [event.teamId || selectedTeamId]})} className="text-slate-500 hover:text-slate-700 p-1"><Edit size={18}/></button>
                                 </div>
                             </li>
                         ))}
