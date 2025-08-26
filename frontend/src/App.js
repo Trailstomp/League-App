@@ -1053,13 +1053,25 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                         className="w-full p-2 border rounded" 
                         required 
                     />
-                    <input 
-                        type="time" 
+                    <select 
                         value={editingEvent?.time || ''} 
                         onChange={e => setEditingEvent(prev => ({...prev, time: e.target.value}))} 
                         className="w-full p-2 border rounded" 
                         required 
-                    />
+                    >
+                        <option value="">Select Time</option>
+                        {Array.from({ length: 96 }, (_, i) => {
+                            const hour = Math.floor(i / 4);
+                            const minute = (i % 4) * 15;
+                            const time24 = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                            const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                            const period = hour < 12 ? 'AM' : 'PM';
+                            const time12 = `${hour12}:${minute.toString().padStart(2, '0')} ${period}`;
+                            return (
+                                <option key={time24} value={time24}>{time12}</option>
+                            );
+                        })}
+                    </select>
                 </div>
                 <input 
                     type="text" 
