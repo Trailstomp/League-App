@@ -2337,7 +2337,7 @@ function App() {
                         <h1 className="text-lg font-bold">MLBL</h1>
                         <div className="w-10"></div>
                     </div>
-                    <GameTicker teams={teams} gameTickerData={gameTickerData} onTeamClick={(teamId) => navigate('team', teamId)} />
+                    <GameTicker teams={teams} gameTickerData={gameTickerData} websiteStyle={websiteStyle} onTeamClick={(teamId) => navigate('team', teamId)} />
                 </header>
                 <main className="flex-1 overflow-y-auto" style={backgroundStyle}>
                     {renderPage()}
