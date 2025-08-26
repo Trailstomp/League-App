@@ -246,16 +246,154 @@ const ContactCard = ({ entity }) => {
     );
 };
 
-const SocialCard = ({ entity }) => (
-    <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">Follow Us</h2>
-        <div className="flex space-x-6 justify-center">
-            <a href={entity.social.twitter} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-blue-400 transition-colors"><Twitter size={32} /></a>
-            <a href={entity.social.instagram} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-pink-500 transition-colors"><Instagram size={32} /></a>
-            <a href={entity.social.facebook} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-blue-600 transition-colors"><Facebook size={32} /></a>
+const SocialCard = ({ entity }) => {
+    const [activeTab, setActiveTab] = useState('links');
+
+    const getEmbedUrl = (url, platform) => {
+        if (!url || url === '#') return null;
+        
+        try {
+            if (platform === 'twitter') {
+                // Extract Twitter username from URL
+                const match = url.match(/twitter\.com\/([^/?]+)/);
+                if (match) {
+                    const username = match[1];
+                    return `https://syndication.twitter.com/srv/timeline-profile/screen-name/${username}?dnt=false&embedId=twitter-widget-0&frame=false&hideBorder=false&hideFooter=false&hideHeader=false&hideScrollBar=false&lang=en&maxHeight=400px&origin=${window.location.origin}&sessionId=&theme=light&widgetsVersion=82e1070%3A1619632193066&width=340px`;
+                }
+            } else if (platform === 'instagram') {
+                // For Instagram, we'll show a link since embedding requires approval
+                return null;
+            } else if (platform === 'facebook') {
+                // For Facebook, we'll use the page plugin
+                const match = url.match(/facebook\.com\/([^/?]+)/);
+                if (match) {
+                    const pageId = match[1];
+                    return `https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(url)}&tabs=timeline&width=340&height=400&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId`;
+                }
+            }
+        } catch (error) {
+            console.error('Error generating embed URL:', error);
+        }
+        return null;
+    };
+
+    return (
+        <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-2xl font-bold text-slate-800 mb-4">Follow Us</h2>
+            
+            {/* Tab Navigation */}
+            <div className="flex space-x-4 mb-6 border-b">
+                <button 
+                    onClick={() => setActiveTab('links')}
+                    className={`pb-2 px-1 ${activeTab === 'links' ? 'border-b-2 border-red-600 text-red-600 font-semibold' : 'text-slate-600'}`}
+                >
+                    Quick Links
+                </button>
+                <button 
+                    onClick={() => setActiveTab('feeds')}
+                    className={`pb-2 px-1 ${activeTab === 'feeds' ? 'border-b-2 border-red-600 text-red-600 font-semibold' : 'text-slate-600'}`}
+                >
+                    Live Feeds
+                </button>
+            </div>
+
+            {activeTab === 'links' && (
+                <div className="text-center">
+                    <div className="flex space-x-6 justify-center mb-6">
+                        <a href={entity.social.twitter} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-blue-400 transition-colors">
+                            <Twitter size={32} />
+                            <div className="text-xs mt-1">Twitter</div>
+                        </a>
+                        <a href={entity.social.instagram} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-pink-500 transition-colors">
+                            <Instagram size={32} />
+                            <div className="text-xs mt-1">Instagram</div>
+                        </a>
+                        <a href={entity.social.facebook} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-blue-600 transition-colors">
+                            <Facebook size={32} />
+                            <div className="text-xs mt-1">Facebook</div>
+                        </a>
+                    </div>
+                    <p className="text-sm text-slate-600">Click the icons above to visit our social media pages</p>
+                </div>
+            )}
+
+            {activeTab === 'feeds' && (
+                <div className="space-y-6">
+                    {/* Twitter Embed */}
+                    {entity.social.twitter && entity.social.twitter !== '#' && (
+                        <div className="border rounded-lg p-4">
+                            <h4 className="font-semibold text-slate-700 mb-2 flex items-center">
+                                <Twitter className="mr-2 text-blue-400" size={18} />
+                                Twitter Feed
+                            </h4>
+                            <div className="bg-slate-50 p-4 rounded text-center text-slate-600">
+                                <p className="mb-2">Live Twitter feed</p>
+                                <a 
+                                    href={entity.social.twitter} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-blue-500 hover:text-blue-700 underline"
+                                >
+                                    View our latest tweets →
+                                </a>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Facebook Embed */}
+                    {entity.social.facebook && entity.social.facebook !== '#' && (
+                        <div className="border rounded-lg p-4">
+                            <h4 className="font-semibold text-slate-700 mb-2 flex items-center">
+                                <Facebook className="mr-2 text-blue-600" size={18} />
+                                Facebook Page
+                            </h4>
+                            <div className="bg-slate-50 p-4 rounded text-center text-slate-600">
+                                <p className="mb-2">Latest Facebook posts</p>
+                                <a 
+                                    href={entity.social.facebook} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-blue-500 hover:text-blue-700 underline"
+                                >
+                                    Visit our Facebook page →
+                                </a>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Instagram */}
+                    {entity.social.instagram && entity.social.instagram !== '#' && (
+                        <div className="border rounded-lg p-4">
+                            <h4 className="font-semibold text-slate-700 mb-2 flex items-center">
+                                <Instagram className="mr-2 text-pink-500" size={18} />
+                                Instagram Photos
+                            </h4>
+                            <div className="bg-slate-50 p-4 rounded text-center text-slate-600">
+                                <p className="mb-2">Latest Instagram photos</p>
+                                <a 
+                                    href={entity.social.instagram} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-pink-500 hover:text-pink-700 underline"
+                                >
+                                    View our Instagram →
+                                </a>
+                            </div>
+                        </div>
+                    )}
+
+                    {(!entity.social.twitter || entity.social.twitter === '#') && 
+                     (!entity.social.facebook || entity.social.facebook === '#') && 
+                     (!entity.social.instagram || entity.social.instagram === '#') && (
+                        <div className="text-center py-8 text-slate-500">
+                            <p>No social media accounts configured yet.</p>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
-    </div>
-);
+    );
+};
 
 // --- Page Components ---
 const NewHomePage = ({teams, onTeamClick, leagueInfo}) => {
