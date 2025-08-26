@@ -499,13 +499,14 @@ const LeagueCalendarManager = ({ teams, setTeams }) => {
                 </div>
                 <button 
                     onClick={() => setEditingEvent({
-                        teamId: selectedTeamId === 'all' ? teams[0]?.id : selectedTeamId,
+                        teamIds: selectedTeamId === 'all' ? [] : [selectedTeamId],
                         type: 'practice', 
                         date: '', 
                         time: '', 
                         title: '', 
                         location: '', 
-                        description: ''
+                        description: '',
+                        imageUrl: ''
                     })} 
                     className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"
                 >
