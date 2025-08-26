@@ -1550,6 +1550,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                 {isAuthorizedToManage && <TeamTab tabName="manage_info" label="Team Info" />}
                 {isAuthorizedToManage && <TeamTab tabName="manage_calendar" label="Manage Calendar" />}
                 {isAuthorizedToManage && <TeamTab tabName="manage_players" label="Manage Players" />}
+                {isAuthorizedToManage && <TeamTab tabName="manage_media" label="Manage Media" />}
                 {isAuthorizedToManage && <TeamTab tabName="manage_style" label="Team Style" />}
             </div>
             
