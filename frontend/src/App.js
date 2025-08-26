@@ -258,71 +258,232 @@ const SocialCard = ({ entity }) => (
 );
 
 // --- Page Components ---
-const HomePage = ({teams, leagueSchedule, onTeamClick}) => {
+const HomePage = ({teams, onTeamClick, leagueInfo}) => {
+    const sortedTeams = teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name));
+    
+    return (
+        <div className="p-4 md:p-8">
+            {/* Hero Section */}
+            <div className="text-center mb-12">
+                <h1 className="text-6xl font-bold text-slate-800 mb-4 tracking-tight">{leagueInfo.name}</h1>
+                <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                    {leagueInfo.description || "Welcome to the premier lacrosse league featuring competitive teams from across the region. Experience the excitement, skill, and camaraderie that makes our league special."}
+                </p>
+            </div>
+
+            {/* Photo Albums Section */}
+            <div className="mb-12">
+                <h2 className="text-4xl font-bold text-slate-800 mb-8 text-center tracking-tight">League Photo Gallery</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                        <img src="https://placehold.co/400x250/dc2626/FFFFFF?text=Championship+Games" alt="Championship" className="w-full h-48 object-cover" />
+                        <div className="p-4">
+                            <h3 className="text-xl font-bold text-slate-800 mb-2">Championship Games</h3>
+                            <p className="text-slate-600">The most exciting moments from our championship tournaments and playoff games.</p>
+                        </div>
+                    </div>
+                    
+                    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                        <img src="https://placehold.co/400x250/1d4ed8/FFFFFF?text=Team+Action+Shots" alt="Action" className="w-full h-48 object-cover" />
+                        <div className="p-4">
+                            <h3 className="text-xl font-bold text-slate-800 mb-2">Action Shots</h3>
+                            <p className="text-slate-600">Dynamic gameplay photography showcasing the intensity and skill of our players.</p>
+                        </div>
+                    </div>
+                    
+                    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                        <img src="https://placehold.co/400x250/047857/FFFFFF?text=League+Events" alt="Events" className="w-full h-48 object-cover" />
+                        <div className="p-4">
+                            <h3 className="text-xl font-bold text-slate-800 mb-2">League Events</h3>
+                            <p className="text-slate-600">Behind-the-scenes moments, awards ceremonies, and community gatherings.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Teams Grid */}
+            <div className="mb-12">
+                <h2 className="text-4xl font-bold text-slate-800 mb-8 text-center tracking-tight">Our Teams</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {sortedTeams.map(team => (
+                        <button
+                            key={team.id}
+                            onClick={() => onTeamClick(team.id)}
+                            className="group bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transform transition-all duration-300 hover:scale-105 text-center"
+                        >
+                            <div className="relative mb-4">
+                                <img 
+                                    src={team.logo} 
+                                    alt={team.name} 
+                                    className="w-20 h-20 mx-auto rounded-full bg-slate-200 p-2 group-hover:scale-110 transition-transform"
+                                />
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-800 mb-2 group-hover:text-red-700 transition-colors">
+                                {team.name}
+                            </h3>
+                            <div className="flex justify-center space-x-4 text-sm">
+                                <div className="text-center">
+                                    <div className="font-bold text-green-600">{team.wins}</div>
+                                    <div className="text-slate-500">Wins</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="font-bold text-red-600">{team.losses}</div>
+                                    <div className="text-slate-500">Losses</div>
+                                </div>
+                            </div>
+                            <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span className="text-sm text-red-600 font-semibold">View Team →</span>
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* About Section */}
+            <div className="bg-slate-50 rounded-xl p-8 text-center">
+                <h2 className="text-3xl font-bold text-slate-800 mb-4">About Our League</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div>
+                        <div className="text-4xl font-bold text-red-600 mb-2">{teams.filter(t => t.active).length}</div>
+                        <div className="text-slate-600">Active Teams</div>
+                    </div>
+                    <div>
+                        <div className="text-4xl font-bold text-red-600 mb-2">{leagueInfo.founded || "2020"}</div>
+                        <div className="text-slate-600">Founded</div>
+                    </div>
+                    <div>
+                        <div className="text-4xl font-bold text-red-600 mb-2">{leagueInfo.location || "Ohio Valley"}</div>
+                        <div className="text-slate-600">Region</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const EventsPage = ({teams, leagueSchedule, onTeamClick}) => {
     const [selectedTeamSchedule, setSelectedTeamSchedule] = useState('all');
     const getTeam = (id) => teams.find(t => t.id === id);
+    
+    // Get all calendar events from all teams
+    const allEvents = teams.flatMap(team => 
+        (team.calendar || []).map(event => ({
+            ...event,
+            teamName: team.name,
+            teamLogo: team.logo,
+            teamId: team.id
+        }))
+    ).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Filter schedule
     const filteredSchedule = leagueSchedule.map(day => {
         if (selectedTeamSchedule === 'all') return day;
         const games = day.games.filter(g => g.home === selectedTeamSchedule || g.away === selectedTeamSchedule);
         return { ...day, games };
     }).filter(day => day.games.length > 0);
     
+    // Filter events
+    const filteredEvents = selectedTeamSchedule === 'all' 
+        ? allEvents 
+        : allEvents.filter(event => event.teamId === selectedTeamSchedule);
+    
     return (
-        <div className="p-4 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-                <h1 className="text-4xl font-bold text-slate-800 mb-4 tracking-tight">League Schedule</h1>
-                <div className="mb-4">
-                    <select onChange={(e) => setSelectedTeamSchedule(e.target.value)} value={selectedTeamSchedule} className="p-2 border border-slate-300 rounded-md shadow-sm">
-                        <option value="all">All Teams</option>
-                        {teams.filter(t => t.active).map(team => <option key={team.id} value={team.id}>{team.name}</option>)}
-                    </select>
-                </div>
-                <div className="space-y-6">
-                    {filteredSchedule.map(day => (
-                        <div key={day.date}>
-                            <h2 className="text-xl font-semibold text-slate-700 pb-2 border-b-2 border-red-800 mb-3">
-                                {new Date(day.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}
-                            </h2>
-                            <div className="space-y-4">
-                                {day.games.map((game) => {
-                                    const home = getTeam(game.home);
-                                    const away = getTeam(game.away);
-                                    if (!home || !away) return null;
-                                    return (
-                                        <div key={game.id} className="bg-white p-4 rounded-lg shadow-md flex items-center justify-between">
-                                            <div className="flex items-center">
-                                                <button onClick={() => onTeamClick(away.id)} className="text-center w-32 hover:opacity-80">
-                                                    <img src={away.logo} alt={away.name} className="w-16 h-16 mx-auto rounded-full bg-slate-200 p-1"/>
-                                                    <p className="font-bold text-sm mt-1">{away.name}</p>
-                                                </button>
-                                                <span className="text-2xl font-bold text-slate-400 mx-4">@</span>
-                                                <button onClick={() => onTeamClick(home.id)} className="text-center w-32 hover:opacity-80">
-                                                    <img src={home.logo} alt={home.name} className="w-16 h-16 mx-auto rounded-full bg-slate-200 p-1"/>
-                                                    <p className="font-bold text-sm mt-1">{home.name}</p>
-                                                </button>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="font-bold text-lg">{game.time}</p>
-                                                <p className="text-sm text-slate-500">{game.location}</p>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+        <div className="p-4 md:p-8">
+            <h1 className="text-4xl font-bold text-slate-800 mb-6 tracking-tight">League Events & Schedule</h1>
+            
+            <div className="mb-6">
+                <select onChange={(e) => setSelectedTeamSchedule(e.target.value)} value={selectedTeamSchedule} className="p-3 border border-slate-300 rounded-md shadow-sm">
+                    <option value="all">All Teams</option>
+                    {teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name)).map(team => <option key={team.id} value={team.id}>{team.name}</option>)}
+                </select>
             </div>
-            <div className="lg:col-span-1">
-                <h1 className="text-4xl font-bold text-slate-800 mb-4 tracking-tight">Latest News</h1>
-                <div className="space-y-4">
-                    {newsFeed.map(item => (
-                        <div key={item.id} className="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow">
-                            <p className="text-sm text-slate-500">{new Date(item.date).toLocaleDateString('en-US', { timeZone: 'UTC' })}</p>
-                            <h3 className="text-lg font-bold text-slate-800 hover:text-red-800 cursor-pointer">{item.title}</h3>
-                            <p className="text-slate-600 mt-1">{item.snippet}</p>
-                        </div>
-                    ))}
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Upcoming Events */}
+                <div>
+                    <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center">
+                        <Calendar className="mr-2" size={24} />
+                        Upcoming Events
+                    </h2>
+                    <div className="space-y-4">
+                        {filteredEvents.length > 0 ? filteredEvents.slice(0, 10).map(event => (
+                            <div key={`${event.teamId}-${event.id}`} className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                                <div className="flex items-start justify-between">
+                                    <div className="flex-grow">
+                                        <button onClick={() => onTeamClick(event.teamId)} className="flex items-center gap-2 mb-2 hover:opacity-80">
+                                            <img src={event.teamLogo} alt={event.teamName} className="w-6 h-6 rounded-full" />
+                                            <span className="font-semibold text-red-700">{event.teamName}</span>
+                                        </button>
+                                        <h3 className="font-bold text-slate-800 mb-1">{event.title}</h3>
+                                        <div className="flex items-center space-x-4 text-sm text-slate-600">
+                                            <span>{new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' })}</span>
+                                            <span>{event.time}</span>
+                                            {event.location && <span>{event.location}</span>}
+                                        </div>
+                                        {event.description && (
+                                            <p className="text-sm text-slate-600 mt-2">{event.description}</p>
+                                        )}
+                                    </div>
+                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                        event.type === 'game' ? 'bg-red-100 text-red-800' :
+                                        event.type === 'practice' ? 'bg-blue-100 text-blue-800' :
+                                        event.type === 'tournament' ? 'bg-yellow-100 text-yellow-800' :
+                                        'bg-slate-100 text-slate-800'
+                                    }`}>
+                                        {event.type}
+                                    </span>
+                                </div>
+                            </div>
+                        )) : (
+                            <div className="text-center py-8 text-slate-500">
+                                <Calendar className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
+                                <p>No upcoming events found.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* League Games */}
+                <div>
+                    <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center">
+                        <Swords className="mr-2" size={24} />
+                        League Games
+                    </h2>
+                    <div className="space-y-6">
+                        {filteredSchedule.map(day => (
+                            <div key={day.date}>
+                                <h3 className="text-lg font-semibold text-slate-700 pb-2 border-b-2 border-red-800 mb-3">
+                                    {new Date(day.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}
+                                </h3>
+                                <div className="space-y-3">
+                                    {day.games.map((game) => {
+                                        const home = getTeam(game.home);
+                                        const away = getTeam(game.away);
+                                        if (!home || !away) return null;
+                                        return (
+                                            <div key={game.id} className="bg-white p-4 rounded-lg shadow-md flex items-center justify-between">
+                                                <div className="flex items-center">
+                                                    <button onClick={() => onTeamClick(away.id)} className="text-center w-28 hover:opacity-80">
+                                                        <img src={away.logo} alt={away.name} className="w-12 h-12 mx-auto rounded-full bg-slate-200 p-1"/>
+                                                        <p className="font-bold text-xs mt-1">{away.name}</p>
+                                                    </button>
+                                                    <span className="text-xl font-bold text-slate-400 mx-3">@</span>
+                                                    <button onClick={() => onTeamClick(home.id)} className="text-center w-28 hover:opacity-80">
+                                                        <img src={home.logo} alt={home.name} className="w-12 h-12 mx-auto rounded-full bg-slate-200 p-1"/>
+                                                        <p className="font-bold text-xs mt-1">{home.name}</p>
+                                                    </button>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="font-bold">{game.time}</p>
+                                                    <p className="text-sm text-slate-500">{game.location}</p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
