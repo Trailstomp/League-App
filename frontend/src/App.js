@@ -60,7 +60,7 @@ const newsFeed = [
 ];
 
 // --- Helper Components ---
-const GameTicker = ({teams, gameTickerData, onTeamClick}) => {
+const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
     const getTeam = (id) => teams.find(t => t.id === id);
     const tickerRef = useRef(null);
     const [isHovering, setIsHovering] = useState(false);
@@ -73,9 +73,9 @@ const GameTicker = ({teams, gameTickerData, onTeamClick}) => {
 
         const scroll = () => {
             if (!isHovering) {
-                tickerElement.scrollLeft -= 1; // Scroll right to left
-                if (tickerElement.scrollLeft <= 0) {
-                    tickerElement.scrollLeft = tickerElement.scrollWidth / 2;
+                tickerElement.scrollLeft += 1; // Scroll right to left
+                if (tickerElement.scrollLeft >= tickerElement.scrollWidth / 2) {
+                    tickerElement.scrollLeft = 0;
                 }
             }
             animationFrameId = requestAnimationFrame(scroll);
@@ -88,7 +88,8 @@ const GameTicker = ({teams, gameTickerData, onTeamClick}) => {
     
     return (
         <div 
-            className="bg-slate-800 text-white py-2 overflow-hidden shadow-lg"
+            className="text-white py-2 overflow-hidden shadow-lg"
+            style={{ backgroundColor: websiteStyle?.tickerColor || '#1e293b' }}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
         >
@@ -98,8 +99,11 @@ const GameTicker = ({teams, gameTickerData, onTeamClick}) => {
                     const away = getTeam(game.awayTeam);
                     if (!home || !away) return null;
                     return (
-                        <div key={index} className="flex-shrink-0 w-72 bg-slate-700 rounded-lg p-2 border border-slate-600">
-                            <div className="text-xs text-slate-400 mb-1 flex justify-between">
+                        <div key={index} className="flex-shrink-0 w-72 rounded-lg p-2 border" style={{ 
+                            backgroundColor: websiteStyle?.tickerItemColor || '#334155',
+                            borderColor: websiteStyle?.tickerBorderColor || '#475569'
+                        }}>
+                            <div className="text-xs mb-1 flex justify-between" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
                                 <span>{game.location}</span>
                                 <span className={`font-bold text-xs ${game.type === 'Tournament' ? 'text-yellow-400' : 'text-red-400'}`}>
                                     {game.type === 'Tournament' ? game.tournamentName : 'Regular Season'}
@@ -109,16 +113,16 @@ const GameTicker = ({teams, gameTickerData, onTeamClick}) => {
                                 <div className="flex items-center justify-between text-sm">
                                     <button onClick={() => onTeamClick(home.id)} className="flex items-center gap-2 hover:opacity-80">
                                         <img src={home.logo} alt={home.name} className="w-6 h-6 rounded-full bg-white p-0.5" />
-                                        <span className="font-medium">{home.name}</span>
+                                        <span className="font-medium text-white">{home.name}</span>
                                     </button>
-                                    <span className="font-bold text-lg">{game.homeScore ?? '-'}</span>
+                                    <span className="font-bold text-lg text-white">{game.homeScore ?? '-'}</span>
                                 </div>
                                 <div className="flex items-center justify-between text-sm">
                                     <button onClick={() => onTeamClick(away.id)} className="flex items-center gap-2 hover:opacity-80">
                                         <img src={away.logo} alt={away.name} className="w-6 h-6 rounded-full bg-white p-0.5" />
-                                        <span className="font-medium">{away.name}</span>
+                                        <span className="font-medium text-white">{away.name}</span>
                                     </button>
-                                    <span className="font-bold text-lg">{game.awayScore ?? '-'}</span>
+                                    <span className="font-bold text-lg text-white">{game.awayScore ?? '-'}</span>
                                 </div>
                             </div>
                              <div className="text-center text-xs font-bold text-green-400 mt-1 tracking-wider">{game.status}</div>
