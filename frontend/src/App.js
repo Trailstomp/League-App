@@ -335,6 +335,201 @@ const StandingsPage = ({teams, onTeamClick}) => {
     );
 };
 
+const TeamInfoManager = ({ team, setTeams }) => {
+    const [teamInfo, setTeamInfo] = useState({
+        name: team.name || '',
+        contactEmail: team.contactEmail || '',
+        social: {
+            twitter: team.social?.twitter || '',
+            instagram: team.social?.instagram || '',
+            facebook: team.social?.facebook || ''
+        },
+        location: team.location || '',
+        founded: team.founded || '',
+        website: team.website || '',
+        description: team.description || ''
+    });
+    const [saved, setSaved] = useState(false);
+
+    const handleSave = (e) => {
+        e.preventDefault();
+        setTeams(prevTeams => prevTeams.map(t => 
+            t.id === team.id ? { 
+                ...t, 
+                name: teamInfo.name,
+                contactEmail: teamInfo.contactEmail,
+                social: teamInfo.social,
+                location: teamInfo.location,
+                founded: teamInfo.founded,
+                website: teamInfo.website,
+                description: teamInfo.description
+            } : t
+        ));
+        setSaved(true);
+        setTimeout(() => setSaved(false), 3000);
+    };
+
+    const handleSocialChange = (platform, value) => {
+        setTeamInfo(prev => ({
+            ...prev,
+            social: { ...prev.social, [platform]: value }
+        }));
+    };
+
+    return (
+        <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Team Information & Contact</h2>
+            
+            <form onSubmit={handleSave} className="space-y-8">
+                {/* Basic Information */}
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
+                        <Home className="mr-2" size={20} />
+                        Basic Information
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Team Name</label>
+                            <input
+                                type="text"
+                                value={teamInfo.name}
+                                onChange={(e) => setTeamInfo(prev => ({...prev, name: e.target.value}))}
+                                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="Enter team name"
+                            />
+                        </div>
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Location</label>
+                            <input
+                                type="text"
+                                value={teamInfo.location}
+                                onChange={(e) => setTeamInfo(prev => ({...prev, location: e.target.value}))}
+                                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="City, State"
+                            />
+                        </div>
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Founded Year</label>
+                            <input
+                                type="text"
+                                value={teamInfo.founded}
+                                onChange={(e) => setTeamInfo(prev => ({...prev, founded: e.target.value}))}
+                                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="2020"
+                            />
+                        </div>
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Website URL</label>
+                            <input
+                                type="url"
+                                value={teamInfo.website}
+                                onChange={(e) => setTeamInfo(prev => ({...prev, website: e.target.value}))}
+                                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="https://yourteam.com"
+                            />
+                        </div>
+                    </div>
+                    <div className="mt-4">
+                        <label className="block font-semibold text-slate-700 mb-2">Team Description</label>
+                        <textarea
+                            value={teamInfo.description}
+                            onChange={(e) => setTeamInfo(prev => ({...prev, description: e.target.value}))}
+                            rows="4"
+                            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                            placeholder="Tell us about your team..."
+                        />
+                    </div>
+                </div>
+
+                {/* Contact Information */}
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
+                        <Mail className="mr-2" size={20} />
+                        Contact Information
+                    </h3>
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Contact Email</label>
+                        <input
+                            type="email"
+                            value={teamInfo.contactEmail}
+                            onChange={(e) => setTeamInfo(prev => ({...prev, contactEmail: e.target.value}))}
+                            className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                            placeholder="coach@yourteam.com"
+                        />
+                        <p className="text-sm text-slate-500 mt-1">This email will be used for league communications and fan contact.</p>
+                    </div>
+                </div>
+
+                {/* Social Media */}
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
+                        <Users className="mr-2" size={20} />
+                        Social Media Links
+                    </h3>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2 flex items-center">
+                                <Twitter className="mr-2 text-blue-400" size={18} />
+                                Twitter/X Profile
+                            </label>
+                            <input
+                                type="url"
+                                value={teamInfo.social.twitter}
+                                onChange={(e) => handleSocialChange('twitter', e.target.value)}
+                                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="https://twitter.com/yourteam or https://x.com/yourteam"
+                            />
+                        </div>
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2 flex items-center">
+                                <Instagram className="mr-2 text-pink-500" size={18} />
+                                Instagram Profile
+                            </label>
+                            <input
+                                type="url"
+                                value={teamInfo.social.instagram}
+                                onChange={(e) => handleSocialChange('instagram', e.target.value)}
+                                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="https://instagram.com/yourteam"
+                            />
+                        </div>
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2 flex items-center">
+                                <Facebook className="mr-2 text-blue-600" size={18} />
+                                Facebook Page
+                            </label>
+                            <input
+                                type="url"
+                                value={teamInfo.social.facebook}
+                                onChange={(e) => handleSocialChange('facebook', e.target.value)}
+                                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                placeholder="https://facebook.com/yourteam"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Save Button */}
+                <div className="flex justify-end items-center space-x-4">
+                    {saved && (
+                        <div className="flex items-center text-green-600">
+                            <span className="mr-2">✓</span>
+                            <span className="font-semibold">Team information saved successfully!</span>
+                        </div>
+                    )}
+                    <button 
+                        type="submit" 
+                        className="bg-red-800 text-white px-8 py-3 rounded-lg hover:bg-red-900 font-semibold flex items-center"
+                    >
+                        <Settings className="mr-2" size={18} />
+                        Save Team Information
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
+};
+
 const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, setPlayers, setTeams }) => {
     const team = teams.find(t => t.id === teamId);
     const teamPlayers = players.filter(p => p.teams.includes(teamId) && p.active);
