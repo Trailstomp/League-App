@@ -6359,9 +6359,9 @@ function App() {
                     </div>
                 </nav>
                 <div className="p-2 border-t border-slate-700">
-                   {currentUser && (currentUser.roles.includes('admin') || currentUser.roles.includes('coach') || currentUser.roles.includes('player/coach')) && 
+                   {currentUser && (hasPermission(currentUser, 'system.admin_access') || currentUser.roles?.includes('admin') || currentUser.roles?.includes('coach') || currentUser.roles?.includes('player/coach')) && 
                     <button onClick={handleAdminNav} className={`flex items-center space-x-3 p-2 rounded-md w-full text-left transition-colors ${page === 'admin' ? 'text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white'}`} style={{backgroundColor: page === 'admin' ? websiteStyle.accentColor : 'transparent'}}>
-                        <Crown size={20} /><span>{currentUser.roles.includes('admin') ? 'Admin Portal' : 'Team Admin'}</span>
+                        <Crown size={20} /><span>{hasPermission(currentUser, 'system.admin_access') || currentUser.roles?.includes('admin') ? 'Admin Portal' : 'Team Admin'}</span>
                     </button>
                    }
                    {currentUser ? (
