@@ -732,6 +732,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
                             <h3 className="text-2xl font-bold text-slate-800">Video Gallery</h3>
                             {isLeagueAdmin && (
                                 <button 
+                                    onClick={() => setEditingVideos(true)}
                                     className="bg-red-800 text-white px-3 py-2 rounded text-sm hover:bg-red-900 flex items-center"
                                     title="Edit videos"
                                 >
@@ -741,7 +742,12 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
                         </div>
                         <div className="space-y-4">
                             {mediaContent.videos.map(video => (
-                                <div key={video.id} className="bg-slate-50 rounded-lg p-4 hover:bg-slate-100 transition-colors cursor-pointer">
+                                <div key={video.id} 
+                                     onClick={() => {
+                                         window.open(video.url, '_blank');
+                                     }}
+                                     className="bg-slate-50 rounded-lg p-4 hover:bg-slate-100 transition-colors cursor-pointer"
+                                >
                                     <div className="flex items-center space-x-4">
                                         <div className="relative">
                                             <img 
@@ -759,7 +765,13 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
                                             <h4 className="font-semibold text-slate-800">{video.title}</h4>
                                             <p className="text-sm text-slate-600">{video.description}</p>
                                         </div>
-                                        <button className="text-red-600 hover:text-red-800 text-sm font-semibold">
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                window.open(video.url, '_blank');
+                                            }}
+                                            className="text-red-600 hover:text-red-800 text-sm font-semibold"
+                                        >
                                             Watch →
                                         </button>
                                     </div>
