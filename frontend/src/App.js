@@ -1143,7 +1143,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
     const [showingMedia, setShowingMedia] = useState(false); // For inline media display
     
     // Mock news data - enhanced with multimedia support
-    const [newsItems, setNewsItems] = useState([
+    const [newsItems, setNewsItems] = useState(() => getStoredData('mlbl_newsItems', [
         { 
             id: 1, 
             type: 'text',
@@ -1179,7 +1179,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
             comments: "Check out the best plays and goals from this weekend's games.",
             date: "2025-08-01"
         }
-    ]);
+    ]));
     
     // Mock picture/video content - will be made editable by admin
     const [mediaContent, setMediaContent] = useState({
