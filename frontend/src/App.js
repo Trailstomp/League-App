@@ -1634,7 +1634,7 @@ const StandingsPage = ({teams, onTeamClick}) => {
     });
     
     return (
-        <div className="p-4 md:p-8">
+        <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
             <h1 className="text-4xl font-bold text-slate-800 mb-6 tracking-tight">League Standings</h1>
             <div className="bg-white rounded-lg shadow-md overflow-x-auto">
                 <table className="w-full table-auto">
