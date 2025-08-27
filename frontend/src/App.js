@@ -4415,7 +4415,14 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
                 backgroundColor: '#ffffff',
                 textColor: '#000000',
                 fontFamily: 'Inter, sans-serif',
-                formBackgroundColor: '#f8fafc'
+                formBackgroundColor: '#f8fafc',
+                visibleTabs: {
+                    roster: true,
+                    schedule: true,
+                    media: true,
+                    social: true,
+                    contact: true
+                }
             });
         }
     }, [selectedTeam]);
