@@ -325,7 +325,19 @@ frontend:
         agent: "main"
         comment: "Added photo upload to EventForm and display on event cards in Events & Schedules page. Both tournament and regular event cards now show event photos."
 
-  - task: "Add Manage Locations tab to team admin interface"
+  - task: "Move event photos above attending teams on cards"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Event photos now display above team lists in both tournament and regular event cards for better visual hierarchy."
+
+  - task: "Sort teams alphabetically in calendar forms"
     implemented: true
     working: true
     file: "frontend/src/App.js"
@@ -335,7 +347,31 @@ frontend:
     status_history:
       - working: true
         agent: "main"
-        comment: "Added Manage Locations tab for coaches/admins. Verified working through admin login and UI testing."
+        comment: "Teams in event forms and throughout app now sorted alphabetically using localeCompare for consistent ordering."
+
+  - task: "Maintain tournament consolidation functionality"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Tournament consolidation logic preserved in EventsPage - events with same title/date/location are grouped into single cards."
+
+  - task: "Add logo display settings (fit, fill, crop/zoom)"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added logo display style settings to Website Style Manager with options for Fit (contain), Fill (cover), and Stretch (fill). Global utility function getLogoStyle applies settings to all logos."
 
 backend:
   - task: "Backend API functionality"
