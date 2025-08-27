@@ -5315,11 +5315,21 @@ function App() {
             
             <div className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${isMenuOpen ? 'md:ml-64' : 'ml-0'}`}>
                 <header className="sticky top-0 z-20">
-                    <div className="text-white p-2 flex justify-between items-center shadow-md" style={{backgroundColor: websiteStyle.primaryColor}}>
-                         <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 rounded-md hover:bg-slate-700 text-white">
+                    <div 
+                        className="text-white p-4 flex justify-between items-center shadow-md relative overflow-hidden"
+                        style={{
+                            backgroundColor: websiteStyle.bannerColor || websiteStyle.primaryColor,
+                            backgroundImage: websiteStyle.bannerImage ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${websiteStyle.bannerImage})` : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}
+                    >
+                         <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 rounded-md hover:bg-black hover:bg-opacity-20 text-white transition-colors">
                             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
-                        <h1 className="text-lg font-bold">MLBL</h1>
+                        <h1 className="text-xl font-bold tracking-wide drop-shadow-lg">
+                            {websiteStyle.bannerText || "MLBL"}
+                        </h1>
                         <div className="w-10"></div>
                     </div>
                     <GameTicker teams={teams} gameTickerData={gameTickerData} websiteStyle={websiteStyle} onTeamClick={(teamId) => navigate('team', teamId)} />
