@@ -4583,6 +4583,37 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
                         </div>
                     </div>
 
+                    {/* Tab Visibility Controls */}
+                    <div className="mt-6">
+                        <h4 className="text-lg font-bold text-slate-800 mb-4">Visible Tabs</h4>
+                        <p className="text-sm text-slate-600 mb-4">Control which tabs are visible on your team page to visitors</p>
+                        <div className="grid grid-cols-2 gap-3">
+                            {[
+                                { key: 'roster', label: 'Roster & Stats', default: true },
+                                { key: 'schedule', label: 'Schedule', default: true },
+                                { key: 'media', label: 'Photos & Videos', default: true },
+                                { key: 'social', label: 'Social', default: true },
+                                { key: 'contact', label: 'Contact', default: true }
+                            ].map(tab => (
+                                <label key={tab.key} className="flex items-center space-x-2 cursor-pointer">
+                                    <input 
+                                        type="checkbox"
+                                        checked={style.visibleTabs?.[tab.key] !== false}
+                                        onChange={(e) => setStyle(prev => ({
+                                            ...prev, 
+                                            visibleTabs: {
+                                                ...prev.visibleTabs,
+                                                [tab.key]: e.target.checked
+                                            }
+                                        }))}
+                                        className="h-4 w-4 text-red-600 rounded focus:ring-red-500"
+                                    />
+                                    <span className="text-sm font-medium text-slate-700">{tab.label}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
                     <div className="flex justify-end items-center space-x-4">
                         {saved && <span className="text-green-600 font-semibold">✓ Saved!</span>}
                         <button 
