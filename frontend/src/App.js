@@ -13,6 +13,97 @@ const getLogoStyle = (websiteStyle) => {
            'object-fill';
 };
 
+// File Upload Component
+const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder }) => {
+    const [isDragging, setIsDragging] = useState(false);
+    const fileInputRef = useRef(null);
+
+    const handleFileSelect = (file) => {
+        if (file) {
+            // Create object URL for preview
+            const objectUrl = URL.createObjectURL(file);
+            onChange(objectUrl);
+        }
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleFileSelect(files[0]);
+        }
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = () => {
+        setIsDragging(false);
+    };
+
+    return (
+        <div className="space-y-2">
+            <label className="block font-semibold text-slate-700">{label}</label>
+            
+            {/* Drop Zone */}
+            <div 
+                className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+                    isDragging ? 'border-blue-500 bg-blue-50' : 'border-slate-300 hover:border-slate-400'
+                }`}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onClick={() => fileInputRef.current?.click()}
+            >
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept={accept}
+                    onChange={(e) => {
+                        const file = e.target.files[0];
+                        handleFileSelect(file);
+                    }}
+                    className="hidden"
+                />
+                
+                {currentValue ? (
+                    <div className="space-y-2">
+                        {accept.includes('image') ? (
+                            <img src={currentValue} alt="Preview" className="max-w-full h-32 mx-auto rounded object-cover" />
+                        ) : accept.includes('video') ? (
+                            <div className="bg-slate-200 h-32 flex items-center justify-center rounded">
+                                <span className="text-slate-600">Video selected</span>
+                            </div>
+                        ) : null}
+                        <p className="text-sm text-green-600">✅ File selected - Click to change</p>
+                    </div>
+                ) : (
+                    <div className="py-4">
+                        <Upload className="mx-auto h-8 w-8 text-slate-400 mb-2" />
+                        <p className="text-sm text-slate-600">{placeholder || 'Click or drag to upload file'}</p>
+                        <p className="text-xs text-slate-500 mt-1">Supported: {accept}</p>
+                    </div>
+                )}
+            </div>
+            
+            {/* URL Input as Fallback */}
+            <div className="text-xs">
+                <label className="text-slate-500">Or paste URL:</label>
+                <input 
+                    type="url"
+                    value={typeof currentValue === 'string' && currentValue.startsWith('http') ? currentValue : ''}
+                    onChange={(e) => onChange(e.target.value)}
+                    placeholder="https://example.com/image.jpg"
+                    className="w-full p-1 border rounded text-xs mt-1"
+                />
+            </div>
+        </div>
+    );
+};
+
 // Helper function to find address from location name
 const findLocationAddress = (locationName, teams) => {
     if (!locationName || !teams) return null;
