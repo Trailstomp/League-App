@@ -1855,6 +1855,83 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                     </div>
                 </div>
             )}
+
+            {/* News Item Popup Modal */}
+            {selectedNewsItem && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-2xl font-bold text-slate-800">
+                                    {selectedNewsItem.heading || selectedNewsItem.text}
+                                </h2>
+                                <button 
+                                    onClick={() => setSelectedNewsItem(null)}
+                                    className="text-slate-400 hover:text-slate-600 p-2"
+                                >
+                                    <X className="h-6 w-6"/>
+                                </button>
+                            </div>
+                            
+                            {/* Full size image or video */}
+                            {selectedNewsItem.type === 'image' && selectedNewsItem.imageUrl && (
+                                <div className="mb-4">
+                                    <img 
+                                        src={selectedNewsItem.imageUrl} 
+                                        alt="News"
+                                        className="w-full rounded-lg object-cover max-h-96"
+                                    />
+                                </div>
+                            )}
+                            
+                            {selectedNewsItem.type === 'video' && selectedNewsItem.videoUrl && (
+                                <div className="mb-4">
+                                    <div className="relative">
+                                        {selectedNewsItem.thumbnailUrl && (
+                                            <img 
+                                                src={selectedNewsItem.thumbnailUrl} 
+                                                alt="Video thumbnail"
+                                                className="w-full rounded-lg object-cover max-h-96"
+                                            />
+                                        )}
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <button
+                                                onClick={() => window.open(selectedNewsItem.videoUrl, '_blank')}
+                                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center space-x-2 transition-colors"
+                                            >
+                                                <Play size={20} />
+                                                <span>Play Video</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {/* News content */}
+                            <div className="space-y-3">
+                                <div className="text-lg text-slate-700">
+                                    {selectedNewsItem.text}
+                                </div>
+                                
+                                {selectedNewsItem.comments && (
+                                    <div className="bg-slate-50 p-4 rounded-lg">
+                                        <h3 className="font-semibold text-slate-800 mb-2">Details</h3>
+                                        <p className="text-slate-700">{selectedNewsItem.comments}</p>
+                                    </div>
+                                )}
+                                
+                                <div className="text-sm text-slate-500">
+                                    Published: {new Date(selectedNewsItem.date).toLocaleDateString('en-US', { 
+                                        year: 'numeric', 
+                                        month: 'long', 
+                                        day: 'numeric' 
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             </div>
         </div>
     );
