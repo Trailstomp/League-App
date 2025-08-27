@@ -373,6 +373,18 @@ frontend:
         agent: "main"
         comment: "Added logo display style settings to Website Style Manager with options for Fit (contain), Fill (cover), and Stretch (fill). Global utility function getLogoStyle applies settings to all logos."
 
+  - task: "Make team locations clickable to open Google Maps"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Implemented clickable addresses in LocationManager and ClickableLocation component for event locations. Addresses open Google Maps with satellite view (t=k parameter) in new tab. Tested and verified 8 clickable location buttons working correctly with proper URL generation and encoding."
+
 backend:
   - task: "Backend API functionality"
     implemented: true
