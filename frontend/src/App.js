@@ -6781,6 +6781,7 @@ const apiService = {
 };
 
 // --- LOCAL STORAGE HELPERS (Fallback) ---
+// Enhanced data loading with API + localStorage fallback
 const getStoredData = (key, defaultValue) => {
     try {
         const stored = localStorage.getItem(key);
@@ -6797,6 +6798,20 @@ const setStoredData = (key, value) => {
     } catch (error) {
         console.warn(`Error saving ${key} to localStorage:`, error);
     }
+};
+
+// Initialize data with API-first approach
+const initializeData = async (key, defaultValue) => {
+    // Try to load from API first
+    const apiData = await apiService.loadLeagueData();
+    if (apiData && apiData[key]) {
+        // Save to localStorage as cache
+        setStoredData(`mlbl_${key}`, apiData[key]);
+        return apiData[key];
+    }
+    
+    // Fallback to localStorage
+    return getStoredData(`mlbl_${key}`, defaultValue);
 };
 
 // --- Main App Component ---
