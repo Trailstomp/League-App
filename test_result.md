@@ -277,17 +277,65 @@ frontend:
         agent: "main"
         comment: "Added tabbed interface with 'Photo Galleries' and 'Video Collections' sub-tabs with separate management workflows."
 
-  - task: "Fix build error - Unexpected token, expected comma (2088:0)"
+  - task: "Implement location management system for teams"
     implemented: true
     working: true
     file: "frontend/src/App.js"
     stuck_count: 0
-    priority: "critical"
+    priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "main"
-        comment: "Fixed missing closing parenthesis in MediaManager return statement. Build compilation and application loading now working correctly."
+        comment: "Created LocationManager component with add/edit/delete functionality. Teams can manage multiple locations with name, address, type, and description."
+
+  - task: "Add location picker dropdown to event forms"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Updated EventForm with location dropdown that pulls from team locations. Includes custom location option for one-time venues."
+
+  - task: "Display team locations on team pages"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added team locations display to roster tab with location type badges, addresses, and descriptions."
+
+  - task: "Add event photo upload and display"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added photo upload to EventForm and display on event cards in Events & Schedules page. Both tournament and regular event cards now show event photos."
+
+  - task: "Add Manage Locations tab to team admin interface"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added Manage Locations tab for coaches/admins. Verified working through admin login and UI testing."
 
 backend:
   - task: "Backend API functionality"
