@@ -587,21 +587,43 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                             </div>
                         </div>
                     </div>
-                    {/* Show current user status for debugging - make it more visible */}
-                    <div className="text-xs bg-yellow-500 text-black px-2 py-1 rounded">
-                        User: {currentUser ? currentUser.name : 'None'} | Admin: {isLeagueAdmin ? 'Yes' : 'No'}
-                    </div>
-                    {isLeagueAdmin && (
-                        <button 
-                            onClick={() => setEditingNews(true)}
-                            className="bg-red-900 text-white px-3 py-1 rounded text-sm hover:bg-red-950 flex items-center ml-4"
-                            title="Edit news ticker"
-                        >
-                            <Edit className="mr-1 h-3 w-3"/> Edit News
-                        </button>
-                    )}
                 </div>
             </div>
+
+            {/* Admin Controls - Positioned outside ticker for better visibility */}
+            {currentUser && (
+                <div className="bg-slate-700 text-white px-4 py-2 text-center">
+                    <span className="text-sm">Logged in as: <strong>{currentUser.name}</strong> ({currentUser.roles.join(', ')})</span>
+                </div>
+            )}
+            
+            {isLeagueAdmin && (
+                <div className="bg-blue-800 text-white px-4 py-3 flex items-center justify-center">
+                    <button 
+                        onClick={() => setEditingNews(true)}
+                        className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-950 flex items-center"
+                        title="Edit news ticker"
+                    >
+                        <Edit className="mr-2 h-4 w-4"/> Edit News Ticker
+                    </button>
+                    <span className="mx-4 text-blue-200">|</span>
+                    <button 
+                        onClick={() => setEditingPhotos(true)}
+                        className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-950 flex items-center"
+                        title="Edit photo gallery"
+                    >
+                        <Edit className="mr-2 h-4 w-4"/> Edit Photos
+                    </button>
+                    <span className="mx-4 text-blue-200">|</span>
+                    <button 
+                        onClick={() => setEditingVideos(true)}
+                        className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-950 flex items-center"
+                        title="Edit video gallery"
+                    >
+                        <Edit className="mr-2 h-4 w-4"/> Edit Videos
+                    </button>
+                </div>
+            )}
 
             {/* News Editing Modal */}
             {editingNews && isLeagueAdmin && (
