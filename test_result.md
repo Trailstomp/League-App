@@ -487,8 +487,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Add top banner bar customization (color, image, text)"
-    - "Redesign homepage team logos as large rectangles with colored styling"
+    - "Add music player functionality with team-specific music"
+    - "Add team division/type system (Field vs Box Lacrosse)"
+    - "Update navigation to nest teams by division"
+    - "Update standings to show divisions separately"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
