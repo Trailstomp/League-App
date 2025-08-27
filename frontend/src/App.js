@@ -6940,14 +6940,63 @@ function App() {
         audioRef: null
     });
 
-    // Save data to localStorage whenever it changes
-    useEffect(() => { setStoredData('mlbl_teams', teams); }, [teams]);
-    useEffect(() => { setStoredData('mlbl_players', players); }, [players]);
-    useEffect(() => { setStoredData('mlbl_gameTickerData', gameTickerData); }, [gameTickerData]);
-    useEffect(() => { setStoredData('mlbl_leagueSchedule', leagueSchedule); }, [leagueSchedule]);
-    useEffect(() => { setStoredData('mlbl_users', users); }, [users]);
-    useEffect(() => { setStoredData('mlbl_leagueInfo', leagueInfo); }, [leagueInfo]);
-    useEffect(() => { setStoredData('mlbl_websiteStyle', websiteStyle); }, [websiteStyle]);
+    // Save data to both API and localStorage whenever it changes
+    const saveDataToAPI = async (dataType, data) => {
+        const success = await apiService.updateSpecificData(dataType, data);
+        if (!success) {
+            // Fallback to localStorage if API fails
+            setStoredData(`mlbl_${dataType}`, data);
+        }
+    };
+
+    useEffect(() => { 
+        if (!dataLoading) {
+            saveDataToAPI('teams', teams);
+            setStoredData('mlbl_teams', teams);
+        }
+    }, [teams, dataLoading]);
+    
+    useEffect(() => { 
+        if (!dataLoading) {
+            saveDataToAPI('players', players);
+            setStoredData('mlbl_players', players);
+        }
+    }, [players, dataLoading]);
+    
+    useEffect(() => { 
+        if (!dataLoading) {
+            saveDataToAPI('gameTickerData', gameTickerData);
+            setStoredData('mlbl_gameTickerData', gameTickerData);
+        }
+    }, [gameTickerData, dataLoading]);
+    
+    useEffect(() => { 
+        if (!dataLoading) {
+            saveDataToAPI('leagueSchedule', leagueSchedule);
+            setStoredData('mlbl_leagueSchedule', leagueSchedule);
+        }
+    }, [leagueSchedule, dataLoading]);
+    
+    useEffect(() => { 
+        if (!dataLoading) {
+            saveDataToAPI('users', users);
+            setStoredData('mlbl_users', users);
+        }
+    }, [users, dataLoading]);
+    
+    useEffect(() => { 
+        if (!dataLoading) {
+            saveDataToAPI('leagueInfo', leagueInfo);
+            setStoredData('mlbl_leagueInfo', leagueInfo);
+        }
+    }, [leagueInfo, dataLoading]);
+    
+    useEffect(() => { 
+        if (!dataLoading) {
+            saveDataToAPI('websiteStyle', websiteStyle);
+            setStoredData('mlbl_websiteStyle', websiteStyle);
+        }
+    }, [websiteStyle, dataLoading]);
 
     // Sidebar collapsible sections state
     const [sidebarSections, setSidebarSections] = useState({
