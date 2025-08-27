@@ -1253,7 +1253,9 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
             {/* Enhanced Vertical Scrolling News Feed - Clean Background */}
             <div className="text-white py-2 relative" style={getBackgroundStyle(websiteStyle)}>
                 <div className="flex items-start px-4 max-w-3xl mx-auto">
-                    <span className="bg-red-800 text-white px-4 py-3 rounded text-sm font-bold mr-6 flex-shrink-0 shadow-lg">NEWS</span>
+                    <span className="bg-red-800 text-white px-4 py-3 rounded text-sm font-bold mr-6 flex-shrink-0 shadow-lg">
+                        {websiteStyle.newsLabel || 'NEWS'}
+                    </span>
                     
                     {/* Vertical scrolling container with red background only for content */}
                     <div className="flex-grow overflow-hidden relative max-w-xl bg-red-800 rounded-lg shadow-lg" style={{ height: '280px' }}>
