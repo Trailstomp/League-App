@@ -6620,22 +6620,196 @@ function App() {
         }));
     };
 
-    const LoginModal = () => (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-sm">
-                <h2 className="text-2xl font-bold text-center mb-4">Select a Role to Login</h2>
-                <div className="space-y-3">
-                    {users.filter(u => u.roles.length > 0).map(user => (
-                        <button key={user.id} onClick={() => handleLogin(user)} className="w-full text-left p-3 bg-slate-100 hover:bg-red-100 rounded-md flex items-center gap-3">
-                           <UserCheck className="text-slate-600" />
-                           <div>
-                               <p className="font-bold">{user.name}</p>
-                               <p className="text-sm text-slate-500 capitalize">{user.roles.join(', ')}</p>
-                           </div>
+    // Registration handlers
+    const handleRegistration = () => {
+        const newUser = {
+            id: Date.now(),
+            name: registrationData.name,
+            email: registrationData.email,
+            teamId: registrationData.teamId || null,
+            preferredRole: registrationData.preferredRole,
+            phone: registrationData.phone,
+            reasonForJoining: registrationData.reasonForJoining,
+            roles: [], // Empty until approved
+            roleIds: [], // Empty until approved
+            status: 'pending',
+            createdAt: new Date().toISOString().split('T')[0]
+        };
+        
+        setUsers(prev => [...prev, newUser]);
+        setRegistrationData({
+            name: '',
+            email: '',
+            preferredRole: 'player',
+            teamId: '',
+            phone: '',
+            reasonForJoining: ''
+        });
+        setAuthMode('login');
+        alert('Registration submitted! An admin will review your application.');
+    };
+
+    const AuthModal = () => (
+        <div 
+            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+            onClick={() => setShowLogin(false)}
+        >
+            <div 
+                className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+            >
+                {authMode === 'login' ? (
+                    // Login View
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold text-center mb-6">Welcome to MLBL</h2>
+                        
+                        {/* Active Users Login */}
+                        <div className="mb-6">
+                            <h3 className="text-lg font-semibold mb-3">Login as:</h3>
+                            <div className="space-y-3">
+                                {users.filter(u => u.status === 'active' && u.roles.length > 0).map(user => (
+                                    <button 
+                                        key={user.id} 
+                                        onClick={() => handleLogin(user)} 
+                                        className="w-full text-left p-3 bg-slate-100 hover:bg-red-100 rounded-md flex items-center gap-3 transition-colors"
+                                    >
+                                       <UserCheck className="text-slate-600" />
+                                       <div>
+                                           <p className="font-bold">{user.name}</p>
+                                           <p className="text-sm text-slate-500 capitalize">{user.roles.join(', ')}</p>
+                                       </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        
+                        {/* Registration Option */}
+                        <div className="border-t pt-4">
+                            <p className="text-center text-slate-600 mb-3">New to the league?</p>
+                            <button 
+                                onClick={() => setAuthMode('register')}
+                                className="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 transition-colors font-semibold"
+                            >
+                                Request Access
+                            </button>
+                        </div>
+                        
+                        <button 
+                            onClick={() => setShowLogin(false)} 
+                            className="w-full mt-4 bg-slate-200 text-slate-700 p-2 rounded hover:bg-slate-300 transition-colors"
+                        >
+                            Continue as Guest
                         </button>
-                    ))}
-                </div>
-                <button onClick={() => setShowLogin(false)} className="w-full mt-4 bg-slate-200 text-slate-700 p-2 rounded hover:bg-slate-300">Cancel</button>
+                    </div>
+                ) : (
+                    // Registration View
+                    <div className="p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold">Request Access</h2>
+                            <button 
+                                onClick={() => setAuthMode('login')}
+                                className="text-slate-400 hover:text-slate-600"
+                            >
+                                <X className="h-6 w-6"/>
+                            </button>
+                        </div>
+                        
+                        <form onSubmit={(e) => { e.preventDefault(); handleRegistration(); }} className="space-y-4">
+                            {/* Name */}
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-1">Full Name *</label>
+                                <input
+                                    type="text"
+                                    value={registrationData.name}
+                                    onChange={(e) => setRegistrationData(prev => ({ ...prev, name: e.target.value }))}
+                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    required
+                                />
+                            </div>
+                            
+                            {/* Email */}
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-1">Email *</label>
+                                <input
+                                    type="email"
+                                    value={registrationData.email}
+                                    onChange={(e) => setRegistrationData(prev => ({ ...prev, email: e.target.value }))}
+                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    required
+                                />
+                            </div>
+                            
+                            {/* Phone */}
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-1">Phone</label>
+                                <input
+                                    type="tel"
+                                    value={registrationData.phone}
+                                    onChange={(e) => setRegistrationData(prev => ({ ...prev, phone: e.target.value }))}
+                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+                            
+                            {/* Preferred Role */}
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-1">Preferred Role *</label>
+                                <select
+                                    value={registrationData.preferredRole}
+                                    onChange={(e) => setRegistrationData(prev => ({ ...prev, preferredRole: e.target.value }))}
+                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    required
+                                >
+                                    <option value="player">Player</option>
+                                    <option value="coach">Coach</option>
+                                </select>
+                            </div>
+                            
+                            {/* Interested Team */}
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-1">Interested Team</label>
+                                <select
+                                    value={registrationData.teamId}
+                                    onChange={(e) => setRegistrationData(prev => ({ ...prev, teamId: e.target.value }))}
+                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                >
+                                    <option value="">No preference</option>
+                                    {teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name)).map(team => (
+                                        <option key={team.id} value={team.id}>{team.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            
+                            {/* Reason for Joining */}
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-1">Why do you want to join? *</label>
+                                <textarea
+                                    value={registrationData.reasonForJoining}
+                                    onChange={(e) => setRegistrationData(prev => ({ ...prev, reasonForJoining: e.target.value }))}
+                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-20"
+                                    placeholder="Tell us about your experience and why you want to join our league..."
+                                    required
+                                />
+                            </div>
+                            
+                            {/* Submit Buttons */}
+                            <div className="flex space-x-3 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setAuthMode('login')}
+                                    className="flex-1 bg-slate-200 text-slate-700 p-2 rounded hover:bg-slate-300 transition-colors"
+                                >
+                                    Back to Login
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition-colors font-semibold"
+                                >
+                                    Submit Request
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                )}
             </div>
         </div>
     );
