@@ -587,6 +587,10 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                             </div>
                         </div>
                     </div>
+                    {/* Show current user status for debugging */}
+                    <div className="text-xs">
+                        User: {currentUser ? currentUser.name : 'None'} | Admin: {isLeagueAdmin ? 'Yes' : 'No'}
+                    </div>
                     {isLeagueAdmin && (
                         <button 
                             onClick={() => setEditingNews(true)}
