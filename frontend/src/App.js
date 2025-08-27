@@ -432,7 +432,7 @@ const PlayerCardModal = ({ player, teamStyle, teams, isOpen, onClose }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full transform transition-all">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full transform transition-all overflow-hidden">
                 {/* Close button */}
                 <button 
                     onClick={onClose}
@@ -441,105 +441,114 @@ const PlayerCardModal = ({ player, teamStyle, teams, isOpen, onClose }) => {
                     <X className="h-5 w-5 text-slate-600" />
                 </button>
 
-                {/* Playing card style layout */}
-                <div className="relative overflow-hidden rounded-2xl" style={{ background: `linear-gradient(135deg, ${teamStyle?.primaryColor || '#1e293b'}, ${teamStyle?.accentColor || '#dc2626'})` }}>
-                    {/* Header with number and coach badge */}
-                    <div className="p-6 text-white">
-                        <div className="flex justify-between items-start mb-6">
-                            <div className="text-4xl font-bold opacity-75">#{player.number}</div>
-                            {player.roles && player.roles.includes('coach') && (
-                                <div className="bg-yellow-500 px-3 py-1 rounded-full text-sm font-bold">
-                                    COACH
-                                </div>
-                            )}
+                {/* Large Player Photo Section */}
+                <div className="relative h-80 overflow-hidden">
+                    <img 
+                        src={player.photo || `https://ui-avatars.com/api/?name=${player.firstName}+${player.lastName}&background=random&size=600`} 
+                        alt={`${player.firstName} ${player.lastName}`}
+                        className="w-full h-full object-cover"
+                    />
+                    
+                    {/* Gradient overlay for text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                    
+                    {/* Team logo circle overlay */}
+                    {primaryTeam && (
+                        <div className="absolute top-4 left-4 w-16 h-16 bg-white rounded-full border-4 border-white shadow-lg flex items-center justify-center">
+                            <img 
+                                src={primaryTeam.logo} 
+                                alt={primaryTeam.name}
+                                className="w-12 h-12 rounded-full object-contain"
+                            />
                         </div>
-                        
-                        {/* Large player photo with team logo circle */}
-                        <div className="flex items-center justify-center mb-6">
-                            <div className="relative">
-                                <img 
-                                    src={player.photo || `https://ui-avatars.com/api/?name=${player.firstName}+${player.lastName}&background=random&size=200`} 
-                                    alt={`${player.firstName} ${player.lastName}`}
-                                    className="w-32 h-32 rounded-full border-4 border-white shadow-xl object-cover"
-                                />
-                                {/* Team logo circle */}
-                                {primaryTeam && (
-                                    <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-white rounded-full border-2 border-white shadow-lg flex items-center justify-center">
-                                        <img 
-                                            src={primaryTeam.logo} 
-                                            alt={primaryTeam.name}
-                                            className="w-8 h-8 rounded-full object-contain"
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                    )}
 
-                        {/* Player name and position */}
-                        <div className="text-center">
-                            <h2 className="text-3xl font-bold mb-1">{player.firstName} {player.lastName}</h2>
-                            {player.nickname && (
-                                <p className="text-xl opacity-90 mb-2">"{player.nickname}"</p>
-                            )}
-                            <p className="opacity-75 text-lg">
-                                {Array.isArray(player.positions) ? player.positions.join(', ') : player.positions}
-                            </p>
+                    {/* Jersey number - top right */}
+                    <div className="absolute top-4 right-4">
+                        <div 
+                            className="text-white text-4xl font-bold px-3 py-1 rounded-lg shadow-lg"
+                            style={{ backgroundColor: `rgba(0, 0, 0, 0.6)` }}
+                        >
+                            #{player.number}
                         </div>
                     </div>
 
-                    {/* Stats and details */}
-                    <div className="bg-white p-6">
-                        <div className="space-y-4">
-                            {/* Contact Info */}
-                            {(player.email || player.phone) && (
-                                <div>
-                                    <h3 className="font-semibold text-slate-800 mb-2">Contact</h3>
-                                    <div className="space-y-1 text-sm text-slate-600">
-                                        {player.email && (
-                                            <div className="flex items-center">
-                                                <Mail className="h-4 w-4 mr-2" />
-                                                <a href={`mailto:${player.email}`} className="hover:text-blue-600">
-                                                    {player.email}
-                                                </a>
-                                            </div>
-                                        )}
-                                        {player.phone && (
-                                            <div className="flex items-center">
-                                                <span className="h-4 w-4 mr-2 text-center">📞</span>
-                                                <a href={`tel:${player.phone}`} className="hover:text-blue-600">
-                                                    {player.phone}
-                                                </a>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
+                    {/* Coach badge */}
+                    {player.roles && player.roles.includes('coach') && (
+                        <div className="absolute bottom-4 right-4 bg-yellow-500 px-3 py-1 rounded-full text-sm font-bold text-black">
+                            COACH
+                        </div>
+                    )}
 
-                            {/* Teams */}
-                            {player.teams && player.teams.length > 0 && (
-                                <div>
-                                    <h3 className="font-semibold text-slate-800 mb-2">Teams</h3>
-                                    <div className="flex flex-wrap gap-1">
-                                        {player.teams.map(teamId => {
-                                            const team = teams?.find(t => t.id === teamId);
-                                            return team ? (
-                                                <span 
-                                                    key={teamId}
-                                                    className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs"
-                                                >
-                                                    {team.name}
-                                                </span>
-                                            ) : null;
-                                        })}
-                                    </div>
-                                </div>
-                            )}
+                    {/* Player name and position overlay - bottom of photo */}
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                        <h2 className="text-3xl font-bold mb-1 drop-shadow-lg">{player.firstName} {player.lastName}</h2>
+                        {player.nickname && (
+                            <p className="text-xl opacity-90 mb-2 drop-shadow-lg">"{player.nickname}"</p>
+                        )}
+                        <p className="opacity-90 text-lg drop-shadow-lg">
+                            {Array.isArray(player.positions) ? player.positions.join(', ') : player.positions}
+                        </p>
+                    </div>
+                </div>
 
-                            {/* Playing card number corner */}
-                            <div className="absolute bottom-4 right-4 opacity-25">
-                                <div className="text-6xl font-bold text-slate-300 transform rotate-180">
-                                    #{player.number}
+                {/* Player details section */}
+                <div className="p-6">
+                    <div className="space-y-4">
+                        {/* Contact Info */}
+                        {(player.email || player.phone) && (
+                            <div>
+                                <h3 className="font-semibold text-slate-800 mb-2">Contact Information</h3>
+                                <div className="space-y-2 text-sm text-slate-600">
+                                    {player.email && (
+                                        <div className="flex items-center">
+                                            <Mail className="h-4 w-4 mr-2" />
+                                            <a href={`mailto:${player.email}`} className="hover:text-blue-600">
+                                                {player.email}
+                                            </a>
+                                        </div>
+                                    )}
+                                    {player.phone && (
+                                        <div className="flex items-center">
+                                            <span className="h-4 w-4 mr-2 text-center">📞</span>
+                                            <a href={`tel:${player.phone}`} className="hover:text-blue-600">
+                                                {player.phone}
+                                            </a>
+                                        </div>
+                                    )}
                                 </div>
+                            </div>
+                        )}
+
+                        {/* Teams */}
+                        {player.teams && player.teams.length > 1 && (
+                            <div>
+                                <h3 className="font-semibold text-slate-800 mb-2">Teams</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {player.teams.map(teamId => {
+                                        const team = teams?.find(t => t.id === teamId);
+                                        return team ? (
+                                            <span 
+                                                key={teamId}
+                                                className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm flex items-center"
+                                            >
+                                                <img 
+                                                    src={team.logo} 
+                                                    alt={team.name}
+                                                    className="w-4 h-4 rounded-full object-contain mr-2"
+                                                />
+                                                {team.name}
+                                            </span>
+                                        ) : null;
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Playing card number corner */}
+                        <div className="absolute bottom-4 right-4 opacity-10">
+                            <div className="text-6xl font-bold text-slate-300 transform rotate-12">
+                                #{player.number}
                             </div>
                         </div>
                     </div>
