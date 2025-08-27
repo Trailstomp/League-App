@@ -538,10 +538,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Add music player functionality with team-specific music"
-    - "Add team division/type system (Field vs Box Lacrosse)"
-    - "Update navigation to nest teams by division"
-    - "Update standings to show divisions separately"
+    - "Make team logos fill full upper rectangle on homepage"
+    - "Add sidebar background image customization"
+    - "Add repeat functionality to event scheduling"
+    - "Make sidebar logo larger in top left corner"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
