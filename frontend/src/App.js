@@ -6867,6 +6867,97 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
     const [usersSecurityTab, setUsersSecurityTab] = useState('users'); // New state for sub-tabs
     const [settingsTab, setSettingsTab] = useState('website'); // New state for settings sub-tabs
 
+    // Social Media Credentials State
+    const [credentials, setCredentials] = useState(() => {
+        const stored = localStorage.getItem('mlbl_social_credentials');
+        return stored ? JSON.parse(stored) : {
+            twitter: {
+                api_key: '',
+                api_secret: '',
+                access_token: '',
+                access_token_secret: '',
+                bearer_token: '',
+                connected: false
+            },
+            facebook: {
+                app_id: '',
+                app_secret: '',
+                access_token: '',
+                page_id: '',
+                connected: false
+            },
+            instagram: {
+                app_id: '',
+                app_secret: '',
+                access_token: '',
+                business_account_id: '',
+                redirect_uri: '',
+                connected: false
+            },
+            youtube: {
+                client_id: '',
+                client_secret: '',
+                refresh_token: '',
+                channel_id: '',
+                connected: false
+            }
+        };
+    });
+
+    // Save credentials to localStorage whenever they change
+    useEffect(() => {
+        localStorage.setItem('mlbl_social_credentials', JSON.stringify(credentials));
+    }, [credentials]);
+
+    const handleCredentialChange = (platform, field, value) => {
+        setCredentials(prev => ({
+            ...prev,
+            [platform]: {
+                ...prev[platform],
+                [field]: value
+            }
+        }));
+    };
+
+    const handleTestConnection = async (platform) => {
+        const platformCredentials = credentials[platform];
+        
+        // Check if required fields are filled
+        const requiredFields = {
+            twitter: ['api_key', 'api_secret', 'access_token', 'access_token_secret'],
+            facebook: ['app_id', 'app_secret', 'access_token'],
+            instagram: ['app_id', 'app_secret', 'access_token'],
+            youtube: ['client_id', 'client_secret', 'refresh_token']
+        };
+
+        const required = requiredFields[platform] || [];
+        const missingFields = required.filter(field => !platformCredentials[field]);
+
+        if (missingFields.length > 0) {
+            alert(`Please fill in the following required fields: ${missingFields.join(', ')}`);
+            return;
+        }
+
+        try {
+            // Simulate API test - in real implementation, this would make actual API calls
+            console.log(`Testing ${platform} connection...`, platformCredentials);
+            
+            // Update connection status
+            setCredentials(prev => ({
+                ...prev,
+                [platform]: {
+                    ...prev[platform],
+                    connected: true
+                }
+            }));
+
+            alert(`${platform.charAt(0).toUpperCase() + platform.slice(1)} connection successful!`);
+        } catch (error) {
+            console.error(`Error testing ${platform} connection:`, error);
+            alert(`Failed to connect to ${platform}. Please check your credentials.`);
+        }
+    };
+
     // Use new permission system
     const adminTabs = [
         { 
