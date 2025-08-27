@@ -1467,7 +1467,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                         <label className="block font-semibold text-slate-700 mb-2">Teams</label>
                         <div className="border rounded-lg p-3 max-h-32 overflow-y-auto bg-slate-50">
                             <div className="grid grid-cols-1 gap-2">
-                                {teams.filter(t => t.active).map(team => (
+                                {teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name)).map(team => (
                                     <label key={team.id} className="flex items-center space-x-2 hover:bg-white p-1 rounded">
                                         <input
                                             type="checkbox"
