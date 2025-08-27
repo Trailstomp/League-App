@@ -7490,8 +7490,29 @@ function App() {
                     </div>
                     <GameTicker teams={teams} gameTickerData={gameTickerData} websiteStyle={websiteStyle} onTeamClick={(teamId) => navigate('team', teamId)} />
                 </header>
-                <main className="flex-1 overflow-y-auto" style={backgroundStyle}>
+                <main className="flex-1 overflow-y-auto relative" style={backgroundStyle}>
                     {renderPage()}
+                    
+                    {/* Logo Overlay */}
+                    {websiteStyle.overlayLogo && (
+                        <div 
+                            className={`fixed bottom-8 z-10 pointer-events-none ${
+                                websiteStyle.overlayLogoAlignment === 'left' ? 'left-8' :
+                                websiteStyle.overlayLogoAlignment === 'right' ? 'right-8' :
+                                'left-1/2 transform -translate-x-1/2'
+                            }`}
+                        >
+                            <img 
+                                src={websiteStyle.overlayLogo}
+                                alt="Logo Overlay"
+                                className={`opacity-20 ${
+                                    websiteStyle.overlayLogoSize === 'small' ? 'h-16' :
+                                    websiteStyle.overlayLogoSize === 'large' ? 'h-32' :
+                                    'h-24'
+                                } w-auto object-contain drop-shadow-lg`}
+                            />
+                        </div>
+                    )}
                 </main>
                 </div>
             </div>
