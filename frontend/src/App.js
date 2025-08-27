@@ -6954,12 +6954,15 @@ function App() {
         backgroundImage: '',
         backgroundMode: 'cover', // cover, contain, tile
         backgroundOpacity: 0.1, // 0-1 for overlay opacity
-        // Banner settings
+        // Top Banner/Header settings  
+        bannerText: 'MLBL',
         bannerColor: '#1e293b', // default to primaryColor
         bannerImage: '',
-        bannerText: 'MLBL',
         bannerMode: 'cover', // cover, contain, repeat
         bannerOpacity: 0.3,
+        bannerLogo: '',
+        bannerLogoSize: 'medium', // small, medium, large
+        bannerLogoPosition: 'left', // left, center, right
         // Music settings
         globalMusicUrl: '',
         // Sidebar settings
