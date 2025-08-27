@@ -1884,10 +1884,208 @@ const MediaManager = ({ team, setTeams }) => {
 
     return (
         <div className="max-w-6xl mx-auto">
-            {editingMedia && <MediaForm />}
+            {editingGallery && (
+                <GalleryForm
+                    editingGallery={editingGallery}
+                    setEditingGallery={setEditingGallery}
+                    onSave={handleSaveGallery}
+                    onCancel={() => setEditingGallery(null)}
+                    galleryType={activeTab === 'photos' ? 'photo' : 'video'}
+                />
+            )}
+            
+            {editingItem && (
+                <ItemForm
+                    editingItem={editingItem}
+                    setEditingItem={setEditingItem}
+                    onSave={handleSaveItem}
+                    onCancel={() => setEditingItem(null)}
+                    itemType={activeTab === 'photos' ? 'photo' : 'video'}
+                    galleryId={selectedGallery?.id}
+                />
+            )}
+            
+            <Slideshow 
+                items={slideshow.items}
+                isOpen={slideshow.isOpen}
+                onClose={() => setSlideshow({ isOpen: false, items: [], startIndex: 0 })}
+                startIndex={slideshow.startIndex}
+            />
             
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-3xl font-bold text-slate-800 tracking-tight">Team Media Management</h2>
+                <button 
+                    onClick={() => setEditingGallery({ name: '', description: '', type: activeTab === 'photos' ? 'photo' : 'video' })} 
+                    className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"
+                >
+                    <Plus className="mr-2 h-4 w-4"/> Create New {activeTab === 'photos' ? 'Photo Gallery' : 'Video Collection'}
+                </button>
+            </div>
+
+            {/* Tab Navigation */}
+            <div className="flex space-x-4 mb-6 border-b">
+                <button 
+                    onClick={() => setActiveTab('photos')}
+                    className={`pb-2 px-1 ${activeTab === 'photos' ? 'border-b-2 border-red-600 text-red-600 font-semibold' : 'text-slate-600'}`}
+                >
+                    <Image className="mr-2 inline" size={18} />
+                    Photo Galleries ({photoGalleries.length})
+                </button>
+                <button 
+                    onClick={() => setActiveTab('videos')}
+                    className={`pb-2 px-1 ${activeTab === 'videos' ? 'border-b-2 border-red-600 text-red-600 font-semibold' : 'text-slate-600'}`}
+                >
+                    <Video className="mr-2 inline" size={18} />
+                    Video Collections ({videoGalleries.length})
+                </button>
+            </div>
+
+            {/* Gallery Display */}
+            <div className="space-y-8">
+                {(activeTab === 'photos' ? photoGalleries : videoGalleries).map(gallery => (
+                    <div key={gallery.id} className="bg-white rounded-lg shadow-md p-6">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="flex-grow">
+                                <h3 className="text-xl font-semibold text-slate-800 mb-2">{gallery.name}</h3>
+                                <p className="text-slate-600 mb-2">{gallery.description}</p>
+                                <div className="flex items-center space-x-4 text-sm text-slate-500">
+                                    <span>Created: {new Date(gallery.createdAt).toLocaleDateString()}</span>
+                                    <span>{(gallery.items || []).length} {activeTab === 'photos' ? 'photos' : 'videos'}</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-2 ml-4">
+                                <button 
+                                    onClick={() => {
+                                        setSelectedGallery(gallery);
+                                        setEditingItem({ galleryId: gallery.id });
+                                    }}
+                                    className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 flex items-center"
+                                >
+                                    <Plus className="mr-1 h-3 w-3"/> Add {activeTab === 'photos' ? 'Photo' : 'Video'}
+                                </button>
+                                <button 
+                                    onClick={() => setEditingGallery(gallery)} 
+                                    className="text-slate-500 hover:text-slate-700 p-1"
+                                    title="Edit gallery"
+                                >
+                                    <Edit size={16}/>
+                                </button>
+                                <button 
+                                    onClick={() => handleDeleteGallery(gallery.id)} 
+                                    className="text-red-500 hover:text-red-700 p-1"
+                                    title="Delete gallery"
+                                >
+                                    <Trash2 size={16}/>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Gallery Items */}
+                        {(gallery.items || []).length > 0 ? (
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                {(gallery.items || []).map((item, index) => (
+                                    <div key={item.id} className="group relative bg-slate-50 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
+                                        <div 
+                                            onClick={() => openSlideshow(gallery.items, index)}
+                                            className="aspect-square relative overflow-hidden"
+                                        >
+                                            {activeTab === 'photos' ? (
+                                                <img 
+                                                    src={item.url} 
+                                                    alt={item.caption} 
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-slate-800 flex items-center justify-center">
+                                                    {item.url.includes('youtube.com') || item.url.includes('youtu.be') ? (
+                                                        <div className="relative w-full h-full">
+                                                            <img 
+                                                                src={`https://img.youtube.com/vi/${item.url.split('v=')[1]?.split('&')[0] || item.url.split('/').pop()}/0.jpg`}
+                                                                alt={item.caption}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                                <div className="bg-red-600 rounded-full p-2">
+                                                                    <Video className="text-white" size={24} />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <Video className="text-slate-400" size={32} />
+                                                    )}
+                                                </div>
+                                            )}
+                                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity flex items-center justify-center">
+                                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <div className="bg-white rounded-full p-2">
+                                                        <Eye className="text-slate-800" size={20} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="p-3">
+                                            <p className="text-sm font-medium text-slate-800 truncate">{item.caption}</p>
+                                            <div className="flex justify-between items-center mt-2">
+                                                <span className="text-xs text-slate-500">
+                                                    {new Date(item.addedAt).toLocaleDateString()}
+                                                </span>
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDeleteItem(gallery.id, item.id);
+                                                    }}
+                                                    className="text-red-500 hover:text-red-700 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    title="Delete item"
+                                                >
+                                                    <Trash2 size={14}/>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8 text-slate-500 border-2 border-dashed border-slate-200 rounded-lg">
+                                {activeTab === 'photos' ? (
+                                    <Image className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
+                                ) : (
+                                    <Video className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
+                                )}
+                                <p>No {activeTab === 'photos' ? 'photos' : 'videos'} in this gallery yet.</p>
+                                <button 
+                                    onClick={() => {
+                                        setSelectedGallery(gallery);
+                                        setEditingItem({ galleryId: gallery.id });
+                                    }}
+                                    className="mt-2 text-red-600 hover:text-red-800 font-medium"
+                                >
+                                    Add the first {activeTab === 'photos' ? 'photo' : 'video'} →
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                ))}
+
+                {(activeTab === 'photos' ? photoGalleries : videoGalleries).length === 0 && (
+                    <div className="text-center py-12 text-slate-500">
+                        {activeTab === 'photos' ? (
+                            <Image className="mx-auto h-16 w-16 text-slate-300 mb-4"/>
+                        ) : (
+                            <Video className="mx-auto h-16 w-16 text-slate-300 mb-4"/>
+                        )}
+                        <h3 className="text-xl font-semibold mb-2">No {activeTab === 'photos' ? 'Photo Galleries' : 'Video Collections'} Yet</h3>
+                        <p className="mb-4">Create your first {activeTab === 'photos' ? 'photo gallery' : 'video collection'} to showcase your team's memories and highlights.</p>
+                        <button 
+                            onClick={() => setEditingGallery({ name: '', description: '', type: activeTab === 'photos' ? 'photo' : 'video' })}
+                            className="bg-red-800 text-white px-6 py-3 rounded hover:bg-red-900 font-medium"
+                        >
+                            Create First {activeTab === 'photos' ? 'Photo Gallery' : 'Video Collection'}
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
                 <button 
                     onClick={() => setEditingMedia({url: '', caption: ''})} 
                     className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"
