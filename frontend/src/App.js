@@ -5067,6 +5067,23 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
             <div>
                 <h3 className="text-xl font-bold text-slate-800 mb-4">Live Preview</h3>
                 <div className="border rounded-lg overflow-hidden shadow-lg bg-slate-100">
+                    {/* Banner Preview */}
+                    <div 
+                        className="text-white p-4 flex justify-between items-center relative"
+                        style={{
+                            backgroundColor: style.bannerColor || style.primaryColor,
+                            backgroundImage: style.bannerImage ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${style.bannerImage})` : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}
+                    >
+                        <Menu className="text-white" size={20} />
+                        <h2 className="text-lg font-bold tracking-wide drop-shadow-lg">
+                            {style.bannerText || "MLBL"}
+                        </h2>
+                        <div className="w-5"></div>
+                    </div>
+                    
                     <aside 
                         className="text-white w-full py-6 px-4 space-y-4" 
                         style={{ backgroundColor: style.primaryColor }}
@@ -5090,7 +5107,7 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                     </aside>
                     <div className="p-4 bg-white">
                         <h4 className="text-lg font-bold text-slate-800 mb-2">Main Content Area</h4>
-                        <p className="text-slate-600">This preview shows how your website navigation will look with the selected colors.</p>
+                        <p className="text-slate-600">This preview shows how your website banner and navigation will look with the selected colors and banner settings.</p>
                     </div>
                 </div>
             </div>
