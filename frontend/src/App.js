@@ -760,36 +760,39 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                             </div>
                                             
                                             {editingNewsItem?.type === 'image' && (
-                                                <input 
-                                                    type="url"
-                                                    defaultValue={item.imageUrl || ''}
-                                                    placeholder="Image URL"
-                                                    className="w-full p-2 border rounded"
-                                                    onChange={(e) => {
-                                                        setEditingNewsItem(prev => ({...prev, imageUrl: e.target.value}));
+                                                <FileUploadInput
+                                                    label="News Image"
+                                                    accept="image/*"
+                                                    currentValue={editingNewsItem.imageUrl || ''}
+                                                    onChange={(url) => {
+                                                        setEditingNewsItem(prev => ({...prev, imageUrl: url}));
                                                     }}
+                                                    placeholder="Upload image or paste URL"
                                                 />
                                             )}
                                             
                                             {editingNewsItem?.type === 'video' && (
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                                    <input 
-                                                        type="url"
-                                                        defaultValue={item.videoUrl || ''}
-                                                        placeholder="YouTube/Video URL"
-                                                        className="p-2 border rounded"
-                                                        onChange={(e) => {
-                                                            setEditingNewsItem(prev => ({...prev, videoUrl: e.target.value}));
+                                                <div className="space-y-2">
+                                                    <div>
+                                                        <label className="block font-semibold text-slate-700 mb-1">Video URL (YouTube, etc.)</label>
+                                                        <input 
+                                                            type="url"
+                                                            defaultValue={editingNewsItem.videoUrl || ''}
+                                                            placeholder="https://www.youtube.com/watch?v=..."
+                                                            className="w-full p-2 border rounded"
+                                                            onChange={(e) => {
+                                                                setEditingNewsItem(prev => ({...prev, videoUrl: e.target.value}));
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <FileUploadInput
+                                                        label="Video Thumbnail"
+                                                        accept="image/*"
+                                                        currentValue={editingNewsItem.thumbnailUrl || ''}
+                                                        onChange={(url) => {
+                                                            setEditingNewsItem(prev => ({...prev, thumbnailUrl: url}));
                                                         }}
-                                                    />
-                                                    <input 
-                                                        type="url"
-                                                        defaultValue={item.thumbnailUrl || ''}
-                                                        placeholder="Thumbnail URL"
-                                                        className="p-2 border rounded"
-                                                        onChange={(e) => {
-                                                            setEditingNewsItem(prev => ({...prev, thumbnailUrl: e.target.value}));
-                                                        }}
+                                                        placeholder="Upload thumbnail image"
                                                     />
                                                 </div>
                                             )}
