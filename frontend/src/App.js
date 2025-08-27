@@ -1488,26 +1488,26 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                 </div>
                                 
                                 {/* Team Name and Division */}
-                                <h3 className="text-lg font-bold text-slate-800 mb-1 group-hover:text-opacity-80 transition-all text-center">
+                                <h3 className="text-sm md:text-lg font-bold text-slate-800 mb-1 group-hover:text-opacity-80 transition-all text-center">
                                     {team.name}
                                 </h3>
-                                <p className="text-sm text-slate-500 mb-4 text-center flex items-center justify-center">
+                                <p className="text-xs md:text-sm text-slate-500 mb-2 md:mb-4 text-center flex items-center justify-center">
                                     {team.division === 'Field' ? (
-                                        <><Trophy size={14} className="mr-1" /> Field Lacrosse</>
+                                        <><Trophy size={12} className="mr-1" /> Field</>
                                     ) : (
-                                        <><Shield size={14} className="mr-1" /> Box Lacrosse</>
+                                        <><Shield size={12} className="mr-1" /> Box</>
                                     )}
                                 </p>
                                 
                                 {/* W/L Record - Labels above numbers */}
-                                <div className="flex justify-center space-x-6 mb-4">
+                                <div className="flex justify-center space-x-3 md:space-x-6 mb-2 md:mb-4">
                                     <div className="text-center">
                                         <div className="text-xs font-semibold text-slate-500 mb-1">W</div>
-                                        <div className="text-2xl font-bold text-green-600">{team.wins}</div>
+                                        <div className="text-lg md:text-2xl font-bold text-green-600">{team.wins}</div>
                                     </div>
                                     <div className="text-center">
                                         <div className="text-xs font-semibold text-slate-500 mb-1">L</div>
-                                        <div className="text-2xl font-bold text-red-600">{team.losses}</div>
+                                        <div className="text-lg md:text-2xl font-bold text-red-600">{team.losses}</div>
                                     </div>
                                 </div>
                                 
