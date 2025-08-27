@@ -1219,46 +1219,46 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
     
     return (
         <div className="min-h-screen" style={getBackgroundStyle(websiteStyle)}>
-            {/* Enhanced Vertical Scrolling News Feed - Much Taller & Narrower */}
-            <div className="bg-red-800 text-white py-6 relative">
+            {/* Enhanced Vertical Scrolling News Feed - Extra Tall & Clean */}
+            <div className="bg-red-800 text-white py-2 relative">
                 <div className="flex items-start px-4 max-w-3xl mx-auto">
                     <span className="bg-white text-red-800 px-4 py-3 rounded text-sm font-bold mr-6 flex-shrink-0">NEWS</span>
                     
-                    {/* Vertical scrolling container - Much taller (h-40) and narrower (max-w-xl) */}
-                    <div className="flex-grow overflow-hidden h-40 relative max-w-xl">
+                    {/* Vertical scrolling container - Extra tall (h-70) with minimal red space */}
+                    <div className="flex-grow overflow-hidden h-70 relative max-w-xl">
                         <div className="animate-scroll-vertical absolute w-full">
                             {/* Create a continuous loop by duplicating news items */}
                             {[...newsItems, ...newsItems].map((item, index) => (
                                 <div 
                                     key={`${item.id}-${index}`} 
-                                    className="flex items-center py-4 h-40 cursor-pointer hover:bg-red-700 hover:bg-opacity-50 rounded px-4 transition-colors"
+                                    className="flex items-center py-6 h-70 cursor-pointer hover:bg-red-700 hover:bg-opacity-50 rounded px-4 transition-colors"
                                     onClick={() => setSelectedNewsItem(item)}
                                 >
                                     {item.type === 'image' && item.imageUrl && (
                                         <img 
                                             src={item.imageUrl} 
                                             alt="News"
-                                            className="w-32 h-24 rounded mr-4 object-cover flex-shrink-0 shadow-sm"
+                                            className="w-40 h-32 rounded mr-5 object-cover flex-shrink-0 shadow-sm"
                                         />
                                     )}
                                     {item.type === 'video' && item.thumbnailUrl && (
-                                        <div className="relative mr-4 flex-shrink-0">
+                                        <div className="relative mr-5 flex-shrink-0">
                                             <img 
                                                 src={item.thumbnailUrl} 
                                                 alt="Video"
-                                                className="w-32 h-24 rounded object-cover shadow-sm"
+                                                className="w-40 h-32 rounded object-cover shadow-sm"
                                             />
                                             <div className="absolute inset-0 flex items-center justify-center">
-                                                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg">
-                                                    <div className="w-0 h-0 border-l-5 border-l-red-600 border-t-4 border-t-transparent border-b-4 border-b-transparent ml-1"></div>
+                                                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
+                                                    <div className="w-0 h-0 border-l-6 border-l-red-600 border-t-5 border-t-transparent border-b-5 border-b-transparent ml-1"></div>
                                                 </div>
                                             </div>
                                         </div>
                                     )}
                                     <div className="flex-grow min-w-0">
-                                        <div className="text-white font-semibold text-xl truncate">{item.heading || item.text}</div>
+                                        <div className="text-white font-semibold text-2xl truncate leading-tight">{item.heading || item.text}</div>
                                         {item.comments && (
-                                            <div className="text-red-100 text-lg truncate mt-2">{item.comments}</div>
+                                            <div className="text-red-100 text-xl truncate mt-3 leading-relaxed">{item.comments}</div>
                                         )}
                                     </div>
                                 </div>
