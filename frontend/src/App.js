@@ -6793,7 +6793,7 @@ function App() {
         tickerItemColor: '#334155',
         tickerBorderColor: '#475569',
         tickerTextColor: '#94a3b8'
-    });
+    }));
 
     // Global music player state
     const [musicState, setMusicState] = useState({
