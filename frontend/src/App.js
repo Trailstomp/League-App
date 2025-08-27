@@ -389,33 +389,148 @@ const StatCard = ({ title, value, color }) => (
     </div>
 );
 
-const PlayerCard = ({ player, teamStyle }) => (
+const PlayerCard = ({ player, teamStyle, onClick }) => (
     <div
-        className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform hover:scale-105 duration-300 border-4"
+        className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform hover:scale-105 duration-300 border-4 cursor-pointer"
         style={{ borderColor: teamStyle?.primaryColor || '#cccccc' }}
+        onClick={onClick}
+        title="Click for player details"
     >
-        <div className="relative w-full h-48 bg-slate-200 flex items-center justify-center">
-            <img src={player.photo} alt={`${player.firstName} ${player.lastName}`} className="w-full h-full object-contain" onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/200x200/CCCCCC/FFFFFF?text=Player'; }} />
-            <div
-                className="absolute bottom-0 right-0 px-3 py-1 rounded-tl-lg"
-                style={{ backgroundColor: teamStyle?.primaryColor ? `${teamStyle.primaryColor}e6` : 'rgba(0,0,0,0.75)' }} // Add some transparency
-            >
-                <p className="text-white text-2xl font-bold tracking-tighter">#{player.number}</p>
+        <div className="relative h-48 overflow-hidden">
+            <img 
+                src={player.photo || `https://ui-avatars.com/api/?name=${player.firstName}+${player.lastName}&background=random`} 
+                alt={`${player.firstName} ${player.lastName}`}
+                className="w-full h-full object-cover"
+            />
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                <h3 className="text-white font-bold text-lg">{player.firstName} {player.lastName}</h3>
+                <p className="text-white text-sm">#{player.number}</p>
             </div>
         </div>
         <div className="p-4">
-            <h3 className="text-xl font-bold text-slate-800">{player.firstName} "{player.nickname}" {player.lastName}</h3>
-            <div className="flex justify-between items-center mt-2">
-                <p
-                    className="text-sm font-semibold px-2 py-1 rounded-full text-white"
-                    style={{ backgroundColor: teamStyle?.primaryColor || '#475569' }}
-                >
+            <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-semibold text-slate-600">
                     {Array.isArray(player.positions) ? player.positions.join(', ') : player.positions}
-                </p>
+                </span>
+                {player.roles && player.roles.includes('coach') && (
+                    <span className="bg-yellow-500 text-white px-2 py-1 rounded text-xs font-bold">COACH</span>
+                )}
             </div>
+            {player.nickname && (
+                <p className="text-slate-500 text-sm">"{player.nickname}"</p>
+            )}
         </div>
     </div>
 );
+
+// Player Card Modal Component
+const PlayerCardModal = ({ player, teamStyle, isOpen, onClose }) => {
+    if (!isOpen || !player) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all">
+                {/* Close button */}
+                <button 
+                    onClick={onClose}
+                    className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-shadow"
+                >
+                    <X className="h-5 w-5 text-slate-600" />
+                </button>
+
+                {/* Playing card style layout */}
+                <div className="relative overflow-hidden rounded-2xl" style={{ background: `linear-gradient(135deg, ${teamStyle?.primaryColor || '#1e293b'}, ${teamStyle?.accentColor || '#dc2626'})` }}>
+                    {/* Header with number and position */}
+                    <div className="p-6 text-white">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="text-4xl font-bold opacity-75">#{player.number}</div>
+                            {player.roles && player.roles.includes('coach') && (
+                                <div className="bg-yellow-500 px-3 py-1 rounded-full text-sm font-bold">
+                                    COACH
+                                </div>
+                            )}
+                        </div>
+                        
+                        {/* Player photo */}
+                        <div className="flex items-center mb-4">
+                            <img 
+                                src={player.photo || `https://ui-avatars.com/api/?name=${player.firstName}+${player.lastName}&background=random&size=120`} 
+                                alt={`${player.firstName} ${player.lastName}`}
+                                className="w-20 h-20 rounded-full border-4 border-white shadow-lg object-cover mr-4"
+                            />
+                            <div>
+                                <h2 className="text-2xl font-bold">{player.firstName} {player.lastName}</h2>
+                                {player.nickname && (
+                                    <p className="text-lg opacity-90">"{player.nickname}"</p>
+                                )}
+                                <p className="opacity-75">
+                                    {Array.isArray(player.positions) ? player.positions.join(', ') : player.positions}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Stats and details */}
+                    <div className="bg-white p-6">
+                        <div className="space-y-4">
+                            {/* Contact Info */}
+                            {(player.email || player.phone) && (
+                                <div>
+                                    <h3 className="font-semibold text-slate-800 mb-2">Contact</h3>
+                                    <div className="space-y-1 text-sm text-slate-600">
+                                        {player.email && (
+                                            <div className="flex items-center">
+                                                <Mail className="h-4 w-4 mr-2" />
+                                                <a href={`mailto:${player.email}`} className="hover:text-blue-600">
+                                                    {player.email}
+                                                </a>
+                                            </div>
+                                        )}
+                                        {player.phone && (
+                                            <div className="flex items-center">
+                                                <span className="h-4 w-4 mr-2 text-center">📞</span>
+                                                <a href={`tel:${player.phone}`} className="hover:text-blue-600">
+                                                    {player.phone}
+                                                </a>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Teams */}
+                            {player.teams && player.teams.length > 0 && (
+                                <div>
+                                    <h3 className="font-semibold text-slate-800 mb-2">Teams</h3>
+                                    <div className="flex flex-wrap gap-1">
+                                        {player.teams.map(teamId => {
+                                            const team = teams?.find(t => t.id === teamId);
+                                            return team ? (
+                                                <span 
+                                                    key={teamId}
+                                                    className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs"
+                                                >
+                                                    {team.name}
+                                                </span>
+                                            ) : null;
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Playing card number corner */}
+                            <div className="absolute bottom-4 right-4 opacity-25">
+                                <div className="text-6xl font-bold text-slate-300 transform rotate-180">
+                                    #{player.number}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const ContactCard = ({ entity }) => {
     const [messageSent, setMessageSent] = useState(false);
