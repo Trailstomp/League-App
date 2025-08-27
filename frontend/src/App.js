@@ -6156,7 +6156,9 @@ function App() {
         globalMusicUrl: '',
         // Sidebar settings
         sidebarImage: '',
-        sidebarOpacity: 0.2
+        sidebarOpacity: 0.2,
+        // Ticker settings
+        tickerColor: '#1e293b'
     });
 
     // Global music player state
