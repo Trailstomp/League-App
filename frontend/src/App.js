@@ -6314,6 +6314,12 @@ function App() {
         audioRef: null
     });
 
+    // Sidebar collapsible sections state
+    const [sidebarSections, setSidebarSections] = useState({
+        fieldLacrosse: true,
+        boxLacrosse: true
+    });
+
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 768) setIsMenuOpen(false);
