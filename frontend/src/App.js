@@ -5,7 +5,81 @@ import "./App.css";
 // --- ASSETS ---
 const MlblLogo = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzE4MTgyOCIvPjxwYXRoIGQ9Ik0zMCAyMEw3MCAyMFY4MEw1MCA5MEwzMCA4MFoiIGZpbGw9IiNkYzI2MjYiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIzMCIgZm9udC1mYW1pbHk9InNlcmlmIiBmaWxsPSJ3aGl0ZSI+TUxCTDwvdGV4dD48L3N2Zz4=";
 
-// --- UTILITIES ---
+// Music Player Component
+const MusicPlayer = ({ musicState, setMusicState }) => {
+    const audioRef = useRef(null);
+
+    useEffect(() => {
+        if (audioRef.current) {
+            setMusicState(prev => ({ ...prev, audioRef: audioRef.current }));
+        }
+    }, [setMusicState]);
+
+    useEffect(() => {
+        if (audioRef.current && musicState.currentTrack) {
+            audioRef.current.src = musicState.currentTrack.url;
+            if (musicState.isPlaying) {
+                audioRef.current.play().catch(console.error);
+            }
+        }
+    }, [musicState.currentTrack, musicState.isPlaying]);
+
+    const togglePlay = () => {
+        if (audioRef.current) {
+            if (musicState.isPlaying) {
+                audioRef.current.pause();
+            } else {
+                audioRef.current.play().catch(console.error);
+            }
+            setMusicState(prev => ({ ...prev, isPlaying: !prev.isPlaying }));
+        }
+    };
+
+    const stopMusic = () => {
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+            setMusicState(prev => ({ ...prev, isPlaying: false, currentTrack: null }));
+        }
+    };
+
+    if (!musicState.currentTrack) return null;
+
+    return (
+        <div className="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg p-4 z-50 max-w-xs">
+            <div className="flex items-center space-x-3">
+                <div className="flex-grow">
+                    <p className="text-sm font-semibold text-slate-800 truncate">
+                        {musicState.currentTrack.title}
+                    </p>
+                    {musicState.currentTrack.teamId && (
+                        <p className="text-xs text-slate-500">Team Music</p>
+                    )}
+                </div>
+                <div className="flex space-x-2">
+                    <button
+                        onClick={togglePlay}
+                        className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
+                    >
+                        {musicState.isPlaying ? <X size={16} /> : <Play size={16} />}
+                    </button>
+                    <button
+                        onClick={stopMusic}
+                        className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                    >
+                        <X size={16} />
+                    </button>
+                </div>
+            </div>
+            <audio
+                ref={audioRef}
+                onEnded={() => setMusicState(prev => ({ ...prev, isPlaying: false }))}
+                onPlay={() => setMusicState(prev => ({ ...prev, isPlaying: true }))}
+                onPause={() => setMusicState(prev => ({ ...prev, isPlaying: false }))}
+            />
+        </div>
+    );
+};
 const getLogoStyle = (websiteStyle) => {
     const logoStyle = websiteStyle?.logoStyle || 'contain';
     return logoStyle === 'contain' ? 'object-contain' : 
