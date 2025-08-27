@@ -4826,7 +4826,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
     };
 
     return (
-        <div className="p-4 md:p-8">
+        <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
             <h1 className="text-4xl font-bold text-slate-800 mb-6 tracking-tight">
                 {currentUser.roles.includes('admin') ? 'Admin Portal' : 'Team Management Portal'}
             </h1>
