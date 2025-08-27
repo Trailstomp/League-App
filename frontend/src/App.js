@@ -4167,10 +4167,10 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                                 onChange={(e) => setPostContent(e.target.value)}
                                 placeholder="What's happening with the league?"
                                 className="w-full p-3 border rounded-lg h-32 resize-none"
-                                maxLength={280}
+                                maxLength={2200}
                             />
                             <div className="text-right text-xs text-slate-500 mt-1">
-                                {postContent.length}/280 characters
+                                {postContent.length}/2200 characters (optimized per platform)
                             </div>
                         </div>
 
@@ -4178,29 +4178,81 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                             <label className="block text-sm font-medium text-slate-700 mb-2">
                                 Post to Platforms
                             </label>
-                            <div className="flex space-x-4">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {[
-                                    { id: 'twitter', label: 'Twitter', icon: Twitter, color: 'text-blue-400' },
-                                    { id: 'facebook', label: 'Facebook', icon: Facebook, color: 'text-blue-600' },
-                                    { id: 'instagram', label: 'Instagram', icon: Instagram, color: 'text-pink-500' }
+                                    { id: 'twitter', label: 'Twitter', icon: Twitter, color: 'text-blue-400', bgColor: 'bg-blue-50', borderColor: 'border-blue-200' },
+                                    { id: 'facebook', label: 'Facebook', icon: Facebook, color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-200' },
+                                    { id: 'instagram', label: 'Instagram', icon: Instagram, color: 'text-pink-500', bgColor: 'bg-pink-50', borderColor: 'border-pink-200' },
+                                    { id: 'youtube', label: 'YouTube', icon: Video, color: 'text-red-500', bgColor: 'bg-red-50', borderColor: 'border-red-200' }
                                 ].map(platform => (
-                                    <label key={platform.id} className="flex items-center space-x-2 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedPlatforms.includes(platform.id)}
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setSelectedPlatforms(prev => [...prev, platform.id]);
-                                                } else {
-                                                    setSelectedPlatforms(prev => prev.filter(p => p !== platform.id));
-                                                }
-                                            }}
-                                            className="rounded"
-                                        />
-                                        <platform.icon className={platform.color} size={18} />
-                                        <span className="text-sm">{platform.label}</span>
-                                    </label>
+                                    <div key={platform.id} className={`relative border-2 rounded-lg p-3 ${
+                                        selectedPlatforms.includes(platform.id) 
+                                            ? `${platform.bgColor} ${platform.borderColor}` 
+                                            : 'bg-gray-50 border-gray-200'
+                                    } ${!credentials[platform.id]?.connected ? 'opacity-50' : 'cursor-pointer'}`}>
+                                        <label className="cursor-pointer block">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedPlatforms.includes(platform.id)}
+                                                disabled={!credentials[platform.id]?.connected}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setSelectedPlatforms(prev => [...prev, platform.id]);
+                                                    } else {
+                                                        setSelectedPlatforms(prev => prev.filter(p => p !== platform.id));
+                                                    }
+                                                }}
+                                                className="sr-only"
+                                            />
+                                            <div className="flex flex-col items-center space-y-2">
+                                                <platform.icon className={platform.color} size={24} />
+                                                <span className="text-sm font-medium">{platform.label}</span>
+                                                {!credentials[platform.id]?.connected && (
+                                                    <span className="text-xs text-red-500">Not Connected</span>
+                                                )}
+                                                {credentials[platform.id]?.connected && (
+                                                    <span className="text-xs text-green-600">Ready</span>
+                                                )}
+                                            </div>
+                                            {selectedPlatforms.includes(platform.id) && (
+                                                <div className="absolute top-1 right-1 bg-green-500 text-white rounded-full p-1">
+                                                    <Eye size={12} />
+                                                </div>
+                                            )}
+                                        </label>
+                                    </div>
                                 ))}
+                            </div>
+                            {selectedPlatforms.filter(p => credentials[p]?.connected).length === 0 && (
+                                <p className="text-sm text-red-600 mt-2">
+                                    Please connect at least one platform in the API Setup tab before posting.
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Media Upload Section */}
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Media (Optional)
+                            </label>
+                            <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-slate-400 transition-colors">
+                                <Upload className="mx-auto h-8 w-8 text-slate-400 mb-2" />
+                                <p className="text-sm text-slate-600">
+                                    Drag & drop images or videos, or click to select
+                                </p>
+                                <p className="text-xs text-slate-500 mt-1">
+                                    Supports images (JPG, PNG) and videos (MP4) up to 50MB
+                                </p>
+                                <input
+                                    type="file"
+                                    multiple
+                                    accept="image/*,video/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                        // Handle file selection
+                                        console.log('Files selected:', e.target.files);
+                                    }}
+                                />
                             </div>
                         </div>
 
@@ -4213,7 +4265,7 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                             </button>
                             <button
                                 type="submit"
-                                disabled={!postContent.trim() || selectedPlatforms.length === 0 || isPosting}
+                                disabled={!postContent.trim() || selectedPlatforms.filter(p => credentials[p]?.connected).length === 0 || isPosting}
                                 className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
                             >
                                 {isPosting ? (
@@ -4223,7 +4275,7 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                                     </>
                                 ) : (
                                     <>
-                                        <span>Post Now</span>
+                                        <span>Post to {selectedPlatforms.filter(p => credentials[p]?.connected).length} Platform(s)</span>
                                     </>
                                 )}
                             </button>
