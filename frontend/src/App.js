@@ -1056,19 +1056,19 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                                     }));
                                                 }}
                                             />
-                                            <input 
-                                                type="url"
-                                                defaultValue={picture.image}
-                                                placeholder="Image URL"
-                                                className="w-full p-2 border rounded"
-                                                onChange={(e) => {
+                                            <FileUploadInput
+                                                label="Photo Image"
+                                                accept="image/*"
+                                                currentValue={picture.image}
+                                                onChange={(url) => {
                                                     setMediaContent(prev => ({
                                                         ...prev,
                                                         pictures: prev.pictures.map(p => 
-                                                            p.id === picture.id ? {...p, image: e.target.value} : p
+                                                            p.id === picture.id ? {...p, image: url} : p
                                                         )
                                                     }));
                                                 }}
+                                                placeholder="Upload photo or paste URL"
                                             />
                                             <textarea 
                                                 defaultValue={picture.description}
