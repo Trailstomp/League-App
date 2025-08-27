@@ -1008,36 +1008,68 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                         <h1 className="text-5xl font-bold text-slate-800 mb-2 tracking-tight">{leagueInfo.name || "Men's Lacrosse Beer League"}</h1>
                         <h2 className="text-3xl font-bold text-slate-600 mb-6 tracking-tight">Our Teams</h2>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {sortedTeams.map(team => (
                             <button
                                 key={team.id}
                                 onClick={() => onTeamClick(team.id)}
-                                className="group bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transform transition-all duration-300 hover:scale-105 text-center"
+                                className="group bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transform transition-all duration-300 hover:scale-105 relative overflow-hidden"
+                                style={{
+                                    backgroundColor: team.style?.backgroundColor || '#ffffff',
+                                    borderLeft: `6px solid ${team.style?.primaryColor || '#dc2626'}`
+                                }}
                             >
-                                <div className="relative mb-4">
+                                {/* Team Logo */}
+                                <div className="flex items-center justify-center mb-4">
                                     <img 
                                         src={team.logo} 
                                         alt={team.name} 
-                                        className={`w-16 h-16 mx-auto rounded-full bg-slate-200 p-2 group-hover:scale-110 transition-transform ${getLogoStyle(websiteStyle)}`}
+                                        className={`w-20 h-20 group-hover:scale-110 transition-transform ${getLogoStyle(websiteStyle)}`}
+                                        style={{
+                                            border: `2px solid ${team.style?.primaryColor || '#dc2626'}`,
+                                            borderRadius: '8px',
+                                            padding: '8px'
+                                        }}
                                     />
                                 </div>
-                                <h3 className="text-sm font-bold text-slate-800 mb-2 group-hover:text-red-700 transition-colors">
+                                
+                                {/* Team Name */}
+                                <h3 className="text-lg font-bold text-slate-800 mb-4 group-hover:text-opacity-80 transition-all text-center">
                                     {team.name}
                                 </h3>
-                                <div className="flex justify-center space-x-2 text-xs">
+                                
+                                {/* W/L Record - Labels above numbers */}
+                                <div className="flex justify-center space-x-6 mb-4">
                                     <div className="text-center">
-                                        <div className="font-bold text-green-600">{team.wins}</div>
-                                        <div className="text-slate-500">W</div>
+                                        <div className="text-xs font-semibold text-slate-500 mb-1">W</div>
+                                        <div className="text-2xl font-bold text-green-600">{team.wins}</div>
                                     </div>
                                     <div className="text-center">
-                                        <div className="font-bold text-red-600">{team.losses}</div>
-                                        <div className="text-slate-500">L</div>
+                                        <div className="text-xs font-semibold text-slate-500 mb-1">L</div>
+                                        <div className="text-2xl font-bold text-red-600">{team.losses}</div>
                                     </div>
                                 </div>
-                                <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <span className="text-xs text-red-600 font-semibold">View Team →</span>
+                                
+                                {/* Hover Action */}
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div 
+                                        className="text-sm font-semibold text-center py-2 rounded-lg"
+                                        style={{ 
+                                            backgroundColor: team.style?.primaryColor || '#dc2626',
+                                            color: 'white'
+                                        }}
+                                    >
+                                        View Team →
+                                    </div>
                                 </div>
+                                
+                                {/* Decorative gradient overlay */}
+                                <div 
+                                    className="absolute top-0 right-0 w-16 h-16 opacity-10"
+                                    style={{
+                                        background: `linear-gradient(135deg, ${team.style?.primaryColor || '#dc2626'} 0%, transparent 70%)`
+                                    }}
+                                ></div>
                             </button>
                         ))}
                     </div>
