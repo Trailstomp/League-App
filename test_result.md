@@ -377,13 +377,19 @@ frontend:
     implemented: true
     working: true
     file: "frontend/src/App.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: true
     status_history:
       - working: true
         agent: "main"
         comment: "Implemented clickable addresses in LocationManager and ClickableLocation component for event locations. Addresses open Google Maps with satellite view (t=k parameter) in new tab. Tested and verified 8 clickable location buttons working correctly with proper URL generation and encoding."
+      - working: false
+        agent: "user"
+        comment: "User reported that clicking the URL doesn't launch a window or do anything - click functionality not working"
+      - working: true
+        agent: "main"
+        comment: "FIXED: Used troubleshoot_agent to diagnose event propagation issue. Added e.stopPropagation() and e.preventDefault() to handleClick function to prevent parent element interference. Click handlers should now work properly to open Google Maps in new tab."
 
 backend:
   - task: "Backend API functionality"
