@@ -798,11 +798,14 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser}) => {
                                                     <span>{event.time}</span>
                                                     {event.location && <span>{event.location}</span>}
                                                 </div>
+                                                {event.imageUrl && (
+                                                    <img src={event.imageUrl} alt="Tournament" className="w-full h-32 object-cover rounded-lg mb-3" />
+                                                )}
                                                 <div className="mb-2">
                                                     <span className="text-sm font-semibold text-slate-700">Participating Teams ({event.teams.length}):</span>
                                                 </div>
                                                 <div className="flex flex-wrap gap-2 mb-3">
-                                                    {event.teams.map((team, index) => (
+                                                    {event.teams.sort((a, b) => a.name.localeCompare(b.name)).map((team, index) => (
                                                         <button
                                                             key={`${team.id}-${index}`}
                                                             onClick={() => onTeamClick(team.id)}
@@ -815,9 +818,6 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser}) => {
                                                 </div>
                                                 {event.description && (
                                                     <p className="text-sm text-slate-600 mb-3">{event.description}</p>
-                                                )}
-                                                {event.imageUrl && (
-                                                    <img src={event.imageUrl} alt="Tournament" className="w-full h-32 object-cover rounded-lg mt-3" />
                                                 )}
                                             </div>
                                             <span className="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
