@@ -2968,6 +2968,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                 {activeTab === 'manage_players' && isAuthorizedToManage && <PlayerManager players={players} setPlayers={setPlayers} teams={[team]} currentUser={currentUser} />}
                 {activeTab === 'manage_media' && isAuthorizedToManage && <MediaManager team={team} setTeams={setTeams} />}
                 {activeTab === 'manage_locations' && isAuthorizedToManage && <LocationManager team={team} setTeams={setTeams} />}
+                {activeTab === 'manage_groupme' && isAuthorizedToManage && <GroupMeManager team={team} setTeams={setTeams} />}
                 {activeTab === 'manage_style' && isAuthorizedToManage && <TeamStyleManager teams={[team]} setTeams={setTeams} currentUser={currentUser} />}
             </div>
         </div>
