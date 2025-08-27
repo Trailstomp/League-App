@@ -6802,6 +6802,15 @@ function App() {
         audioRef: null
     });
 
+    // Save data to localStorage whenever it changes
+    useEffect(() => { setStoredData('mlbl_teams', teams); }, [teams]);
+    useEffect(() => { setStoredData('mlbl_players', players); }, [players]);
+    useEffect(() => { setStoredData('mlbl_gameTickerData', gameTickerData); }, [gameTickerData]);
+    useEffect(() => { setStoredData('mlbl_leagueSchedule', leagueSchedule); }, [leagueSchedule]);
+    useEffect(() => { setStoredData('mlbl_users', users); }, [users]);
+    useEffect(() => { setStoredData('mlbl_leagueInfo', leagueInfo); }, [leagueInfo]);
+    useEffect(() => { setStoredData('mlbl_websiteStyle', websiteStyle); }, [websiteStyle]);
+
     // Sidebar collapsible sections state
     const [sidebarSections, setSidebarSections] = useState({
         fieldLacrosse: true,
