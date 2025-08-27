@@ -1434,6 +1434,27 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                     rows="3"
                 />
                 
+                {/* Event Photo Upload */}
+                <div>
+                    <label className="block font-semibold text-slate-700 mb-2">Event Photo (Optional)</label>
+                    <input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                                const fileUrl = URL.createObjectURL(e.target.files[0]);
+                                setEditingEvent(prev => ({...prev, imageUrl: fileUrl}));
+                            }
+                        }}
+                        className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
+                    {editingEvent?.imageUrl && (
+                        <div className="mt-3">
+                            <img src={editingEvent.imageUrl} alt="Event preview" className="w-full h-32 object-cover rounded-lg border" />
+                        </div>
+                    )}
+                </div>
+                
                 {/* Team Selection */}
                 {!isTeamSpecific && (
                     <div>
