@@ -551,7 +551,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
                                 <img 
                                     src={team.logo} 
                                     alt={team.name} 
-                                    className="w-16 h-16 mx-auto rounded-full bg-slate-200 p-2 group-hover:scale-110 transition-transform"
+                                    className={`w-16 h-16 mx-auto rounded-full bg-slate-200 p-2 group-hover:scale-110 transition-transform ${getLogoStyle(websiteStyle)}`}
                                 />
                             </div>
                             <h3 className="text-sm font-bold text-slate-800 mb-2 group-hover:text-red-700 transition-colors">
