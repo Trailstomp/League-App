@@ -4244,7 +4244,7 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                                     </div>
                                 ))}
                             </div>
-                            {selectedPlatforms.filter(p => credentials[p]?.connected).length === 0 && (
+                            {selectedPlatforms.filter(p => currentCredentials[p]?.connected).length === 0 && (
                                 <p className="text-sm text-red-600 mt-2">
                                     Please connect at least one platform in the API Setup tab before posting.
                                 </p>
