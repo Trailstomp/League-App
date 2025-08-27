@@ -1585,62 +1585,87 @@ const TeamCalendarManager = ({ team, teams, setTeams }) => {
     );
 };
 
-const MediaManager = ({ team, setTeams }) => {
-    const [editingMedia, setEditingMedia] = useState(null);
-    const [mediaType, setMediaType] = useState('photo');
+const GalleryForm = ({ editingGallery, setEditingGallery, onSave, onCancel, galleryType }) => {
+    const [galleryName, setGalleryName] = useState(editingGallery?.name || '');
+    const [galleryDescription, setGalleryDescription] = useState(editingGallery?.description || '');
     
-    const handleSave = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        const newMedia = {
-            ...editingMedia,
-            id: editingMedia.id || Date.now(),
-            type: mediaType
-        };
-
-        setTeams(currentTeams => currentTeams.map(t => {
-            if (t.id === team.id) {
-                const updatedMedia = editingMedia.id
-                    ? (t.media || []).map(media => media.id === editingMedia.id ? newMedia : media)
-                    : [...(t.media || []), newMedia];
-                return { ...t, media: updatedMedia };
-            }
-            return t;
-        }));
-        
-        setEditingMedia(null);
+        onSave({
+            ...editingGallery,
+            name: galleryName,
+            description: galleryDescription,
+            type: galleryType,
+            id: editingGallery?.id || Date.now(),
+            items: editingGallery?.items || [],
+            createdAt: editingGallery?.createdAt || new Date().toISOString()
+        });
     };
 
-    const handleDelete = (mediaId) => {
-        setTeams(currentTeams => currentTeams.map(t => {
-            if (t.id === team.id) {
-                return { ...t, media: (t.media || []).filter(media => media.id !== mediaId) };
-            }
-            return t;
-        }));
-    };
-
-    const media = team.media || [];
-    const photos = media.filter(m => m.type === 'photo');
-    const videos = media.filter(m => m.type === 'video');
-
-    const MediaForm = () => (
+    return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <h3 className="text-2xl font-bold mb-4">{editingMedia?.id ? 'Edit Media' : 'Add New Media'}</h3>
-                <form onSubmit={handleSave} className="space-y-4">
+            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+                <h3 className="text-2xl font-bold mb-4">
+                    {editingGallery?.id ? 'Edit' : 'Create New'} {galleryType === 'photo' ? 'Photo Gallery' : 'Video Collection'}
+                </h3>
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block font-semibold text-slate-700 mb-2">Media Type</label>
-                        <select 
-                            value={mediaType} 
-                            onChange={e => setMediaType(e.target.value)} 
-                            className="w-full p-2 border rounded"
-                        >
-                            <option value="photo">Photo</option>
-                            <option value="video">Video</option>
-                        </select>
+                        <label className="block font-semibold text-slate-700 mb-2">Gallery Name</label>
+                        <input 
+                            type="text" 
+                            value={galleryName}
+                            onChange={(e) => setGalleryName(e.target.value)}
+                            placeholder="e.g., Championship Games, Team Photos"
+                            className="w-full p-2 border rounded" 
+                            required 
+                        />
                     </div>
                     
-                    {mediaType === 'photo' ? (
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Description</label>
+                        <textarea 
+                            value={galleryDescription}
+                            onChange={(e) => setGalleryDescription(e.target.value)}
+                            placeholder="Brief description of this gallery..."
+                            className="w-full p-2 border rounded h-24 resize-none" 
+                            required 
+                        />
+                    </div>
+
+                    <div className="flex justify-end space-x-2">
+                        <button type="button" onClick={onCancel} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
+                        <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Create Gallery</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+const ItemForm = ({ editingItem, setEditingItem, onSave, onCancel, itemType, galleryId }) => {
+    const [itemData, setItemData] = useState({
+        caption: editingItem?.caption || '',
+        url: editingItem?.url || '',
+        ...editingItem
+    });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSave({
+            ...itemData,
+            id: editingItem?.id || Date.now(),
+            type: itemType,
+            galleryId: galleryId,
+            addedAt: editingItem?.addedAt || new Date().toISOString()
+        });
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                <h3 className="text-2xl font-bold mb-4">Add {itemType === 'photo' ? 'Photo' : 'Video'}</h3>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {itemType === 'photo' ? (
                         <div>
                             <label className="block font-semibold text-slate-700 mb-2">Photo Upload</label>
                             <input 
@@ -1649,7 +1674,7 @@ const MediaManager = ({ team, setTeams }) => {
                                 onChange={(e) => {
                                     if (e.target.files && e.target.files[0]) {
                                         const fileUrl = URL.createObjectURL(e.target.files[0]);
-                                        setEditingMedia(prev => ({...prev, url: fileUrl}));
+                                        setItemData(prev => ({...prev, url: fileUrl}));
                                     }
                                 }}
                                 className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
@@ -1660,8 +1685,8 @@ const MediaManager = ({ team, setTeams }) => {
                             <label className="block font-semibold text-slate-700 mb-2">YouTube URL or Video URL</label>
                             <input 
                                 type="url" 
-                                value={editingMedia?.url || ''} 
-                                onChange={e => setEditingMedia(prev => ({...prev, url: e.target.value}))} 
+                                value={itemData.url}
+                                onChange={(e) => setItemData(prev => ({...prev, url: e.target.value}))}
                                 placeholder="https://www.youtube.com/watch?v=..." 
                                 className="w-full p-2 border rounded" 
                                 required 
@@ -1669,35 +1694,193 @@ const MediaManager = ({ team, setTeams }) => {
                         </div>
                     )}
                     
-                    <input 
-                        type="text" 
-                        value={editingMedia?.caption || ''} 
-                        onChange={e => setEditingMedia(prev => ({...prev, caption: e.target.value}))} 
-                        placeholder="Caption/Description" 
-                        className="w-full p-2 border rounded" 
-                        required 
-                    />
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Caption/Description</label>
+                        <input 
+                            type="text" 
+                            value={itemData.caption}
+                            onChange={(e) => setItemData(prev => ({...prev, caption: e.target.value}))}
+                            placeholder="Caption/Description" 
+                            className="w-full p-2 border rounded" 
+                            required 
+                        />
+                    </div>
                     
-                    {editingMedia?.url && (
+                    {itemData.url && (
                         <div className="mt-2">
-                            {mediaType === 'photo' ? (
-                                <img src={editingMedia.url} alt="Preview" className="w-full h-48 object-cover rounded-lg border" />
+                            {itemType === 'photo' ? (
+                                <img src={itemData.url} alt="Preview" className="w-full h-48 object-cover rounded-lg border" />
                             ) : (
                                 <div className="bg-slate-100 p-4 rounded-lg">
-                                    <p className="text-sm text-slate-600">Video URL: {editingMedia.url}</p>
+                                    <p className="text-sm text-slate-600">Video URL: {itemData.url}</p>
                                 </div>
                             )}
                         </div>
                     )}
 
                     <div className="flex justify-end space-x-2">
-                        <button type="button" onClick={() => setEditingMedia(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
-                        <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Save Media</button>
+                        <button type="button" onClick={onCancel} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
+                        <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Add {itemType === 'photo' ? 'Photo' : 'Video'}</button>
                     </div>
                 </form>
             </div>
         </div>
     );
+};
+
+const Slideshow = ({ items, isOpen, onClose, startIndex = 0 }) => {
+    const [currentIndex, setCurrentIndex] = useState(startIndex);
+    
+    if (!isOpen || !items.length) return null;
+
+    const nextSlide = () => {
+        setCurrentIndex((prev) => (prev + 1) % items.length);
+    };
+
+    const prevSlide = () => {
+        setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+    };
+
+    const currentItem = items[currentIndex];
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
+            <div className="relative w-full max-w-4xl max-h-full">
+                <button 
+                    onClick={onClose}
+                    className="absolute top-4 right-4 text-white hover:text-gray-300 z-60"
+                >
+                    <X size={32} />
+                </button>
+                
+                {items.length > 1 && (
+                    <>
+                        <button 
+                            onClick={prevSlide}
+                            className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-60"
+                        >
+                            <ChevronLeft size={48} />
+                        </button>
+                        <button 
+                            onClick={nextSlide}
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-60"
+                        >
+                            <ChevronRight size={48} />
+                        </button>
+                    </>
+                )}
+                
+                <div className="bg-white rounded-lg overflow-hidden">
+                    <div className="aspect-w-16 aspect-h-12">
+                        {currentItem.type === 'photo' ? (
+                            <img 
+                                src={currentItem.url} 
+                                alt={currentItem.caption}
+                                className="w-full h-96 object-contain bg-black"
+                            />
+                        ) : (
+                            <div className="h-96 flex items-center justify-center bg-black">
+                                {currentItem.url.includes('youtube.com') || currentItem.url.includes('youtu.be') ? (
+                                    <iframe 
+                                        src={currentItem.url.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')} 
+                                        title={currentItem.caption} 
+                                        frameBorder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                        allowFullScreen 
+                                        className="w-full h-full"
+                                    />
+                                ) : (
+                                    <video controls className="w-full h-full">
+                                        <source src={currentItem.url} type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                    <div className="p-4">
+                        <h3 className="text-lg font-semibold text-slate-800 mb-2">{currentItem.caption}</h3>
+                        <div className="flex justify-between items-center text-sm text-slate-500">
+                            <span>Added {new Date(currentItem.addedAt).toLocaleDateString()}</span>
+                            <span>{currentIndex + 1} of {items.length}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const MediaManager = ({ team, setTeams }) => {
+    const [activeTab, setActiveTab] = useState('photos');
+    const [editingGallery, setEditingGallery] = useState(null);
+    const [editingItem, setEditingItem] = useState(null);
+    const [selectedGallery, setSelectedGallery] = useState(null);
+    const [slideshow, setSlideshow] = useState({ isOpen: false, items: [], startIndex: 0 });
+    
+    const galleries = team.galleries || [];
+    const photoGalleries = galleries.filter(g => g.type === 'photo').sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const videoGalleries = galleries.filter(g => g.type === 'video').sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    const handleSaveGallery = (galleryData) => {
+        setTeams(currentTeams => currentTeams.map(t => {
+            if (t.id === team.id) {
+                const updatedGalleries = galleryData.id && (t.galleries || []).find(g => g.id === galleryData.id)
+                    ? (t.galleries || []).map(g => g.id === galleryData.id ? galleryData : g)
+                    : [...(t.galleries || []), galleryData];
+                return { ...t, galleries: updatedGalleries };
+            }
+            return t;
+        }));
+        setEditingGallery(null);
+    };
+
+    const handleSaveItem = (itemData) => {
+        setTeams(currentTeams => currentTeams.map(t => {
+            if (t.id === team.id) {
+                const updatedGalleries = (t.galleries || []).map(g => {
+                    if (g.id === selectedGallery.id) {
+                        const updatedItems = itemData.id && (g.items || []).find(i => i.id === itemData.id)
+                            ? (g.items || []).map(i => i.id === itemData.id ? itemData : i)
+                            : [...(g.items || []), itemData];
+                        return { ...g, items: updatedItems };
+                    }
+                    return g;
+                });
+                return { ...t, galleries: updatedGalleries };
+            }
+            return t;
+        }));
+        setEditingItem(null);
+    };
+
+    const handleDeleteGallery = (galleryId) => {
+        setTeams(currentTeams => currentTeams.map(t => {
+            if (t.id === team.id) {
+                return { ...t, galleries: (t.galleries || []).filter(g => g.id !== galleryId) };
+            }
+            return t;
+        }));
+    };
+
+    const handleDeleteItem = (galleryId, itemId) => {
+        setTeams(currentTeams => currentTeams.map(t => {
+            if (t.id === team.id) {
+                const updatedGalleries = (t.galleries || []).map(g => {
+                    if (g.id === galleryId) {
+                        return { ...g, items: (g.items || []).filter(i => i.id !== itemId) };
+                    }
+                    return g;
+                });
+                return { ...t, galleries: updatedGalleries };
+            }
+            return t;
+        }));
+    };
+
+    const openSlideshow = (items, startIndex = 0) => {
+        setSlideshow({ isOpen: true, items, startIndex });
+    };
 
     return (
         <div className="max-w-6xl mx-auto">
