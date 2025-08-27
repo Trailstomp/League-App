@@ -4033,7 +4033,13 @@ const TeamManager = ({ teams, setTeams }) => {
                 <h3 className="text-2xl font-bold mb-4">{editingTeam?.id ? 'Edit Team' : 'Add New Team'}</h3>
                 <form onSubmit={handleSave} className="space-y-4">
                     <input type="text" value={editingTeam.name || ''} onChange={e => setEditingTeam({...editingTeam, name: e.target.value})} placeholder="Team Name" className="w-full p-2 border rounded" required />
-                    <input type="text" value={editingTeam.logo || ''} onChange={e => setEditingTeam({...editingTeam, logo: e.target.value})} placeholder="Logo Image URL" className="w-full p-2 border rounded" required />
+                    <FileUploadInput
+                        label="Team Logo"
+                        accept="image/*"
+                        currentValue={editingTeam.logo || ''}
+                        onChange={(url) => setEditingTeam({...editingTeam, logo: url})}
+                        placeholder="Upload team logo"
+                    />
                     <div className="flex justify-end space-x-2">
                         <button type="button" onClick={() => setEditingTeam(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
                         <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Save Team</button>
