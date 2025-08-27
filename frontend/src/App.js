@@ -1130,6 +1130,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
     const [editingPhotos, setEditingPhotos] = useState(false);
     const [editingVideos, setEditingVideos] = useState(false);
     const [editingNewsItem, setEditingNewsItem] = useState(null);
+    const [selectedNewsItem, setSelectedNewsItem] = useState(null);
     
     // Mock news data - enhanced with multimedia support
     const [newsItems, setNewsItems] = useState([
