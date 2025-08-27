@@ -5826,7 +5826,7 @@ function App() {
             </aside>
             
             {/* Main Content Area */}
-            <div className={`flex-1 min-h-screen transition-all duration-300 ease-in-out ${isMenuOpen ? 'ml-64' : 'ml-0'}`}>
+            <div className={`flex-1 min-h-screen transition-all duration-300 ease-in-out ${isMenuOpen ? 'ml-64' : 'ml-0'} flex flex-col`}>
                 <header className="sticky top-0 z-20">
                     <div 
                         className="text-white p-4 flex justify-between items-center shadow-md relative overflow-hidden"
