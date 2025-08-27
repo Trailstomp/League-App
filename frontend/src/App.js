@@ -4210,7 +4210,7 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                                         selectedPlatforms.includes(platform.id) 
                                             ? `${platform.bgColor} ${platform.borderColor}` 
                                             : 'bg-gray-50 border-gray-200'
-                                    } ${!credentials[platform.id]?.connected ? 'opacity-50' : 'cursor-pointer'}`}>
+                                    } ${!currentCredentials[platform.id]?.connected ? 'opacity-50' : 'cursor-pointer'}`}>
                                         <label className="cursor-pointer block">
                                             <input
                                                 type="checkbox"
