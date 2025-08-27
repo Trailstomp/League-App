@@ -587,8 +587,8 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                             </div>
                         </div>
                     </div>
-                    {/* Show current user status for debugging */}
-                    <div className="text-xs">
+                    {/* Show current user status for debugging - make it more visible */}
+                    <div className="text-xs bg-yellow-500 text-black px-2 py-1 rounded">
                         User: {currentUser ? currentUser.name : 'None'} | Admin: {isLeagueAdmin ? 'Yes' : 'No'}
                     </div>
                     {isLeagueAdmin && (
