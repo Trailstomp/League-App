@@ -6479,8 +6479,10 @@ function App() {
                 </div>
             </div>
             
-            {/* Global Music Player */}
-            <MusicPlayer musicState={musicState} setMusicState={setMusicState} />
+            <div>
+                {/* Global Music Player */}
+                <MusicPlayer musicState={musicState} setMusicState={setMusicState} />
+            </div>
         </div>
     );
 }
