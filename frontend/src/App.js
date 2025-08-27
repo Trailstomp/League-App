@@ -6428,7 +6428,7 @@ function App() {
                 default: pageComponent = <NewHomePage teams={teams} onTeamClick={(teamId) => navigate('team', teamId)} leagueInfo={leagueInfo} currentUser={currentUser} websiteStyle={websiteStyle} setCurrentUser={setCurrentUser} />;
             }
         }
-        return <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">{pageComponent}</div>;
+        return <div className="w-full">{pageComponent}</div>;
     };
 
     const backgroundStyle = {
