@@ -2625,6 +2625,43 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                             <StatCard title="Points For" value={team.pf} color="text-slate-600" />
                             <StatCard title="Points Against" value={team.pa} color="text-orange-500" />
                         </div>
+
+                        {/* Team Locations */}
+                        {team.locations && team.locations.length > 0 && (
+                            <div className="mb-8">
+                                <h2 className="text-2xl font-bold text-slate-800 mb-4 tracking-tight">Team Locations</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {team.locations.map(location => (
+                                        <div key={location.id} className="bg-white rounded-lg shadow-md p-4 border-l-4" style={{ borderLeftColor: team.style?.primaryColor || '#dc2626' }}>
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex-grow">
+                                                    <div className="flex items-center space-x-2 mb-2">
+                                                        <h3 className="text-lg font-semibold text-slate-800">{location.name}</h3>
+                                                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                                            location.type === 'field' ? 'bg-green-100 text-green-800' :
+                                                            location.type === 'stadium' ? 'bg-blue-100 text-blue-800' :
+                                                            location.type === 'gym' ? 'bg-orange-100 text-orange-800' :
+                                                            location.type === 'training' ? 'bg-purple-100 text-purple-800' :
+                                                            'bg-slate-100 text-slate-800'
+                                                        }`}>
+                                                            {location.type}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-start space-x-2 text-slate-600 mb-2">
+                                                        <MapPin className="mt-0.5 flex-shrink-0" size={16} />
+                                                        <span className="text-sm">{location.address}</span>
+                                                    </div>
+                                                    {location.description && (
+                                                        <p className="text-sm text-slate-500">{location.description}</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         <div className="mb-8">
                             <h2 className="text-3xl font-bold text-slate-800 mb-4 tracking-tight">Roster</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
