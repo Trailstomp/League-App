@@ -28,6 +28,29 @@ const findLocationAddress = (locationName, teams) => {
     return null;
 };
 
+// Clickable location component
+const ClickableLocation = ({ locationName, teams, className = "", children }) => {
+    const address = findLocationAddress(locationName, teams);
+    
+    const handleClick = () => {
+        const searchTerm = address || locationName;
+        const mapsUrl = `https://maps.google.com/maps?q=${encodeURIComponent(searchTerm)}&t=k`;
+        window.open(mapsUrl, '_blank');
+    };
+    
+    if (!locationName) return null;
+    
+    return (
+        <button 
+            onClick={handleClick}
+            className={`text-left hover:text-blue-600 hover:underline cursor-pointer transition-colors ${className}`}
+            title={`Click to open in Google Maps${address ? ` (${address})` : ''}`}
+        >
+            {children || locationName}
+        </button>
+    );
+};
+
 // --- DATA IMPORTED FROM SPREADSHEETS ---
 const initialMockUsers = [
     { id: 1, name: 'Admin Ali', roles: ['admin'], teamId: null, email: 'admin@mlbl.org' },
