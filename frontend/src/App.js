@@ -6273,7 +6273,7 @@ function App() {
                     pageComponent = currentUser ? <ChatPage currentUser={currentUser} /> : <div className="p-8 text-center"><h2 className="text-2xl font-bold">Access Denied</h2><p>You must be logged in to access the chat.</p></div>;
                     break;
                 case 'admin':
-                    pageComponent = currentUser && (currentUser.roles.includes('admin') || currentUser.roles.includes('coach') || currentUser.roles.includes('player/coach'))
+                    pageComponent = currentUser && (hasPermission(currentUser, 'system.admin_access') || currentUser.roles?.includes('admin') || currentUser.roles?.includes('coach') || currentUser.roles?.includes('player/coach'))
                         ? <AdminPage teams={teams} setTeams={setTeams} players={players} setPlayers={setPlayers} leagueSchedule={leagueSchedule} gameTickerData={gameTickerData} setGameTickerData={setGameTickerData} currentUser={currentUser} users={users} setUsers={setUsers} websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} leagueInfo={leagueInfo} setLeagueInfo={setLeagueInfo} /> 
                         : <div className="p-8 text-center"><h2 className="text-2xl font-bold">Access Denied</h2><p>You do not have permission to view this page.</p></div>;
                     break;
