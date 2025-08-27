@@ -4683,6 +4683,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                 {activeTab === 'manage_groupme' && isAuthorizedToManage && <GroupMeManager team={team} setTeams={setTeams} />}
                 {activeTab === 'manage_style' && isAuthorizedToManage && <TeamStyleManager teams={[team]} setTeams={setTeams} currentUser={currentUser} />}
             </div>
+            </div>
         </div>
     );
 };
