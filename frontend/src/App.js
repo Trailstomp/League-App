@@ -2999,6 +2999,52 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                             </div>
                         )}
 
+                        {/* Team GroupMe Chats - Only visible to players, coaches, and admins */}
+                        {currentUser && (currentUser.roles.includes('player') || currentUser.roles.includes('coach') || currentUser.roles.includes('player/coach') || currentUser.roles.includes('admin')) && team.groupMes && team.groupMes.length > 0 && (
+                            <div className="mb-8">
+                                <h2 className="text-2xl font-bold text-slate-800 mb-4 tracking-tight">Team Chat Groups</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {team.groupMes.map(groupMe => (
+                                        <div key={groupMe.id} className="bg-white rounded-lg shadow-md p-4 border-l-4" style={{ borderLeftColor: team.style?.primaryColor || '#dc2626' }}>
+                                            <div className="flex items-center space-x-4">
+                                                <div className="flex-shrink-0">
+                                                    {groupMe.image ? (
+                                                        <img 
+                                                            src={groupMe.image} 
+                                                            alt={groupMe.name}
+                                                            className="w-12 h-12 rounded-lg object-cover"
+                                                            onError={(e) => {
+                                                                e.target.style.display = 'none';
+                                                                e.target.nextSibling.style.display = 'flex';
+                                                            }}
+                                                        />
+                                                    ) : null}
+                                                    <div 
+                                                        className={`w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center ${groupMe.image ? 'hidden' : 'flex'}`}
+                                                    >
+                                                        <MessageSquare className="h-6 w-6 text-blue-600" />
+                                                    </div>
+                                                </div>
+                                                <div className="flex-grow">
+                                                    <h3 className="text-lg font-semibold text-slate-800">{groupMe.name}</h3>
+                                                    {groupMe.description && (
+                                                        <p className="text-sm text-slate-600 mt-1">{groupMe.description}</p>
+                                                    )}
+                                                    <button 
+                                                        onClick={() => window.open(groupMe.url, '_blank')}
+                                                        className="mt-2 bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors flex items-center"
+                                                    >
+                                                        <MessageSquare className="mr-1 h-4 w-4" />
+                                                        Join Chat
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         <div className="mb-8">
                             <h2 className="text-3xl font-bold text-slate-800 mb-4 tracking-tight">Roster</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
