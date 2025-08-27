@@ -5816,80 +5816,304 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
 };
 
 const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameTickerData, setGameTickerData, currentUser, users, setUsers, websiteStyle, setWebsiteStyle, leagueInfo, setLeagueInfo }) => {
-    const [activeTab, setActiveTab] = useState(currentUser.roles.includes('admin') ? 'users' : 'players');
-    const hasPermission = (requiredRoles) => requiredRoles.some(role => currentUser.roles.includes(role));
+    const [activeTab, setActiveTab] = useState('dashboard');
 
-    const AdminTab = ({tabName, label, requiredRoles}) => {
-        if (!hasPermission(requiredRoles)) return null;
-        return (
-            <button onClick={() => setActiveTab(tabName)} className={`px-4 py-2 rounded-t-lg font-semibold ${activeTab === tabName ? 'bg-white text-red-800' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}>
-                {label}
-            </button>
-        );
-    };
+    // Use new permission system
+    const adminTabs = [
+        { 
+            id: 'dashboard', 
+            label: 'Dashboard', 
+            icon: <Home size={16} />, 
+            permissions: ['system.admin_access'],
+            description: 'Overview and statistics'
+        },
+        { 
+            id: 'teams', 
+            label: 'Teams', 
+            icon: <Users size={16} />, 
+            permissions: ['teams.view'],
+            description: 'Manage teams and divisions'
+        },
+        { 
+            id: 'players', 
+            label: 'Players', 
+            icon: <UserCheck size={16} />, 
+            permissions: ['players.view'],
+            description: 'Manage player rosters'
+        },
+        { 
+            id: 'schedule', 
+            label: 'Schedule & Events', 
+            icon: <Calendar size={16} />, 
+            permissions: ['events.view'],
+            description: 'Calendar and event management'
+        },
+        { 
+            id: 'media', 
+            label: 'Media Gallery', 
+            icon: <Image size={16} />, 
+            permissions: ['media.view'],
+            description: 'Photos and videos'
+        },
+        { 
+            id: 'game_ticker', 
+            label: 'Game Ticker', 
+            icon: <BarChart2 size={16} />, 
+            permissions: ['events.edit'],
+            description: 'Manage game results ticker'
+        },
+        { 
+            id: 'users', 
+            label: 'Users & Security', 
+            icon: <Shield size={16} />, 
+            permissions: ['users.view', 'system.roles'],
+            description: 'User management and roles'
+        },
+        { 
+            id: 'invitations', 
+            label: 'Invitations', 
+            icon: <Mail size={16} />, 
+            permissions: ['system.invitations'],
+            description: 'Send invites and manage access requests'
+        },
+        { 
+            id: 'settings', 
+            label: 'League Settings', 
+            icon: <Settings size={16} />, 
+            permissions: ['system.settings'],
+            description: 'Website style and league info'
+        }
+    ];
+
+    // Filter tabs based on permissions
+    const visibleTabs = adminTabs.filter(tab => 
+        hasAnyPermission(currentUser, tab.permissions)
+    );
+
+    // Set default tab to first available tab
+    React.useEffect(() => {
+        if (visibleTabs.length > 0 && !visibleTabs.find(t => t.id === activeTab)) {
+            setActiveTab(visibleTabs[0].id);
+        }
+    }, [visibleTabs, activeTab]);
+
+    const AdminTab = ({ tab }) => (
+        <button 
+            onClick={() => setActiveTab(tab.id)} 
+            className={`flex items-center space-x-2 px-4 py-3 rounded-t-lg font-semibold transition-all ${
+                activeTab === tab.id 
+                    ? 'bg-white text-blue-800 border-t-2 border-blue-600' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+            title={tab.description}
+        >
+            {tab.icon}
+            <span className="hidden sm:inline">{tab.label}</span>
+        </button>
+    );
 
     return (
         <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
-            <h1 className="text-4xl font-bold text-slate-800 mb-6 tracking-tight">
-                {currentUser.roles.includes('admin') ? 'Admin Portal' : 'Team Management Portal'}
-            </h1>
-            <div className="flex border-b border-slate-300 flex-wrap">
-                <AdminTab tabName="users" label="User Management" requiredRoles={['admin']} />
-                <AdminTab tabName="players" label="Player Management" requiredRoles={['admin', 'coach', 'player/coach']} />
-                <AdminTab tabName="teams" label="Team Management" requiredRoles={['admin']} />
-                <AdminTab tabName="scores" label="Score Entry" requiredRoles={['admin']} />
-                <AdminTab tabName="calendar" label="Calendar Management" requiredRoles={['admin']} />
-                <AdminTab tabName="team_style" label="Team Style" requiredRoles={['admin', 'coach', 'player/coach']} />
-                <AdminTab tabName="site_style" label="Site Style" requiredRoles={['admin']} />
-                <AdminTab tabName="league_info" label="League Info" requiredRoles={['admin']} />
+            <div className="mb-6">
+                <h1 className="text-4xl font-bold text-slate-800 mb-2 tracking-tight">
+                    Admin Portal
+                </h1>
+                <p className="text-slate-600">
+                    Welcome back, {currentUser.name}
+                </p>
             </div>
-            <div className="bg-white p-6 rounded-b-lg shadow-md">
-                {activeTab === 'users' && hasPermission(['admin']) && (
-                    <div>
-                        <h2 className="text-2xl font-bold mb-4">User Management</h2>
-                        <UserManager users={users} setUsers={setUsers} teams={teams} />
+
+            {/* Tab Navigation */}
+            <div className="flex border-b border-slate-300 flex-wrap mb-6 overflow-x-auto">
+                {visibleTabs.map(tab => (
+                    <AdminTab key={tab.id} tab={tab} />
+                ))}
+            </div>
+
+            {/* Tab Content */}
+            <div className="bg-white rounded-lg shadow-md min-h-[600px]">
+                {activeTab === 'dashboard' && hasPermission(currentUser, 'system.admin_access') && (
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-6">Dashboard</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {/* Stats Cards */}
+                            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm text-blue-600">Total Teams</p>
+                                        <p className="text-2xl font-bold text-blue-800">{teams.filter(t => t.active).length}</p>
+                                    </div>
+                                    <Users className="text-blue-600" size={24} />
+                                </div>
+                            </div>
+                            
+                            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm text-green-600">Active Players</p>
+                                        <p className="text-2xl font-bold text-green-800">{players.filter(p => p.active).length}</p>
+                                    </div>
+                                    <UserCheck className="text-green-600" size={24} />
+                                </div>
+                            </div>
+                            
+                            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm text-purple-600">Total Users</p>
+                                        <p className="text-2xl font-bold text-purple-800">{users.filter(u => u.active !== false).length}</p>
+                                    </div>
+                                    <Shield className="text-purple-600" size={24} />
+                                </div>
+                            </div>
+                            
+                            <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm text-orange-600">This Month's Games</p>
+                                        <p className="text-2xl font-bold text-orange-800">{gameTickerData.length}</p>
+                                    </div>
+                                    <Calendar className="text-orange-600" size={24} />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Quick Actions */}
+                        <div className="mt-8">
+                            <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <button 
+                                    onClick={() => setActiveTab('teams')}
+                                    className="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                >
+                                    <Users className="mb-2" size={20} />
+                                    <div className="text-sm font-semibold">Manage Teams</div>
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('schedule')}
+                                    className="p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                                >
+                                    <Calendar className="mb-2" size={20} />
+                                    <div className="text-sm font-semibold">Add Event</div>
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('users')}
+                                    className="p-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                                >
+                                    <Shield className="mb-2" size={20} />
+                                    <div className="text-sm font-semibold">Manage Users</div>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 )}
-                {activeTab === 'players' && hasPermission(['admin', 'coach', 'player/coach']) && (
-                    <div>
-                        <h2 className="text-2xl font-bold mb-4">Player Management</h2>
-                        <PlayerManager players={players} setPlayers={setPlayers} teams={teams} currentUser={currentUser} />
-                    </div>
-                )}
-                {activeTab === 'teams' && hasPermission(['admin']) && (
-                    <div>
+
+                {activeTab === 'teams' && hasPermission(currentUser, 'teams.view') && (
+                    <div className="p-6">
                         <h2 className="text-2xl font-bold mb-4">Team Management</h2>
                         <TeamManager teams={teams} setTeams={setTeams} />
                     </div>
                 )}
-                {activeTab === 'scores' && hasPermission(['admin']) && (
-                    <div>
-                        <h2 className="text-2xl font-bold mb-4">Score Entry</h2>
-                        <ScoreManager leagueSchedule={leagueSchedule} gameTickerData={gameTickerData} setGameTickerData={setGameTickerData} teams={teams} />
+
+                {activeTab === 'players' && hasPermission(currentUser, 'players.view') && (
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-4">Player Management</h2>
+                        <PlayerManager players={players} setPlayers={setPlayers} teams={teams} currentUser={currentUser} />
                     </div>
                 )}
-                {activeTab === 'calendar' && hasPermission(['admin']) && (
-                    <div>
-                        <h2 className="text-2xl font-bold mb-4">League Calendar Management</h2>
+
+                {activeTab === 'schedule' && hasPermission(currentUser, 'events.view') && (
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-4">Schedule & Events Management</h2>
                         <LeagueCalendarManager teams={teams} setTeams={setTeams} />
                     </div>
                 )}
-                {activeTab === 'team_style' && hasPermission(['admin', 'coach', 'player/coach']) && (
-                    <div>
-                        <h2 className="text-2xl font-bold mb-4">Team Style Management</h2>
-                        <TeamStyleManager teams={teams} setTeams={setTeams} currentUser={currentUser} />
+
+                {activeTab === 'media' && hasPermission(currentUser, 'media.view') && (
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-4">Media Gallery</h2>
+                        <div className="text-center py-8 text-slate-500">
+                            <Image size={48} className="mx-auto mb-4" />
+                            <p>Media gallery management coming soon...</p>
+                            <p className="text-sm">This will consolidate photo and video management</p>
+                        </div>
                     </div>
                 )}
-                {activeTab === 'site_style' && hasPermission(['admin']) && (
-                    <div>
-                        <h2 className="text-2xl font-bold mb-4">Website Style Management</h2>
-                        <WebsiteStyleManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
+
+                {activeTab === 'game_ticker' && hasPermission(currentUser, 'events.edit') && (
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-4">Game Ticker Management</h2>
+                        <ScoreManager leagueSchedule={leagueSchedule} gameTickerData={gameTickerData} setGameTickerData={setGameTickerData} teams={teams} />
                     </div>
                 )}
-                {activeTab === 'league_info' && hasPermission(['admin']) && (
-                    <div>
-                        <h2 className="text-2xl font-bold mb-4">League Information & Settings</h2>
-                        <LeagueInfoManager leagueInfo={leagueInfo} setLeagueInfo={setLeagueInfo} websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
+
+                {activeTab === 'users' && (hasPermission(currentUser, 'users.view') || hasPermission(currentUser, 'system.roles')) && (
+                    <div className="p-6">
+                        <div className="mb-6">
+                            <h2 className="text-2xl font-bold mb-2">Users & Security</h2>
+                            <div className="flex space-x-4 border-b">
+                                <button 
+                                    className="px-4 py-2 border-b-2 border-blue-600 text-blue-600 font-semibold"
+                                >
+                                    Users
+                                </button>
+                                {hasPermission(currentUser, 'system.roles') && (
+                                    <button 
+                                        className="px-4 py-2 text-slate-600 hover:text-blue-600"
+                                        onClick={() => {/* Add role tab logic */}}
+                                    >
+                                        Roles & Permissions
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                        
+                        {hasPermission(currentUser, 'users.view') && (
+                            <UserManager users={users} setUsers={setUsers} teams={teams} />
+                        )}
+                        
+                        {hasPermission(currentUser, 'system.roles') && (
+                            <div className="mt-8">
+                                <RoleManager users={users} setUsers={setUsers} />
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {activeTab === 'invitations' && hasPermission(currentUser, 'system.invitations') && (
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-4">Invitations & Access Requests</h2>
+                        <div className="text-center py-8 text-slate-500">
+                            <Mail size={48} className="mx-auto mb-4" />
+                            <p>Invitation system coming soon...</p>
+                            <p className="text-sm">Send invites and manage access requests</p>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'settings' && hasPermission(currentUser, 'system.settings') && (
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-6">League Settings</h2>
+                        <div className="space-y-8">
+                            <div>
+                                <h3 className="text-lg font-semibold mb-4">Website Style</h3>
+                                <WebsiteStyleManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
+                            </div>
+                            
+                            <div>
+                                <h3 className="text-lg font-semibold mb-4">League Information</h3>
+                                <LeagueInfoManager leagueInfo={leagueInfo} setLeagueInfo={setLeagueInfo} />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Access Denied for tabs without permission */}
+                {!hasAnyPermission(currentUser, adminTabs.find(t => t.id === activeTab)?.permissions || []) && (
+                    <div className="p-6 text-center">
+                        <Shield size={48} className="mx-auto mb-4 text-slate-400" />
+                        <h3 className="text-lg font-semibold text-slate-600 mb-2">Access Denied</h3>
+                        <p className="text-slate-500">You don't have permission to view this section.</p>
                     </div>
                 )}
             </div>
