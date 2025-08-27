@@ -792,6 +792,223 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
                         </button>
                     </div>
                 )}
+
+            {/* Photo Editing Modal */}
+            {editingPhotos && isLeagueAdmin && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[80vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-semibold">Edit Photo Gallery</h3>
+                            <button 
+                                onClick={() => setEditingPhotos(false)}
+                                className="text-slate-400 hover:text-slate-600"
+                            >
+                                <X className="h-6 w-6"/>
+                            </button>
+                        </div>
+                        
+                        <div className="space-y-4 mb-4">
+                            {mediaContent.pictures.map(picture => (
+                                <div key={picture.id} className="bg-slate-50 p-4 rounded border">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <img src={picture.image} alt={picture.title} className="w-full h-32 object-cover rounded"/>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <input 
+                                                type="text"
+                                                defaultValue={picture.title}
+                                                placeholder="Photo title"
+                                                className="w-full p-2 border rounded"
+                                                onChange={(e) => {
+                                                    setMediaContent(prev => ({
+                                                        ...prev,
+                                                        pictures: prev.pictures.map(p => 
+                                                            p.id === picture.id ? {...p, title: e.target.value} : p
+                                                        )
+                                                    }));
+                                                }}
+                                            />
+                                            <input 
+                                                type="url"
+                                                defaultValue={picture.image}
+                                                placeholder="Image URL"
+                                                className="w-full p-2 border rounded"
+                                                onChange={(e) => {
+                                                    setMediaContent(prev => ({
+                                                        ...prev,
+                                                        pictures: prev.pictures.map(p => 
+                                                            p.id === picture.id ? {...p, image: e.target.value} : p
+                                                        )
+                                                    }));
+                                                }}
+                                            />
+                                            <textarea 
+                                                defaultValue={picture.description}
+                                                placeholder="Photo description"
+                                                className="w-full p-2 border rounded h-20"
+                                                onChange={(e) => {
+                                                    setMediaContent(prev => ({
+                                                        ...prev,
+                                                        pictures: prev.pictures.map(p => 
+                                                            p.id === picture.id ? {...p, description: e.target.value} : p
+                                                        )
+                                                    }));
+                                                }}
+                                            />
+                                            <button 
+                                                onClick={() => {
+                                                    setMediaContent(prev => ({
+                                                        ...prev,
+                                                        pictures: prev.pictures.filter(p => p.id !== picture.id)
+                                                    }));
+                                                }}
+                                                className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+                                            >
+                                                Delete Photo
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        <button 
+                            onClick={() => {
+                                const newPhoto = {
+                                    id: Date.now(),
+                                    title: "New Photo",
+                                    image: "https://placehold.co/400x250/94a3b8/FFFFFF?text=New+Photo",
+                                    description: "Add description here"
+                                };
+                                setMediaContent(prev => ({
+                                    ...prev,
+                                    pictures: [...prev.pictures, newPhoto]
+                                }));
+                            }}
+                            className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"
+                        >
+                            <Plus className="mr-2 h-4 w-4"/> Add Photo
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Video Editing Modal */}
+            {editingVideos && isLeagueAdmin && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[80vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-semibold">Edit Video Gallery</h3>
+                            <button 
+                                onClick={() => setEditingVideos(false)}
+                                className="text-slate-400 hover:text-slate-600"
+                            >
+                                <X className="h-6 w-6"/>
+                            </button>
+                        </div>
+                        
+                        <div className="space-y-4 mb-4">
+                            {mediaContent.videos.map(video => (
+                                <div key={video.id} className="bg-slate-50 p-4 rounded border">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <img src={video.thumbnail} alt={video.title} className="w-full h-32 object-cover rounded"/>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <input 
+                                                type="text"
+                                                defaultValue={video.title}
+                                                placeholder="Video title"
+                                                className="w-full p-2 border rounded"
+                                                onChange={(e) => {
+                                                    setMediaContent(prev => ({
+                                                        ...prev,
+                                                        videos: prev.videos.map(v => 
+                                                            v.id === video.id ? {...v, title: e.target.value} : v
+                                                        )
+                                                    }));
+                                                }}
+                                            />
+                                            <input 
+                                                type="url"
+                                                defaultValue={video.url}
+                                                placeholder="YouTube/Video URL"
+                                                className="w-full p-2 border rounded"
+                                                onChange={(e) => {
+                                                    setMediaContent(prev => ({
+                                                        ...prev,
+                                                        videos: prev.videos.map(v => 
+                                                            v.id === video.id ? {...v, url: e.target.value} : v
+                                                        )
+                                                    }));
+                                                }}
+                                            />
+                                            <input 
+                                                type="url"
+                                                defaultValue={video.thumbnail}
+                                                placeholder="Thumbnail image URL"
+                                                className="w-full p-2 border rounded"
+                                                onChange={(e) => {
+                                                    setMediaContent(prev => ({
+                                                        ...prev,
+                                                        videos: prev.videos.map(v => 
+                                                            v.id === video.id ? {...v, thumbnail: e.target.value} : v
+                                                        )
+                                                    }));
+                                                }}
+                                            />
+                                            <textarea 
+                                                defaultValue={video.description}
+                                                placeholder="Video description"
+                                                className="w-full p-2 border rounded h-20"
+                                                onChange={(e) => {
+                                                    setMediaContent(prev => ({
+                                                        ...prev,
+                                                        videos: prev.videos.map(v => 
+                                                            v.id === video.id ? {...v, description: e.target.value} : v
+                                                        )
+                                                    }));
+                                                }}
+                                            />
+                                            <button 
+                                                onClick={() => {
+                                                    setMediaContent(prev => ({
+                                                        ...prev,
+                                                        videos: prev.videos.filter(v => v.id !== video.id)
+                                                    }));
+                                                }}
+                                                className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+                                            >
+                                                Delete Video
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        <button 
+                            onClick={() => {
+                                const newVideo = {
+                                    id: Date.now(),
+                                    title: "New Video",
+                                    thumbnail: "https://placehold.co/400x250/be185d/FFFFFF?text=New+Video",
+                                    url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                                    description: "Add description here"
+                                };
+                                setMediaContent(prev => ({
+                                    ...prev,
+                                    videos: [...prev.videos, newVideo]
+                                }));
+                            }}
+                            className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"
+                        >
+                            <Plus className="mr-2 h-4 w-4"/> Add Video
+                        </button>
+                    </div>
+                </div>
+            )}
             </div>
         </div>
     );
