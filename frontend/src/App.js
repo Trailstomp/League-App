@@ -3614,6 +3614,30 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
     const [activeTab, setActiveTab] = useState('roster');
     const [selectedPlayer, setSelectedPlayer] = useState(null);
     const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
+
+    // Sort players: coaches first, then players
+    const sortedTeamPlayers = teamPlayers.sort((a, b) => {
+        const aIsCoach = a.roles && a.roles.includes('coach');
+        const bIsCoach = b.roles && b.roles.includes('coach');
+        
+        if (aIsCoach && !bIsCoach) return -1;
+        if (!aIsCoach && bIsCoach) return 1;
+        
+        // If both are coaches or both are players, sort by last name
+        return a.lastName.localeCompare(b.lastName);
+    });
+
+    const handlePlayerClick = (player) => {
+        setSelectedPlayer(player);
+        setIsPlayerModalOpen(true);
+    };
+
+    const handleClosePlayerModal = () => {
+        setIsPlayerModalOpen(false);
+        setSelectedPlayer(null);
+    };
+    const [selectedPlayer, setSelectedPlayer] = useState(null);
+    const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
     const getTeam = (id) => teams.find(t => t.id === id);
     const isAuthorizedToManage = currentUser && (
         currentUser.roles.includes('admin') || 
