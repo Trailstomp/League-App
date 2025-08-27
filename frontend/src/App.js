@@ -5159,7 +5159,11 @@ function App() {
         // Background image settings
         backgroundImage: '',
         backgroundMode: 'cover', // cover, contain, tile
-        backgroundOpacity: 0.1 // 0-1 for overlay opacity
+        backgroundOpacity: 0.1, // 0-1 for overlay opacity
+        // Banner settings
+        bannerColor: '#1e293b', // default to primaryColor
+        bannerImage: '',
+        bannerText: 'MLBL'
     });
 
     useEffect(() => {
