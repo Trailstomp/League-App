@@ -4650,6 +4650,91 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                         <p className="text-xs text-slate-500 mt-1">This setting affects all team and league logos throughout the site</p>
                     </div>
 
+                    {/* Background Image Settings */}
+                    <div>
+                        <h4 className="text-lg font-semibold text-slate-800 mb-3">Page Background Image</h4>
+                        
+                        <div className="space-y-4">
+                            <FileUploadInput
+                                label="Background Image"
+                                accept="image/*"
+                                currentValue={style.backgroundImage || ''}
+                                onChange={(url) => setStyle(prev => ({...prev, backgroundImage: url}))}
+                                placeholder="Upload background image for all pages"
+                            />
+                            
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Background Display Mode</label>
+                                <div className="grid grid-cols-3 gap-3">
+                                    <label className="flex items-center space-x-2 border rounded p-3 cursor-pointer hover:bg-slate-50">
+                                        <input 
+                                            type="radio" 
+                                            name="backgroundMode" 
+                                            value="cover" 
+                                            checked={style.backgroundMode === 'cover' || !style.backgroundMode}
+                                            onChange={(e) => setStyle(prev => ({...prev, backgroundMode: e.target.value}))} 
+                                            className="text-red-600"
+                                        />
+                                        <div>
+                                            <div className="font-medium">Fill</div>
+                                            <div className="text-xs text-slate-500">Covers entire area</div>
+                                        </div>
+                                    </label>
+                                    
+                                    <label className="flex items-center space-x-2 border rounded p-3 cursor-pointer hover:bg-slate-50">
+                                        <input 
+                                            type="radio" 
+                                            name="backgroundMode" 
+                                            value="contain" 
+                                            checked={style.backgroundMode === 'contain'}
+                                            onChange={(e) => setStyle(prev => ({...prev, backgroundMode: e.target.value}))} 
+                                            className="text-red-600"
+                                        />
+                                        <div>
+                                            <div className="font-medium">Fit</div>
+                                            <div className="text-xs text-slate-500">Shows entire image</div>
+                                        </div>
+                                    </label>
+                                    
+                                    <label className="flex items-center space-x-2 border rounded p-3 cursor-pointer hover:bg-slate-50">
+                                        <input 
+                                            type="radio" 
+                                            name="backgroundMode" 
+                                            value="repeat" 
+                                            checked={style.backgroundMode === 'repeat'}
+                                            onChange={(e) => setStyle(prev => ({...prev, backgroundMode: e.target.value}))} 
+                                            className="text-red-600"
+                                        />
+                                        <div>
+                                            <div className="font-medium">Tile</div>
+                                            <div className="text-xs text-slate-500">Repeats pattern</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">
+                                    Background Opacity: {Math.round((style.backgroundOpacity || 0.1) * 100)}%
+                                </label>
+                                <input 
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step="0.1"
+                                    value={style.backgroundOpacity || 0.1}
+                                    onChange={(e) => setStyle(prev => ({...prev, backgroundOpacity: parseFloat(e.target.value)}))}
+                                    className="w-full"
+                                />
+                                <div className="flex justify-between text-xs text-slate-500 mt-1">
+                                    <span>Transparent</span>
+                                    <span>Opaque</span>
+                                </div>
+                                <p className="text-xs text-slate-500 mt-1">Lower opacity makes background more subtle</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="flex justify-end items-center space-x-4">
                         {saved && <span className="text-green-600 font-semibold">✓ Saved!</span>}
                         <button 
