@@ -424,27 +424,33 @@ metadata:
 
   - task: "Add handedness field to player management form"
     implemented: true
-    working: false
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "main"
         comment: "Added handedness dropdown field to PlayerForm with Left/Right handed options. Field properly integrated with existing form state management and initialMockUsers data already contains handedness values."
+      - working: true
+        agent: "testing"
+        comment: "COMPREHENSIVE TESTING COMPLETED: ✅ Handedness field found in PlayerForm with correct options: ['Right Handed', 'Left Handed'] ✅ Successfully selected both Left and Right handed options ✅ Successfully saved a new player with handedness ✅ Handedness displayed correctly in PlayerCardModal: 'Right Handed' ✅ All functionality working as expected - players can be created and edited with handedness selection, and handedness is properly displayed in player details modal."
         
   - task: "Add team tab visibility controls to TeamStyleManager"
     implemented: true
-    working: false
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "main"
         comment: "Extended TeamStyleManager to include tab visibility controls allowing team admins/coaches to control which tabs (Roster, Schedule, Media, Social, Contact) are visible on their team page. Updated TeamDetailPage to respect visibility settings."
+      - working: true
+        agent: "testing"
+        comment: "COMPREHENSIVE TESTING COMPLETED: ✅ Found Visible Tabs section with 5 tab visibility checkboxes for Roster & Stats, Schedule, Photos & Videos, Social, and Contact ✅ Successfully unchecked 'Photos & Videos' and 'Social' tabs ✅ Saved team style settings successfully ✅ Tab visibility working correctly - Hidden tabs: ['Photos & Videos', 'Social'], Visible tabs: ['Roster & Stats', 'Schedule', 'Contact'] ✅ Management tabs still visible as expected: ['Manage Players', 'Team Style', 'Manage Calendar'] ✅ All functionality working perfectly - team admins can control which public tabs are visible while management tabs remain accessible to authorized users."
 
 test_plan:
   current_focus:
