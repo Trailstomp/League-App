@@ -475,6 +475,14 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
     const sortedTeams = teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name));
     const isLeagueAdmin = currentUser && currentUser.roles.includes('admin');
     
+    // Debug logging
+    console.log('NewHomePage Debug:', {
+        currentUser: currentUser,
+        isLeagueAdmin: isLeagueAdmin,
+        setCurrentUser: typeof setCurrentUser,
+        hasSetCurrentUser: !!setCurrentUser
+    });
+    
     // State for editing modes
     const [editingNews, setEditingNews] = useState(false);
     const [editingPhotos, setEditingPhotos] = useState(false);
