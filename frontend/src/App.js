@@ -7431,7 +7431,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                                             <label className="block text-sm font-medium text-slate-700 mb-1">API Key *</label>
                                             <input
                                                 type="password"
-                                                value={credentials.twitter.api_key}
+                                                value={currentCredentials.twitter.api_key}
                                                 onChange={(e) => handleCredentialChange('twitter', 'api_key', e.target.value)}
                                                 className="w-full p-2 border rounded-lg"
                                                 placeholder="Enter Twitter API Key"
