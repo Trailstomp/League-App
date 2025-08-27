@@ -3856,6 +3856,331 @@ const MediaManager = ({ team, setTeams }) => {
     );
 };
 
+const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, currentUser }) => {
+    const [activeTab, setActiveTab] = useState('overview');
+    const [selectedTeamId, setSelectedTeamId] = useState('league');
+    const [postContent, setPostContent] = useState('');
+    const [selectedPlatforms, setSelectedPlatforms] = useState(['twitter', 'facebook', 'instagram']);
+    const [scheduledPosts, setScheduledPosts] = useState([]);
+    const [isPosting, setIsPosting] = useState(false);
+
+    // Get current entity (league or team)
+    const currentEntity = selectedTeamId === 'league' 
+        ? leagueInfo 
+        : teams.find(t => t.id === selectedTeamId);
+
+    const handlePost = async (e) => {
+        e.preventDefault();
+        if (!postContent.trim()) return;
+
+        setIsPosting(true);
+        
+        // Simulate posting to social media platforms
+        const newPost = {
+            id: Date.now(),
+            content: postContent,
+            platforms: selectedPlatforms,
+            entityId: selectedTeamId,
+            entityName: currentEntity?.name || 'League',
+            timestamp: new Date().toISOString(),
+            status: 'posted'
+        };
+
+        setScheduledPosts(prev => [newPost, ...prev]);
+        setPostContent('');
+        
+        // Simulate API delay
+        setTimeout(() => {
+            setIsPosting(false);
+        }, 1500);
+    };
+
+    const tabs = [
+        { id: 'overview', label: 'Overview', icon: <Layout size={16} /> },
+        { id: 'post', label: 'Create Post', icon: <Plus size={16} /> },
+        { id: 'schedule', label: 'Scheduled Posts', icon: <Calendar size={16} /> },
+        { id: 'analytics', label: 'Analytics', icon: <BarChart2 size={16} /> }
+    ];
+
+    return (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold mb-4">Social Media Manager</h2>
+                <select 
+                    value={selectedTeamId}
+                    onChange={(e) => setSelectedTeamId(e.target.value)}
+                    className="px-3 py-2 border rounded-lg"
+                >
+                    <option value="league">League Account</option>
+                    {teams.map(team => (
+                        <option key={team.id} value={team.id}>{team.name}</option>
+                    ))}
+                </select>
+            </div>
+
+            {/* Tab Navigation */}
+            <div className="flex space-x-1 bg-slate-100 p-1 rounded-lg">
+                {tabs.map(tab => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
+                            activeTab === tab.id 
+                                ? 'bg-white text-blue-600 shadow-sm' 
+                                : 'text-slate-600 hover:text-slate-800'
+                        }`}
+                    >
+                        {tab.icon}
+                        <span>{tab.label}</span>
+                    </button>
+                ))}
+            </div>
+
+            {/* Overview Tab */}
+            {activeTab === 'overview' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-semibold text-slate-800">Connected Accounts</h3>
+                            <Settings className="text-slate-400" size={20} />
+                        </div>
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <Twitter className="text-blue-400" size={18} />
+                                    <span className="text-sm">Twitter</span>
+                                </div>
+                                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Connected</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <Facebook className="text-blue-600" size={18} />
+                                    <span className="text-sm">Facebook</span>
+                                </div>
+                                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Connected</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <Instagram className="text-pink-500" size={18} />
+                                    <span className="text-sm">Instagram</span>
+                                </div>
+                                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Connected</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                        <h3 className="font-semibold text-slate-800 mb-4">Recent Activity</h3>
+                        <div className="space-y-3">
+                            <div className="text-sm">
+                                <div className="font-medium">Game Result Posted</div>
+                                <div className="text-slate-500 text-xs">2 hours ago • All platforms</div>
+                            </div>
+                            <div className="text-sm">
+                                <div className="font-medium">Team Photo Shared</div>
+                                <div className="text-slate-500 text-xs">1 day ago • Instagram, Facebook</div>
+                            </div>
+                            <div className="text-sm">
+                                <div className="font-medium">Schedule Update</div>
+                                <div className="text-slate-500 text-xs">3 days ago • Twitter</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                        <h3 className="font-semibold text-slate-800 mb-4">Quick Stats</h3>
+                        <div className="space-y-3">
+                            <div className="flex justify-between">
+                                <span className="text-sm text-slate-600">Posts This Week</span>
+                                <span className="font-semibold">12</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-sm text-slate-600">Total Followers</span>
+                                <span className="font-semibold">1,247</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-sm text-slate-600">Engagement Rate</span>
+                                <span className="font-semibold text-green-600">4.2%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Create Post Tab */}
+            {activeTab === 'post' && (
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <form onSubmit={handlePost} className="space-y-6">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Post Content
+                            </label>
+                            <textarea
+                                value={postContent}
+                                onChange={(e) => setPostContent(e.target.value)}
+                                placeholder="What's happening with the league?"
+                                className="w-full p-3 border rounded-lg h-32 resize-none"
+                                maxLength={280}
+                            />
+                            <div className="text-right text-xs text-slate-500 mt-1">
+                                {postContent.length}/280 characters
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Post to Platforms
+                            </label>
+                            <div className="flex space-x-4">
+                                {[
+                                    { id: 'twitter', label: 'Twitter', icon: Twitter, color: 'text-blue-400' },
+                                    { id: 'facebook', label: 'Facebook', icon: Facebook, color: 'text-blue-600' },
+                                    { id: 'instagram', label: 'Instagram', icon: Instagram, color: 'text-pink-500' }
+                                ].map(platform => (
+                                    <label key={platform.id} className="flex items-center space-x-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedPlatforms.includes(platform.id)}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedPlatforms(prev => [...prev, platform.id]);
+                                                } else {
+                                                    setSelectedPlatforms(prev => prev.filter(p => p !== platform.id));
+                                                }
+                                            }}
+                                            className="rounded"
+                                        />
+                                        <platform.icon className={platform.color} size={18} />
+                                        <span className="text-sm">{platform.label}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end space-x-3">
+                            <button
+                                type="button"
+                                className="px-4 py-2 text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
+                            >
+                                Save Draft
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={!postContent.trim() || selectedPlatforms.length === 0 || isPosting}
+                                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                            >
+                                {isPosting ? (
+                                    <>
+                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                        <span>Posting...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>Post Now</span>
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
+            {/* Scheduled Posts Tab */}
+            {activeTab === 'schedule' && (
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-lg font-semibold">Recent Posts</h3>
+                        <button className="text-blue-600 hover:text-blue-800 text-sm">
+                            View All
+                        </button>
+                    </div>
+                    
+                    {scheduledPosts.length > 0 ? (
+                        <div className="space-y-4">
+                            {scheduledPosts.slice(0, 5).map(post => (
+                                <div key={post.id} className="border rounded-lg p-4">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="flex-grow">
+                                            <p className="text-sm text-slate-800">{post.content}</p>
+                                        </div>
+                                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded ml-4">
+                                            {post.status}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-xs text-slate-500">
+                                        <div className="flex space-x-2">
+                                            {post.platforms.map(platform => (
+                                                <span key={platform} className="capitalize">{platform}</span>
+                                            ))}
+                                        </div>
+                                        <span>{new Date(post.timestamp).toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-8 text-slate-500">
+                            <Calendar className="mx-auto h-12 w-12 mb-4" />
+                            <p>No posts yet</p>
+                            <p className="text-sm">Create your first post to get started</p>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Analytics Tab */}
+            {activeTab === 'analytics' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                        <h3 className="text-lg font-semibold mb-4">Engagement Overview</h3>
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm text-slate-600">Total Likes</span>
+                                <span className="font-semibold">342</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm text-slate-600">Total Shares</span>
+                                <span className="font-semibold">89</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm text-slate-600">Total Comments</span>
+                                <span className="font-semibold">156</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-lg shadow-md">
+                        <h3 className="text-lg font-semibold mb-4">Platform Performance</h3>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <Twitter className="text-blue-400" size={16} />
+                                    <span className="text-sm">Twitter</span>
+                                </div>
+                                <span className="text-sm font-semibold">4.2% engagement</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <Facebook className="text-blue-600" size={16} />
+                                    <span className="text-sm">Facebook</span>
+                                </div>
+                                <span className="text-sm font-semibold">3.8% engagement</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <Instagram className="text-pink-500" size={16} />
+                                    <span className="text-sm">Instagram</span>
+                                </div>
+                                <span className="text-sm font-semibold">5.1% engagement</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 const LocationManager = ({ team, setTeams }) => {
     const [editingLocation, setEditingLocation] = useState(null);
     const [locationData, setLocationData] = useState({
