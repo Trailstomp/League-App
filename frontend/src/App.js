@@ -6206,6 +6206,11 @@ function App() {
         primaryColor: '#1e293b', // slate-800
         accentColor: '#991b1b', // red-800
         logoStyle: 'contain',
+        // Page & Text Colors
+        pageBackgroundColor: '#f1f5f9', // slate-100
+        textColor: '#1e293b', // slate-800
+        headingColor: '#0f172a', // slate-900
+        linkColor: '#2563eb', // blue-600
         // Background image settings
         backgroundImage: '',
         backgroundMode: 'cover', // cover, contain, tile
@@ -6219,7 +6224,7 @@ function App() {
         // Sidebar settings
         sidebarImage: '',
         sidebarOpacity: 0.2,
-        // Ticker settings
+        // Game Ticker settings (moved from LeagueInfoManager)
         tickerColor: '#1e293b',
         tickerItemColor: '#334155',
         tickerBorderColor: '#475569',
