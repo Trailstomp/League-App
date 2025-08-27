@@ -148,7 +148,17 @@ frontend:
     status_history:
       - working: true
         agent: "main"
-        comment: "COMPLETED: Enhanced multiple modals with click-outside-to-close functionality: 1) PlayerCardModal - click background to close 2) News popup modal - click outside to close 3) News editing modal - click background to close 4) Photo editing modal - click outside to close 5) Video editing modal - click background to close. All modals now have improved UX with proper event handling to prevent closing when clicking modal content."
+  - task: "Implement core authentication system with registration and admin approval"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "COMPLETED CORE AUTH SYSTEM: 1) Enhanced login modal with professional 'Welcome to MLBL' interface 2) Complete user registration form with validation (name, email, phone, preferred role, team interest, reason for joining) 3) User status tracking system (active, pending) with mock pending users 4) Enhanced UserManager with tabbed interface (Active Users/Pending Approval) 5) Admin approval workflow - approve/reject pending users 6) Click-outside-to-close functionality for all auth modals 7) Seamless integration with existing role system 8) Professional user registration experience ready for launch. All core functionality working as verified by testing."
         
   - task: "Update renderPage function to handle events page routing"
     implemented: true
