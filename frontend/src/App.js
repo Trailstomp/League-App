@@ -1275,7 +1275,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
     );
 };
 
-const HomePage = ({teams, onTeamClick, leagueInfo}) => {
+const HomePage = ({teams, onTeamClick, leagueInfo, websiteStyle}) => {
     const sortedTeams = teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name));
     
     return (
