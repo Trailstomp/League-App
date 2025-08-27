@@ -2672,7 +2672,16 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                     </div>
                                                     <div className="flex items-start space-x-2 text-slate-600 mb-2">
                                                         <MapPin className="mt-0.5 flex-shrink-0" size={16} />
-                                                        <span className="text-sm">{location.address}</span>
+                                                        <button 
+                                                            onClick={() => {
+                                                                const mapsUrl = `https://maps.google.com/maps?q=${encodeURIComponent(location.address)}&t=k`;
+                                                                window.open(mapsUrl, '_blank');
+                                                            }}
+                                                            className="text-sm text-left hover:text-blue-600 hover:underline cursor-pointer transition-colors"
+                                                            title="Click to open in Google Maps"
+                                                        >
+                                                            {location.address}
+                                                        </button>
                                                     </div>
                                                     {location.description && (
                                                         <p className="text-sm text-slate-500">{location.description}</p>
