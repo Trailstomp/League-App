@@ -550,26 +550,6 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
     
     return (
         <div className="min-h-screen">
-            {/* Admin Access Button */}
-            {!currentUser && (
-                <div className="bg-blue-100 p-2 text-center">
-                    <button 
-                        onClick={() => {
-                            const adminUser = {
-                                id: 'admin-all',
-                                name: 'Admin All',
-                                email: 'admin@mlbl.com',
-                                roles: ['admin']
-                            };
-                            setCurrentUser(adminUser);
-                        }}
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                    >
-                        🔑 Login as Admin (Click to Edit News & Media)
-                    </button>
-                </div>
-            )}
-            
             {/* Scrolling News Ticker */}
             <div className="bg-red-800 text-white py-2 overflow-hidden relative">
                 <div className="flex justify-between items-center px-4">
