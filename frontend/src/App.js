@@ -3787,7 +3787,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                         <div className="mb-8">
                             <h2 className="text-3xl font-bold text-slate-800 mb-4 tracking-tight">Roster</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                {teamPlayers.map(player => <PlayerCard key={player.id} player={player} teamStyle={team.style} />)}
+                                {teamPlayers.map(player => <PlayerCard key={player.id} player={player} teamStyle={team.style} onClick={() => handlePlayerClick(player)} />)}
                             </div>
                         </div>
                     </div>
