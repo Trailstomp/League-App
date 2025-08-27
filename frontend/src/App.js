@@ -1200,41 +1200,46 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
     
     return (
         <div className="min-h-screen" style={getBackgroundStyle(websiteStyle)}>
-            {/* Scrolling News Ticker */}
-            <div className="bg-red-800 text-white py-2 overflow-hidden relative">
-                <div className="flex justify-between items-center px-4">
-                    <div className="flex items-center">
-                        <span className="bg-white text-red-800 px-2 py-1 rounded text-sm font-bold mr-4">NEWS</span>
-                        <div className="overflow-hidden">
-                            <div className="animate-marquee whitespace-nowrap flex items-center">
-                                {newsItems.map((item, index) => (
-                                    <div key={item.id} className="inline-flex items-center mx-8">
-                                        {item.type === 'image' && item.imageUrl && (
+            {/* Vertical Scrolling News Feed */}
+            <div className="bg-red-800 text-white py-3 relative">
+                <div className="flex items-center px-4">
+                    <span className="bg-white text-red-800 px-3 py-1 rounded text-sm font-bold mr-4 flex-shrink-0">NEWS</span>
+                    
+                    {/* Vertical scrolling container */}
+                    <div className="flex-grow overflow-hidden h-8 relative">
+                        <div className="animate-scroll-vertical absolute w-full">
+                            {/* Create a continuous loop by duplicating news items */}
+                            {[...newsItems, ...newsItems].map((item, index) => (
+                                <div 
+                                    key={`${item.id}-${index}`} 
+                                    className="flex items-center py-2 h-8"
+                                    style={{ minHeight: '32px' }}
+                                >
+                                    {item.type === 'image' && item.imageUrl && (
+                                        <img 
+                                            src={item.imageUrl} 
+                                            alt="News"
+                                            className="w-10 h-6 rounded mr-2 object-cover flex-shrink-0"
+                                        />
+                                    )}
+                                    {item.type === 'video' && item.thumbnailUrl && (
+                                        <div className="relative mr-2 flex-shrink-0">
                                             <img 
-                                                src={item.imageUrl} 
-                                                alt="News"
-                                                className="w-12 h-8 rounded mr-2 object-cover"
+                                                src={item.thumbnailUrl} 
+                                                alt="Video"
+                                                className="w-10 h-6 rounded object-cover cursor-pointer"
+                                                onClick={() => window.open(item.videoUrl, '_blank')}
                                             />
-                                        )}
-                                        {item.type === 'video' && item.thumbnailUrl && (
-                                            <div className="relative mr-2">
-                                                <img 
-                                                    src={item.thumbnailUrl} 
-                                                    alt="Video"
-                                                    className="w-12 h-8 rounded object-cover cursor-pointer"
-                                                    onClick={() => window.open(item.videoUrl, '_blank')}
-                                                />
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <div className="w-3 h-3 bg-white rounded-full flex items-center justify-center">
-                                                        <div className="w-0 h-0 border-l-2 border-l-red-600 border-t-1 border-t-transparent border-b-1 border-b-transparent"></div>
-                                                    </div>
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <div className="w-2 h-2 bg-white rounded-full flex items-center justify-center">
+                                                    <div className="w-0 h-0 border-l-1 border-l-red-600 border-t-0.5 border-t-transparent border-b-0.5 border-b-transparent"></div>
                                                 </div>
                                             </div>
-                                        )}
-                                        <span className="text-white">{item.text}</span>
-                                    </div>
-                                ))}
-                            </div>
+                                        </div>
+                                    )}
+                                    <span className="text-white text-sm truncate">{item.text}</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
