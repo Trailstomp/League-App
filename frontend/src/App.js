@@ -4318,8 +4318,15 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
         );
     };
 
+    const teamBackgroundStyle = team.style?.pageBackgroundImage ? {
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${team.style.pageBackgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+    } : getBackgroundStyle(websiteStyle);
+
     return (
-        <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
+        <div className="min-h-screen" style={teamBackgroundStyle}>
             <div 
                 className="bg-cover bg-center h-48 rounded-lg mb-6 flex items-end p-4 shadow-inner relative" 
                 style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${team.style?.bannerUrl || 'https://placehold.co/1200x400/4A5568/FFFFFF?text=MLBL'})` }}
