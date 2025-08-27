@@ -2839,10 +2839,14 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                                     {event.time}
                                                                 </span>
                                                                 {event.location && (
-                                                                    <span className="flex items-center">
+                                                                    <ClickableLocation 
+                                                                        locationName={event.location}
+                                                                        teams={teams}
+                                                                        className="flex items-center"
+                                                                    >
                                                                         <MapPin className="mr-1 h-4 w-4"/>
                                                                         {event.location}
-                                                                    </span>
+                                                                    </ClickableLocation>
                                                                 )}
                                                             </div>
                                                             {event.description && (
