@@ -2441,10 +2441,10 @@ const LeagueInfoManager = ({ leagueInfo, setLeagueInfo, websiteStyle, setWebsite
     });
     
     const [tickerStyle, setTickerStyle] = useState({
-        tickerColor: websiteStyle.tickerColor || '#1e293b',
-        tickerItemColor: websiteStyle.tickerItemColor || '#334155', 
-        tickerBorderColor: websiteStyle.tickerBorderColor || '#475569',
-        tickerTextColor: websiteStyle.tickerTextColor || '#94a3b8'
+        tickerColor: websiteStyle?.tickerColor || '#1e293b',
+        tickerItemColor: websiteStyle?.tickerItemColor || '#334155', 
+        tickerBorderColor: websiteStyle?.tickerBorderColor || '#475569',
+        tickerTextColor: websiteStyle?.tickerTextColor || '#94a3b8'
     });
 
     const [saved, setSaved] = useState(false);
