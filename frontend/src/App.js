@@ -32,7 +32,9 @@ const findLocationAddress = (locationName, teams) => {
 const ClickableLocation = ({ locationName, teams, className = "", children }) => {
     const address = findLocationAddress(locationName, teams);
     
-    const handleClick = () => {
+    const handleClick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
         const searchTerm = address || locationName;
         const mapsUrl = `https://maps.google.com/maps?q=${encodeURIComponent(searchTerm)}&t=k`;
         window.open(mapsUrl, '_blank');
