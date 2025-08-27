@@ -475,6 +475,12 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
     const sortedTeams = teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name));
     const isLeagueAdmin = currentUser && currentUser.roles.includes('admin');
     
+    // State for editing modes
+    const [editingNews, setEditingNews] = useState(false);
+    const [editingPhotos, setEditingPhotos] = useState(false);
+    const [editingVideos, setEditingVideos] = useState(false);
+    const [editingNewsItem, setEditingNewsItem] = useState(null);
+    
     // Mock news data - will be made editable by admin
     const [newsItems, setNewsItems] = useState([
         { id: 1, text: "🏆 American Dads win Dayton Classic Tournament!", date: "2025-08-10" },
@@ -495,6 +501,28 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
             { id: 2, title: "Training Sessions", thumbnail: "https://placehold.co/400x250/be185d/FFFFFF?text=Training+Sessions", url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", description: "Behind-the-scenes training footage." }
         ]
     });
+
+    // News editing functions
+    const handleAddNews = () => {
+        const newItem = {
+            id: Date.now(),
+            text: "New announcement - edit this text",
+            date: new Date().toISOString().split('T')[0]
+        };
+        setNewsItems(prev => [...prev, newItem]);
+        setEditingNewsItem(newItem);
+    };
+
+    const handleSaveNews = (newsId, newText) => {
+        setNewsItems(prev => prev.map(item => 
+            item.id === newsId ? { ...item, text: newText } : item
+        ));
+        setEditingNewsItem(null);
+    };
+
+    const handleDeleteNews = (newsId) => {
+        setNewsItems(prev => prev.filter(item => item.id !== newsId));
+    };
     
     return (
         <div className="min-h-screen">
@@ -515,6 +543,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
                     </div>
                     {isLeagueAdmin && (
                         <button 
+                            onClick={() => setEditingNews(true)}
                             className="bg-red-900 text-white px-3 py-1 rounded text-sm hover:bg-red-950 flex items-center ml-4"
                             title="Edit news ticker"
                         >
@@ -523,6 +552,87 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
                     )}
                 </div>
             </div>
+
+            {/* News Editing Modal */}
+            {editingNews && isLeagueAdmin && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-semibold">Edit News Ticker</h3>
+                            <button 
+                                onClick={() => setEditingNews(false)}
+                                className="text-slate-400 hover:text-slate-600"
+                            >
+                                <X className="h-6 w-6"/>
+                            </button>
+                        </div>
+                        
+                        <div className="space-y-4 mb-4">
+                            {newsItems.map(item => (
+                                <div key={item.id} className="bg-slate-50 p-3 rounded">
+                                    {editingNewsItem?.id === item.id ? (
+                                        <div className="space-y-2">
+                                            <input 
+                                                type="text"
+                                                defaultValue={item.text}
+                                                className="w-full p-2 border rounded"
+                                                onKeyPress={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        handleSaveNews(item.id, e.target.value);
+                                                    }
+                                                }}
+                                                autoFocus
+                                            />
+                                            <div className="flex space-x-2">
+                                                <button 
+                                                    onClick={(e) => {
+                                                        const input = e.target.parentElement.previousElementSibling;
+                                                        handleSaveNews(item.id, input.value);
+                                                    }}
+                                                    className="bg-green-600 text-white px-3 py-1 rounded text-sm"
+                                                >
+                                                    Save
+                                                </button>
+                                                <button 
+                                                    onClick={() => setEditingNewsItem(null)}
+                                                    className="bg-slate-500 text-white px-3 py-1 rounded text-sm"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="flex justify-between items-center">
+                                            <span className="flex-grow">{item.text}</span>
+                                            <div className="flex space-x-2">
+                                                <button 
+                                                    onClick={() => setEditingNewsItem(item)}
+                                                    className="text-blue-600 hover:text-blue-800"
+                                                >
+                                                    <Edit className="h-4 w-4"/>
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleDeleteNews(item.id)}
+                                                    className="text-red-600 hover:text-red-800"
+                                                >
+                                                    <Trash2 className="h-4 w-4"/>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                        
+                        <button 
+                            onClick={handleAddNews}
+                            className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"
+                        >
+                            <Plus className="mr-2 h-4 w-4"/> Add News Item
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div className="p-4 md:p-8">
                 {/* Teams of MLBL Section */}
