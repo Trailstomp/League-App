@@ -4119,6 +4119,13 @@ const PlayerForm = ({ initialPlayer, onSave, onCancel, managedTeams, isAdmin }) 
                             </select>
                              <p className="text-xs text-slate-500 mt-1">Hold Ctrl/Cmd to select multiple.</p>
                         </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Handedness</label>
+                            <select name="handedness" value={player.handedness || 'Right'} onChange={handleChange} className="w-full p-2 border rounded" required>
+                                <option value="Right">Right Handed</option>
+                                <option value="Left">Left Handed</option>
+                            </select>
+                        </div>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Player Photo</label>
