@@ -119,6 +119,48 @@ const findLocationAddress = (locationName, teams) => {
     return null;
 };
 
+// Background style utility function
+const getBackgroundStyle = (websiteStyle) => {
+    if (!websiteStyle?.backgroundImage) return {};
+    
+    const { backgroundImage, backgroundMode = 'cover', backgroundOpacity = 0.1 } = websiteStyle;
+    
+    let backgroundSize = 'cover';
+    let backgroundRepeat = 'no-repeat';
+    
+    switch (backgroundMode) {
+        case 'contain':
+            backgroundSize = 'contain';
+            break;
+        case 'repeat':
+            backgroundSize = 'auto';
+            backgroundRepeat = 'repeat';
+            break;
+        default: // 'cover'
+            backgroundSize = 'cover';
+            break;
+    }
+    
+    return {
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize,
+        backgroundRepeat,
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        position: 'relative',
+        '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: `rgba(255, 255, 255, ${1 - backgroundOpacity})`,
+            zIndex: 1
+        }
+    };
+};
+
 // Clickable location component
 const ClickableLocation = ({ locationName, teams, className = "", children }) => {
     const address = findLocationAddress(locationName, teams);
