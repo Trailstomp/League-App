@@ -471,7 +471,7 @@ const SocialCard = ({ entity }) => {
 };
 
 // --- Page Components ---
-const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}) => {
+const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle, setCurrentUser}) => {
     const sortedTeams = teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name));
     const isLeagueAdmin = currentUser && currentUser.roles.includes('admin');
     
