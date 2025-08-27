@@ -837,13 +837,16 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser}) => {
                                                     <span className="font-semibold text-red-700">{event.teamName}</span>
                                                 </button>
                                                 <h3 className="font-bold text-slate-800 mb-1">{event.title}</h3>
-                                                <div className="flex items-center space-x-4 text-sm text-slate-600">
+                                                <div className="flex items-center space-x-4 text-sm text-slate-600 mb-2">
                                                     <span>{new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' })}</span>
                                                     <span>{event.time}</span>
                                                     {event.location && <span>{event.location}</span>}
                                                 </div>
                                                 {event.description && (
-                                                    <p className="text-sm text-slate-600 mt-2">{event.description}</p>
+                                                    <p className="text-sm text-slate-600 mb-3">{event.description}</p>
+                                                )}
+                                                {event.imageUrl && (
+                                                    <img src={event.imageUrl} alt="Event" className="w-full h-32 object-cover rounded-lg" />
                                                 )}
                                             </div>
                                             <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
