@@ -6752,17 +6752,17 @@ function App() {
         reasonForJoining: ''
     });
 
-    const [teams, setTeams] = useState(initialTeams);
-    const [players, setPlayers] = useState(initialPlayersList);
-    const [gameTickerData, setGameTickerData] = useState(initialGameTickerData);
-    const [leagueSchedule, setLeagueSchedule] = useState(initialLeagueSchedule);
-    const [users, setUsers] = useState(initialMockUsers);
-    const [leagueInfo, setLeagueInfo] = useState({
+    const [teams, setTeams] = useState(() => getStoredData('mlbl_teams', initialTeams));
+    const [players, setPlayers] = useState(() => getStoredData('mlbl_players', initialPlayersList));
+    const [gameTickerData, setGameTickerData] = useState(() => getStoredData('mlbl_gameTickerData', initialGameTickerData));
+    const [leagueSchedule, setLeagueSchedule] = useState(() => getStoredData('mlbl_leagueSchedule', initialLeagueSchedule));
+    const [users, setUsers] = useState(() => getStoredData('mlbl_users', initialMockUsers));
+    const [leagueInfo, setLeagueInfo] = useState(() => getStoredData('mlbl_leagueInfo', {
         name: "Men's Lacrosse Beer League",
         contactEmail: "admin@mlbl.org",
         social: { twitter: '#', instagram: '#', facebook: '#' }
-    });
-    const [websiteStyle, setWebsiteStyle] = useState({
+    }));
+    const [websiteStyle, setWebsiteStyle] = useState(() => getStoredData('mlbl_websiteStyle', {
         logoUrl: MlblLogo,
         primaryColor: '#1e293b', // slate-800
         accentColor: '#991b1b', // red-800
