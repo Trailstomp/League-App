@@ -195,33 +195,41 @@ const findLocationAddress = (locationName, teams) => {
 
 // Background style utility function
 const getBackgroundStyle = (websiteStyle) => {
-    if (!websiteStyle?.backgroundImage) return {};
+    const style = {};
     
-    const { backgroundImage, backgroundMode = 'cover', backgroundOpacity = 0.1 } = websiteStyle;
-    
-    let backgroundSize = 'cover';
-    let backgroundRepeat = 'no-repeat';
-    
-    switch (backgroundMode) {
-        case 'contain':
-            backgroundSize = 'contain';
-            break;
-        case 'repeat':
-            backgroundSize = 'auto';
-            backgroundRepeat = 'repeat';
-            break;
-        default: // 'cover'
-            backgroundSize = 'cover';
-            break;
+    // Page background color
+    if (websiteStyle?.pageBackgroundColor) {
+        style.backgroundColor = websiteStyle.pageBackgroundColor;
     }
     
-    return {
-        backgroundImage: `linear-gradient(rgba(255, 255, 255, ${1 - backgroundOpacity}), rgba(255, 255, 255, ${1 - backgroundOpacity})), url(${backgroundImage})`,
-        backgroundSize,
-        backgroundRepeat,
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-    };
+    // Background image overlay
+    if (websiteStyle?.backgroundImage) {
+        const { backgroundImage, backgroundMode = 'cover', backgroundOpacity = 0.1 } = websiteStyle;
+        
+        let backgroundSize = 'cover';
+        let backgroundRepeat = 'no-repeat';
+        
+        switch (backgroundMode) {
+            case 'contain':
+                backgroundSize = 'contain';
+                break;
+            case 'repeat':
+                backgroundSize = 'auto';
+                backgroundRepeat = 'repeat';
+                break;
+            default: // 'cover'
+                backgroundSize = 'cover';
+                break;
+        }
+        
+        style.backgroundImage = `linear-gradient(rgba(255, 255, 255, ${1 - backgroundOpacity}), rgba(255, 255, 255, ${1 - backgroundOpacity})), url(${backgroundImage})`;
+        style.backgroundSize = backgroundSize;
+        style.backgroundRepeat = backgroundRepeat;
+        style.backgroundPosition = 'center';
+        style.backgroundAttachment = 'fixed';
+    }
+    
+    return style;
 };
 
 // Clickable location component
