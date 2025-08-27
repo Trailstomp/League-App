@@ -3636,8 +3636,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
         setIsPlayerModalOpen(false);
         setSelectedPlayer(null);
     };
-    const [selectedPlayer, setSelectedPlayer] = useState(null);
-    const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
+
     const getTeam = (id) => teams.find(t => t.id === id);
     const isAuthorizedToManage = currentUser && (
         currentUser.roles.includes('admin') || 
