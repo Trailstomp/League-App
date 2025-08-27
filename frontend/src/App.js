@@ -1377,13 +1377,54 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                         <option value="social">Social Event</option>
                         <option value="meeting">Team Meeting</option>
                     </select>
-                    <input 
-                        type="text" 
-                        value={editingEvent?.location || ''} 
-                        onChange={e => setEditingEvent(prev => ({...prev, location: e.target.value}))} 
-                        placeholder="Location" 
-                        className="w-full p-2 border rounded" 
-                    />
+                    {/* Location Dropdown from Team Locations */}
+                    <div className="relative">
+                        <select 
+                            value={editingEvent?.location || ''} 
+                            onChange={e => setEditingEvent(prev => ({...prev, location: e.target.value}))} 
+                            className="w-full p-2 border rounded"
+                            required
+                        >
+                            <option value="">Select Location</option>
+                            {(() => {
+                                // Collect all locations from relevant teams
+                                const allLocations = [];
+                                
+                                if (isTeamSpecific && currentTeamId) {
+                                    // For team-specific events, show only current team's locations
+                                    const currentTeam = teams.find(t => t.id === currentTeamId);
+                                    if (currentTeam?.locations) {
+                                        allLocations.push(...currentTeam.locations.map(loc => ({...loc, teamName: currentTeam.name})));
+                                    }
+                                } else {
+                                    // For league events, show all teams' locations
+                                    teams.forEach(team => {
+                                        if (team.locations) {
+                                            allLocations.push(...team.locations.map(loc => ({...loc, teamName: team.name})));
+                                        }
+                                    });
+                                }
+                                
+                                return allLocations.map(location => (
+                                    <option key={`${location.teamName}-${location.id}`} value={location.name}>
+                                        {location.name} {!isTeamSpecific ? `(${location.teamName})` : ''}
+                                    </option>
+                                ));
+                            })()}
+                            <option value="custom">+ Add Custom Location</option>
+                        </select>
+                        
+                        {editingEvent?.location === 'custom' && (
+                            <input 
+                                type="text" 
+                                value={editingEvent?.customLocation || ''} 
+                                onChange={e => setEditingEvent(prev => ({...prev, customLocation: e.target.value}))} 
+                                placeholder="Enter custom location" 
+                                className="w-full p-2 border rounded mt-2" 
+                                required
+                            />
+                        )}
+                    </div>
                 </div>
                 <textarea 
                     value={editingEvent?.description || ''} 
