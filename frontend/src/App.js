@@ -1224,14 +1224,15 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                 <div className="flex items-start px-4 max-w-3xl mx-auto">
                     <span className="bg-white text-red-800 px-4 py-3 rounded text-sm font-bold mr-6 flex-shrink-0">NEWS</span>
                     
-                    {/* Vertical scrolling container - Extra tall (h-70) with minimal red space */}
-                    <div className="flex-grow overflow-hidden h-70 relative max-w-xl">
+                    {/* Vertical scrolling container - Extra tall with minimal red space */}
+                    <div className="flex-grow overflow-hidden relative max-w-xl" style={{ height: '280px' }}>
                         <div className="animate-scroll-vertical absolute w-full">
                             {/* Create a continuous loop by duplicating news items */}
                             {[...newsItems, ...newsItems].map((item, index) => (
                                 <div 
                                     key={`${item.id}-${index}`} 
-                                    className="flex items-center py-6 h-70 cursor-pointer hover:bg-red-700 hover:bg-opacity-50 rounded px-4 transition-colors"
+                                    className="flex items-center py-6 cursor-pointer hover:bg-red-700 hover:bg-opacity-50 rounded px-4 transition-colors"
+                                    style={{ height: '280px' }}
                                     onClick={() => setSelectedNewsItem(item)}
                                 >
                                     {item.type === 'image' && item.imageUrl && (
