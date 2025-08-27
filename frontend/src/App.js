@@ -1680,10 +1680,14 @@ const TeamCalendarManager = ({ team, teams, setTeams }) => {
                                                     {event.time}
                                                 </span>
                                                 {event.location && (
-                                                    <span className="flex items-center">
+                                                    <ClickableLocation 
+                                                        locationName={event.location}
+                                                        teams={teams}
+                                                        className="flex items-center"
+                                                    >
                                                         <MapPin className="mr-1 h-4 w-4"/>
                                                         {event.location}
-                                                    </span>
+                                                    </ClickableLocation>
                                                 )}
                                                 <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
                                                     event.type === 'game' ? 'bg-red-100 text-red-800' :
