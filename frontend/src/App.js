@@ -7191,7 +7191,7 @@ function App() {
                         </div>
                         
                         <button 
-                            onClick={() => setShowLogin(false)} 
+                            onClick={handleAuthModalClose} 
                             className="w-full mt-4 bg-slate-200 text-slate-700 p-2 rounded hover:bg-slate-300 transition-colors"
                         >
                             Continue as Guest
