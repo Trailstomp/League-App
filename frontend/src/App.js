@@ -5156,7 +5156,42 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                         </div>
                     </div>
 
-                    {/* Top Banner Customization */}
+                    {/* Sidebar Customization */}
+                    <div>
+                        <h4 className="text-lg font-semibold text-slate-800 mb-3">Navigation Sidebar</h4>
+                        
+                        <div className="space-y-4">
+                            <FileUploadInput
+                                label="Sidebar Background Image"
+                                accept="image/*"
+                                currentValue={style.sidebarImage || ''}
+                                onChange={(url) => setStyle(prev => ({...prev, sidebarImage: url}))}
+                                placeholder="Upload sidebar background image (optional)"
+                            />
+                            
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">
+                                    Sidebar Image Opacity: {Math.round((style.sidebarOpacity || 0.2) * 100)}%
+                                </label>
+                                <input 
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step="0.1"
+                                    value={style.sidebarOpacity || 0.2}
+                                    onChange={(e) => setStyle(prev => ({...prev, sidebarOpacity: parseFloat(e.target.value)}))}
+                                    className="w-full"
+                                />
+                                <div className="flex justify-between text-xs text-slate-500 mt-1">
+                                    <span>Dark Overlay</span>
+                                    <span>Bright Image</span>
+                                </div>
+                                <p className="text-xs text-slate-500 mt-1">Lower opacity adds darker overlay for better text readability</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Top Banner Customization */}}
                     <div>
                         <h4 className="text-lg font-semibold text-slate-800 mb-3">Top Banner Bar</h4>
                         
