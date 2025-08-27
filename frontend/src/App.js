@@ -6111,7 +6111,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                             
                             <div>
                                 <h3 className="text-lg font-semibold mb-4">League Information</h3>
-                                <LeagueInfoManager leagueInfo={leagueInfo} setLeagueInfo={setLeagueInfo} />
+                                <LeagueInfoManager leagueInfo={leagueInfo} setLeagueInfo={setLeagueInfo} websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
                             </div>
                         </div>
                     </div>
