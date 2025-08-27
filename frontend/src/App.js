@@ -5005,6 +5005,53 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                         </div>
                     </div>
 
+                    {/* Top Banner Customization */}
+                    <div>
+                        <h4 className="text-lg font-semibold text-slate-800 mb-3">Top Banner Bar</h4>
+                        
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Banner Color</label>
+                                <div className="relative">
+                                    <div 
+                                        className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
+                                        style={{ backgroundColor: style.bannerColor || style.primaryColor }}
+                                    >
+                                        <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+                                            {style.bannerColor || style.primaryColor}
+                                        </span>
+                                    </div>
+                                    <input 
+                                        type="color" 
+                                        value={style.bannerColor || style.primaryColor}
+                                        onChange={(e) => setStyle(prev => ({...prev, bannerColor: e.target.value}))}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    />
+                                </div>
+                            </div>
+
+                            <FileUploadInput
+                                label="Banner Background Image"
+                                accept="image/*"
+                                currentValue={style.bannerImage || ''}
+                                onChange={(url) => setStyle(prev => ({...prev, bannerImage: url}))}
+                                placeholder="Upload banner background image (optional)"
+                            />
+                            
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Banner Text</label>
+                                <input 
+                                    type="text"
+                                    value={style.bannerText || 'MLBL'}
+                                    onChange={(e) => setStyle(prev => ({...prev, bannerText: e.target.value}))}
+                                    placeholder="Enter banner text (e.g., MLBL, League Name, etc.)"
+                                    className="w-full p-3 border border-slate-300 rounded-lg"
+                                />
+                                <p className="text-xs text-slate-500 mt-1">This text appears in the center of the top banner bar</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="flex justify-end items-center space-x-4">
                         {saved && <span className="text-green-600 font-semibold">✓ Saved!</span>}
                         <button 
