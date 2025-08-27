@@ -7421,6 +7421,39 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                     </div>
                 )}
 
+                {/* Social Media Management */}
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                    <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
+                        <Settings className="mr-2" size={20} />
+                        Social Media Management
+                    </h3>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                        <div className="flex items-center space-x-3">
+                            <div className="bg-blue-600 rounded-full p-2">
+                                <Zap className="text-white" size={16} />
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-blue-800">Advanced Social Media Features</h4>
+                                <p className="text-sm text-blue-700">
+                                    Set up API credentials to post directly from the app, schedule posts, and manage all your social platforms in one place.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Quick Team Social Media Manager */}
+                    <div className="border rounded-lg p-4 bg-gray-50">
+                        <div className="flex justify-between items-center mb-4">
+                            <div>
+                                <h4 className="font-semibold text-slate-800">Team Social Media Hub</h4>
+                                <p className="text-sm text-slate-600">Manage API credentials and post to your team's social accounts</p>
+                            </div>
+                        </div>
+                        
+                        <TeamSocialMediaManager team={team} setTeams={setTeams} />
+                    </div>
+                </div>
+
                 {/* Access Denied for tabs without permission */}
                 {!hasAnyPermission(currentUser, adminTabs.find(t => t.id === activeTab)?.permissions || []) && (
                     <div className="p-6 text-center">
