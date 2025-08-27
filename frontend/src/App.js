@@ -684,6 +684,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
                             <h3 className="text-2xl font-bold text-slate-800">Photo Gallery</h3>
                             {isLeagueAdmin && (
                                 <button 
+                                    onClick={() => setEditingPhotos(true)}
                                     className="bg-red-800 text-white px-3 py-2 rounded text-sm hover:bg-red-900 flex items-center"
                                     title="Edit photos"
                                 >
@@ -693,7 +694,13 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
                         </div>
                         <div className="space-y-4">
                             {mediaContent.pictures.map(picture => (
-                                <div key={picture.id} className="bg-slate-50 rounded-lg p-4 hover:bg-slate-100 transition-colors cursor-pointer">
+                                <div key={picture.id} 
+                                     onClick={() => {
+                                         // Open a simple image viewer or placeholder
+                                         window.open(picture.image, '_blank');
+                                     }}
+                                     className="bg-slate-50 rounded-lg p-4 hover:bg-slate-100 transition-colors cursor-pointer"
+                                >
                                     <div className="flex items-center space-x-4">
                                         <img 
                                             src={picture.image} 
@@ -704,7 +711,13 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
                                             <h4 className="font-semibold text-slate-800">{picture.title}</h4>
                                             <p className="text-sm text-slate-600">{picture.description}</p>
                                         </div>
-                                        <button className="text-red-600 hover:text-red-800 text-sm font-semibold">
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                window.open(picture.image, '_blank');
+                                            }}
+                                            className="text-red-600 hover:text-red-800 text-sm font-semibold"
+                                        >
                                             View →
                                         </button>
                                     </div>
