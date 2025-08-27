@@ -5196,6 +5196,26 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                         </div>
                     </div>
 
+                    {/* Global Music Settings */}
+                    <div>
+                        <h4 className="text-lg font-semibold text-slate-800 mb-3 flex items-center">
+                            <Music className="mr-2" size={20} />
+                            Global Music
+                        </h4>
+                        
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Global Background Music URL (Optional)</label>
+                            <input 
+                                type="url"
+                                value={style.globalMusicUrl || ''}
+                                onChange={(e) => setStyle(prev => ({...prev, globalMusicUrl: e.target.value}))}
+                                placeholder="https://example.com/background-music.mp3"
+                                className="w-full p-3 border border-slate-300 rounded-lg"
+                            />
+                            <p className="text-xs text-slate-500 mt-1">Background music for the entire website (MP3, WAV, etc.)</p>
+                        </div>
+                    </div>
+
                     <div className="flex justify-end items-center space-x-4">
                         {saved && <span className="text-green-600 font-semibold">✓ Saved!</span>}
                         <button 
