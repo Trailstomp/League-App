@@ -1473,8 +1473,8 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                     borderLeft: `6px solid ${team.style?.primaryColor || '#dc2626'}`
                                 }}
                             >
-                                {/* Team Logo - Responsive Rectangle */}
-                                <div className="h-20 md:h-32 mb-2 md:mb-4 rounded-lg overflow-hidden relative" style={{
+                                {/* Team Logo - Compact Mobile Rectangle */}
+                                <div className="h-16 sm:h-20 md:h-32 mb-2 md:mb-4 rounded-lg overflow-hidden relative" style={{
                                     backgroundColor: team.style?.primaryColor || '#dc2626',
                                     backgroundImage: `linear-gradient(45deg, ${team.style?.primaryColor || '#dc2626'} 0%, ${team.style?.backgroundColor || '#ffffff'} 100%)`
                                 }}>
