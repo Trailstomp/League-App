@@ -558,6 +558,13 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
     
     return (
         <div className="min-h-screen">
+            {/* Debug Info Display */}
+            <div className="bg-yellow-100 p-2 text-xs">
+                DEBUG: currentUser={currentUser ? 'SET' : 'NULL'} | 
+                isLeagueAdmin={isLeagueAdmin ? 'TRUE' : 'FALSE'} | 
+                setCurrentUser={setCurrentUser ? 'AVAILABLE' : 'MISSING'}
+            </div>
+            
             {/* Scrolling News Ticker */}
             <div className="bg-red-800 text-white py-2 overflow-hidden relative">
                 <div className="flex justify-between items-center px-4">
