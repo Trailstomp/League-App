@@ -5817,6 +5817,7 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
 
 const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameTickerData, setGameTickerData, currentUser, users, setUsers, websiteStyle, setWebsiteStyle, leagueInfo, setLeagueInfo }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
+    const [usersSecurityTab, setUsersSecurityTab] = useState('users'); // New state for sub-tabs
 
     // Use new permission system
     const adminTabs = [
