@@ -555,11 +555,33 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
                     <div className="flex items-center">
                         <span className="bg-white text-red-800 px-2 py-1 rounded text-sm font-bold mr-4">NEWS</span>
                         <div className="overflow-hidden">
-                            <div className="animate-marquee whitespace-nowrap">
+                            <div className="animate-marquee whitespace-nowrap flex items-center">
                                 {newsItems.map((item, index) => (
-                                    <span key={item.id} className="inline-block mx-8">
-                                        {item.text}
-                                    </span>
+                                    <div key={item.id} className="inline-flex items-center mx-8">
+                                        {item.type === 'image' && item.imageUrl && (
+                                            <img 
+                                                src={item.imageUrl} 
+                                                alt="News"
+                                                className="w-12 h-8 rounded mr-2 object-cover"
+                                            />
+                                        )}
+                                        {item.type === 'video' && item.thumbnailUrl && (
+                                            <div className="relative mr-2">
+                                                <img 
+                                                    src={item.thumbnailUrl} 
+                                                    alt="Video"
+                                                    className="w-12 h-8 rounded object-cover cursor-pointer"
+                                                    onClick={() => window.open(item.videoUrl, '_blank')}
+                                                />
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <div className="w-3 h-3 bg-white rounded-full flex items-center justify-center">
+                                                        <div className="w-0 h-0 border-l-2 border-l-red-600 border-t-1 border-t-transparent border-b-1 border-b-transparent"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        <span className="text-white">{item.text}</span>
+                                    </div>
                                 ))}
                             </div>
                         </div>
