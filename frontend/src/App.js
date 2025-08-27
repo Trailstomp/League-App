@@ -6902,7 +6902,13 @@ function App() {
         tickerColor: '#1e293b',
         tickerItemColor: '#334155',
         tickerBorderColor: '#475569',
-        tickerTextColor: '#94a3b8'
+        tickerTextColor: '#94a3b8',
+        // Top Bar/News Ticker Text Customization
+        newsLabel: 'NEWS',
+        // Logo Overlay Settings
+        overlayLogo: '',
+        overlayLogoAlignment: 'center', // left, center, right
+        overlayLogoSize: 'medium' // small, medium, large
     });
 
     // Load data from API on component mount
