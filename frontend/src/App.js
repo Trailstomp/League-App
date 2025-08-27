@@ -1499,15 +1499,15 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                     )}
                                 </p>
                                 
-                                {/* W/L Record - Labels above numbers */}
-                                <div className="flex justify-center space-x-3 md:space-x-6 mb-2 md:mb-4">
+                                {/* W/L Record - Compact mobile layout */}
+                                <div className="flex justify-center space-x-2 sm:space-x-3 md:space-x-6 mb-2 md:mb-4">
                                     <div className="text-center">
                                         <div className="text-xs font-semibold text-slate-500 mb-1">W</div>
-                                        <div className="text-lg md:text-2xl font-bold text-green-600">{team.wins}</div>
+                                        <div className="text-base sm:text-lg md:text-2xl font-bold text-green-600">{team.wins}</div>
                                     </div>
                                     <div className="text-center">
                                         <div className="text-xs font-semibold text-slate-500 mb-1">L</div>
-                                        <div className="text-lg md:text-2xl font-bold text-red-600">{team.losses}</div>
+                                        <div className="text-base sm:text-lg md:text-2xl font-bold text-red-600">{team.losses}</div>
                                     </div>
                                 </div>
                                 
