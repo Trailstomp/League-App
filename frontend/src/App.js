@@ -4050,7 +4050,7 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div className="bg-white p-6 rounded-lg shadow-md">
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="font-semibold text-slate-800">Connected Accounts</h3>
+                            <h3 className="font-semibold text-slate-800">Platform Connections</h3>
                             <Settings className="text-slate-400" size={20} />
                         </div>
                         <div className="space-y-3">
@@ -4059,23 +4059,61 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                                     <Twitter className="text-blue-400" size={18} />
                                     <span className="text-sm">Twitter</span>
                                 </div>
-                                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Connected</span>
+                                <span className={`text-xs px-2 py-1 rounded ${
+                                    credentials.twitter.connected 
+                                        ? 'bg-green-100 text-green-800' 
+                                        : 'bg-red-100 text-red-800'
+                                }`}>
+                                    {credentials.twitter.connected ? 'Connected' : 'Not Connected'}
+                                </span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                     <Facebook className="text-blue-600" size={18} />
                                     <span className="text-sm">Facebook</span>
                                 </div>
-                                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Connected</span>
+                                <span className={`text-xs px-2 py-1 rounded ${
+                                    credentials.facebook.connected 
+                                        ? 'bg-green-100 text-green-800' 
+                                        : 'bg-red-100 text-red-800'
+                                }`}>
+                                    {credentials.facebook.connected ? 'Connected' : 'Not Connected'}
+                                </span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                     <Instagram className="text-pink-500" size={18} />
                                     <span className="text-sm">Instagram</span>
                                 </div>
-                                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Connected</span>
+                                <span className={`text-xs px-2 py-1 rounded ${
+                                    credentials.instagram.connected 
+                                        ? 'bg-green-100 text-green-800' 
+                                        : 'bg-red-100 text-red-800'
+                                }`}>
+                                    {credentials.instagram.connected ? 'Connected' : 'Not Connected'}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <Video className="text-red-500" size={18} />
+                                    <span className="text-sm">YouTube</span>
+                                </div>
+                                <span className={`text-xs px-2 py-1 rounded ${
+                                    credentials.youtube.connected 
+                                        ? 'bg-green-100 text-green-800' 
+                                        : 'bg-red-100 text-red-800'
+                                }`}>
+                                    {credentials.youtube.connected ? 'Connected' : 'Not Connected'}
+                                </span>
                             </div>
                         </div>
+                        {!Object.values(credentials).some(cred => cred.connected) && (
+                            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                <p className="text-sm text-yellow-800">
+                                    No platforms connected. Go to API Setup to add credentials.
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="bg-white p-6 rounded-lg shadow-md">
