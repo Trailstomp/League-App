@@ -481,12 +481,35 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
     const [editingVideos, setEditingVideos] = useState(false);
     const [editingNewsItem, setEditingNewsItem] = useState(null);
     
-    // Mock news data - will be made editable by admin
+    // Mock news data - enhanced with multimedia support
     const [newsItems, setNewsItems] = useState([
-        { id: 1, text: "🏆 American Dads win Dayton Classic Tournament!", date: "2025-08-10" },
-        { id: 2, text: "📅 New season registration now open through September 1st", date: "2025-08-05" },
-        { id: 3, text: "🥍 OH10 Lacrosse advances to championship finals", date: "2025-08-03" },
-        { id: 4, text: "⚡ Game highlights now available on our media page", date: "2025-08-01" }
+        { 
+            id: 1, 
+            type: 'text',
+            text: "🏆 American Dads win Dayton Classic Tournament!", 
+            date: "2025-08-10"
+        },
+        { 
+            id: 2, 
+            type: 'image',
+            text: "📸 Championship celebration photos!", 
+            imageUrl: "https://placehold.co/100x60/dc2626/FFFFFF?text=Champs",
+            date: "2025-08-05"
+        },
+        { 
+            id: 3, 
+            type: 'text',
+            text: "🥍 OH10 Lacrosse advances to championship finals", 
+            date: "2025-08-03"
+        },
+        { 
+            id: 4, 
+            type: 'video',
+            text: "🎥 Game highlights now available!", 
+            videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            thumbnailUrl: "https://placehold.co/100x60/f59e0b/FFFFFF?text=Video",
+            date: "2025-08-01"
+        }
     ]);
     
     // Mock picture/video content - will be made editable by admin
