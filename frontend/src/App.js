@@ -5433,7 +5433,7 @@ function App() {
         let pageComponent;
 
         if (page === 'team' && selectedTeam) {
-            pageComponent = <TeamDetailPage teamId={selectedTeam} teams={teams} players={players} leagueSchedule={leagueSchedule} currentUser={currentUser} setPlayers={setPlayers} setTeams={setTeams} websiteStyle={websiteStyle} />;
+            pageComponent = <TeamDetailPage teamId={selectedTeam} teams={teams} players={players} leagueSchedule={leagueSchedule} currentUser={currentUser} setPlayers={setPlayers} setTeams={setTeams} websiteStyle={websiteStyle} playMusic={playMusic} stopAllMusic={stopAllMusic} musicState={musicState} />;
         } else {
             switch (page) {
                 case 'home': pageComponent = <NewHomePage teams={teams} onTeamClick={(teamId) => navigate('team', teamId)} leagueInfo={leagueInfo} currentUser={currentUser} websiteStyle={websiteStyle} setCurrentUser={setCurrentUser} />; break;
