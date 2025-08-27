@@ -1625,7 +1625,7 @@ const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
     </div>
 );
 
-const StandingsPage = ({teams, onTeamClick}) => {
+const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
     const sortedTeams = [...teams].filter(t => t.active).sort((a, b) => {
         const scoreA = a.wins * 2 + a.ties;
         const scoreB = b.wins * 2 + b.ties;
