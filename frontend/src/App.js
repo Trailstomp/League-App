@@ -427,9 +427,12 @@ const PlayerCard = ({ player, teamStyle, onClick }) => (
 const PlayerCardModal = ({ player, teamStyle, teams, isOpen, onClose }) => {
     if (!isOpen || !player) return null;
 
+    // Get the primary team for logo display
+    const primaryTeam = teams?.find(t => player.teams && player.teams.includes(t.id));
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full transform transition-all">
                 {/* Close button */}
                 <button 
                     onClick={onClose}
@@ -440,9 +443,9 @@ const PlayerCardModal = ({ player, teamStyle, teams, isOpen, onClose }) => {
 
                 {/* Playing card style layout */}
                 <div className="relative overflow-hidden rounded-2xl" style={{ background: `linear-gradient(135deg, ${teamStyle?.primaryColor || '#1e293b'}, ${teamStyle?.accentColor || '#dc2626'})` }}>
-                    {/* Header with number and position */}
+                    {/* Header with number and coach badge */}
                     <div className="p-6 text-white">
-                        <div className="flex justify-between items-start mb-4">
+                        <div className="flex justify-between items-start mb-6">
                             <div className="text-4xl font-bold opacity-75">#{player.number}</div>
                             {player.roles && player.roles.includes('coach') && (
                                 <div className="bg-yellow-500 px-3 py-1 rounded-full text-sm font-bold">
@@ -451,22 +454,36 @@ const PlayerCardModal = ({ player, teamStyle, teams, isOpen, onClose }) => {
                             )}
                         </div>
                         
-                        {/* Player photo */}
-                        <div className="flex items-center mb-4">
-                            <img 
-                                src={player.photo || `https://ui-avatars.com/api/?name=${player.firstName}+${player.lastName}&background=random&size=120`} 
-                                alt={`${player.firstName} ${player.lastName}`}
-                                className="w-20 h-20 rounded-full border-4 border-white shadow-lg object-cover mr-4"
-                            />
-                            <div>
-                                <h2 className="text-2xl font-bold">{player.firstName} {player.lastName}</h2>
-                                {player.nickname && (
-                                    <p className="text-lg opacity-90">"{player.nickname}"</p>
+                        {/* Large player photo with team logo circle */}
+                        <div className="flex items-center justify-center mb-6">
+                            <div className="relative">
+                                <img 
+                                    src={player.photo || `https://ui-avatars.com/api/?name=${player.firstName}+${player.lastName}&background=random&size=200`} 
+                                    alt={`${player.firstName} ${player.lastName}`}
+                                    className="w-32 h-32 rounded-full border-4 border-white shadow-xl object-cover"
+                                />
+                                {/* Team logo circle */}
+                                {primaryTeam && (
+                                    <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-white rounded-full border-2 border-white shadow-lg flex items-center justify-center">
+                                        <img 
+                                            src={primaryTeam.logo} 
+                                            alt={primaryTeam.name}
+                                            className="w-8 h-8 rounded-full object-contain"
+                                        />
+                                    </div>
                                 )}
-                                <p className="opacity-75">
-                                    {Array.isArray(player.positions) ? player.positions.join(', ') : player.positions}
-                                </p>
                             </div>
+                        </div>
+
+                        {/* Player name and position */}
+                        <div className="text-center">
+                            <h2 className="text-3xl font-bold mb-1">{player.firstName} {player.lastName}</h2>
+                            {player.nickname && (
+                                <p className="text-xl opacity-90 mb-2">"{player.nickname}"</p>
+                            )}
+                            <p className="opacity-75 text-lg">
+                                {Array.isArray(player.positions) ? player.positions.join(', ') : player.positions}
+                            </p>
                         </div>
                     </div>
 
