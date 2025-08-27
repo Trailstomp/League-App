@@ -2452,7 +2452,9 @@ const LeagueInfoManager = ({ leagueInfo, setLeagueInfo, websiteStyle, setWebsite
     const handleSave = (e) => {
         e.preventDefault();
         setLeagueInfo(info);
-        setWebsiteStyle(prev => ({...prev, ...tickerStyle}));
+        if (setWebsiteStyle) {
+            setWebsiteStyle(prev => ({...prev, ...tickerStyle}));
+        }
         setSaved(true);
         setTimeout(() => setSaved(false), 3000);
     };
