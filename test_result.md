@@ -419,14 +419,37 @@ metadata:
   test_sequence: 1
   run_ui: false
 
+  - task: "Add handedness field to player management form"
+    implemented: true
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Added handedness dropdown field to PlayerForm with Left/Right handed options. Field properly integrated with existing form state management and initialMockUsers data already contains handedness values."
+        
+  - task: "Add team tab visibility controls to TeamStyleManager"
+    implemented: true
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Extended TeamStyleManager to include tab visibility controls allowing team admins/coaches to control which tabs (Roster, Schedule, Media, Social, Contact) are visible on their team page. Updated TeamDetailPage to respect visibility settings."
+
 test_plan:
   current_focus:
-    - "All requested features and bug fixes completed and tested"
-    - "Calendar team selection confirmed working"
-    - "15-minute intervals, dates in ticker, and scheduled status all implemented"
+    - "Add handedness field to player management form"
+    - "Add team tab visibility controls to TeamStyleManager"
   stuck_tasks: []
   test_all: false
-  test_priority: "completed"
+  test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
