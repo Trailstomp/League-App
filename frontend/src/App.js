@@ -1462,19 +1462,19 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                         <h1 className="text-5xl font-bold text-slate-800 mb-2 tracking-tight">{leagueInfo.name || "Men's Lacrosse Beer League"}</h1>
                         <h2 className="text-3xl font-bold text-slate-600 mb-6 tracking-tight">Our Teams</h2>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 md:gap-6">
                         {sortedTeams.map(team => (
                             <button
                                 key={team.id}
                                 onClick={() => onTeamClick(team.id)}
-                                className="group bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transform transition-all duration-300 hover:scale-105 relative overflow-hidden"
+                                className="group bg-white rounded-xl shadow-lg p-3 md:p-6 hover:shadow-xl transform transition-all duration-300 hover:scale-105 relative overflow-hidden"
                                 style={{
                                     backgroundColor: team.style?.backgroundColor || '#ffffff',
                                     borderLeft: `6px solid ${team.style?.primaryColor || '#dc2626'}`
                                 }}
                             >
-                                {/* Team Logo - Full Rectangle */}
-                                <div className="h-32 mb-4 rounded-lg overflow-hidden relative" style={{
+                                {/* Team Logo - Responsive Rectangle */}
+                                <div className="h-20 md:h-32 mb-2 md:mb-4 rounded-lg overflow-hidden relative" style={{
                                     backgroundColor: team.style?.primaryColor || '#dc2626',
                                     backgroundImage: `linear-gradient(45deg, ${team.style?.primaryColor || '#dc2626'} 0%, ${team.style?.backgroundColor || '#ffffff'} 100%)`
                                 }}>
