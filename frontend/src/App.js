@@ -1845,15 +1845,8 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
 const HomePage = ({teams, onTeamClick, leagueInfo, websiteStyle}) => {
     const sortedTeams = teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name));
     
-    const teamBackgroundStyle = team.style?.pageBackgroundImage ? {
-        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${team.style.pageBackgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-    } : getBackgroundStyle(websiteStyle);
-
     return (
-        <div className="min-h-screen" style={teamBackgroundStyle}>
+        <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
             {/* Hero Section */}
             <div className="text-center mb-12">
                 <h1 className="text-6xl font-bold text-slate-800 mb-4 tracking-tight">{leagueInfo.name}</h1>
