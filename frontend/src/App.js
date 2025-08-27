@@ -6441,7 +6441,7 @@ function App() {
             
             {/* Fixed Sidebar */}
             <aside 
-                className={`bg-slate-900 text-white w-64 space-y-6 py-7 px-2 fixed inset-y-0 left-0 transform ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out z-30 flex flex-col overflow-hidden`} 
+                className={`bg-slate-900 text-white w-64 space-y-6 py-7 px-2 fixed inset-y-0 left-0 transform ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out z-30 flex flex-col overflow-y-auto`} 
                 style={{
                     backgroundColor: websiteStyle.primaryColor,
                     backgroundImage: websiteStyle.sidebarImage ? `linear-gradient(rgba(0,0,0,${1 - websiteStyle.sidebarOpacity}), rgba(0,0,0,${1 - websiteStyle.sidebarOpacity})), url(${websiteStyle.sidebarImage})` : 'none',
