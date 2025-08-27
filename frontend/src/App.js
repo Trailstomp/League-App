@@ -7198,6 +7198,19 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                                         <span>League Info</span>
                                     </div>
                                 </button>
+                                <button 
+                                    className={`px-4 py-2 border-b-2 font-semibold transition-colors ${
+                                        settingsTab === 'credentials' 
+                                            ? 'border-blue-600 text-blue-600' 
+                                            : 'border-transparent text-slate-600 hover:text-blue-600'
+                                    }`}
+                                    onClick={() => setSettingsTab('credentials')}
+                                >
+                                    <div className="flex items-center space-x-2">
+                                        <Settings size={16} />
+                                        <span>API Credentials</span>
+                                    </div>
+                                </button>
                             </div>
                         </div>
                         
