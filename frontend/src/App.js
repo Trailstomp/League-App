@@ -6716,6 +6716,25 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
     );
 };
 
+// --- LOCAL STORAGE HELPERS ---
+const getStoredData = (key, defaultValue) => {
+    try {
+        const stored = localStorage.getItem(key);
+        return stored ? JSON.parse(stored) : defaultValue;
+    } catch (error) {
+        console.warn(`Error loading ${key} from localStorage:`, error);
+        return defaultValue;
+    }
+};
+
+const setStoredData = (key, value) => {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+        console.warn(`Error saving ${key} to localStorage:`, error);
+    }
+};
+
 // --- Main App Component ---
 function App() {
     const [page, setPage] = useState('home');
