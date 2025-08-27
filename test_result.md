@@ -277,17 +277,17 @@ frontend:
         agent: "main"
         comment: "Added tabbed interface with 'Photo Galleries' and 'Video Collections' sub-tabs with separate management workflows."
 
-  - task: "Multiple galleries with newest on top sorting"
+  - task: "Fix build error - Unexpected token, expected comma (2088:0)"
     implemented: true
     working: true
     file: "frontend/src/App.js"
     stuck_count: 0
-    priority: "medium"
+    priority: "critical"
     needs_retesting: false
     status_history:
       - working: true
         agent: "main"
-        comment: "Galleries sorted by creation date (newest first). Each gallery shows creation date, item count, and individual gallery management."
+        comment: "Fixed missing closing parenthesis in MediaManager return statement. Build compilation and application loading now working correctly."
 
 backend:
   - task: "Backend API functionality"
