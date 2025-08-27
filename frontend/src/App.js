@@ -3860,9 +3860,52 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
     const [activeTab, setActiveTab] = useState('overview');
     const [selectedTeamId, setSelectedTeamId] = useState('league');
     const [postContent, setPostContent] = useState('');
-    const [selectedPlatforms, setSelectedPlatforms] = useState(['twitter', 'facebook', 'instagram']);
+    const [selectedPlatforms, setSelectedPlatforms] = useState(['twitter', 'facebook', 'instagram', 'youtube']);
     const [scheduledPosts, setScheduledPosts] = useState([]);
     const [isPosting, setIsPosting] = useState(false);
+    const [showCredentialsForm, setShowCredentialsForm] = useState(false);
+    
+    // Social Media Credentials State
+    const [credentials, setCredentials] = useState(() => {
+        const stored = localStorage.getItem('mlbl_social_credentials');
+        return stored ? JSON.parse(stored) : {
+            twitter: {
+                api_key: '',
+                api_secret: '',
+                bearer_token: '',
+                access_token: '',
+                access_token_secret: '',
+                connected: false
+            },
+            facebook: {
+                app_id: '',
+                app_secret: '',
+                access_token: '',
+                page_id: '',
+                connected: false
+            },
+            instagram: {
+                app_id: '',
+                app_secret: '',
+                access_token: '',
+                redirect_uri: '',
+                business_account_id: '',
+                connected: false
+            },
+            youtube: {
+                client_id: '',
+                client_secret: '',
+                refresh_token: '',
+                channel_id: '',
+                connected: false
+            }
+        };
+    });
+
+    // Save credentials to localStorage whenever they change
+    useEffect(() => {
+        localStorage.setItem('mlbl_social_credentials', JSON.stringify(credentials));
+    }, [credentials]);
 
     // Get current entity (league or team)
     const currentEntity = selectedTeamId === 'league' 
@@ -3873,30 +3916,96 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
         e.preventDefault();
         if (!postContent.trim()) return;
 
+        // Check which platforms are actually connected
+        const connectedPlatforms = selectedPlatforms.filter(platform => credentials[platform]?.connected);
+        
+        if (connectedPlatforms.length === 0) {
+            alert('Please connect at least one social media platform before posting.');
+            return;
+        }
+
         setIsPosting(true);
         
-        // Simulate posting to social media platforms
-        const newPost = {
-            id: Date.now(),
-            content: postContent,
-            platforms: selectedPlatforms,
-            entityId: selectedTeamId,
-            entityName: currentEntity?.name || 'League',
-            timestamp: new Date().toISOString(),
-            status: 'posted'
+        try {
+            // Here we would call the actual API integration
+            // For now, simulate the posting process
+            const newPost = {
+                id: Date.now(),
+                content: postContent,
+                platforms: connectedPlatforms,
+                entityId: selectedTeamId,
+                entityName: currentEntity?.name || 'League',
+                timestamp: new Date().toISOString(),
+                status: 'posted',
+                results: connectedPlatforms.map(platform => ({
+                    platform,
+                    success: Math.random() > 0.2, // 80% success rate for demo
+                    url: `https://${platform}.com/post/${Date.now()}`
+                }))
+            };
+
+            setScheduledPosts(prev => [newPost, ...prev]);
+            setPostContent('');
+            
+        } catch (error) {
+            console.error('Error posting to social media:', error);
+            alert('Error posting to social media. Please try again.');
+        } finally {
+            setTimeout(() => {
+                setIsPosting(false);
+            }, 2000);
+        }
+    };
+
+    const handleCredentialChange = (platform, field, value) => {
+        setCredentials(prev => ({
+            ...prev,
+            [platform]: {
+                ...prev[platform],
+                [field]: value
+            }
+        }));
+    };
+
+    const handleTestConnection = async (platform) => {
+        const platformCredentials = credentials[platform];
+        
+        // Check if required fields are filled
+        const requiredFields = {
+            twitter: ['api_key', 'api_secret', 'access_token', 'access_token_secret'],
+            facebook: ['app_id', 'app_secret', 'access_token'],
+            instagram: ['app_id', 'app_secret', 'access_token'],
+            youtube: ['client_id', 'client_secret', 'refresh_token']
         };
 
-        setScheduledPosts(prev => [newPost, ...prev]);
-        setPostContent('');
+        const missing = requiredFields[platform]?.filter(field => !platformCredentials[field]) || [];
         
-        // Simulate API delay
-        setTimeout(() => {
-            setIsPosting(false);
-        }, 1500);
+        if (missing.length > 0) {
+            alert(`Missing required fields for ${platform}: ${missing.join(', ')}`);
+            return;
+        }
+
+        // Simulate connection test
+        const isConnected = Math.random() > 0.3; // 70% success rate for demo
+        
+        setCredentials(prev => ({
+            ...prev,
+            [platform]: {
+                ...prev[platform],
+                connected: isConnected
+            }
+        }));
+
+        if (isConnected) {
+            alert(`Successfully connected to ${platform.charAt(0).toUpperCase() + platform.slice(1)}!`);
+        } else {
+            alert(`Failed to connect to ${platform.charAt(0).toUpperCase() + platform.slice(1)}. Please check your credentials.`);
+        }
     };
 
     const tabs = [
         { id: 'overview', label: 'Overview', icon: <Layout size={16} /> },
+        { id: 'credentials', label: 'API Setup', icon: <Settings size={16} /> },
         { id: 'post', label: 'Create Post', icon: <Plus size={16} /> },
         { id: 'schedule', label: 'Scheduled Posts', icon: <Calendar size={16} /> },
         { id: 'analytics', label: 'Analytics', icon: <BarChart2 size={16} /> }
