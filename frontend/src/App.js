@@ -3923,7 +3923,7 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
         if (!postContent.trim()) return;
 
         // Check which platforms are actually connected
-        const connectedPlatforms = selectedPlatforms.filter(platform => credentials[platform]?.connected);
+        const connectedPlatforms = selectedPlatforms.filter(platform => currentCredentials[platform]?.connected);
         
         if (connectedPlatforms.length === 0) {
             alert('Please connect at least one social media platform before posting.');
