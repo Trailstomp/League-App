@@ -7095,6 +7095,12 @@ function App() {
 
     // Registration handlers
     const handleRegistration = () => {
+        // Validation
+        if (!registrationData.name || !registrationData.email || !registrationData.reasonForJoining) {
+            alert('Please fill in all required fields (Name, Email, and Reason for Joining).');
+            return;
+        }
+
         const newUser = {
             id: Date.now(),
             name: registrationData.name,
@@ -7110,6 +7116,8 @@ function App() {
         };
         
         setUsers(prev => [...prev, newUser]);
+        
+        // Reset form
         setRegistrationData({
             name: '',
             email: '',
@@ -7118,8 +7126,23 @@ function App() {
             phone: '',
             reasonForJoining: ''
         });
+        
         setAuthMode('login');
-        alert('Registration submitted! An admin will review your application.');
+        alert('Registration submitted successfully! An admin will review your application and notify you when approved. Note: Email notifications are not currently configured.');
+    };
+
+    // Reset registration data when closing auth modal
+    const handleAuthModalClose = () => {
+        setShowLogin(false);
+        setAuthMode('login');
+        setRegistrationData({
+            name: '',
+            email: '',
+            preferredRole: 'player',
+            teamId: '',
+            phone: '',
+            reasonForJoining: ''
+        });
     };
 
     const AuthModal = () => (
