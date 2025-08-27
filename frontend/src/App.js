@@ -6433,6 +6433,13 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
             description: 'Photos and videos'
         },
         { 
+            id: 'social', 
+            label: 'Social Media', 
+            icon: <Share2 size={16} />, 
+            permissions: ['media.edit'],
+            description: 'Social media management and cross-posting'
+        },
+        { 
             id: 'game_ticker', 
             label: 'Game Ticker', 
             icon: <BarChart2 size={16} />, 
