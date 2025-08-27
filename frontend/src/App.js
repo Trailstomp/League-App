@@ -1093,18 +1093,18 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                     borderLeft: `6px solid ${team.style?.primaryColor || '#dc2626'}`
                                 }}
                             >
-                                {/* Team Logo */}
-                                <div className="flex items-center justify-center mb-4">
+                                {/* Team Logo - Full Rectangle */}
+                                <div className="h-32 mb-4 rounded-lg overflow-hidden relative" style={{
+                                    backgroundColor: team.style?.primaryColor || '#dc2626',
+                                    backgroundImage: `linear-gradient(45deg, ${team.style?.primaryColor || '#dc2626'} 0%, ${team.style?.backgroundColor || '#ffffff'} 100%)`
+                                }}>
                                     <img 
                                         src={team.logo} 
                                         alt={team.name} 
-                                        className={`w-20 h-20 group-hover:scale-110 transition-transform ${getLogoStyle(websiteStyle)}`}
-                                        style={{
-                                            border: `2px solid ${team.style?.primaryColor || '#dc2626'}`,
-                                            borderRadius: '8px',
-                                            padding: '8px'
-                                        }}
+                                        className={`w-full h-full group-hover:scale-110 transition-transform ${getLogoStyle(websiteStyle)} opacity-90`}
                                     />
+                                    {/* Overlay for better contrast */}
+                                    <div className="absolute inset-0 bg-black bg-opacity-10"></div>
                                 </div>
                                 
                                 {/* Team Name and Division */}
