@@ -1279,7 +1279,7 @@ const HomePage = ({teams, onTeamClick, leagueInfo}) => {
     const sortedTeams = teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name));
     
     return (
-        <div className="p-4 md:p-8">
+        <div className="p-4 md:p-8" style={getBackgroundStyle(websiteStyle)}>
             {/* Hero Section */}
             <div className="text-center mb-12">
                 <h1 className="text-6xl font-bold text-slate-800 mb-4 tracking-tight">{leagueInfo.name}</h1>
