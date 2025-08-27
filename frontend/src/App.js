@@ -4034,18 +4034,29 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold mb-4">Social Media Manager</h2>
-                <select 
-                    value={selectedTeamId}
-                    onChange={(e) => setSelectedTeamId(e.target.value)}
-                    className="px-3 py-2 border rounded-lg"
-                >
-                    <option value="league">League Account</option>
-                    {teams.map(team => (
-                        <option key={team.id} value={team.id}>{team.name}</option>
-                    ))}
-                </select>
+            <div className="bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-500">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h2 className="text-2xl font-bold text-slate-800">Social Media Manager</h2>
+                        <p className="text-sm text-slate-600 mt-1">
+                            Manage social media accounts for {selectedTeamId === 'league' ? 'the league' : `${teams.find(t => t.id === selectedTeamId)?.name || 'team'}`}
+                        </p>
+                    </div>
+                    <div className="text-right">
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Managing Account For:</label>
+                        <select 
+                            value={selectedTeamId}
+                            onChange={(e) => setSelectedTeamId(e.target.value)}
+                            className="px-3 py-2 border rounded-lg bg-white min-w-[200px]"
+                        >
+                            <option value="league">🏆 League (Main Account)</option>
+                            {teams.map(team => (
+                                <option key={team.id} value={team.id}>🏒 {team.name} Team</option>
+                            ))}
+                        </select>
+                        <p className="text-xs text-slate-500 mt-1">Each has separate credentials</p>
+                    </div>
+                </div>
             </div>
 
             {/* Tab Navigation */}
