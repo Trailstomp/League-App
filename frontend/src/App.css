@@ -43,11 +43,28 @@
     }
 }
 
+/* Vertical scrolling animation for news feed */
+@keyframes scroll-vertical {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-50%);
+    }
+}
+
 .animate-marquee {
     animation: marquee 30s linear infinite;
 }
 
-/* Pause animation on hover */
 .animate-marquee:hover {
+    animation-play-state: paused;
+}
+
+.animate-scroll-vertical {
+    animation: scroll-vertical 20s linear infinite;
+}
+
+.animate-scroll-vertical:hover {
     animation-play-state: paused;
 }
