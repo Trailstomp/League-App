@@ -2085,6 +2085,7 @@ const MediaManager = ({ team, setTeams }) => {
                 )}
             </div>
         </div>
+    );
 };
 
 const TeamInfoManager = ({ team, setTeams }) => {
