@@ -1228,7 +1228,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                         <img 
                                             src={item.imageUrl} 
                                             alt="News"
-                                            className="w-20 h-12 rounded mr-3 object-cover flex-shrink-0 shadow-sm"
+                                            className="w-24 h-16 rounded mr-3 object-cover flex-shrink-0 shadow-sm"
                                         />
                                     )}
                                     {item.type === 'video' && item.thumbnailUrl && (
@@ -1236,11 +1236,11 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                             <img 
                                                 src={item.thumbnailUrl} 
                                                 alt="Video"
-                                                className="w-20 h-12 rounded object-cover shadow-sm"
+                                                className="w-24 h-16 rounded object-cover shadow-sm"
                                             />
                                             <div className="absolute inset-0 flex items-center justify-center">
-                                                <div className="w-4 h-4 bg-white rounded-full flex items-center justify-center shadow-sm">
-                                                    <div className="w-0 h-0 border-l-2 border-l-red-600 border-t-1 border-t-transparent border-b-1 border-b-transparent ml-0.5"></div>
+                                                <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                                    <div className="w-0 h-0 border-l-3 border-l-red-600 border-t-2 border-t-transparent border-b-2 border-b-transparent ml-0.5"></div>
                                                 </div>
                                             </div>
                                         </div>
