@@ -432,7 +432,7 @@ const PlayerCardModal = ({ player, teamStyle, teams, isOpen, onClose }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full transform transition-all overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full transform transition-all overflow-hidden">
                 {/* Close button */}
                 <button 
                     onClick={onClose}
@@ -441,16 +441,16 @@ const PlayerCardModal = ({ player, teamStyle, teams, isOpen, onClose }) => {
                     <X className="h-5 w-5 text-slate-600" />
                 </button>
 
-                {/* Large Player Photo Section */}
-                <div className="relative h-80 overflow-hidden">
+                {/* Large Player Photo Section - Match typical portrait proportions */}
+                <div className="relative h-96 overflow-hidden bg-gradient-to-b from-slate-200 to-slate-300">
                     <img 
                         src={player.photo || `https://ui-avatars.com/api/?name=${player.firstName}+${player.lastName}&background=random&size=600`} 
                         alt={`${player.firstName} ${player.lastName}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                     />
                     
-                    {/* Gradient overlay for text readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                    {/* Gradient overlay for text readability - only at bottom */}
+                    <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
                     
                     {/* Team logo circle overlay */}
                     {primaryTeam && (
@@ -466,8 +466,8 @@ const PlayerCardModal = ({ player, teamStyle, teams, isOpen, onClose }) => {
                     {/* Jersey number - top right */}
                     <div className="absolute top-4 right-4">
                         <div 
-                            className="text-white text-4xl font-bold px-3 py-1 rounded-lg shadow-lg"
-                            style={{ backgroundColor: `rgba(0, 0, 0, 0.6)` }}
+                            className="text-white text-3xl font-bold px-3 py-1 rounded-lg shadow-lg"
+                            style={{ backgroundColor: `rgba(0, 0, 0, 0.7)` }}
                         >
                             #{player.number}
                         </div>
@@ -475,18 +475,18 @@ const PlayerCardModal = ({ player, teamStyle, teams, isOpen, onClose }) => {
 
                     {/* Coach badge */}
                     {player.roles && player.roles.includes('coach') && (
-                        <div className="absolute bottom-4 right-4 bg-yellow-500 px-3 py-1 rounded-full text-sm font-bold text-black">
+                        <div className="absolute bottom-20 right-4 bg-yellow-500 px-3 py-1 rounded-full text-sm font-bold text-black shadow-lg">
                             COACH
                         </div>
                     )}
 
                     {/* Player name and position overlay - bottom of photo */}
-                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                        <h2 className="text-3xl font-bold mb-1 drop-shadow-lg">{player.firstName} {player.lastName}</h2>
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                        <h2 className="text-2xl font-bold mb-1 drop-shadow-lg">{player.firstName} {player.lastName}</h2>
                         {player.nickname && (
-                            <p className="text-xl opacity-90 mb-2 drop-shadow-lg">"{player.nickname}"</p>
+                            <p className="text-lg opacity-90 mb-1 drop-shadow-lg">"{player.nickname}"</p>
                         )}
-                        <p className="opacity-90 text-lg drop-shadow-lg">
+                        <p className="opacity-90 text-base drop-shadow-lg">
                             {Array.isArray(player.positions) ? player.positions.join(', ') : player.positions}
                         </p>
                     </div>
