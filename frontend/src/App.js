@@ -4777,7 +4777,7 @@ function App() {
                         ? <AdminPage teams={teams} setTeams={setTeams} players={players} setPlayers={setPlayers} leagueSchedule={leagueSchedule} gameTickerData={gameTickerData} setGameTickerData={setGameTickerData} currentUser={currentUser} users={users} setUsers={setUsers} websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} leagueInfo={leagueInfo} setLeagueInfo={setLeagueInfo} /> 
                         : <div className="p-8 text-center"><h2 className="text-2xl font-bold">Access Denied</h2><p>You do not have permission to view this page.</p></div>;
                     break;
-                default: pageComponent = <NewHomePage teams={teams} onTeamClick={(teamId) => navigate('team', teamId)} leagueInfo={leagueInfo} currentUser={currentUser} websiteStyle={websiteStyle} />;
+                default: pageComponent = <NewHomePage teams={teams} onTeamClick={(teamId) => navigate('team', teamId)} leagueInfo={leagueInfo} currentUser={currentUser} websiteStyle={websiteStyle} setCurrentUser={setCurrentUser} />;
             }
         }
         return <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">{pageComponent}</div>;
