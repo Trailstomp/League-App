@@ -7417,13 +7417,13 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                                                 <p className="text-sm text-slate-600">Get credentials from developer.twitter.com</p>
                                             </div>
                                         </div>
-                                        <span className={`px-3 py-1 rounded text-sm font-medium ${
-                                            credentials.twitter.connected 
-                                                ? 'bg-green-100 text-green-800' 
-                                                : 'bg-red-100 text-red-800'
-                                        }`}>
-                                            {credentials.twitter.connected ? 'Connected' : 'Not Connected'}
-                                        </span>
+                                            <span className={`px-3 py-1 rounded text-sm font-medium ${
+                                credentials.twitter.connected 
+                                    ? 'bg-green-100 text-green-800' 
+                                    : 'bg-red-100 text-red-800'
+                            }`}>
+                                {credentials.twitter.connected ? 'Connected' : 'Not Connected'}
+                            </span>
                                     </div>
                                     
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
