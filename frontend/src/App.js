@@ -5194,6 +5194,66 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
                             onChange={(e) => handleImageUpload(e, 'bannerUrl')}
                             className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
                         />
+                        <input 
+                            type="url"
+                            value={style.bannerUrl || ''}
+                            onChange={(e) => setStyle(prev => ({...prev, bannerUrl: e.target.value}))}
+                            placeholder="Or enter banner image URL"
+                            className="w-full p-2 border border-slate-300 rounded-lg mt-2"
+                        />
+                    </div>
+
+                    {/* === TEAM BACKGROUND IMAGE === */}
+                    <div className="border-t border-slate-300 pt-4">
+                        <label className="block font-semibold text-slate-700 mb-2">Team Page Background Image</label>
+                        <input 
+                            type="file" 
+                            accept="image/*"
+                            onChange={(e) => handleImageUpload(e, 'pageBackgroundImage')}
+                            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        />
+                        <input 
+                            type="url"
+                            value={style.pageBackgroundImage || ''}
+                            onChange={(e) => setStyle(prev => ({...prev, pageBackgroundImage: e.target.value}))}
+                            placeholder="Or enter background image URL"
+                            className="w-full p-2 border border-slate-300 rounded-lg mt-2"
+                        />
+                        <p className="text-xs text-slate-500 mt-1">Background image for this team's page</p>
+                    </div>
+
+                    {/* === TEAM MUSIC === */}
+                    <div className="border-t border-slate-300 pt-4">
+                        <label className="block font-semibold text-slate-700 mb-2">Team Music</label>
+                        <input 
+                            type="file"
+                            accept="audio/*"
+                            onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                    const fileUrl = URL.createObjectURL(e.target.files[0]);
+                                    setStyle(prev => ({...prev, musicUrl: fileUrl}));
+                                    // Also update the team directly for immediate music functionality
+                                    setTeams(prevTeams => prevTeams.map(team => 
+                                        team.id === selectedTeamId ? { ...team, musicUrl: fileUrl } : team
+                                    ));
+                                }
+                            }}
+                            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                        />
+                        <input 
+                            type="url"
+                            value={style.musicUrl || selectedTeam.musicUrl || ''}
+                            onChange={(e) => {
+                                setStyle(prev => ({...prev, musicUrl: e.target.value}));
+                                // Also update the team directly for immediate music functionality
+                                setTeams(prevTeams => prevTeams.map(team => 
+                                    team.id === selectedTeamId ? { ...team, musicUrl: e.target.value } : team
+                                ));
+                            }}
+                            placeholder="Or enter music URL (MP3, Spotify, SoundCloud, etc.)"
+                            className="w-full p-2 border border-slate-300 rounded-lg mt-2"
+                        />
+                        <p className="text-xs text-slate-500 mt-1">Team theme song that plays when viewing this team's page</p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
