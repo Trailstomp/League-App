@@ -7444,18 +7444,6 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                             </div>
                         </div>
                     </div>
-                    
-                    {/* Quick Team Social Media Manager */}
-                    <div className="border rounded-lg p-4 bg-gray-50">
-                        <div className="flex justify-between items-center mb-4">
-                            <div>
-                                <h4 className="font-semibold text-slate-800">Team Social Media Hub</h4>
-                                <p className="text-sm text-slate-600">Manage API credentials and post to your team's social accounts</p>
-                            </div>
-                        </div>
-                        
-                        <TeamSocialMediaManager team={teams[0]} setTeams={setTeams} />
-                    </div>
                 </div>
 
                 {/* Access Denied for tabs without permission */}
