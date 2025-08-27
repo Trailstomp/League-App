@@ -4363,6 +4363,20 @@ const TeamManager = ({ teams, setTeams }) => {
                 <h3 className="text-2xl font-bold mb-4">{editingTeam?.id ? 'Edit Team' : 'Add New Team'}</h3>
                 <form onSubmit={handleSave} className="space-y-4">
                     <input type="text" value={editingTeam.name || ''} onChange={e => setEditingTeam({...editingTeam, name: e.target.value})} placeholder="Team Name" className="w-full p-2 border rounded" required />
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Division</label>
+                        <select 
+                            value={editingTeam.division || 'Field'} 
+                            onChange={e => setEditingTeam({...editingTeam, division: e.target.value})} 
+                            className="w-full p-2 border rounded" 
+                            required
+                        >
+                            <option value="Field">Field Lacrosse</option>
+                            <option value="Box">Box Lacrosse</option>
+                        </select>
+                    </div>
+                    
                     <FileUploadInput
                         label="Team Logo"
                         accept="image/*"
@@ -4370,6 +4384,19 @@ const TeamManager = ({ teams, setTeams }) => {
                         onChange={(url) => setEditingTeam({...editingTeam, logo: url})}
                         placeholder="Upload team logo"
                     />
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Team Music URL (Optional)</label>
+                        <input 
+                            type="url" 
+                            value={editingTeam.musicUrl || ''} 
+                            onChange={e => setEditingTeam({...editingTeam, musicUrl: e.target.value})} 
+                            placeholder="https://example.com/team-song.mp3" 
+                            className="w-full p-2 border rounded" 
+                        />
+                        <p className="text-xs text-slate-500 mt-1">URL to team's theme song or music (MP3, WAV, etc.)</p>
+                    </div>
+                    
                     <div className="flex justify-end space-x-2">
                         <button type="button" onClick={() => setEditingTeam(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
                         <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Save Team</button>
