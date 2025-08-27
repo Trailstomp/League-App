@@ -6470,46 +6470,74 @@ function App() {
                       
                       {/* Field Lacrosse Teams */}
                       <div className="mb-3">
-                        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 px-2 flex items-center">
-                            <Trophy size={12} className="mr-1" /> Field Lacrosse
-                        </h3>
-                        {teams.filter(t => t.active && t.division === 'Field').sort((a, b) => a.name.localeCompare(b.name)).map(team => (
-                           <button
-                                key={team.id}
-                                onClick={() => navigate('team', team.id)}
-                                className={`flex items-center space-x-3 p-2 rounded-md w-full text-left transition-colors ml-2 ${
-                                    page === 'team' && selectedTeam === team.id
-                                        ? 'text-white'
-                                        : 'text-slate-300 hover:bg-slate-700 hover:text-white'
-                                }`}
-                                style={{backgroundColor: (page === 'team' && selectedTeam === team.id) ? websiteStyle.accentColor : 'transparent'}}
-                            >
-                                <img src={team.logo} alt={team.name} className="w-6 h-6 rounded-full bg-white p-0.5" />
-                                <span className="text-sm">{team.name}</span>
-                           </button>
-                        ))}
+                        <button 
+                            onClick={() => setSidebarSections(prev => ({...prev, fieldLacrosse: !prev.fieldLacrosse}))}
+                            className="w-full text-left px-2 py-1 hover:bg-slate-700 hover:bg-opacity-50 rounded transition-colors"
+                        >
+                            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 flex items-center justify-between">
+                                <div className="flex items-center">
+                                    <Trophy size={12} className="mr-1" /> Field Lacrosse
+                                </div>
+                                <div className={`transform transition-transform ${sidebarSections.fieldLacrosse ? 'rotate-180' : ''}`}>
+                                    <ArrowDown size={12} />
+                                </div>
+                            </h3>
+                        </button>
+                        {sidebarSections.fieldLacrosse && (
+                            <div className="space-y-1 mt-2">
+                                {teams.filter(t => t.active && t.division === 'Field').sort((a, b) => a.name.localeCompare(b.name)).map(team => (
+                                   <button
+                                        key={team.id}
+                                        onClick={() => navigate('team', team.id)}
+                                        className={`flex items-center space-x-3 p-2 rounded-md w-full text-left transition-colors ml-2 ${
+                                            page === 'team' && selectedTeam === team.id
+                                                ? 'text-white'
+                                                : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                                        }`}
+                                        style={{backgroundColor: (page === 'team' && selectedTeam === team.id) ? websiteStyle.accentColor : 'transparent'}}
+                                    >
+                                        <img src={team.logo} alt={team.name} className="w-6 h-6 rounded-full bg-white p-0.5" />
+                                        <span className="text-sm">{team.name}</span>
+                                   </button>
+                                ))}
+                            </div>
+                        )}
                       </div>
                       
                       {/* Box Lacrosse Teams */}
                       <div>
-                        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 px-2 flex items-center">
-                            <Shield size={12} className="mr-1" /> Box Lacrosse
-                        </h3>
-                        {teams.filter(t => t.active && t.division === 'Box').sort((a, b) => a.name.localeCompare(b.name)).map(team => (
-                           <button
-                                key={team.id}
-                                onClick={() => navigate('team', team.id)}
-                                className={`flex items-center space-x-3 p-2 rounded-md w-full text-left transition-colors ml-2 ${
-                                    page === 'team' && selectedTeam === team.id
-                                        ? 'text-white'
-                                        : 'text-slate-300 hover:bg-slate-700 hover:text-white'
-                                }`}
-                                style={{backgroundColor: (page === 'team' && selectedTeam === team.id) ? websiteStyle.accentColor : 'transparent'}}
-                            >
-                                <img src={team.logo} alt={team.name} className="w-6 h-6 rounded-full bg-white p-0.5" />
-                                <span className="text-sm">{team.name}</span>
-                           </button>
-                        ))}
+                        <button 
+                            onClick={() => setSidebarSections(prev => ({...prev, boxLacrosse: !prev.boxLacrosse}))}
+                            className="w-full text-left px-2 py-1 hover:bg-slate-700 hover:bg-opacity-50 rounded transition-colors"
+                        >
+                            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 flex items-center justify-between">
+                                <div className="flex items-center">
+                                    <Shield size={12} className="mr-1" /> Box Lacrosse
+                                </div>
+                                <div className={`transform transition-transform ${sidebarSections.boxLacrosse ? 'rotate-180' : ''}`}>
+                                    <ArrowDown size={12} />
+                                </div>
+                            </h3>
+                        </button>
+                        {sidebarSections.boxLacrosse && (
+                            <div className="space-y-1 mt-2">
+                                {teams.filter(t => t.active && t.division === 'Box').sort((a, b) => a.name.localeCompare(b.name)).map(team => (
+                                   <button
+                                        key={team.id}
+                                        onClick={() => navigate('team', team.id)}
+                                        className={`flex items-center space-x-3 p-2 rounded-md w-full text-left transition-colors ml-2 ${
+                                            page === 'team' && selectedTeam === team.id
+                                                ? 'text-white'
+                                                : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                                        }`}
+                                        style={{backgroundColor: (page === 'team' && selectedTeam === team.id) ? websiteStyle.accentColor : 'transparent'}}
+                                    >
+                                        <img src={team.logo} alt={team.name} className="w-6 h-6 rounded-full bg-white p-0.5" />
+                                        <span className="text-sm">{team.name}</span>
+                                   </button>
+                                ))}
+                            </div>
+                        )}
                       </div>
                     </div>
                 </nav>
