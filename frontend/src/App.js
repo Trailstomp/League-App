@@ -3609,6 +3609,18 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
     const [selectedPlayer, setSelectedPlayer] = useState(null);
     const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
 
+    // Ensure activeTab is visible, fallback to first visible tab
+    React.useEffect(() => {
+        if (team?.style?.visibleTabs) {
+            const visibleTabs = ['roster', 'schedule', 'media', 'social', 'contact'].filter(
+                tab => team.style.visibleTabs[tab] !== false
+            );
+            if (!visibleTabs.includes(activeTab) && visibleTabs.length > 0) {
+                setActiveTab(visibleTabs[0]);
+            }
+        }
+    }, [team, activeTab]);
+
     // Sort players: coaches first, then players
     const sortedTeamPlayers = teamPlayers.sort((a, b) => {
         const aIsCoach = a.roles && a.roles.includes('coach');
