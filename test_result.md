@@ -104,9 +104,11 @@
 
 user_problem_statement: |
   User has an existing lacrosse league management application built with React frontend. The current pending tasks are:
-  1. Update navigation to include the new Events page and use the new pages in the main App component
-  2. Create a NewHomePage component to replace the existing HomePage
-  3. Update the renderPage function to correctly route to EventsPage and NewHomePage
+  1. Enhance news ticker to show a pop-up window with the news message and a full-size image when clicked
+  2. Add `heading` and `comments` fields to news items data structure and display  
+  3. Implement the ability for team and player cards to close when clicked anywhere on the card
+  4. Fully implement the login/create splash screen, admin approval for new user access, and an invitation process
+  5. Finalize WebsiteStyleManager enhancements for all text label attributes and visual separators
   
 frontend:
   - task: "Create NewHomePage component with photo albums, text area, and team logo links"
