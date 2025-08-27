@@ -5540,6 +5540,9 @@ function App() {
                     {renderPage()}
                 </main>
             </div>
+            
+            {/* Global Music Player */}
+            <MusicPlayer musicState={musicState} setMusicState={setMusicState} />
         </div>
     );
 }
