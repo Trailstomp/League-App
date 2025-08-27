@@ -4923,18 +4923,6 @@ const TeamManager = ({ teams, setTeams }) => {
                         placeholder="Upload team logo"
                     />
                     
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Team Music URL (Optional)</label>
-                        <input 
-                            type="url" 
-                            value={editingTeam.musicUrl || ''} 
-                            onChange={e => setEditingTeam({...editingTeam, musicUrl: e.target.value})} 
-                            placeholder="https://example.com/team-song.mp3" 
-                            className="w-full p-2 border rounded" 
-                        />
-                        <p className="text-xs text-slate-500 mt-1">URL to team's theme song or music (MP3, WAV, etc.)</p>
-                    </div>
-                    
                     <div className="flex justify-end space-x-2">
                         <button type="button" onClick={() => setEditingTeam(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
                         <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Save Team</button>
