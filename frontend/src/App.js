@@ -415,7 +415,224 @@ const getAllRoles = () => {
     return [...Object.values(SYSTEM_ROLES), ...customRoles];
 };
 
-// --- Helper Components ---
+// Role Management Component
+const RoleManager = ({ users, setUsers }) => {
+    const [editingRole, setEditingRole] = useState(null);
+    const [roles, setRoles] = useState(() => getAllRoles());
+
+    const handleSaveRole = (e) => {
+        e.preventDefault();
+        
+        if (editingRole.id && !editingRole.isSystemRole) {
+            // Edit existing custom role
+            const updatedRoles = roles.map(r => 
+                r.id === editingRole.id ? editingRole : r
+            );
+            setRoles(updatedRoles);
+            
+            // Save custom roles to localStorage
+            const customRoles = updatedRoles.filter(r => !r.isSystemRole);
+            localStorage.setItem('customRoles', JSON.stringify(customRoles));
+        } else if (!editingRole.id) {
+            // Create new role
+            const newRole = {
+                ...editingRole,
+                id: `custom_${Date.now()}`,
+                isSystemRole: false
+            };
+            
+            const updatedRoles = [...roles, newRole];
+            setRoles(updatedRoles);
+            
+            // Save custom roles to localStorage
+            const customRoles = updatedRoles.filter(r => !r.isSystemRole);
+            localStorage.setItem('customRoles', JSON.stringify(customRoles));
+        }
+        
+        setEditingRole(null);
+    };
+
+    const handleDeleteRole = (roleId) => {
+        const role = roles.find(r => r.id === roleId);
+        if (role && !role.isSystemRole && window.confirm(`Delete role "${role.name}"?`)) {
+            const updatedRoles = roles.filter(r => r.id !== roleId);
+            setRoles(updatedRoles);
+            
+            // Update localStorage
+            const customRoles = updatedRoles.filter(r => !r.isSystemRole);
+            localStorage.setItem('customRoles', JSON.stringify(customRoles));
+            
+            // Update users who had this role
+            setUsers(currentUsers => 
+                currentUsers.map(user => ({
+                    ...user,
+                    roleIds: (user.roleIds || []).filter(id => id !== roleId)
+                }))
+            );
+        }
+    };
+
+    const getPermissionsByCategory = () => {
+        const categories = {};
+        Object.entries(PERMISSIONS).forEach(([key, permission]) => {
+            if (!categories[permission.category]) {
+                categories[permission.category] = [];
+            }
+            categories[permission.category].push({ key, ...permission });
+        });
+        return categories;
+    };
+
+    const permissionCategories = getPermissionsByCategory();
+
+    return (
+        <div>
+            <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-semibold">Role Management</h3>
+                <button 
+                    onClick={() => setEditingRole({name: '', description: '', permissions: []})}
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center"
+                >
+                    <Plus className="mr-2 h-4 w-4"/> Create Role
+                </button>
+            </div>
+
+            {/* Role List */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {roles.map(role => (
+                    <div key={role.id} className="bg-slate-50 p-4 rounded-lg border">
+                        <div className="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 className="font-semibold text-slate-800">{role.name}</h4>
+                                {role.isSystemRole && (
+                                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">System Role</span>
+                                )}
+                            </div>
+                            <div className="flex space-x-2">
+                                {!role.isSystemRole && (
+                                    <>
+                                        <button 
+                                            onClick={() => setEditingRole(role)}
+                                            className="text-blue-600 hover:text-blue-800"
+                                        >
+                                            <Edit size={16} />
+                                        </button>
+                                        <button 
+                                            onClick={() => handleDeleteRole(role.id)}
+                                            className="text-red-600 hover:text-red-800"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                        <p className="text-sm text-slate-600 mb-2">{role.description}</p>
+                        <p className="text-xs text-slate-500">
+                            {role.permissions.length} permission{role.permissions.length !== 1 ? 's' : ''}
+                        </p>
+                    </div>
+                ))}
+            </div>
+
+            {/* Role Edit Modal */}
+            {editingRole && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                        <h3 className="text-2xl font-bold mb-4">
+                            {editingRole.id ? 'Edit Role' : 'Create New Role'}
+                        </h3>
+                        
+                        <form onSubmit={handleSaveRole}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Role Details */}
+                                <div>
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Role Name</label>
+                                        <input 
+                                            type="text"
+                                            value={editingRole.name || ''}
+                                            onChange={e => setEditingRole(prev => ({...prev, name: e.target.value}))}
+                                            className="w-full p-2 border rounded"
+                                            required
+                                        />
+                                    </div>
+                                    
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                        <textarea 
+                                            value={editingRole.description || ''}
+                                            onChange={e => setEditingRole(prev => ({...prev, description: e.target.value}))}
+                                            className="w-full p-2 border rounded h-20"
+                                            placeholder="Describe what this role can do..."
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Permissions */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-3">Permissions</label>
+                                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                                        {Object.entries(permissionCategories).map(([category, permissions]) => (
+                                            <div key={category} className="border rounded p-3">
+                                                <h4 className="font-semibold text-sm text-slate-700 mb-2">{category}</h4>
+                                                <div className="space-y-1">
+                                                    {permissions.map(permission => (
+                                                        <label key={permission.key} className="flex items-start space-x-2 text-sm">
+                                                            <input 
+                                                                type="checkbox"
+                                                                checked={editingRole.permissions?.includes(permission.key) || false}
+                                                                onChange={e => {
+                                                                    const permissions = editingRole.permissions || [];
+                                                                    if (e.target.checked) {
+                                                                        setEditingRole(prev => ({
+                                                                            ...prev,
+                                                                            permissions: [...permissions, permission.key]
+                                                                        }));
+                                                                    } else {
+                                                                        setEditingRole(prev => ({
+                                                                            ...prev,
+                                                                            permissions: permissions.filter(p => p !== permission.key)
+                                                                        }));
+                                                                    }
+                                                                }}
+                                                                className="mt-1"
+                                                            />
+                                                            <div>
+                                                                <div className="font-medium">{permission.name}</div>
+                                                                <div className="text-xs text-slate-500">{permission.description}</div>
+                                                            </div>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end space-x-2 mt-6">
+                                <button 
+                                    type="button" 
+                                    onClick={() => setEditingRole(null)}
+                                    className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit"
+                                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                >
+                                    {editingRole.id ? 'Update Role' : 'Create Role'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
 const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
     const getTeam = (id) => teams.find(t => t.id === id);
     const tickerRef = useRef(null);
