@@ -1891,7 +1891,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                     onClick={() => setSelectedNewsItem(null)}
                 >
                     <div 
-                        className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+                        className="bg-white rounded-lg max-w-3xl w-full max-h-[85vh] overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="p-6">
@@ -1907,37 +1907,106 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                 </button>
                             </div>
                             
-                            {/* Full size image or video */}
+                            {/* Full size image */}
                             {selectedNewsItem.type === 'image' && selectedNewsItem.imageUrl && (
                                 <div className="mb-4">
-                                    <img 
-                                        src={selectedNewsItem.imageUrl} 
-                                        alt="News"
-                                        className="w-full rounded-lg object-cover max-h-96"
-                                    />
+                                    <div className="relative group">
+                                        <img 
+                                            src={selectedNewsItem.imageUrl} 
+                                            alt="News"
+                                            className="w-full rounded-lg object-cover max-h-[400px] cursor-pointer transition-transform hover:scale-[1.02]"
+                                            onClick={() => setShowingMedia(!showingMedia)}
+                                        />
+                                        <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                                            Click to {showingMedia ? 'shrink' : 'enlarge'}
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Full screen image view */}
+                                    {showingMedia && (
+                                        <div 
+                                            className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
+                                            onClick={() => setShowingMedia(false)}
+                                        >
+                                            <div className="relative max-w-[90vw] max-h-[90vh]">
+                                                <img 
+                                                    src={selectedNewsItem.imageUrl} 
+                                                    alt="News Full Size"
+                                                    className="max-w-full max-h-full object-contain"
+                                                />
+                                                <button
+                                                    onClick={() => setShowingMedia(false)}
+                                                    className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-70"
+                                                >
+                                                    <X size={24} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                             
+                            {/* Inline video player */}
                             {selectedNewsItem.type === 'video' && selectedNewsItem.videoUrl && (
                                 <div className="mb-4">
-                                    <div className="relative">
-                                        {selectedNewsItem.thumbnailUrl && (
-                                            <img 
-                                                src={selectedNewsItem.thumbnailUrl} 
-                                                alt="Video thumbnail"
-                                                className="w-full rounded-lg object-cover max-h-96"
-                                            />
-                                        )}
-                                        <div className="absolute inset-0 flex items-center justify-center">
+                                    {!showingMedia ? (
+                                        // Video thumbnail with play button
+                                        <div className="relative">
+                                            {selectedNewsItem.thumbnailUrl && (
+                                                <img 
+                                                    src={selectedNewsItem.thumbnailUrl} 
+                                                    alt="Video thumbnail"
+                                                    className="w-full rounded-lg object-cover max-h-[400px]"
+                                                />
+                                            )}
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <button
+                                                    onClick={() => setShowingMedia(true)}
+                                                    className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center space-x-2 transition-colors shadow-lg"
+                                                >
+                                                    <Play size={20} />
+                                                    <span>Play Video</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        // Inline video player
+                                        <div className="relative">
+                                            <div className="bg-slate-100 rounded-lg p-4 text-center">
+                                                {selectedNewsItem.videoUrl.includes('youtube.com') || selectedNewsItem.videoUrl.includes('youtu.be') ? (
+                                                    // YouTube embed
+                                                    <div className="aspect-video">
+                                                        <iframe
+                                                            className="w-full h-full rounded-lg"
+                                                            src={`https://www.youtube.com/embed/${selectedNewsItem.videoUrl.split('v=')[1]?.split('&')[0] || selectedNewsItem.videoUrl.split('/').pop()}`}
+                                                            title="YouTube video"
+                                                            frameBorder="0"
+                                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                            allowFullScreen
+                                                        ></iframe>
+                                                    </div>
+                                                ) : (
+                                                    // Generic video player
+                                                    <div className="aspect-video">
+                                                        <video 
+                                                            className="w-full h-full rounded-lg"
+                                                            controls
+                                                            src={selectedNewsItem.videoUrl}
+                                                        >
+                                                            Your browser does not support the video tag.
+                                                        </video>
+                                                    </div>
+                                                )}
+                                            </div>
                                             <button
-                                                onClick={() => window.open(selectedNewsItem.videoUrl, '_blank')}
-                                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center space-x-2 transition-colors"
+                                                onClick={() => setShowingMedia(false)}
+                                                className="mt-2 text-slate-500 hover:text-slate-700 flex items-center space-x-1"
                                             >
-                                                <Play size={20} />
-                                                <span>Play Video</span>
+                                                <Eye size={16} />
+                                                <span>Show thumbnail</span>
                                             </button>
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
                             )}
                             
