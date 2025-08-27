@@ -558,35 +558,25 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
     
     return (
         <div className="min-h-screen">
-            {/* Debug Info Display */}
-            <div className="bg-yellow-100 p-2 text-xs flex justify-between items-center">
-                <span>
-                    DEBUG: currentUser={currentUser ? 'SET' : 'NULL'} | 
-                    isLeagueAdmin={isLeagueAdmin ? 'TRUE' : 'FALSE'} | 
-                    setCurrentUser={setCurrentUser ? 'AVAILABLE' : 'MISSING'}
-                </span>
-                {/* Move debug button here to test */}
-                <button 
-                    onClick={() => {
-                        const adminUser = {
-                            id: 'admin-all',
-                            name: 'Admin All',
-                            email: 'admin@mlbl.com',
-                            roles: ['admin']
-                        };
-                        if (setCurrentUser) {
+            {/* Admin Access Button */}
+            {!currentUser && (
+                <div className="bg-blue-100 p-2 text-center">
+                    <button 
+                        onClick={() => {
+                            const adminUser = {
+                                id: 'admin-all',
+                                name: 'Admin All',
+                                email: 'admin@mlbl.com',
+                                roles: ['admin']
+                            };
                             setCurrentUser(adminUser);
-                            console.log('Set admin user:', adminUser);
-                        } else {
-                            console.log('setCurrentUser not available!');
-                        }
-                    }}
-                    className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700"
-                    title="Debug: Become Admin"
-                >
-                    🔧 BECOME ADMIN
-                </button>
-            </div>
+                        }}
+                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    >
+                        🔑 Login as Admin (Click to Edit News & Media)
+                    </button>
+                </div>
+            )}
             
             {/* Scrolling News Ticker */}
             <div className="bg-red-800 text-white py-2 overflow-hidden relative">
