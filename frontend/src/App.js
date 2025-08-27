@@ -6167,7 +6167,10 @@ function App() {
         sidebarImage: '',
         sidebarOpacity: 0.2,
         // Ticker settings
-        tickerColor: '#1e293b'
+        tickerColor: '#1e293b',
+        tickerItemColor: '#334155',
+        tickerBorderColor: '#475569',
+        tickerTextColor: '#94a3b8'
     });
 
     // Global music player state
