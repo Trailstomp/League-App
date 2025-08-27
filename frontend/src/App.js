@@ -5400,7 +5400,10 @@ function App() {
         bannerImage: '',
         bannerText: 'MLBL',
         // Music settings
-        globalMusicUrl: ''
+        globalMusicUrl: '',
+        // Sidebar settings
+        sidebarImage: '',
+        sidebarOpacity: 0.2
     });
 
     // Global music player state
