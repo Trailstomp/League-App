@@ -457,27 +457,33 @@ metadata:
 
   - task: "Add top banner bar customization (color, image, text)"
     implemented: true
-    working: false
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "main"
         comment: "Added banner customization controls to WebsiteStyleManager including banner color picker, background image upload, and banner text input. Updated header to use these settings with proper styling and background image overlay."
+      - working: true
+        agent: "user"
+        comment: "User confirmed 'works great!' - banner customization features are working correctly including color picker, background image upload, and text customization in the WebsiteStyleManager."
         
   - task: "Redesign homepage team logos as large rectangles with colored styling"
     implemented: true
-    working: false
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "main"
         comment: "Redesigned team cards on homepage to be large rectangles with team colors, moved W/L labels above numbers, added colored borders and gradients, and improved hover effects. Cards now use team's primary color for styling."
+      - working: true
+        agent: "user"
+        comment: "User confirmed 'works great!' - team card redesign is working correctly with large rectangles, W/L labels above numbers, and proper team color styling."
 
 test_plan:
   current_focus:
