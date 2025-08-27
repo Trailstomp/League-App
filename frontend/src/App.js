@@ -6445,7 +6445,8 @@ function App() {
                 style={{
                     backgroundColor: websiteStyle.primaryColor,
                     backgroundImage: websiteStyle.sidebarImage ? `linear-gradient(rgba(0,0,0,${1 - websiteStyle.sidebarOpacity}), rgba(0,0,0,${1 - websiteStyle.sidebarOpacity})), url(${websiteStyle.sidebarImage})` : 'none',
-                    backgroundSize: 'cover',
+                    backgroundSize: websiteStyle.sidebarMode === 'contain' ? 'contain' : websiteStyle.sidebarMode === 'repeat' ? 'auto' : 'cover',
+                    backgroundRepeat: websiteStyle.sidebarMode === 'repeat' ? 'repeat' : 'no-repeat',
                     backgroundPosition: 'center'
                 }}
             >
