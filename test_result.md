@@ -453,7 +453,7 @@ metadata:
         comment: "COMPREHENSIVE TESTING COMPLETED: ✅ Found Visible Tabs section with 5 tab visibility checkboxes for Roster & Stats, Schedule, Photos & Videos, Social, and Contact ✅ Successfully unchecked 'Photos & Videos' and 'Social' tabs ✅ Saved team style settings successfully ✅ Tab visibility working correctly - Hidden tabs: ['Photos & Videos', 'Social'], Visible tabs: ['Roster & Stats', 'Schedule', 'Contact'] ✅ Management tabs still visible as expected: ['Manage Players', 'Team Style', 'Manage Calendar'] ✅ All functionality working perfectly - team admins can control which public tabs are visible while management tabs remain accessible to authorized users."
 
   - task: "Add top banner bar customization (color, image, text)"
-    implemented: false
+    implemented: true
     working: false
     file: "frontend/src/App.js"
     stuck_count: 0
@@ -462,10 +462,10 @@ metadata:
     status_history:
       - working: false
         agent: "main"
-        comment: "Need to implement top banner bar customization allowing editing of color, image, and text content."
+        comment: "Added banner customization controls to WebsiteStyleManager including banner color picker, background image upload, and banner text input. Updated header to use these settings with proper styling and background image overlay."
         
   - task: "Redesign homepage team logos as large rectangles with colored styling"
-    implemented: false
+    implemented: true
     working: false
     file: "frontend/src/App.js"
     stuck_count: 0
@@ -474,7 +474,7 @@ metadata:
     status_history:
       - working: false
         agent: "main"
-        comment: "Need to change team logos on homepage to large rectangles, move W/L labels above numbers, and add colors like player cards."
+        comment: "Redesigned team cards on homepage to be large rectangles with team colors, moved W/L labels above numbers, added colored borders and gradients, and improved hover effects. Cards now use team's primary color for styling."
 
 test_plan:
   current_focus:
