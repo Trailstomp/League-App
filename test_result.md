@@ -452,8 +452,34 @@ metadata:
         agent: "testing"
         comment: "COMPREHENSIVE TESTING COMPLETED: ✅ Found Visible Tabs section with 5 tab visibility checkboxes for Roster & Stats, Schedule, Photos & Videos, Social, and Contact ✅ Successfully unchecked 'Photos & Videos' and 'Social' tabs ✅ Saved team style settings successfully ✅ Tab visibility working correctly - Hidden tabs: ['Photos & Videos', 'Social'], Visible tabs: ['Roster & Stats', 'Schedule', 'Contact'] ✅ Management tabs still visible as expected: ['Manage Players', 'Team Style', 'Manage Calendar'] ✅ All functionality working perfectly - team admins can control which public tabs are visible while management tabs remain accessible to authorized users."
 
+  - task: "Add top banner bar customization (color, image, text)"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Need to implement top banner bar customization allowing editing of color, image, and text content."
+        
+  - task: "Redesign homepage team logos as large rectangles with colored styling"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Need to change team logos on homepage to large rectangles, move W/L labels above numbers, and add colors like player cards."
+
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Add top banner bar customization (color, image, text)"
+    - "Redesign homepage team logos as large rectangles with colored styling"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
