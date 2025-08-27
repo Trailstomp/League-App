@@ -3865,10 +3865,16 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
     const [isPosting, setIsPosting] = useState(false);
     const [showCredentialsForm, setShowCredentialsForm] = useState(false);
     
-    // Social Media Credentials State
-    const [credentials, setCredentials] = useState(() => {
-        const stored = localStorage.getItem('mlbl_social_credentials');
-        return stored ? JSON.parse(stored) : {
+    // Social Media Credentials State - Now team-specific
+    const [allCredentials, setAllCredentials] = useState(() => {
+        const stored = localStorage.getItem('mlbl_social_credentials_all');
+        return stored ? JSON.parse(stored) : {};
+    });
+
+    // Get credentials for current selected entity (league or team)
+    const currentCredentials = useMemo(() => {
+        const credentialsKey = selectedTeamId;
+        return allCredentials[credentialsKey] || {
             twitter: {
                 api_key: '',
                 api_secret: '',
@@ -3900,12 +3906,12 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                 connected: false
             }
         };
-    });
+    }, [allCredentials, selectedTeamId]);
 
     // Save credentials to localStorage whenever they change
     useEffect(() => {
-        localStorage.setItem('mlbl_social_credentials', JSON.stringify(credentials));
-    }, [credentials]);
+        localStorage.setItem('mlbl_social_credentials_all', JSON.stringify(allCredentials));
+    }, [allCredentials]);
 
     // Get current entity (league or team)
     const currentEntity = selectedTeamId === 'league' 
