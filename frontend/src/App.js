@@ -6721,7 +6721,66 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
     );
 };
 
-// --- LOCAL STORAGE HELPERS ---
+// --- API SERVICE LAYER ---
+const API_BASE = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001/api';
+
+const apiService = {
+    async loadLeagueData() {
+        try {
+            const response = await fetch(`${API_BASE}/league-data`);
+            if (response.ok) {
+                const data = await response.json();
+                return data;
+            } else {
+                console.warn('Failed to load league data from API, using localStorage fallback');
+                return null;
+            }
+        } catch (error) {
+            console.warn('API unavailable, using localStorage fallback:', error);
+            return null;
+        }
+    },
+
+    async saveLeagueData(data) {
+        try {
+            const response = await fetch(`${API_BASE}/league-data`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+            if (response.ok) {
+                console.log('✅ League data saved to database');
+                return true;
+            } else {
+                console.warn('Failed to save to database, falling back to localStorage');
+                return false;
+            }
+        } catch (error) {
+            console.warn('API save failed, falling back to localStorage:', error);
+            return false;
+        }
+    },
+
+    async updateSpecificData(dataType, data) {
+        try {
+            const response = await fetch(`${API_BASE}/league-data/${dataType}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+            return response.ok;
+        } catch (error) {
+            console.warn(`Failed to update ${dataType}:`, error);
+            return false;
+        }
+    }
+};
+
+// --- LOCAL STORAGE HELPERS (Fallback) ---
 const getStoredData = (key, defaultValue) => {
     try {
         const stored = localStorage.getItem(key);
