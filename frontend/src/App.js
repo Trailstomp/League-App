@@ -6105,18 +6105,52 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
 
                 {activeTab === 'settings' && hasPermission(currentUser, 'system.settings') && (
                     <div className="p-6">
-                        <h2 className="text-2xl font-bold mb-6">League Settings</h2>
-                        <div className="space-y-8">
-                            <div>
-                                <h3 className="text-lg font-semibold mb-4">Website Style</h3>
-                                <WebsiteStyleManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
-                            </div>
-                            
-                            <div>
-                                <h3 className="text-lg font-semibold mb-4">League Information</h3>
-                                <LeagueInfoManager leagueInfo={leagueInfo} setLeagueInfo={setLeagueInfo} websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
+                        <div className="mb-6">
+                            <h2 className="text-2xl font-bold mb-2">League Settings</h2>
+                            <div className="flex space-x-4 border-b">
+                                <button 
+                                    className={`px-4 py-2 border-b-2 font-semibold transition-colors ${
+                                        settingsTab === 'website' 
+                                            ? 'border-blue-600 text-blue-600' 
+                                            : 'border-transparent text-slate-600 hover:text-blue-600'
+                                    }`}
+                                    onClick={() => setSettingsTab('website')}
+                                >
+                                    <div className="flex items-center space-x-2">
+                                        <Palette size={16} />
+                                        <span>Website Style</span>
+                                    </div>
+                                </button>
+                                <button 
+                                    className={`px-4 py-2 border-b-2 font-semibold transition-colors ${
+                                        settingsTab === 'league' 
+                                            ? 'border-blue-600 text-blue-600' 
+                                            : 'border-transparent text-slate-600 hover:text-blue-600'
+                                    }`}
+                                    onClick={() => setSettingsTab('league')}
+                                >
+                                    <div className="flex items-center space-x-2">
+                                        <Trophy size={16} />
+                                        <span>League Info</span>
+                                    </div>
+                                </button>
                             </div>
                         </div>
+                        
+                        {/* Tab Content */}
+                        {settingsTab === 'website' && (
+                            <div>
+                                <h3 className="text-lg font-semibold mb-4">Website Appearance & Style</h3>
+                                <WebsiteStyleManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
+                            </div>
+                        )}
+                        
+                        {settingsTab === 'league' && (
+                            <div>
+                                <h3 className="text-lg font-semibold mb-4">League Information & Settings</h3>
+                                <LeagueInfoManager leagueInfo={leagueInfo} setLeagueInfo={setLeagueInfo} websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
+                            </div>
+                        )}
                     </div>
                 )}
 
