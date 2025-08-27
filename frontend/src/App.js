@@ -424,7 +424,7 @@ const PlayerCard = ({ player, teamStyle, onClick }) => (
 );
 
 // Player Card Modal Component
-const PlayerCardModal = ({ player, teamStyle, isOpen, onClose }) => {
+const PlayerCardModal = ({ player, teamStyle, teams, isOpen, onClose }) => {
     if (!isOpen || !player) return null;
 
     return (
