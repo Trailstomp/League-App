@@ -6852,6 +6852,57 @@ function App() {
         reasonForJoining: ''
     });
 
+    // Registration handlers
+    const handleRegistration = () => {
+        if (!registrationData.name || !registrationData.email || !registrationData.reasonForJoining) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+
+        const newUser = {
+            id: Date.now(),
+            name: registrationData.name,
+            email: registrationData.email,
+            teamId: registrationData.teamId || null,
+            preferredRole: registrationData.preferredRole,
+            phone: registrationData.phone,
+            reasonForJoining: registrationData.reasonForJoining,
+            roles: [], // Empty until approved
+            roleIds: [], // Empty until approved
+            status: 'pending',
+            createdAt: new Date().toISOString().split('T')[0]
+        };
+        
+        setUsers(prev => [...prev, newUser]);
+        
+        // Reset form
+        setRegistrationData({
+            name: '',
+            email: '',
+            preferredRole: 'player',
+            teamId: '',
+            phone: '',
+            reasonForJoining: ''
+        });
+        
+        setAuthMode('login');
+        alert('Registration submitted! An admin will review your application and you will be notified when approved.');
+    };
+
+    // Reset registration data when closing auth modal
+    const handleAuthModalClose = () => {
+        setShowLogin(false);
+        setAuthMode('login');
+        setRegistrationData({
+            name: '',
+            email: '',
+            preferredRole: 'player',
+            teamId: '',
+            phone: '',
+            reasonForJoining: ''
+        });
+    };
+
     // Data loading state
     const [dataLoading, setDataLoading] = useState(true);
 
