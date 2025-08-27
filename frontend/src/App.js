@@ -7552,9 +7552,29 @@ function App() {
                          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 rounded-md hover:bg-black hover:bg-opacity-20 text-white transition-colors">
                             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
-                        <h1 className="text-xl font-bold tracking-wide drop-shadow-lg">
-                            {websiteStyle.bannerText || "MLBL"}
-                        </h1>
+                        
+                        {/* Header Content - Logo and/or Text */}
+                        <div className={`flex items-center space-x-3 ${
+                            websiteStyle.bannerLogoPosition === 'center' ? 'justify-center flex-1' :
+                            websiteStyle.bannerLogoPosition === 'right' ? 'justify-end flex-1' :
+                            'justify-start flex-1'
+                        }`}>
+                            {websiteStyle.bannerLogo && (
+                                <img 
+                                    src={websiteStyle.bannerLogo}
+                                    alt="Banner Logo"
+                                    className={`${
+                                        websiteStyle.bannerLogoSize === 'small' ? 'h-8' :
+                                        websiteStyle.bannerLogoSize === 'large' ? 'h-12' :
+                                        'h-10'
+                                    } w-auto object-contain drop-shadow-lg`}
+                                />
+                            )}
+                            <h1 className="text-xl font-bold tracking-wide drop-shadow-lg">
+                                {websiteStyle.bannerText || "MLBL"}
+                            </h1>
+                        </div>
+                        
                         <div className="w-10"></div>
                     </div>
                     <GameTicker teams={teams} gameTickerData={gameTickerData} websiteStyle={websiteStyle} onTeamClick={(teamId) => navigate('team', teamId)} />
