@@ -5227,7 +5227,16 @@ function App() {
         // Banner settings
         bannerColor: '#1e293b', // default to primaryColor
         bannerImage: '',
-        bannerText: 'MLBL'
+        bannerText: 'MLBL',
+        // Music settings
+        globalMusicUrl: ''
+    });
+
+    // Global music player state
+    const [musicState, setMusicState] = useState({
+        currentTrack: null, // { url: string, title: string, teamId?: string }
+        isPlaying: false,
+        audioRef: null
     });
 
     useEffect(() => {
