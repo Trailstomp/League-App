@@ -7650,7 +7650,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                             </div>
                         </div>
                         
-                        <TeamSocialMediaManager team={team} setTeams={setTeams} />
+                        <TeamSocialMediaManager team={teams[0]} setTeams={setTeams} />
                     </div>
                 </div>
 
