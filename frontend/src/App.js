@@ -671,7 +671,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
     };
     
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen" style={getBackgroundStyle(websiteStyle)}>
             {/* Scrolling News Ticker */}
             <div className="bg-red-800 text-white py-2 overflow-hidden relative">
                 <div className="flex justify-between items-center px-4">
