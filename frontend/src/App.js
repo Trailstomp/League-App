@@ -1180,6 +1180,11 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
             date: "2025-08-01"
         }
     ]));
+
+    // Save news items to localStorage whenever they change
+    useEffect(() => { 
+        setStoredData('mlbl_newsItems', newsItems); 
+    }, [newsItems]);
     
     // Mock picture/video content - will be made editable by admin
     const [mediaContent, setMediaContent] = useState({
