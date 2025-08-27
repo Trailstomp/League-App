@@ -4215,7 +4215,7 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                                             <input
                                                 type="checkbox"
                                                 checked={selectedPlatforms.includes(platform.id)}
-                                                disabled={!credentials[platform.id]?.connected}
+                                                disabled={!currentCredentials[platform.id]?.connected}
                                                 onChange={(e) => {
                                                     if (e.target.checked) {
                                                         setSelectedPlatforms(prev => [...prev, platform.id]);
