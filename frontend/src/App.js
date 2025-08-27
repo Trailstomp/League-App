@@ -4799,7 +4799,12 @@ function App() {
     const [websiteStyle, setWebsiteStyle] = useState({
         logoUrl: MlblLogo,
         primaryColor: '#1e293b', // slate-800
-        accentColor: '#991b1b' // red-800
+        accentColor: '#991b1b', // red-800
+        logoStyle: 'contain',
+        // Background image settings
+        backgroundImage: '',
+        backgroundMode: 'cover', // cover, contain, tile
+        backgroundOpacity: 0.1 // 0-1 for overlay opacity
     });
 
     useEffect(() => {
