@@ -4296,7 +4296,7 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                                     </>
                                 ) : (
                                     <>
-                                        <span>Post to {selectedPlatforms.filter(p => credentials[p]?.connected).length} Platform(s)</span>
+                                        <span>Post to {selectedPlatforms.filter(p => currentCredentials[p]?.connected).length} Platform(s)</span>
                                     </>
                                 )}
                             </button>
