@@ -526,6 +526,21 @@ metadata:
         
   - task: "Update standings to show divisions separately"
     implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Modified StandingsPage to display separate standings tables for Field Lacrosse and Box Lacrosse divisions, with first place teams getting crown icons and proper division headers."
+      - working: true
+        agent: "user"
+        comment: "User confirmed music and division features work great - all tasks from previous request completed successfully."
+
+  - task: "Make team logos fill full upper rectangle on homepage"
+    implemented: true
     working: false
     file: "frontend/src/App.js"
     stuck_count: 0
@@ -534,7 +549,43 @@ metadata:
     status_history:
       - working: false
         agent: "main"
-        comment: "Modified StandingsPage to display separate standings tables for Field Lacrosse and Box Lacrosse divisions, with first place teams getting crown icons and proper division headers."
+        comment: "Updated team cards on homepage to make logos fill the full upper rectangle with gradient backgrounds using team colors and proper scaling."
+        
+  - task: "Add sidebar background image customization"
+    implemented: true
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Added Navigation Sidebar section to WebsiteStyleManager with background image upload and opacity controls. Updated sidebar to use background image with overlay."
+        
+  - task: "Add repeat functionality to event scheduling"
+    implemented: true
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Added comprehensive repeat functionality to EventForm with daily, weekly, bi-weekly, and monthly options. Updated both TeamCalendarManager and LeagueCalendarManager to generate recurring events automatically."
+        
+  - task: "Make sidebar logo larger in top left corner"
+    implemented: true
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Increased sidebar logo size from h-24 to h-32 with max-w-full and object-contain for better visibility while utilizing available space."
 
 test_plan:
   current_focus:
