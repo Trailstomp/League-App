@@ -3632,6 +3632,16 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
         ));
     };
 
+    const handlePlayerClick = (player) => {
+        setSelectedPlayer(player);
+        setIsPlayerModalOpen(true);
+    };
+
+    const handleClosePlayerModal = () => {
+        setIsPlayerModalOpen(false);
+        setSelectedPlayer(null);
+    };
+
     const TeamTab = ({tabName, label, isManagerTab = false}) => {
         if (isManagerTab && !isAuthorizedToManage) return null;
         return (
