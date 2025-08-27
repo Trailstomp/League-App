@@ -5536,7 +5536,7 @@ function App() {
             {showLogin && <LoginModal />}
             <aside className={`bg-slate-900 text-white w-64 space-y-6 py-7 px-2 fixed inset-y-0 left-0 transform ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out z-30 flex flex-col`} style={{backgroundColor: websiteStyle.primaryColor}}>
                 <div className="p-4 border-b border-slate-700 flex items-center justify-center">
-                    <img src={websiteStyle.logoUrl} alt="MLBL Logo" className="h-24" />
+                    <img src={websiteStyle.logoUrl} alt="MLBL Logo" className="h-32 max-w-full object-contain" />
                 </div>
                 <nav className="flex-grow">
                     <NavItem icon={<Home size={20} />} label="Home" pageName="home" />
