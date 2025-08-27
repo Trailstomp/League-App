@@ -3964,17 +3964,26 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
     };
 
     const handleCredentialChange = (platform, field, value) => {
-        setCredentials(prev => ({
+        const credentialsKey = selectedTeamId;
+        setAllCredentials(prev => ({
             ...prev,
-            [platform]: {
-                ...prev[platform],
-                [field]: value
+            [credentialsKey]: {
+                ...prev[credentialsKey] || {
+                    twitter: { api_key: '', api_secret: '', bearer_token: '', access_token: '', access_token_secret: '', connected: false },
+                    facebook: { app_id: '', app_secret: '', access_token: '', page_id: '', connected: false },
+                    instagram: { app_id: '', app_secret: '', access_token: '', redirect_uri: '', business_account_id: '', connected: false },
+                    youtube: { client_id: '', client_secret: '', refresh_token: '', channel_id: '', connected: false }
+                },
+                [platform]: {
+                    ...(prev[credentialsKey]?.[platform] || {}),
+                    [field]: value
+                }
             }
         }));
     };
 
     const handleTestConnection = async (platform) => {
-        const platformCredentials = credentials[platform];
+        const platformCredentials = currentCredentials[platform];
         
         // Check if required fields are filled
         const requiredFields = {
@@ -3994,18 +4003,24 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
         // Simulate connection test
         const isConnected = Math.random() > 0.3; // 70% success rate for demo
         
-        setCredentials(prev => ({
+        const credentialsKey = selectedTeamId;
+        setAllCredentials(prev => ({
             ...prev,
-            [platform]: {
-                ...prev[platform],
-                connected: isConnected
+            [credentialsKey]: {
+                ...prev[credentialsKey] || {},
+                [platform]: {
+                    ...prev[credentialsKey]?.[platform] || {},
+                    connected: isConnected
+                }
             }
         }));
 
+        const entityName = selectedTeamId === 'league' ? 'League' : teams.find(t => t.id === selectedTeamId)?.name || 'Team';
+
         if (isConnected) {
-            alert(`Successfully connected to ${platform.charAt(0).toUpperCase() + platform.slice(1)}!`);
+            alert(`Successfully connected ${platform.charAt(0).toUpperCase() + platform.slice(1)} for ${entityName}!`);
         } else {
-            alert(`Failed to connect to ${platform.charAt(0).toUpperCase() + platform.slice(1)}. Please check your credentials.`);
+            alert(`Failed to connect to ${platform.charAt(0).toUpperCase() + platform.slice(1)} for ${entityName}. Please check your credentials.`);
         }
     };
 
