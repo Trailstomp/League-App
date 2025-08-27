@@ -475,163 +475,188 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
     const sortedTeams = teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name));
     const isLeagueAdmin = currentUser && currentUser.roles.includes('admin');
     
+    // Mock news data - will be made editable by admin
+    const [newsItems, setNewsItems] = useState([
+        { id: 1, text: "🏆 American Dads win Dayton Classic Tournament!", date: "2025-08-10" },
+        { id: 2, text: "📅 New season registration now open through September 1st", date: "2025-08-05" },
+        { id: 3, text: "🥍 OH10 Lacrosse advances to championship finals", date: "2025-08-03" },
+        { id: 4, text: "⚡ Game highlights now available on our media page", date: "2025-08-01" }
+    ]);
+    
+    // Mock picture/video content - will be made editable by admin
+    const [mediaContent, setMediaContent] = useState({
+        pictures: [
+            { id: 1, title: "Championship Games", image: "https://placehold.co/400x250/dc2626/FFFFFF?text=Championship+Games", description: "The most exciting moments from our championship tournaments." },
+            { id: 2, title: "Team Action Shots", image: "https://placehold.co/400x250/1d4ed8/FFFFFF?text=Action+Shots", description: "Dynamic gameplay photography showcasing player intensity." },
+            { id: 3, title: "League Events", image: "https://placehold.co/400x250/047857/FFFFFF?text=League+Events", description: "Awards ceremonies and community gatherings." }
+        ],
+        videos: [
+            { id: 1, title: "Season Highlights", thumbnail: "https://placehold.co/400x250/f59e0b/FFFFFF?text=Season+Highlights", url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", description: "Best moments from the current season." },
+            { id: 2, title: "Training Sessions", thumbnail: "https://placehold.co/400x250/be185d/FFFFFF?text=Training+Sessions", url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", description: "Behind-the-scenes training footage." }
+        ]
+    });
+    
     return (
-        <div className="p-4 md:p-8">
-            {/* Hero Section with Text Area */}
-            <div className="text-center mb-12">
-                <div className="flex justify-between items-start mb-4">
-                    <div className="flex-grow">
-                        <h1 className="text-6xl font-bold text-slate-800 mb-4 tracking-tight">{leagueInfo.name}</h1>
+        <div className="min-h-screen">
+            {/* Scrolling News Ticker */}
+            <div className="bg-red-800 text-white py-2 overflow-hidden relative">
+                <div className="flex justify-between items-center px-4">
+                    <div className="flex items-center">
+                        <span className="bg-white text-red-800 px-2 py-1 rounded text-sm font-bold mr-4">NEWS</span>
+                        <div className="overflow-hidden">
+                            <div className="animate-marquee whitespace-nowrap">
+                                {newsItems.map((item, index) => (
+                                    <span key={item.id} className="inline-block mx-8">
+                                        {item.text}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                     {isLeagueAdmin && (
-                        <div className="ml-4">
-                            <button 
-                                onClick={() => window.location.hash = 'admin-portal'}
-                                className="bg-red-800 text-white px-3 py-2 rounded text-sm hover:bg-red-900 flex items-center"
-                                title="Quick access to league management"
-                            >
-                                <Settings className="mr-1 h-4 w-4"/> Edit League Info
-                            </button>
-                        </div>
+                        <button 
+                            className="bg-red-900 text-white px-3 py-1 rounded text-sm hover:bg-red-950 flex items-center ml-4"
+                            title="Edit news ticker"
+                        >
+                            <Edit className="mr-1 h-3 w-3"/> Edit News
+                        </button>
                     )}
                 </div>
-                <div className="max-w-4xl mx-auto">
-                    <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
-                        <div className="flex justify-between items-start">
-                            <div className="flex-grow">
-                                <h2 className="text-2xl font-bold text-slate-800 mb-4">Welcome to Our League</h2>
-                                <p className="text-lg text-slate-600 leading-relaxed">
-                                    {leagueInfo.description || "Welcome to the premier lacrosse league featuring competitive teams from across the region. Experience the excitement, skill, and camaraderie that makes our league special. Join us for intense competition, community spirit, and unforgettable moments on the field."}
-                                </p>
-                            </div>
+            </div>
+
+            <div className="p-4 md:p-8">
+                {/* Teams of MLBL Section */}
+                <div className="mb-12">
+                    <div className="text-center mb-8">
+                        <h1 className="text-5xl font-bold text-slate-800 mb-2 tracking-tight">{leagueInfo.name || "Men's Lacrosse Beer League"}</h1>
+                        <h2 className="text-3xl font-bold text-slate-600 mb-6 tracking-tight">Our Teams</h2>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                        {sortedTeams.map(team => (
+                            <button
+                                key={team.id}
+                                onClick={() => onTeamClick(team.id)}
+                                className="group bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transform transition-all duration-300 hover:scale-105 text-center"
+                            >
+                                <div className="relative mb-4">
+                                    <img 
+                                        src={team.logo} 
+                                        alt={team.name} 
+                                        className={`w-16 h-16 mx-auto rounded-full bg-slate-200 p-2 group-hover:scale-110 transition-transform ${getLogoStyle(websiteStyle)}`}
+                                    />
+                                </div>
+                                <h3 className="text-sm font-bold text-slate-800 mb-2 group-hover:text-red-700 transition-colors">
+                                    {team.name}
+                                </h3>
+                                <div className="flex justify-center space-x-2 text-xs">
+                                    <div className="text-center">
+                                        <div className="font-bold text-green-600">{team.wins}</div>
+                                        <div className="text-slate-500">W</div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="font-bold text-red-600">{team.losses}</div>
+                                        <div className="text-slate-500">L</div>
+                                    </div>
+                                </div>
+                                <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span className="text-xs text-red-600 font-semibold">View Team →</span>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Picture and Video Windows */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                    {/* Picture Window */}
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-2xl font-bold text-slate-800">Photo Gallery</h3>
                             {isLeagueAdmin && (
                                 <button 
-                                    className="ml-4 text-slate-400 hover:text-slate-600"
-                                    title="Edit this text"
+                                    className="bg-red-800 text-white px-3 py-2 rounded text-sm hover:bg-red-900 flex items-center"
+                                    title="Edit photos"
                                 >
-                                    <Edit className="h-4 w-4"/>
+                                    <Edit className="mr-1 h-4 w-4"/> Edit Photos
                                 </button>
                             )}
                         </div>
+                        <div className="space-y-4">
+                            {mediaContent.pictures.map(picture => (
+                                <div key={picture.id} className="bg-slate-50 rounded-lg p-4 hover:bg-slate-100 transition-colors cursor-pointer">
+                                    <div className="flex items-center space-x-4">
+                                        <img 
+                                            src={picture.image} 
+                                            alt={picture.title}
+                                            className="w-16 h-16 rounded-lg object-cover"
+                                        />
+                                        <div className="flex-grow">
+                                            <h4 className="font-semibold text-slate-800">{picture.title}</h4>
+                                            <p className="text-sm text-slate-600">{picture.description}</p>
+                                        </div>
+                                        <button className="text-red-600 hover:text-red-800 text-sm font-semibold">
+                                            View →
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Video Window */}
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-2xl font-bold text-slate-800">Video Gallery</h3>
+                            {isLeagueAdmin && (
+                                <button 
+                                    className="bg-red-800 text-white px-3 py-2 rounded text-sm hover:bg-red-900 flex items-center"
+                                    title="Edit videos"
+                                >
+                                    <Edit className="mr-1 h-4 w-4"/> Edit Videos
+                                </button>
+                            )}
+                        </div>
+                        <div className="space-y-4">
+                            {mediaContent.videos.map(video => (
+                                <div key={video.id} className="bg-slate-50 rounded-lg p-4 hover:bg-slate-100 transition-colors cursor-pointer">
+                                    <div className="flex items-center space-x-4">
+                                        <div className="relative">
+                                            <img 
+                                                src={video.thumbnail} 
+                                                alt={video.title}
+                                                className="w-16 h-16 rounded-lg object-cover"
+                                            />
+                                            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 rounded-lg">
+                                                <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                                                    <div className="w-0 h-0 border-l-4 border-l-red-600 border-t-2 border-t-transparent border-b-2 border-b-transparent ml-1"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex-grow">
+                                            <h4 className="font-semibold text-slate-800">{video.title}</h4>
+                                            <p className="text-sm text-slate-600">{video.description}</p>
+                                        </div>
+                                        <button className="text-red-600 hover:text-red-800 text-sm font-semibold">
+                                            Watch →
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Photo Albums Section */}
-            <div className="mb-12">
-                <h2 className="text-4xl font-bold text-slate-800 mb-8 text-center tracking-tight">League Photo Gallery</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
-                        <img src="https://placehold.co/400x250/dc2626/FFFFFF?text=Championship+Games" alt="Championship" className="w-full h-48 object-cover" />
-                        <div className="p-4">
-                            <h3 className="text-xl font-bold text-slate-800 mb-2">Championship Games</h3>
-                            <p className="text-slate-600">The most exciting moments from our championship tournaments and playoff games.</p>
-                            <button className="mt-3 text-red-600 font-semibold hover:text-red-800">View Album →</button>
-                        </div>
-                    </div>
-                    
-                    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
-                        <img src="https://placehold.co/400x250/1d4ed8/FFFFFF?text=Team+Action+Shots" alt="Action" className="w-full h-48 object-cover" />
-                        <div className="p-4">
-                            <h3 className="text-xl font-bold text-slate-800 mb-2">Action Shots</h3>
-                            <p className="text-slate-600">Dynamic gameplay photography showcasing the intensity and skill of our players.</p>
-                            <button className="mt-3 text-red-600 font-semibold hover:text-red-800">View Album →</button>
-                        </div>
-                    </div>
-                    
-                    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
-                        <img src="https://placehold.co/400x250/047857/FFFFFF?text=League+Events" alt="Events" className="w-full h-48 object-cover" />
-                        <div className="p-4">
-                            <h3 className="text-xl font-bold text-slate-800 mb-2">League Events</h3>
-                            <p className="text-slate-600">Behind-the-scenes moments, awards ceremonies, and community gatherings.</p>
-                            <button className="mt-3 text-red-600 font-semibold hover:text-red-800">View Album →</button>
-                        </div>
-                    </div>
-                    
-                    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
-                        <img src="https://placehold.co/400x250/f59e0b/FFFFFF?text=Season+Highlights" alt="Highlights" className="w-full h-48 object-cover" />
-                        <div className="p-4">
-                            <h3 className="text-xl font-bold text-slate-800 mb-2">Season Highlights</h3>
-                            <p className="text-slate-600">Best moments from the current season featuring outstanding plays and team spirit.</p>
-                            <button className="mt-3 text-red-600 font-semibold hover:text-red-800">View Album →</button>
-                        </div>
-                    </div>
-                    
-                    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
-                        <img src="https://placehold.co/400x250/be185d/FFFFFF?text=Training+Sessions" alt="Training" className="w-full h-48 object-cover" />
-                        <div className="p-4">
-                            <h3 className="text-xl font-bold text-slate-800 mb-2">Training Sessions</h3>
-                            <p className="text-slate-600">Behind-the-scenes look at team practices and skill development sessions.</p>
-                            <button className="mt-3 text-red-600 font-semibold hover:text-red-800">View Album →</button>
-                        </div>
-                    </div>
-                    
-                    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
-                        <img src="https://placehold.co/400x250/581c87/FFFFFF?text=Fan+Moments" alt="Fans" className="w-full h-48 object-cover" />
-                        <div className="p-4">
-                            <h3 className="text-xl font-bold text-slate-800 mb-2">Fan Moments</h3>
-                            <p className="text-slate-600">Celebrating our amazing fans and the community that supports our teams.</p>
-                            <button className="mt-3 text-red-600 font-semibold hover:text-red-800">View Album →</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Teams Grid with Logos */}
-            <div className="mb-12">
-                <h2 className="text-4xl font-bold text-slate-800 mb-8 text-center tracking-tight">Our Teams</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                    {sortedTeams.map(team => (
-                        <button
-                            key={team.id}
-                            onClick={() => onTeamClick(team.id)}
-                            className="group bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transform transition-all duration-300 hover:scale-105 text-center"
+                {/* Admin Quick Access */}
+                {isLeagueAdmin && (
+                    <div className="text-center">
+                        <button 
+                            onClick={() => window.location.hash = 'admin-portal'}
+                            className="bg-red-800 text-white px-6 py-3 rounded-lg hover:bg-red-900 flex items-center mx-auto"
                         >
-                            <div className="relative mb-4">
-                                <img 
-                                    src={team.logo} 
-                                    alt={team.name} 
-                                    className={`w-16 h-16 mx-auto rounded-full bg-slate-200 p-2 group-hover:scale-110 transition-transform ${getLogoStyle(websiteStyle)}`}
-                                />
-                            </div>
-                            <h3 className="text-sm font-bold text-slate-800 mb-2 group-hover:text-red-700 transition-colors">
-                                {team.name}
-                            </h3>
-                            <div className="flex justify-center space-x-2 text-xs">
-                                <div className="text-center">
-                                    <div className="font-bold text-green-600">{team.wins}</div>
-                                    <div className="text-slate-500">W</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="font-bold text-red-600">{team.losses}</div>
-                                    <div className="text-slate-500">L</div>
-                                </div>
-                            </div>
-                            <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <span className="text-xs text-red-600 font-semibold">View Team →</span>
-                            </div>
+                            <Settings className="mr-2 h-5 w-5"/> League Management
                         </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* About Section */}
-            <div className="bg-slate-50 rounded-xl p-8 text-center">
-                <h2 className="text-3xl font-bold text-slate-800 mb-4">About Our League</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div>
-                        <div className="text-4xl font-bold text-red-600 mb-2">{teams.filter(t => t.active).length}</div>
-                        <div className="text-slate-600">Active Teams</div>
                     </div>
-                    <div>
-                        <div className="text-4xl font-bold text-red-600 mb-2">{leagueInfo.founded || "2020"}</div>
-                        <div className="text-slate-600">Founded</div>
-                    </div>
-                    <div>
-                        <div className="text-4xl font-bold text-red-600 mb-2">{leagueInfo.location || "Ohio Valley"}</div>
-                        <div className="text-slate-600">Region</div>
-                    </div>
-                </div>
+                )}
             </div>
         </div>
     );
