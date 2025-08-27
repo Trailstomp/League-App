@@ -4319,8 +4319,9 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
     };
 
     const teamBackgroundStyle = team.style?.pageBackgroundImage ? {
-        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${team.style.pageBackgroundImage})`,
-        backgroundSize: 'cover',
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, ${1 - (team.style.pageBackgroundOpacity !== undefined ? team.style.pageBackgroundOpacity : 0.1)}), rgba(255, 255, 255, ${1 - (team.style.pageBackgroundOpacity !== undefined ? team.style.pageBackgroundOpacity : 0.1)})), url(${team.style.pageBackgroundImage})`,
+        backgroundSize: team.style.pageBackgroundMode === 'contain' ? 'contain' : team.style.pageBackgroundMode === 'repeat' ? 'auto' : 'cover',
+        backgroundRepeat: team.style.pageBackgroundMode === 'repeat' ? 'repeat' : 'no-repeat',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed'
     } : getBackgroundStyle(websiteStyle);
