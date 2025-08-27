@@ -5449,11 +5449,17 @@ function App() {
                     {currentUser && <NavItem icon={<MessageSquare size={20} />} label="Chat" pageName="chat" />}
                     <div className="pt-4 mt-4 border-t border-slate-700">
                       <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-2">Teams</h2>
-                       {teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name)).map(team => (
+                      
+                      {/* Field Lacrosse Teams */}
+                      <div className="mb-3">
+                        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 px-2 flex items-center">
+                            <Trophy size={12} className="mr-1" /> Field Lacrosse
+                        </h3>
+                        {teams.filter(t => t.active && t.division === 'Field').sort((a, b) => a.name.localeCompare(b.name)).map(team => (
                            <button
                                 key={team.id}
                                 onClick={() => navigate('team', team.id)}
-                                className={`flex items-center space-x-3 p-2 rounded-md w-full text-left transition-colors ${
+                                className={`flex items-center space-x-3 p-2 rounded-md w-full text-left transition-colors ml-2 ${
                                     page === 'team' && selectedTeam === team.id
                                         ? 'text-white'
                                         : 'text-slate-300 hover:bg-slate-700 hover:text-white'
@@ -5461,9 +5467,32 @@ function App() {
                                 style={{backgroundColor: (page === 'team' && selectedTeam === team.id) ? websiteStyle.accentColor : 'transparent'}}
                             >
                                 <img src={team.logo} alt={team.name} className="w-6 h-6 rounded-full bg-white p-0.5" />
-                                <span>{team.name}</span>
+                                <span className="text-sm">{team.name}</span>
                            </button>
-                       ))}
+                        ))}
+                      </div>
+                      
+                      {/* Box Lacrosse Teams */}
+                      <div>
+                        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 px-2 flex items-center">
+                            <Shield size={12} className="mr-1" /> Box Lacrosse
+                        </h3>
+                        {teams.filter(t => t.active && t.division === 'Box').sort((a, b) => a.name.localeCompare(b.name)).map(team => (
+                           <button
+                                key={team.id}
+                                onClick={() => navigate('team', team.id)}
+                                className={`flex items-center space-x-3 p-2 rounded-md w-full text-left transition-colors ml-2 ${
+                                    page === 'team' && selectedTeam === team.id
+                                        ? 'text-white'
+                                        : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                                }`}
+                                style={{backgroundColor: (page === 'team' && selectedTeam === team.id) ? websiteStyle.accentColor : 'transparent'}}
+                            >
+                                <img src={team.logo} alt={team.name} className="w-6 h-6 rounded-full bg-white p-0.5" />
+                                <span className="text-sm">{team.name}</span>
+                           </button>
+                        ))}
+                      </div>
                     </div>
                 </nav>
                 <div className="p-2 border-t border-slate-700">
