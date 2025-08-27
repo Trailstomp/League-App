@@ -4081,11 +4081,11 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                                     <span className="text-sm">Twitter</span>
                                 </div>
                                 <span className={`text-xs px-2 py-1 rounded ${
-                                    credentials.twitter.connected 
+                                    currentCredentials.twitter.connected 
                                         ? 'bg-green-100 text-green-800' 
                                         : 'bg-red-100 text-red-800'
                                 }`}>
-                                    {credentials.twitter.connected ? 'Connected' : 'Not Connected'}
+                                    {currentCredentials.twitter.connected ? 'Connected' : 'Not Connected'}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between">
@@ -4094,11 +4094,11 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                                     <span className="text-sm">Facebook</span>
                                 </div>
                                 <span className={`text-xs px-2 py-1 rounded ${
-                                    credentials.facebook.connected 
+                                    currentCredentials.facebook.connected 
                                         ? 'bg-green-100 text-green-800' 
                                         : 'bg-red-100 text-red-800'
                                 }`}>
-                                    {credentials.facebook.connected ? 'Connected' : 'Not Connected'}
+                                    {currentCredentials.facebook.connected ? 'Connected' : 'Not Connected'}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between">
@@ -4107,11 +4107,11 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                                     <span className="text-sm">Instagram</span>
                                 </div>
                                 <span className={`text-xs px-2 py-1 rounded ${
-                                    credentials.instagram.connected 
+                                    currentCredentials.instagram.connected 
                                         ? 'bg-green-100 text-green-800' 
                                         : 'bg-red-100 text-red-800'
                                 }`}>
-                                    {credentials.instagram.connected ? 'Connected' : 'Not Connected'}
+                                    {currentCredentials.instagram.connected ? 'Connected' : 'Not Connected'}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between">
@@ -4120,11 +4120,11 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                                     <span className="text-sm">YouTube</span>
                                 </div>
                                 <span className={`text-xs px-2 py-1 rounded ${
-                                    credentials.youtube.connected 
+                                    currentCredentials.youtube.connected 
                                         ? 'bg-green-100 text-green-800' 
                                         : 'bg-red-100 text-red-800'
                                 }`}>
-                                    {credentials.youtube.connected ? 'Connected' : 'Not Connected'}
+                                    {currentCredentials.youtube.connected ? 'Connected' : 'Not Connected'}
                                 </span>
                             </div>
                         </div>
