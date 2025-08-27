@@ -3783,14 +3783,38 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
     return (
         <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
             <div 
-                className="bg-cover bg-center h-48 rounded-lg mb-6 flex items-end p-4 shadow-inner" 
+                className="bg-cover bg-center h-48 rounded-lg mb-6 flex items-end p-4 shadow-inner relative" 
                 style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${team.style?.bannerUrl || 'https://placehold.co/1200x400/4A5568/FFFFFF?text=MLBL'})` }}
             >
-                <div className="flex items-center">
-                    <img src={team.logo} alt={team.name} className="w-24 h-24 mr-4 rounded-full bg-white p-2 shadow-lg" />
-                    <div>
-                        <h1 className="text-5xl font-bold text-white tracking-tight drop-shadow-lg">{team.name}</h1>
+                <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center">
+                        <img src={team.logo} alt={team.name} className="w-24 h-24 mr-4 rounded-full bg-white p-2 shadow-lg" />
+                        <div>
+                            <h1 className="text-5xl font-bold text-white tracking-tight drop-shadow-lg">{team.name}</h1>
+                            <p className="text-lg text-white opacity-90 drop-shadow-lg">{team.division} Lacrosse</p>
+                        </div>
                     </div>
+                    
+                    {/* Music Controls */}
+                    {team.musicUrl && (
+                        <div className="flex items-center space-x-2">
+                            <button
+                                onClick={() => {
+                                    if (musicState.currentTrack?.teamId === team.id && musicState.isPlaying) {
+                                        stopAllMusic();
+                                    } else {
+                                        playMusic(team.musicUrl, `${team.name} Theme`, team.id);
+                                    }
+                                }}
+                                className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all shadow-lg"
+                                title={musicState.currentTrack?.teamId === team.id && musicState.isPlaying ? "Stop Team Music" : "Play Team Music"}
+                            >
+                                {musicState.currentTrack?.teamId === team.id && musicState.isPlaying ? 
+                                    <Pause size={24} /> : <Play size={24} />
+                                }
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="flex border-b mb-6 flex-wrap">
