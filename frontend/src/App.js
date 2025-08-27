@@ -6396,6 +6396,8 @@ function App() {
         bannerColor: '#1e293b', // default to primaryColor
         bannerImage: '',
         bannerText: 'MLBL',
+        bannerMode: 'cover', // cover, contain, repeat
+        bannerOpacity: 0.3,
         // Music settings
         globalMusicUrl: '',
         // Sidebar settings
