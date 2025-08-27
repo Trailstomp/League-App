@@ -303,6 +303,118 @@ const newsFeed = [
     { id: 2, title: 'Indy Gauntlet Tournament Recap', date: '2025-08-03', snippet: 'OH10 and the Indy Lacers came out on top in a hard-fought weekend of lacrosse at the Indy Gauntlet tournament...' },
 ];
 
+// --- SECURITY & PERMISSIONS SYSTEM ---
+
+// Define comprehensive permissions system
+const PERMISSIONS = {
+    // User Management
+    'users.view': { name: 'View Users', category: 'User Management', description: 'View user list and profiles' },
+    'users.create': { name: 'Create Users', category: 'User Management', description: 'Add new users to the system' },
+    'users.edit': { name: 'Edit Users', category: 'User Management', description: 'Modify user information and roles' },
+    'users.delete': { name: 'Delete Users', category: 'User Management', description: 'Remove users from the system' },
+    
+    // Team Management
+    'teams.view': { name: 'View Teams', category: 'Team Management', description: 'View team information' },
+    'teams.create': { name: 'Create Teams', category: 'Team Management', description: 'Add new teams' },
+    'teams.edit': { name: 'Edit Teams', category: 'Team Management', description: 'Modify team information' },
+    'teams.delete': { name: 'Delete Teams', category: 'Team Management', description: 'Remove teams' },
+    'teams.manage_own': { name: 'Manage Own Team', category: 'Team Management', description: 'Manage assigned team only' },
+    
+    // Player Management  
+    'players.view': { name: 'View Players', category: 'Player Management', description: 'View player roster and stats' },
+    'players.add': { name: 'Add Players', category: 'Player Management', description: 'Add players to teams' },
+    'players.edit': { name: 'Edit Players', category: 'Player Management', description: 'Modify player information' },
+    'players.remove': { name: 'Remove Players', category: 'Player Management', description: 'Remove players from teams' },
+    
+    // Schedule & Events
+    'events.view': { name: 'View Events', category: 'Schedule & Events', description: 'View game and event schedules' },
+    'events.create': { name: 'Create Events', category: 'Schedule & Events', description: 'Create new games and events' },
+    'events.edit': { name: 'Edit Events', category: 'Schedule & Events', description: 'Modify existing events' },
+    'events.delete': { name: 'Delete Events', category: 'Schedule & Events', description: 'Remove events from calendar' },
+    
+    // Media Management
+    'media.view': { name: 'View Media', category: 'Media Management', description: 'View photos and videos' },
+    'media.upload': { name: 'Upload Media', category: 'Media Management', description: 'Upload new photos and videos' },
+    'media.edit': { name: 'Edit Media', category: 'Media Management', description: 'Edit media metadata and organize galleries' },
+    'media.delete': { name: 'Delete Media', category: 'Media Management', description: 'Remove photos and videos' },
+    
+    // System Administration
+    'system.settings': { name: 'System Settings', category: 'System Administration', description: 'Manage website settings and configuration' },
+    'system.roles': { name: 'Role Management', category: 'System Administration', description: 'Create and manage user roles and permissions' },
+    'system.invitations': { name: 'Manage Invitations', category: 'System Administration', description: 'Send invitations and manage access requests' },
+    'system.admin_access': { name: 'Admin Access', category: 'System Administration', description: 'Access administrative functions' }
+};
+
+// Define system roles with their permissions
+const SYSTEM_ROLES = {
+    'super_admin': {
+        id: 'super_admin',
+        name: 'Super Administrator',
+        description: 'Full system access with all permissions',
+        isSystemRole: true,
+        permissions: Object.keys(PERMISSIONS)
+    },
+    'league_admin': {
+        id: 'league_admin', 
+        name: 'League Administrator',
+        description: 'League management with most administrative functions',
+        isSystemRole: true,
+        permissions: [
+            'users.view', 'users.create', 'users.edit',
+            'teams.view', 'teams.create', 'teams.edit', 'teams.delete',
+            'players.view', 'players.add', 'players.edit', 'players.remove',
+            'events.view', 'events.create', 'events.edit', 'events.delete',
+            'media.view', 'media.upload', 'media.edit', 'media.delete',
+            'system.settings', 'system.invitations', 'system.admin_access'
+        ]
+    },
+    'team_coach': {
+        id: 'team_coach',
+        name: 'Team Coach',
+        description: 'Team and player management for assigned team',
+        isSystemRole: true,
+        permissions: [
+            'teams.view', 'teams.manage_own',
+            'players.view', 'players.add', 'players.edit',
+            'events.view', 'events.create', 'events.edit',
+            'media.view', 'media.upload'
+        ]
+    },
+    'player': {
+        id: 'player',
+        name: 'Player',
+        description: 'Basic access to view team and league information',
+        isSystemRole: true,
+        permissions: [
+            'teams.view', 'players.view', 'events.view', 'media.view'
+        ]
+    }
+};
+
+// Permission checking utilities
+const hasPermission = (user, permission) => {
+    if (!user || !user.roleIds) return false;
+    return user.roleIds.some(roleId => {
+        const role = getAllRoles().find(r => r.id === roleId);
+        return role && role.permissions.includes(permission);
+    });
+};
+
+const hasAllPermissions = (user, permissions) => {
+    return permissions.every(permission => hasPermission(user, permission));
+};
+
+const hasAnyPermission = (user, permissions) => {
+    return permissions.some(permission => hasPermission(user, permission));
+};
+
+const getAllRoles = () => {
+    // This would normally come from a database
+    // For now, return system roles + any custom roles from localStorage
+    const customRoles = JSON.parse(localStorage.getItem('customRoles') || '[]');
+    return [...Object.values(SYSTEM_ROLES), ...customRoles];
+};
+
 // --- Helper Components ---
 const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
     const getTeam = (id) => teams.find(t => t.id === id);
