@@ -4128,7 +4128,7 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                                 </span>
                             </div>
                         </div>
-                        {!Object.values(credentials).some(cred => cred.connected) && (
+                        {!Object.values(currentCredentials).some(cred => cred.connected) && (
                             <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                                 <p className="text-sm text-yellow-800">
                                     No platforms connected. Go to API Setup to add credentials.
