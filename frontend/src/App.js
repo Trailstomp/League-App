@@ -1487,15 +1487,15 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                     <div className="absolute inset-0 bg-black bg-opacity-10"></div>
                                 </div>
                                 
-                                {/* Team Name and Division */}
-                                <h3 className="text-sm md:text-lg font-bold text-slate-800 mb-1 group-hover:text-opacity-80 transition-all text-center">
+                                {/* Team Name and Division - Compact mobile */}
+                                <h3 className="text-xs sm:text-sm md:text-lg font-bold text-slate-800 mb-1 group-hover:text-opacity-80 transition-all text-center leading-tight">
                                     {team.name}
                                 </h3>
-                                <p className="text-xs md:text-sm text-slate-500 mb-2 md:mb-4 text-center flex items-center justify-center">
+                                <p className="text-xs md:text-sm text-slate-500 mb-1 md:mb-4 text-center flex items-center justify-center">
                                     {team.division === 'Field' ? (
-                                        <><Trophy size={12} className="mr-1" /> Field</>
+                                        <><Trophy size={10} className="mr-1" /> Field</>
                                     ) : (
-                                        <><Shield size={12} className="mr-1" /> Box</>
+                                        <><Shield size={10} className="mr-1" /> Box</>
                                     )}
                                 </p>
                                 
