@@ -891,7 +891,12 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser}) => {
                                                 <div className="flex items-center space-x-4 text-sm text-slate-600 mb-2">
                                                     <span>{new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' })}</span>
                                                     <span>{event.time}</span>
-                                                    {event.location && <span>{event.location}</span>}
+                                                    {event.location && (
+                                                        <ClickableLocation 
+                                                            locationName={event.location}
+                                                            teams={teams}
+                                                        />
+                                                    )}
                                                 </div>
                                                 {event.imageUrl && (
                                                     <img src={event.imageUrl} alt="Event" className="w-full h-32 object-cover rounded-lg mb-3" />
