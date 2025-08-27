@@ -3637,6 +3637,46 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                         </div>
                     </div>
 
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Logo Display Style</label>
+                        <div className="space-y-2">
+                            <label className="flex items-center space-x-2">
+                                <input 
+                                    type="radio" 
+                                    name="logoStyle" 
+                                    value="contain" 
+                                    checked={style.logoStyle === 'contain' || !style.logoStyle}
+                                    onChange={(e) => setStyle(prev => ({...prev, logoStyle: e.target.value}))} 
+                                    className="text-red-600"
+                                />
+                                <span>Fit (show entire logo)</span>
+                            </label>
+                            <label className="flex items-center space-x-2">
+                                <input 
+                                    type="radio" 
+                                    name="logoStyle" 
+                                    value="cover" 
+                                    checked={style.logoStyle === 'cover'}
+                                    onChange={(e) => setStyle(prev => ({...prev, logoStyle: e.target.value}))} 
+                                    className="text-red-600"
+                                />
+                                <span>Fill (crop/zoom to fill space)</span>
+                            </label>
+                            <label className="flex items-center space-x-2">
+                                <input 
+                                    type="radio" 
+                                    name="logoStyle" 
+                                    value="fill" 
+                                    checked={style.logoStyle === 'fill'}
+                                    onChange={(e) => setStyle(prev => ({...prev, logoStyle: e.target.value}))} 
+                                    className="text-red-600"
+                                />
+                                <span>Stretch (distort to fill space)</span>
+                            </label>
+                        </div>
+                        <p className="text-xs text-slate-500 mt-1">This setting affects all team and league logos throughout the site</p>
+                    </div>
+
                     <div className="flex justify-end items-center space-x-4">
                         {saved && <span className="text-green-600 font-semibold">✓ Saved!</span>}
                         <button 
