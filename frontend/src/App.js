@@ -500,37 +500,45 @@ const RoleManager = ({ users, setUsers }) => {
             {/* Role List */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 {roles.map(role => (
-                    <div key={role.id} className="bg-slate-50 p-4 rounded-lg border">
+                    <div key={role.id} className="bg-slate-50 p-4 rounded-lg border hover:border-slate-300 transition-colors">
                         <div className="flex justify-between items-start mb-2">
-                            <div>
-                                <h4 className="font-semibold text-slate-800">{role.name}</h4>
+                            <div className="flex-grow">
+                                <h4 className="font-semibold text-slate-800 mb-1">{role.name}</h4>
                                 {role.isSystemRole && (
                                     <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">System Role</span>
                                 )}
                             </div>
                             <div className="flex space-x-2">
+                                <button 
+                                    onClick={() => setEditingRole(role)}
+                                    className="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 p-2 rounded transition-colors"
+                                    title={role.isSystemRole ? "View Permissions" : "Edit Role"}
+                                >
+                                    <Edit size={16} />
+                                </button>
                                 {!role.isSystemRole && (
-                                    <>
-                                        <button 
-                                            onClick={() => setEditingRole(role)}
-                                            className="text-blue-600 hover:text-blue-800"
-                                        >
-                                            <Edit size={16} />
-                                        </button>
-                                        <button 
-                                            onClick={() => handleDeleteRole(role.id)}
-                                            className="text-red-600 hover:text-red-800"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </>
+                                    <button 
+                                        onClick={() => handleDeleteRole(role.id)}
+                                        className="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded transition-colors"
+                                        title="Delete Role"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
                                 )}
                             </div>
                         </div>
-                        <p className="text-sm text-slate-600 mb-2">{role.description}</p>
-                        <p className="text-xs text-slate-500">
-                            {role.permissions.length} permission{role.permissions.length !== 1 ? 's' : ''}
-                        </p>
+                        <p className="text-sm text-slate-600 mb-3">{role.description}</p>
+                        <div className="flex justify-between items-center">
+                            <p className="text-xs text-slate-500">
+                                {role.permissions.length} permission{role.permissions.length !== 1 ? 's' : ''}
+                            </p>
+                            <button 
+                                onClick={() => setEditingRole(role)}
+                                className="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1 rounded transition-colors"
+                            >
+                                {role.isSystemRole ? 'View Details' : 'Edit Permissions'}
+                            </button>
+                        </div>
                     </div>
                 ))}
             </div>
