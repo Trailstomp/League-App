@@ -6492,6 +6492,15 @@ function App() {
     const [currentUser, setCurrentUser] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(window.innerWidth > 768);
     const [showLogin, setShowLogin] = useState(false);
+    const [authMode, setAuthMode] = useState('login'); // 'login', 'register'
+    const [registrationData, setRegistrationData] = useState({
+        name: '',
+        email: '',
+        preferredRole: 'player',
+        teamId: '',
+        phone: '',
+        reasonForJoining: ''
+    });
 
     const [teams, setTeams] = useState(initialTeams);
     const [players, setPlayers] = useState(initialPlayersList);
