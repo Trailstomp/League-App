@@ -5191,7 +5191,7 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                         </div>
                     </div>
 
-                    {/* Top Banner Customization */}}
+                    {/* Top Banner Customization */}
                     <div>
                         <h4 className="text-lg font-semibold text-slate-800 mb-3">Top Banner Bar</h4>
                         
