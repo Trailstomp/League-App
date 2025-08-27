@@ -241,7 +241,31 @@ frontend:
         agent: "main"
         comment: "Fixed TeamCalendarManager by setting isTeamSpecific=false to enable team selection. Now shows 7 team checkboxes for multi-team events like tournaments."
 
-  - task: "Add management controls directly to relevant pages"
+  - task: "Fix media description input focus issue - only allows one letter"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Fixed React re-rendering issue by restructuring MediaManager with separate form components using proper state management. Input focus issue resolved."
+
+  - task: "Implement gallery-based media system with slideshow"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Completely rebuilt MediaManager as gallery system with slideshow functionality, multiple galleries per team, and proper sorting (newest first)."
+
+  - task: "Separate photos and videos into sub-tabs"
     implemented: true
     working: true
     file: "frontend/src/App.js"
@@ -251,7 +275,19 @@ frontend:
     status_history:
       - working: true
         agent: "main"
-        comment: "Added admin-only management controls: 'Edit League Info' button on homepage, 'Add League Event' button on Events page. Only visible to league admins."
+        comment: "Added tabbed interface with 'Photo Galleries' and 'Video Collections' sub-tabs with separate management workflows."
+
+  - task: "Multiple galleries with newest on top sorting"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Galleries sorted by creation date (newest first). Each gallery shows creation date, item count, and individual gallery management."
 
 backend:
   - task: "Backend API functionality"
