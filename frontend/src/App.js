@@ -5,6 +5,14 @@ import "./App.css";
 // --- ASSETS ---
 const MlblLogo = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzE4MTgyOCIvPjxwYXRoIGQ9Ik0zMCAyMEw3MCAyMFY4MEw1MCA5MEwzMCA4MFoiIGZpbGw9IiNkYzI2MjYiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIzMCIgZm9udC1mYW1pbHk9InNlcmlmIiBmaWxsPSJ3aGl0ZSI+TUxCTDwvdGV4dD48L3N2Zz4=";
 
+// --- UTILITIES ---
+const getLogoStyle = (websiteStyle) => {
+    const logoStyle = websiteStyle?.logoStyle || 'contain';
+    return logoStyle === 'contain' ? 'object-contain' : 
+           logoStyle === 'cover' ? 'object-cover' : 
+           'object-fill';
+};
+
 // --- DATA IMPORTED FROM SPREADSHEETS ---
 const initialMockUsers = [
     { id: 1, name: 'Admin Ali', roles: ['admin'], teamId: null, email: 'admin@mlbl.org' },
