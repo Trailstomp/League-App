@@ -618,23 +618,68 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
                                 <div key={item.id} className="bg-slate-50 p-3 rounded">
                                     {editingNewsItem?.id === item.id ? (
                                         <div className="space-y-2">
-                                            <input 
-                                                type="text"
-                                                defaultValue={item.text}
-                                                className="w-full p-2 border rounded"
-                                                onKeyPress={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        handleSaveNews(item.id, e.target.value);
-                                                    }
-                                                }}
-                                                autoFocus
-                                            />
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                                <select 
+                                                    defaultValue={item.type}
+                                                    className="p-2 border rounded"
+                                                    onChange={(e) => {
+                                                        setEditingNewsItem(prev => ({...prev, type: e.target.value}));
+                                                    }}
+                                                >
+                                                    <option value="text">📝 Text Only</option>
+                                                    <option value="image">🖼️ Image + Text</option>
+                                                    <option value="video">🎥 Video + Text</option>
+                                                </select>
+                                                
+                                                <input 
+                                                    type="text"
+                                                    defaultValue={item.text}
+                                                    placeholder="News text"
+                                                    className="p-2 border rounded md:col-span-2"
+                                                    onChange={(e) => {
+                                                        setEditingNewsItem(prev => ({...prev, text: e.target.value}));
+                                                    }}
+                                                />
+                                            </div>
+                                            
+                                            {editingNewsItem?.type === 'image' && (
+                                                <input 
+                                                    type="url"
+                                                    defaultValue={item.imageUrl || ''}
+                                                    placeholder="Image URL"
+                                                    className="w-full p-2 border rounded"
+                                                    onChange={(e) => {
+                                                        setEditingNewsItem(prev => ({...prev, imageUrl: e.target.value}));
+                                                    }}
+                                                />
+                                            )}
+                                            
+                                            {editingNewsItem?.type === 'video' && (
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                                    <input 
+                                                        type="url"
+                                                        defaultValue={item.videoUrl || ''}
+                                                        placeholder="YouTube/Video URL"
+                                                        className="p-2 border rounded"
+                                                        onChange={(e) => {
+                                                            setEditingNewsItem(prev => ({...prev, videoUrl: e.target.value}));
+                                                        }}
+                                                    />
+                                                    <input 
+                                                        type="url"
+                                                        defaultValue={item.thumbnailUrl || ''}
+                                                        placeholder="Thumbnail URL"
+                                                        className="p-2 border rounded"
+                                                        onChange={(e) => {
+                                                            setEditingNewsItem(prev => ({...prev, thumbnailUrl: e.target.value}));
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+                                            
                                             <div className="flex space-x-2">
                                                 <button 
-                                                    onClick={(e) => {
-                                                        const input = e.target.parentElement.previousElementSibling;
-                                                        handleSaveNews(item.id, input.value);
-                                                    }}
+                                                    onClick={() => handleSaveNews(item.id, editingNewsItem)}
                                                     className="bg-green-600 text-white px-3 py-1 rounded text-sm"
                                                 >
                                                     Save
@@ -649,7 +694,23 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
                                         </div>
                                     ) : (
                                         <div className="flex justify-between items-center">
-                                            <span className="flex-grow">{item.text}</span>
+                                            <div className="flex items-center space-x-2 flex-grow">
+                                                {item.type === 'image' && item.imageUrl && (
+                                                    <img src={item.imageUrl} alt="News" className="w-8 h-6 rounded object-cover"/>
+                                                )}
+                                                {item.type === 'video' && item.thumbnailUrl && (
+                                                    <div className="relative">
+                                                        <img src={item.thumbnailUrl} alt="Video" className="w-8 h-6 rounded object-cover"/>
+                                                        <div className="absolute inset-0 flex items-center justify-center">
+                                                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <span className="flex-grow font-semibold">{item.text}</span>
+                                                    <span className="text-xs text-slate-500 ml-2">({item.type})</span>
+                                                </div>
+                                            </div>
                                             <div className="flex space-x-2">
                                                 <button 
                                                     onClick={() => setEditingNewsItem(item)}
