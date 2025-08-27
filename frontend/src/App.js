@@ -596,6 +596,28 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
                             <Edit className="mr-1 h-3 w-3"/> Edit News
                         </button>
                     )}
+                    {/* Quick Admin Toggle for Development/Testing */}
+                    {!currentUser && (
+                        <button 
+                            onClick={() => {
+                                const adminUser = {
+                                    id: 'admin-all',
+                                    name: 'Admin All',
+                                    email: 'admin@mlbl.com',
+                                    roles: ['admin']
+                                };
+                                onTeamClick = onTeamClick || (() => {}); // Fallback
+                                if (typeof setCurrentUser !== 'undefined') {
+                                    // This would need to be passed from parent component
+                                    console.log('Quick admin login activated');
+                                }
+                            }}
+                            className="bg-yellow-600 text-white px-2 py-1 rounded text-xs hover:bg-yellow-700 ml-2"
+                            title="Quick admin access"
+                        >
+                            🔑 Admin
+                        </button>
+                    )}
                 </div>
             </div>
 
