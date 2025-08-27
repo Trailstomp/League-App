@@ -13,6 +13,21 @@ const getLogoStyle = (websiteStyle) => {
            'object-fill';
 };
 
+// Helper function to find address from location name
+const findLocationAddress = (locationName, teams) => {
+    if (!locationName || !teams) return null;
+    
+    for (const team of teams) {
+        if (team.locations) {
+            const location = team.locations.find(loc => loc.name === locationName);
+            if (location) {
+                return location.address;
+            }
+        }
+    }
+    return null;
+};
+
 // --- DATA IMPORTED FROM SPREADSHEETS ---
 const initialMockUsers = [
     { id: 1, name: 'Admin Ali', roles: ['admin'], teamId: null, email: 'admin@mlbl.org' },
