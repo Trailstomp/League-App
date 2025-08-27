@@ -1143,6 +1143,20 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                             <img src={video.thumbnail} alt={video.title} className="w-full h-32 object-cover rounded"/>
                                         </div>
                                         <div className="space-y-2">
+                                            <input 
+                                                type="text"
+                                                defaultValue={video.title}
+                                                placeholder="Video title"
+                                                className="w-full p-2 border rounded"
+                                                onChange={(e) => {
+                                                    setMediaContent(prev => ({
+                                                        ...prev,
+                                                        videos: prev.videos.map(v => 
+                                                            v.id === video.id ? {...v, title: e.target.value} : v
+                                                        )
+                                                    }));
+                                                }}
+                                            />
                                             <div>
                                                 <label className="block font-semibold text-slate-700 mb-1">Video URL</label>
                                                 <input 
