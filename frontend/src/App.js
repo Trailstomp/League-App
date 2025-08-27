@@ -2441,7 +2441,7 @@ const LeagueCalendarManager = ({ teams, setTeams }) => {
     );
 };
 
-const AdminPage = ({ leagueInfo, setLeagueInfo, websiteStyle, setWebsiteStyle }) => {
+const LeagueInfoManager = ({ leagueInfo, setLeagueInfo, websiteStyle, setWebsiteStyle }) => {
     const [info, setInfo] = useState({
         name: leagueInfo.name || '',
         contactEmail: leagueInfo.contactEmail || '',
