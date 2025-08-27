@@ -1841,16 +1841,26 @@ const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
 );
 
 const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
-    const sortedTeams = [...teams].filter(t => t.active).sort((a, b) => {
+    const fieldTeams = teams.filter(t => t.active && t.division === 'Field').sort((a, b) => {
         const scoreA = a.wins * 2 + a.ties;
         const scoreB = b.wins * 2 + b.ties;
         if (scoreA !== scoreB) return scoreB - scoreA;
         return (b.pf - b.pa) - (a.pf - a.pa);
     });
     
-    return (
-        <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
-            <h1 className="text-4xl font-bold text-slate-800 mb-6 tracking-tight">League Standings</h1>
+    const boxTeams = teams.filter(t => t.active && t.division === 'Box').sort((a, b) => {
+        const scoreA = a.wins * 2 + a.ties;
+        const scoreB = b.wins * 2 + b.ties;
+        if (scoreA !== scoreB) return scoreB - scoreA;
+        return (b.pf - b.pa) - (a.pf - a.pa);
+    });
+
+    const renderStandingsTable = (divisionTeams, divisionName) => (
+        <div className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-700 mb-4 flex items-center">
+                {divisionName === 'Field' ? <Trophy className="mr-2" size={24} /> : <Shield className="mr-2" size={24} />}
+                {divisionName} Lacrosse Standings
+            </h2>
             <div className="bg-white rounded-lg shadow-md overflow-x-auto">
                 <table className="w-full table-auto">
                     <thead className="bg-slate-100 text-slate-600 uppercase text-sm leading-normal">
@@ -1862,13 +1872,14 @@ const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
                         </tr>
                     </thead>
                     <tbody className="text-slate-700 text-sm font-light">
-                        {sortedTeams.map(team => {
+                        {divisionTeams.map((team, index) => {
                             const differential = team.pf - team.pa;
                             const score = team.wins * 2 + team.ties;
                             return (
-                                <tr key={team.id} className="border-b border-slate-200 hover:bg-slate-50">
+                                <tr key={team.id} className={`border-b border-slate-200 hover:bg-slate-50 ${index === 0 ? 'bg-yellow-50' : ''}`}>
                                     <td className="py-3 px-6 text-left whitespace-nowrap">
                                         <button onClick={() => onTeamClick(team.id)} className="flex items-center hover:opacity-80">
+                                            {index === 0 && <Crown size={16} className="text-yellow-600 mr-1" />}
                                             <img src={team.logo} alt={team.name} className="w-8 h-8 mr-3 rounded-full bg-white p-1" />
                                             <span className="font-medium">{team.name}</span>
                                         </button>
@@ -1885,6 +1896,14 @@ const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
                     </tbody>
                 </table>
             </div>
+        </div>
+    );
+    
+    return (
+        <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
+            <h1 className="text-4xl font-bold text-slate-800 mb-6 tracking-tight">League Standings</h1>
+            {fieldTeams.length > 0 && renderStandingsTable(fieldTeams, 'Field')}
+            {boxTeams.length > 0 && renderStandingsTable(boxTeams, 'Box')}
         </div>
     );
 };
