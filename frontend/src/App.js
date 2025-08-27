@@ -6299,6 +6299,7 @@ function App() {
         // Sidebar settings
         sidebarImage: '',
         sidebarOpacity: 0.2,
+        sidebarMode: 'cover', // cover, contain, repeat
         // Game Ticker settings (moved from LeagueInfoManager)
         tickerColor: '#1e293b',
         tickerItemColor: '#334155',
