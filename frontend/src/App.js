@@ -4228,10 +4228,10 @@ const SocialMediaManager = ({ leagueInfo, setLeagueInfo, teams, setTeams, curren
                                             <div className="flex flex-col items-center space-y-2">
                                                 <platform.icon className={platform.color} size={24} />
                                                 <span className="text-sm font-medium">{platform.label}</span>
-                                                {!credentials[platform.id]?.connected && (
+                                                {!currentCredentials[platform.id]?.connected && (
                                                     <span className="text-xs text-red-500">Not Connected</span>
                                                 )}
-                                                {credentials[platform.id]?.connected && (
+                                                {currentCredentials[platform.id]?.connected && (
                                                     <span className="text-xs text-green-600">Ready</span>
                                                 )}
                                             </div>
