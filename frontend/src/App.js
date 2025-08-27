@@ -5945,133 +5945,252 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
 };
 
 const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
-    const [style, setStyle] = useState(websiteStyle || {});
+    const [style, setStyle] = useState(websiteStyle);
     const [saved, setSaved] = useState(false);
-
-    React.useEffect(() => {
-        setStyle(websiteStyle || {});
-    }, [websiteStyle]);
 
     const handleSave = () => {
         setWebsiteStyle(style);
         setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
+        setTimeout(() => setSaved(false), 2000);
     };
 
-    const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder }) => (
-        <div>
-            <label className="block font-semibold text-slate-700 mb-2">{label}</label>
-            <div className="space-y-2">
-                <input 
-                    type="file"
-                    accept={accept}
-                    onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (e) => onChange(e.target.result);
-                            reader.readAsDataURL(file);
-                        }
-                    }}
-                    className="w-full p-2 border border-slate-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                />
-                <input 
-                    type="url"
-                    value={currentValue || ''}
-                    onChange={(e) => onChange(e.target.value)}
-                    placeholder={placeholder || "Or enter URL"}
-                    className="w-full p-2 border border-slate-300 rounded-lg"
-                />
-            </div>
-        </div>
-    );
-
     return (
-        <div className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Left Column */}
-                <div className="space-y-6">
-                    {/* === LOGO & BRANDING === */}
-                    <div className="border-b border-slate-200 pb-6">
-                        <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-                            <Image className="mr-2" size={20} />
-                            Logo & Branding
-                        </h4>
-                        
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <div className="border-b border-slate-200 pb-4 mb-6">
+                <h3 className="text-2xl font-bold text-slate-800 mb-2">Website Appearance</h3>
+                <p className="text-slate-600">Customize how your league website looks across all pages and devices</p>
+            </div>
+
+            <div className="space-y-8">
+                {/* === TOP HEADER BAR === */}
+                <div className="bg-slate-50 p-6 rounded-lg">
+                    <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                        <Layout className="mr-2" size={20} />
+                        Top Header Bar
+                    </h4>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
                         <div className="space-y-4">
-                            <FileUploadInput
-                                label="Website Logo"
-                                accept="image/*"
-                                currentValue={style.logoUrl || ''}
-                                onChange={(url) => setStyle(prev => ({...prev, logoUrl: url}))}
-                                placeholder="Upload logo or enter URL"
-                            />
-                            
                             <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Logo Display Style</label>
-                                <select 
-                                    value={style.logoStyle || 'contain'}
-                                    onChange={(e) => setStyle(prev => ({...prev, logoStyle: e.target.value}))}
+                                <label className="block font-semibold text-slate-700 mb-2">Header Text</label>
+                                <input 
+                                    type="text"
+                                    value={style.bannerText || 'MLBL'}
+                                    onChange={(e) => setStyle(prev => ({...prev, bannerText: e.target.value}))}
                                     className="w-full p-3 border border-slate-300 rounded-lg"
-                                >
-                                    <option value="contain">Fit (Contain)</option>
-                                    <option value="cover">Fill (Cover)</option>
-                                    <option value="stretch">Stretch</option>
-                                </select>
+                                    placeholder="Your league name or title"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Background Color</label>
+                                <div className="relative">
+                                    <div 
+                                        className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
+                                        style={{ backgroundColor: style.bannerColor || style.primaryColor }}
+                                    >
+                                        <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+                                            {style.bannerColor || style.primaryColor}
+                                        </span>
+                                    </div>
+                                    <input 
+                                        type="color" 
+                                        value={style.bannerColor || style.primaryColor || '#1e293b'}
+                                        onChange={(e) => setStyle(prev => ({...prev, bannerColor: e.target.value}))}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Background Image (Optional)</label>
+                                <FileUploadInput
+                                    accept="image/*"
+                                    currentValue={style.bannerImage || ''}
+                                    onChange={(url) => setStyle(prev => ({...prev, bannerImage: url}))}
+                                    placeholder="Upload header background image or enter URL"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Header Logo (Optional)</label>
+                                <FileUploadInput
+                                    accept="image/*"
+                                    currentValue={style.bannerLogo || ''}
+                                    onChange={(url) => setStyle(prev => ({...prev, bannerLogo: url}))}
+                                    placeholder="Upload logo for header or enter URL"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block font-semibold text-slate-700 mb-2">Logo Position</label>
+                                    <select 
+                                        value={style.bannerLogoPosition || 'left'}
+                                        onChange={(e) => setStyle(prev => ({...prev, bannerLogoPosition: e.target.value}))}
+                                        className="w-full p-3 border border-slate-300 rounded-lg"
+                                    >
+                                        <option value="left">Left</option>
+                                        <option value="center">Center</option>
+                                        <option value="right">Right</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block font-semibold text-slate-700 mb-2">Logo Size</label>
+                                    <select 
+                                        value={style.bannerLogoSize || 'medium'}
+                                        onChange={(e) => setStyle(prev => ({...prev, bannerLogoSize: e.target.value}))}
+                                        className="w-full p-3 border border-slate-300 rounded-lg"
+                                    >
+                                        <option value="small">Small</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="large">Large</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {style.bannerImage && (
+                                <div>
+                                    <label className="block font-semibold text-slate-700 mb-2">
+                                        Background Opacity: {Math.round((style.bannerOpacity || 0.3) * 100)}%
+                                    </label>
+                                    <input 
+                                        type="range"
+                                        min="0"
+                                        max="1"
+                                        step="0.1"
+                                        value={style.bannerOpacity || 0.3}
+                                        onChange={(e) => setStyle(prev => ({...prev, bannerOpacity: parseFloat(e.target.value)}))}
+                                        className="w-full"
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* === NEWS TICKER === */}
+                <div className="bg-slate-50 p-6 rounded-lg">
+                    <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                        <Zap className="mr-2" size={20} />
+                        News Ticker
+                    </h4>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Ticker Label Text</label>
+                            <input 
+                                type="text"
+                                value={style.newsLabel || 'NEWS'}
+                                onChange={(e) => setStyle(prev => ({...prev, newsLabel: e.target.value}))}
+                                className="w-full p-3 border border-slate-300 rounded-lg"
+                                placeholder="Label for news ticker (NEWS, UPDATES, etc.)"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Ticker Colors</label>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="relative">
+                                    <div 
+                                        className="w-full h-10 border rounded cursor-pointer flex items-center px-2"
+                                        style={{ backgroundColor: style.tickerColor }}
+                                    >
+                                        <span className="text-white text-xs bg-black bg-opacity-50 px-1 rounded">Background</span>
+                                    </div>
+                                    <input 
+                                        type="color" 
+                                        value={style.tickerColor || '#1e293b'}
+                                        onChange={(e) => setStyle(prev => ({...prev, tickerColor: e.target.value}))}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    />
+                                </div>
+                                
+                                <div className="relative">
+                                    <div 
+                                        className="w-full h-10 border rounded cursor-pointer flex items-center px-2"
+                                        style={{ backgroundColor: style.tickerTextColor }}
+                                    >
+                                        <span className="text-white text-xs bg-black bg-opacity-50 px-1 rounded">Text</span>
+                                    </div>
+                                    <input 
+                                        type="color" 
+                                        value={style.tickerTextColor || '#94a3b8'}
+                                        onChange={(e) => setStyle(prev => ({...prev, tickerTextColor: e.target.value}))}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* === COLORS === */}
-                    <div className="border-b border-slate-200 pb-6">
-                        <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-                            <Palette className="mr-2" size={20} />
-                            Color Scheme
-                        </h4>
-                        
+                {/* === NAVIGATION SIDEBAR === */}
+                <div className="bg-slate-50 p-6 rounded-lg">
+                    <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                        <Menu className="mr-2" size={20} />
+                        Navigation Sidebar
+                    </h4>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Sidebar Background Image</label>
+                            <FileUploadInput
+                                accept="image/*"
+                                currentValue={style.sidebarImage || ''}
+                                onChange={(url) => setStyle(prev => ({...prev, sidebarImage: url}))}
+                                placeholder="Upload sidebar background or enter URL"
+                            />
+                        </div>
+
                         <div className="space-y-4">
                             <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Primary Color</label>
-                                <div className="relative">
-                                    <div 
-                                        className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
-                                        style={{ backgroundColor: style.primaryColor }}
-                                    >
-                                        <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                                            {style.primaryColor}
-                                        </span>
-                                    </div>
-                                    <input 
-                                        type="color" 
-                                        value={style.primaryColor || '#1e293b'}
-                                        onChange={(e) => setStyle(prev => ({...prev, primaryColor: e.target.value}))}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                    />
-                                </div>
+                                <label className="block font-semibold text-slate-700 mb-2">Display Mode</label>
+                                <select 
+                                    value={style.sidebarMode || 'cover'}
+                                    onChange={(e) => setStyle(prev => ({...prev, sidebarMode: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg"
+                                >
+                                    <option value="cover">Cover (Fill)</option>
+                                    <option value="contain">Contain (Fit)</option>
+                                    <option value="repeat">Repeat (Tile)</option>
+                                </select>
                             </div>
 
-                            <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Accent Color</label>
-                                <div className="relative">
-                                    <div 
-                                        className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
-                                        style={{ backgroundColor: style.accentColor }}
-                                    >
-                                        <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                                            {style.accentColor}
-                                        </span>
-                                    </div>
+                            {style.sidebarImage && (
+                                <div>
+                                    <label className="block font-semibold text-slate-700 mb-2">
+                                        Image Opacity: {Math.round((style.sidebarOpacity || 0.2) * 100)}%
+                                    </label>
                                     <input 
-                                        type="color" 
-                                        value={style.accentColor || '#991b1b'}
-                                        onChange={(e) => setStyle(prev => ({...prev, accentColor: e.target.value}))}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        type="range"
+                                        min="0"
+                                        max="1"
+                                        step="0.1"
+                                        value={style.sidebarOpacity || 0.2}
+                                        onChange={(e) => setStyle(prev => ({...prev, sidebarOpacity: parseFloat(e.target.value)}))}
+                                        className="w-full"
                                     />
                                 </div>
-                            </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
 
+                {/* === PAGE BACKGROUND === */}
+                <div className="bg-slate-50 p-6 rounded-lg">
+                    <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                        <Image className="mr-2" size={20} />
+                        Page Background
+                    </h4>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
                             <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Page Background Color</label>
+                                <label className="block font-semibold text-slate-700 mb-2">Background Color</label>
                                 <div className="relative">
                                     <div 
                                         className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
@@ -6089,374 +6208,180 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                     />
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* === TEXT STYLING === */}
-                    <div className="border-b border-slate-200 pb-6">
-                        <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-                            <Edit className="mr-2" size={20} />
-                            Text & Typography
-                        </h4>
-                        
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Body Text Color</label>
-                                <div className="relative">
-                                    <div 
-                                        className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
-                                        style={{ backgroundColor: style.textColor }}
-                                    >
-                                        <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                                            {style.textColor} Sample Text
-                                        </span>
-                                    </div>
-                                    <input 
-                                        type="color" 
-                                        value={style.textColor || '#1e293b'}
-                                        onChange={(e) => setStyle(prev => ({...prev, textColor: e.target.value}))}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                    />
-                                </div>
-                            </div>
 
                             <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Heading Color</label>
-                                <div className="relative">
-                                    <div 
-                                        className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
-                                        style={{ backgroundColor: style.headingColor }}
-                                    >
-                                        <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                                            {style.headingColor} Heading
-                                        </span>
-                                    </div>
-                                    <input 
-                                        type="color" 
-                                        value={style.headingColor || '#0f172a'}
-                                        onChange={(e) => setStyle(prev => ({...prev, headingColor: e.target.value}))}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Link Color</label>
-                                <div className="relative">
-                                    <div 
-                                        className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
-                                        style={{ backgroundColor: style.linkColor }}
-                                    >
-                                        <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                                            {style.linkColor} Link Text
-                                        </span>
-                                    </div>
-                                    <input 
-                                        type="color" 
-                                        value={style.linkColor || '#2563eb'}
-                                        onChange={(e) => setStyle(prev => ({...prev, linkColor: e.target.value}))}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Right Column */}
-                <div className="space-y-6">
-                    {/* === GAME TICKER === */}
-                    <div className="border-b border-slate-200 pb-6">
-                        <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-                            <BarChart2 className="mr-2" size={20} />
-                            Game Ticker Styling
-                        </h4>
-                        
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Ticker Background</label>
-                                <div className="relative">
-                                    <div 
-                                        className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
-                                        style={{ backgroundColor: style.tickerColor }}
-                                    >
-                                        <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                                            {style.tickerColor}
-                                        </span>
-                                    </div>
-                                    <input 
-                                        type="color" 
-                                        value={style.tickerColor || '#1e293b'}
-                                        onChange={(e) => setStyle(prev => ({...prev, tickerColor: e.target.value}))}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Ticker Text Color</label>
-                                <div className="relative">
-                                    <div 
-                                        className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
-                                        style={{ backgroundColor: style.tickerTextColor }}
-                                    >
-                                        <span className="text-white font-semibold text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
-                                            {style.tickerTextColor}
-                                        </span>
-                                    </div>
-                                    <input 
-                                        type="color" 
-                                        value={style.tickerTextColor || '#94a3b8'}
-                                        onChange={(e) => setStyle(prev => ({...prev, tickerTextColor: e.target.value}))}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* === TOP BANNER BACKGROUND === */}
-                    <div className="border-b border-slate-200 pb-6">
-                        <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-                            <Image className="mr-2" size={20} />
-                            Top Banner Background
-                        </h4>
-                        
-                        <div className="space-y-4">
-                            <FileUploadInput
-                                label="Banner Background Image"
-                                accept="image/*"
-                                currentValue={style.bannerImage || ''}
-                                onChange={(url) => setStyle(prev => ({...prev, bannerImage: url}))}
-                                placeholder="Upload banner background image or enter URL"
-                            />
-                            
-                            <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Banner Display Mode</label>
-                                <select 
-                                    value={style.bannerMode || 'cover'}
-                                    onChange={(e) => setStyle(prev => ({...prev, bannerMode: e.target.value}))}
-                                    className="w-full p-3 border border-slate-300 rounded-lg"
-                                >
-                                    <option value="cover">Cover (Fill entire banner)</option>
-                                    <option value="contain">Contain (Fit within banner)</option>
-                                    <option value="repeat">Repeat (Tile pattern)</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block font-semibold text-slate-700 mb-2">
-                                    Banner Image Opacity: {Math.round((style.bannerOpacity !== undefined ? style.bannerOpacity : 0.3) * 100)}%
-                                </label>
-                                <input 
-                                    type="range"
-                                    min="0"
-                                    max="1"
-                                    step="0.1"
-                                    value={style.bannerOpacity !== undefined ? style.bannerOpacity : 0.3}
-                                    onChange={(e) => setStyle(prev => ({...prev, bannerOpacity: parseFloat(e.target.value)}))}
-                                    className="w-full"
+                                <label className="block font-semibold text-slate-700 mb-2">Background Image (Optional)</label>
+                                <FileUploadInput
+                                    accept="image/*"
+                                    currentValue={style.backgroundImage || ''}
+                                    onChange={(url) => setStyle(prev => ({...prev, backgroundImage: url}))}
+                                    placeholder="Upload page background or enter URL"
                                 />
-                                <div className="flex justify-between text-xs text-slate-500 mt-1">
-                                    <span>Transparent</span>
-                                    <span>Opaque</span>
-                                </div>
-                                <p className="text-xs text-slate-500 mt-1">Controls the darkness of the overlay on the banner image</p>
                             </div>
                         </div>
-                    </div>
 
-                    {/* === SIDEBAR BACKGROUND === */}
-                    <div className="border-b border-slate-200 pb-6">
-                        <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-                            <Menu className="mr-2" size={20} />
-                            Navigation Sidebar Background
-                        </h4>
-                        
                         <div className="space-y-4">
-                            <FileUploadInput
-                                label="Sidebar Background Image"
-                                accept="image/*"
-                                currentValue={style.sidebarImage || ''}
-                                onChange={(url) => setStyle(prev => ({...prev, sidebarImage: url}))}
-                                placeholder="Upload sidebar background image or enter URL"
-                            />
-                            
                             <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Sidebar Display Mode</label>
-                                <select 
-                                    value={style.sidebarMode || 'cover'}
-                                    onChange={(e) => setStyle(prev => ({...prev, sidebarMode: e.target.value}))}
-                                    className="w-full p-3 border border-slate-300 rounded-lg"
-                                >
-                                    <option value="cover">Cover (Fill sidebar)</option>
-                                    <option value="contain">Contain (Fit within sidebar)</option>
-                                    <option value="repeat">Repeat (Tile pattern)</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block font-semibold text-slate-700 mb-2">
-                                    Sidebar Image Opacity: {Math.round((style.sidebarOpacity || 0.2) * 100)}%
-                                </label>
-                                <input 
-                                    type="range"
-                                    min="0"
-                                    max="1"
-                                    step="0.1"
-                                    value={style.sidebarOpacity || 0.2}
-                                    onChange={(e) => setStyle(prev => ({...prev, sidebarOpacity: parseFloat(e.target.value)}))}
-                                    className="w-full"
-                                />
-                                <div className="flex justify-between text-xs text-slate-500 mt-1">
-                                    <span>Dark Overlay</span>
-                                    <span>Bright Image</span>
-                                </div>
-                                <p className="text-xs text-slate-500 mt-1">Lower opacity adds darker overlay for better text readability</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* === PAGE BACKGROUND === */}
-                    <div className="border-b border-slate-200 pb-6">
-                        <h4 className="text-lg font-semibold text-slate-800 mb-4">Page Background Image</h4>
-                        
-                        <div className="space-y-4">
-                            <FileUploadInput
-                                label="Background Image"
-                                accept="image/*"
-                                currentValue={style.backgroundImage || ''}
-                                onChange={(url) => setStyle(prev => ({...prev, backgroundImage: url}))}
-                                placeholder="Upload background image or enter URL"
-                            />
-                            
-                            <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Background Display Mode</label>
+                                <label className="block font-semibold text-slate-700 mb-2">Display Mode</label>
                                 <select 
                                     value={style.backgroundMode || 'cover'}
                                     onChange={(e) => setStyle(prev => ({...prev, backgroundMode: e.target.value}))}
                                     className="w-full p-3 border border-slate-300 rounded-lg"
                                 >
-                                    <option value="cover">Cover (Fill entire area)</option>
-                                    <option value="contain">Contain (Fit within area)</option>
-                                    <option value="repeat">Repeat (Tile pattern)</option>
+                                    <option value="cover">Cover (Fill)</option>
+                                    <option value="contain">Contain (Fit)</option>
+                                    <option value="repeat">Repeat (Tile)</option>
                                 </select>
                             </div>
 
-                            <div>
-                                <label className="block font-semibold text-slate-700 mb-2">
-                                    Background Opacity: {Math.round((style.backgroundOpacity || 0.1) * 100)}%
-                                </label>
-                                <input 
-                                    type="range"
-                                    min="0"
-                                    max="1"
-                                    step="0.1"
-                                    value={style.backgroundOpacity || 0.1}
-                                    onChange={(e) => setStyle(prev => ({...prev, backgroundOpacity: parseFloat(e.target.value)}))}
-                                    className="w-full"
-                                />
-                                <div className="flex justify-between text-xs text-slate-500 mt-1">
-                                    <span>Transparent</span>
-                                    <span>Opaque</span>
+                            {style.backgroundImage && (
+                                <div>
+                                    <label className="block font-semibold text-slate-700 mb-2">
+                                        Image Opacity: {Math.round((style.backgroundOpacity || 0.1) * 100)}%
+                                    </label>
+                                    <input 
+                                        type="range"
+                                        min="0"
+                                        max="1"
+                                        step="0.1"
+                                        value={style.backgroundOpacity || 0.1}
+                                        onChange={(e) => setStyle(prev => ({...prev, backgroundOpacity: parseFloat(e.target.value)}))}
+                                        className="w-full"
+                                    />
                                 </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* === TEXT STYLING === */}
+                <div className="bg-slate-50 p-6 rounded-lg">
+                    <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                        <Type className="mr-2" size={20} />
+                        Text & Colors
+                    </h4>
+                    
+                    <div className="grid md:grid-cols-3 gap-4">
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Body Text</label>
+                            <div className="relative">
+                                <div 
+                                    className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
+                                    style={{ backgroundColor: style.textColor }}
+                                >
+                                    <span className="text-white font-semibold text-xs bg-black bg-opacity-50 px-2 py-1 rounded">
+                                        Sample
+                                    </span>
+                                </div>
+                                <input 
+                                    type="color" 
+                                    value={style.textColor || '#1e293b'}
+                                    onChange={(e) => setStyle(prev => ({...prev, textColor: e.target.value}))}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Headings</label>
+                            <div className="relative">
+                                <div 
+                                    className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
+                                    style={{ backgroundColor: style.headingColor }}
+                                >
+                                    <span className="text-white font-semibold text-xs bg-black bg-opacity-50 px-2 py-1 rounded">
+                                        Heading
+                                    </span>
+                                </div>
+                                <input 
+                                    type="color" 
+                                    value={style.headingColor || '#0f172a'}
+                                    onChange={(e) => setStyle(prev => ({...prev, headingColor: e.target.value}))}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Links</label>
+                            <div className="relative">
+                                <div 
+                                    className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
+                                    style={{ backgroundColor: style.linkColor }}
+                                >
+                                    <span className="text-white font-semibold text-xs bg-black bg-opacity-50 px-2 py-1 rounded">
+                                        Link
+                                    </span>
+                                </div>
+                                <input 
+                                    type="color" 
+                                    value={style.linkColor || '#2563eb'}
+                                    onChange={(e) => setStyle(prev => ({...prev, linkColor: e.target.value}))}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* === TOP BAR TEXT CUSTOMIZATION === */}
-                    <div className="border-b border-slate-200 pb-6">
-                        <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-                            <Edit className="mr-2" size={20} />
-                            Top Bar Text
-                        </h4>
-                        
+                {/* === LOGO WATERMARK === */}
+                <div className="bg-slate-50 p-6 rounded-lg">
+                    <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                        <Star className="mr-2" size={20} />
+                        Page Watermark Logo
+                    </h4>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
                         <div>
-                            <label className="block font-semibold text-slate-700 mb-2">News Label Text</label>
-                            <input 
-                                type="text"
-                                value={style.newsLabel || 'NEWS'}
-                                onChange={(e) => setStyle(prev => ({...prev, newsLabel: e.target.value}))}
-                                className="w-full p-3 border border-slate-300 rounded-lg"
-                                placeholder="Enter text for news ticker label (e.g., NEWS, UPDATES, ANNOUNCEMENTS)"
-                            />
-                            <p className="text-xs text-slate-500 mt-1">This text appears in the red label next to your news ticker</p>
-                        </div>
-                    </div>
-
-                    {/* === LOGO OVERLAY === */}
-                    <div className="border-b border-slate-200 pb-6">
-                        <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-                            <Image className="mr-2" size={20} />
-                            Logo Overlay
-                        </h4>
-                        
-                        <div className="space-y-4">
+                            <label className="block font-semibold text-slate-700 mb-2">Watermark Logo</label>
                             <FileUploadInput
-                                label="Overlay Logo"
                                 accept="image/*"
                                 currentValue={style.overlayLogo || ''}
                                 onChange={(url) => setStyle(prev => ({...prev, overlayLogo: url}))}
-                                placeholder="Upload logo or enter URL for background overlay"
+                                placeholder="Upload watermark logo or enter URL"
                             />
-                            
+                            <p className="text-xs text-slate-500 mt-1">Appears subtly on all pages</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Logo Position</label>
+                                <label className="block font-semibold text-slate-700 mb-2">Position</label>
                                 <select 
                                     value={style.overlayLogoAlignment || 'center'}
                                     onChange={(e) => setStyle(prev => ({...prev, overlayLogoAlignment: e.target.value}))}
                                     className="w-full p-3 border border-slate-300 rounded-lg"
                                 >
-                                    <option value="left">Left Aligned</option>
-                                    <option value="center">Center Aligned</option>
-                                    <option value="right">Right Aligned</option>
+                                    <option value="left">Bottom Left</option>
+                                    <option value="center">Bottom Center</option>
+                                    <option value="right">Bottom Right</option>
                                 </select>
                             </div>
 
                             <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Logo Size</label>
+                                <label className="block font-semibold text-slate-700 mb-2">Size</label>
                                 <select 
                                     value={style.overlayLogoSize || 'medium'}
                                     onChange={(e) => setStyle(prev => ({...prev, overlayLogoSize: e.target.value}))}
                                     className="w-full p-3 border border-slate-300 rounded-lg"
                                 >
-                                    <option value="small">Small (64px)</option>
-                                    <option value="medium">Medium (96px)</option>
-                                    <option value="large">Large (128px)</option>
+                                    <option value="small">Small</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="large">Large</option>
                                 </select>
                             </div>
-
-                            <p className="text-xs text-slate-500">Logo appears as a subtle watermark in the bottom corner of all pages</p>
                         </div>
-                    </div>
-
-                    {/* === MUSIC === */}
-                    <div>
-                        <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-                            <Music className="mr-2" size={20} />
-                            Background Music
-                        </h4>
-                        
-                        <FileUploadInput
-                            label="Background Music"
-                            accept="audio/*"
-                            currentValue={style.globalMusicUrl || ''}
-                            onChange={(url) => setStyle(prev => ({...prev, globalMusicUrl: url}))}
-                            placeholder="Upload audio file or enter URL (Spotify, SoundCloud, etc.)"
-                        />
-                        <p className="text-xs text-slate-500 mt-2">Supported: MP3, WAV, streaming URLs from Spotify, SoundCloud, YouTube</p>
                     </div>
                 </div>
             </div>
 
             {/* Save Button */}
-            <div className="flex justify-end pt-6 border-t border-slate-200">
-                {saved && <span className="text-green-600 font-semibold mr-4">✓ Saved!</span>}
+            <div className="flex justify-end pt-8 border-t border-slate-200 mt-8">
+                {saved && <span className="text-green-600 font-semibold mr-4 flex items-center"><span className="mr-1">✓</span> Changes Saved!</span>}
                 <button 
                     onClick={handleSave}
-                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                    className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
                 >
-                    Save Style Settings
+                    Save All Changes
                 </button>
             </div>
         </div>
