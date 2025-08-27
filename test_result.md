@@ -111,17 +111,44 @@ user_problem_statement: |
   5. Finalize WebsiteStyleManager enhancements for all text label attributes and visual separators
   
 frontend:
-  - task: "Create NewHomePage component with photo albums, text area, and team logo links"
+  - task: "Enhance news ticker to show popup with full-size images and click functionality"
     implemented: true
     working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Fixed selectedNewsItem state declaration issue that was causing JavaScript compilation errors. Added missing selectedNewsItem state variable to NewHomePage component."
+      - working: true
+        agent: "main" 
+        comment: "COMPLETED: 1) Fixed JavaScript compilation error with selectedNewsItem state 2) Enhanced news data structure with heading and comments fields 3) Implemented news popup modal with full-size images/videos 4) Added click-to-popup functionality for all news items 5) News ticker now shows larger images (24x16 vs 20x12) and proper heading/comments display 6) Popup includes proper close functionality with X button and click-outside-to-close 7) All news items now display with proper formatting in both ticker and popup views. Feature working perfectly as verified by screenshot testing."
+
+  - task: "Add heading and comments fields to news items data structure"  
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
-        comment: "NewHomePage component created with enhanced photo galleries, text area, and improved team logo grid layout. Tested and verified working."
+        comment: "COMPLETED: Updated news items mock data to include heading and comments fields. All 4 news items now have proper heading, text, comments, and enhanced display. News ticker displays heading in main text and comments as subtitle. Popup modal shows full heading as title and comments in a details section."
+
+  - task: "Implement click-outside-to-close functionality for modals"
+    implemented: true
+    working: true 
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "COMPLETED: Enhanced multiple modals with click-outside-to-close functionality: 1) PlayerCardModal - click background to close 2) News popup modal - click outside to close 3) News editing modal - click background to close 4) Photo editing modal - click outside to close 5) Video editing modal - click background to close. All modals now have improved UX with proper event handling to prevent closing when clicking modal content."
         
   - task: "Update renderPage function to handle events page routing"
     implemented: true
