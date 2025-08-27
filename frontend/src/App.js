@@ -5826,7 +5826,109 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                         </div>
                     </div>
 
-                    {/* === BACKGROUND === */}
+                    {/* === TOP BANNER BACKGROUND === */}
+                    <div className="border-b border-slate-200 pb-6">
+                        <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                            <Image className="mr-2" size={20} />
+                            Top Banner Background
+                        </h4>
+                        
+                        <div className="space-y-4">
+                            <FileUploadInput
+                                label="Banner Background Image"
+                                accept="image/*"
+                                currentValue={style.bannerImage || ''}
+                                onChange={(url) => setStyle(prev => ({...prev, bannerImage: url}))}
+                                placeholder="Upload banner background image or enter URL"
+                            />
+                            
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Banner Display Mode</label>
+                                <select 
+                                    value={style.bannerMode || 'cover'}
+                                    onChange={(e) => setStyle(prev => ({...prev, bannerMode: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg"
+                                >
+                                    <option value="cover">Cover (Fill entire banner)</option>
+                                    <option value="contain">Contain (Fit within banner)</option>
+                                    <option value="repeat">Repeat (Tile pattern)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">
+                                    Banner Image Opacity: {Math.round((style.bannerOpacity !== undefined ? style.bannerOpacity : 0.3) * 100)}%
+                                </label>
+                                <input 
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step="0.1"
+                                    value={style.bannerOpacity !== undefined ? style.bannerOpacity : 0.3}
+                                    onChange={(e) => setStyle(prev => ({...prev, bannerOpacity: parseFloat(e.target.value)}))}
+                                    className="w-full"
+                                />
+                                <div className="flex justify-between text-xs text-slate-500 mt-1">
+                                    <span>Transparent</span>
+                                    <span>Opaque</span>
+                                </div>
+                                <p className="text-xs text-slate-500 mt-1">Controls the darkness of the overlay on the banner image</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* === SIDEBAR BACKGROUND === */}
+                    <div className="border-b border-slate-200 pb-6">
+                        <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                            <Menu className="mr-2" size={20} />
+                            Navigation Sidebar Background
+                        </h4>
+                        
+                        <div className="space-y-4">
+                            <FileUploadInput
+                                label="Sidebar Background Image"
+                                accept="image/*"
+                                currentValue={style.sidebarImage || ''}
+                                onChange={(url) => setStyle(prev => ({...prev, sidebarImage: url}))}
+                                placeholder="Upload sidebar background image or enter URL"
+                            />
+                            
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Sidebar Display Mode</label>
+                                <select 
+                                    value={style.sidebarMode || 'cover'}
+                                    onChange={(e) => setStyle(prev => ({...prev, sidebarMode: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg"
+                                >
+                                    <option value="cover">Cover (Fill sidebar)</option>
+                                    <option value="contain">Contain (Fit within sidebar)</option>
+                                    <option value="repeat">Repeat (Tile pattern)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">
+                                    Sidebar Image Opacity: {Math.round((style.sidebarOpacity || 0.2) * 100)}%
+                                </label>
+                                <input 
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step="0.1"
+                                    value={style.sidebarOpacity || 0.2}
+                                    onChange={(e) => setStyle(prev => ({...prev, sidebarOpacity: parseFloat(e.target.value)}))}
+                                    className="w-full"
+                                />
+                                <div className="flex justify-between text-xs text-slate-500 mt-1">
+                                    <span>Dark Overlay</span>
+                                    <span>Bright Image</span>
+                                </div>
+                                <p className="text-xs text-slate-500 mt-1">Lower opacity adds darker overlay for better text readability</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* === PAGE BACKGROUND === */}
                     <div className="border-b border-slate-200 pb-6">
                         <h4 className="text-lg font-semibold text-slate-800 mb-4">Page Background Image</h4>
                         
