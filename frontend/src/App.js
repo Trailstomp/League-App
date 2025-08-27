@@ -1888,7 +1888,10 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
             {selectedNewsItem && (
                 <div 
                     className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-                    onClick={() => setSelectedNewsItem(null)}
+                    onClick={() => {
+                        setSelectedNewsItem(null);
+                        setShowingMedia(false);
+                    }}
                 >
                     <div 
                         className="bg-white rounded-lg max-w-3xl w-full max-h-[85vh] overflow-y-auto"
