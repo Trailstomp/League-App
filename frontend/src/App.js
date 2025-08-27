@@ -3676,11 +3676,11 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                 </div>
             </div>
             <div className="flex border-b mb-6 flex-wrap">
-                <TeamTab tabName="roster" label="Roster & Stats" />
-                <TeamTab tabName="schedule" label="Schedule" />
-                <TeamTab tabName="media" label="Photos & Videos" />
-                <TeamTab tabName="social" label="Social" />
-                <TeamTab tabName="contact" label="Contact" />
+                {(team.style?.visibleTabs?.roster !== false) && <TeamTab tabName="roster" label="Roster & Stats" />}
+                {(team.style?.visibleTabs?.schedule !== false) && <TeamTab tabName="schedule" label="Schedule" />}
+                {(team.style?.visibleTabs?.media !== false) && <TeamTab tabName="media" label="Photos & Videos" />}
+                {(team.style?.visibleTabs?.social !== false) && <TeamTab tabName="social" label="Social" />}
+                {(team.style?.visibleTabs?.contact !== false) && <TeamTab tabName="contact" label="Contact" />}
                 {isAuthorizedToManage && <TeamTab tabName="manage_info" label="Team Info" />}
                 {isAuthorizedToManage && <TeamTab tabName="manage_calendar" label="Manage Calendar" />}
                 {isAuthorizedToManage && <TeamTab tabName="manage_players" label="Manage Players" />}
