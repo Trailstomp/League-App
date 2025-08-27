@@ -529,6 +529,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
     const handleAddNews = () => {
         const newItem = {
             id: Date.now(),
+            type: 'text',
             text: "New announcement - edit this text",
             date: new Date().toISOString().split('T')[0]
         };
@@ -536,9 +537,9 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle}
         setEditingNewsItem(newItem);
     };
 
-    const handleSaveNews = (newsId, newText) => {
+    const handleSaveNews = (newsId, updatedItem) => {
         setNewsItems(prev => prev.map(item => 
-            item.id === newsId ? { ...item, text: newText } : item
+            item.id === newsId ? { ...item, ...updatedItem } : item
         ));
         setEditingNewsItem(null);
     };
