@@ -5774,6 +5774,8 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
         </div>
     );
 };
+
+const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
     const [style, setStyle] = useState(websiteStyle);
     const [saved, setSaved] = useState(false);
 
