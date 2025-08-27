@@ -7301,6 +7301,17 @@ function App() {
     
     return (
         <div className="min-h-screen bg-slate-100">
+            {/* Loading Screen */}
+            {dataLoading && (
+                <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-800 mx-auto mb-4"></div>
+                        <h2 className="text-2xl font-bold text-slate-800 mb-2">Loading MLBL</h2>
+                        <p className="text-slate-600">Syncing league data across all devices...</p>
+                    </div>
+                </div>
+            )}
+
             {showLogin && <AuthModal />}
             
             {/* Fixed Sidebar */}
