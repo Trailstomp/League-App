@@ -142,22 +142,11 @@ const getBackgroundStyle = (websiteStyle) => {
     }
     
     return {
-        backgroundImage: `url(${backgroundImage})`,
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, ${1 - backgroundOpacity}), rgba(255, 255, 255, ${1 - backgroundOpacity})), url(${backgroundImage})`,
         backgroundSize,
         backgroundRepeat,
         backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-        position: 'relative',
-        '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: `rgba(255, 255, 255, ${1 - backgroundOpacity})`,
-            zIndex: 1
-        }
+        backgroundAttachment: 'fixed'
     };
 };
 
