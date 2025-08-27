@@ -7148,7 +7148,7 @@ function App() {
     const AuthModal = () => (
         <div 
             className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-            onClick={() => setShowLogin(false)}
+            onClick={handleAuthModalClose}
         >
             <div 
                 className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto"
