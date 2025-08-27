@@ -5851,6 +5851,7 @@ function App() {
                 <main className="flex-1 overflow-y-auto" style={backgroundStyle}>
                     {renderPage()}
                 </main>
+                </div>
             </div>
             
             {/* Global Music Player */}
