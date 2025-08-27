@@ -1926,19 +1926,75 @@ const LeagueCalendarManager = ({ teams, setTeams }) => {
 
     const handleSave = (e) => {
         e.preventDefault();
-        const newEvent = {
+        
+        // Helper function to generate recurring events
+        const generateRecurringEvents = (baseEvent) => {
+            if (!baseEvent.repeatType || baseEvent.repeatType === 'none' || !baseEvent.repeatCount) {
+                return [baseEvent];
+            }
+            
+            const events = [];
+            const startDate = new Date(baseEvent.date);
+            
+            for (let i = 0; i < baseEvent.repeatCount; i++) {
+                const eventDate = new Date(startDate);
+                
+                switch (baseEvent.repeatType) {
+                    case 'daily':
+                        eventDate.setDate(startDate.getDate() + i);
+                        break;
+                    case 'weekly':
+                        eventDate.setDate(startDate.getDate() + (i * 7));
+                        break;
+                    case 'biweekly':
+                        eventDate.setDate(startDate.getDate() + (i * 14));
+                        break;
+                    case 'monthly':
+                        eventDate.setMonth(startDate.getMonth() + i);
+                        break;
+                }
+                
+                const event = {
+                    ...baseEvent,
+                    id: (baseEvent.id || Date.now()) + i,
+                    date: eventDate.toISOString().split('T')[0],
+                    title: `${baseEvent.title}${i > 0 ? ` (${i + 1})` : ''}`
+                };
+                
+                // Remove repeat properties from individual events
+                delete event.repeatType;
+                delete event.repeatCount;
+                
+                events.push(event);
+            }
+            
+            return events;
+        };
+
+        const baseEvent = {
             ...editingEvent,
             id: editingEvent.id || Date.now(),
             teamIds: editingEvent.teamIds || []
         };
 
+        const eventsToAdd = generateRecurringEvents(baseEvent);
+
         // Update each selected team's calendar
-        const teamIds = newEvent.teamIds.length > 0 ? newEvent.teamIds : [selectedTeamId];
+        const teamIds = baseEvent.teamIds.length > 0 ? baseEvent.teamIds : [selectedTeamId];
         setTeams(currentTeams => currentTeams.map(t => {
             if (teamIds.includes(t.id)) {
-                const updatedEvents = editingEvent.id
-                    ? (t.calendar || []).map(event => event.id === editingEvent.id ? newEvent : event)
-                    : [...(t.calendar || []), newEvent];
+                let updatedEvents = t.calendar || [];
+                
+                if (editingEvent.id && !editingEvent.repeatType) {
+                    // Single event edit
+                    updatedEvents = updatedEvents.map(event => 
+                        event.id === editingEvent.id ? baseEvent : event
+                    );
+                } else {
+                    // New events or recurring events
+                    updatedEvents = [...updatedEvents, ...eventsToAdd];
+                }
+                
                 return { ...t, calendar: updatedEvents };
             }
             return t;
