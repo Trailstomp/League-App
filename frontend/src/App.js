@@ -1143,47 +1143,36 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                             <img src={video.thumbnail} alt={video.title} className="w-full h-32 object-cover rounded"/>
                                         </div>
                                         <div className="space-y-2">
-                                            <input 
-                                                type="text"
-                                                defaultValue={video.title}
-                                                placeholder="Video title"
-                                                className="w-full p-2 border rounded"
-                                                onChange={(e) => {
+                                            <div>
+                                                <label className="block font-semibold text-slate-700 mb-1">Video URL</label>
+                                                <input 
+                                                    type="url"
+                                                    defaultValue={video.url}
+                                                    placeholder="https://www.youtube.com/watch?v=..."
+                                                    className="w-full p-2 border rounded"
+                                                    onChange={(e) => {
+                                                        setMediaContent(prev => ({
+                                                            ...prev,
+                                                            videos: prev.videos.map(v => 
+                                                                v.id === video.id ? {...v, url: e.target.value} : v
+                                                            )
+                                                        }));
+                                                    }}
+                                                />
+                                            </div>
+                                            <FileUploadInput
+                                                label="Video Thumbnail"
+                                                accept="image/*"
+                                                currentValue={video.thumbnail}
+                                                onChange={(url) => {
                                                     setMediaContent(prev => ({
                                                         ...prev,
                                                         videos: prev.videos.map(v => 
-                                                            v.id === video.id ? {...v, title: e.target.value} : v
+                                                            v.id === video.id ? {...v, thumbnail: url} : v
                                                         )
                                                     }));
                                                 }}
-                                            />
-                                            <input 
-                                                type="url"
-                                                defaultValue={video.url}
-                                                placeholder="YouTube/Video URL"
-                                                className="w-full p-2 border rounded"
-                                                onChange={(e) => {
-                                                    setMediaContent(prev => ({
-                                                        ...prev,
-                                                        videos: prev.videos.map(v => 
-                                                            v.id === video.id ? {...v, url: e.target.value} : v
-                                                        )
-                                                    }));
-                                                }}
-                                            />
-                                            <input 
-                                                type="url"
-                                                defaultValue={video.thumbnail}
-                                                placeholder="Thumbnail image URL"
-                                                className="w-full p-2 border rounded"
-                                                onChange={(e) => {
-                                                    setMediaContent(prev => ({
-                                                        ...prev,
-                                                        videos: prev.videos.map(v => 
-                                                            v.id === video.id ? {...v, thumbnail: e.target.value} : v
-                                                        )
-                                                    }));
-                                                }}
+                                                placeholder="Upload thumbnail image"
                                             />
                                             <textarea 
                                                 defaultValue={video.description}
