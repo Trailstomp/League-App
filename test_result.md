@@ -485,6 +485,54 @@ metadata:
         agent: "user"
         comment: "User confirmed 'works great!' - team card redesign is working correctly with large rectangles, W/L labels above numbers, and proper team color styling."
 
+  - task: "Add music player functionality with team-specific music"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Need to implement music player with global state management to prevent multiple players, add music URL fields to teams, and create music controls."
+        
+  - task: "Add team division/type system (Field vs Box Lacrosse)"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Need to add division field to team data structure and team management interface to distinguish Field Lacrosse from Box Lacrosse teams."
+        
+  - task: "Update navigation to nest teams by division"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Need to modify navigation structure to show Field Lacrosse and Box Lacrosse as separate nested sections under Teams."
+        
+  - task: "Update standings to show divisions separately"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Need to modify standings page to separate Field Lacrosse and Box Lacrosse teams into different sections."
+
 test_plan:
   current_focus:
     - "Add music player functionality with team-specific music"
