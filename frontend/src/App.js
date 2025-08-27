@@ -616,45 +616,6 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                             <Edit className="mr-1 h-3 w-3"/> Edit News
                         </button>
                     )}
-                    {/* Debug Admin Button - Always Visible */}
-                    <button 
-                        onClick={() => {
-                            const adminUser = {
-                                id: 'admin-all',
-                                name: 'Admin All',
-                                email: 'admin@mlbl.com',
-                                roles: ['admin']
-                            };
-                            if (setCurrentUser) {
-                                setCurrentUser(adminUser);
-                                console.log('Set admin user:', adminUser);
-                            } else {
-                                console.log('setCurrentUser not available!');
-                            }
-                        }}
-                        className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700 ml-2"
-                        title="Debug: Become Admin"
-                    >
-                        🔧 DEBUG ADMIN
-                    </button>
-                    {/* Original Quick Admin Toggle for Development/Testing */}
-                    {!currentUser && setCurrentUser && (
-                        <button 
-                            onClick={() => {
-                                const adminUser = {
-                                    id: 'admin-all',
-                                    name: 'Admin All',
-                                    email: 'admin@mlbl.com',
-                                    roles: ['admin']
-                                };
-                                setCurrentUser(adminUser);
-                            }}
-                            className="bg-yellow-600 text-white px-2 py-1 rounded text-xs hover:bg-yellow-700 ml-2"
-                            title="Quick admin access"
-                        >
-                            🔑 Admin
-                        </button>
-                    )}
                 </div>
             </div>
 
