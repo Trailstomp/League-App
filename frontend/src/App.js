@@ -5735,8 +5735,10 @@ function App() {
     };
     
     return (
-        <div className="min-h-screen bg-slate-100">
+        <div className="min-h-screen bg-slate-100 flex">
             {showLogin && <LoginModal />}
+            
+            {/* Fixed Sidebar */}
             <aside 
                 className={`bg-slate-900 text-white w-64 space-y-6 py-7 px-2 fixed inset-y-0 left-0 transform ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out z-30 flex flex-col relative overflow-hidden`} 
                 style={{
