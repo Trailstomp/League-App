@@ -5775,25 +5775,7 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
     );
 };
 
-const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
-    const [style, setStyle] = useState(websiteStyle);
-    const [saved, setSaved] = useState(false);
-
-    const handleSave = (e) => {
-        e.preventDefault();
-        setWebsiteStyle(style);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
-    };
-
-    const handleLogoUpload = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            const fileUrl = URL.createObjectURL(e.target.files[0]);
-            setStyle(prev => ({...prev, logoUrl: fileUrl}));
-        }
-    };
-
-    return (
+const LeagueInfoManager = ({ leagueInfo, setLeagueInfo, websiteStyle, setWebsiteStyle }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
                 <form onSubmit={handleSave} className="space-y-6 bg-slate-50 p-6 rounded-lg">
