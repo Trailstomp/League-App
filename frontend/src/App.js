@@ -3138,13 +3138,12 @@ const GroupMeManager = ({ team, setTeams }) => {
                                 />
                             </div>
                             <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Chat Image URL</label>
-                                <input 
-                                    type="url" 
-                                    value={groupMeData.image}
-                                    onChange={(e) => setGroupMeData(prev => ({...prev, image: e.target.value}))}
-                                    placeholder="https://example.com/chat-image.jpg"
-                                    className="w-full p-2 border rounded" 
+                                <FileUploadInput
+                                    label="Chat Image (Optional)"
+                                    accept="image/*"
+                                    currentValue={groupMeData.image}
+                                    onChange={(url) => setGroupMeData(prev => ({...prev, image: url}))}
+                                    placeholder="Upload chat group image"
                                 />
                             </div>
                         </div>
