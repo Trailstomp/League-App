@@ -1614,7 +1614,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
 };
 
 const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
-    <div className="p-4 md:p-8">
+    <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
         <div className="max-w-2xl mx-auto">
             <div className="text-center mb-8">
                 <img src={websiteStyle.logoUrl} alt="MLBL Logo" className="h-40 mx-auto mb-4" />
