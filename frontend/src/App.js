@@ -449,9 +449,6 @@ const PlayerCardModal = ({ player, teamStyle, teams, isOpen, onClose }) => {
                         className="w-full h-full object-contain"
                     />
                     
-                    {/* Gradient overlay for text readability - only at bottom */}
-                    <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-                    
                     {/* Team logo circle overlay */}
                     {primaryTeam && (
                         <div className="absolute top-4 left-4 w-16 h-16 bg-white rounded-full border-4 border-white shadow-lg flex items-center justify-center">
@@ -463,93 +460,64 @@ const PlayerCardModal = ({ player, teamStyle, teams, isOpen, onClose }) => {
                         </div>
                     )}
 
-                    {/* Jersey number - top right */}
-                    <div className="absolute top-4 right-4">
-                        <div 
-                            className="text-white text-3xl font-bold px-3 py-1 rounded-lg shadow-lg"
-                            style={{ backgroundColor: `rgba(0, 0, 0, 0.7)` }}
-                        >
-                            #{player.number}
-                        </div>
-                    </div>
-
                     {/* Coach badge */}
                     {player.roles && player.roles.includes('coach') && (
-                        <div className="absolute bottom-20 right-4 bg-yellow-500 px-3 py-1 rounded-full text-sm font-bold text-black shadow-lg">
+                        <div className="absolute top-4 right-20 bg-yellow-500 px-3 py-1 rounded-full text-sm font-bold text-black shadow-lg">
                             COACH
                         </div>
                     )}
-
-                    {/* Player name and position overlay - bottom of photo */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                        <h2 className="text-2xl font-bold mb-1 drop-shadow-lg">{player.firstName} {player.lastName}</h2>
-                        {player.nickname && (
-                            <p className="text-lg opacity-90 mb-1 drop-shadow-lg">"{player.nickname}"</p>
-                        )}
-                        <p className="opacity-90 text-base drop-shadow-lg">
-                            {Array.isArray(player.positions) ? player.positions.join(', ') : player.positions}
-                        </p>
-                    </div>
                 </div>
 
                 {/* Player details section */}
-                <div className="p-6">
-                    <div className="space-y-4">
-                        {/* Contact Info */}
-                        {(player.email || player.phone) && (
-                            <div>
-                                <h3 className="font-semibold text-slate-800 mb-2">Contact Information</h3>
-                                <div className="space-y-2 text-sm text-slate-600">
-                                    {player.email && (
-                                        <div className="flex items-center">
-                                            <Mail className="h-4 w-4 mr-2" />
-                                            <a href={`mailto:${player.email}`} className="hover:text-blue-600">
-                                                {player.email}
-                                            </a>
-                                        </div>
-                                    )}
-                                    {player.phone && (
-                                        <div className="flex items-center">
-                                            <span className="h-4 w-4 mr-2 text-center">📞</span>
-                                            <a href={`tel:${player.phone}`} className="hover:text-blue-600">
-                                                {player.phone}
-                                            </a>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                <div className="p-6 relative">
+                    {/* Player name, nickname, and position */}
+                    <div className="text-center mb-4">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-1">{player.firstName} {player.lastName}</h2>
+                        {player.nickname && (
+                            <p className="text-xl text-slate-600 mb-2">"{player.nickname}"</p>
                         )}
-
-                        {/* Teams */}
-                        {player.teams && player.teams.length > 1 && (
-                            <div>
-                                <h3 className="font-semibold text-slate-800 mb-2">Teams</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {player.teams.map(teamId => {
-                                        const team = teams?.find(t => t.id === teamId);
-                                        return team ? (
-                                            <span 
-                                                key={teamId}
-                                                className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm flex items-center"
-                                            >
-                                                <img 
-                                                    src={team.logo} 
-                                                    alt={team.name}
-                                                    className="w-4 h-4 rounded-full object-contain mr-2"
-                                                />
-                                                {team.name}
-                                            </span>
-                                        ) : null;
-                                    })}
-                                </div>
-                            </div>
+                        <p className="text-lg text-slate-500">
+                            {Array.isArray(player.positions) ? player.positions.join(', ') : player.positions}
+                        </p>
+                        {/* Handedness field for future use */}
+                        {player.handedness && (
+                            <p className="text-sm text-slate-400 mt-1">
+                                {player.handedness} Handed
+                            </p>
                         )}
+                    </div>
 
-                        {/* Playing card number corner */}
-                        <div className="absolute bottom-4 right-4 opacity-10">
-                            <div className="text-6xl font-bold text-slate-300 transform rotate-12">
-                                #{player.number}
+                    {/* Teams */}
+                    {player.teams && player.teams.length > 1 && (
+                        <div className="mb-4">
+                            <h3 className="font-semibold text-slate-800 mb-2 text-center">Teams</h3>
+                            <div className="flex flex-wrap gap-2 justify-center">
+                                {player.teams.map(teamId => {
+                                    const team = teams?.find(t => t.id === teamId);
+                                    return team ? (
+                                        <span 
+                                            key={teamId}
+                                            className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm flex items-center"
+                                        >
+                                            <img 
+                                                src={team.logo} 
+                                                alt={team.name}
+                                                className="w-4 h-4 rounded-full object-contain mr-2"
+                                            />
+                                            {team.name}
+                                        </span>
+                                    ) : null;
+                                })}
                             </div>
+                        </div>
+                    )}
+
+                    {/* Jersey number - bottom right corner */}
+                    <div className="absolute bottom-4 right-4">
+                        <div 
+                            className="text-slate-300 text-5xl font-bold opacity-50"
+                        >
+                            #{player.number}
                         </div>
                     </div>
                 </div>
