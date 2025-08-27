@@ -1900,7 +1900,10 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                     {selectedNewsItem.heading || selectedNewsItem.text}
                                 </h2>
                                 <button 
-                                    onClick={() => setSelectedNewsItem(null)}
+                                    onClick={() => {
+                                        setSelectedNewsItem(null);
+                                        setShowingMedia(false);
+                                    }}
                                     className="text-slate-400 hover:text-slate-600 p-2"
                                 >
                                     <X className="h-6 w-6"/>
