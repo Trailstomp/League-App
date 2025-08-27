@@ -6054,14 +6054,23 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                             <h2 className="text-2xl font-bold mb-2">Users & Security</h2>
                             <div className="flex space-x-4 border-b">
                                 <button 
-                                    className="px-4 py-2 border-b-2 border-blue-600 text-blue-600 font-semibold"
+                                    className={`px-4 py-2 border-b-2 font-semibold transition-colors ${
+                                        usersSecurityTab === 'users' 
+                                            ? 'border-blue-600 text-blue-600' 
+                                            : 'border-transparent text-slate-600 hover:text-blue-600'
+                                    }`}
+                                    onClick={() => setUsersSecurityTab('users')}
                                 >
                                     Users
                                 </button>
                                 {hasPermission(currentUser, 'system.roles') && (
                                     <button 
-                                        className="px-4 py-2 text-slate-600 hover:text-blue-600"
-                                        onClick={() => {/* Add role tab logic */}}
+                                        className={`px-4 py-2 border-b-2 font-semibold transition-colors ${
+                                            usersSecurityTab === 'roles' 
+                                                ? 'border-blue-600 text-blue-600' 
+                                                : 'border-transparent text-slate-600 hover:text-blue-600'
+                                        }`}
+                                        onClick={() => setUsersSecurityTab('roles')}
                                     >
                                         Roles & Permissions
                                     </button>
@@ -6069,14 +6078,13 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                             </div>
                         </div>
                         
-                        {hasPermission(currentUser, 'users.view') && (
+                        {/* Tab Content */}
+                        {usersSecurityTab === 'users' && hasPermission(currentUser, 'users.view') && (
                             <UserManager users={users} setUsers={setUsers} teams={teams} />
                         )}
                         
-                        {hasPermission(currentUser, 'system.roles') && (
-                            <div className="mt-8">
-                                <RoleManager users={users} setUsers={setUsers} />
-                            </div>
+                        {usersSecurityTab === 'roles' && hasPermission(currentUser, 'system.roles') && (
+                            <RoleManager users={users} setUsers={setUsers} />
                         )}
                     </div>
                 )}
