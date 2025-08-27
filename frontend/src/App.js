@@ -1439,7 +1439,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
     }).filter(day => day.games.length > 0);
     
     return (
-        <div className="p-4 md:p-8">
+        <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-4xl font-bold text-slate-800 tracking-tight">League Events & Schedule</h1>
                 {isAdmin && (
