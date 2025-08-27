@@ -1107,10 +1107,17 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                     />
                                 </div>
                                 
-                                {/* Team Name */}
-                                <h3 className="text-lg font-bold text-slate-800 mb-4 group-hover:text-opacity-80 transition-all text-center">
+                                {/* Team Name and Division */}
+                                <h3 className="text-lg font-bold text-slate-800 mb-1 group-hover:text-opacity-80 transition-all text-center">
                                     {team.name}
                                 </h3>
+                                <p className="text-sm text-slate-500 mb-4 text-center flex items-center justify-center">
+                                    {team.division === 'Field' ? (
+                                        <><Trophy size={14} className="mr-1" /> Field Lacrosse</>
+                                    ) : (
+                                        <><Shield size={14} className="mr-1" /> Box Lacrosse</>
+                                    )}
+                                </p>
                                 
                                 {/* W/L Record - Labels above numbers */}
                                 <div className="flex justify-center space-x-6 mb-4">
