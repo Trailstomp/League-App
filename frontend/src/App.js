@@ -5346,6 +5346,32 @@ function App() {
         }
     };
 
+    // Music control functions
+    const playMusic = (url, title, teamId = null) => {
+        // Stop current music if playing
+        if (musicState.audioRef) {
+            musicState.audioRef.pause();
+        }
+        
+        setMusicState({
+            currentTrack: { url, title, teamId },
+            isPlaying: true,
+            audioRef: musicState.audioRef
+        });
+    };
+
+    const stopAllMusic = () => {
+        if (musicState.audioRef) {
+            musicState.audioRef.pause();
+            musicState.audioRef.currentTime = 0;
+        }
+        setMusicState(prev => ({
+            ...prev,
+            currentTrack: null,
+            isPlaying: false
+        }));
+    };
+
     const LoginModal = () => (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-sm">
