@@ -2088,6 +2088,215 @@ const MediaManager = ({ team, setTeams }) => {
     );
 };
 
+const LocationManager = ({ team, setTeams }) => {
+    const [editingLocation, setEditingLocation] = useState(null);
+    const [locationData, setLocationData] = useState({
+        name: '',
+        address: '',
+        description: '',
+        type: 'field'
+    });
+
+    const locations = team.locations || [];
+
+    const handleSaveLocation = (e) => {
+        e.preventDefault();
+        const newLocation = {
+            ...locationData,
+            id: editingLocation?.id || Date.now()
+        };
+
+        setTeams(currentTeams => currentTeams.map(t => {
+            if (t.id === team.id) {
+                const updatedLocations = editingLocation?.id
+                    ? (t.locations || []).map(loc => loc.id === editingLocation.id ? newLocation : loc)
+                    : [...(t.locations || []), newLocation];
+                return { ...t, locations: updatedLocations };
+            }
+            return t;
+        }));
+        
+        setEditingLocation(null);
+        setLocationData({ name: '', address: '', description: '', type: 'field' });
+    };
+
+    const handleDeleteLocation = (locationId) => {
+        setTeams(currentTeams => currentTeams.map(t => {
+            if (t.id === team.id) {
+                return { ...t, locations: (t.locations || []).filter(loc => loc.id !== locationId) };
+            }
+            return t;
+        }));
+    };
+
+    const handleEditLocation = (location) => {
+        setEditingLocation(location);
+        setLocationData({
+            name: location.name,
+            address: location.address,
+            description: location.description || '',
+            type: location.type || 'field'
+        });
+    };
+
+    return (
+        <div className="max-w-4xl mx-auto">
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-3xl font-bold text-slate-800 tracking-tight">Team Locations</h2>
+                <button 
+                    onClick={() => {
+                        setEditingLocation({});
+                        setLocationData({ name: '', address: '', description: '', type: 'field' });
+                    }}
+                    className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"
+                >
+                    <Plus className="mr-2 h-4 w-4"/> Add Location
+                </button>
+            </div>
+
+            {/* Location Form */}
+            {editingLocation !== null && (
+                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h3 className="text-xl font-semibold text-slate-800 mb-4">
+                        {editingLocation.id ? 'Edit Location' : 'Add New Location'}
+                    </h3>
+                    <form onSubmit={handleSaveLocation} className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Location Name</label>
+                                <input 
+                                    type="text" 
+                                    value={locationData.name}
+                                    onChange={(e) => setLocationData(prev => ({...prev, name: e.target.value}))}
+                                    placeholder="e.g., Main Field, Home Stadium"
+                                    className="w-full p-2 border rounded" 
+                                    required 
+                                />
+                            </div>
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Location Type</label>
+                                <select 
+                                    value={locationData.type}
+                                    onChange={(e) => setLocationData(prev => ({...prev, type: e.target.value}))}
+                                    className="w-full p-2 border rounded"
+                                >
+                                    <option value="field">Field</option>
+                                    <option value="stadium">Stadium</option>
+                                    <option value="gym">Gym</option>
+                                    <option value="training">Training Facility</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Address</label>
+                            <input 
+                                type="text" 
+                                value={locationData.address}
+                                onChange={(e) => setLocationData(prev => ({...prev, address: e.target.value}))}
+                                placeholder="Full address or directions"
+                                className="w-full p-2 border rounded" 
+                                required 
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Description (Optional)</label>
+                            <textarea 
+                                value={locationData.description}
+                                onChange={(e) => setLocationData(prev => ({...prev, description: e.target.value}))}
+                                placeholder="Additional notes about this location..."
+                                className="w-full p-2 border rounded h-20 resize-none" 
+                            />
+                        </div>
+
+                        <div className="flex justify-end space-x-2">
+                            <button 
+                                type="button" 
+                                onClick={() => {
+                                    setEditingLocation(null);
+                                    setLocationData({ name: '', address: '', description: '', type: 'field' });
+                                }}
+                                className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600"
+                            >
+                                Cancel
+                            </button>
+                            <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">
+                                {editingLocation.id ? 'Update Location' : 'Add Location'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
+            {/* Locations List */}
+            <div className="space-y-4">
+                {locations.length > 0 ? (
+                    locations.map(location => (
+                        <div key={location.id} className="bg-white rounded-lg shadow-md p-6">
+                            <div className="flex justify-between items-start">
+                                <div className="flex-grow">
+                                    <div className="flex items-center space-x-3 mb-2">
+                                        <h3 className="text-xl font-semibold text-slate-800">{location.name}</h3>
+                                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                            location.type === 'field' ? 'bg-green-100 text-green-800' :
+                                            location.type === 'stadium' ? 'bg-blue-100 text-blue-800' :
+                                            location.type === 'gym' ? 'bg-orange-100 text-orange-800' :
+                                            location.type === 'training' ? 'bg-purple-100 text-purple-800' :
+                                            'bg-slate-100 text-slate-800'
+                                        }`}>
+                                            {location.type}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-start space-x-2 text-slate-600">
+                                        <MapPin className="mt-0.5" size={16} />
+                                        <span>{location.address}</span>
+                                    </div>
+                                    {location.description && (
+                                        <p className="text-sm text-slate-500 mt-2">{location.description}</p>
+                                    )}
+                                </div>
+                                <div className="flex items-center space-x-2 ml-4">
+                                    <button 
+                                        onClick={() => handleEditLocation(location)}
+                                        className="text-slate-500 hover:text-slate-700 p-1"
+                                        title="Edit location"
+                                    >
+                                        <Edit size={16}/>
+                                    </button>
+                                    <button 
+                                        onClick={() => handleDeleteLocation(location.id)}
+                                        className="text-red-500 hover:text-red-700 p-1"
+                                        title="Delete location"
+                                    >
+                                        <Trash2 size={16}/>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <div className="text-center py-8 text-slate-500 bg-white rounded-lg">
+                        <MapPin className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
+                        <h3 className="text-lg font-semibold mb-2">No Locations Added Yet</h3>
+                        <p className="mb-4">Add your team's practice fields, stadiums, and other venues.</p>
+                        <button 
+                            onClick={() => {
+                                setEditingLocation({});
+                                setLocationData({ name: '', address: '', description: '', type: 'field' });
+                            }}
+                            className="bg-red-800 text-white px-6 py-2 rounded hover:bg-red-900"
+                        >
+                            Add First Location
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
 const TeamInfoManager = ({ team, setTeams }) => {
     const [teamInfo, setTeamInfo] = useState({
         name: team.name || '',
