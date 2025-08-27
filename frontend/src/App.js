@@ -2407,6 +2407,59 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                     )}
                 </div>
                 
+                {/* Repeat Options */}
+                <div className="border rounded-lg p-4 bg-slate-50">
+                    <h4 className="font-semibold text-slate-700 mb-3 flex items-center">
+                        <Calendar className="mr-2" size={16} />
+                        Repeat Event
+                    </h4>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Repeat Type</label>
+                            <select 
+                                value={editingEvent?.repeatType || 'none'} 
+                                onChange={e => setEditingEvent(prev => ({...prev, repeatType: e.target.value}))} 
+                                className="w-full p-2 border rounded"
+                            >
+                                <option value="none">No Repeat</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="biweekly">Bi-Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                        
+                        {editingEvent?.repeatType && editingEvent?.repeatType !== 'none' && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Number of Occurrences</label>
+                                <input 
+                                    type="number" 
+                                    min="1" 
+                                    max="52" 
+                                    value={editingEvent?.repeatCount || 1} 
+                                    onChange={e => setEditingEvent(prev => ({...prev, repeatCount: parseInt(e.target.value) || 1}))} 
+                                    placeholder="Number of events" 
+                                    className="w-full p-2 border rounded" 
+                                />
+                            </div>
+                        )}
+                    </div>
+                    
+                    {editingEvent?.repeatType && editingEvent?.repeatType !== 'none' && (
+                        <div className="mt-3 p-3 bg-blue-50 rounded border border-blue-200">
+                            <p className="text-sm text-blue-800">
+                                <strong>Preview:</strong> This will create {editingEvent?.repeatCount || 1} events 
+                                {editingEvent?.repeatType === 'daily' && ' daily'}
+                                {editingEvent?.repeatType === 'weekly' && ' weekly'}
+                                {editingEvent?.repeatType === 'biweekly' && ' every two weeks'}
+                                {editingEvent?.repeatType === 'monthly' && ' monthly'}
+                                {editingEvent?.date && ` starting from ${new Date(editingEvent.date).toLocaleDateString()}`}
+                            </p>
+                        </div>
+                    )}
+                </div>
+                
                 {/* Team Selection */}
                 {!isTeamSpecific && (
                     <div>
