@@ -5775,8 +5775,7 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
     );
 };
 
-const LeagueInfoManager = ({ leagueInfo, setLeagueInfo, websiteStyle, setWebsiteStyle }) => {
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameTickerData, setGameTickerData, currentUser, users, setUsers, websiteStyle, setWebsiteStyle, leagueInfo, setLeagueInfo }) => {
             <div>
                 <form onSubmit={handleSave} className="space-y-6 bg-slate-50 p-6 rounded-lg">
                     <h3 className="text-xl font-bold text-slate-800">Global Website Style</h3>
