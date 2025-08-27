@@ -1219,13 +1219,13 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
     
     return (
         <div className="min-h-screen" style={getBackgroundStyle(websiteStyle)}>
-            {/* Enhanced Vertical Scrolling News Feed - Extra Tall & Clean */}
-            <div className="bg-red-800 text-white py-2 relative">
+            {/* Enhanced Vertical Scrolling News Feed - Clean Background */}
+            <div className="text-white py-2 relative" style={getBackgroundStyle(websiteStyle)}>
                 <div className="flex items-start px-4 max-w-3xl mx-auto">
-                    <span className="bg-white text-red-800 px-4 py-3 rounded text-sm font-bold mr-6 flex-shrink-0">NEWS</span>
+                    <span className="bg-red-800 text-white px-4 py-3 rounded text-sm font-bold mr-6 flex-shrink-0">NEWS</span>
                     
-                    {/* Vertical scrolling container - Extra tall with minimal red space */}
-                    <div className="flex-grow overflow-hidden relative max-w-xl" style={{ height: '280px' }}>
+                    {/* Vertical scrolling container with red background only for content */}
+                    <div className="flex-grow overflow-hidden relative max-w-xl bg-red-800 rounded-lg shadow-lg" style={{ height: '280px' }}>
                         <div className="animate-scroll-vertical absolute w-full">
                             {/* Create a continuous loop by duplicating news items */}
                             {[...newsItems, ...newsItems].map((item, index) => (
