@@ -2470,6 +2470,222 @@ const LocationManager = ({ team, setTeams }) => {
     );
 };
 
+const GroupMeManager = ({ team, setTeams }) => {
+    const [editingGroupMe, setEditingGroupMe] = useState(null);
+    const [groupMeData, setGroupMeData] = useState({
+        name: '',
+        url: '',
+        description: '',
+        image: ''
+    });
+
+    const groupMes = team.groupMes || [];
+
+    const handleSaveGroupMe = (e) => {
+        e.preventDefault();
+        const newGroupMe = {
+            ...groupMeData,
+            id: editingGroupMe?.id || Date.now()
+        };
+
+        setTeams(currentTeams => currentTeams.map(t => {
+            if (t.id === team.id) {
+                const updatedGroupMes = editingGroupMe?.id
+                    ? (t.groupMes || []).map(gm => gm.id === editingGroupMe.id ? newGroupMe : gm)
+                    : [...(t.groupMes || []), newGroupMe];
+                return { ...t, groupMes: updatedGroupMes };
+            }
+            return t;
+        }));
+        
+        setEditingGroupMe(null);
+        setGroupMeData({ name: '', url: '', description: '', image: '' });
+    };
+
+    const handleDeleteGroupMe = (groupMeId) => {
+        setTeams(currentTeams => currentTeams.map(t => {
+            if (t.id === team.id) {
+                return { ...t, groupMes: (t.groupMes || []).filter(gm => gm.id !== groupMeId) };
+            }
+            return t;
+        }));
+    };
+
+    const handleEditGroupMe = (groupMe) => {
+        setEditingGroupMe(groupMe);
+        setGroupMeData({
+            name: groupMe.name,
+            url: groupMe.url,
+            description: groupMe.description || '',
+            image: groupMe.image || ''
+        });
+    };
+
+    return (
+        <div className="max-w-4xl mx-auto">
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-3xl font-bold text-slate-800 tracking-tight">Team GroupMe Chats</h2>
+                <button 
+                    onClick={() => {
+                        setEditingGroupMe({});
+                        setGroupMeData({ name: '', url: '', description: '', image: '' });
+                    }}
+                    className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"
+                >
+                    <Plus className="mr-2 h-4 w-4"/> Add GroupMe
+                </button>
+            </div>
+
+            {/* GroupMe Form */}
+            {editingGroupMe !== null && (
+                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h3 className="text-xl font-semibold text-slate-800 mb-4">
+                        {editingGroupMe.id ? 'Edit GroupMe' : 'Add New GroupMe'}
+                    </h3>
+                    <form onSubmit={handleSaveGroupMe} className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Chat Name</label>
+                                <input 
+                                    type="text" 
+                                    value={groupMeData.name}
+                                    onChange={(e) => setGroupMeData(prev => ({...prev, name: e.target.value}))}
+                                    placeholder="e.g., Main Team Chat, Parents Group"
+                                    className="w-full p-2 border rounded" 
+                                    required 
+                                />
+                            </div>
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Chat Image URL</label>
+                                <input 
+                                    type="url" 
+                                    value={groupMeData.image}
+                                    onChange={(e) => setGroupMeData(prev => ({...prev, image: e.target.value}))}
+                                    placeholder="https://example.com/chat-image.jpg"
+                                    className="w-full p-2 border rounded" 
+                                />
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">GroupMe Link/URL</label>
+                            <input 
+                                type="url" 
+                                value={groupMeData.url}
+                                onChange={(e) => setGroupMeData(prev => ({...prev, url: e.target.value}))}
+                                placeholder="https://groupme.com/join_group/..."
+                                className="w-full p-2 border rounded" 
+                                required 
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Description (Optional)</label>
+                            <textarea 
+                                value={groupMeData.description}
+                                onChange={(e) => setGroupMeData(prev => ({...prev, description: e.target.value}))}
+                                placeholder="Description of this chat group..."
+                                className="w-full p-2 border rounded h-20 resize-none" 
+                            />
+                        </div>
+
+                        <div className="flex justify-end space-x-2">
+                            <button 
+                                type="button" 
+                                onClick={() => {
+                                    setEditingGroupMe(null);
+                                    setGroupMeData({ name: '', url: '', description: '', image: '' });
+                                }}
+                                className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600"
+                            >
+                                Cancel
+                            </button>
+                            <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">
+                                {editingGroupMe.id ? 'Update GroupMe' : 'Add GroupMe'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
+            {/* GroupMe List */}
+            <div className="space-y-4">
+                {groupMes.length > 0 ? (
+                    groupMes.map(groupMe => (
+                        <div key={groupMe.id} className="bg-white rounded-lg shadow-md p-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-4 flex-grow">
+                                    <div className="flex-shrink-0">
+                                        {groupMe.image ? (
+                                            <img 
+                                                src={groupMe.image} 
+                                                alt={groupMe.name}
+                                                className="w-12 h-12 rounded-lg object-cover"
+                                                onError={(e) => {
+                                                    e.target.style.display = 'none';
+                                                    e.target.nextSibling.style.display = 'flex';
+                                                }}
+                                            />
+                                        ) : null}
+                                        <div 
+                                            className={`w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center ${groupMe.image ? 'hidden' : 'flex'}`}
+                                        >
+                                            <MessageSquare className="h-6 w-6 text-blue-600" />
+                                        </div>
+                                    </div>
+                                    <div className="flex-grow">
+                                        <h3 className="text-lg font-semibold text-slate-800">{groupMe.name}</h3>
+                                        {groupMe.description && (
+                                            <p className="text-sm text-slate-600 mt-1">{groupMe.description}</p>
+                                        )}
+                                        <button 
+                                            onClick={() => window.open(groupMe.url, '_blank')}
+                                            className="mt-2 bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
+                                        >
+                                            Join GroupMe
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-2 ml-4">
+                                    <button 
+                                        onClick={() => handleEditGroupMe(groupMe)}
+                                        className="text-slate-500 hover:text-slate-700 p-1"
+                                        title="Edit GroupMe"
+                                    >
+                                        <Edit size={16}/>
+                                    </button>
+                                    <button 
+                                        onClick={() => handleDeleteGroupMe(groupMe.id)}
+                                        className="text-red-500 hover:text-red-700 p-1"
+                                        title="Delete GroupMe"
+                                    >
+                                        <Trash2 size={16}/>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <div className="text-center py-8 text-slate-500 bg-white rounded-lg">
+                        <MessageSquare className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
+                        <h3 className="text-lg font-semibold mb-2">No GroupMe Chats Added Yet</h3>
+                        <p className="mb-4">Add your team's GroupMe chats to keep everyone connected.</p>
+                        <button 
+                            onClick={() => {
+                                setEditingGroupMe({});
+                                setGroupMeData({ name: '', url: '', description: '', image: '' });
+                            }}
+                            className="bg-red-800 text-white px-6 py-2 rounded hover:bg-red-900"
+                        >
+                            Add First GroupMe
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
 const TeamInfoManager = ({ team, setTeams }) => {
     const [teamInfo, setTeamInfo] = useState({
         name: team.name || '',
