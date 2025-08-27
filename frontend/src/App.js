@@ -1219,26 +1219,26 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
     
     return (
         <div className="min-h-screen" style={getBackgroundStyle(websiteStyle)}>
-            {/* Enhanced Vertical Scrolling News Feed - Larger & Narrower */}
+            {/* Enhanced Vertical Scrolling News Feed - Much Taller & Narrower */}
             <div className="bg-red-800 text-white py-6 relative">
-                <div className="flex items-start px-4 max-w-4xl mx-auto">
+                <div className="flex items-start px-4 max-w-3xl mx-auto">
                     <span className="bg-white text-red-800 px-4 py-3 rounded text-sm font-bold mr-6 flex-shrink-0">NEWS</span>
                     
-                    {/* Vertical scrolling container - Much taller and narrower */}
-                    <div className="flex-grow overflow-hidden h-24 relative max-w-2xl">
+                    {/* Vertical scrolling container - Much taller (h-40) and narrower (max-w-xl) */}
+                    <div className="flex-grow overflow-hidden h-40 relative max-w-xl">
                         <div className="animate-scroll-vertical absolute w-full">
                             {/* Create a continuous loop by duplicating news items */}
                             {[...newsItems, ...newsItems].map((item, index) => (
                                 <div 
                                     key={`${item.id}-${index}`} 
-                                    className="flex items-center py-3 h-24 cursor-pointer hover:bg-red-700 hover:bg-opacity-50 rounded px-3 transition-colors"
+                                    className="flex items-center py-4 h-40 cursor-pointer hover:bg-red-700 hover:bg-opacity-50 rounded px-4 transition-colors"
                                     onClick={() => setSelectedNewsItem(item)}
                                 >
                                     {item.type === 'image' && item.imageUrl && (
                                         <img 
                                             src={item.imageUrl} 
                                             alt="News"
-                                            className="w-28 h-20 rounded mr-4 object-cover flex-shrink-0 shadow-sm"
+                                            className="w-32 h-24 rounded mr-4 object-cover flex-shrink-0 shadow-sm"
                                         />
                                     )}
                                     {item.type === 'video' && item.thumbnailUrl && (
@@ -1246,19 +1246,19 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                             <img 
                                                 src={item.thumbnailUrl} 
                                                 alt="Video"
-                                                className="w-28 h-20 rounded object-cover shadow-sm"
+                                                className="w-32 h-24 rounded object-cover shadow-sm"
                                             />
                                             <div className="absolute inset-0 flex items-center justify-center">
-                                                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg">
-                                                    <div className="w-0 h-0 border-l-4 border-l-red-600 border-t-3 border-t-transparent border-b-3 border-b-transparent ml-1"></div>
+                                                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg">
+                                                    <div className="w-0 h-0 border-l-5 border-l-red-600 border-t-4 border-t-transparent border-b-4 border-b-transparent ml-1"></div>
                                                 </div>
                                             </div>
                                         </div>
                                     )}
                                     <div className="flex-grow min-w-0">
-                                        <div className="text-white font-semibold text-lg truncate">{item.heading || item.text}</div>
+                                        <div className="text-white font-semibold text-xl truncate">{item.heading || item.text}</div>
                                         {item.comments && (
-                                            <div className="text-red-100 text-base truncate mt-1">{item.comments}</div>
+                                            <div className="text-red-100 text-lg truncate mt-2">{item.comments}</div>
                                         )}
                                     </div>
                                 </div>
