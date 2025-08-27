@@ -6748,7 +6748,9 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
 };
 
 // --- API SERVICE LAYER ---
-const API_BASE = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001/api';
+const API_BASE = process.env.NODE_ENV === 'development' 
+    ? 'http://localhost:8001/api' 
+    : (process.env.REACT_APP_BACKEND_URL ? `${process.env.REACT_APP_BACKEND_URL}/api` : 'http://localhost:8001/api');
 
 const apiService = {
     async loadLeagueData() {
