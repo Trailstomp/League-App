@@ -4327,9 +4327,10 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
 
     return (
         <div className="min-h-screen" style={teamBackgroundStyle}>
-            <div 
-                className="bg-cover bg-center h-48 rounded-lg mb-6 flex items-end p-4 shadow-inner relative" 
-                style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${team.style?.bannerUrl || 'https://placehold.co/1200x400/4A5568/FFFFFF?text=MLBL'})` }}
+            <div className="p-4 md:p-8">
+                <div 
+                    className="bg-cover bg-center h-48 rounded-lg mb-6 flex items-end p-4 shadow-inner relative" 
+                    style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${team.style?.bannerUrl || 'https://placehold.co/1200x400/4A5568/FFFFFF?text=MLBL'})` }}
             >
                 <div className="flex items-center justify-between w-full">
                     <div className="flex items-center">
