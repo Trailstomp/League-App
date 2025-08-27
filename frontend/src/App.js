@@ -6673,8 +6673,9 @@ function App() {
                         className="text-white p-4 flex justify-between items-center shadow-md relative overflow-hidden"
                         style={{
                             backgroundColor: websiteStyle.bannerColor || websiteStyle.primaryColor,
-                            backgroundImage: websiteStyle.bannerImage ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${websiteStyle.bannerImage})` : 'none',
-                            backgroundSize: 'cover',
+                            backgroundImage: websiteStyle.bannerImage ? `linear-gradient(rgba(0,0,0,${1 - (websiteStyle.bannerOpacity !== undefined ? websiteStyle.bannerOpacity : 0.3)}), rgba(0,0,0,${1 - (websiteStyle.bannerOpacity !== undefined ? websiteStyle.bannerOpacity : 0.3)})), url(${websiteStyle.bannerImage})` : 'none',
+                            backgroundSize: websiteStyle.bannerMode === 'contain' ? 'contain' : websiteStyle.bannerMode === 'repeat' ? 'auto' : 'cover',
+                            backgroundRepeat: websiteStyle.bannerMode === 'repeat' ? 'repeat' : 'no-repeat',
                             backgroundPosition: 'center'
                         }}
                     >
