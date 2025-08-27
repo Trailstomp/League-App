@@ -6364,6 +6364,72 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                         </div>
                     </div>
 
+                    {/* === TOP BAR TEXT CUSTOMIZATION === */}
+                    <div className="border-b border-slate-200 pb-6">
+                        <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                            <Edit className="mr-2" size={20} />
+                            Top Bar Text
+                        </h4>
+                        
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">News Label Text</label>
+                            <input 
+                                type="text"
+                                value={style.newsLabel || 'NEWS'}
+                                onChange={(e) => setStyle(prev => ({...prev, newsLabel: e.target.value}))}
+                                className="w-full p-3 border border-slate-300 rounded-lg"
+                                placeholder="Enter text for news ticker label (e.g., NEWS, UPDATES, ANNOUNCEMENTS)"
+                            />
+                            <p className="text-xs text-slate-500 mt-1">This text appears in the red label next to your news ticker</p>
+                        </div>
+                    </div>
+
+                    {/* === LOGO OVERLAY === */}
+                    <div className="border-b border-slate-200 pb-6">
+                        <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                            <Image className="mr-2" size={20} />
+                            Logo Overlay
+                        </h4>
+                        
+                        <div className="space-y-4">
+                            <FileUploadInput
+                                label="Overlay Logo"
+                                accept="image/*"
+                                currentValue={style.overlayLogo || ''}
+                                onChange={(url) => setStyle(prev => ({...prev, overlayLogo: url}))}
+                                placeholder="Upload logo or enter URL for background overlay"
+                            />
+                            
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Logo Position</label>
+                                <select 
+                                    value={style.overlayLogoAlignment || 'center'}
+                                    onChange={(e) => setStyle(prev => ({...prev, overlayLogoAlignment: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg"
+                                >
+                                    <option value="left">Left Aligned</option>
+                                    <option value="center">Center Aligned</option>
+                                    <option value="right">Right Aligned</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Logo Size</label>
+                                <select 
+                                    value={style.overlayLogoSize || 'medium'}
+                                    onChange={(e) => setStyle(prev => ({...prev, overlayLogoSize: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg"
+                                >
+                                    <option value="small">Small (64px)</option>
+                                    <option value="medium">Medium (96px)</option>
+                                    <option value="large">Large (128px)</option>
+                                </select>
+                            </div>
+
+                            <p className="text-xs text-slate-500">Logo appears as a subtle watermark in the bottom corner of all pages</p>
+                        </div>
+                    </div>
+
                     {/* === MUSIC === */}
                     <div>
                         <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
