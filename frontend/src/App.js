@@ -6973,20 +6973,77 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                 {activeTab === 'media' && (
                     <div>
                         <h2 className="text-3xl font-bold text-slate-800 mb-4 tracking-tight">Media Gallery</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {team.media.length > 0 ? team.media.map(item => (
-                                <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                                    {item.type === 'photo' ? (
-                                        <img src={item.url} alt={item.caption} className="w-full h-auto object-cover"/>
-                                    ) : (
-                                        <div className="aspect-w-16 aspect-h-9">
-                                            <iframe src={item.url} title={item.caption} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full"></iframe>
+                        
+                        {/* Display galleries and their items */}
+                        {team.galleries && team.galleries.length > 0 ? (
+                            <div className="space-y-8">
+                                {team.galleries.map(gallery => (
+                                    <div key={gallery.id}>
+                                        <div className="mb-4">
+                                            <h3 className="text-xl font-semibold text-slate-700 mb-2">{gallery.name}</h3>
+                                            {gallery.description && (
+                                                <p className="text-slate-600 text-sm mb-3">{gallery.description}</p>
+                                            )}
                                         </div>
-                                    )}
-                                    <p className="p-3 text-slate-600 text-sm">{item.caption}</p>
-                                </div>
-                            )) : <p>No media has been added for this team yet.</p>}
-                        </div>
+                                        
+                                        {gallery.items && gallery.items.length > 0 ? (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                                {gallery.items.map(item => (
+                                                    <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                                                        {gallery.type === 'photo' ? (
+                                                            <div className="aspect-square overflow-hidden">
+                                                                <img 
+                                                                    src={item.url} 
+                                                                    alt={item.caption || gallery.name}
+                                                                    className="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
+                                                                    onClick={() => {
+                                                                        // Open slideshow for photos
+                                                                        const galleryImages = gallery.items.map(img => ({
+                                                                            ...img,
+                                                                            type: 'photo'
+                                                                        }));
+                                                                        const startIndex = gallery.items.findIndex(img => img.id === item.id);
+                                                                        // You could implement a slideshow modal here
+                                                                        window.open(item.url, '_blank');
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        ) : (
+                                                            <div className="aspect-video">
+                                                                <iframe 
+                                                                    src={item.url} 
+                                                                    title={item.caption || gallery.name}
+                                                                    frameBorder="0" 
+                                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                                    allowFullScreen 
+                                                                    className="w-full h-full"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                        {item.caption && (
+                                                            <div className="p-3">
+                                                                <p className="text-slate-600 text-sm">{item.caption}</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-8 bg-slate-50 rounded-lg">
+                                                <ImageIcon className="mx-auto h-12 w-12 text-slate-400 mb-2"/>
+                                                <p className="text-slate-500">No {gallery.type}s in this gallery yet.</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-12">
+                                <ImageIcon className="mx-auto h-16 w-16 text-slate-400 mb-4"/>
+                                <h3 className="text-xl font-semibold text-slate-600 mb-2">No Media Galleries Yet</h3>
+                                <p className="text-slate-500 mb-4">Team administrators can create photo and video galleries to showcase the team's memories and highlights.</p>
+                            </div>
+                        )}
                     </div>
                 )}
                 
