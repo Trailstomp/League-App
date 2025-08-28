@@ -1774,7 +1774,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
             const deltaY = y - dragStart.y;
             
             let newCropArea = { ...cropArea };
-            const aspectRatio = aspectRatios[currentAspectRatio].ratio;
+            const aspectRatio = (aspectRatios[currentAspectRatio] || aspectRatios['free']).ratio;
             
             switch (resizeHandle) {
                 case 'se': // bottom-right
