@@ -496,18 +496,9 @@ const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder, e
     };
 
     const openCropTool = () => {
-        console.log('openCropTool called with currentValue:', currentValue);
-        console.log('accept includes image:', accept.includes('image'));
-        
         if (currentValue && accept.includes('image')) {
-            console.log('Opening crop tool immediately for existing image:', currentValue);
-            
-            // Skip validation for now and open immediately to test
             setOriginalImageUrl(currentValue);
             setShowCropTool(true);
-            console.log('Crop tool state updated - showCropTool should now be true');
-        } else {
-            console.log('Cannot open crop tool - no currentValue or not image type');
         }
     };
 
