@@ -8388,36 +8388,7 @@ function App() {
                         <h2 className="text-2xl font-bold text-center mb-6">Welcome to MLBL</h2>
                         
                         {/* Email/Password Login Form */}
-                        <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="mb-6">
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
-                                <input
-                                    type="email"
-                                    value={loginCredentials.email}
-                                    onChange={(e) => setLoginCredentials(prev => ({...prev, email: e.target.value}))}
-                                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="Enter your email address"
-                                    required
-                                />
-                            </div>
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-slate-700 mb-2">Password</label>
-                                <input
-                                    type="password"
-                                    value={loginCredentials.password}
-                                    onChange={(e) => setLoginCredentials(prev => ({...prev, password: e.target.value}))}
-                                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="Enter your password"
-                                    required
-                                />
-                            </div>
-                            <button 
-                                type="submit"
-                                className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
-                            >
-                                Login
-                            </button>
-                        </form>
+                        <LoginForm />
 
                         {/* Quick Login (for demo/testing) */}
                         {users.filter(u => u.status === 'active' && u.roles.length > 0).length > 0 && (
@@ -8427,7 +8398,7 @@ function App() {
                                     {users.filter(u => u.status === 'active' && u.roles.length > 0).slice(0, 3).map(user => (
                                         <button 
                                             key={user.id} 
-                                            onClick={() => handleLogin(user)} 
+                                            onClick={() => handleQuickLogin(user)} 
                                             className="text-left p-2 bg-slate-50 hover:bg-red-50 rounded text-sm flex items-center gap-2 transition-colors"
                                         >
                                            <UserCheck size={16} className="text-slate-500" />
