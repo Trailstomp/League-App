@@ -4958,17 +4958,20 @@ const ItemForm = ({ editingItem, setEditingItem, onSave, onCancel, itemType, gal
                         </div>
                     )}
                     
-                    <div>
-                        <label className="block font-semibold text-slate-700 mb-2">Caption/Description</label>
-                        <input 
-                            type="text" 
-                            value={itemData.caption}
-                            onChange={(e) => setItemData(prev => ({...prev, caption: e.target.value}))}
-                            placeholder="Caption/Description" 
-                            className="w-full p-2 border rounded" 
-                            required 
-                        />
-                    </div>
+                    {/* Caption - Only for single mode */}
+                    {(!isMultipleMode || itemType === 'video') && (
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Caption/Description</label>
+                            <input 
+                                type="text" 
+                                value={itemData.caption}
+                                onChange={(e) => setItemData(prev => ({...prev, caption: e.target.value}))}
+                                placeholder="Caption/Description" 
+                                className="w-full p-2 border rounded" 
+                                required 
+                            />
+                        </div>
+                    )}
                     
                     {itemData.url && itemType === 'video' && (
                         <div className="mt-2">
