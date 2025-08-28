@@ -11213,4 +11213,122 @@ function App() {
     );
 }
 
+// Banner Upload Component
+const BannerUploadManager = ({ onBannerSelect, currentBanners = [] }) => {
+    const [selectedBannerType, setSelectedBannerType] = useState('horizontal');
+    const [showUploader, setShowUploader] = useState(false);
+    
+    const bannerPresets = {
+        horizontal: {
+            label: 'Horizontal Banners',
+            icon: '📐',
+            options: [
+                { key: 'header', label: 'Header Banner', ratio: '5:1', width: 1200, height: 240 },
+                { key: 'hero', label: 'Hero Banner', ratio: '3:1', width: 1200, height: 400 },
+                { key: 'section', label: 'Section Banner', ratio: '16:9', width: 1200, height: 675 },
+                { key: 'footer', label: 'Footer Banner', ratio: '4:1', width: 1200, height: 300 }
+            ]
+        },
+        vertical: {
+            label: 'Vertical Banners',
+            icon: '📱',
+            options: [
+                { key: 'sidebar', label: 'Sidebar Banner', ratio: '1:3', width: 300, height: 900 },
+                { key: 'mobile', label: 'Mobile Banner', ratio: '9:16', width: 360, height: 640 },
+                { key: 'story', label: 'Story Banner', ratio: '9:16', width: 1080, height: 1920 },
+                { key: 'poster', label: 'Poster Banner', ratio: '2:3', width: 800, height: 1200 }
+            ]
+        },
+        square: {
+            label: 'Square Banners',
+            icon: '⬜',
+            options: [
+                { key: 'profile', label: 'Profile Banner', ratio: '1:1', width: 500, height: 500 },
+                { key: 'social', label: 'Social Media', ratio: '1:1', width: 1080, height: 1080 },
+                { key: 'logo', label: 'Logo Banner', ratio: '1:1', width: 300, height: 300 }
+            ]
+        }
+    };
+    
+    return (
+        <div className="space-y-6">
+            {/* Banner Type Selector */}
+            <div className="flex justify-center space-x-4">
+                {Object.entries(bannerPresets).map(([type, config]) => (
+                    <button
+                        key={type}
+                        onClick={() => setSelectedBannerType(type)}
+                        className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                            selectedBannerType === type
+                                ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                : 'border-slate-300 hover:border-slate-400'
+                        }`}
+                    >
+                        <div className="text-center">
+                            <div className="text-2xl mb-1">{config.icon}</div>
+                            <div className="text-sm font-medium">{config.label}</div>
+                        </div>
+                    </button>
+                ))}
+            </div>
+            
+            {/* Banner Options */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {bannerPresets[selectedBannerType].options.map((option) => (
+                    <div key={option.key} className="border rounded-lg p-4 hover:border-blue-300 transition-colors">
+                        <div className="flex justify-between items-center mb-3">
+                            <h3 className="font-semibold text-slate-800">{option.label}</h3>
+                            <span className="text-xs bg-slate-100 px-2 py-1 rounded">{option.ratio}</span>
+                        </div>
+                        
+                        {/* Preview Box */}
+                        <div className="mb-3 bg-slate-100 rounded border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-500 text-sm"
+                             style={{ 
+                                 aspectRatio: option.ratio,
+                                 minHeight: selectedBannerType === 'vertical' ? '120px' : '60px'
+                             }}>
+                            {option.width} × {option.height}px
+                        </div>
+                        
+                        <button
+                            onClick={() => {
+                                setShowUploader(true);
+                                onBannerSelect?.({
+                                    type: selectedBannerType,
+                                    preset: option,
+                                    aspectRatio: option.ratio.replace(':', '/') // Convert to CSS format
+                                });
+                            }}
+                            className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors text-sm"
+                        >
+                            Upload {option.label}
+                        </button>
+                    </div>
+                ))}
+            </div>
+            
+            {/* Current Banners */}
+            {currentBanners.length > 0 && (
+                <div className="mt-8">
+                    <h3 className="text-lg font-semibold text-slate-800 mb-4">Current Banners</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {currentBanners.map((banner, index) => (
+                            <div key={index} className="border rounded-lg p-3">
+                                <img 
+                                    src={banner.url} 
+                                    alt={banner.label}
+                                    className="w-full rounded mb-2"
+                                    style={{ aspectRatio: banner.aspectRatio }}
+                                />
+                                <div className="text-sm font-medium text-slate-700">{banner.label}</div>
+                                <div className="text-xs text-slate-500">{banner.dimensions}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 export default App;
