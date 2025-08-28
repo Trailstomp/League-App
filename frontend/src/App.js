@@ -6427,7 +6427,7 @@ const TeamSocialMediaManager = ({ team, setTeams }) => {
                     )}
                     {socialMediaData.youtube && (
                         <div className="flex items-center space-x-2 text-xs text-slate-600">
-                            <Youtube size={14} className="text-red-600" />
+                            <Video size={14} className="text-red-600" />
                             <span>YouTube Connected</span>
                         </div>
                     )}
