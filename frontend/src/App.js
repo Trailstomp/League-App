@@ -1467,7 +1467,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio = 'free', conte
                                         onClick={() => handleZoom('out')}
                                         className="flex items-center space-x-1 px-3 py-2 bg-blue-100 hover:bg-blue-200 rounded text-sm"
                                     >
-                                        <SearchX size={16} />
+                                        <Minimize2 size={16} />
                                         <span>Zoom Out</span>
                                     </button>
                                     
@@ -1475,7 +1475,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio = 'free', conte
                                         onClick={() => handleZoom('in')}
                                         className="flex items-center space-x-1 px-3 py-2 bg-blue-100 hover:bg-blue-200 rounded text-sm"
                                     >
-                                        <Search size={16} />
+                                        <Maximize2 size={16} />
                                         <span>Zoom In</span>
                                     </button>
                                     
