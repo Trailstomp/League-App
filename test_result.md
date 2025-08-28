@@ -679,6 +679,21 @@ metadata:
         agent: "testing"
         comment: "FRONTEND-ONLY FEATURE - NOT TESTED: ImageCropTool is a frontend UI component that only affects image cropping functionality in the user interface. Testing agent does not test frontend features per system limitations. Backend functionality remains unaffected and fully operational."
 
+  - task: "Fix newsItems is not defined error in TeamDetailPage"
+    implemented: true
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported 'ReferenceError: newsItems is not defined' error when clicking on teams page. Error occurs in renderPage function and App component during team navigation."
+      - working: false
+        agent: "main"
+        comment: "ATTEMPTED FIX: Identified that TeamDetailPage component was expecting setShowNewsPopup prop that was undefined. Removed setShowNewsPopup parameter from TeamDetailPage and removed setShowNewsPopup(true) call, leaving only setSelectedNewsItem(item). However, teams are not showing in sidebar navigation - may be a data loading or filtering issue preventing proper team navigation testing."
+
 test_plan:
   current_focus:
     - "Event Registration & RSVP System with yes/no tracking"
