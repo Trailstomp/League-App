@@ -7562,6 +7562,10 @@ function App() {
     const [isMenuOpen, setIsMenuOpen] = useState(window.innerWidth > 768);
     const [showLogin, setShowLogin] = useState(false);
     const [authMode, setAuthMode] = useState('login'); // 'login', 'register'
+    const [loginCredentials, setLoginCredentials] = useState({
+        email: '',
+        password: ''
+    });
     const [registrationData, setRegistrationData] = useState({
         name: '',
         email: '',
