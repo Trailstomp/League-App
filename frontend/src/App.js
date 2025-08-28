@@ -4318,15 +4318,11 @@ const ItemForm = ({ editingItem, setEditingItem, onSave, onCancel, itemType, gal
                         />
                     </div>
                     
-                    {itemData.url && (
+                    {itemData.url && itemType === 'video' && (
                         <div className="mt-2">
-                            {itemType === 'photo' ? (
-                                <img src={itemData.url} alt="Preview" className="w-full h-48 object-cover rounded-lg border" />
-                            ) : (
-                                <div className="bg-slate-100 p-4 rounded-lg">
-                                    <p className="text-sm text-slate-600">Video URL: {itemData.url}</p>
-                                </div>
-                            )}
+                            <div className="bg-slate-100 p-4 rounded-lg">
+                                <p className="text-sm text-slate-600">Video URL: {itemData.url}</p>
+                            </div>
                         </div>
                     )}
 
