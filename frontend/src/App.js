@@ -4554,7 +4554,7 @@ const MediaManager = ({ team, setTeams }) => {
                 {(activeTab === 'photos' ? photoGalleries : videoGalleries).length === 0 && (
                     <div className="text-center py-12 text-slate-500">
                         {activeTab === 'photos' ? (
-                            <Image className="mx-auto h-16 w-16 text-slate-300 mb-4"/>
+                            <ImageIcon className="mx-auto h-16 w-16 text-slate-300 mb-4"/>
                         ) : (
                             <Video className="mx-auto h-16 w-16 text-slate-300 mb-4"/>
                         )}
