@@ -10215,7 +10215,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                     </div>
                 )}
 
-                {activeTab === 'invitations' && hasPermission(currentUser, 'system.invitations') && (
+                {activeTab === 'invites' && hasPermission(currentUser, 'users.create') && (
                     <div className="p-6">
                         <h2 className="text-2xl font-bold mb-4">Invitations & Access Requests</h2>
                         <div className="text-center py-8 text-slate-500">
