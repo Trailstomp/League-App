@@ -7535,23 +7535,24 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                 )}
                                                 
                                                 {/* Auto-Scrolling Gallery Container */}
-                                                <div 
-                                                    id={`gallery-${gallery.id}`}
-                                                    className="flex overflow-x-auto scrollbar-hide space-x-4 pb-4 gallery-auto-scroll"
-                                                    style={{
-                                                        scrollbarWidth: 'none', 
-                                                        msOverflowStyle: 'none',
-                                                        animation: gallery.items.length > 3 ? 'gallery-scroll 20s linear infinite' : 'none'
-                                                    }}
-                                                    onMouseEnter={(e) => {
-                                                        e.target.style.animationPlayState = 'paused';
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                        e.target.style.animationPlayState = 'running';
-                                                    }}
-                                                >
-                                                    {/* Duplicate items for seamless scrolling */}
-                                                    {[...gallery.items, ...gallery.items].map((item, index) => (
+                                                <div className="overflow-hidden">
+                                                    <div 
+                                                        id={`gallery-${gallery.id}`}
+                                                        className="flex gallery-auto-scroll"
+                                                        style={{
+                                                            gap: '16px',
+                                                            width: `${(gallery.items.length * 2) * 296}px`, // 280px + 16px gap per item
+                                                            animation: gallery.items.length > 1 ? `gallery-scroll-${gallery.id} 20s linear infinite` : 'none'
+                                                        }}
+                                                        onMouseEnter={(e) => {
+                                                            e.target.style.animationPlayState = 'paused';
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            e.target.style.animationPlayState = 'running';
+                                                        }}
+                                                    >
+                                                        {/* Duplicate items for seamless scrolling - no gaps */}
+                                                        {[...gallery.items, ...gallery.items].map((item, index) => (
                                                         <div key={`${item.id}-${index}`} className="flex-shrink-0 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" style={{width: '280px'}}>
                                                             {gallery.type === 'photo' ? (
                                                                 <div 
