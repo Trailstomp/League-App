@@ -444,6 +444,11 @@ class BackendTester:
         self.test_get_status_checks()
         self.test_create_status_check()
         
+        # Test league data endpoints
+        self.test_get_league_data()
+        self.test_save_league_data()
+        self.test_update_specific_data()
+        
         # Test database functionality
         self.test_database_persistence()
         
