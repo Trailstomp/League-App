@@ -192,7 +192,7 @@ const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder, e
                                     className="inline-flex items-center space-x-2 px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-md text-sm transition-colors"
                                 >
                                     <Edit size={14} />
-                                    <span>Adjust Image</span>
+                                    <span>Crop & Adjust</span>
                                 </button>
                             </div>
                         )}
