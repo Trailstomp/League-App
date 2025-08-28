@@ -3515,15 +3515,26 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-4xl font-bold text-slate-800 tracking-tight">League Events & Schedule</h1>
-                {isAdmin && (
-                    <button 
-                        onClick={() => window.location.hash = 'admin-portal'}
-                        className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center text-sm"
-                        title="Quick access to calendar management"
-                    >
-                        <Plus className="mr-2 h-4 w-4"/> Add League Event
-                    </button>
-                )}
+                <div className="flex space-x-2">
+                    {(isAdmin || hasPermission(currentUser, 'events.view')) && (
+                        <button 
+                            onClick={() => window.location.hash = 'event-dashboard'}
+                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center text-sm"
+                            title="View event management dashboard"
+                        >
+                            <BarChart2 className="mr-2 h-4 w-4"/> Event Dashboard
+                        </button>
+                    )}
+                    {isAdmin && (
+                        <button 
+                            onClick={() => window.location.hash = 'admin-portal'}
+                            className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center text-sm"
+                            title="Quick access to calendar management"
+                        >
+                            <Plus className="mr-2 h-4 w-4"/> Add League Event
+                        </button>
+                    )}
+                </div>
             </div>
             
             <div className="mb-6">
