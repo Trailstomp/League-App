@@ -1715,69 +1715,72 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
             canvas.width = canvasSize.width;
             canvas.height = canvasSize.height;
 
-        // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Calculate image position and size with scaling and panning
-        const scaledWidth = canvasSize.width * imageScale;
-        const scaledHeight = canvasSize.height * imageScale;
-        const imageX = (canvasSize.width - scaledWidth) / 2 + imagePan.x;
-        const imageY = (canvasSize.height - scaledHeight) / 2 + imagePan.y;
+            // Calculate image position and size with scaling and panning
+            const scaledWidth = canvasSize.width * imageScale;
+            const scaledHeight = canvasSize.height * imageScale;
+            const imageX = (canvasSize.width - scaledWidth) / 2 + imagePan.x;
+            const imageY = (canvasSize.height - scaledHeight) / 2 + imagePan.y;
 
-        // Draw image with scaling and panning
-        ctx.drawImage(img, imageX, imageY, scaledWidth, scaledHeight);
+            // Draw image with scaling and panning
+            ctx.drawImage(img, imageX, imageY, scaledWidth, scaledHeight);
 
-        // Draw dark overlay
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Draw dark overlay
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Clear crop area to show unmasked image
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
-        ctx.clip();
-        ctx.clearRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
-        ctx.drawImage(img, imageX, imageY, scaledWidth, scaledHeight);
-        ctx.restore();
+            // Clear crop area to show unmasked image
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
+            ctx.clip();
+            ctx.clearRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
+            ctx.drawImage(img, imageX, imageY, scaledWidth, scaledHeight);
+            ctx.restore();
 
-        // Draw crop border
-        ctx.strokeStyle = '#3b82f6';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([]);
-        ctx.strokeRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
+            // Draw crop border
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([]);
+            ctx.strokeRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
 
-        // Draw resize handles
-        const handleSize = 12;
-        ctx.fillStyle = '#3b82f6';
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 1;
-        
-        // Corner handles
-        const corners = [
-            { x: cropArea.x, y: cropArea.y }, // top-left
-            { x: cropArea.x + cropArea.width, y: cropArea.y }, // top-right
-            { x: cropArea.x, y: cropArea.y + cropArea.height }, // bottom-left
-            { x: cropArea.x + cropArea.width, y: cropArea.y + cropArea.height } // bottom-right
-        ];
-        
-        corners.forEach(corner => {
-            ctx.fillRect(corner.x - handleSize/2, corner.y - handleSize/2, handleSize, handleSize);
-            ctx.strokeRect(corner.x - handleSize/2, corner.y - handleSize/2, handleSize, handleSize);
-        });
-
-        // Side handles (only if not maintaining aspect ratio)
-        if (!(aspectRatios[currentAspectRatio] || aspectRatios['free']).ratio) {
-            const sides = [
-                { x: cropArea.x + cropArea.width/2, y: cropArea.y }, // top
-                { x: cropArea.x + cropArea.width, y: cropArea.y + cropArea.height/2 }, // right
-                { x: cropArea.x + cropArea.width/2, y: cropArea.y + cropArea.height }, // bottom
-                { x: cropArea.x, y: cropArea.y + cropArea.height/2 } // left
+            // Draw resize handles
+            const handleSize = 12;
+            ctx.fillStyle = '#3b82f6';
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            
+            // Corner handles
+            const corners = [
+                { x: cropArea.x, y: cropArea.y }, // top-left
+                { x: cropArea.x + cropArea.width, y: cropArea.y }, // top-right
+                { x: cropArea.x, y: cropArea.y + cropArea.height }, // bottom-left
+                { x: cropArea.x + cropArea.width, y: cropArea.y + cropArea.height } // bottom-right
             ];
             
-            sides.forEach(side => {
-                ctx.fillRect(side.x - handleSize/2, side.y - handleSize/2, handleSize, handleSize);
-                ctx.strokeRect(side.x - handleSize/2, side.y - handleSize/2, handleSize, handleSize);
+            corners.forEach(corner => {
+                ctx.fillRect(corner.x - handleSize/2, corner.y - handleSize/2, handleSize, handleSize);
+                ctx.strokeRect(corner.x - handleSize/2, corner.y - handleSize/2, handleSize, handleSize);
             });
+
+            // Side handles (only if not maintaining aspect ratio)
+            if (!(aspectRatios[currentAspectRatio] || aspectRatios['free']).ratio) {
+                const sides = [
+                    { x: cropArea.x + cropArea.width/2, y: cropArea.y }, // top
+                    { x: cropArea.x + cropArea.width, y: cropArea.y + cropArea.height/2 }, // right
+                    { x: cropArea.x + cropArea.width/2, y: cropArea.y + cropArea.height }, // bottom
+                    { x: cropArea.x, y: cropArea.y + cropArea.height/2 } // left
+                ];
+                
+                sides.forEach(side => {
+                    ctx.fillRect(side.x - handleSize/2, side.y - handleSize/2, handleSize, handleSize);
+                    ctx.strokeRect(side.x - handleSize/2, side.y - handleSize/2, handleSize, handleSize);
+                });
+            }
+        } catch (error) {
+            console.error('Error drawing canvas:', error);
         }
     };
 
