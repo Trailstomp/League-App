@@ -103,12 +103,14 @@
 #====================================================================================================
 
 user_problem_statement: |
-  User has an existing lacrosse league management application built with React frontend. The current pending tasks are:
-  1. Enhance news ticker to show a pop-up window with the news message and a full-size image when clicked
-  2. Add `heading` and `comments` fields to news items data structure and display  
-  3. Implement the ability for team and player cards to close when clicked anywhere on the card
-  4. Fully implement the login/create splash screen, admin approval for new user access, and an invitation process
-  5. Finalize WebsiteStyleManager enhancements for all text label attributes and visual separators
+  User has an existing League Management App (formerly lacrosse league management application) built with React frontend. The current focus is on Priority 3 - Event Management Completion including:
+  1. Advanced Event Registration & RSVP System: Allow users to register/RSVP for events with yes/no tracking
+  2. Attendance Tracking: Track how many and who are attending practices or games with detailed participant lists
+  3. Event Notification System: Send out text or email notifications for upcoming events, reminders, and RSVP requests
+  4. Advanced Recurring Events: Complete the recurring event system with complex patterns
+  5. Event Management Dashboard: Enhanced event oversight and reporting capabilities
+  
+  Project has been renamed to "League Management App" and requires redeployment.
   
 frontend:
   - task: "Enhance news ticker to show popup with full-size images and click functionality"
