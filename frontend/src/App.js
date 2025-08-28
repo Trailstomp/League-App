@@ -2068,6 +2068,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
     };
 
     if (isLoading) {
+        console.log('ImageCropTool is in loading state for imageUrl:', imageUrl);
         return (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white rounded-lg p-6">
@@ -2075,6 +2076,18 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
                         <span>Loading image...</span>
                     </div>
+                    <div className="mt-2 text-sm text-gray-600">
+                        URL: {imageUrl?.substring(0, 50)}...
+                    </div>
+                    <button 
+                        onClick={() => {
+                            console.log('Force close loading modal');
+                            onCancel();
+                        }}
+                        className="mt-3 px-3 py-1 bg-gray-500 text-white rounded text-sm"
+                    >
+                        Cancel (Debug)
+                    </button>
                 </div>
             </div>
         );
