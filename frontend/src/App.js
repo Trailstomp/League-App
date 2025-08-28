@@ -6972,16 +6972,15 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
                     <h3 className="text-xl font-bold text-slate-800">Style Controls</h3>
                     
                     <div>
-                        <label className="block font-semibold text-slate-700 mb-2">Team Logo</label>
-                        <input 
-                            type="file" 
+                        <FileUploadInput
+                            label="Team Logo"
                             accept="image/*"
-                            onChange={(e) => handleImageUpload(e, 'logoUrl')}
-                            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                            currentValue={style.logoUrl || selectedTeam.logo || ''}
+                            onChange={(url) => setStyle(prev => ({...prev, logoUrl: url}))}
+                            placeholder="Upload team logo"
+                            enableCrop={true}
+                            cropAspectRatio="1:1"
                         />
-                        {selectedTeam.logo && (
-                            <img src={selectedTeam.logo} alt="Current Logo" className="w-16 h-16 mt-2 rounded-full border" />
-                        )}
                     </div>
 
                     <div>
