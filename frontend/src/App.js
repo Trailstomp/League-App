@@ -6984,19 +6984,14 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
                     </div>
 
                     <div>
-                        <label className="block font-semibold text-slate-700 mb-2">Team Banner</label>
-                        <input 
-                            type="file" 
+                        <FileUploadInput
+                            label="Team Banner"
                             accept="image/*"
-                            onChange={(e) => handleImageUpload(e, 'bannerUrl')}
-                            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
-                        />
-                        <input 
-                            type="url"
-                            value={style.bannerUrl || ''}
-                            onChange={(e) => setStyle(prev => ({...prev, bannerUrl: e.target.value}))}
-                            placeholder="Or enter banner image URL"
-                            className="w-full p-2 border border-slate-300 rounded-lg mt-2"
+                            currentValue={style.bannerUrl || ''}
+                            onChange={(url) => setStyle(prev => ({...prev, bannerUrl: url}))}
+                            placeholder="Upload team banner or enter URL"
+                            enableCrop={true}
+                            cropAspectRatio="16:9"
                         />
                     </div>
 
