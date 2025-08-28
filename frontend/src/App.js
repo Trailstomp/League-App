@@ -4887,58 +4887,77 @@ const ItemForm = ({ editingItem, setEditingItem, onSave, onCancel, itemType, gal
                                     />
                                 </div>
                             ) : (
-                                /* Multiple Photos Upload */
+                                /* Multiple Photos Upload - Direct File Selection */
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <h4 className="text-lg font-semibold">Multiple Photos</h4>
-                                        <button
-                                            type="button"
-                                            onClick={addImageSlot}
-                                            className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 flex items-center"
-                                        >
-                                            <Plus className="mr-1" size={16} />
-                                            Add Photo Slot
-                                        </button>
+                                        <h4 className="text-lg font-semibold">Multiple Photos Upload</h4>
                                     </div>
                                     
-                                    {multipleImages.map((image, index) => (
-                                        <div key={index} className="p-4 border rounded-lg bg-slate-50 space-y-3">
-                                            <div className="flex items-center justify-between">
-                                                <h5 className="font-medium">Photo {index + 1}</h5>
-                                                {multipleImages.length > 1 && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeImageSlot(index)}
-                                                        className="text-red-600 hover:text-red-800 p-1"
-                                                    >
-                                                        <X size={16} />
-                                                    </button>
-                                                )}
+                                    <div 
+                                        className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center cursor-pointer transition-colors hover:border-slate-400"
+                                        onClick={() => document.getElementById('multipleFileInput').click()}
+                                    >
+                                        <input
+                                            id="multipleFileInput"
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            onChange={(e) => {
+                                                const files = Array.from(e.target.files);
+                                                const newImages = files.map((file, index) => ({
+                                                    url: URL.createObjectURL(file),
+                                                    caption: `Photo ${index + 1}`,
+                                                    file: file
+                                                }));
+                                                setMultipleImages(newImages);
+                                            }}
+                                            className="hidden"
+                                        />
+                                        
+                                        {multipleImages.length === 0 ? (
+                                            <div>
+                                                <Upload className="mx-auto h-12 w-12 text-slate-400 mb-4" />
+                                                <h3 className="text-lg font-semibold text-slate-700 mb-2">Select Multiple Photos</h3>
+                                                <p className="text-slate-600">Click here to select multiple images at once</p>
+                                                <p className="text-sm text-slate-500 mt-2">You can select multiple files and upload them all together</p>
                                             </div>
-                                            
-                                            <FileUploadInput
-                                                label={`Photo ${index + 1} Upload`}
-                                                accept="image/*"
-                                                currentValue={image.url || ''}
-                                                onChange={(url) => handleMultipleImageUpload(url, index)}
-                                                placeholder="Upload gallery photo"
-                                                enableCrop={true}
-                                                cropAspectRatio="free"
-                                            />
-                                            
-                                            <input
-                                                type="text"
-                                                value={image.caption || ''}
-                                                onChange={(e) => updateImageCaption(index, e.target.value)}
-                                                placeholder={`Caption for Photo ${index + 1} (optional)`}
-                                                className="w-full p-2 border rounded text-sm"
-                                            />
-                                        </div>
-                                    ))}
+                                        ) : (
+                                            <div>
+                                                <ImageIcon className="mx-auto h-8 w-8 text-green-500 mb-2" />
+                                                <p className="text-green-600 font-medium">{multipleImages.length} photos selected</p>
+                                                <p className="text-sm text-slate-500">Click to select different photos</p>
+                                            </div>
+                                        )}
+                                    </div>
                                     
-                                    {multipleImages.length === 0 && (
-                                        <div className="text-center py-8 text-slate-500">
-                                            <p>No photos added yet. Click "Add Photo Slot" to start.</p>
+                                    {multipleImages.length > 0 && (
+                                        <div className="space-y-3">
+                                            <h5 className="font-medium text-slate-700">Selected Photos:</h5>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                                {multipleImages.map((image, index) => (
+                                                    <div key={index} className="relative">
+                                                        <img 
+                                                            src={image.url} 
+                                                            alt={`Preview ${index + 1}`}
+                                                            className="w-full h-24 object-cover rounded border"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeImageSlot(index)}
+                                                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                                                        >
+                                                            <X size={12} />
+                                                        </button>
+                                                        <input
+                                                            type="text"
+                                                            value={image.caption || ''}
+                                                            onChange={(e) => updateImageCaption(index, e.target.value)}
+                                                            placeholder="Caption (optional)"
+                                                            className="w-full p-1 border rounded text-xs mt-1"
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                     )}
                                 </div>
