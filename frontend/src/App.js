@@ -6997,19 +6997,14 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
 
                     {/* === TEAM BACKGROUND IMAGE === */}
                     <div className="border-t border-slate-300 pt-4">
-                        <label className="block font-semibold text-slate-700 mb-2">Team Page Background Image</label>
-                        <input 
-                            type="file" 
+                        <FileUploadInput
+                            label="Team Page Background Image"
                             accept="image/*"
-                            onChange={(e) => handleImageUpload(e, 'pageBackgroundImage')}
-                            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                        />
-                        <input 
-                            type="url"
-                            value={style.pageBackgroundImage || ''}
-                            onChange={(e) => setStyle(prev => ({...prev, pageBackgroundImage: e.target.value}))}
-                            placeholder="Or enter background image URL"
-                            className="w-full p-2 border border-slate-300 rounded-lg mt-2"
+                            currentValue={style.pageBackgroundImage || ''}
+                            onChange={(url) => setStyle(prev => ({...prev, pageBackgroundImage: url}))}
+                            placeholder="Upload team background or enter URL"
+                            enableCrop={true}
+                            cropAspectRatio="free"
                         />
                         
                         {/* Background Display Mode */}
