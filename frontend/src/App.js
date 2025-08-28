@@ -693,8 +693,46 @@ const initialMockUsers = [
 ];
 
 const initialTeams = [
-    { id: 'oh10-lacrosse', name: 'OH10 Lacrosse', logo: 'https://lh3.googleusercontent.com/d/12Piww7Y46hHbAbnDZwxsFDBfuSKbq2RR', wins: 4, losses: 2, ties: 0, pf: 65, pa: 59, contactEmail: 'cschrudder23@gmail.com', social: { twitter: '#', instagram: '#', facebook: '#' }, active: true, media: [], calendar: [], division: 'Field', musicUrl: '', style: { bannerUrl: '', primaryColor: '#ff0000', backgroundColor: '#fef2f2' } },
-    { id: 'american-dads', name: 'American Dads', logo: 'https://lh3.googleusercontent.com/d/1_YssV72EQ9Y3gtXzjM8S0eAJCGQMFpJ6', wins: 4, losses: 0, ties: 0, pf: 56, pa: 10, contactEmail: 'coach@gmail.com', social: { twitter: '#', instagram: '#', facebook: '#' }, active: true, media: [], calendar: [], division: 'Field', musicUrl: '', style: { bannerUrl: '', primaryColor: '#1d4ed8', backgroundColor: '#eff6ff' } },
+    { id: 'oh10-lacrosse', name: 'OH10 Lacrosse', logo: 'https://lh3.googleusercontent.com/d/12Piww7Y46hHbAbnDZwxsFDBfuSKbq2RR', wins: 4, losses: 2, ties: 0, pf: 65, pa: 59, contactEmail: 'cschrudder23@gmail.com', social: { twitter: '#', instagram: '#', facebook: '#' }, active: true, media: [], calendar: [
+        { 
+            id: 'oh10-practice-1', 
+            title: 'Weekly Practice', 
+            date: '2025-01-15', 
+            time: '18:00', 
+            type: 'practice', 
+            location: 'Local Field', 
+            description: 'Regular team practice session',
+            rsvp: {
+                enabled: true,
+                responses: [
+                    { userId: 1, userName: 'Chandler Schrudder', status: 'yes', timestamp: '2025-01-10T10:00:00Z' },
+                    { userId: 2, userName: 'John Smith', status: 'yes', timestamp: '2025-01-10T14:30:00Z' }
+                ],
+                requiresResponse: true,
+                remindersSent: []
+            }
+        }
+    ], division: 'Field', musicUrl: '', style: { bannerUrl: '', primaryColor: '#ff0000', backgroundColor: '#fef2f2' } },
+    { id: 'american-dads', name: 'American Dads', logo: 'https://lh3.googleusercontent.com/d/1_YssV72EQ9Y3gtXzjM8S0eAJCGQMFpJ6', wins: 4, losses: 0, ties: 0, pf: 56, pa: 10, contactEmail: 'coach@gmail.com', social: { twitter: '#', instagram: '#', facebook: '#' }, active: true, media: [], calendar: [
+        {
+            id: 'dads-game-1',
+            title: 'Championship Game',
+            date: '2025-01-20',
+            time: '14:00',
+            type: 'game',
+            location: 'Stadium Field',
+            description: 'Important championship game vs rivals',
+            rsvp: {
+                enabled: true,
+                responses: [
+                    { userId: 3, userName: 'Player Pat', status: 'yes', timestamp: '2025-01-11T09:00:00Z' },
+                    { userId: 4, userName: 'Coach Dave', status: 'yes', timestamp: '2025-01-11T16:00:00Z' }
+                ],
+                requiresResponse: true,
+                remindersSent: []
+            }
+        }
+    ], division: 'Field', musicUrl: '', style: { bannerUrl: '', primaryColor: '#1d4ed8', backgroundColor: '#eff6ff' } },
     { id: 'indiana-lacers', name: 'Indiana Lacers', logo: 'https://lh3.googleusercontent.com/d/1grpa4h9wlU21hDZGMYjiWUZOHQEttN1U', wins: 4, losses: 3, ties: 0, pf: 55, pa: 63, contactEmail: 'coach@gmail.com', social: { twitter: '#', instagram: '#', facebook: '#' }, active: true, media: [], calendar: [], division: 'Box', musicUrl: '', style: { bannerUrl: '', primaryColor: '#047857', backgroundColor: '#ecfdf5' } },
     { id: 'cincinnati-trash-pandas', name: 'Cincinnati Trash Pandas', logo: 'https://lh3.googleusercontent.com/d/1BjyA_93A2g-9Iu2625m2I4uA6p4xX-37', wins: 2, losses: 1, ties: 0, pf: 21, pa: 25, contactEmail: 'coach@gmail.com', social: { twitter: '#', instagram: '#', facebook: '#' }, active: true, media: [], calendar: [], division: 'Box', musicUrl: '', style: { bannerUrl: '', primaryColor: '#4b5563', backgroundColor: '#f3f4f6' } },
     { id: 'columbus-ball-hawgs', name: 'Columbus Ball Hawgs', logo: 'https://lh3.googleusercontent.com/d/1BjyA_93A2g-9Iu2625m2I4uA6p4xX-37', wins: 1, losses: 0, ties: 0, pf: 17, pa: 7, contactEmail: 'coach@gmail.com', social: { twitter: '#', instagram: '#', facebook: '#' }, active: true, media: [], calendar: [], division: 'Field', musicUrl: '', style: { bannerUrl: '', primaryColor: '#f59e0b', backgroundColor: '#fffbeb' } },
