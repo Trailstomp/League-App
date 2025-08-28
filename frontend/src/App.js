@@ -497,10 +497,26 @@ const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder, e
 
     const openCropTool = () => {
         if (currentValue && accept.includes('image')) {
-            // For existing images, we'll re-crop the current image
-            // In a real app, you'd want to store the original image URL separately
-            setOriginalImageUrl(currentValue);
-            setShowCropTool(true);
+            console.log('Opening crop tool for existing image:', currentValue);
+            
+            // Test if the current image URL is valid before opening crop tool
+            const testImg = new window.Image();
+            testImg.onload = () => {
+                console.log('Image URL is valid, opening crop tool');
+                setOriginalImageUrl(currentValue);
+                setShowCropTool(true);
+            };
+            testImg.onerror = () => {
+                console.error('Current image URL is invalid:', currentValue);
+                alert('The current image cannot be edited. Please upload a new image.');
+            };
+            
+            // Handle CORS appropriately
+            if (!currentValue.startsWith('blob:') && !currentValue.startsWith('data:')) {
+                testImg.crossOrigin = "anonymous";
+            }
+            
+            testImg.src = currentValue;
         }
     };
 
