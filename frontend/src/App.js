@@ -1706,17 +1706,19 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
             };
             
             // Try loading with CORS first, then without if it fails
+            console.log('Attempting to load image with CORS...');
             loadImage(imageUrl, true)
-                .then(initializeCanvas)
+                .then((img) => {
+                    console.log('CORS loading successful');
+                    initializeCanvas(img);
+                })
                 .catch((error) => {
                     console.warn('CORS loading failed, retrying without CORS:', error.message);
-                    return loadImage(imageUrl, false);
-                })
-                .then((img) => {
-                    if (img) {
-                        console.log('Fallback loading successful');
-                        initializeCanvas(img);
-                    }
+                    return loadImage(imageUrl, false)
+                        .then((img) => {
+                            console.log('Fallback loading successful');
+                            initializeCanvas(img);
+                        });
                 })
                 .catch((error) => {
                     console.error('All image loading attempts failed:', error.message);
