@@ -721,6 +721,7 @@ const Facebook = (props) => <Icon name="Facebook" {...props} />;
 const ImageIcon = (props) => <Icon name="ImageIcon" {...props} />;
 const Video = (props) => <Icon name="Video" {...props} />;
 const UserCheck = (props) => <Icon name="UserCheck" {...props} />;
+const UserX = (props) => <Icon name="UserX" {...props} />;
 const MapPin = (props) => <Icon name="MapPin" {...props} />;
 const Palette = (props) => <Icon name="Palette" {...props} />;
 const ChevronLeft = (props) => <Icon name="ChevronLeft" {...props} />;
