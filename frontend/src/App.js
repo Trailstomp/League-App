@@ -2102,12 +2102,19 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
 
     // Aspect ratio configurations with proper labels
     const aspectRatios = {
-        'free': { ratio: null, label: 'Free Form' },
-        '1:1': { ratio: 1, label: '1:1 Square' },
-        '16:9': { ratio: 16/9, label: '16:9 Widescreen' },
-        '4:3': { ratio: 4/3, label: '4:3 Standard' },
-        '3:2': { ratio: 3/2, label: '3:2 Photo' },
-        '2:1': { ratio: 2/1, label: '2:1 Banner' }
+        'free': { ratio: null, label: 'Free Form', category: 'flexible' },
+        '1:1': { ratio: 1, label: '1:1 Square', category: 'standard' },
+        '4:3': { ratio: 4/3, label: '4:3 Standard', category: 'standard' },
+        '3:2': { ratio: 3/2, label: '3:2 Photo', category: 'standard' },
+        '16:9': { ratio: 16/9, label: '16:9 Widescreen', category: 'wide' },
+        '21:9': { ratio: 21/9, label: '21:9 Ultra Wide', category: 'wide' },
+        '2:1': { ratio: 2/1, label: '2:1 Banner', category: 'banner' },
+        '3:1': { ratio: 3/1, label: '3:1 Wide Banner', category: 'banner' },
+        '5:1': { ratio: 5/1, label: '5:1 Header Banner', category: 'banner' },
+        '1:2': { ratio: 1/2, label: '1:2 Vertical Banner', category: 'vertical' },
+        '2:3': { ratio: 2/3, label: '2:3 Portrait', category: 'vertical' },
+        '3:4': { ratio: 3/4, label: '3:4 Portrait', category: 'vertical' },
+        '9:16': { ratio: 9/16, label: '9:16 Mobile/Story', category: 'vertical' }
     };
 
     // Ensure currentAspectRatio is always valid
