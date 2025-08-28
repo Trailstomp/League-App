@@ -10228,80 +10228,14 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
 
                 {activeTab === 'settings' && hasPermission(currentUser, 'system.settings') && (
                     <div className="p-6">
-                        <div className="mb-6">
-                            <h2 className="text-2xl font-bold mb-2">League Settings</h2>
-                            <div className="flex space-x-4 border-b">
-                                <button 
-                                    className={`px-4 py-2 border-b-2 font-semibold transition-colors ${
-                                        settingsTab === 'website' 
-                                            ? 'border-blue-600 text-blue-600' 
-                                            : 'border-transparent text-slate-600 hover:text-blue-600'
-                                    }`}
-                                    onClick={() => setSettingsTab('website')}
-                                >
-                                    <div className="flex items-center space-x-2">
-                                        <Palette size={16} />
-                                        <span>Website Style</span>
-                                    </div>
-                                </button>
-                                <button 
-                                    className={`px-4 py-2 border-b-2 font-semibold transition-colors ${
-                                        settingsTab === 'league' 
-                                            ? 'border-blue-600 text-blue-600' 
-                                            : 'border-transparent text-slate-600 hover:text-blue-600'
-                                    }`}
-                                    onClick={() => setSettingsTab('league')}
-                                >
-                                    <div className="flex items-center space-x-2">
-                                        <Trophy size={16} />
-                                        <span>League Info</span>
-                                    </div>
-                                </button>
-                                <button 
-                                    className={`px-4 py-2 border-b-2 font-semibold transition-colors ${
-                                        settingsTab === 'credentials' 
-                                            ? 'border-blue-600 text-blue-600' 
-                                            : 'border-transparent text-slate-600 hover:text-blue-600'
-                                    }`}
-                                    onClick={() => setSettingsTab('credentials')}
-                                >
-                                    <div className="flex items-center space-x-2">
-                                        <Settings size={16} />
-                                        <span>API Credentials</span>
-                                    </div>
-                                </button>
-                            </div>
+                        <h2 className="text-2xl font-bold mb-6">League Settings</h2>
+                        <div className="bg-slate-50 p-6 rounded-lg border">
+                            <h3 className="text-lg font-semibold mb-4 flex items-center">
+                                <Trophy className="mr-2" size={20} />
+                                League Information & Configuration
+                            </h3>
+                            <LeagueInfoManager leagueInfo={leagueInfo} setLeagueInfo={setLeagueInfo} websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
                         </div>
-                        
-                        {/* Tab Content */}
-                        {settingsTab === 'website' && (
-                            <div>
-                                <h3 className="text-lg font-semibold mb-4">Website Appearance & Style</h3>
-                                <WebsiteStyleManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
-                            </div>
-                        )}
-                        
-                        {settingsTab === 'league' && (
-                            <div>
-                                <h3 className="text-lg font-semibold mb-4">League Information & Settings</h3>
-                                <LeagueInfoManager leagueInfo={leagueInfo} setLeagueInfo={setLeagueInfo} websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
-                            </div>
-                        )}
-
-                        {settingsTab === 'credentials' && (
-                            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-                                <div className="flex items-center space-x-3 mb-3">
-                                    <Settings className="text-yellow-600" size={20} />
-                                    <h3 className="font-semibold text-yellow-800">Social Media API Setup</h3>
-                                </div>
-                                <p className="text-sm text-yellow-700 mb-4">
-                                    Social media API credentials have been moved to the dedicated Social Media Manager.
-                                </p>
-                                <p className="text-sm text-yellow-700">
-                                    Go to <strong>Social Media → API Setup</strong> to configure your credentials for Twitter, Facebook, Instagram, and YouTube.
-                                </p>
-                            </div>
-                        )}
                     </div>
                 )}
 
