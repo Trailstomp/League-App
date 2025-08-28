@@ -5589,6 +5589,8 @@ const GroupMeManager = ({ team, setTeams }) => {
                                     currentValue={groupMeData.image}
                                     onChange={(url) => setGroupMeData(prev => ({...prev, image: url}))}
                                     placeholder="Upload chat group image"
+                                    enableCrop={true}
+                                    cropAspectRatio="1:1"
                                 />
                             </div>
                         </div>
