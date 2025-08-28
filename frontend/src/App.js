@@ -7611,8 +7611,12 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                         onClick={() => {
                                                             const container = document.getElementById(`gallery-${gallery.id}`);
                                                             if (container) {
-                                                                container.style.animationPlayState = 
-                                                                    container.style.animationPlayState === 'paused' ? 'running' : 'paused';
+                                                                const currentState = container.style.animationPlayState;
+                                                                if (currentState === 'paused') {
+                                                                    container.style.animationPlayState = 'running';
+                                                                } else {
+                                                                    container.style.animationPlayState = 'paused';
+                                                                }
                                                             }
                                                         }}
                                                         className="bg-slate-600 text-white px-3 py-1 rounded text-sm hover:bg-slate-700 transition-colors"
@@ -7626,10 +7630,8 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                                 onClick={() => {
                                                                     const container = document.getElementById(`gallery-${gallery.id}`);
                                                                     if (container) {
-                                                                        container.scrollTo({
-                                                                            left: index * 300,
-                                                                            behavior: 'smooth'
-                                                                        });
+                                                                        container.style.transform = `translateX(-${index * 296}px)`;
+                                                                        container.style.animationPlayState = 'paused';
                                                                     }
                                                                 }}
                                                                 className="w-3 h-3 bg-slate-300 hover:bg-slate-500 rounded-full transition-colors"
