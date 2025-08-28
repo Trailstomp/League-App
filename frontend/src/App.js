@@ -1935,7 +1935,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                         {/* Crop Info */}
                         <div className="flex items-center space-x-4 text-sm text-gray-600">
                             <span>Size: {Math.round(cropArea.width)} × {Math.round(cropArea.height)}</span>
-                            <span>Aspect: {aspectRatios[currentAspectRatio].label}</span>
+                            <span>Aspect: {(aspectRatios[currentAspectRatio] || aspectRatios['free']).label}</span>
                         </div>
 
                         {/* Aspect Ratio Selector */}
