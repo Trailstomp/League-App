@@ -6245,9 +6245,9 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                 <div className="h-96 overflow-y-auto">
                                     <div className="news-feed-scrolling" style={{ 
                                         animation: 'scroll-vertical 20s linear infinite',
-                                        animationPlayState: (team.newsItems && team.newsItems.length > 3) ? 'running' : 'paused'
+                                        animationPlayState: (newsItems && newsItems.length > 3) ? 'running' : 'paused'
                                     }}>
-                                        {team.newsItems && team.newsItems.length > 0 ? [...team.newsItems, ...team.newsItems].map((item, index) => (
+                                        {newsItems && newsItems.length > 0 ? [...newsItems, ...newsItems].map((item, index) => (
                                             <div key={`${item.id}-${index}`} 
                                                 className="border-b border-slate-200 p-6 hover:bg-slate-50 cursor-pointer transition-colors"
                                                 onClick={() => {
@@ -6287,7 +6287,13 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                     </div>
                                                 </div>
                                             </div>
-                                        ))}
+                                        )) : (
+                                            <div className="p-6 text-center text-slate-500">
+                                                <MessageSquare size={48} className="mx-auto mb-4 text-slate-300" />
+                                                <p>No team news available yet.</p>
+                                                <p className="text-sm mt-2">Check back later for updates!</p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
