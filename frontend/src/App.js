@@ -4843,16 +4843,106 @@ const ItemForm = ({ editingItem, setEditingItem, onSave, onCancel, itemType, gal
                 <h3 className="text-2xl font-bold mb-4">Add {itemType === 'photo' ? 'Photo' : 'Video'}</h3>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {itemType === 'photo' ? (
-                        <div>
-                            <FileUploadInput
-                                label="Photo Upload"
-                                accept="image/*"
-                                currentValue={itemData.url || ''}
-                                onChange={(url) => setItemData(prev => ({...prev, url: url}))}
-                                placeholder="Upload gallery photo"
-                                enableCrop={true}
-                                cropAspectRatio="free"
-                            />
+                        <div className="space-y-4">
+                            {/* Upload Mode Toggle */}
+                            <div className="flex items-center space-x-4 p-3 bg-slate-50 rounded-lg">
+                                <label className="flex items-center space-x-2">
+                                    <input
+                                        type="radio"
+                                        name="uploadMode"
+                                        checked={!isMultipleMode}
+                                        onChange={() => setIsMultipleMode(false)}
+                                        className="rounded"
+                                    />
+                                    <span className="text-sm font-medium">Single Photo</span>
+                                </label>
+                                <label className="flex items-center space-x-2">
+                                    <input
+                                        type="radio"
+                                        name="uploadMode"
+                                        checked={isMultipleMode}
+                                        onChange={() => {
+                                            setIsMultipleMode(true);
+                                            if (multipleImages.length === 0) {
+                                                setMultipleImages([{ url: '', caption: '' }]);
+                                            }
+                                        }}
+                                        className="rounded"
+                                    />
+                                    <span className="text-sm font-medium">Multiple Photos</span>
+                                </label>
+                            </div>
+
+                            {!isMultipleMode ? (
+                                /* Single Photo Upload */
+                                <div>
+                                    <FileUploadInput
+                                        label="Photo Upload"
+                                        accept="image/*"
+                                        currentValue={itemData.url || ''}
+                                        onChange={(url) => setItemData(prev => ({...prev, url: url}))}
+                                        placeholder="Upload gallery photo"
+                                        enableCrop={true}
+                                        cropAspectRatio="free"
+                                    />
+                                </div>
+                            ) : (
+                                /* Multiple Photos Upload */
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-lg font-semibold">Multiple Photos</h4>
+                                        <button
+                                            type="button"
+                                            onClick={addImageSlot}
+                                            className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 flex items-center"
+                                        >
+                                            <Plus className="mr-1" size={16} />
+                                            Add Photo Slot
+                                        </button>
+                                    </div>
+                                    
+                                    {multipleImages.map((image, index) => (
+                                        <div key={index} className="p-4 border rounded-lg bg-slate-50 space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <h5 className="font-medium">Photo {index + 1}</h5>
+                                                {multipleImages.length > 1 && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeImageSlot(index)}
+                                                        className="text-red-600 hover:text-red-800 p-1"
+                                                    >
+                                                        <X size={16} />
+                                                    </button>
+                                                )}
+                                            </div>
+                                            
+                                            <FileUploadInput
+                                                label={`Photo ${index + 1} Upload`}
+                                                accept="image/*"
+                                                currentValue={image.url || ''}
+                                                onChange={(url) => handleMultipleImageUpload(url, index)}
+                                                placeholder="Upload gallery photo"
+                                                enableCrop={true}
+                                                cropAspectRatio="free"
+                                            />
+                                            
+                                            <input
+                                                type="text"
+                                                value={image.caption || ''}
+                                                onChange={(e) => updateImageCaption(index, e.target.value)}
+                                                placeholder={`Caption for Photo ${index + 1} (optional)`}
+                                                className="w-full p-2 border rounded text-sm"
+                                            />
+                                        </div>
+                                    ))}
+                                    
+                                    {multipleImages.length === 0 && (
+                                        <div className="text-center py-8 text-slate-500">
+                                            <p>No photos added yet. Click "Add Photo Slot" to start.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div>
