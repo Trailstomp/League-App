@@ -7618,20 +7618,24 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                 {/* Gallery Controls */}
                                                 <div className="flex justify-center items-center mt-4 space-x-4">
                                                     <button
-                                                        onClick={() => {
+                                                        onClick={(e) => {
                                                             const container = document.getElementById(`gallery-${gallery.id}`);
                                                             if (container) {
-                                                                const currentState = container.style.animationPlayState;
+                                                                const currentState = window.getComputedStyle(container).animationPlayState;
                                                                 if (currentState === 'paused') {
                                                                     container.style.animationPlayState = 'running';
+                                                                    e.target.innerHTML = '⏸️ Pause';
+                                                                    e.target.className = 'bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition-colors';
                                                                 } else {
                                                                     container.style.animationPlayState = 'paused';
+                                                                    e.target.innerHTML = '▶️ Play';
+                                                                    e.target.className = 'bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors';
                                                                 }
                                                             }
                                                         }}
-                                                        className="bg-slate-600 text-white px-3 py-1 rounded text-sm hover:bg-slate-700 transition-colors"
+                                                        className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition-colors"
                                                     >
-                                                        ⏯️ Play/Pause
+                                                        ⏸️ Pause
                                                     </button>
                                                     <div className="flex space-x-1">
                                                         {gallery.items.map((_, index) => (
