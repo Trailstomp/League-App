@@ -9811,7 +9811,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
         }
     };
 
-    // Use new permission system
+    // Use new permission system with consolidated structure
     const adminTabs = [
         { 
             id: 'dashboard', 
@@ -9832,48 +9832,62 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
             label: 'Players', 
             icon: <UserCheck size={16} />, 
             permissions: ['players.view'],
-            description: 'Manage player rosters'
+            description: 'Manage players and roster'
         },
         { 
             id: 'schedule', 
             label: 'Schedule & Events', 
             icon: <Calendar size={16} />, 
             permissions: ['events.view'],
-            description: 'Calendar and event management'
-        },
-        { 
-            id: 'media', 
-            label: 'Media Gallery', 
-            icon: <ImageIcon size={16} />, 
-            permissions: ['media.view'],
-            description: 'Photos and videos'
-        },
-        { 
-            id: 'social', 
-            label: 'Social Media', 
-            icon: <Share2 size={16} />, 
-            permissions: ['media.edit'],
-            description: 'Social media management and cross-posting'
+            description: 'Manage league schedule and events'
         },
         { 
             id: 'game_ticker', 
             label: 'Game Ticker', 
             icon: <BarChart2 size={16} />, 
             permissions: ['events.edit'],
-            description: 'Manage game results ticker'
+            description: 'Manage live scores and game ticker'
+        },
+        { 
+            id: 'media', 
+            label: 'Media Gallery', 
+            icon: <ImageIcon size={16} />, 
+            permissions: ['media.view'],
+            description: 'Manage photos and videos'
+        },
+        { 
+            id: 'social', 
+            label: 'Social Media', 
+            icon: <Share2 size={16} />, 
+            permissions: ['media.edit'],
+            description: 'Manage social media integration'
+        },
+        { 
+            id: 'website', 
+            label: 'Website Design', 
+            icon: <Palette size={16} />, 
+            permissions: ['system.settings'],
+            description: 'Customize website appearance and styling'
+        },
+        { 
+            id: 'api', 
+            label: 'API & Integrations', 
+            icon: <Globe size={16} />, 
+            permissions: ['system.settings'],
+            description: 'API credentials and third-party integrations'
         },
         { 
             id: 'users', 
-            label: 'Users & Security', 
-            icon: <Shield size={16} />, 
-            permissions: ['users.view', 'system.roles'],
-            description: 'User management and roles'
+            label: 'User Management', 
+            icon: <UserPlus size={16} />, 
+            permissions: ['users.view'],
+            description: 'Manage user access and permissions'
         },
         { 
-            id: 'invitations', 
+            id: 'invites', 
             label: 'Invitations', 
             icon: <Mail size={16} />, 
-            permissions: ['system.invitations'],
+            permissions: ['users.create'],
             description: 'Send invites and manage access requests'
         },
         { 
@@ -9881,7 +9895,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
             label: 'League Settings', 
             icon: <Settings size={16} />, 
             permissions: ['system.settings'],
-            description: 'Website style and league info'
+            description: 'Configure league information and general settings'
         }
     ];
 
