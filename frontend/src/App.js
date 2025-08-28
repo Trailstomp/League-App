@@ -10514,6 +10514,45 @@ function App() {
         }
     }, [websiteStyle, dataLoading]);
 
+    // Hash routing implementation
+    useEffect(() => {
+        const handleHashChange = () => {
+            const hash = window.location.hash.substring(1); // Remove the '#'
+            if (hash.startsWith('team=')) {
+                const teamId = hash.replace('team=', '');
+                const team = teams.find(t => t.id === teamId);
+                if (team) {
+                    setPage('team');
+                    setSelectedTeam(teamId);
+                }
+            } else if (hash) {
+                // Handle other page navigation
+                setPage(hash);
+                setSelectedTeam(null);
+            }
+        };
+
+        // Listen for hash changes
+        window.addEventListener('hashchange', handleHashChange);
+        
+        // Parse initial hash on mount
+        handleHashChange();
+
+        return () => {
+            window.removeEventListener('hashchange', handleHashChange);
+        };
+    }, [teams]);
+
+    // Update hash when navigation changes
+    const navigate = (pageName, teamId = null) => {
+        if (pageName === 'team' && teamId) {
+            window.location.hash = `team=${teamId}`;
+        } else {
+            window.location.hash = pageName;
+        }
+        // State will be updated by hashchange listener
+    };
+
     // Load news data
     useEffect(() => {
         const loadNewsData = async () => {
