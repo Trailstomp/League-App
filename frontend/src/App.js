@@ -7516,20 +7516,21 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                         {gallery.items && gallery.items.length > 0 ? (
                                             <div className="relative group">
                                                 {/* Navigation Arrows */}
-                                                {gallery.items.length > 3 && (
+                                                {gallery.items.length > 1 && (
                                                     <>
                                                         <button
                                                             onClick={() => {
                                                                 const container = document.getElementById(`gallery-${gallery.id}`);
                                                                 if (container) {
+                                                                    container.style.animationPlayState = 'paused';
                                                                     const currentTransform = container.style.transform || 'translateX(0px)';
                                                                     const currentX = parseInt(currentTransform.match(/-?\d+/) || [0])[0];
                                                                     const newX = Math.min(currentX + 296, 0);
                                                                     container.style.transform = `translateX(${newX}px)`;
-                                                                    container.style.animationPlayState = 'paused';
                                                                 }
                                                             }}
-                                                            className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-opacity opacity-0 group-hover:opacity-100"
+                                                            className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-blue-600 bg-opacity-80 text-white p-2 rounded-full hover:bg-opacity-100 transition-all shadow-lg"
+                                                            title="Previous image"
                                                         >
                                                             <ChevronLeft size={20} />
                                                         </button>
@@ -7537,15 +7538,16 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                             onClick={() => {
                                                                 const container = document.getElementById(`gallery-${gallery.id}`);
                                                                 if (container) {
+                                                                    container.style.animationPlayState = 'paused';
                                                                     const currentTransform = container.style.transform || 'translateX(0px)';
                                                                     const currentX = parseInt(currentTransform.match(/-?\d+/) || [0])[0];
                                                                     const maxX = -(gallery.items.length * 296);
                                                                     const newX = currentX - 296;
                                                                     container.style.transform = `translateX(${newX >= maxX ? newX : 0}px)`;
-                                                                    container.style.animationPlayState = 'paused';
                                                                 }
                                                             }}
-                                                            className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-opacity opacity-0 group-hover:opacity-100"
+                                                            className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-blue-600 bg-opacity-80 text-white p-2 rounded-full hover:bg-opacity-100 transition-all shadow-lg"
+                                                            title="Next image"
                                                         >
                                                             <ChevronRight size={20} />
                                                         </button>
