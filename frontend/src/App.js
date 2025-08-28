@@ -6158,6 +6158,9 @@ const TeamManager = ({ teams, setTeams }) => {
                         currentValue={editingTeam.logo || ''}
                         onChange={(url) => setEditingTeam({...editingTeam, logo: url})}
                         placeholder="Upload team logo"
+                        enableCrop={true}
+                        cropAspectRatio="square"
+                        cropContext="square"
                     />
                     
                     <div className="flex justify-end space-x-2">
