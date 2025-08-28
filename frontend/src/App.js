@@ -7603,6 +7603,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                                 )}
                                                             </div>
                                                         ))}
+                                                    </div>
                                                 </div>
                                                 
                                                 {/* Gallery Controls */}
