@@ -2277,6 +2277,8 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                                             setEditingNewsItem(prev => ({...prev, thumbnailUrl: url}));
                                                         }}
                                                         placeholder="Upload thumbnail image"
+                                                        enableCrop={true}
+                                                        cropAspectRatio="16:9"
                                                     />
                                                 </div>
                                             )}
