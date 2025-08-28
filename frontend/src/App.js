@@ -496,27 +496,18 @@ const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder, e
     };
 
     const openCropTool = () => {
+        console.log('openCropTool called with currentValue:', currentValue);
+        console.log('accept includes image:', accept.includes('image'));
+        
         if (currentValue && accept.includes('image')) {
-            console.log('Opening crop tool for existing image:', currentValue);
+            console.log('Opening crop tool immediately for existing image:', currentValue);
             
-            // Test if the current image URL is valid before opening crop tool
-            const testImg = new window.Image();
-            testImg.onload = () => {
-                console.log('Image URL is valid, opening crop tool');
-                setOriginalImageUrl(currentValue);
-                setShowCropTool(true);
-            };
-            testImg.onerror = () => {
-                console.error('Current image URL is invalid:', currentValue);
-                alert('The current image cannot be edited. Please upload a new image.');
-            };
-            
-            // Handle CORS appropriately
-            if (!currentValue.startsWith('blob:') && !currentValue.startsWith('data:')) {
-                testImg.crossOrigin = "anonymous";
-            }
-            
-            testImg.src = currentValue;
+            // Skip validation for now and open immediately to test
+            setOriginalImageUrl(currentValue);
+            setShowCropTool(true);
+            console.log('Crop tool state updated - showCropTool should now be true');
+        } else {
+            console.log('Cannot open crop tool - no currentValue or not image type');
         }
     };
 
