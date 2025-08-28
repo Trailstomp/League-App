@@ -4790,16 +4790,18 @@ const ItemForm = ({ editingItem, setEditingItem, onSave, onCancel, itemType, gal
         e.preventDefault();
         
         if (isMultipleMode && multipleImages.length > 0) {
-            // Save multiple images
+            // Save multiple images - call onSave for each image separately
             multipleImages.forEach((image, index) => {
-                onSave({
-                    id: Date.now() + index,
-                    type: itemType,
-                    galleryId: galleryId,
-                    addedAt: new Date().toISOString(),
-                    url: image.url,
-                    caption: image.caption || itemData.caption || `Image ${index + 1}`
-                });
+                setTimeout(() => {
+                    onSave({
+                        id: Date.now() + index,
+                        type: itemType,
+                        galleryId: galleryId,
+                        addedAt: new Date().toISOString(),
+                        url: image.url,
+                        caption: image.caption || `Image ${index + 1}`
+                    });
+                }, index * 100); // Small delay to ensure unique IDs
             });
         } else {
             // Save single image (original behavior)
