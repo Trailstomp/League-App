@@ -306,6 +306,82 @@ const Icon = ({ name, ...props }) => {
   return IconComponent ? <IconComponent {...props} /> : null;
 };
 
+// Enhanced Image Component with Fit Options
+const EnhancedImage = ({ 
+    src, 
+    alt, 
+    className = '', 
+    fit = 'cover', // cover, contain, fill, scale-down, none
+    aspectRatio = null, // e.g., '16/9', '1/1', '4/3'
+    fallback = null,
+    showFitControls = false,
+    onFitChange = null,
+    ...props 
+}) => {
+    const [currentFit, setCurrentFit] = useState(fit);
+    const [imageError, setImageError] = useState(false);
+    
+    const fitOptions = [
+        { value: 'cover', label: 'Cover (Crop)', icon: '📐' },
+        { value: 'contain', label: 'Contain (Fit)', icon: '📦' },
+        { value: 'fill', label: 'Fill (Stretch)', icon: '↔️' },
+        { value: 'scale-down', label: 'Scale Down', icon: '⬇️' },
+        { value: 'none', label: 'Original', icon: '🖼️' }
+    ];
+    
+    const handleFitChange = (newFit) => {
+        setCurrentFit(newFit);
+        if (onFitChange) onFitChange(newFit);
+    };
+    
+    const imageStyle = {
+        objectFit: currentFit,
+        ...(aspectRatio && { aspectRatio: aspectRatio }),
+        ...props.style
+    };
+    
+    const imageSrc = imageError ? 
+        (fallback || `https://ui-avatars.com/api/?name=${alt?.replace(' ', '+')}&background=random&size=400`) : 
+        src;
+    
+    return (
+        <div className={`relative ${className}`} {...props}>
+            <img
+                src={imageSrc}
+                alt={alt}
+                style={imageStyle}
+                className="w-full h-full transition-all duration-300"
+                onError={() => setImageError(true)}
+                onLoad={() => setImageError(false)}
+            />
+            
+            {/* Fit Controls Overlay */}
+            {showFitControls && (
+                <div className="absolute top-2 right-2 z-10">
+                    <div className="bg-black bg-opacity-75 rounded-lg p-2">
+                        <div className="flex flex-wrap gap-1">
+                            {fitOptions.map((option) => (
+                                <button
+                                    key={option.value}
+                                    onClick={() => handleFitChange(option.value)}
+                                    className={`px-2 py-1 text-xs rounded transition-colors ${
+                                        currentFit === option.value
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-gray-600 text-gray-200 hover:bg-gray-500'
+                                    }`}
+                                    title={option.label}
+                                >
+                                    {option.icon}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 // RSVP Management Component
 const RSVPManager = ({ event, currentUser, onUpdateRSVP, users, showFullList = false }) => {
     const [showResponses, setShowResponses] = useState(false);
