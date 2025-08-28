@@ -9286,6 +9286,7 @@ function App() {
     // News system state (moved from NewHomePage)
     const [newsItems, setNewsItems] = useState([]);
     const [selectedNewsItem, setSelectedNewsItem] = useState(null);
+    const [newsLoading, setNewsLoading] = useState(true);
     const [websiteStyle, setWebsiteStyle] = useState({
         logoUrl: MlblLogo,
         primaryColor: '#1e293b', // slate-800
