@@ -1590,18 +1590,38 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
     // Initialize image and canvas
     useEffect(() => {
         if (imageUrl) {
-            const img = new window.Image(); // Use window.Image to avoid conflicts
+            console.log('Loading image:', imageUrl);
+            setIsLoading(true);
             
-            // Handle CORS and different image sources better
-            if (imageUrl.startsWith('blob:') || imageUrl.startsWith('data:')) {
-                // Local files and data URLs don't need CORS
-                img.crossOrigin = null;
-            } else {
-                // External URLs may need CORS handling
-                img.crossOrigin = "anonymous";
-            }
+            const loadImage = (url, useCors = true) => {
+                return new Promise((resolve, reject) => {
+                    const img = new window.Image();
+                    
+                    // Handle CORS based on URL type and flag
+                    if (useCors && !url.startsWith('blob:') && !url.startsWith('data:')) {
+                        img.crossOrigin = "anonymous";
+                    }
+                    
+                    const timeout = setTimeout(() => {
+                        reject(new Error('Image loading timeout'));
+                    }, 15000); // 15 second timeout
+                    
+                    img.onload = () => {
+                        clearTimeout(timeout);
+                        console.log('Image loaded successfully');
+                        resolve(img);
+                    };
+                    
+                    img.onerror = (e) => {
+                        clearTimeout(timeout);
+                        reject(new Error(`Failed to load image: ${e.message || 'Unknown error'}`));
+                    };
+                    
+                    img.src = url;
+                });
+            };
             
-            img.onload = () => {
+            const initializeCanvas = (img) => {
                 imageRef.current = img;
                 
                 // Set canvas size based on container
@@ -1655,118 +1675,28 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                         if (canvasRef.current && imageRef.current) {
                             drawCanvas();
                         }
-                    }, 0);
+                    }, 10);
                 }
             };
             
-            img.onerror = (e) => {
-                console.error('Failed to load image:', e, 'URL:', imageUrl);
-                
-                // Try loading without CORS as fallback
-                if (img.crossOrigin) {
-                    console.log('Retrying without CORS...');
-                    const fallbackImg = new window.Image();
-                    fallbackImg.onload = () => {
-                        console.log('Fallback image loaded successfully');
-                        imageRef.current = fallbackImg;
-                        
-                        // Same initialization logic as main onload
-                        const canvas = canvasRef.current;
-                        if (canvas) {
-                            const container = canvas.parentElement;
-                            const maxWidth = Math.min(container.clientWidth - 32, 800);
-                            const maxHeight = Math.min(container.clientHeight - 32, 600);
-                            
-                            const imageAspect = fallbackImg.width / fallbackImg.height;
-                            let displayWidth, displayHeight;
-                            
-                            if (imageAspect > maxWidth / maxHeight) {
-                                displayWidth = maxWidth;
-                                displayHeight = maxWidth / imageAspect;
-                            } else {
-                                displayHeight = maxHeight;
-                                displayWidth = maxHeight * imageAspect;
-                            }
-                            
-                            setImageScale(1);
-                            setImagePan({ x: 0, y: 0 });
-                            
-                            const cropSize = Math.min(displayWidth, displayHeight) * 0.6;
-                            let cropWidth = cropSize;
-                            let cropHeight = cropSize;
-                            
-                            const ratioConfig = aspectRatios[currentAspectRatio] || aspectRatios['free'];
-                            if (ratioConfig && ratioConfig.ratio) {
-                                cropHeight = cropWidth / ratioConfig.ratio;
-                            }
-                            
-                            const newCropArea = {
-                                x: (displayWidth - cropWidth) / 2,
-                                y: (displayHeight - cropHeight) / 2,
-                                width: cropWidth,
-                                height: cropHeight
-                            };
-                            
-                            setCanvasSize({ width: displayWidth, height: displayHeight });
-                            setCropArea(newCropArea);
-                            setIsLoading(false);
-                            
-                            setTimeout(() => {
-                                if (canvasRef.current && imageRef.current) {
-                                    drawCanvas();
-                                }
-                            }, 0);
-                        }
-                    };
-                    fallbackImg.onerror = () => {
-                        console.error('Image loading failed completely');
-                        setIsLoading(false);
-                        alert('Failed to load image. The image may be corrupted or the URL is invalid. Please try uploading a new image.');
-                    };
-                    // Set a timeout for the fallback loading
-                    const timeout = setTimeout(() => {
-                        console.error('Image loading timed out');
-                        setIsLoading(false);
-                        alert('Image loading timed out. Please try a different image.');
-                    }, 10000); // 10 second timeout
-                    
-                    fallbackImg.onload = () => {
-                        clearTimeout(timeout);
-                        fallbackImg.onload(); // Call the original onload
-                    };
-                    fallbackImg.onerror = () => {
-                        clearTimeout(timeout);
-                        fallbackImg.onerror(); // Call the original onerror
-                    };
-                    
-                    fallbackImg.src = imageUrl;
-                } else {
+            // Try loading with CORS first, then without if it fails
+            loadImage(imageUrl, true)
+                .then(initializeCanvas)
+                .catch((error) => {
+                    console.warn('CORS loading failed, retrying without CORS:', error.message);
+                    return loadImage(imageUrl, false);
+                })
+                .then((img) => {
+                    if (img) {
+                        console.log('Fallback loading successful');
+                        initializeCanvas(img);
+                    }
+                })
+                .catch((error) => {
+                    console.error('All image loading attempts failed:', error.message);
                     setIsLoading(false);
-                    alert('Failed to load image. Please try uploading a new image.');
-                }
-            };
-            
-            // Set a timeout for the main image loading
-            const mainTimeout = setTimeout(() => {
-                console.error('Main image loading timed out');
-                setIsLoading(false);
-                alert('Image loading timed out. Please try a different image.');
-            }, 10000); // 10 second timeout
-            
-            // Clear timeout on successful load
-            const originalOnLoad = img.onload;
-            img.onload = () => {
-                clearTimeout(mainTimeout);
-                originalOnLoad();
-            };
-            
-            const originalOnError = img.onerror;
-            img.onerror = (e) => {
-                clearTimeout(mainTimeout);
-                originalOnError(e);
-            };
-            
-            img.src = imageUrl;
+                    alert(`Failed to load image: ${error.message}\n\nPlease try:\n• Uploading a new image file\n• Using a different image URL\n• Checking your internet connection`);
+                });
         }
     }, [imageUrl]);
 
