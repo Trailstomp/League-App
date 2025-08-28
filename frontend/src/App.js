@@ -899,7 +899,18 @@ const getLogoStyle = (websiteStyle) => {
 };
 
 // File Upload Component
-const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder, enableCrop = false, cropAspectRatio = 'free', cropContext = 'header' }) => {
+const FileUploadInput = ({ 
+    label, 
+    accept, 
+    currentValue, 
+    onChange, 
+    placeholder, 
+    enableCrop = false, 
+    cropAspectRatio = 'free', 
+    cropContext = 'header',
+    showAspectRatioPresets = false,
+    allowCustomAspectRatio = false 
+}) => {
     const [isDragging, setIsDragging] = useState(false);
     const [showCropTool, setShowCropTool] = useState(false);
     const [originalImageUrl, setOriginalImageUrl] = useState(null);
