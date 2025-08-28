@@ -7808,7 +7808,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
         { 
             id: 'media', 
             label: 'Media Gallery', 
-            icon: <Image size={16} />, 
+            icon: <ImageIcon size={16} />, 
             permissions: ['media.view'],
             description: 'Photos and videos'
         },
