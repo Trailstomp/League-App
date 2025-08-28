@@ -1705,11 +1705,15 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
     const drawCanvas = () => {
         const canvas = canvasRef.current;
         const img = imageRef.current;
-        if (!canvas || !img) return;
+        if (!canvas || !img || canvasSize.width === 0 || canvasSize.height === 0) return;
 
-        const ctx = canvas.getContext('2d');
-        canvas.width = canvasSize.width;
-        canvas.height = canvasSize.height;
+        try {
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            
+            // Set canvas size
+            canvas.width = canvasSize.width;
+            canvas.height = canvasSize.height;
 
         // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
