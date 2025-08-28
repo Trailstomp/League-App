@@ -529,10 +529,22 @@ const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder, e
                     className="hidden"
                 />
                 
-                {currentValue ? (
+                {isUploading ? (
+                    <div className="py-4">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+                        <p className="text-sm text-blue-600">Processing image...</p>
+                    </div>
+                ) : currentValue ? (
                     <div className="space-y-2">
                         {accept.includes('image') ? (
-                            <img src={currentValue} alt="Preview" className="max-w-full h-32 mx-auto rounded object-cover" />
+                            <img 
+                                src={currentValue} 
+                                alt="Preview" 
+                                className="max-w-full h-32 mx-auto rounded object-cover"
+                                onError={(e) => {
+                                    e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2Y3ZjdmNyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5Ij5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+';
+                                }}
+                            />
                         ) : accept.includes('video') ? (
                             <div className="bg-slate-200 h-32 flex items-center justify-center rounded">
                                 <span className="text-slate-600">Video selected</span>
