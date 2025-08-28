@@ -7010,6 +7010,9 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                     currentValue={style.bannerLogo || ''}
                                     onChange={(url) => setStyle(prev => ({...prev, bannerLogo: url}))}
                                     placeholder="Upload logo for header or enter URL"
+                                    enableCrop={true}
+                                    cropAspectRatio="header"
+                                    cropContext="header"
                                 />
                             </div>
 
