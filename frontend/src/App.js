@@ -1608,7 +1608,6 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                     
                     img.onload = () => {
                         clearTimeout(timeout);
-                        console.log('Image loaded successfully');
                         resolve(img);
                     };
                     
