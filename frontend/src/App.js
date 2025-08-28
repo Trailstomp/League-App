@@ -7553,47 +7553,47 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                     >
                                                         {/* Duplicate items for seamless scrolling - no gaps */}
                                                         {[...gallery.items, ...gallery.items].map((item, index) => (
-                                                        <div key={`${item.id}-${index}`} className="flex-shrink-0 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" style={{width: '280px'}}>
-                                                            {gallery.type === 'photo' ? (
-                                                                <div 
-                                                                    className="aspect-square overflow-hidden relative group"
-                                                                    onClick={() => setSelectedImagePopup({
-                                                                        url: item.url,
-                                                                        caption: item.caption,
-                                                                        galleryName: gallery.name
-                                                                    })}
-                                                                >
-                                                                    <img 
-                                                                        src={item.url} 
-                                                                        alt={item.caption || gallery.name}
-                                                                        className="w-full h-full object-cover hover:scale-105 transition-transform"
-                                                                    />
-                                                                    {/* Hover overlay */}
-                                                                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity flex items-center justify-center">
-                                                                        <div className="text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                            <Eye size={32} />
+                                                            <div key={`${item.id}-${index}`} className="flex-shrink-0 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" style={{width: '280px', marginRight: '16px'}}>
+                                                                {gallery.type === 'photo' ? (
+                                                                    <div 
+                                                                        className="aspect-square overflow-hidden relative group"
+                                                                        onClick={() => setSelectedImagePopup({
+                                                                            url: item.url,
+                                                                            caption: item.caption,
+                                                                            galleryName: gallery.name
+                                                                        })}
+                                                                    >
+                                                                        <img 
+                                                                            src={item.url} 
+                                                                            alt={item.caption || gallery.name}
+                                                                            className="w-full h-full object-cover hover:scale-105 transition-transform"
+                                                                        />
+                                                                        {/* Hover overlay */}
+                                                                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity flex items-center justify-center">
+                                                                            <div className="text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                                <Eye size={32} />
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                            ) : (
-                                                                <div className="aspect-video">
-                                                                    <iframe 
-                                                                        src={item.url} 
-                                                                        title={item.caption || gallery.name}
-                                                                        frameBorder="0" 
-                                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                                                        allowFullScreen 
-                                                                        className="w-full h-full"
-                                                                    />
-                                                                </div>
-                                                            )}
-                                                            {item.caption && (
-                                                                <div className="p-3">
-                                                                    <p className="text-slate-600 text-sm line-clamp-2">{item.caption}</p>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    ))}
+                                                                ) : (
+                                                                    <div className="aspect-video">
+                                                                        <iframe 
+                                                                            src={item.url} 
+                                                                            title={item.caption || gallery.name}
+                                                                            frameBorder="0" 
+                                                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                                            allowFullScreen 
+                                                                            className="w-full h-full"
+                                                                        />
+                                                                    </div>
+                                                                )}
+                                                                {item.caption && (
+                                                                    <div className="p-3">
+                                                                        <p className="text-slate-600 text-sm line-clamp-2">{item.caption}</p>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        ))}
                                                 </div>
                                                 
                                                 {/* Gallery Controls */}
