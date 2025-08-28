@@ -1529,140 +1529,173 @@ const SocialCard = ({ entity }) => {
 };
 
 // --- IMAGE CROP TOOL DISABLED ---
-// Advanced Image Cropping Tool - Re-implemented without lucide-react dependencies
-const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio = 'free', cropContext = 'general' }) => {
+// Advanced Image Cropping Tool - Fixed implementation
+const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectRatio = 'free' }) => {
     const canvasRef = useRef(null);
+    const imageRef = useRef(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [image, setImage] = useState(null);
-    const [cropArea, setCropArea] = useState({ x: 0, y: 0, width: 200, height: 200 });
+    const [cropArea, setCropArea] = useState({ x: 50, y: 50, width: 200, height: 200 });
     const [isDragging, setIsDragging] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
-    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-    const [scale, setScale] = useState(1);
-    const [pan, setPan] = useState({ x: 0, y: 0 });
+    const [resizeHandle, setResizeHandle] = useState('');
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0, cropX: 0, cropY: 0 });
+    const [currentAspectRatio, setCurrentAspectRatio] = useState(initialAspectRatio);
+    const [canvasSize, setCanvasSize] = useState({ width: 600, height: 400 });
 
-    // CSS-based icons as SVG strings
-    const icons = {
-        scissors: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="m21 12-7-7v4L9.5 14.5"/><path d="m21 12-7 7v-4L9.5 9.5"/></svg>`,
-        rotateLeft: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 2v6h6M2.66 15.57a10 10 0 1 0 .57-8.38"/></svg>`,
-        zoomIn: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M11 8v6M8 11h6"/></svg>`,
-        zoomOut: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M8 11h6"/></svg>`,
-        check: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>`,
-        x: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
-    };
-
-    const IconButton = ({ iconName, onClick, title, className = "" }) => (
-        <button
-            onClick={onClick}
-            title={title}
-            className={`p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors ${className}`}
-            dangerouslySetInnerHTML={{ __html: icons[iconName] }}
-        />
-    );
-
-    // Aspect ratio presets
+    // Aspect ratio configurations with proper labels
     const aspectRatios = {
-        'free': null,
-        '1:1': 1,
-        '16:9': 16/9,
-        '4:3': 4/3,
-        '3:2': 3/2,
-        '2:1': 2/1
+        'free': { ratio: null, label: 'Free Form' },
+        '1:1': { ratio: 1, label: '1:1 Square' },
+        '16:9': { ratio: 16/9, label: '16:9 Widescreen' },
+        '4:3': { ratio: 4/3, label: '4:3 Standard' },
+        '3:2': { ratio: 3/2, label: '3:2 Photo' },
+        '2:1': { ratio: 2/1, label: '2:1 Banner' }
     };
 
+    // Initialize image and canvas
     useEffect(() => {
         if (imageUrl) {
-            const img = new Image();
+            const img = new window.Image(); // Use window.Image to avoid conflicts
+            img.crossOrigin = "anonymous";
             img.onload = () => {
-                setImage(img);
+                imageRef.current = img;
                 setIsLoading(false);
                 
-                // Initialize crop area in center
+                // Set canvas size based on container
                 const canvas = canvasRef.current;
                 if (canvas) {
-                    const containerWidth = canvas.offsetWidth;
-                    const containerHeight = canvas.offsetHeight;
+                    const container = canvas.parentElement;
+                    const maxWidth = Math.min(container.clientWidth - 32, 800);
+                    const maxHeight = Math.min(container.clientHeight - 32, 600);
                     
-                    let cropWidth = Math.min(200, containerWidth * 0.5);
-                    let cropHeight = Math.min(200, containerHeight * 0.5);
+                    // Calculate display size maintaining aspect ratio
+                    const imageAspect = img.width / img.height;
+                    let displayWidth, displayHeight;
                     
-                    // Apply aspect ratio if specified
-                    const ratio = aspectRatios[aspectRatio];
-                    if (ratio) {
-                        cropHeight = cropWidth / ratio;
+                    if (imageAspect > maxWidth / maxHeight) {
+                        displayWidth = maxWidth;
+                        displayHeight = maxWidth / imageAspect;
+                    } else {
+                        displayHeight = maxHeight;
+                        displayWidth = maxHeight * imageAspect;
+                    }
+                    
+                    setCanvasSize({ width: displayWidth, height: displayHeight });
+                    
+                    // Initialize crop area in center
+                    const cropSize = Math.min(displayWidth, displayHeight) * 0.6;
+                    let cropWidth = cropSize;
+                    let cropHeight = cropSize;
+                    
+                    // Apply initial aspect ratio
+                    const ratioConfig = aspectRatios[currentAspectRatio];
+                    if (ratioConfig.ratio) {
+                        cropHeight = cropWidth / ratioConfig.ratio;
                     }
                     
                     setCropArea({
-                        x: (containerWidth - cropWidth) / 2,
-                        y: (containerHeight - cropHeight) / 2,
+                        x: (displayWidth - cropWidth) / 2,
+                        y: (displayHeight - cropHeight) / 2,
                         width: cropWidth,
                         height: cropHeight
                     });
                 }
-                drawCanvas();
+            };
+            img.onerror = () => {
+                console.error('Failed to load image');
+                setIsLoading(false);
             };
             img.src = imageUrl;
         }
-    }, [imageUrl, aspectRatio]);
+    }, [imageUrl]);
 
+    // Draw canvas whenever crop area changes
     useEffect(() => {
         drawCanvas();
-    }, [image, cropArea, scale, pan]);
+    }, [cropArea, canvasSize]);
 
     const drawCanvas = () => {
         const canvas = canvasRef.current;
-        if (!canvas || !image) return;
+        const img = imageRef.current;
+        if (!canvas || !img) return;
 
         const ctx = canvas.getContext('2d');
-        const { width, height } = canvas.getBoundingClientRect();
-        
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = canvasSize.width;
+        canvas.height = canvasSize.height;
 
-        ctx.clearRect(0, 0, width, height);
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Calculate image position and size with scaling
-        const imageAspect = image.width / image.height;
-        const canvasAspect = width / height;
-        
-        let drawWidth, drawHeight, drawX, drawY;
-        
-        if (imageAspect > canvasAspect) {
-            drawHeight = height * scale;
-            drawWidth = drawHeight * imageAspect;
-        } else {
-            drawWidth = width * scale;
-            drawHeight = drawWidth / imageAspect;
-        }
-        
-        drawX = (width - drawWidth) / 2 + pan.x;
-        drawY = (height - drawHeight) / 2 + pan.y;
+        // Draw image to fit canvas
+        ctx.drawImage(img, 0, 0, canvasSize.width, canvasSize.height);
 
-        // Draw the image
-        ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
-
-        // Draw overlay
+        // Draw dark overlay
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillRect(0, 0, width, height);
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Clear crop area
+        // Clear crop area (show original image)
         ctx.clearRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
-        ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+        ctx.drawImage(img, 0, 0, canvasSize.width, canvasSize.height);
 
         // Draw crop border
         ctx.strokeStyle = '#3b82f6';
         ctx.lineWidth = 2;
+        ctx.setLineDash([]);
         ctx.strokeRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
 
-        // Draw corner handles
-        const handleSize = 8;
+        // Draw resize handles
+        const handleSize = 10;
         ctx.fillStyle = '#3b82f6';
         
         // Corner handles
-        ctx.fillRect(cropArea.x - handleSize/2, cropArea.y - handleSize/2, handleSize, handleSize);
-        ctx.fillRect(cropArea.x + cropArea.width - handleSize/2, cropArea.y - handleSize/2, handleSize, handleSize);
-        ctx.fillRect(cropArea.x - handleSize/2, cropArea.y + cropArea.height - handleSize/2, handleSize, handleSize);
-        ctx.fillRect(cropArea.x + cropArea.width - handleSize/2, cropArea.y + cropArea.height - handleSize/2, handleSize, handleSize);
+        const corners = [
+            { x: cropArea.x, y: cropArea.y }, // top-left
+            { x: cropArea.x + cropArea.width, y: cropArea.y }, // top-right
+            { x: cropArea.x, y: cropArea.y + cropArea.height }, // bottom-left
+            { x: cropArea.x + cropArea.width, y: cropArea.y + cropArea.height } // bottom-right
+        ];
+        
+        corners.forEach(corner => {
+            ctx.fillRect(corner.x - handleSize/2, corner.y - handleSize/2, handleSize, handleSize);
+        });
+
+        // Side handles (only if not maintaining aspect ratio)
+        if (!aspectRatios[currentAspectRatio].ratio) {
+            const sides = [
+                { x: cropArea.x + cropArea.width/2, y: cropArea.y }, // top
+                { x: cropArea.x + cropArea.width, y: cropArea.y + cropArea.height/2 }, // right
+                { x: cropArea.x + cropArea.width/2, y: cropArea.y + cropArea.height }, // bottom
+                { x: cropArea.x, y: cropArea.y + cropArea.height/2 } // left
+            ];
+            
+            sides.forEach(side => {
+                ctx.fillRect(side.x - handleSize/2, side.y - handleSize/2, handleSize, handleSize);
+            });
+        }
+    };
+
+    const getHandleType = (x, y) => {
+        const handleSize = 15; // Slightly larger for easier interaction
+        const { x: cropX, y: cropY, width, height } = cropArea;
+        
+        // Check corners first
+        if (Math.abs(x - cropX) < handleSize && Math.abs(y - cropY) < handleSize) return 'nw';
+        if (Math.abs(x - (cropX + width)) < handleSize && Math.abs(y - cropY) < handleSize) return 'ne';
+        if (Math.abs(x - cropX) < handleSize && Math.abs(y - (cropY + height)) < handleSize) return 'sw';
+        if (Math.abs(x - (cropX + width)) < handleSize && Math.abs(y - (cropY + height)) < handleSize) return 'se';
+        
+        // Check sides (only if free form)
+        if (!aspectRatios[currentAspectRatio].ratio) {
+            if (Math.abs(x - (cropX + width/2)) < handleSize && Math.abs(y - cropY) < handleSize) return 'n';
+            if (Math.abs(x - (cropX + width)) < handleSize && Math.abs(y - (cropY + height/2)) < handleSize) return 'e';
+            if (Math.abs(x - (cropX + width/2)) < handleSize && Math.abs(y - (cropY + height)) < handleSize) return 's';
+            if (Math.abs(x - cropX) < handleSize && Math.abs(y - (cropY + height/2)) < handleSize) return 'w';
+        }
+        
+        // Check if inside crop area (for dragging)
+        if (x >= cropX && x <= cropX + width && y >= cropY && y <= cropY + height) return 'move';
+        
+        return null;
     };
 
     const handleMouseDown = (e) => {
@@ -1673,17 +1706,29 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio = 'free', cropC
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        // Check if clicking on crop area
-        if (x >= cropArea.x && x <= cropArea.x + cropArea.width &&
-            y >= cropArea.y && y <= cropArea.y + cropArea.height) {
+        const handleType = getHandleType(x, y);
+        
+        if (handleType === 'move') {
             setIsDragging(true);
-            setDragStart({ x: x - cropArea.x, y: y - cropArea.y });
+            setDragStart({ 
+                x, y, 
+                cropX: cropArea.x, 
+                cropY: cropArea.y 
+            });
+        } else if (handleType && handleType !== 'move') {
+            setIsResizing(true);
+            setResizeHandle(handleType);
+            setDragStart({ 
+                x, y, 
+                cropX: cropArea.x, 
+                cropY: cropArea.y,
+                cropWidth: cropArea.width,
+                cropHeight: cropArea.height
+            });
         }
     };
 
     const handleMouseMove = (e) => {
-        if (!isDragging) return;
-
         const canvas = canvasRef.current;
         if (!canvas) return;
 
@@ -1691,45 +1736,121 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio = 'free', cropC
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        setCropArea(prev => ({
-            ...prev,
-            x: Math.max(0, Math.min(x - dragStart.x, canvas.width - prev.width)),
-            y: Math.max(0, Math.min(y - dragStart.y, canvas.height - prev.height))
-        }));
+        if (isDragging) {
+            const deltaX = x - dragStart.x;
+            const deltaY = y - dragStart.y;
+            
+            const newX = Math.max(0, Math.min(dragStart.cropX + deltaX, canvasSize.width - cropArea.width));
+            const newY = Math.max(0, Math.min(dragStart.cropY + deltaY, canvasSize.height - cropArea.height));
+            
+            setCropArea(prev => ({ ...prev, x: newX, y: newY }));
+        } else if (isResizing) {
+            const deltaX = x - dragStart.x;
+            const deltaY = y - dragStart.y;
+            
+            let newCropArea = { ...cropArea };
+            const aspectRatio = aspectRatios[currentAspectRatio].ratio;
+            
+            switch (resizeHandle) {
+                case 'se': // bottom-right
+                    newCropArea.width = Math.max(50, dragStart.cropWidth + deltaX);
+                    if (aspectRatio) {
+                        newCropArea.height = newCropArea.width / aspectRatio;
+                    } else {
+                        newCropArea.height = Math.max(50, dragStart.cropHeight + deltaY);
+                    }
+                    break;
+                case 'sw': // bottom-left
+                    const newWidth = Math.max(50, dragStart.cropWidth - deltaX);
+                    newCropArea.x = dragStart.cropX + (dragStart.cropWidth - newWidth);
+                    newCropArea.width = newWidth;
+                    if (aspectRatio) {
+                        newCropArea.height = newWidth / aspectRatio;
+                    } else {
+                        newCropArea.height = Math.max(50, dragStart.cropHeight + deltaY);
+                    }
+                    break;
+                case 'ne': // top-right
+                    newCropArea.width = Math.max(50, dragStart.cropWidth + deltaX);
+                    const newHeightNE = aspectRatio ? newCropArea.width / aspectRatio : Math.max(50, dragStart.cropHeight - deltaY);
+                    newCropArea.y = dragStart.cropY + (dragStart.cropHeight - newHeightNE);
+                    newCropArea.height = newHeightNE;
+                    break;
+                case 'nw': // top-left
+                    const newWidthNW = Math.max(50, dragStart.cropWidth - deltaX);
+                    const newHeightNW = aspectRatio ? newWidthNW / aspectRatio : Math.max(50, dragStart.cropHeight - deltaY);
+                    newCropArea.x = dragStart.cropX + (dragStart.cropWidth - newWidthNW);
+                    newCropArea.y = dragStart.cropY + (dragStart.cropHeight - newHeightNW);
+                    newCropArea.width = newWidthNW;
+                    newCropArea.height = newHeightNW;
+                    break;
+            }
+            
+            // Ensure crop area stays within canvas bounds
+            newCropArea.x = Math.max(0, Math.min(newCropArea.x, canvasSize.width - newCropArea.width));
+            newCropArea.y = Math.max(0, Math.min(newCropArea.y, canvasSize.height - newCropArea.height));
+            newCropArea.width = Math.min(newCropArea.width, canvasSize.width - newCropArea.x);
+            newCropArea.height = Math.min(newCropArea.height, canvasSize.height - newCropArea.y);
+            
+            setCropArea(newCropArea);
+        } else {
+            // Update cursor based on hover position
+            const handleType = getHandleType(x, y);
+            if (handleType) {
+                canvas.style.cursor = handleType === 'move' ? 'move' : 
+                                   handleType.includes('n') || handleType.includes('s') ? 'ns-resize' :
+                                   handleType.includes('e') || handleType.includes('w') ? 'ew-resize' : 'nwse-resize';
+            } else {
+                canvas.style.cursor = 'default';
+            }
+        }
     };
 
     const handleMouseUp = () => {
         setIsDragging(false);
         setIsResizing(false);
+        setResizeHandle('');
     };
 
-    const handleZoom = (delta) => {
-        setScale(prev => Math.max(0.1, Math.min(3, prev + delta)));
+    const handleAspectRatioChange = (newRatio) => {
+        setCurrentAspectRatio(newRatio);
+        const ratioConfig = aspectRatios[newRatio];
+        
+        if (ratioConfig.ratio) {
+            // Adjust crop area to match new aspect ratio
+            const newHeight = cropArea.width / ratioConfig.ratio;
+            setCropArea(prev => ({
+                ...prev,
+                height: newHeight,
+                y: Math.max(0, Math.min(prev.y, canvasSize.height - newHeight))
+            }));
+        }
     };
 
     const handleCrop = () => {
         const canvas = canvasRef.current;
-        if (!canvas || !image) return;
+        const img = imageRef.current;
+        if (!canvas || !img) return;
 
-        // Create a new canvas for the cropped image
+        // Create crop canvas
         const cropCanvas = document.createElement('canvas');
         const cropCtx = cropCanvas.getContext('2d');
         
         cropCanvas.width = cropArea.width;
         cropCanvas.height = cropArea.height;
 
-        // Calculate source coordinates
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = image.width / (rect.width * scale);
-        const scaleY = image.height / (rect.height * scale);
+        // Calculate source coordinates from original image
+        const scaleX = img.width / canvasSize.width;
+        const scaleY = img.height / canvasSize.height;
         
-        const sourceX = (cropArea.x - pan.x) * scaleX;
-        const sourceY = (cropArea.y - pan.y) * scaleY;
+        const sourceX = cropArea.x * scaleX;
+        const sourceY = cropArea.y * scaleY;
         const sourceWidth = cropArea.width * scaleX;
         const sourceHeight = cropArea.height * scaleY;
 
+        // Draw cropped section
         cropCtx.drawImage(
-            image,
+            img,
             sourceX, sourceY, sourceWidth, sourceHeight,
             0, 0, cropArea.width, cropArea.height
         );
@@ -1758,18 +1879,24 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio = 'free', cropC
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg max-w-4xl max-h-[90vh] w-full mx-4 flex flex-col">
+            <div className="bg-white rounded-lg max-w-5xl max-h-[95vh] w-full mx-4 flex flex-col">
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b">
                     <h3 className="text-lg font-semibold">Crop Image</h3>
-                    <IconButton iconName="x" onClick={onCancel} title="Cancel" />
+                    <button 
+                        onClick={onCancel}
+                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    >
+                        <X size={20} />
+                    </button>
                 </div>
 
                 {/* Canvas Container */}
-                <div className="flex-1 p-4 relative">
+                <div className="flex-1 p-4 flex items-center justify-center overflow-hidden">
                     <canvas
                         ref={canvasRef}
-                        className="w-full h-96 border border-gray-300 cursor-move"
+                        className="border border-gray-300 cursor-crosshair"
+                        style={{ width: canvasSize.width, height: canvasSize.height }}
                         onMouseDown={handleMouseDown}
                         onMouseMove={handleMouseMove}
                         onMouseUp={handleMouseUp}
@@ -1780,44 +1907,23 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio = 'free', cropC
                 {/* Controls */}
                 <div className="p-4 border-t bg-gray-50">
                     <div className="flex items-center justify-between">
-                        {/* Zoom Controls */}
-                        <div className="flex items-center space-x-2">
-                            <span className="text-sm font-medium">Zoom:</span>
-                            <IconButton 
-                                iconName="zoomOut" 
-                                onClick={() => handleZoom(-0.1)} 
-                                title="Zoom Out" 
-                            />
-                            <span className="text-sm w-12 text-center">{Math.round(scale * 100)}%</span>
-                            <IconButton 
-                                iconName="zoomIn" 
-                                onClick={() => handleZoom(0.1)} 
-                                title="Zoom In" 
-                            />
+                        {/* Crop Info */}
+                        <div className="flex items-center space-x-4 text-sm text-gray-600">
+                            <span>Size: {Math.round(cropArea.width)} × {Math.round(cropArea.height)}</span>
+                            <span>Aspect: {aspectRatios[currentAspectRatio].label}</span>
                         </div>
 
-                        {/* Aspect Ratio */}
+                        {/* Aspect Ratio Selector */}
                         <div className="flex items-center space-x-2">
-                            <span className="text-sm font-medium">Ratio:</span>
+                            <span className="text-sm font-medium">Aspect Ratio:</span>
                             <select
-                                value={aspectRatio}
-                                onChange={(e) => {
-                                    const newRatio = e.target.value;
-                                    if (aspectRatios[newRatio]) {
-                                        setCropArea(prev => ({
-                                            ...prev,
-                                            height: prev.width / aspectRatios[newRatio]
-                                        }));
-                                    }
-                                }}
-                                className="text-sm border border-gray-300 rounded px-2 py-1"
+                                value={currentAspectRatio}
+                                onChange={(e) => handleAspectRatioChange(e.target.value)}
+                                className="text-sm border border-gray-300 rounded px-3 py-1"
                             >
-                                <option value="free">Free</option>
-                                <option value="1:1">1:1 Square</option>
-                                <option value="16:9">16:9 Widescreen</option>
-                                <option value="4:3">4:3 Standard</option>
-                                <option value="3:2">3:2 Photo</option>
-                                <option value="2:1">2:1 Banner</option>
+                                {Object.entries(aspectRatios).map(([key, config]) => (
+                                    <option key={key} value={key}>{config.label}</option>
+                                ))}
                             </select>
                         </div>
 
@@ -1833,8 +1939,8 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio = 'free', cropC
                                 onClick={handleCrop}
                                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors flex items-center space-x-2"
                             >
-                                <span dangerouslySetInnerHTML={{ __html: icons.scissors }} />
-                                <span>Crop Image</span>
+                                <span>✂️</span>
+                                <span>Crop & Save</span>
                             </button>
                         </div>
                     </div>
