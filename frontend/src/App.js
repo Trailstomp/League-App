@@ -7426,6 +7426,7 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
                         <p className="text-sm text-slate-600 mb-4">Control which tabs are visible on your team page to visitors</p>
                         <div className="grid grid-cols-2 gap-3">
                             {[
+                                { key: 'home', label: 'Home', default: true },
                                 { key: 'roster', label: 'Roster & Stats', default: true },
                                 { key: 'schedule', label: 'Schedule', default: true },
                                 { key: 'media', label: 'Photos & Videos', default: true },
