@@ -1691,6 +1691,17 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         drawCanvas();
     }, [cropArea, canvasSize, imageScale, imagePan]);
 
+    // Force redraw when image loads and loading state changes
+    useEffect(() => {
+        if (!isLoading && imageRef.current && canvasRef.current) {
+            // Small delay to ensure all state updates are complete
+            const timeoutId = setTimeout(() => {
+                drawCanvas();
+            }, 10);
+            return () => clearTimeout(timeoutId);
+        }
+    }, [isLoading]);
+
     const drawCanvas = () => {
         const canvas = canvasRef.current;
         const img = imageRef.current;
