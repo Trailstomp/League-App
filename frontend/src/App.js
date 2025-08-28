@@ -326,7 +326,7 @@ const Trash2 = (props) => <Icon name="Trash2" {...props} />;
 const Twitter = (props) => <Icon name="Twitter" {...props} />;
 const Instagram = (props) => <Icon name="Instagram" {...props} />;
 const Facebook = (props) => <Icon name="Facebook" {...props} />;
-const Image = (props) => <Icon name="Image" {...props} />;
+const ImageIcon = (props) => <Icon name="ImageIcon" {...props} />;
 const Video = (props) => <Icon name="Video" {...props} />;
 const UserCheck = (props) => <Icon name="UserCheck" {...props} />;
 const MapPin = (props) => <Icon name="MapPin" {...props} />;
