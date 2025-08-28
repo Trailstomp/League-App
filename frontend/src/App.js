@@ -88,15 +88,38 @@ const getLogoStyle = (websiteStyle) => {
 };
 
 // File Upload Component
-const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder }) => {
+const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder, enableCrop = true, cropAspectRatio = 'free', cropContext = 'header' }) => {
     const [isDragging, setIsDragging] = useState(false);
+    const [showCropTool, setShowCropTool] = useState(false);
+    const [tempImageUrl, setTempImageUrl] = useState(null);
     const fileInputRef = useRef(null);
 
     const handleFileSelect = (file) => {
         if (file) {
             // Create object URL for preview
             const objectUrl = URL.createObjectURL(file);
-            onChange(objectUrl);
+            
+            // If it's an image and crop is enabled, show crop tool
+            if (accept.includes('image') && enableCrop) {
+                setTempImageUrl(objectUrl);
+                setShowCropTool(true);
+            } else {
+                onChange(objectUrl);
+            }
+        }
+    };
+
+    const handleCrop = (croppedImageData) => {
+        onChange(croppedImageData);
+        setShowCropTool(false);
+        setTempImageUrl(null);
+    };
+
+    const handleCropCancel = () => {
+        setShowCropTool(false);
+        if (tempImageUrl) {
+            URL.revokeObjectURL(tempImageUrl);
+            setTempImageUrl(null);
         }
     };
 
@@ -116,6 +139,13 @@ const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder })
 
     const handleDragLeave = () => {
         setIsDragging(false);
+    };
+
+    const openCropTool = () => {
+        if (currentValue && accept.includes('image')) {
+            setTempImageUrl(currentValue);
+            setShowCropTool(true);
+        }
     };
 
     return (
@@ -153,12 +183,28 @@ const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder })
                             </div>
                         ) : null}
                         <p className="text-sm text-green-600">✅ File selected - Click to change</p>
+                        
+                        {/* Crop Tool Button */}
+                        {enableCrop && accept.includes('image') && currentValue && (
+                            <div className="mt-2">
+                                <button 
+                                    onClick={(e) => { e.stopPropagation(); openCropTool(); }}
+                                    className="inline-flex items-center space-x-2 px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-md text-sm transition-colors"
+                                >
+                                    <Crop size={14} />
+                                    <span>Crop & Adjust</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <div className="py-4">
                         <Upload className="mx-auto h-8 w-8 text-slate-400 mb-2" />
                         <p className="text-sm text-slate-600">{placeholder || 'Click or drag to upload file'}</p>
                         <p className="text-xs text-slate-500 mt-1">Supported: {accept}</p>
+                        {enableCrop && accept.includes('image') && (
+                            <p className="text-xs text-blue-600 mt-1">✨ Includes crop & resize tool</p>
+                        )}
                     </div>
                 )}
             </div>
@@ -174,6 +220,17 @@ const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder })
                     className="w-full p-1 border rounded text-xs mt-1"
                 />
             </div>
+
+            {/* Crop Tool Modal */}
+            {showCropTool && tempImageUrl && (
+                <ImageCropTool
+                    imageUrl={tempImageUrl}
+                    onCrop={handleCrop}
+                    onCancel={handleCropCancel}
+                    aspectRatio={cropAspectRatio}
+                    contextPreview={cropContext}
+                />
+            )}
         </div>
     );
 };
