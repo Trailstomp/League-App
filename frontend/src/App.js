@@ -1811,7 +1811,14 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                 cropX: cropArea.x, 
                 cropY: cropArea.y 
             });
-        } else if (handleType && handleType !== 'move') {
+        } else if (handleType === 'pan') {
+            setIsPanningImage(true);
+            setDragStart({ 
+                x, y, 
+                panX: imagePan.x, 
+                panY: imagePan.y 
+            });
+        } else if (handleType && !['move', 'pan'].includes(handleType)) {
             setIsResizing(true);
             setResizeHandle(handleType);
             setDragStart({ 
