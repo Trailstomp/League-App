@@ -7650,6 +7650,8 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                     currentValue={style.backgroundImage || ''}
                                     onChange={(url) => setStyle(prev => ({...prev, backgroundImage: url}))}
                                     placeholder="Upload page background or enter URL"
+                                    enableCrop={true}
+                                    cropAspectRatio="free"
                                 />
                             </div>
                         </div>
