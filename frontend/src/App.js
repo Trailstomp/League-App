@@ -4282,17 +4282,14 @@ const ItemForm = ({ editingItem, setEditingItem, onSave, onCancel, itemType, gal
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {itemType === 'photo' ? (
                         <div>
-                            <label className="block font-semibold text-slate-700 mb-2">Photo Upload</label>
-                            <input 
-                                type="file" 
+                            <FileUploadInput
+                                label="Photo Upload"
                                 accept="image/*"
-                                onChange={(e) => {
-                                    if (e.target.files && e.target.files[0]) {
-                                        const fileUrl = URL.createObjectURL(e.target.files[0]);
-                                        setItemData(prev => ({...prev, url: fileUrl}));
-                                    }
-                                }}
-                                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                                currentValue={itemData.url || ''}
+                                onChange={(url) => setItemData(prev => ({...prev, url: url}))}
+                                placeholder="Upload gallery photo"
+                                enableCrop={true}
+                                cropAspectRatio="free"
                             />
                         </div>
                     ) : (
