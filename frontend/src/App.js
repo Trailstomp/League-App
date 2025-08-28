@@ -9346,6 +9346,10 @@ function App() {
         contactEmail: "admin@mlbl.org",
         social: { twitter: '#', instagram: '#', facebook: '#' }
     });
+    
+    // News system state (moved from NewHomePage)
+    const [newsItems, setNewsItems] = useState([]);
+    const [selectedNewsItem, setSelectedNewsItem] = useState(null);
     const [websiteStyle, setWebsiteStyle] = useState({
         logoUrl: MlblLogo,
         primaryColor: '#1e293b', // slate-800
