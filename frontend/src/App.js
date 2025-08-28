@@ -1847,6 +1847,14 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
             const newY = Math.max(0, Math.min(dragStart.cropY + deltaY, canvasSize.height - cropArea.height));
             
             setCropArea(prev => ({ ...prev, x: newX, y: newY }));
+        } else if (isPanningImage) {
+            const deltaX = x - dragStart.x;
+            const deltaY = y - dragStart.y;
+            
+            setImagePan({
+                x: dragStart.panX + deltaX,
+                y: dragStart.panY + deltaY
+            });
         } else if (isResizing) {
             const deltaX = x - dragStart.x;
             const deltaY = y - dragStart.y;
@@ -1887,6 +1895,23 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                     newCropArea.width = newWidthNW;
                     newCropArea.height = newHeightNW;
                     break;
+                // Side handles for free-form resizing
+                case 'n': // top
+                    const newHeightN = Math.max(50, dragStart.cropHeight - deltaY);
+                    newCropArea.y = dragStart.cropY + (dragStart.cropHeight - newHeightN);
+                    newCropArea.height = newHeightN;
+                    break;
+                case 's': // bottom
+                    newCropArea.height = Math.max(50, dragStart.cropHeight + deltaY);
+                    break;
+                case 'e': // right
+                    newCropArea.width = Math.max(50, dragStart.cropWidth + deltaX);
+                    break;
+                case 'w': // left
+                    const newWidthW = Math.max(50, dragStart.cropWidth - deltaX);
+                    newCropArea.x = dragStart.cropX + (dragStart.cropWidth - newWidthW);
+                    newCropArea.width = newWidthW;
+                    break;
             }
             
             // Ensure crop area stays within canvas bounds
@@ -1899,13 +1924,16 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         } else {
             // Update cursor based on hover position
             const handleType = getHandleType(x, y);
-            if (handleType) {
-                canvas.style.cursor = handleType === 'move' ? 'move' : 
-                                   handleType.includes('n') || handleType.includes('s') ? 'ns-resize' :
-                                   handleType.includes('e') || handleType.includes('w') ? 'ew-resize' : 'nwse-resize';
-            } else {
-                canvas.style.cursor = 'default';
-            }
+            let cursor = 'default';
+            
+            if (handleType === 'move') cursor = 'move';
+            else if (handleType === 'pan') cursor = 'grab';
+            else if (handleType === 'nw' || handleType === 'se') cursor = 'nw-resize';
+            else if (handleType === 'ne' || handleType === 'sw') cursor = 'ne-resize';
+            else if (handleType === 'n' || handleType === 's') cursor = 'ns-resize';
+            else if (handleType === 'e' || handleType === 'w') cursor = 'ew-resize';
+            
+            canvas.style.cursor = cursor;
         }
     };
 
