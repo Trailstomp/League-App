@@ -2060,14 +2060,47 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                 </div>
 
                 {/* Controls */}
-                <div className="p-4 border-t bg-gray-50">
+                <div className="p-4 border-t bg-gray-50 space-y-3">
+                    {/* Top Row - Image Controls */}
                     <div className="flex items-center justify-between">
-                        {/* Crop Info */}
-                        <div className="flex items-center space-x-4 text-sm text-gray-600">
-                            <span>Size: {Math.round(cropArea.width)} × {Math.round(cropArea.height)}</span>
-                            <span>Aspect: {(aspectRatios[currentAspectRatio] || aspectRatios['free']).label}</span>
+                        {/* Image Zoom/Pan Controls */}
+                        <div className="flex items-center space-x-3">
+                            <span className="text-sm font-medium">Image:</span>
+                            <div className="flex items-center space-x-2">
+                                <button
+                                    onClick={() => handleImageZoom(-0.1)}
+                                    className="p-1 bg-white rounded border hover:bg-gray-50 transition-colors"
+                                    title="Zoom Out"
+                                >
+                                    <span className="text-sm">🔍-</span>
+                                </button>
+                                <span className="text-xs w-12 text-center">{Math.round(imageScale * 100)}%</span>
+                                <button
+                                    onClick={() => handleImageZoom(0.1)}
+                                    className="p-1 bg-white rounded border hover:bg-gray-50 transition-colors"
+                                    title="Zoom In"
+                                >
+                                    <span className="text-sm">🔍+</span>
+                                </button>
+                            </div>
+                            <button
+                                onClick={handleResetImageTransform}
+                                className="px-2 py-1 bg-white rounded border text-xs hover:bg-gray-50 transition-colors"
+                                title="Reset zoom and pan"
+                            >
+                                Reset
+                            </button>
                         </div>
 
+                        {/* Crop Info */}
+                        <div className="flex items-center space-x-4 text-sm text-gray-600">
+                            <span>Crop: {Math.round(cropArea.width)} × {Math.round(cropArea.height)}</span>
+                            <span>Aspect: {(aspectRatios[currentAspectRatio] || aspectRatios['free']).label}</span>
+                        </div>
+                    </div>
+
+                    {/* Bottom Row - Main Controls */}
+                    <div className="flex items-center justify-between">
                         {/* Aspect Ratio Selector */}
                         <div className="flex items-center space-x-2">
                             <span className="text-sm font-medium">Aspect Ratio:</span>
@@ -2080,6 +2113,11 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                                     <option key={key} value={key}>{config.label}</option>
                                 ))}
                             </select>
+                        </div>
+
+                        {/* Instructions */}
+                        <div className="text-xs text-gray-500 max-w-md text-center">
+                            Drag corners/sides to resize crop area • Click outside crop area to pan image • Use zoom controls for large images
                         </div>
 
                         {/* Action Buttons */}
