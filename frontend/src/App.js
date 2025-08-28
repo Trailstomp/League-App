@@ -1129,6 +1129,378 @@ const SocialCard = ({ entity }) => {
     );
 };
 
+// --- IMAGE CROP TOOL ---
+const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio = 'free', contextPreview = 'header' }) => {
+    const canvasRef = useRef(null);
+    const [cropData, setCropData] = useState({
+        x: 0,
+        y: 0,
+        width: 200,
+        height: 100,
+        scale: 1
+    });
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+    const [imageLoaded, setImageLoaded] = useState(false);
+    const [originalImage, setOriginalImage] = useState(null);
+
+    // Aspect ratio presets
+    const aspectRatios = {
+        'free': { ratio: null, label: 'Free Form' },
+        'header': { ratio: 16/3, label: 'Header Bar (16:3)' },
+        'square': { ratio: 1, label: 'Square (1:1)' },
+        'logo': { ratio: 1, label: 'Logo (1:1)' },
+        'banner': { ratio: 3/1, label: 'Banner (3:1)' },
+        'card': { ratio: 4/3, label: 'Card (4:3)' }
+    };
+
+    const [currentAspectRatio, setCurrentAspectRatio] = useState(aspectRatio);
+
+    useEffect(() => {
+        if (imageUrl && canvasRef.current) {
+            const canvas = canvasRef.current;
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            
+            img.onload = () => {
+                setOriginalImage(img);
+                
+                // Set canvas size
+                canvas.width = Math.min(img.width, 600);
+                canvas.height = Math.min(img.height, 400);
+                
+                // Calculate initial crop area (center of image)
+                const initialWidth = Math.min(img.width * 0.6, 300);
+                const initialHeight = aspectRatios[currentAspectRatio].ratio 
+                    ? initialWidth / aspectRatios[currentAspectRatio].ratio 
+                    : initialWidth * 0.6;
+                
+                setCropData({
+                    x: (canvas.width - initialWidth) / 2,
+                    y: (canvas.height - initialHeight) / 2,
+                    width: initialWidth,
+                    height: initialHeight,
+                    scale: Math.min(canvas.width / img.width, canvas.height / img.height)
+                });
+                
+                setImageLoaded(true);
+                drawCanvas();
+            };
+            
+            img.crossOrigin = "anonymous";
+            img.src = imageUrl;
+        }
+    }, [imageUrl, currentAspectRatio]);
+
+    const drawCanvas = () => {
+        if (!originalImage || !canvasRef.current) return;
+        
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw image
+        const scale = cropData.scale;
+        ctx.drawImage(
+            originalImage, 
+            0, 0, originalImage.width, originalImage.height,
+            0, 0, originalImage.width * scale, originalImage.height * scale
+        );
+        
+        // Draw overlay
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Clear crop area
+        ctx.clearRect(cropData.x, cropData.y, cropData.width, cropData.height);
+        
+        // Redraw image in crop area
+        const sourceX = cropData.x / scale;
+        const sourceY = cropData.y / scale;
+        const sourceWidth = cropData.width / scale;
+        const sourceHeight = cropData.height / scale;
+        
+        ctx.drawImage(
+            originalImage,
+            sourceX, sourceY, sourceWidth, sourceHeight,
+            cropData.x, cropData.y, cropData.width, cropData.height
+        );
+        
+        // Draw crop border
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(cropData.x, cropData.y, cropData.width, cropData.height);
+        
+        // Draw corner handles
+        const handleSize = 8;
+        ctx.fillStyle = '#3b82f6';
+        ctx.fillRect(cropData.x - handleSize/2, cropData.y - handleSize/2, handleSize, handleSize);
+        ctx.fillRect(cropData.x + cropData.width - handleSize/2, cropData.y - handleSize/2, handleSize, handleSize);
+        ctx.fillRect(cropData.x - handleSize/2, cropData.y + cropData.height - handleSize/2, handleSize, handleSize);
+        ctx.fillRect(cropData.x + cropData.width - handleSize/2, cropData.y + cropData.height - handleSize/2, handleSize, handleSize);
+    };
+
+    useEffect(() => {
+        if (imageLoaded) {
+            drawCanvas();
+        }
+    }, [cropData, imageLoaded]);
+
+    const handleMouseDown = (e) => {
+        const rect = canvasRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Check if clicking inside crop area
+        if (x >= cropData.x && x <= cropData.x + cropData.width &&
+            y >= cropData.y && y <= cropData.y + cropData.height) {
+            setIsDragging(true);
+            setDragStart({ x: x - cropData.x, y: y - cropData.y });
+        }
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDragging) return;
+        
+        const rect = canvasRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const newX = Math.max(0, Math.min(x - dragStart.x, canvasRef.current.width - cropData.width));
+        const newY = Math.max(0, Math.min(y - dragStart.y, canvasRef.current.height - cropData.height));
+        
+        setCropData(prev => ({ ...prev, x: newX, y: newY }));
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    const handleZoom = (direction) => {
+        const newScale = direction === 'in' 
+            ? Math.min(cropData.scale * 1.2, 3) 
+            : Math.max(cropData.scale * 0.8, 0.3);
+        
+        setCropData(prev => ({ ...prev, scale: newScale }));
+    };
+
+    const handleCropSizeChange = (direction) => {
+        const factor = direction === 'larger' ? 1.1 : 0.9;
+        const newWidth = Math.max(50, Math.min(cropData.width * factor, canvasRef.current?.width - cropData.x));
+        const newHeight = aspectRatios[currentAspectRatio].ratio 
+            ? newWidth / aspectRatios[currentAspectRatio].ratio 
+            : cropData.height * factor;
+        
+        setCropData(prev => ({ 
+            ...prev, 
+            width: newWidth,
+            height: newHeight
+        }));
+    };
+
+    const handleAspectRatioChange = (newRatio) => {
+        setCurrentAspectRatio(newRatio);
+        
+        if (aspectRatios[newRatio].ratio) {
+            const newHeight = cropData.width / aspectRatios[newRatio].ratio;
+            setCropData(prev => ({ ...prev, height: newHeight }));
+        }
+    };
+
+    const getCroppedImageData = () => {
+        if (!originalImage || !canvasRef.current) return null;
+        
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set output canvas size
+        canvas.width = cropData.width;
+        canvas.height = cropData.height;
+        
+        // Calculate source coordinates
+        const scale = cropData.scale;
+        const sourceX = cropData.x / scale;
+        const sourceY = cropData.y / scale;
+        const sourceWidth = cropData.width / scale;
+        const sourceHeight = cropData.height / scale;
+        
+        // Draw cropped image
+        ctx.drawImage(
+            originalImage,
+            sourceX, sourceY, sourceWidth, sourceHeight,
+            0, 0, cropData.width, cropData.height
+        );
+        
+        return canvas.toDataURL('image/jpeg', 0.9);
+    };
+
+    const handleSave = () => {
+        const croppedImageData = getCroppedImageData();
+        if (croppedImageData) {
+            onCrop(croppedImageData);
+        }
+    };
+
+    const getContextPreview = () => {
+        const previewStyle = {
+            header: { width: '300px', height: '56px', borderRadius: '4px' },
+            square: { width: '80px', height: '80px', borderRadius: '8px' },
+            banner: { width: '200px', height: '67px', borderRadius: '8px' },
+            card: { width: '120px', height: '90px', borderRadius: '8px' }
+        };
+        
+        const style = previewStyle[contextPreview] || previewStyle.header;
+        
+        return (
+            <div className="bg-slate-100 p-4 rounded-lg">
+                <h4 className="text-sm font-semibold mb-2">Preview: How it will look</h4>
+                <div 
+                    className="bg-white border mx-auto shadow-sm overflow-hidden"
+                    style={{
+                        width: style.width,
+                        height: style.height,
+                        borderRadius: style.borderRadius,
+                        backgroundImage: getCroppedImageData() ? `url(${getCroppedImageData()})` : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                    }}
+                >
+                    {!getCroppedImageData() && (
+                        <div className="flex items-center justify-center h-full text-slate-400 text-xs">
+                            Preview
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="p-6">
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-xl font-bold flex items-center space-x-2">
+                            <Crop size={20} />
+                            <span>Crop & Adjust Image</span>
+                        </h3>
+                        <button onClick={onCancel} className="p-2 hover:bg-slate-100 rounded">
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                        {/* Main Canvas Area */}
+                        <div className="lg:col-span-3">
+                            <div className="border rounded-lg p-4 bg-slate-50">
+                                <canvas
+                                    ref={canvasRef}
+                                    onMouseDown={handleMouseDown}
+                                    onMouseMove={handleMouseMove}
+                                    onMouseUp={handleMouseUp}
+                                    className="border bg-white cursor-move mx-auto block"
+                                    style={{ maxWidth: '100%', maxHeight: '400px' }}
+                                />
+                                
+                                {/* Controls */}
+                                <div className="flex justify-center space-x-4 mt-4">
+                                    <button 
+                                        onClick={() => handleZoom('out')}
+                                        className="flex items-center space-x-1 px-3 py-2 bg-blue-100 hover:bg-blue-200 rounded text-sm"
+                                    >
+                                        <ZoomOut size={16} />
+                                        <span>Zoom Out</span>
+                                    </button>
+                                    
+                                    <button 
+                                        onClick={() => handleZoom('in')}
+                                        className="flex items-center space-x-1 px-3 py-2 bg-blue-100 hover:bg-blue-200 rounded text-sm"
+                                    >
+                                        <ZoomIn size={16} />
+                                        <span>Zoom In</span>
+                                    </button>
+                                    
+                                    <button 
+                                        onClick={() => handleCropSizeChange('smaller')}
+                                        className="flex items-center space-x-1 px-3 py-2 bg-green-100 hover:bg-green-200 rounded text-sm"
+                                    >
+                                        <span>Smaller Crop</span>
+                                    </button>
+                                    
+                                    <button 
+                                        onClick={() => handleCropSizeChange('larger')}
+                                        className="flex items-center space-x-1 px-3 py-2 bg-green-100 hover:bg-green-200 rounded text-sm"
+                                    >
+                                        <span>Larger Crop</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Settings Panel */}
+                        <div className="space-y-6">
+                            {/* Aspect Ratio */}
+                            <div>
+                                <h4 className="font-semibold mb-3">Crop Shape</h4>
+                                <div className="space-y-2">
+                                    {Object.entries(aspectRatios).map(([key, ratio]) => (
+                                        <button
+                                            key={key}
+                                            onClick={() => handleAspectRatioChange(key)}
+                                            className={`w-full text-left p-2 rounded text-sm transition-colors ${
+                                                currentAspectRatio === key 
+                                                    ? 'bg-blue-100 text-blue-800 font-medium' 
+                                                    : 'hover:bg-slate-100'
+                                            }`}
+                                        >
+                                            {ratio.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Preview */}
+                            {getContextPreview()}
+
+                            {/* Instructions */}
+                            <div className="bg-blue-50 p-3 rounded text-sm">
+                                <h5 className="font-semibold text-blue-800 mb-2">How to use:</h5>
+                                <ul className="text-blue-700 space-y-1 text-xs">
+                                    <li>• Drag the crop area to move it</li>
+                                    <li>• Use zoom controls to resize image</li>
+                                    <li>• Use crop size buttons to adjust area</li>
+                                    <li>• Choose shape preset for best fit</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">
+                        <button 
+                            onClick={onCancel}
+                            className="px-4 py-2 text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            onClick={handleSave}
+                            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                        >
+                            <Crop size={16} />
+                            <span>Apply Crop</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// --- UTILITY COMPONENTS ---
+
 // --- Page Components ---
 const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle, setCurrentUser}) => {
     const sortedTeams = teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name));
