@@ -1685,7 +1685,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         });
 
         // Side handles (only if not maintaining aspect ratio)
-        if (!aspectRatios[currentAspectRatio].ratio) {
+        if (!(aspectRatios[currentAspectRatio] || aspectRatios['free']).ratio) {
             const sides = [
                 { x: cropArea.x + cropArea.width/2, y: cropArea.y }, // top
                 { x: cropArea.x + cropArea.width, y: cropArea.y + cropArea.height/2 }, // right
