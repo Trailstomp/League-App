@@ -641,6 +641,18 @@ metadata:
         agent: "testing"
         comment: "FRONTEND-ONLY FEATURE - NOT TESTED: This is a frontend UI enhancement that only affects sidebar logo sizing. Testing agent does not test frontend features per system limitations. Backend functionality remains unaffected and fully operational."
 
+  - task: "Re-implement ImageCropTool without lucide-react dependencies"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "ImageCropTool was previously disabled due to persistent 'TypeError: lucide_react__WEBPACK_IMPORTED_MODULE_XX__.default is not a constructor' errors. Current state: component returns null. Need to re-implement with CSS icons or alternative libraries to avoid lucide-react import issues."
+
 test_plan:
   current_focus:
     - "Make team logos fill full upper rectangle on homepage"
