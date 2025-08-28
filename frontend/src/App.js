@@ -6569,6 +6569,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
     const [selectedPlayer, setSelectedPlayer] = useState(null);
     const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
     const [selectedImagePopup, setSelectedImagePopup] = useState(null);
+    const [editingPlayerStats, setEditingPlayerStats] = useState(false);
 
     // Ensure activeTab is visible, fallback to first visible tab
     React.useEffect(() => {
