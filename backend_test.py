@@ -61,7 +61,7 @@ class BackendTester:
             
             if response.status_code == 200:
                 data = response.json()
-                if data.get('message') == 'Hello World':
+                if data.get('message') == 'MLBL API - Lacrosse League Management':
                     self.log_test(
                         "Health Check Endpoint", 
                         True, 
