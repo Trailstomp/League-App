@@ -1613,8 +1613,8 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                     let cropHeight = cropSize;
                     
                     // Apply initial aspect ratio
-                    const ratioConfig = aspectRatios[currentAspectRatio];
-                    if (ratioConfig.ratio) {
+                    const ratioConfig = aspectRatios[currentAspectRatio] || aspectRatios['free'];
+                    if (ratioConfig && ratioConfig.ratio) {
                         cropHeight = cropWidth / ratioConfig.ratio;
                     }
                     
