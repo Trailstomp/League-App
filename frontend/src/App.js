@@ -6955,7 +6955,75 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                         )}
 
                         <div className="mb-8">
-                            <h2 className="text-3xl font-bold text-slate-800 mb-4 tracking-tight">Roster</h2>
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-3xl font-bold text-slate-800 tracking-tight">Team Roster</h2>
+                                {isAuthorizedToManage && (
+                                    <div className="flex space-x-3">
+                                        <button 
+                                            onClick={() => setEditingPlayer({firstName: '', lastName: '', nickname: '', email: '', phone: '', number: '', positions: [], teams: [teamId], photo: '', active: true, handedness: 'Right'})}
+                                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center text-sm"
+                                        >
+                                            <Plus className="mr-2" size={16} />
+                                            Add Player
+                                        </button>
+                                        <button 
+                                            onClick={() => setManagePlayersExpanded(!managePlayersExpanded)}
+                                            className="bg-slate-600 text-white px-4 py-2 rounded hover:bg-slate-700 flex items-center text-sm"
+                                        >
+                                            <Settings className="mr-2" size={16} />
+                                            {managePlayersExpanded ? 'Hide' : 'Show'} Management
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                            
+                            {/* Player Management Panel */}
+                            {isAuthorizedToManage && managePlayersExpanded && (
+                                <div className="bg-white rounded-lg shadow p-6 mb-6">
+                                    <h3 className="text-xl font-semibold text-slate-800 mb-4">Player Management</h3>
+                                    <div className="space-y-4">
+                                        {sortedTeamPlayers.map(player => (
+                                            <div key={player.id} className={`flex items-center justify-between p-3 border rounded-lg ${!player.active ? 'bg-slate-100 opacity-60' : 'bg-white'}`}>
+                                                <div className="flex items-center space-x-3">
+                                                    {player.photo && (
+                                                        <img src={player.photo} alt={player.firstName} className="w-10 h-10 rounded-full object-cover" />
+                                                    )}
+                                                    <div>
+                                                        <div className="font-medium text-slate-800">
+                                                            {player.firstName} {player.lastName} #{player.number}
+                                                        </div>
+                                                        <div className="text-sm text-slate-600">
+                                                            {Array.isArray(player.positions) ? player.positions.join(', ') : player.positions}
+                                                            {!player.active && <span className="text-red-600 ml-2">(Inactive)</span>}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex space-x-2">
+                                                    <button 
+                                                        onClick={() => setEditingPlayer(player)}
+                                                        className="text-blue-600 hover:text-blue-800 p-1"
+                                                        title="Edit Player"
+                                                    >
+                                                        <Edit size={18} />
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => {
+                                                            setPlayers(players.map(p => 
+                                                                p.id === player.id ? {...p, active: !p.active} : p
+                                                            ));
+                                                        }}
+                                                        className={`p-1 ${player.active ? 'text-orange-600 hover:text-orange-800' : 'text-green-600 hover:text-green-800'}`}
+                                                        title={player.active ? 'Deactivate Player' : 'Activate Player'}
+                                                    >
+                                                        {player.active ? <UserX size={18} /> : <UserCheck size={18} />}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                                 {sortedTeamPlayers.map(player => 
                                     <PlayerCard 
