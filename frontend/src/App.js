@@ -10761,8 +10761,13 @@ function App() {
     };
     
     const navigate = (targetPage, teamId = null) => {
-        setPage(targetPage);
-        setSelectedTeam(teamId);
+        // Use hash routing for navigation
+        if (targetPage === 'team' && teamId) {
+            window.location.hash = `team=${teamId}`;
+        } else {
+            window.location.hash = targetPage;
+        }
+        // State will be updated by hashchange listener
         if (window.innerWidth < 768) setIsMenuOpen(false);
     };
 
