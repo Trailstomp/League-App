@@ -1566,6 +1566,9 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
     const [dragStart, setDragStart] = useState({ x: 0, y: 0, cropX: 0, cropY: 0 });
     const [currentAspectRatio, setCurrentAspectRatio] = useState(initialAspectRatio || 'free');
     const [canvasSize, setCanvasSize] = useState({ width: 600, height: 400 });
+    const [imageScale, setImageScale] = useState(1);
+    const [imagePan, setImagePan] = useState({ x: 0, y: 0 });
+    const [isPanningImage, setIsPanningImage] = useState(false);
 
     // Aspect ratio configurations with proper labels
     const aspectRatios = {
