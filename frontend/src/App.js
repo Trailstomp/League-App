@@ -7766,9 +7766,35 @@ function App() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const handleLogin = (user) => {
+    const handleLogin = (userOrCredentials) => {
+        // If it's a user object (from quick login buttons), use it directly
+        if (userOrCredentials && userOrCredentials.id) {
+            setCurrentUser(userOrCredentials);
+            setShowLogin(false);
+            return;
+        }
+
+        // If it's credentials (from email/password form), authenticate
+        const { email, password } = loginCredentials;
+        
+        if (!email || !password) {
+            alert('Please enter both email and password.');
+            return;
+        }
+
+        // Find user by email
+        const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.status === 'active');
+        
+        if (!user) {
+            alert('Invalid email or account not active. Please check your credentials or contact an admin.');
+            return;
+        }
+
+        // For demo purposes, accept any password for existing users
+        // In production, this would verify against a hashed password
         setCurrentUser(user);
         setShowLogin(false);
+        setLoginCredentials({ email: '', password: '' });
     };
 
     const handleLogout = () => {
