@@ -646,7 +646,7 @@ metadata:
 
   - task: "Re-implement ImageCropTool without lucide-react dependencies"
     implemented: true
-    working: "NA"
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 1
     priority: "high"
