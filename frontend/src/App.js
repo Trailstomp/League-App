@@ -6683,7 +6683,8 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
             </div>
             <div className="flex border-b mb-6 flex-wrap">
                 {(team.style?.visibleTabs?.home !== false) && <TeamTab tabName="home" label="Home" />}
-                {(team.style?.visibleTabs?.roster !== false) && <TeamTab tabName="roster" label="Roster & Stats" />}
+                {(team.style?.visibleTabs?.roster !== false) && <TeamTab tabName="roster" label="Roster" />}
+                {(team.style?.visibleTabs?.stats !== false) && <TeamTab tabName="stats" label="Stats" />}
                 {(team.style?.visibleTabs?.schedule !== false) && <TeamTab tabName="schedule" label="Schedule" />}
                 {(team.style?.visibleTabs?.media !== false) && <TeamTab tabName="media" label="Photos & Videos" />}
                 {(team.style?.visibleTabs?.social !== false) && <TeamTab tabName="social" label="Social" />}
