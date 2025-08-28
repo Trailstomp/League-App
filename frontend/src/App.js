@@ -4783,15 +4783,57 @@ const ItemForm = ({ editingItem, setEditingItem, onSave, onCancel, itemType, gal
         url: editingItem?.url || '',
         ...editingItem
     });
+    const [multipleImages, setMultipleImages] = useState([]);
+    const [isMultipleMode, setIsMultipleMode] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave({
-            ...itemData,
-            id: editingItem?.id || Date.now(),
-            type: itemType,
-            galleryId: galleryId,
-            addedAt: editingItem?.addedAt || new Date().toISOString()
+        
+        if (isMultipleMode && multipleImages.length > 0) {
+            // Save multiple images
+            multipleImages.forEach((image, index) => {
+                onSave({
+                    id: Date.now() + index,
+                    type: itemType,
+                    galleryId: galleryId,
+                    addedAt: new Date().toISOString(),
+                    url: image.url,
+                    caption: image.caption || itemData.caption || `Image ${index + 1}`
+                });
+            });
+        } else {
+            // Save single image (original behavior)
+            onSave({
+                ...itemData,
+                id: editingItem?.id || Date.now(),
+                type: itemType,
+                galleryId: galleryId,
+                addedAt: editingItem?.addedAt || new Date().toISOString()
+            });
+        }
+    };
+
+    const handleMultipleImageUpload = (url, index) => {
+        setMultipleImages(prev => {
+            const updated = [...prev];
+            updated[index] = { ...updated[index], url };
+            return updated;
+        });
+    };
+
+    const addImageSlot = () => {
+        setMultipleImages(prev => [...prev, { url: '', caption: '' }]);
+    };
+
+    const removeImageSlot = (index) => {
+        setMultipleImages(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const updateImageCaption = (index, caption) => {
+        setMultipleImages(prev => {
+            const updated = [...prev];
+            updated[index] = { ...updated[index], caption };
+            return updated;
         });
     };
 
