@@ -9314,6 +9314,59 @@ function App() {
         setCurrentUser(null);
     };
     
+    // RSVP Handler
+    const handleUpdateRSVP = (eventId, responses) => {
+        setTeams(prevTeams => 
+            prevTeams.map(team => ({
+                ...team,
+                calendar: (team.calendar || []).map(event => 
+                    event.id === eventId 
+                        ? {
+                            ...event,
+                            rsvp: {
+                                ...event.rsvp,
+                                responses: responses
+                            }
+                        }
+                        : event
+                )
+            }))
+        );
+    };
+    
+    // Event Notification System
+    const sendEventNotification = (event, type = 'reminder') => {
+        // This would integrate with email/SMS service
+        console.log(`Sending ${type} notification for event: ${event.title}`);
+        
+        // For demo purposes, show a notification
+        alert(`${type.charAt(0).toUpperCase() + type.slice(1)} notification sent for "${event.title}"`);
+        
+        // Update reminders sent
+        const notification = {
+            type: type,
+            sentAt: new Date().toISOString(),
+            recipients: event.rsvp?.responses?.map(r => r.userId) || []
+        };
+        
+        setTeams(prevTeams => 
+            prevTeams.map(team => ({
+                ...team,
+                calendar: (team.calendar || []).map(e => 
+                    e.id === event.id 
+                        ? {
+                            ...e,
+                            rsvp: {
+                                ...e.rsvp,
+                                remindersSent: [...(e.rsvp?.remindersSent || []), notification]
+                            }
+                        }
+                        : e
+                )
+            }))
+        );
+    };
+    
     const navigate = (targetPage, teamId = null) => {
         setPage(targetPage);
         setSelectedTeam(teamId);
