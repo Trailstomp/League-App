@@ -1940,6 +1940,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
     const handleMouseUp = () => {
         setIsDragging(false);
         setIsResizing(false);
+        setIsPanningImage(false);
         setResizeHandle('');
     };
 
