@@ -9263,24 +9263,7 @@ function App() {
     
     return (
         <div className="min-h-screen bg-slate-100">
-            {/* DEBUG: Test Crop Tool Area */}
-            {page === 'home' && (
-                <div className="fixed top-4 right-4 bg-yellow-100 border-2 border-yellow-500 rounded-lg p-4 z-40 max-w-sm">
-                    <h3 className="font-bold text-yellow-800 mb-2">🛠️ DEBUG: Test Crop Tool</h3>
-                    <FileUploadInput
-                        label="Test Image Crop"
-                        accept="image/*"
-                        currentValue={debugTestImage}
-                        onChange={(url) => setDebugTestImage(url)}
-                        placeholder="Test crop functionality"
-                        enableCrop={true}
-                        cropAspectRatio="free"
-                    />
-                    <p className="text-xs text-yellow-700 mt-2">
-                        Click "Crop & Adjust" to test the hanging issue
-                    </p>
-                </div>
-            )}
+
 
             {/* Loading Screen */}
             {dataLoading && (
