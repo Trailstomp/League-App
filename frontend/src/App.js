@@ -1959,6 +1959,15 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         }
     };
 
+    const handleImageZoom = (delta) => {
+        setImageScale(prev => Math.max(0.1, Math.min(5, prev + delta)));
+    };
+
+    const handleResetImageTransform = () => {
+        setImageScale(1);
+        setImagePan({ x: 0, y: 0 });
+    };
+
     const handleCrop = () => {
         const canvas = canvasRef.current;
         const img = imageRef.current;
@@ -1971,21 +1980,35 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         cropCanvas.width = cropArea.width;
         cropCanvas.height = cropArea.height;
 
-        // Calculate source coordinates from original image
-        const scaleX = img.width / canvasSize.width;
-        const scaleY = img.height / canvasSize.height;
+        // Calculate the relationship between canvas display and image scaling/panning
+        const scaledWidth = canvasSize.width * imageScale;
+        const scaledHeight = canvasSize.height * imageScale;
+        const imageX = (canvasSize.width - scaledWidth) / 2 + imagePan.x;
+        const imageY = (canvasSize.height - scaledHeight) / 2 + imagePan.y;
+
+        // Calculate source coordinates in the original image
+        const sourceScaleX = img.width / scaledWidth;
+        const sourceScaleY = img.height / scaledHeight;
         
-        const sourceX = cropArea.x * scaleX;
-        const sourceY = cropArea.y * scaleY;
-        const sourceWidth = cropArea.width * scaleX;
-        const sourceHeight = cropArea.height * scaleY;
+        const sourceX = (cropArea.x - imageX) * sourceScaleX;
+        const sourceY = (cropArea.y - imageY) * sourceScaleY;
+        const sourceWidth = cropArea.width * sourceScaleX;
+        const sourceHeight = cropArea.height * sourceScaleY;
+
+        // Ensure source coordinates are within image bounds
+        const clampedSourceX = Math.max(0, Math.min(sourceX, img.width));
+        const clampedSourceY = Math.max(0, Math.min(sourceY, img.height));
+        const clampedSourceWidth = Math.min(sourceWidth, img.width - clampedSourceX);
+        const clampedSourceHeight = Math.min(sourceHeight, img.height - clampedSourceY);
 
         // Draw cropped section
-        cropCtx.drawImage(
-            img,
-            sourceX, sourceY, sourceWidth, sourceHeight,
-            0, 0, cropArea.width, cropArea.height
-        );
+        if (clampedSourceWidth > 0 && clampedSourceHeight > 0) {
+            cropCtx.drawImage(
+                img,
+                clampedSourceX, clampedSourceY, clampedSourceWidth, clampedSourceHeight,
+                0, 0, cropArea.width, cropArea.height
+            );
+        }
 
         // Convert to blob and call onCrop
         cropCanvas.toBlob((blob) => {
