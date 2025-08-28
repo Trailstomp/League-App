@@ -6223,6 +6223,156 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
             </div>
             
             <div className="p-4 rounded-lg" style={{ backgroundColor: team.style?.backgroundColor || 'transparent' }}>
+                {activeTab === 'home' && (
+                    <div className="space-y-8">
+                        {/* Team Hero Section */}
+                        <div className="text-center py-8">
+                            <h1 className="text-4xl font-bold mb-4" style={{ color: team.style?.primaryColor || '#dc2626' }}>
+                                Welcome to {team.name}
+                            </h1>
+                            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+                                {team.description || `Follow ${team.name} for the latest updates, photos, and team information.`}
+                            </p>
+                        </div>
+
+                        {/* Team News Feed */}
+                        <div>
+                            <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center">
+                                <MessageSquare className="mr-2" />
+                                Team News & Updates
+                            </h2>
+                            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                                <div className="h-96 overflow-y-auto">
+                                    <div className="news-feed-scrolling" style={{ 
+                                        animation: 'scroll-vertical 20s linear infinite',
+                                        animationPlayState: newsItems.length > 3 ? 'running' : 'paused'
+                                    }}>
+                                        {[...newsItems, ...newsItems].map((item, index) => (
+                                            <div key={`${item.id}-${index}`} 
+                                                className="border-b border-slate-200 p-6 hover:bg-slate-50 cursor-pointer transition-colors"
+                                                onClick={() => {
+                                                    setSelectedNewsItem(item);
+                                                    setShowNewsPopup(true);
+                                                }}
+                                            >
+                                                <div className="flex items-start space-x-4">
+                                                    {/* News Content */}
+                                                    <div className="flex-grow">
+                                                        <div className="flex items-center justify-between mb-2">
+                                                            <h3 className="text-lg font-semibold text-slate-800">{item.heading}</h3>
+                                                            <span className="text-sm text-slate-500">{new Date(item.date).toLocaleDateString()}</span>
+                                                        </div>
+                                                        <p className="text-slate-700 mb-2">{item.text}</p>
+                                                        {item.comments && (
+                                                            <p className="text-sm text-slate-600 italic">{item.comments}</p>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    {/* News Image/Icon */}
+                                                    <div className="flex-shrink-0">
+                                                        {item.type === 'image' && item.imageUrl ? (
+                                                            <img src={item.imageUrl} alt={item.heading} className="w-16 h-16 rounded-lg object-cover" />
+                                                        ) : item.type === 'video' && item.thumbnailUrl ? (
+                                                            <div className="relative">
+                                                                <img src={item.thumbnailUrl} alt={item.heading} className="w-16 h-16 rounded-lg object-cover" />
+                                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                                    <Play size={20} className="text-white drop-shadow-lg" />
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="w-16 h-16 rounded-lg bg-blue-100 flex items-center justify-center">
+                                                                <MessageSquare size={24} className="text-blue-600" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Quick Team Stats */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="bg-white rounded-lg shadow p-6 text-center">
+                                <div className="text-2xl font-bold mb-2" style={{ color: team.style?.primaryColor || '#dc2626' }}>
+                                    {team.wins || 0}
+                                </div>
+                                <div className="text-sm font-medium text-slate-600">Wins</div>
+                            </div>
+                            <div className="bg-white rounded-lg shadow p-6 text-center">
+                                <div className="text-2xl font-bold mb-2 text-red-500">
+                                    {team.losses || 0}
+                                </div>
+                                <div className="text-sm font-medium text-slate-600">Losses</div>
+                            </div>
+                            <div className="bg-white rounded-lg shadow p-6 text-center">
+                                <div className="text-2xl font-bold mb-2 text-green-500">
+                                    {team.pf || 0}
+                                </div>
+                                <div className="text-sm font-medium text-slate-600">Points For</div>
+                            </div>
+                            <div className="bg-white rounded-lg shadow p-6 text-center">
+                                <div className="text-2xl font-bold mb-2 text-orange-500">
+                                    {team.pa || 0}
+                                </div>
+                                <div className="text-sm font-medium text-slate-600">Points Against</div>
+                            </div>
+                        </div>
+
+                        {/* Social Media Integration */}
+                        <div className="bg-white rounded-lg shadow p-6">
+                            <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
+                                <Share2 className="mr-2" />
+                                Connect With Us
+                            </h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {team.socialMedia?.twitter && (
+                                    <a 
+                                        href={team.socialMedia.twitter} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center space-x-2 p-3 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors"
+                                    >
+                                        <Twitter size={20} className="text-blue-600" />
+                                        <span className="text-sm font-medium text-blue-800">Twitter</span>
+                                    </a>
+                                )}
+                                {team.socialMedia?.instagram && (
+                                    <a 
+                                        href={team.socialMedia.instagram} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center space-x-2 p-3 bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors"
+                                    >
+                                        <Instagram size={20} className="text-pink-600" />
+                                        <span className="text-sm font-medium text-pink-800">Instagram</span>
+                                    </a>
+                                )}
+                                {team.socialMedia?.facebook && (
+                                    <a 
+                                        href={team.socialMedia.facebook} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center space-x-2 p-3 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors"
+                                    >
+                                        <Facebook size={20} className="text-blue-700" />
+                                        <span className="text-sm font-medium text-blue-900">Facebook</span>
+                                    </a>
+                                )}
+                                <button 
+                                    onClick={() => setActiveTab('social')}
+                                    className="flex items-center justify-center space-x-2 p-3 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                                >
+                                    <Plus size={20} className="text-slate-600" />
+                                    <span className="text-sm font-medium text-slate-700">View All</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {activeTab === 'roster' && (
                     <div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
