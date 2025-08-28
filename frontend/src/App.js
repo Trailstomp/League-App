@@ -1591,7 +1591,16 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
     useEffect(() => {
         if (imageUrl) {
             const img = new window.Image(); // Use window.Image to avoid conflicts
-            img.crossOrigin = "anonymous";
+            
+            // Handle CORS and different image sources better
+            if (imageUrl.startsWith('blob:') || imageUrl.startsWith('data:')) {
+                // Local files and data URLs don't need CORS
+                img.crossOrigin = null;
+            } else {
+                // External URLs may need CORS handling
+                img.crossOrigin = "anonymous";
+            }
+            
             img.onload = () => {
                 imageRef.current = img;
                 setIsLoading(false);
@@ -1617,6 +1626,10 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                     
                     setCanvasSize({ width: displayWidth, height: displayHeight });
                     
+                    // Reset image transformation when new image loads
+                    setImageScale(1);
+                    setImagePan({ x: 0, y: 0 });
+                    
                     // Initialize crop area in center
                     const cropSize = Math.min(displayWidth, displayHeight) * 0.6;
                     let cropWidth = cropSize;
@@ -1636,10 +1649,30 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                     });
                 }
             };
-            img.onerror = () => {
-                console.error('Failed to load image');
-                setIsLoading(false);
+            
+            img.onerror = (e) => {
+                console.error('Failed to load image:', e, 'URL:', imageUrl);
+                
+                // Try loading without CORS as fallback
+                if (img.crossOrigin) {
+                    const fallbackImg = new window.Image();
+                    fallbackImg.onload = () => {
+                        imageRef.current = fallbackImg;
+                        setIsLoading(false);
+                        // Continue with same logic as above...
+                    };
+                    fallbackImg.onerror = () => {
+                        console.error('Image loading failed completely');
+                        setIsLoading(false);
+                        alert('Failed to load image. Please try a different image or check the URL.');
+                    };
+                    fallbackImg.src = imageUrl;
+                } else {
+                    setIsLoading(false);
+                    alert('Failed to load image. Please try a different image or check the URL.');
+                }
             };
+            
             img.src = imageUrl;
         }
     }, [imageUrl]);
