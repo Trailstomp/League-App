@@ -9668,6 +9668,7 @@ function App() {
 
     // Image popup state for galleries
     const [selectedImagePopup, setSelectedImagePopup] = useState(null);
+    const [editingPlayerStats, setEditingPlayerStats] = useState(false);
 
     // Load data from API on component mount
     useEffect(() => {
