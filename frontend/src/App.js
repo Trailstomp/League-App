@@ -9390,6 +9390,9 @@ function App() {
         overlayLogoSize: 'medium' // small, medium, large
     });
 
+    // Image popup state for galleries
+    const [selectedImagePopup, setSelectedImagePopup] = useState(null);
+
     // Load data from API on component mount
     useEffect(() => {
         const loadInitialData = async () => {
