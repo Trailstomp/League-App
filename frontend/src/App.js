@@ -3451,7 +3451,7 @@ const HomePage = ({teams, onTeamClick, leagueInfo, websiteStyle}) => {
     );
 };
 
-const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteStyle}) => {
+const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteStyle, onUpdateRSVP, users, onSendNotification}) => {
     const [selectedTeamSchedule, setSelectedTeamSchedule] = useState('all');
     const getTeam = (id) => teams.find(t => t.id === id);
     const isAdmin = currentUser && currentUser.roles.includes('admin');
