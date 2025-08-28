@@ -286,6 +286,149 @@ class BackendTester:
         
         return all_fast
 
+    def test_get_league_data(self):
+        """Test GET /api/league-data endpoint"""
+        try:
+            response = requests.get(f"{self.api_base}/league-data", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = ['id', 'teams', 'players', 'users', 'newsItems', 'gameTickerData', 'leagueSchedule', 'leagueInfo', 'websiteStyle']
+                
+                if all(field in data for field in required_fields):
+                    self.log_test(
+                        "GET League Data", 
+                        True, 
+                        f"Retrieved league data with {len(data.get('teams', []))} teams", 
+                        f"ID: {data.get('id')}"
+                    )
+                    return True, data
+                else:
+                    missing = [f for f in required_fields if f not in data]
+                    self.log_test(
+                        "GET League Data", 
+                        False, 
+                        f"Missing required fields: {missing}"
+                    )
+                    return False, None
+            else:
+                self.log_test(
+                    "GET League Data", 
+                    False, 
+                    f"HTTP {response.status_code}: {response.text}"
+                )
+                return False, None
+                
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "GET League Data", 
+                False, 
+                f"Connection error: {str(e)}"
+            )
+            return False, None
+
+    def test_save_league_data(self):
+        """Test POST /api/league-data endpoint"""
+        try:
+            test_data = {
+                "teams": [{"id": "test_team", "name": "Test Team"}],
+                "players": [],
+                "users": [],
+                "newsItems": [],
+                "gameTickerData": [],
+                "leagueSchedule": [],
+                "leagueInfo": {"name": "Test League"},
+                "websiteStyle": {"theme": "default"}
+            }
+            
+            response = requests.post(
+                f"{self.api_base}/league-data", 
+                json=test_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('message') == 'League data saved successfully':
+                    self.log_test(
+                        "POST League Data", 
+                        True, 
+                        f"League data saved successfully", 
+                        {"message": data.get('message')}
+                    )
+                    return True, data
+                else:
+                    self.log_test(
+                        "POST League Data", 
+                        False, 
+                        f"Unexpected response: {data}"
+                    )
+                    return False, None
+            else:
+                self.log_test(
+                    "POST League Data", 
+                    False, 
+                    f"HTTP {response.status_code}: {response.text}"
+                )
+                return False, None
+                
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "POST League Data", 
+                False, 
+                f"Connection error: {str(e)}"
+            )
+            return False, None
+
+    def test_update_specific_data(self):
+        """Test POST /api/league-data/{data_type} endpoint"""
+        try:
+            test_teams = [
+                {"id": "team1", "name": "Test Team 1", "division": "Field"},
+                {"id": "team2", "name": "Test Team 2", "division": "Box"}
+            ]
+            
+            response = requests.post(
+                f"{self.api_base}/league-data/teams", 
+                json=test_teams,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('message') == 'teams updated successfully':
+                    self.log_test(
+                        "POST Specific Data (teams)", 
+                        True, 
+                        f"Teams data updated successfully", 
+                        {"message": data.get('message')}
+                    )
+                    return True, data
+                else:
+                    self.log_test(
+                        "POST Specific Data (teams)", 
+                        False, 
+                        f"Unexpected response: {data}"
+                    )
+                    return False, None
+            else:
+                self.log_test(
+                    "POST Specific Data (teams)", 
+                    False, 
+                    f"HTTP {response.status_code}: {response.text}"
+                )
+                return False, None
+                
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "POST Specific Data (teams)", 
+                False, 
+                f"Connection error: {str(e)}"
+            )
+            return False, None
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("Starting Backend API Tests...")
