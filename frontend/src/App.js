@@ -6792,7 +6792,6 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                 className="border-b border-slate-200 p-6 hover:bg-slate-50 cursor-pointer transition-colors"
                                                 onClick={() => {
                                                     setSelectedNewsItem(item);
-                                                    setShowNewsPopup(true);
                                                 }}
                                             >
                                                 <div className="flex items-start space-x-4">
