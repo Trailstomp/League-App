@@ -1677,10 +1677,10 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         }
     }, [imageUrl]);
 
-    // Draw canvas whenever crop area changes
+    // Draw canvas whenever crop area or image transform changes
     useEffect(() => {
         drawCanvas();
-    }, [cropArea, canvasSize]);
+    }, [cropArea, canvasSize, imageScale, imagePan]);
 
     const drawCanvas = () => {
         const canvas = canvasRef.current;
@@ -1694,16 +1694,27 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw image to fit canvas
-        ctx.drawImage(img, 0, 0, canvasSize.width, canvasSize.height);
+        // Calculate image position and size with scaling and panning
+        const scaledWidth = canvasSize.width * imageScale;
+        const scaledHeight = canvasSize.height * imageScale;
+        const imageX = (canvasSize.width - scaledWidth) / 2 + imagePan.x;
+        const imageY = (canvasSize.height - scaledHeight) / 2 + imagePan.y;
+
+        // Draw image with scaling and panning
+        ctx.drawImage(img, imageX, imageY, scaledWidth, scaledHeight);
 
         // Draw dark overlay
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Clear crop area (show original image)
+        // Clear crop area to show unmasked image
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
+        ctx.clip();
         ctx.clearRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
-        ctx.drawImage(img, 0, 0, canvasSize.width, canvasSize.height);
+        ctx.drawImage(img, imageX, imageY, scaledWidth, scaledHeight);
+        ctx.restore();
 
         // Draw crop border
         ctx.strokeStyle = '#3b82f6';
@@ -1712,8 +1723,10 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         ctx.strokeRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
 
         // Draw resize handles
-        const handleSize = 10;
+        const handleSize = 12;
         ctx.fillStyle = '#3b82f6';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
         
         // Corner handles
         const corners = [
@@ -1725,6 +1738,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         
         corners.forEach(corner => {
             ctx.fillRect(corner.x - handleSize/2, corner.y - handleSize/2, handleSize, handleSize);
+            ctx.strokeRect(corner.x - handleSize/2, corner.y - handleSize/2, handleSize, handleSize);
         });
 
         // Side handles (only if not maintaining aspect ratio)
@@ -1738,6 +1752,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
             
             sides.forEach(side => {
                 ctx.fillRect(side.x - handleSize/2, side.y - handleSize/2, handleSize, handleSize);
+                ctx.strokeRect(side.x - handleSize/2, side.y - handleSize/2, handleSize, handleSize);
             });
         }
     };
