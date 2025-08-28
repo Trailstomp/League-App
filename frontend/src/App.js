@@ -1603,7 +1603,6 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
             
             img.onload = () => {
                 imageRef.current = img;
-                setIsLoading(false);
                 
                 // Set canvas size based on container
                 const canvas = canvasRef.current;
@@ -1624,8 +1623,6 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                         displayWidth = maxHeight * imageAspect;
                     }
                     
-                    setCanvasSize({ width: displayWidth, height: displayHeight });
-                    
                     // Reset image transformation when new image loads
                     setImageScale(1);
                     setImagePan({ x: 0, y: 0 });
@@ -1641,12 +1638,24 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                         cropHeight = cropWidth / ratioConfig.ratio;
                     }
                     
-                    setCropArea({
+                    const newCropArea = {
                         x: (displayWidth - cropWidth) / 2,
                         y: (displayHeight - cropHeight) / 2,
                         width: cropWidth,
                         height: cropHeight
-                    });
+                    };
+                    
+                    // Set all state at once, then force canvas redraw
+                    setCanvasSize({ width: displayWidth, height: displayHeight });
+                    setCropArea(newCropArea);
+                    setIsLoading(false);
+                    
+                    // Force immediate canvas redraw after state updates
+                    setTimeout(() => {
+                        if (canvasRef.current && imageRef.current) {
+                            drawCanvas();
+                        }
+                    }, 0);
                 }
             };
             
