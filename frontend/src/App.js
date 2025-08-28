@@ -7766,7 +7766,7 @@ function App() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const handleLogin = (userOrCredentials) => {
+    const handleLogin = React.useCallback((userOrCredentials) => {
         // If it's a user object (from quick login buttons), use it directly
         if (userOrCredentials && userOrCredentials.id) {
             setCurrentUser(userOrCredentials);
@@ -7795,7 +7795,7 @@ function App() {
         setCurrentUser(user);
         setShowLogin(false);
         setLoginCredentials({ email: '', password: '' });
-    };
+    }, [loginCredentials, users]);
 
     const handleLogout = () => {
         setCurrentUser(null);
