@@ -2609,7 +2609,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
 // --- UTILITY COMPONENTS ---
 
 // --- Page Components ---
-const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle, setCurrentUser}) => {
+const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle, setCurrentUser, newsItems, setSelectedNewsItem}) => {
     const sortedTeams = teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name));
     const isLeagueAdmin = currentUser && currentUser.roles.includes('admin');
     
