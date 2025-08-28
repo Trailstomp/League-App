@@ -1440,7 +1440,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio = 'free', conte
                 <div className="p-6">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-xl font-bold flex items-center space-x-2">
-                            <Scissors size={20} />
+                            <Edit3 size={20} />
                             <span>Crop & Adjust Image</span>
                         </h3>
                         <button onClick={onCancel} className="p-2 hover:bg-slate-100 rounded">
