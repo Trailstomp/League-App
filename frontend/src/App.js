@@ -2600,6 +2600,8 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                                     }));
                                                 }}
                                                 placeholder="Upload photo or paste URL"
+                                                enableCrop={true}
+                                                cropAspectRatio="free"
                                             />
                                             <textarea 
                                                 defaultValue={picture.description}
