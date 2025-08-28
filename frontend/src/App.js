@@ -2678,17 +2678,49 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
 
                     {/* Bottom Row - Main Controls */}
                     <div className="flex items-center justify-between">
-                        {/* Aspect Ratio Selector */}
+                        {/* Enhanced Aspect Ratio Selector */}
                         <div className="flex items-center space-x-2">
                             <span className="text-sm font-medium">Aspect Ratio:</span>
                             <select
                                 value={currentAspectRatio}
                                 onChange={(e) => handleAspectRatioChange(e.target.value)}
-                                className="text-sm border border-gray-300 rounded px-3 py-1"
+                                className="text-sm border border-gray-300 rounded px-3 py-1 bg-white"
                             >
-                                {Object.entries(aspectRatios).map(([key, config]) => (
-                                    <option key={key} value={key}>{config.label}</option>
-                                ))}
+                                <optgroup label="📐 Flexible">
+                                    {Object.entries(aspectRatios)
+                                        .filter(([_, config]) => config.category === 'flexible')
+                                        .map(([key, config]) => (
+                                            <option key={key} value={key}>{config.label}</option>
+                                        ))}
+                                </optgroup>
+                                <optgroup label="📱 Standard">
+                                    {Object.entries(aspectRatios)
+                                        .filter(([_, config]) => config.category === 'standard')
+                                        .map(([key, config]) => (
+                                            <option key={key} value={key}>{config.label}</option>
+                                        ))}
+                                </optgroup>
+                                <optgroup label="🖥️ Widescreen">
+                                    {Object.entries(aspectRatios)
+                                        .filter(([_, config]) => config.category === 'wide')
+                                        .map(([key, config]) => (
+                                            <option key={key} value={key}>{config.label}</option>
+                                        ))}
+                                </optgroup>
+                                <optgroup label="🎯 Banners">
+                                    {Object.entries(aspectRatios)
+                                        .filter(([_, config]) => config.category === 'banner')
+                                        .map(([key, config]) => (
+                                            <option key={key} value={key}>{config.label}</option>
+                                        ))}
+                                </optgroup>
+                                <optgroup label="📲 Vertical">
+                                    {Object.entries(aspectRatios)
+                                        .filter(([_, config]) => config.category === 'vertical')
+                                        .map(([key, config]) => (
+                                            <option key={key} value={key}>{config.label}</option>
+                                        ))}
+                                </optgroup>
                             </select>
                         </div>
 
