@@ -2625,13 +2625,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
 
 
 
-    // Save news items to API and localStorage when they change
-    useEffect(() => { 
-        if (!newsLoading && newsItems.length > 0) {
-            apiService.updateSpecificData('newsItems', newsItems);
-            setStoredData('mlbl_newsItems', newsItems);
-        }
-    }, [newsItems, newsLoading]);
+
     
     // Mock picture/video content - will be made editable by admin
     const [mediaContent, setMediaContent] = useState({
