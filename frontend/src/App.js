@@ -10075,6 +10075,98 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                     </div>
                 )}
 
+                {activeTab === 'website' && hasPermission(currentUser, 'system.settings') && (
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-6">Website Design & Styling</h2>
+                        <div className="space-y-6">
+                            <div className="bg-slate-50 p-4 rounded-lg border">
+                                <h3 className="text-lg font-semibold mb-3 flex items-center">
+                                    <Palette className="mr-2" size={20} />
+                                    Website Appearance
+                                </h3>
+                                <WebsiteStyleManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
+                            </div>
+                            
+                            <div className="bg-slate-50 p-4 rounded-lg border">
+                                <h3 className="text-lg font-semibold mb-3 flex items-center">
+                                    <ImageIcon className="mr-2" size={20} />
+                                    Banner & Logo Management
+                                </h3>
+                                <BannerUploadManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'api' && hasPermission(currentUser, 'system.settings') && (
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-6">API & Integrations</h2>
+                        <div className="space-y-6">
+                            <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                                <div className="flex items-center mb-4">
+                                    <Globe className="mr-2 text-blue-600" size={24} />
+                                    <h3 className="text-lg font-semibold text-blue-800">Third-Party API Credentials</h3>
+                                </div>
+                                <p className="text-sm text-blue-600 mb-4">
+                                    Configure API keys and credentials for external integrations
+                                </p>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="bg-white p-4 rounded-md border">
+                                        <h4 className="font-medium text-slate-800 mb-2">Social Media APIs</h4>
+                                        <p className="text-sm text-slate-600 mb-3">Twitter, Instagram, Facebook integration keys</p>
+                                        <button className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                            Configure Social APIs
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="bg-white p-4 rounded-md border">
+                                        <h4 className="font-medium text-slate-800 mb-2">Email & SMS APIs</h4>
+                                        <p className="text-sm text-slate-600 mb-3">SendGrid, Twilio, Mailgun credentials</p>
+                                        <button className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                                            Configure Messaging APIs
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="bg-white p-4 rounded-md border">
+                                        <h4 className="font-medium text-slate-800 mb-2">Analytics & Tracking</h4>
+                                        <p className="text-sm text-slate-600 mb-3">Google Analytics, tracking codes</p>
+                                        <button className="bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700">
+                                            Configure Analytics
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="bg-white p-4 rounded-md border">
+                                        <h4 className="font-medium text-slate-800 mb-2">Payment Processing</h4>
+                                        <p className="text-sm text-slate-600 mb-3">Stripe, PayPal integration</p>
+                                        <button className="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-700">
+                                            Configure Payments
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="bg-slate-50 p-6 rounded-lg border">
+                                <h3 className="text-lg font-semibold mb-3">API Documentation & Testing</h3>
+                                <p className="text-slate-600 mb-4">
+                                    Access API documentation and test endpoints
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                    <button className="bg-slate-600 text-white px-4 py-2 rounded hover:bg-slate-700">
+                                        View API Docs
+                                    </button>
+                                    <button className="bg-slate-600 text-white px-4 py-2 rounded hover:bg-slate-700">
+                                        Test Endpoints
+                                    </button>
+                                    <button className="bg-slate-600 text-white px-4 py-2 rounded hover:bg-slate-700">
+                                        Generate API Keys
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {activeTab === 'game_ticker' && hasPermission(currentUser, 'events.edit') && (
                     <div className="p-6">
                         <h2 className="text-2xl font-bold mb-4">Game Ticker Management</h2>
