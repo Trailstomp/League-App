@@ -203,7 +203,7 @@ const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder, e
                         <p className="text-sm text-slate-600">{placeholder || 'Click or drag to upload file'}</p>
                         <p className="text-xs text-slate-500 mt-1">Supported: {accept}</p>
                         {enableCrop && accept.includes('image') && (
-                            <p className="text-xs text-blue-600 mt-1">✨ Includes crop & resize tool</p>
+                            <p className="text-xs text-blue-600 mt-1">✨ Includes image adjustment tool</p>
                         )}
                     </div>
                 )}
