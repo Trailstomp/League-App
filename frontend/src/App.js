@@ -10014,6 +10014,7 @@ function App() {
     const [manageMediaExpanded, setManageMediaExpanded] = useState(false);
     const [manageSocialExpanded, setManageSocialExpanded] = useState(false);
     const [manageContactExpanded, setManageContactExpanded] = useState(false);
+    const [manageScheduleExpanded, setManageScheduleExpanded] = useState(false);
 
     // Load data from API on component mount
     useEffect(() => {
