@@ -7064,7 +7064,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {teamRoster.length > 0 ? teamRoster
+                                        {sortedTeamPlayers.length > 0 ? sortedTeamPlayers
                                             .filter(player => player.active)
                                             .sort((a, b) => (b.stats?.points || 0) - (a.stats?.points || 0))
                                             .map(player => {
