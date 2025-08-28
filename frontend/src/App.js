@@ -9933,6 +9933,7 @@ function App() {
     const [editingPlayerStats, setEditingPlayerStats] = useState(false);
     const [managePlayersExpanded, setManagePlayersExpanded] = useState(false);
     const [editingPlayer, setEditingPlayer] = useState(null);
+    const [manageMediaExpanded, setManageMediaExpanded] = useState(false);
 
     // Load data from API on component mount
     useEffect(() => {
