@@ -7997,7 +7997,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                     <div className="p-6">
                         <h2 className="text-2xl font-bold mb-4">Media Gallery</h2>
                         <div className="text-center py-8 text-slate-500">
-                            <Image size={48} className="mx-auto mb-4" />
+                            <ImageIcon size={48} className="mx-auto mb-4" />
                             <p>Media gallery management coming soon...</p>
                             <p className="text-sm">This will consolidate photo and video management</p>
                         </div>
