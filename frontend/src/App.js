@@ -1565,7 +1565,6 @@ const SocialCard = ({ entity }) => {
 // --- IMAGE CROP TOOL DISABLED ---
 // Advanced Image Cropping Tool - Enhanced with zoom/pan and fixed handles
 const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectRatio = 'free' }) => {
-    console.log('ImageCropTool component rendered with imageUrl:', imageUrl);
     
     const canvasRef = useRef(null);
     const imageRef = useRef(null);
