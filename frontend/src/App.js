@@ -6311,7 +6311,7 @@ const TeamSocialMediaManager = ({ team, setTeams }) => {
             if (t.id === team.id) {
                 return { 
                     ...t, 
-                    socialMedia: {
+                    social: {
                         ...socialMediaData
                     }
                 };
