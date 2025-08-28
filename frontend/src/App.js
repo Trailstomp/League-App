@@ -7236,41 +7236,41 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                 {activeTab === 'manage_style' && isAuthorizedToManage && <TeamStyleManager teams={[team]} setTeams={setTeams} currentUser={currentUser} />}
             </div>
             </div>
-        </div>
-        
-        {/* Image Popup Modal */}
-        {selectedImagePopup && (
-            <div 
-                className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
-                onClick={() => setSelectedImagePopup(null)}
-            >
-                <div className="relative max-w-[90vw] max-h-[90vh]">
-                    {/* Close button */}
-                    <button
-                        onClick={() => setSelectedImagePopup(null)}
-                        className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-70 z-10"
-                    >
-                        <X size={24} />
-                    </button>
-                    
-                    {/* Image */}
-                    <img 
-                        src={selectedImagePopup.url} 
-                        alt={selectedImagePopup.caption}
-                        className="max-w-full max-h-full object-contain cursor-pointer"
-                        onClick={() => setSelectedImagePopup(null)}
-                    />
-                    
-                    {/* Caption */}
-                    {selectedImagePopup.caption && (
-                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white p-4">
-                            <h3 className="text-lg font-semibold">{selectedImagePopup.galleryName}</h3>
-                            <p className="text-sm text-gray-300">{selectedImagePopup.caption}</p>
-                        </div>
-                    )}
+            
+            {/* Image Popup Modal */}
+            {selectedImagePopup && (
+                <div 
+                    className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
+                    onClick={() => setSelectedImagePopup(null)}
+                >
+                    <div className="relative max-w-[90vw] max-h-[90vh]">
+                        {/* Close button */}
+                        <button
+                            onClick={() => setSelectedImagePopup(null)}
+                            className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-70 z-10"
+                        >
+                            <X size={24} />
+                        </button>
+                        
+                        {/* Image */}
+                        <img 
+                            src={selectedImagePopup.url} 
+                            alt={selectedImagePopup.caption}
+                            className="max-w-full max-h-full object-contain cursor-pointer"
+                            onClick={() => setSelectedImagePopup(null)}
+                        />
+                        
+                        {/* Caption */}
+                        {selectedImagePopup.caption && (
+                            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white p-4">
+                                <h3 className="text-lg font-semibold">{selectedImagePopup.galleryName}</h3>
+                                <p className="text-sm text-gray-300">{selectedImagePopup.caption}</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
-        )}
+            )}
+        </div>
     );
 };
 
