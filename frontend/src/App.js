@@ -1664,22 +1664,106 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                 
                 // Try loading without CORS as fallback
                 if (img.crossOrigin) {
+                    console.log('Retrying without CORS...');
                     const fallbackImg = new window.Image();
                     fallbackImg.onload = () => {
+                        console.log('Fallback image loaded successfully');
                         imageRef.current = fallbackImg;
-                        setIsLoading(false);
-                        // Continue with same logic as above...
+                        
+                        // Same initialization logic as main onload
+                        const canvas = canvasRef.current;
+                        if (canvas) {
+                            const container = canvas.parentElement;
+                            const maxWidth = Math.min(container.clientWidth - 32, 800);
+                            const maxHeight = Math.min(container.clientHeight - 32, 600);
+                            
+                            const imageAspect = fallbackImg.width / fallbackImg.height;
+                            let displayWidth, displayHeight;
+                            
+                            if (imageAspect > maxWidth / maxHeight) {
+                                displayWidth = maxWidth;
+                                displayHeight = maxWidth / imageAspect;
+                            } else {
+                                displayHeight = maxHeight;
+                                displayWidth = maxHeight * imageAspect;
+                            }
+                            
+                            setImageScale(1);
+                            setImagePan({ x: 0, y: 0 });
+                            
+                            const cropSize = Math.min(displayWidth, displayHeight) * 0.6;
+                            let cropWidth = cropSize;
+                            let cropHeight = cropSize;
+                            
+                            const ratioConfig = aspectRatios[currentAspectRatio] || aspectRatios['free'];
+                            if (ratioConfig && ratioConfig.ratio) {
+                                cropHeight = cropWidth / ratioConfig.ratio;
+                            }
+                            
+                            const newCropArea = {
+                                x: (displayWidth - cropWidth) / 2,
+                                y: (displayHeight - cropHeight) / 2,
+                                width: cropWidth,
+                                height: cropHeight
+                            };
+                            
+                            setCanvasSize({ width: displayWidth, height: displayHeight });
+                            setCropArea(newCropArea);
+                            setIsLoading(false);
+                            
+                            setTimeout(() => {
+                                if (canvasRef.current && imageRef.current) {
+                                    drawCanvas();
+                                }
+                            }, 0);
+                        }
                     };
                     fallbackImg.onerror = () => {
                         console.error('Image loading failed completely');
                         setIsLoading(false);
-                        alert('Failed to load image. Please try a different image or check the URL.');
+                        alert('Failed to load image. The image may be corrupted or the URL is invalid. Please try uploading a new image.');
                     };
+                    // Set a timeout for the fallback loading
+                    const timeout = setTimeout(() => {
+                        console.error('Image loading timed out');
+                        setIsLoading(false);
+                        alert('Image loading timed out. Please try a different image.');
+                    }, 10000); // 10 second timeout
+                    
+                    fallbackImg.onload = () => {
+                        clearTimeout(timeout);
+                        fallbackImg.onload(); // Call the original onload
+                    };
+                    fallbackImg.onerror = () => {
+                        clearTimeout(timeout);
+                        fallbackImg.onerror(); // Call the original onerror
+                    };
+                    
                     fallbackImg.src = imageUrl;
                 } else {
                     setIsLoading(false);
-                    alert('Failed to load image. Please try a different image or check the URL.');
+                    alert('Failed to load image. Please try uploading a new image.');
                 }
+            };
+            
+            // Set a timeout for the main image loading
+            const mainTimeout = setTimeout(() => {
+                console.error('Main image loading timed out');
+                setIsLoading(false);
+                alert('Image loading timed out. Please try a different image.');
+            }, 10000); // 10 second timeout
+            
+            // Clear timeout on successful load
+            const originalOnLoad = img.onload;
+            img.onload = () => {
+                clearTimeout(mainTimeout);
+                originalOnLoad();
+            };
+            
+            const originalOnError = img.onerror;
+            img.onerror = (e) => {
+                clearTimeout(mainTimeout);
+                originalOnError(e);
             };
             
             img.src = imageUrl;
