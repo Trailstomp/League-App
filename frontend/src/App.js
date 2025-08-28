@@ -7884,6 +7884,7 @@ function App() {
     const handleAuthModalClose = () => {
         setShowLogin(false);
         setAuthMode('login');
+        setLoginCredentials({ email: '', password: '' });
         setRegistrationData({
             name: '',
             email: '',
