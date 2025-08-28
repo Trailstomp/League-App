@@ -87,7 +87,26 @@
     overflow: hidden;
 }
 
-/* Gallery auto-scroll animation */
+/* Gallery auto-scroll animations - dynamically generated per gallery */
+@keyframes gallery-scroll-gallery-1 {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-1480px); /* 5 items * 296px = exact loop point */
+    }
+}
+
+@keyframes gallery-scroll-gallery-2 {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-592px); /* 2 items * 296px = exact loop point */
+    }
+}
+
+/* Default gallery scroll */
 @keyframes gallery-scroll {
     0% {
         transform: translateX(0);
