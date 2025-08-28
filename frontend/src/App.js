@@ -191,7 +191,7 @@ const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder, e
                                     onClick={(e) => { e.stopPropagation(); openCropTool(); }}
                                     className="inline-flex items-center space-x-2 px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-md text-sm transition-colors"
                                 >
-                                    <Crop size={14} />
+                                    <Scissors size={14} />
                                     <span>Crop & Adjust</span>
                                 </button>
                             </div>
