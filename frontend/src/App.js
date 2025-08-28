@@ -7775,8 +7775,7 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                 onChange={(url) => setStyle(prev => ({...prev, overlayLogo: url}))}
                                 placeholder="Upload watermark logo or enter URL"
                                 enableCrop={true}
-                                cropAspectRatio="square"
-                                cropContext="square"
+                                cropAspectRatio="1:1"
                             />
                             <p className="text-xs text-slate-500 mt-1">Appears subtly on all pages</p>
                         </div>
