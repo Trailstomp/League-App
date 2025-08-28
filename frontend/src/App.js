@@ -2623,63 +2623,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
 
 
 
-    useEffect(() => {
-        const loadNewsData = async () => {
-            try {
-                const apiData = await apiService.loadLeagueData();
-                if (apiData && apiData.newsItems) {
-                    setNewsItems(apiData.newsItems);
-                    setStoredData('mlbl_newsItems', apiData.newsItems);
-                } else {
-                    // Fallback to localStorage or default
-                    const fallbackNews = getStoredData('mlbl_newsItems', [
-                        { 
-                            id: 1, 
-                            type: 'text',
-                            heading: "American Dads Championship Victory",
-                            text: "🏆 American Dads win Dayton Classic Tournament!", 
-                            comments: "Outstanding performance in the finals with a 12-9 victory over the defending champions.",
-                            date: "2025-08-10"
-                        },
-                        { 
-                            id: 2, 
-                            type: 'image',
-                            heading: "Championship Celebration",
-                            text: "📸 Championship celebration photos!", 
-                            imageUrl: "https://placehold.co/400x300/dc2626/FFFFFF?text=Championship+Photos",
-                            comments: "Amazing shots from the post-game celebration and trophy ceremony.",
-                            date: "2025-08-05"
-                        },
-                        { 
-                            id: 3, 
-                            type: 'text',
-                            heading: "OH10 Reaches Finals",
-                            text: "🥍 OH10 Lacrosse advances to championship finals", 
-                            comments: "After a thrilling semi-final match, OH10 secures their spot in the championship game.",
-                            date: "2025-08-03"
-                        },
-                        { 
-                            id: 4, 
-                            type: 'video',
-                            heading: "Game Highlights Available",
-                            text: "🎥 Game highlights now available!", 
-                            videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                            thumbnailUrl: "https://placehold.co/400x300/f59e0b/FFFFFF?text=Video+Highlights",
-                            comments: "Check out the best plays and goals from this weekend's games.",
-                            date: "2025-08-01"
-                        }
-                    ]);
-                    setNewsItems(fallbackNews);
-                }
-            } catch (error) {
-                console.error('Error loading news data:', error);
-            } finally {
-                setNewsLoading(false);
-            }
-        };
 
-        loadNewsData();
-    }, []);
 
     // Save news items to API and localStorage when they change
     useEffect(() => { 
