@@ -7505,11 +7505,54 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                         </div>
                                         
                                         {gallery.items && gallery.items.length > 0 ? (
-                                            <div className="relative">
-                                                {/* Horizontal Scrolling Gallery */}
-                                                <div className="flex overflow-x-auto scrollbar-hide space-x-4 pb-4" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
-                                                    {gallery.items.map(item => (
-                                                        <div key={item.id} className="flex-shrink-0 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" style={{width: '280px'}}>
+                                            <div className="relative group">
+                                                {/* Navigation Arrows */}
+                                                {gallery.items.length > 3 && (
+                                                    <>
+                                                        <button
+                                                            onClick={() => {
+                                                                const container = document.getElementById(`gallery-${gallery.id}`);
+                                                                if (container) {
+                                                                    container.scrollBy({ left: -300, behavior: 'smooth' });
+                                                                }
+                                                            }}
+                                                            className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-opacity opacity-0 group-hover:opacity-100"
+                                                        >
+                                                            <ChevronLeft size={20} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                const container = document.getElementById(`gallery-${gallery.id}`);
+                                                                if (container) {
+                                                                    container.scrollBy({ left: 300, behavior: 'smooth' });
+                                                                }
+                                                            }}
+                                                            className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-opacity opacity-0 group-hover:opacity-100"
+                                                        >
+                                                            <ChevronRight size={20} />
+                                                        </button>
+                                                    </>
+                                                )}
+                                                
+                                                {/* Auto-Scrolling Gallery Container */}
+                                                <div 
+                                                    id={`gallery-${gallery.id}`}
+                                                    className="flex overflow-x-auto scrollbar-hide space-x-4 pb-4 gallery-auto-scroll"
+                                                    style={{
+                                                        scrollbarWidth: 'none', 
+                                                        msOverflowStyle: 'none',
+                                                        animation: gallery.items.length > 3 ? 'gallery-scroll 20s linear infinite' : 'none'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.target.style.animationPlayState = 'paused';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.target.style.animationPlayState = 'running';
+                                                    }}
+                                                >
+                                                    {/* Duplicate items for seamless scrolling */}
+                                                    {[...gallery.items, ...gallery.items].map((item, index) => (
+                                                        <div key={`${item.id}-${index}`} className="flex-shrink-0 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" style={{width: '280px'}}>
                                                             {gallery.type === 'photo' ? (
                                                                 <div 
                                                                     className="aspect-square overflow-hidden relative group"
@@ -7552,14 +7595,39 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                     ))}
                                                 </div>
                                                 
-                                                {/* Scroll Indicators */}
-                                                {gallery.items.length > 3 && (
-                                                    <div className="flex justify-center mt-2 space-x-1">
-                                                        {Array.from({length: Math.ceil(gallery.items.length / 3)}).map((_, index) => (
-                                                            <div key={index} className="w-2 h-2 bg-slate-300 rounded-full"></div>
+                                                {/* Gallery Controls */}
+                                                <div className="flex justify-center items-center mt-4 space-x-4">
+                                                    <button
+                                                        onClick={() => {
+                                                            const container = document.getElementById(`gallery-${gallery.id}`);
+                                                            if (container) {
+                                                                container.style.animationPlayState = 
+                                                                    container.style.animationPlayState === 'paused' ? 'running' : 'paused';
+                                                            }
+                                                        }}
+                                                        className="bg-slate-600 text-white px-3 py-1 rounded text-sm hover:bg-slate-700 transition-colors"
+                                                    >
+                                                        ⏯️ Play/Pause
+                                                    </button>
+                                                    <div className="flex space-x-1">
+                                                        {gallery.items.map((_, index) => (
+                                                            <button
+                                                                key={index}
+                                                                onClick={() => {
+                                                                    const container = document.getElementById(`gallery-${gallery.id}`);
+                                                                    if (container) {
+                                                                        container.scrollTo({
+                                                                            left: index * 300,
+                                                                            behavior: 'smooth'
+                                                                        });
+                                                                    }
+                                                                }}
+                                                                className="w-3 h-3 bg-slate-300 hover:bg-slate-500 rounded-full transition-colors"
+                                                                title={`Go to image ${index + 1}`}
+                                                            ></button>
                                                         ))}
                                                     </div>
-                                                )}
+                                                </div>
                                             </div>
                                         ) : (
                                             <div className="text-center py-8 bg-slate-50 rounded-lg">
