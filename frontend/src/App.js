@@ -1648,10 +1648,12 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
             };
             
             const initializeCanvas = (img) => {
+                console.log('initializeCanvas called with image:', img.width + 'x' + img.height);
                 imageRef.current = img;
                 
                 // Set canvas size based on container
                 const canvas = canvasRef.current;
+                console.log('Canvas ref:', canvas ? 'found' : 'NOT FOUND');
                 if (canvas) {
                     const container = canvas.parentElement;
                     const maxWidth = Math.min(container.clientWidth - 32, 800);
