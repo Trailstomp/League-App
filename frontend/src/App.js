@@ -2419,10 +2419,11 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                 <div key={item.id} className="bg-slate-50 p-3 rounded">
                                     {editingNewsItem?.id === item.id ? (
                                         <div className="space-y-2">
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                            <div className="space-y-3">
+                                                {/* News Type Selector */}
                                                 <select 
                                                     defaultValue={item.type}
-                                                    className="p-2 border rounded"
+                                                    className="p-2 border rounded w-full"
                                                     onChange={(e) => {
                                                         setEditingNewsItem(prev => ({...prev, type: e.target.value}));
                                                     }}
@@ -2432,13 +2433,35 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                                     <option value="video">🎥 Video + Text</option>
                                                 </select>
                                                 
+                                                {/* Header Text */}
                                                 <input 
                                                     type="text"
+                                                    defaultValue={item.heading}
+                                                    placeholder="News headline/header (e.g., 'Championship Victory')"
+                                                    className="p-2 border rounded w-full font-medium"
+                                                    onChange={(e) => {
+                                                        setEditingNewsItem(prev => ({...prev, heading: e.target.value}));
+                                                    }}
+                                                />
+                                                
+                                                {/* Body Text */}
+                                                <textarea 
                                                     defaultValue={item.text}
-                                                    placeholder="News text"
-                                                    className="p-2 border rounded md:col-span-2"
+                                                    placeholder="Detailed news content (e.g., 'The team secured a decisive 15-10 victory...')"
+                                                    className="p-2 border rounded w-full h-24 resize-vertical"
                                                     onChange={(e) => {
                                                         setEditingNewsItem(prev => ({...prev, text: e.target.value}));
+                                                    }}
+                                                />
+                                                
+                                                {/* Comments/Additional Info */}
+                                                <input 
+                                                    type="text"
+                                                    defaultValue={item.comments}
+                                                    placeholder="Additional comments or context (optional)"
+                                                    className="p-2 border rounded w-full text-sm"
+                                                    onChange={(e) => {
+                                                        setEditingNewsItem(prev => ({...prev, comments: e.target.value}));
                                                     }}
                                                 />
                                             </div>
