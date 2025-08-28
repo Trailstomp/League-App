@@ -8343,7 +8343,7 @@ function App() {
                 <MusicPlayer musicState={musicState} setMusicState={setMusicState} />
             </div>
         </div>
-    ), [authMode, loginCredentials, registrationData, users, teams, handleAuthModalClose, handleLogin]);
+    );
 }
 
 export default App;
