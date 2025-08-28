@@ -10544,7 +10544,7 @@ function App() {
     }, [teams]);
 
     // Update hash when navigation changes
-    const navigate = (pageName, teamId = null) => {
+    const navigateWithHash = (pageName, teamId = null) => {
         if (pageName === 'team' && teamId) {
             window.location.hash = `team=${teamId}`;
         } else {
