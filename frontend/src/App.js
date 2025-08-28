@@ -7157,7 +7157,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                             <div className="bg-white rounded-lg shadow p-4">
                                 <h4 className="text-lg font-semibold text-slate-800 mb-3">Top Goalie</h4>
                                 {(() => {
-                                    const topGoalie = teamRoster
+                                    const topGoalie = sortedTeamPlayers
                                         .filter(p => p.active && p.positions && 
                                                (Array.isArray(p.positions) ? p.positions.includes('Goalie') : p.positions === 'Goalie'))
                                         .sort((a, b) => (b.stats?.saves || 0) - (a.stats?.saves || 0))[0];
