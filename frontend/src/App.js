@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Home, BarChart2, Users, Calendar, Shield, Menu, X, Settings, LogOut, Sun, Moon, ArrowUp, ArrowDown, Trophy, Swords, MessageSquare, Crown, LogIn, Mail, Edit, ToggleLeft, ToggleRight, Plus, Trash2, Twitter, Instagram, Facebook, Image, Video, UserCheck, MapPin, Palette, ChevronLeft, ChevronRight, Eye, Upload, Play, Pause, Music, Layout, Zap, Type, Star, Share2, Edit3, Maximize2, Minimize2, Move3D } from 'lucide-react';
+import { Home, BarChart2, Users, Calendar, Shield, Menu, X, Settings, LogOut, Sun, Moon, ArrowUp, ArrowDown, Trophy, Swords, MessageSquare, Crown, LogIn, Mail, Edit, ToggleLeft, ToggleRight, Plus, Trash2, Twitter, Instagram, Facebook, Image, Video, UserCheck, MapPin, Palette, ChevronLeft, ChevronRight, Eye, Upload, Play, Pause, Music, Layout, Zap, Type, Star, Share2, Edit3, Plus as PlusIcon, Minus as MinusIcon, MousePointer2 } from 'lucide-react';
 import "./App.css";
 
 // --- ASSETS ---
