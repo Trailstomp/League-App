@@ -606,22 +606,7 @@ const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder, e
                 />
             )}
 
-            {/* DEBUG: Test Crop Tool with Sample Image */}
-            {showCropTool && !originalImageUrl && (
-                <div className="fixed inset-0 bg-red-500 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6">
-                        <h3 className="text-lg font-bold text-red-600 mb-4">DEBUG: Crop Tool Issue</h3>
-                        <p className="mb-4">showCropTool is true but originalImageUrl is empty!</p>
-                        <p className="mb-4">originalImageUrl: {String(originalImageUrl)}</p>
-                        <button 
-                            onClick={handleCropCancel}
-                            className="px-4 py-2 bg-red-500 text-white rounded"
-                        >
-                            Close Debug Modal
-                        </button>
-                    </div>
-                </div>
-            )}
+
         </div>
     );
 };
