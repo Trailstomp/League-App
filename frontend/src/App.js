@@ -8358,7 +8358,6 @@ function App() {
     const handleAuthModalClose = React.useCallback(() => {
         setShowLogin(false);
         setAuthMode('login');
-        setLoginCredentials({ email: '', password: '' });
         setRegistrationData({
             name: '',
             email: '',
