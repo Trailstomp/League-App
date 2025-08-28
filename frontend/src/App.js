@@ -1744,17 +1744,28 @@ const StatCard = ({ title, value, color }) => (
 
 const PlayerCard = ({ player, teamStyle, onClick }) => (
     <div
-        className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform hover:scale-105 duration-300 border-4 cursor-pointer"
+        className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform hover:scale-105 duration-300 border-4 cursor-pointer group"
         style={{ borderColor: teamStyle?.primaryColor || '#cccccc' }}
         onClick={onClick}
         title="Click for player details"
     >
-        <div className="relative h-48 overflow-hidden">
-            <img 
-                src={player.photo || `https://ui-avatars.com/api/?name=${player.firstName}+${player.lastName}&background=random`} 
+        <div className="relative overflow-hidden" style={{ aspectRatio: '3/4', minHeight: '200px' }}>
+            <EnhancedImage
+                src={player.photo}
                 alt={`${player.firstName} ${player.lastName}`}
-                className="w-full h-full object-cover"
+                fit={player.imageFit || 'cover'}
+                fallback={`https://ui-avatars.com/api/?name=${player.firstName}+${player.lastName}&background=random&size=400`}
+                showFitControls={false} // Can be enabled for admin editing
+                className="w-full h-full"
             />
+            
+            {/* Hover overlay for image fit options */}
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="bg-black bg-opacity-60 rounded px-2 py-1 text-xs text-white">
+                    {player.imageFit || 'cover'}
+                </div>
+            </div>
+            
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
                 <h3 className="text-white font-bold text-lg">{player.firstName} {player.lastName}</h3>
                 <p className="text-white text-sm">#{player.number}</p>
