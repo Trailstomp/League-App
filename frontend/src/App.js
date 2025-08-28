@@ -8269,6 +8269,12 @@ function App() {
         );
     };
 
+    // Quick login function for demo buttons
+    const handleQuickLogin = (user) => {
+        setCurrentUser(user);
+        setShowLogin(false);
+    };
+
     const handleLogout = () => {
         setCurrentUser(null);
     };
