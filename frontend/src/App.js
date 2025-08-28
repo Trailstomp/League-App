@@ -10518,29 +10518,37 @@ function App() {
     useEffect(() => {
         const handleHashChange = () => {
             const hash = window.location.hash.substring(1); // Remove the '#'
+            console.log('Hash change detected:', hash, 'Teams loaded:', teams.length);
+            
             if (hash.startsWith('team=')) {
                 const teamId = hash.replace('team=', '');
                 const team = teams.find(t => t.id === teamId);
-                if (team) {
+                console.log('Looking for team:', teamId, 'Found:', !!team);
+                if (team && teams.length > 0) {
                     setPage('team');
                     setSelectedTeam(teamId);
+                    console.log('Team page set:', teamId);
                 }
-            } else if (hash) {
+            } else if (hash && hash !== 'home') {
                 // Handle other page navigation
                 setPage(hash);
                 setSelectedTeam(null);
+                console.log('Page set:', hash);
             }
         };
 
-        // Listen for hash changes
-        window.addEventListener('hashchange', handleHashChange);
-        
-        // Parse initial hash on mount
-        handleHashChange();
+        // Only set up routing if teams have loaded
+        if (teams.length > 0) {
+            // Listen for hash changes
+            window.addEventListener('hashchange', handleHashChange);
+            
+            // Parse initial hash on mount
+            handleHashChange();
 
-        return () => {
-            window.removeEventListener('hashchange', handleHashChange);
-        };
+            return () => {
+                window.removeEventListener('hashchange', handleHashChange);
+            };
+        }
     }, [teams]);
 
     // Load news data
