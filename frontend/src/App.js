@@ -6296,6 +6296,150 @@ const LocationManager = ({ team, setTeams }) => {
     );
 };
 
+const TeamSocialMediaManager = ({ team, setTeams }) => {
+    const [socialMediaData, setSocialMediaData] = useState({
+        twitter: team.socialMedia?.twitter || '',
+        instagram: team.socialMedia?.instagram || '',
+        facebook: team.socialMedia?.facebook || '',
+        youtube: team.socialMedia?.youtube || ''
+    });
+
+    const handleSaveSocialMedia = (e) => {
+        e.preventDefault();
+        
+        setTeams(currentTeams => currentTeams.map(t => {
+            if (t.id === team.id) {
+                return { 
+                    ...t, 
+                    socialMedia: {
+                        ...socialMediaData
+                    }
+                };
+            }
+            return t;
+        }));
+        
+        alert('Social media settings saved successfully!');
+    };
+
+    const handleInputChange = (platform, value) => {
+        setSocialMediaData(prev => ({
+            ...prev,
+            [platform]: value
+        }));
+    };
+
+    return (
+        <div className="space-y-6">
+            <form onSubmit={handleSaveSocialMedia} className="space-y-4">
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                        <div className="flex items-center space-x-2">
+                            <Twitter size={16} className="text-blue-500" />
+                            <span>Twitter/X URL</span>
+                        </div>
+                    </label>
+                    <input
+                        type="url"
+                        value={socialMediaData.twitter}
+                        onChange={(e) => handleInputChange('twitter', e.target.value)}
+                        placeholder="https://twitter.com/your_team"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                        <div className="flex items-center space-x-2">
+                            <Instagram size={16} className="text-pink-500" />
+                            <span>Instagram URL</span>
+                        </div>
+                    </label>
+                    <input
+                        type="url"
+                        value={socialMediaData.instagram}
+                        onChange={(e) => handleInputChange('instagram', e.target.value)}
+                        placeholder="https://instagram.com/your_team"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                        <div className="flex items-center space-x-2">
+                            <Facebook size={16} className="text-blue-600" />
+                            <span>Facebook URL</span>
+                        </div>
+                    </label>
+                    <input
+                        type="url"
+                        value={socialMediaData.facebook}
+                        onChange={(e) => handleInputChange('facebook', e.target.value)}
+                        placeholder="https://facebook.com/your_team"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                        <div className="flex items-center space-x-2">
+                            <Youtube size={16} className="text-red-600" />
+                            <span>YouTube URL</span>
+                        </div>
+                    </label>
+                    <input
+                        type="url"
+                        value={socialMediaData.youtube}
+                        onChange={(e) => handleInputChange('youtube', e.target.value)}
+                        placeholder="https://youtube.com/@your_team"
+                        className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                    />
+                </div>
+
+                <button 
+                    type="submit"
+                    className="w-full bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 transition-colors"
+                >
+                    Save Social Media Settings
+                </button>
+            </form>
+
+            <div className="bg-slate-50 p-4 rounded-lg">
+                <h4 className="text-sm font-medium text-slate-700 mb-2">Preview</h4>
+                <div className="grid grid-cols-2 gap-2">
+                    {socialMediaData.twitter && (
+                        <div className="flex items-center space-x-2 text-xs text-slate-600">
+                            <Twitter size={14} className="text-blue-500" />
+                            <span>Twitter Connected</span>
+                        </div>
+                    )}
+                    {socialMediaData.instagram && (
+                        <div className="flex items-center space-x-2 text-xs text-slate-600">
+                            <Instagram size={14} className="text-pink-500" />
+                            <span>Instagram Connected</span>
+                        </div>
+                    )}
+                    {socialMediaData.facebook && (
+                        <div className="flex items-center space-x-2 text-xs text-slate-600">
+                            <Facebook size={14} className="text-blue-600" />
+                            <span>Facebook Connected</span>
+                        </div>
+                    )}
+                    {socialMediaData.youtube && (
+                        <div className="flex items-center space-x-2 text-xs text-slate-600">
+                            <Youtube size={14} className="text-red-600" />
+                            <span>YouTube Connected</span>
+                        </div>
+                    )}
+                </div>
+                {!socialMediaData.twitter && !socialMediaData.instagram && !socialMediaData.facebook && !socialMediaData.youtube && (
+                    <p className="text-xs text-slate-500">No social media platforms connected yet.</p>
+                )}
+            </div>
+        </div>
+    );
+};
+
 const GroupMeManager = ({ team, setTeams }) => {
     const [editingGroupMe, setEditingGroupMe] = useState(null);
     const [groupMeData, setGroupMeData] = useState({
