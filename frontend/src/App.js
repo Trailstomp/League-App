@@ -7469,7 +7469,7 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                 {/* === PAGE BACKGROUND === */}
                 <div className="bg-slate-50 p-6 rounded-lg">
                     <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
-                        <Image className="mr-2" size={20} />
+                        <ImageIcon className="mr-2" size={20} />
                         Page Background
                     </h4>
                     
