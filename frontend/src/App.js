@@ -7881,7 +7881,7 @@ function App() {
     };
 
     // Reset registration data when closing auth modal
-    const handleAuthModalClose = () => {
+    const handleAuthModalClose = React.useCallback(() => {
         setShowLogin(false);
         setAuthMode('login');
         setLoginCredentials({ email: '', password: '' });
@@ -7893,7 +7893,7 @@ function App() {
             phone: '',
             reasonForJoining: ''
         });
-    };
+    }, []);
 
     const AuthModal = React.useCallback(() => (
         <div 
