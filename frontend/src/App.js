@@ -8092,7 +8092,7 @@ function App() {
                 )}
             </div>
         </div>
-    );
+    ), [authMode, loginCredentials, registrationData, users, teams, handleAuthModalClose, handleLogin]);
     
     const NavItem = ({ icon, label, pageName }) => (
         <button onClick={() => navigate(pageName)}
