@@ -7908,32 +7908,66 @@ function App() {
                     <div className="p-6">
                         <h2 className="text-2xl font-bold text-center mb-6">Welcome to MLBL</h2>
                         
-                        {/* Active Users Login */}
-                        <div className="mb-6">
-                            <h3 className="text-lg font-semibold mb-3">Login as:</h3>
-                            <div className="space-y-3">
-                                {users.filter(u => u.status === 'active' && u.roles.length > 0).map(user => (
-                                    <button 
-                                        key={user.id} 
-                                        onClick={() => handleLogin(user)} 
-                                        className="w-full text-left p-3 bg-slate-100 hover:bg-red-100 rounded-md flex items-center gap-3 transition-colors"
-                                    >
-                                       <UserCheck className="text-slate-600" />
-                                       <div>
-                                           <p className="font-bold">{user.name}</p>
-                                           <p className="text-sm text-slate-500 capitalize">{user.roles.join(', ')}</p>
-                                       </div>
-                                    </button>
-                                ))}
+                        {/* Email/Password Login Form */}
+                        <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="mb-6">
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
+                                <input
+                                    type="email"
+                                    value={loginCredentials.email}
+                                    onChange={(e) => setLoginCredentials(prev => ({...prev, email: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Enter your email address"
+                                    required
+                                />
                             </div>
-                        </div>
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Password</label>
+                                <input
+                                    type="password"
+                                    value={loginCredentials.password}
+                                    onChange={(e) => setLoginCredentials(prev => ({...prev, password: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Enter your password"
+                                    required
+                                />
+                            </div>
+                            <button 
+                                type="submit"
+                                className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                            >
+                                Login
+                            </button>
+                        </form>
+
+                        {/* Quick Login (for demo/testing) */}
+                        {users.filter(u => u.status === 'active' && u.roles.length > 0).length > 0 && (
+                            <div className="mb-6 border-t pt-4">
+                                <h3 className="text-sm font-semibold mb-3 text-slate-600">Quick Login (Demo Mode):</h3>
+                                <div className="grid grid-cols-1 gap-2">
+                                    {users.filter(u => u.status === 'active' && u.roles.length > 0).slice(0, 3).map(user => (
+                                        <button 
+                                            key={user.id} 
+                                            onClick={() => handleLogin(user)} 
+                                            className="text-left p-2 bg-slate-50 hover:bg-red-50 rounded text-sm flex items-center gap-2 transition-colors"
+                                        >
+                                           <UserCheck size={16} className="text-slate-500" />
+                                           <div>
+                                               <p className="font-medium text-sm">{user.name}</p>
+                                               <p className="text-xs text-slate-500">{user.email}</p>
+                                           </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                         
                         {/* Registration Option */}
                         <div className="border-t pt-4">
                             <p className="text-center text-slate-600 mb-3">New to the league?</p>
                             <button 
                                 onClick={() => setAuthMode('register')}
-                                className="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 transition-colors font-semibold"
+                                className="w-full bg-green-600 text-white p-3 rounded-md hover:bg-green-700 transition-colors font-semibold"
                             >
                                 Request Access
                             </button>
