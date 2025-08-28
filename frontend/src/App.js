@@ -7444,7 +7444,25 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
 
                 {activeTab === 'media' && (
                     <div>
-                        <h2 className="text-3xl font-bold text-slate-800 mb-4 tracking-tight">Media Gallery</h2>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-3xl font-bold text-slate-800 tracking-tight">Media Gallery</h2>
+                            {isAuthorizedToManage && (
+                                <button 
+                                    onClick={() => setManageMediaExpanded(!manageMediaExpanded)}
+                                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center text-sm"
+                                >
+                                    <Settings className="mr-2" size={16} />
+                                    {manageMediaExpanded ? 'Hide' : 'Show'} Media Management
+                                </button>
+                            )}
+                        </div>
+                        
+                        {/* Media Management Panel */}
+                        {isAuthorizedToManage && manageMediaExpanded && (
+                            <div className="bg-white rounded-lg shadow p-6 mb-6">
+                                <MediaManager team={team} setTeams={setTeams} />
+                            </div>
+                        )}
                         
                         {/* Display galleries and their items */}
                         {team.galleries && team.galleries.length > 0 ? (
