@@ -9989,6 +9989,8 @@ function App() {
     const [managePlayersExpanded, setManagePlayersExpanded] = useState(false);
     const [editingPlayer, setEditingPlayer] = useState(null);
     const [manageMediaExpanded, setManageMediaExpanded] = useState(false);
+    const [manageSocialExpanded, setManageSocialExpanded] = useState(false);
+    const [manageContactExpanded, setManageContactExpanded] = useState(false);
 
     // Load data from API on component mount
     useEffect(() => {
