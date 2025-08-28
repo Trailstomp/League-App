@@ -433,20 +433,25 @@ const getLogoStyle = (websiteStyle) => {
 const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder, enableCrop = false, cropAspectRatio = 'free', cropContext = 'header' }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [showCropTool, setShowCropTool] = useState(false);
-    const [tempImageUrl, setTempImageUrl] = useState(null);
+    const [originalImageUrl, setOriginalImageUrl] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef(null);
 
     const handleFileSelect = (file) => {
         if (file) {
+            setIsUploading(true);
+            
             // Create object URL for preview
             const objectUrl = URL.createObjectURL(file);
             
             // If it's an image and crop is enabled, show crop tool
             if (accept.includes('image') && enableCrop) {
-                setTempImageUrl(objectUrl);
+                setOriginalImageUrl(objectUrl);
                 setShowCropTool(true);
+                setIsUploading(false);
             } else {
                 onChange(objectUrl);
+                setIsUploading(false);
             }
         }
     };
@@ -454,15 +459,22 @@ const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder, e
     const handleCrop = (croppedImageData) => {
         onChange(croppedImageData);
         setShowCropTool(false);
-        setTempImageUrl(null);
+        
+        // Clean up original image URL if it was a blob
+        if (originalImageUrl && originalImageUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(originalImageUrl);
+        }
+        setOriginalImageUrl(null);
     };
 
     const handleCropCancel = () => {
         setShowCropTool(false);
-        if (tempImageUrl) {
-            URL.revokeObjectURL(tempImageUrl);
-            setTempImageUrl(null);
+        
+        // Clean up original image URL if it was a blob
+        if (originalImageUrl && originalImageUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(originalImageUrl);
         }
+        setOriginalImageUrl(null);
     };
 
     const handleDrop = (e) => {
@@ -485,7 +497,9 @@ const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder, e
 
     const openCropTool = () => {
         if (currentValue && accept.includes('image')) {
-            setTempImageUrl(currentValue);
+            // For existing images, we'll re-crop the current image
+            // In a real app, you'd want to store the original image URL separately
+            setOriginalImageUrl(currentValue);
             setShowCropTool(true);
         }
     };
