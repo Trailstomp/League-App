@@ -6542,7 +6542,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
             
             <div className="p-4 rounded-lg" style={{ backgroundColor: team.style?.backgroundColor || 'transparent' }}>
                 {activeTab === 'home' && (
-                    <div className="space-y-8">
+                    <div className="space-y-6">
                         {/* Team Hero Section */}
                         <div className="text-center py-8">
                             <h1 className="text-4xl font-bold mb-4" style={{ color: team.style?.primaryColor || '#dc2626' }}>
@@ -6553,7 +6553,41 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                             </p>
                         </div>
 
-                        {/* Team News Feed */}
+                        {/* Quick Team Stats - Moved Above News Feed and Made Smaller */}
+                        <div className="bg-white rounded-lg shadow p-4">
+                            <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                                <BarChart2 className="mr-2 h-5 w-5" />
+                                Team Stats
+                            </h2>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div className="text-center p-3 bg-slate-50 rounded-lg">
+                                    <div className="text-xl font-bold mb-1" style={{ color: team.style?.primaryColor || '#dc2626' }}>
+                                        {team.wins || 0}
+                                    </div>
+                                    <div className="text-xs font-medium text-slate-600">Wins</div>
+                                </div>
+                                <div className="text-center p-3 bg-slate-50 rounded-lg">
+                                    <div className="text-xl font-bold mb-1 text-red-500">
+                                        {team.losses || 0}
+                                    </div>
+                                    <div className="text-xs font-medium text-slate-600">Losses</div>
+                                </div>
+                                <div className="text-center p-3 bg-slate-50 rounded-lg">
+                                    <div className="text-xl font-bold mb-1 text-green-500">
+                                        {team.pf || 0}
+                                    </div>
+                                    <div className="text-xs font-medium text-slate-600">Points For</div>
+                                </div>
+                                <div className="text-center p-3 bg-slate-50 rounded-lg">
+                                    <div className="text-xl font-bold mb-1 text-orange-500">
+                                        {team.pa || 0}
+                                    </div>
+                                    <div className="text-xs font-medium text-slate-600">Points Against</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Team News Feed - Moved Below Stats */}
                         <div>
                             <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center">
                                 <MessageSquare className="mr-2" />
@@ -6613,34 +6647,6 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                         )}
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        {/* Quick Team Stats */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="bg-white rounded-lg shadow p-6 text-center">
-                                <div className="text-2xl font-bold mb-2" style={{ color: team.style?.primaryColor || '#dc2626' }}>
-                                    {team.wins || 0}
-                                </div>
-                                <div className="text-sm font-medium text-slate-600">Wins</div>
-                            </div>
-                            <div className="bg-white rounded-lg shadow p-6 text-center">
-                                <div className="text-2xl font-bold mb-2 text-red-500">
-                                    {team.losses || 0}
-                                </div>
-                                <div className="text-sm font-medium text-slate-600">Losses</div>
-                            </div>
-                            <div className="bg-white rounded-lg shadow p-6 text-center">
-                                <div className="text-2xl font-bold mb-2 text-green-500">
-                                    {team.pf || 0}
-                                </div>
-                                <div className="text-sm font-medium text-slate-600">Points For</div>
-                            </div>
-                            <div className="bg-white rounded-lg shadow p-6 text-center">
-                                <div className="text-2xl font-bold mb-2 text-orange-500">
-                                    {team.pa || 0}
-                                </div>
-                                <div className="text-sm font-medium text-slate-600">Points Against</div>
                             </div>
                         </div>
 
