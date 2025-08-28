@@ -10543,16 +10543,6 @@ function App() {
         };
     }, [teams]);
 
-    // Update hash when navigation changes
-    const navigateWithHash = (pageName, teamId = null) => {
-        if (pageName === 'team' && teamId) {
-            window.location.hash = `team=${teamId}`;
-        } else {
-            window.location.hash = pageName;
-        }
-        // State will be updated by hashchange listener
-    };
-
     // Load news data
     useEffect(() => {
         const loadNewsData = async () => {
