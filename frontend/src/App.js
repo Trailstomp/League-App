@@ -1839,9 +1839,9 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
 
     const handleAspectRatioChange = (newRatio) => {
         setCurrentAspectRatio(newRatio);
-        const ratioConfig = aspectRatios[newRatio];
+        const ratioConfig = aspectRatios[newRatio] || aspectRatios['free'];
         
-        if (ratioConfig.ratio) {
+        if (ratioConfig && ratioConfig.ratio) {
             // Adjust crop area to match new aspect ratio
             const newHeight = cropArea.width / ratioConfig.ratio;
             setCropArea(prev => ({
