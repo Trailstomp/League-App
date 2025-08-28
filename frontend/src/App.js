@@ -298,6 +298,148 @@ const Icon = ({ name, ...props }) => {
   return IconComponent ? <IconComponent {...props} /> : null;
 };
 
+// RSVP Management Component
+const RSVPManager = ({ event, currentUser, onUpdateRSVP, users, showFullList = false }) => {
+    const [showResponses, setShowResponses] = useState(false);
+    
+    if (!event?.rsvp?.enabled) return null;
+    
+    const responses = event.rsvp.responses || [];
+    const userResponse = responses.find(r => r.userId === currentUser?.id);
+    const yesCount = responses.filter(r => r.status === 'yes').length;
+    const noCount = responses.filter(r => r.status === 'no').length;
+    const maybeCount = responses.filter(r => r.status === 'maybe').length;
+    
+    const handleRSVP = (status) => {
+        if (!currentUser) return;
+        
+        const newResponse = {
+            userId: currentUser.id,
+            userName: currentUser.name,
+            status: status,
+            timestamp: new Date().toISOString()
+        };
+        
+        const updatedResponses = responses.filter(r => r.userId !== currentUser.id);
+        updatedResponses.push(newResponse);
+        
+        onUpdateRSVP(event.id, updatedResponses);
+    };
+    
+    return (
+        <div className="bg-slate-50 rounded-lg p-4 mt-3">
+            <div className="flex items-center justify-between mb-3">
+                <h4 className="font-semibold text-slate-800 flex items-center">
+                    <UserCheck className="mr-2" size={16} />
+                    Event RSVP
+                </h4>
+                <button 
+                    onClick={() => setShowResponses(!showResponses)}
+                    className="text-blue-600 hover:text-blue-800 text-sm flex items-center"
+                >
+                    <span className="mr-1">View Responses</span>
+                    {showResponses ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
+                </button>
+            </div>
+            
+            {/* RSVP Buttons */}
+            <div className="flex space-x-2 mb-3">
+                <button 
+                    onClick={() => handleRSVP('yes')}
+                    className={`flex-1 px-3 py-2 rounded text-sm font-medium transition-colors ${
+                        userResponse?.status === 'yes' 
+                            ? 'bg-green-600 text-white' 
+                            : 'bg-green-100 text-green-800 hover:bg-green-200'
+                    }`}
+                >
+                    ✓ Yes ({yesCount})
+                </button>
+                <button 
+                    onClick={() => handleRSVP('maybe')}
+                    className={`flex-1 px-3 py-2 rounded text-sm font-medium transition-colors ${
+                        userResponse?.status === 'maybe' 
+                            ? 'bg-yellow-600 text-white' 
+                            : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                    }`}
+                >
+                    ? Maybe ({maybeCount})
+                </button>
+                <button 
+                    onClick={() => handleRSVP('no')}
+                    className={`flex-1 px-3 py-2 rounded text-sm font-medium transition-colors ${
+                        userResponse?.status === 'no' 
+                            ? 'bg-red-600 text-white' 
+                            : 'bg-red-100 text-red-800 hover:bg-red-200'
+                    }`}
+                >
+                    ✗ No ({noCount})
+                </button>
+            </div>
+            
+            {/* Response Summary */}
+            <div className="text-sm text-slate-600 mb-3">
+                {responses.length > 0 ? (
+                    <span>
+                        {responses.length} total response{responses.length !== 1 ? 's' : ''} • 
+                        <span className="text-green-600 font-medium"> {yesCount} attending</span>
+                        {maybeCount > 0 && <span className="text-yellow-600"> • {maybeCount} maybe</span>}
+                        {noCount > 0 && <span className="text-red-600"> • {noCount} not attending</span>}
+                    </span>
+                ) : (
+                    <span>No responses yet</span>
+                )}
+            </div>
+            
+            {/* Detailed Response List */}
+            {showResponses && responses.length > 0 && (
+                <div className="border-t pt-3 mt-3">
+                    <div className="space-y-2">
+                        {['yes', 'maybe', 'no'].map(status => {
+                            const statusResponses = responses.filter(r => r.status === status);
+                            if (statusResponses.length === 0) return null;
+                            
+                            const statusConfig = {
+                                yes: { label: 'Attending', color: 'text-green-600', icon: '✓' },
+                                maybe: { label: 'Maybe', color: 'text-yellow-600', icon: '?' },
+                                no: { label: 'Not Attending', color: 'text-red-600', icon: '✗' }
+                            };
+                            
+                            const config = statusConfig[status];
+                            
+                            return (
+                                <div key={status} className="mb-2">
+                                    <h5 className={`text-sm font-semibold ${config.color} mb-1`}>
+                                        {config.icon} {config.label} ({statusResponses.length})
+                                    </h5>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-sm">
+                                        {statusResponses
+                                            .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+                                            .map(response => (
+                                            <div key={`${response.userId}-${status}`} className="flex items-center text-slate-700">
+                                                <span className="font-medium">{response.userName}</span>
+                                                <span className="ml-auto text-xs text-slate-500">
+                                                    {new Date(response.timestamp).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+            
+            {userResponse && (
+                <div className="text-xs text-slate-500 mt-2">
+                    Your response: <span className="font-medium">{userResponse.status}</span> • 
+                    Submitted {new Date(userResponse.timestamp).toLocaleDateString()}
+                </div>
+            )}
+        </div>
+    );
+};
+
 // Export individual icons for backward compatibility
 const Home = (props) => <Icon name="Home" {...props} />;
 const BarChart2 = (props) => <Icon name="BarChart2" {...props} />;
