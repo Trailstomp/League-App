@@ -9243,8 +9243,30 @@ function App() {
         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 100 100'%3E%3Cg fill='%23d1d5db' fill-opacity='0.1'%3E%3Cpath d='M12.5 0 L50 37.5 L87.5 0 L100 12.5 L62.5 50 L100 87.5 L87.5 100 L50 62.5 L12.5 100 L0 87.5 L37.5 50 L0 12.5 Z'/%3E%3C/g%3E%3C/svg%3E")`,
     };
     
+    // DEBUG: Add test state for crop functionality
+    const [debugTestImage, setDebugTestImage] = useState('https://picsum.photos/400/300');
+    
     return (
         <div className="min-h-screen bg-slate-100">
+            {/* DEBUG: Test Crop Tool Area */}
+            {page === 'home' && (
+                <div className="fixed top-4 right-4 bg-yellow-100 border-2 border-yellow-500 rounded-lg p-4 z-40 max-w-sm">
+                    <h3 className="font-bold text-yellow-800 mb-2">🛠️ DEBUG: Test Crop Tool</h3>
+                    <FileUploadInput
+                        label="Test Image Crop"
+                        accept="image/*"
+                        currentValue={debugTestImage}
+                        onChange={(url) => setDebugTestImage(url)}
+                        placeholder="Test crop functionality"
+                        enableCrop={true}
+                        cropAspectRatio="free"
+                    />
+                    <p className="text-xs text-yellow-700 mt-2">
+                        Click "Crop & Adjust" to test the hanging issue
+                    </p>
+                </div>
+            )}
+
             {/* Loading Screen */}
             {dataLoading && (
                 <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
