@@ -7184,7 +7184,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                             <div className="bg-white rounded-lg shadow p-4">
                                 <h4 className="text-lg font-semibold text-slate-800 mb-3">Most Active</h4>
                                 {(() => {
-                                    const mostActive = teamRoster
+                                    const mostActive = sortedTeamPlayers
                                         .filter(p => p.active && p.stats)
                                         .sort((a, b) => (b.stats?.gamesPlayed || 0) - (a.stats?.gamesPlayed || 0))[0];
                                     
