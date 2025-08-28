@@ -6298,10 +6298,10 @@ const LocationManager = ({ team, setTeams }) => {
 
 const TeamSocialMediaManager = ({ team, setTeams }) => {
     const [socialMediaData, setSocialMediaData] = useState({
-        twitter: team.socialMedia?.twitter || '',
-        instagram: team.socialMedia?.instagram || '',
-        facebook: team.socialMedia?.facebook || '',
-        youtube: team.socialMedia?.youtube || ''
+        twitter: team.social?.twitter || '',
+        instagram: team.social?.instagram || '',
+        facebook: team.social?.facebook || '',
+        youtube: team.social?.youtube || ''
     });
 
     const handleSaveSocialMedia = (e) => {
