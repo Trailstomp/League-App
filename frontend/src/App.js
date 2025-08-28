@@ -7541,6 +7541,19 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                     
                     <div className="grid md:grid-cols-2 gap-6">
                         <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Sidebar Logo</label>
+                            <FileUploadInput
+                                accept="image/*"
+                                currentValue={style.sidebarLogo || ''}
+                                onChange={(url) => setStyle(prev => ({...prev, sidebarLogo: url}))}
+                                placeholder="Upload sidebar logo"
+                                enableCrop={true}
+                                cropAspectRatio="1:1"
+                            />
+                            <p className="text-xs text-slate-500 mt-1">Logo displayed in top corner of sidebar navigation</p>
+                        </div>
+
+                        <div>
                             <label className="block font-semibold text-slate-700 mb-2">Sidebar Background Image</label>
                             <FileUploadInput
                                 accept="image/*"
