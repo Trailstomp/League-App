@@ -661,15 +661,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Make team logos fill full upper rectangle on homepage"
-    - "Add sidebar background image customization"
-    - "Add repeat functionality to event scheduling"
-    - "Make sidebar logo larger in top left corner"
+    - "Re-implement ImageCropTool without lucide-react dependencies"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
-  backend_testing_complete: true
-  backend_notes: "All backend functionality verified working correctly. New features are frontend-only and do not impact backend API operations."
+  backend_testing_complete: false
+  backend_notes: "Need to verify backend functionality after ImageCropTool re-implementation to ensure no regressions."
 
 agent_communication:
   - agent: "main"
