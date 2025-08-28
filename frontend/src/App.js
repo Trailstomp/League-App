@@ -4308,6 +4308,60 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                     />
                 </div>
                 
+                {/* RSVP Settings */}
+                <div className="border rounded-lg p-4 bg-green-50">
+                    <h4 className="font-semibold text-slate-700 mb-3 flex items-center">
+                        <UserCheck className="mr-2" size={16} />
+                        RSVP & Attendance Settings
+                    </h4>
+                    
+                    <div className="space-y-3">
+                        <label className="flex items-center space-x-2">
+                            <input
+                                type="checkbox"
+                                checked={editingEvent?.rsvp?.enabled || false}
+                                onChange={(e) => setEditingEvent(prev => ({
+                                    ...prev,
+                                    rsvp: {
+                                        ...prev.rsvp,
+                                        enabled: e.target.checked,
+                                        responses: prev.rsvp?.responses || [],
+                                        requiresResponse: prev.rsvp?.requiresResponse || false,
+                                        remindersSent: prev.rsvp?.remindersSent || []
+                                    }
+                                }))}
+                                className="rounded"
+                            />
+                            <span className="font-medium text-slate-700">Enable RSVP for this event</span>
+                        </label>
+                        
+                        {editingEvent?.rsvp?.enabled && (
+                            <div className="ml-6 space-y-2">
+                                <label className="flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={editingEvent?.rsvp?.requiresResponse || false}
+                                        onChange={(e) => setEditingEvent(prev => ({
+                                            ...prev,
+                                            rsvp: {
+                                                ...prev.rsvp,
+                                                requiresResponse: e.target.checked
+                                            }
+                                        }))}
+                                        className="rounded"
+                                    />
+                                    <span className="text-slate-600">Require response from team members</span>
+                                </label>
+                                
+                                <div className="text-sm text-green-700 bg-green-100 p-2 rounded">
+                                    <strong>RSVP Features:</strong> Team members can respond Yes/Maybe/No • 
+                                    Attendance tracking • Automatic reminders • Response analytics
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                
                 {/* Repeat Options */}
                 <div className="border rounded-lg p-4 bg-slate-50">
                     <h4 className="font-semibold text-slate-700 mb-3 flex items-center">
