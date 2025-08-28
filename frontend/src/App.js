@@ -9029,7 +9029,7 @@ function App() {
                 }}
             >
                 <div className="p-4 border-b border-slate-700 flex items-center justify-center">
-                    <img src={websiteStyle.logoUrl} alt="MLBL Logo" className="h-32 max-w-full object-contain" />
+                    <img src={websiteStyle.sidebarLogo || websiteStyle.logoUrl || 'https://placehold.co/200x200/4A5568/FFFFFF?text=LOGO'} alt="Logo" className="h-32 max-w-full object-contain" />
                 </div>
                 <nav className="flex-grow">
                     <NavItem icon={<Home size={20} />} label="Home" pageName="home" />
