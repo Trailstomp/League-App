@@ -1591,7 +1591,6 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
     // Initialize image and canvas
     useEffect(() => {
         if (imageUrl) {
-            console.log('Loading image:', imageUrl);
             setIsLoading(true);
             
             const loadImage = (url, useCors = true) => {
