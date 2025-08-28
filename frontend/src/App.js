@@ -4413,7 +4413,7 @@ const MediaManager = ({ team, setTeams }) => {
                     onClick={() => setActiveTab('photos')}
                     className={`pb-2 px-1 ${activeTab === 'photos' ? 'border-b-2 border-red-600 text-red-600 font-semibold' : 'text-slate-600'}`}
                 >
-                    <Image className="mr-2 inline" size={18} />
+                    <ImageIcon className="mr-2 inline" size={18} />
                     Photo Galleries ({photoGalleries.length})
                 </button>
                 <button 
