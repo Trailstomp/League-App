@@ -3988,23 +3988,15 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
 
                 {/* Photo Upload */}
                 <div>
-                    <label className="block font-semibold text-slate-700 mb-2">Event Photo</label>
-                    <input 
-                        type="file" 
+                    <FileUploadInput
+                        label="Event Photo"
                         accept="image/*"
-                        onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
-                                const fileUrl = URL.createObjectURL(e.target.files[0]);
-                                setEditingEvent(prev => ({...prev, imageUrl: fileUrl}));
-                            }
-                        }}
-                        className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                        currentValue={editingEvent.imageUrl || ''}
+                        onChange={(url) => setEditingEvent(prev => ({...prev, imageUrl: url}))}
+                        placeholder="Upload event image"
+                        enableCrop={true}
+                        cropAspectRatio="16:9"
                     />
-                    {editingEvent?.imageUrl && (
-                        <div className="mt-2">
-                            <img src={editingEvent.imageUrl} alt="Event preview" className="w-full h-32 object-cover rounded-lg border" />
-                        </div>
-                    )}
                 </div>
 
                 <div className="flex justify-end space-x-2">
