@@ -7295,6 +7295,29 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                 
                 {activeTab === 'schedule' && (
                      <div className="space-y-6">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-3xl font-bold text-slate-800 tracking-tight">Team Schedule</h2>
+                            {isAuthorizedToManage && (
+                                <div className="flex space-x-3">
+                                    <button 
+                                        onClick={() => setManageScheduleExpanded(!manageScheduleExpanded)}
+                                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center text-sm"
+                                    >
+                                        <Settings className="mr-2" size={16} />
+                                        {manageScheduleExpanded ? 'Hide' : 'Show'} Schedule Management
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        
+                        {/* Schedule Management Panel */}
+                        {isAuthorizedToManage && manageScheduleExpanded && (
+                            <div className="bg-white rounded-lg shadow p-6 mb-6">
+                                <h3 className="text-xl font-semibold text-slate-800 mb-4">Schedule & Event Management</h3>
+                                <TeamCalendarManager team={team} teams={teams} setTeams={setTeams} />
+                            </div>
+                        )}
+                        
                         {/* Team Calendar Events */}
                         {team.calendar && team.calendar.length > 0 && (
                             <div>
