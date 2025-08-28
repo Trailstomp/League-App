@@ -4532,7 +4532,7 @@ const MediaManager = ({ team, setTeams }) => {
                         ) : (
                             <div className="text-center py-8 text-slate-500 border-2 border-dashed border-slate-200 rounded-lg">
                                 {activeTab === 'photos' ? (
-                                    <Image className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
+                                    <ImageIcon className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
                                 ) : (
                                     <Video className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
                                 )}
