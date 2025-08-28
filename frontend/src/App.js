@@ -1710,7 +1710,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         if (Math.abs(x - (cropX + width)) < handleSize && Math.abs(y - (cropY + height)) < handleSize) return 'se';
         
         // Check sides (only if free form)
-        if (!aspectRatios[currentAspectRatio].ratio) {
+        if (!(aspectRatios[currentAspectRatio] || aspectRatios['free']).ratio) {
             if (Math.abs(x - (cropX + width/2)) < handleSize && Math.abs(y - cropY) < handleSize) return 'n';
             if (Math.abs(x - (cropX + width)) < handleSize && Math.abs(y - (cropY + height/2)) < handleSize) return 'e';
             if (Math.abs(x - (cropX + width/2)) < handleSize && Math.abs(y - (cropY + height)) < handleSize) return 's';
