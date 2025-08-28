@@ -2724,6 +2724,8 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                                     }));
                                                 }}
                                                 placeholder="Upload thumbnail image"
+                                                enableCrop={true}
+                                                cropAspectRatio="16:9"
                                             />
                                             <textarea 
                                                 defaultValue={video.description}
