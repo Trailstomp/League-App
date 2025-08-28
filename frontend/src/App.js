@@ -2621,7 +2621,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
     const [showingMedia, setShowingMedia] = useState(false); // For inline media display
     
 
-    const [newsLoading, setNewsLoading] = useState(true);
+
 
     useEffect(() => {
         const loadNewsData = async () => {
