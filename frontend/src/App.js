@@ -6458,8 +6458,15 @@ const PlayerForm = ({ initialPlayer, onSave, onCancel, managedTeams, isAdmin }) 
                         </div>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Player Photo</label>
-                        <input type="file" accept="image/*" onChange={handlePhotoChange} className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"/>
+                        <FileUploadInput
+                            label="Player Photo"
+                            accept="image/*"
+                            currentValue={player.photo || ''}
+                            onChange={(url) => setPlayer(prev => ({...prev, photo: url}))}
+                            placeholder="Upload player photo"
+                            enableCrop={true}
+                            cropAspectRatio="1:1"
+                        />
                     </div>
                     <div className="flex items-center">
                         <input type="checkbox" name="active" id="active" checked={player.active} onChange={handleChange} className="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500" />
