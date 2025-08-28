@@ -1694,16 +1694,27 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                     };
                     
                     // Set all state at once, then force canvas redraw
+                    console.log('Setting canvas size:', displayWidth + 'x' + displayHeight);
+                    console.log('Setting crop area:', newCropArea);
+                    console.log('Setting isLoading to false');
+                    
                     setCanvasSize({ width: displayWidth, height: displayHeight });
                     setCropArea(newCropArea);
                     setIsLoading(false);
                     
                     // Force immediate canvas redraw after state updates
                     setTimeout(() => {
+                        console.log('Timeout callback - attempting to draw canvas');
                         if (canvasRef.current && imageRef.current) {
+                            console.log('Drawing canvas now...');
                             drawCanvas();
+                        } else {
+                            console.log('Cannot draw - canvas or image ref missing');
                         }
                     }, 10);
+                } else {
+                    console.error('Canvas not found - cannot initialize!');
+                    setIsLoading(false);
                 }
             };
             
