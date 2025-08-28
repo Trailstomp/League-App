@@ -6245,9 +6245,9 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                 <div className="h-96 overflow-y-auto">
                                     <div className="news-feed-scrolling" style={{ 
                                         animation: 'scroll-vertical 20s linear infinite',
-                                        animationPlayState: newsItems.length > 3 ? 'running' : 'paused'
+                                        animationPlayState: (team.newsItems && team.newsItems.length > 3) ? 'running' : 'paused'
                                     }}>
-                                        {[...newsItems, ...newsItems].map((item, index) => (
+                                        {team.newsItems && team.newsItems.length > 0 ? [...team.newsItems, ...team.newsItems].map((item, index) => (
                                             <div key={`${item.id}-${index}`} 
                                                 className="border-b border-slate-200 p-6 hover:bg-slate-50 cursor-pointer transition-colors"
                                                 onClick={() => {
