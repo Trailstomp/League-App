@@ -1758,25 +1758,38 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
     };
 
     const getHandleType = (x, y) => {
-        const handleSize = 15; // Slightly larger for easier interaction
+        const handleSize = 16; // Larger for easier interaction
         const { x: cropX, y: cropY, width, height } = cropArea;
         
-        // Check corners first
-        if (Math.abs(x - cropX) < handleSize && Math.abs(y - cropY) < handleSize) return 'nw';
-        if (Math.abs(x - (cropX + width)) < handleSize && Math.abs(y - cropY) < handleSize) return 'ne';
-        if (Math.abs(x - cropX) < handleSize && Math.abs(y - (cropY + height)) < handleSize) return 'sw';
-        if (Math.abs(x - (cropX + width)) < handleSize && Math.abs(y - (cropY + height)) < handleSize) return 'se';
+        // Check corners first (priority over sides)
+        if (Math.abs(x - cropX) <= handleSize && Math.abs(y - cropY) <= handleSize) return 'nw';
+        if (Math.abs(x - (cropX + width)) <= handleSize && Math.abs(y - cropY) <= handleSize) return 'ne';
+        if (Math.abs(x - cropX) <= handleSize && Math.abs(y - (cropY + height)) <= handleSize) return 'sw';
+        if (Math.abs(x - (cropX + width)) <= handleSize && Math.abs(y - (cropY + height)) <= handleSize) return 'se';
         
-        // Check sides (only if free form)
-        if (!(aspectRatios[currentAspectRatio] || aspectRatios['free']).ratio) {
-            if (Math.abs(x - (cropX + width/2)) < handleSize && Math.abs(y - cropY) < handleSize) return 'n';
-            if (Math.abs(x - (cropX + width)) < handleSize && Math.abs(y - (cropY + height/2)) < handleSize) return 'e';
-            if (Math.abs(x - (cropX + width/2)) < handleSize && Math.abs(y - (cropY + height)) < handleSize) return 's';
-            if (Math.abs(x - cropX) < handleSize && Math.abs(y - (cropY + height/2)) < handleSize) return 'w';
+        // Check sides (only if free form aspect ratio)
+        const hasAspectRatio = (aspectRatios[currentAspectRatio] || aspectRatios['free']).ratio;
+        if (!hasAspectRatio) {
+            // Top side
+            if (Math.abs(x - (cropX + width/2)) <= handleSize && Math.abs(y - cropY) <= handleSize) return 'n';
+            // Right side  
+            if (Math.abs(x - (cropX + width)) <= handleSize && Math.abs(y - (cropY + height/2)) <= handleSize) return 'e';
+            // Bottom side
+            if (Math.abs(x - (cropX + width/2)) <= handleSize && Math.abs(y - (cropY + height)) <= handleSize) return 's';
+            // Left side
+            if (Math.abs(x - cropX) <= handleSize && Math.abs(y - (cropY + height/2)) <= handleSize) return 'w';
         }
         
-        // Check if inside crop area (for dragging)
-        if (x >= cropX && x <= cropX + width && y >= cropY && y <= cropY + height) return 'move';
+        // Check if inside crop area (for dragging entire crop)
+        if (x >= cropX + handleSize && x <= cropX + width - handleSize && 
+            y >= cropY + handleSize && y <= cropY + height - handleSize) {
+            return 'move';
+        }
+        
+        // Check if outside crop area for panning image
+        if (x < cropX || x > cropX + width || y < cropY || y > cropY + height) {
+            return 'pan';
+        }
         
         return null;
     };
