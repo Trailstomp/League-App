@@ -1546,7 +1546,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio = 'free', conte
                             onClick={handleSave}
                             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2"
                         >
-                            <Crop size={16} />
+                            <Scissors size={16} />
                             <span>Apply Crop</span>
                         </button>
                     </div>
