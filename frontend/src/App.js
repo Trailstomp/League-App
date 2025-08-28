@@ -7552,15 +7552,70 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                     </div>
                 )}
                 
-                {activeTab === 'social' && ( <div className="max-w-2xl mx-auto"> <SocialCard entity={team} /> </div> )}
-                {activeTab === 'contact' && ( <div className="max-w-2xl mx-auto"> <ContactCard entity={team} /> </div> )}
-                {activeTab === 'manage_info' && isAuthorizedToManage && <TeamInfoManager team={team} setTeams={setTeams} />}
-                {activeTab === 'manage_calendar' && isAuthorizedToManage && <TeamCalendarManager team={team} teams={teams} setTeams={setTeams} />}
-                {activeTab === 'manage_players' && isAuthorizedToManage && <PlayerManager players={players} setPlayers={setPlayers} teams={[team]} currentUser={currentUser} />}
-                {activeTab === 'manage_media' && isAuthorizedToManage && <MediaManager team={team} setTeams={setTeams} />}
-                {activeTab === 'manage_locations' && isAuthorizedToManage && <LocationManager team={team} setTeams={setTeams} />}
-                {activeTab === 'manage_groupme' && isAuthorizedToManage && <GroupMeManager team={team} setTeams={setTeams} />}
-                {activeTab === 'manage_style' && isAuthorizedToManage && <TeamStyleManager teams={[team]} setTeams={setTeams} currentUser={currentUser} />}
+                {activeTab === 'social' && (
+                    <div>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-3xl font-bold text-slate-800 tracking-tight">Social Media & Communication</h2>
+                            {isAuthorizedToManage && (
+                                <button 
+                                    onClick={() => setManageSocialExpanded(!manageSocialExpanded)}
+                                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center text-sm"
+                                >
+                                    <Settings className="mr-2" size={16} />
+                                    {manageSocialExpanded ? 'Hide' : 'Show'} Social Management
+                                </button>
+                            )}
+                        </div>
+                        
+                        <div className="max-w-2xl mx-auto mb-6">
+                            <SocialCard entity={team} />
+                        </div>
+                        
+                        {/* Social Media Management Panel */}
+                        {isAuthorizedToManage && manageSocialExpanded && (
+                            <div className="space-y-6">
+                                <div className="bg-white rounded-lg shadow p-6">
+                                    <h3 className="text-xl font-semibold text-slate-800 mb-4">Social Media Settings</h3>
+                                    <TeamSocialMediaManager team={team} setTeams={setTeams} />
+                                </div>
+                                
+                                <div className="bg-white rounded-lg shadow p-6">
+                                    <h3 className="text-xl font-semibold text-slate-800 mb-4">GroupMe Chat Management</h3>
+                                    <GroupMeManager team={team} setTeams={setTeams} />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+                
+                {activeTab === 'contact' && (
+                    <div>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-3xl font-bold text-slate-800 tracking-tight">Team Contact Information</h2>
+                            {isAuthorizedToManage && (
+                                <button 
+                                    onClick={() => setManageContactExpanded(!manageContactExpanded)}
+                                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center text-sm"
+                                >
+                                    <Settings className="mr-2" size={16} />
+                                    {manageContactExpanded ? 'Hide' : 'Show'} Contact Management
+                                </button>
+                            )}
+                        </div>
+                        
+                        <div className="max-w-2xl mx-auto">
+                            <ContactCard entity={team} />
+                        </div>
+                        
+                        {/* Contact Management Panel */}
+                        {isAuthorizedToManage && manageContactExpanded && (
+                            <div className="bg-white rounded-lg shadow p-6 mt-6">
+                                <h3 className="text-xl font-semibold text-slate-800 mb-4">Team Information Management</h3>
+                                <TeamInfoManager team={team} setTeams={setTeams} />
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
             </div>
             
