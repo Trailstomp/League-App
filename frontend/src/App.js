@@ -3617,6 +3617,36 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                                 {event.description && (
                                                     <p className="text-sm text-slate-600 mb-3">{event.description}</p>
                                                 )}
+                                                
+                                                {/* RSVP Component */}
+                                                <RSVPManager 
+                                                    event={event}
+                                                    currentUser={currentUser}
+                                                    onUpdateRSVP={onUpdateRSVP}
+                                                    users={users}
+                                                />
+                                                
+                                                {/* Notification Controls for Admins/Coaches */}
+                                                {currentUser && (hasPermission(currentUser, 'events.edit') || event.teamId === currentUser.teamId) && (
+                                                    <div className="mt-3 pt-3 border-t">
+                                                        <div className="flex space-x-2">
+                                                            <button 
+                                                                onClick={() => onSendNotification(event, 'reminder')}
+                                                                className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 transition-colors"
+                                                                title="Send event reminder to all team members"
+                                                            >
+                                                                📧 Send Reminder
+                                                            </button>
+                                                            <button 
+                                                                onClick={() => onSendNotification(event, 'rsvp_request')}
+                                                                className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded hover:bg-green-200 transition-colors"
+                                                                title="Request RSVP responses"
+                                                            >
+                                                                📲 Request RSVP
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                             <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
                                                 event.type === 'game' ? 'bg-red-100 text-red-800' :
