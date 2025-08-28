@@ -7001,6 +7001,9 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                     currentValue={style.bannerImage || ''}
                                     onChange={(url) => setStyle(prev => ({...prev, bannerImage: url}))}
                                     placeholder="Upload header background image or enter URL"
+                                    enableCrop={true}
+                                    cropAspectRatio="banner"
+                                    cropContext="banner"
                                 />
                             </div>
                         </div>
