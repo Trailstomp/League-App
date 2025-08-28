@@ -6690,13 +6690,6 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                 {(team.style?.visibleTabs?.media !== false) && <TeamTab tabName="media" label="Photos & Videos" />}
                 {(team.style?.visibleTabs?.social !== false) && <TeamTab tabName="social" label="Social" />}
                 {(team.style?.visibleTabs?.contact !== false) && <TeamTab tabName="contact" label="Contact" />}
-                {isAuthorizedToManage && <TeamTab tabName="manage_info" label="Team Info" />}
-                {isAuthorizedToManage && <TeamTab tabName="manage_calendar" label="Manage Calendar" />}
-                {isAuthorizedToManage && <TeamTab tabName="manage_players" label="Manage Players" />}
-                {isAuthorizedToManage && <TeamTab tabName="manage_media" label="Manage Media" />}
-                {isAuthorizedToManage && <TeamTab tabName="manage_locations" label="Manage Locations" />}
-                {isAuthorizedToManage && <TeamTab tabName="manage_groupme" label="Manage GroupMe" />}
-                {isAuthorizedToManage && <TeamTab tabName="manage_style" label="Team Style" />}
             </div>
             
             <div className="p-4 rounded-lg" style={{ backgroundColor: team.style?.backgroundColor || 'transparent' }}>
