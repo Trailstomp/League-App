@@ -6985,6 +6985,230 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                     </div>
                 )}
                 
+                {activeTab === 'stats' && (
+                    <div className="space-y-6">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Team Statistics</h2>
+                        
+                        {/* Team Overview Stats */}
+                        <div className="bg-white rounded-lg shadow p-6">
+                            <h3 className="text-xl font-semibold text-slate-800 mb-4">Season Overview</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                <div className="text-center">
+                                    <div className="text-3xl font-bold text-green-600">{team.wins || 0}</div>
+                                    <div className="text-sm font-medium text-slate-600">Wins</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-3xl font-bold text-red-600">{team.losses || 0}</div>
+                                    <div className="text-sm font-medium text-slate-600">Losses</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-3xl font-bold text-blue-600">{team.pf || 0}</div>
+                                    <div className="text-sm font-medium text-slate-600">Goals For</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-3xl font-bold text-orange-600">{team.pa || 0}</div>
+                                    <div className="text-sm font-medium text-slate-600">Goals Against</div>
+                                </div>
+                            </div>
+                            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                                <div>
+                                    <div className="text-xl font-bold text-slate-700">
+                                        {((team.wins || 0) / Math.max((team.wins || 0) + (team.losses || 0), 1) * 100).toFixed(1)}%
+                                    </div>
+                                    <div className="text-sm text-slate-600">Win Percentage</div>
+                                </div>
+                                <div>
+                                    <div className="text-xl font-bold text-slate-700">
+                                        {((team.pf || 0) / Math.max((team.wins || 0) + (team.losses || 0), 1)).toFixed(1)}
+                                    </div>
+                                    <div className="text-sm text-slate-600">Avg Goals/Game</div>
+                                </div>
+                                <div>
+                                    <div className="text-xl font-bold text-slate-700">
+                                        {(team.pf && team.pa) ? ((team.pf - team.pa) > 0 ? '+' : '') + (team.pf - team.pa) : '0'}
+                                    </div>
+                                    <div className="text-sm text-slate-600">Goal Differential</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Player Statistics */}
+                        <div className="bg-white rounded-lg shadow p-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-xl font-semibold text-slate-800">Player Statistics</h3>
+                                {isAuthorizedToManage && (
+                                    <button 
+                                        onClick={() => setEditingPlayerStats(true)}
+                                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm flex items-center"
+                                    >
+                                        <Edit className="mr-2" size={16} />
+                                        Update Stats
+                                    </button>
+                                )}
+                            </div>
+                            
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b">
+                                            <th className="text-left py-3 px-2 font-semibold text-slate-700">Player</th>
+                                            <th className="text-center py-3 px-2 font-semibold text-slate-700">#</th>
+                                            <th className="text-center py-3 px-2 font-semibold text-slate-700">GP</th>
+                                            <th className="text-center py-3 px-2 font-semibold text-slate-700">W-L</th>
+                                            <th className="text-center py-3 px-2 font-semibold text-slate-700">Goals</th>
+                                            <th className="text-center py-3 px-2 font-semibold text-slate-700">Assists</th>
+                                            <th className="text-center py-3 px-2 font-semibold text-slate-700">Points</th>
+                                            <th className="text-center py-3 px-2 font-semibold text-slate-700">Shots</th>
+                                            <th className="text-center py-3 px-2 font-semibold text-slate-700">Saves</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {teamRoster.length > 0 ? teamRoster
+                                            .filter(player => player.active)
+                                            .sort((a, b) => (b.stats?.points || 0) - (a.stats?.points || 0))
+                                            .map(player => {
+                                                const stats = player.stats || {};
+                                                const wins = stats.wins || 0;
+                                                const losses = stats.losses || 0;
+                                                const goals = stats.goals || 0;
+                                                const assists = stats.assists || 0;
+                                                const points = goals + assists;
+                                                
+                                                return (
+                                                    <tr key={player.id} className="border-b hover:bg-slate-50">
+                                                        <td className="py-3 px-2">
+                                                            <div className="flex items-center space-x-2">
+                                                                {player.photo && (
+                                                                    <img 
+                                                                        src={player.photo} 
+                                                                        alt={`${player.firstName} ${player.lastName}`}
+                                                                        className="w-8 h-8 rounded-full object-cover"
+                                                                    />
+                                                                )}
+                                                                <div>
+                                                                    <div className="font-medium text-slate-800">
+                                                                        {player.firstName} {player.lastName}
+                                                                    </div>
+                                                                    <div className="text-xs text-slate-500">
+                                                                        {Array.isArray(player.positions) ? player.positions.join(', ') : player.positions}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="text-center py-3 px-2 font-semibold">{player.number}</td>
+                                                        <td className="text-center py-3 px-2">{stats.gamesPlayed || 0}</td>
+                                                        <td className="text-center py-3 px-2">
+                                                            <span className="text-green-600 font-medium">{wins}</span>-<span className="text-red-600 font-medium">{losses}</span>
+                                                        </td>
+                                                        <td className="text-center py-3 px-2 font-semibold">{goals}</td>
+                                                        <td className="text-center py-3 px-2">{assists}</td>
+                                                        <td className="text-center py-3 px-2 font-bold text-blue-600">{points}</td>
+                                                        <td className="text-center py-3 px-2">{stats.shots || 0}</td>
+                                                        <td className="text-center py-3 px-2">
+                                                            {player.positions && (Array.isArray(player.positions) ? player.positions.includes('Goalie') : player.positions === 'Goalie') ? (
+                                                                <span className="font-semibold text-purple-600">{stats.saves || 0}</span>
+                                                            ) : (
+                                                                <span className="text-slate-400">-</span>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            }) : (
+                                            <tr>
+                                                <td colSpan="9" className="text-center py-8 text-slate-500">
+                                                    No players found for this team
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        {/* Top Performers */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="bg-white rounded-lg shadow p-4">
+                                <h4 className="text-lg font-semibold text-slate-800 mb-3">Top Scorer</h4>
+                                {(() => {
+                                    const topScorer = teamRoster
+                                        .filter(p => p.active && p.stats)
+                                        .sort((a, b) => ((b.stats?.goals || 0) + (b.stats?.assists || 0)) - ((a.stats?.goals || 0) + (a.stats?.assists || 0)))[0];
+                                    
+                                    return topScorer ? (
+                                        <div className="flex items-center space-x-3">
+                                            {topScorer.photo && (
+                                                <img src={topScorer.photo} alt={topScorer.firstName} className="w-12 h-12 rounded-full object-cover" />
+                                            )}
+                                            <div>
+                                                <div className="font-semibold">{topScorer.firstName} {topScorer.lastName}</div>
+                                                <div className="text-sm text-slate-600">#{topScorer.number}</div>
+                                                <div className="text-lg font-bold text-blue-600">
+                                                    {(topScorer.stats?.goals || 0) + (topScorer.stats?.assists || 0)} pts
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="text-slate-500">No statistics available</div>
+                                    );
+                                })()}
+                            </div>
+                            
+                            <div className="bg-white rounded-lg shadow p-4">
+                                <h4 className="text-lg font-semibold text-slate-800 mb-3">Top Goalie</h4>
+                                {(() => {
+                                    const topGoalie = teamRoster
+                                        .filter(p => p.active && p.positions && 
+                                               (Array.isArray(p.positions) ? p.positions.includes('Goalie') : p.positions === 'Goalie'))
+                                        .sort((a, b) => (b.stats?.saves || 0) - (a.stats?.saves || 0))[0];
+                                    
+                                    return topGoalie ? (
+                                        <div className="flex items-center space-x-3">
+                                            {topGoalie.photo && (
+                                                <img src={topGoalie.photo} alt={topGoalie.firstName} className="w-12 h-12 rounded-full object-cover" />
+                                            )}
+                                            <div>
+                                                <div className="font-semibold">{topGoalie.firstName} {topGoalie.lastName}</div>
+                                                <div className="text-sm text-slate-600">#{topGoalie.number}</div>
+                                                <div className="text-lg font-bold text-purple-600">
+                                                    {topGoalie.stats?.saves || 0} saves
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="text-slate-500">No goalies found</div>
+                                    );
+                                })()}
+                            </div>
+                            
+                            <div className="bg-white rounded-lg shadow p-4">
+                                <h4 className="text-lg font-semibold text-slate-800 mb-3">Most Active</h4>
+                                {(() => {
+                                    const mostActive = teamRoster
+                                        .filter(p => p.active && p.stats)
+                                        .sort((a, b) => (b.stats?.gamesPlayed || 0) - (a.stats?.gamesPlayed || 0))[0];
+                                    
+                                    return mostActive ? (
+                                        <div className="flex items-center space-x-3">
+                                            {mostActive.photo && (
+                                                <img src={mostActive.photo} alt={mostActive.firstName} className="w-12 h-12 rounded-full object-cover" />
+                                            )}
+                                            <div>
+                                                <div className="font-semibold">{mostActive.firstName} {mostActive.lastName}</div>
+                                                <div className="text-sm text-slate-600">#{mostActive.number}</div>
+                                                <div className="text-lg font-bold text-green-600">
+                                                    {mostActive.stats?.gamesPlayed || 0} games
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="text-slate-500">No statistics available</div>
+                                    );
+                                })()}
+                            </div>
+                        </div>
+                    </div>
+                )}
+                
                 {activeTab === 'schedule' && (
                      <div className="space-y-6">
                         {/* Team Calendar Events */}
