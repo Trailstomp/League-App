@@ -7513,7 +7513,11 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                             onClick={() => {
                                                                 const container = document.getElementById(`gallery-${gallery.id}`);
                                                                 if (container) {
-                                                                    container.scrollBy({ left: -300, behavior: 'smooth' });
+                                                                    const currentTransform = container.style.transform || 'translateX(0px)';
+                                                                    const currentX = parseInt(currentTransform.match(/-?\d+/) || [0])[0];
+                                                                    const newX = Math.min(currentX + 296, 0);
+                                                                    container.style.transform = `translateX(${newX}px)`;
+                                                                    container.style.animationPlayState = 'paused';
                                                                 }
                                                             }}
                                                             className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-opacity opacity-0 group-hover:opacity-100"
@@ -7524,7 +7528,12 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                             onClick={() => {
                                                                 const container = document.getElementById(`gallery-${gallery.id}`);
                                                                 if (container) {
-                                                                    container.scrollBy({ left: 300, behavior: 'smooth' });
+                                                                    const currentTransform = container.style.transform || 'translateX(0px)';
+                                                                    const currentX = parseInt(currentTransform.match(/-?\d+/) || [0])[0];
+                                                                    const maxX = -(gallery.items.length * 296);
+                                                                    const newX = currentX - 296;
+                                                                    container.style.transform = `translateX(${newX >= maxX ? newX : 0}px)`;
+                                                                    container.style.animationPlayState = 'paused';
                                                                 }
                                                             }}
                                                             className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-opacity opacity-0 group-hover:opacity-100"
