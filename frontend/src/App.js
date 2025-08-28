@@ -1681,22 +1681,13 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
             };
             
             // Try loading with CORS first, then without if it fails
-            console.log('Attempting to load image with CORS...');
             loadImage(imageUrl, true)
-                .then((img) => {
-                    console.log('CORS loading successful');
-                    initializeCanvas(img);
-                })
+                .then(initializeCanvas)
                 .catch((error) => {
-                    console.warn('CORS loading failed, retrying without CORS:', error.message);
                     return loadImage(imageUrl, false)
-                        .then((img) => {
-                            console.log('Fallback loading successful');
-                            initializeCanvas(img);
-                        });
+                        .then(initializeCanvas);
                 })
                 .catch((error) => {
-                    console.error('All image loading attempts failed:', error.message);
                     setIsLoading(false);
                     alert(`Failed to load image: ${error.message}\n\nPlease try:\n• Uploading a new image file\n• Using a different image URL\n• Checking your internet connection`);
                 });
