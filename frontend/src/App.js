@@ -578,13 +578,12 @@ const FileUploadInput = ({ label, accept, currentValue, onChange, placeholder, e
             </div>
 
             {/* Crop Tool Modal */}
-            {showCropTool && tempImageUrl && (
+            {showCropTool && originalImageUrl && (
                 <ImageCropTool
-                    imageUrl={tempImageUrl}
+                    imageUrl={originalImageUrl}
                     onCrop={handleCrop}
                     onCancel={handleCropCancel}
                     aspectRatio={cropAspectRatio}
-                    contextPreview={cropContext}
                 />
             )}
         </div>
