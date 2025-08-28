@@ -1577,6 +1577,13 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         '2:1': { ratio: 2/1, label: '2:1 Banner' }
     };
 
+    // Ensure currentAspectRatio is always valid
+    useEffect(() => {
+        if (!aspectRatios[currentAspectRatio]) {
+            setCurrentAspectRatio('free');
+        }
+    }, [currentAspectRatio]);
+
     // Initialize image and canvas
     useEffect(() => {
         if (imageUrl) {
