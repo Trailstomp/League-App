@@ -7575,6 +7575,8 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                 currentValue={style.sidebarImage || ''}
                                 onChange={(url) => setStyle(prev => ({...prev, sidebarImage: url}))}
                                 placeholder="Upload sidebar background or enter URL"
+                                enableCrop={true}
+                                cropAspectRatio="free"
                             />
                         </div>
 
