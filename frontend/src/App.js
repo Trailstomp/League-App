@@ -7131,7 +7131,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                             <div className="bg-white rounded-lg shadow p-4">
                                 <h4 className="text-lg font-semibold text-slate-800 mb-3">Top Scorer</h4>
                                 {(() => {
-                                    const topScorer = teamRoster
+                                    const topScorer = sortedTeamPlayers
                                         .filter(p => p.active && p.stats)
                                         .sort((a, b) => ((b.stats?.goals || 0) + (b.stats?.assists || 0)) - ((a.stats?.goals || 0) + (a.stats?.assists || 0)))[0];
                                     
