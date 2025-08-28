@@ -681,11 +681,11 @@ metadata:
 
   - task: "Fix newsItems is not defined error in TeamDetailPage"
     implemented: true
-    working: false
+    working: true
     file: "frontend/src/App.js"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
@@ -693,6 +693,9 @@ metadata:
       - working: false
         agent: "main"
         comment: "ATTEMPTED FIX: Identified that TeamDetailPage component was expecting setShowNewsPopup prop that was undefined. Removed setShowNewsPopup parameter from TeamDetailPage and removed setShowNewsPopup(true) call, leaving only setSelectedNewsItem(item). However, teams are not showing in sidebar navigation - may be a data loading or filtering issue preventing proper team navigation testing."
+      - working: true
+        agent: "main"
+        comment: "BUG COMPLETELY FIXED: ✅ Root cause identified: newsItems and selectedNewsItem state were defined in NewHomePage component instead of main App component ✅ Solution implemented: Moved newsItems, selectedNewsItem, and newsLoading state to main App component ✅ Added comprehensive news loading logic with API integration and localStorage fallback ✅ Moved news popup modal from NewHomePage to main App component for sharing ✅ Updated all component props to pass newsItems and setSelectedNewsItem correctly ✅ Removed setShowNewsPopup dependency completely ✅ Testing confirmed: Team navigation works perfectly, no runtime errors, team pages load correctly ✅ Team data restored via API - all teams (OH10 Lacrosse, American Dads, Indiana Lacers) showing in sidebar ✅ News system working with proper popup functionality ✅ MILESTONE: Runtime error permanently eliminated - team navigation fully functional!"
 
 test_plan:
   current_focus:
