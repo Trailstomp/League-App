@@ -7553,14 +7553,14 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                 )}
                                                 
                                                 {/* Auto-Scrolling Gallery Container */}
-                                                <div className="overflow-hidden">
+                                                <div className="overflow-hidden w-full" style={{minHeight: '320px'}}>
                                                     <div 
                                                         id={`gallery-${gallery.id}`}
                                                         className="flex gallery-auto-scroll"
                                                         style={{
                                                             gap: '16px',
                                                             width: `${(gallery.items.length * 2) * 296}px`, // 280px + 16px gap per item
-                                                            animation: gallery.items.length > 1 ? `gallery-scroll-${gallery.id} 20s linear infinite` : 'none'
+                                                            animation: gallery.items.length > 1 ? `gallery-scroll-${gallery.id} 15s linear infinite` : 'none'
                                                         }}
                                                         onMouseEnter={(e) => {
                                                             e.target.style.animationPlayState = 'paused';
