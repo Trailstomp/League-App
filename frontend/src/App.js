@@ -6981,7 +6981,28 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                             {/* Player Management Panel */}
                             {isAuthorizedToManage && managePlayersExpanded && (
                                 <div className="bg-white rounded-lg shadow p-6 mb-6">
-                                    <h3 className="text-xl font-semibold text-slate-800 mb-4">Player Management</h3>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="text-xl font-semibold text-slate-800">Player Management</h3>
+                                        <button 
+                                            onClick={() => setEditingPlayer({
+                                                firstName: '',
+                                                lastName: '',
+                                                nickname: '',
+                                                email: '',
+                                                phone: '',
+                                                number: '',
+                                                positions: [],
+                                                teams: [teamId],
+                                                photo: '',
+                                                active: true,
+                                                handedness: 'Right'
+                                            })}
+                                            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center space-x-2"
+                                        >
+                                            <Plus size={16} />
+                                            <span>Add Player</span>
+                                        </button>
+                                    </div>
                                     <div className="space-y-4">
                                         {sortedTeamPlayers.map(player => (
                                             <div key={player.id} className={`flex items-center justify-between p-3 border rounded-lg ${!player.active ? 'bg-slate-100 opacity-60' : 'bg-white'}`}>
