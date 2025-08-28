@@ -86,3 +86,21 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+/* Gallery auto-scroll animation */
+@keyframes gallery-scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.gallery-auto-scroll {
+    animation-play-state: running;
+}
+
+.gallery-auto-scroll:hover {
+    animation-play-state: paused;
+}
