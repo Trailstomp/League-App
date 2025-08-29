@@ -10966,6 +10966,11 @@ function App() {
     const [gameTickerData, setGameTickerData] = useState([]);
     const [leagueSchedule, setLeagueSchedule] = useState([]);
     const [users, setUsers] = useState([]);
+    
+    // SEASONS INFRASTRUCTURE - NEW STATE
+    const [seasons, setSeasons] = useState([]);
+    const [currentSeason, setCurrentSeason] = useState(null);
+    
     const [leagueInfo, setLeagueInfo] = useState({
         name: "Men's Lacrosse Beer League",
         contactEmail: "admin@mlbl.org",
