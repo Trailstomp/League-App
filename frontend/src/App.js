@@ -8326,6 +8326,192 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                         </div>
                     </div>
                 )}
+                
+                {/* FRIENDS TAB - Display team friends and partners */}
+                {activeTab === 'friends' && (
+                    <div className="space-y-6">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Friends & Partners</h2>
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            {friends.length === 0 ? (
+                                <div className="col-span-full text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
+                                    <Users className="mx-auto h-12 w-12 text-slate-400 mb-4" />
+                                    <h3 className="text-lg font-semibold text-slate-600 mb-2">No Friends Yet</h3>
+                                    <p className="text-slate-500">Check back later to see our friends and community partners</p>
+                                </div>
+                            ) : (
+                                friends.map(friend => (
+                                    <div key={friend.id} className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                        <div className="text-center">
+                                            <img 
+                                                src={friend.photo || 'https://placehold.co/100x100/e2e8f0/94a3b8?text=FRIEND'} 
+                                                alt={friend.name} 
+                                                className="w-20 h-20 mx-auto rounded-full object-contain bg-slate-50 p-1"
+                                            />
+                                            <h3 className="font-semibold text-slate-800 mt-3">{friend.name}</h3>
+                                            {friend.description && (
+                                                <p className="text-sm text-slate-600 mt-1">{friend.description}</p>
+                                            )}
+                                        </div>
+                                        
+                                        <div className="flex justify-center gap-2 mt-4">
+                                            {friend.website && (
+                                                <a 
+                                                    href={friend.website} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-500 hover:text-blue-700 p-1"
+                                                    title="Visit website"
+                                                >
+                                                    <Globe size={18} />
+                                                </a>
+                                            )}
+                                            {friend.socialMedia?.twitter && (
+                                                <a 
+                                                    href={`https://twitter.com/${friend.socialMedia.twitter.replace('@', '')}`} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-400 hover:text-blue-600 p-1"
+                                                    title="Twitter"
+                                                >
+                                                    <Twitter size={18} />
+                                                </a>
+                                            )}
+                                            {friend.socialMedia?.facebook && (
+                                                <a 
+                                                    href={friend.socialMedia.facebook.startsWith('http') ? friend.socialMedia.facebook : `https://facebook.com/${friend.socialMedia.facebook}`} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-600 hover:text-blue-800 p-1"
+                                                    title="Facebook"
+                                                >
+                                                    <Facebook size={18} />
+                                                </a>
+                                            )}
+                                            {friend.socialMedia?.instagram && (
+                                                <a 
+                                                    href={`https://instagram.com/${friend.socialMedia.instagram.replace('@', '')}`} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="text-pink-500 hover:text-pink-700 p-1"
+                                                    title="Instagram"
+                                                >
+                                                    <Instagram size={18} />
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                )}
+                
+                {/* SPONSORS TAB - Display team sponsors */}
+                {activeTab === 'sponsors' && (
+                    <div className="space-y-6">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Sponsors & Supporters</h2>
+                        
+                        {sponsors.length === 0 ? (
+                            <div className="text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
+                                <Briefcase className="mx-auto h-12 w-12 text-slate-400 mb-4" />
+                                <h3 className="text-lg font-semibold text-slate-600 mb-2">No Sponsors Yet</h3>
+                                <p className="text-slate-500">Check back later to see our amazing sponsors and supporters</p>
+                            </div>
+                        ) : (
+                            ['Platinum', 'Gold', 'Silver', 'Bronze'].map(tier => {
+                                const tierSponsors = sponsors.filter(s => s.tier === tier);
+                                return tierSponsors.length > 0 && (
+                                    <div key={tier} className="space-y-4">
+                                        <div className="flex items-center gap-3">
+                                            <h3 className="text-xl font-semibold text-slate-800">{tier} Sponsors</h3>
+                                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                                tier === 'Platinum' ? 'bg-purple-100 text-purple-800' :
+                                                tier === 'Gold' ? 'bg-yellow-100 text-yellow-800' :
+                                                tier === 'Silver' ? 'bg-gray-100 text-gray-800' :
+                                                'bg-orange-100 text-orange-800'
+                                            }`}>
+                                                {tierSponsors.length} {tierSponsors.length === 1 ? 'Sponsor' : 'Sponsors'}
+                                            </span>
+                                        </div>
+                                        
+                                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                            {tierSponsors.map(sponsor => (
+                                                <div key={sponsor.id} className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                                    <div className="text-center">
+                                                        <img 
+                                                            src={sponsor.logo || 'https://placehold.co/120x80/f1f5f9/64748b?text=SPONSOR'} 
+                                                            alt={sponsor.name} 
+                                                            className="w-24 h-16 mx-auto rounded object-contain bg-slate-50 p-1"
+                                                        />
+                                                        <h4 className="font-semibold text-slate-800 mt-3">{sponsor.name}</h4>
+                                                        <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium mt-2 ${
+                                                            sponsor.tier === 'Platinum' ? 'bg-purple-100 text-purple-800' :
+                                                            sponsor.tier === 'Gold' ? 'bg-yellow-100 text-yellow-800' :
+                                                            sponsor.tier === 'Silver' ? 'bg-gray-100 text-gray-800' :
+                                                            'bg-orange-100 text-orange-800'
+                                                        }`}>
+                                                            {sponsor.tier}
+                                                        </span>
+                                                        {sponsor.description && (
+                                                            <p className="text-sm text-slate-600 mt-2">{sponsor.description}</p>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    <div className="flex justify-center gap-2 mt-4">
+                                                        {sponsor.website && (
+                                                            <a 
+                                                                href={sponsor.website} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                className="text-blue-500 hover:text-blue-700 p-1"
+                                                                title="Visit website"
+                                                            >
+                                                                <Globe size={18} />
+                                                            </a>
+                                                        )}
+                                                        {sponsor.socialMedia?.twitter && (
+                                                            <a 
+                                                                href={`https://twitter.com/${sponsor.socialMedia.twitter.replace('@', '')}`} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                className="text-blue-400 hover:text-blue-600 p-1"
+                                                                title="Twitter"
+                                                            >
+                                                                <Twitter size={18} />
+                                                            </a>
+                                                        )}
+                                                        {sponsor.socialMedia?.facebook && (
+                                                            <a 
+                                                                href={sponsor.socialMedia.facebook.startsWith('http') ? sponsor.socialMedia.facebook : `https://facebook.com/${sponsor.socialMedia.facebook}`} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                className="text-blue-600 hover:text-blue-800 p-1"
+                                                                title="Facebook"
+                                                            >
+                                                                <Facebook size={18} />
+                                                            </a>
+                                                        )}
+                                                        {sponsor.socialMedia?.instagram && (
+                                                            <a 
+                                                                href={`https://instagram.com/${sponsor.socialMedia.instagram.replace('@', '')}`} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                className="text-pink-500 hover:text-pink-700 p-1"
+                                                                title="Instagram"
+                                                            >
+                                                                <Instagram size={18} />
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        )}
+                    </div>
+                )}
             </div>
             </div>
             
