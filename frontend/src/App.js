@@ -8702,49 +8702,14 @@ const TeamManager = ({ teams, setTeams }) => {
     const toggleActive = useCallback((team) => {
         setTeams(currentTeams => currentTeams.map(t => t.id === team.id ? {...t, active: !t.active} : t));
     }, [setTeams]);
-         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-                <h3 className="text-2xl font-bold mb-4">{editingTeam?.id ? 'Edit Team' : 'Add New Team'}</h3>
-                <form onSubmit={handleSave} className="space-y-4">
-                    <input 
-                        type="text" 
-                        value={editingTeam?.name || ''} 
-                        onChange={e => handleInputChange('name', e.target.value)} 
-                        placeholder="Team Name" 
-                        className="w-full p-2 border rounded" 
-                        required 
-                    />
-                    
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Division</label>
-                        <select 
-                            value={editingTeam?.division || 'Field'} 
-                            onChange={e => handleInputChange('division', e.target.value)} 
-                            className="w-full p-2 border rounded" 
-                            required
-                        >
-                            <option value="Field">Field Lacrosse</option>
-                            <option value="Box">Box Lacrosse</option>
-                        </select>
-                    </div>
-                    
-                    <FileUploadInput
-                        label="Team Logo"
-                        accept="image/*"
-                        currentValue={editingTeam?.logo || ''}
-                        onChange={(url) => handleInputChange('logo', url)}
-                        placeholder="Upload team logo"
-                        enableCrop={true}
-                        cropAspectRatio="1:1"
-                    />
-                    
-                    <div className="flex justify-end space-x-2">
-                        <button type="button" onClick={() => setEditingTeam(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
-                        <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Save Team</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+    
+    // FIX: Add missing delete handler
+    const handleDelete = useCallback((team) => {
+        if (window.confirm(`Are you sure you want to delete ${team.name}? This action cannot be undone.`)) {
+            setTeams(currentTeams => currentTeams.filter(t => t.id !== team.id));
+        }
+    }, [setTeams]);
+
     return (
         <div>
             {editingTeam && (
@@ -8770,7 +8735,7 @@ const TeamManager = ({ teams, setTeams }) => {
                                 {t.active ? <ToggleRight size={22}/> : <ToggleLeft size={22} />}
                             </button>
                             <button onClick={() => setEditingTeam(t)} className="text-slate-500 hover:text-slate-700 mr-2 p-1"><Edit size={18}/></button>
-                            <button className="text-red-500 hover:text-red-700 p-1"><Trash2 size={18}/></button>
+                            <button onClick={() => handleDelete(t)} className="text-red-500 hover:text-red-700 p-1"><Trash2 size={18}/></button>
                         </div>
                     </li>
                 ))}
