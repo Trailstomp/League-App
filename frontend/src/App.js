@@ -1727,6 +1727,16 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle, onNavigat
         return [...regularGames, ...tournamentItems, ...upcomingEvents];
     }, [gameTickerData, teams, websiteStyle?.tickerFilters]);
 
+    // Debug logging to check if we have items
+    useEffect(() => {
+        console.log('GameTicker Debug:', {
+            allItemsCount: allItems.length,
+            gameTickerDataCount: gameTickerData.length,
+            teamsCount: teams.length,
+            tickerFilters: websiteStyle?.tickerFilters
+        });
+    }, [allItems, gameTickerData, teams, websiteStyle?.tickerFilters]);
+
     useEffect(() => {
         const tickerElement = tickerRef.current;
         if (!tickerElement) return;
