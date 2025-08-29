@@ -2276,6 +2276,33 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         '9:16': { ratio: 9/16, label: '9:16 Mobile/Story', category: 'vertical' }
     };
 
+    // Prevent navigation while crop tool is active
+    useEffect(() => {
+        const preventNavigation = (e) => {
+            e.preventDefault();
+            return '';
+        };
+        
+        const preventHashChange = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        };
+
+        // Add navigation prevention
+        window.addEventListener('beforeunload', preventNavigation);
+        window.addEventListener('hashchange', preventHashChange, true); // Use capture phase
+        
+        // Set pointer events on body to prevent interaction with parent elements
+        const originalPointerEvents = document.body.style.pointerEvents;
+        document.body.style.pointerEvents = 'none';
+        
+        return () => {
+            window.removeEventListener('beforeunload', preventNavigation);
+            window.removeEventListener('hashchange', preventHashChange, true);
+            document.body.style.pointerEvents = originalPointerEvents;
+        };
+    }, []);
+
     // Ensure currentAspectRatio is always valid
     useEffect(() => {
         if (!aspectRatios[currentAspectRatio]) {
