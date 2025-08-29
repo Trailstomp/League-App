@@ -11479,6 +11479,16 @@ function App() {
                         ...websiteStyle, // Start with defaults
                         ...storedWebsiteStyle // Overlay saved data
                     } : websiteStyle);
+                    
+                    // Load seasons from localStorage
+                    const storedSeasons = getStoredData('mlbl_seasons', []);
+                    const storedCurrentSeason = getStoredData('mlbl_currentSeason', null);
+                    if (storedSeasons.length > 0) {
+                        setSeasons(storedSeasons);
+                    }
+                    if (storedCurrentSeason) {
+                        setCurrentSeason(storedCurrentSeason);
+                    }
                 }
             } catch (error) {
                 console.error('Error loading data:', error);
