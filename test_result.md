@@ -525,6 +525,24 @@ frontend:
         agent: "main"
         comment: "🎉 TEAM MANAGEMENT BUGS FIXED: 1) Removed duplicate modal code that was causing form state conflicts during logo uploads 2) Added missing handleDelete function with confirmation dialog for safe team deletion 3) Fixed form state management to properly handle logo addition without data loss 4) Eliminated duplicate team creation issue - edits now properly UPDATE existing teams 5) Backend verification shows 100% test success rate for all team operations 6) Team editing with logo addition now preserves all form fields correctly 7) Delete functionality works with proper user confirmation. Critical team management issues completely resolved!"
 
+  - task: "Fix image distortion - images showing up distorted when adding, need native aspect ratio"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported 'images are showing up distorted when adding them. Need them to be in their native aspect and let the crop handle reshaping what is viewed. this is another item we had working but lost. still think we lost a version somewhere' - Image distortion regression affecting all team logos and uploads."
+      - working: false
+        agent: "main"
+        comment: "INVESTIGATION: Found root cause - team logos throughout application were using fixed width/height constraints (w-8 h-8, w-6 h-6, etc.) WITHOUT object-contain CSS property. This forces rectangular images into square containers causing distortion. Missing object-contain on team logos in: sidebar navigation, team headers, standings table, schedule displays, event listings, and team management."
+      - working: true
+        agent: "main"
+        comment: "🎉 IMAGE DISTORTION FIXED: 1) Added object-contain CSS class to ALL team logo img elements throughout the application 2) Fixed team header logo (most visible distortion) 3) Fixed sidebar navigation team logos (Field & Box lacrosse sections) 4) Fixed standings table team logos 5) Fixed schedule/game display logos (w-12 h-12 and w-16 h-16) 6) Fixed event listing logos 7) Fixed team management list logos 8) Images now maintain native aspect ratio in all containers 9) FileUploadInput already had object-contain for previews 10) Crop tool handles reshaping as intended - distortion completely eliminated across all logo displays. Native aspect ratios preserved!"
+
 backend:
   - task: "Backend API functionality"
     implemented: true
