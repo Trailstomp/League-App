@@ -10574,6 +10574,23 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                     </div>
                 )}
 
+                {activeTab === 'seasons' && hasPermission(currentUser, 'system.admin_access') && (
+                    <div className="p-6">
+                        <SeasonManager 
+                            seasons={seasons}
+                            setSeasons={setSeasons}
+                            currentSeason={currentSeason}
+                            setCurrentSeason={setCurrentSeason}
+                            teams={teams}
+                            setTeams={setTeams}
+                            players={players}
+                            setPlayers={setPlayers}
+                            leagueSchedule={leagueSchedule}
+                            setLeagueSchedule={setLeagueSchedule}
+                        />
+                    </div>
+                )}
+
                 {activeTab === 'teams' && hasPermission(currentUser, 'teams.view') && (
                     <div className="p-6">
                         <h2 className="text-2xl font-bold mb-4">Team Management</h2>
