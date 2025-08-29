@@ -2525,6 +2525,9 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
     };
 
     const handleMouseDown = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
         const canvas = canvasRef.current;
         if (!canvas) return;
 
