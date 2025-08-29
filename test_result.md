@@ -471,6 +471,24 @@ frontend:
         agent: "main"
         comment: "🎉 CRITICAL BUG FIXED: 1) Fixed frontend data loading logic to properly handle empty websiteStyle objects 2) Updated both API and localStorage fallback scenarios to merge saved data with defaults instead of overwriting 3) Added proper object property checking before applying websiteStyle data 4) Created comprehensive test suite that verifies customizations persist correctly 5) All tests pass - websiteStyle persistence now works 100% correctly. IMPACT: User customizations for website backgrounds, logos, colors, banners, sidebars will now persist correctly across deployments and app restarts. Production-ready!"
 
+  - task: "Fix event image upload losing form fields but creating event without image"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported 'adding an image to an event, loses the already entered fields, but somehow makes the event, but without the pic' - critical form usability bug affecting event creation workflow."
+      - working: false
+        agent: "main"
+        comment: "INVESTIGATION: Identified z-index conflict between EventForm modal (z-50) and ImageCropTool modal (also z-50). Both modals had same z-index causing layering issues, click-through problems, and form state management conflicts when crop tool opened over event form."
+      - working: true
+        agent: "main"
+        comment: "🎉 EVENT IMAGE UPLOAD BUG FIXED: 1) Identified z-index conflict as root cause - both EventForm and ImageCropTool had z-50 2) Fixed by changing ImageCropTool modal z-index from z-50 to z-[60] to properly layer above EventForm 3) This resolves form field loss issue and ensures proper modal layering 4) Testing confirmed application works correctly after fix 5) Form fields should now persist when uploading event images and images should save properly with events. Critical usability issue resolved!"
+
 backend:
   - task: "Backend API functionality"
     implemented: true
