@@ -679,7 +679,7 @@ const EventDashboard = ({ teams, currentUser, onSendNotification, websiteStyle }
                             <div className="flex justify-between items-start mb-4">
                                 <div className="flex-grow">
                                     <div className="flex items-center gap-2 mb-2">
-                                        <img src={event.teamLogo} alt={event.teamName} className="w-6 h-6 rounded-full" />
+                                        <img src={event.teamLogo} alt={event.teamName} className="w-6 h-6 rounded-full object-contain" />
                                         <span className="font-semibold text-slate-600">{event.teamName}</span>
                                         <span className={`px-2 py-1 rounded text-xs font-semibold ${
                                             event.type === 'game' ? 'bg-red-100 text-red-800' :
