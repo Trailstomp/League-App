@@ -8593,7 +8593,7 @@ const TeamManager = ({ teams, setTeams }) => {
                     <FileUploadInput
                         label="Team Logo"
                         accept="image/*"
-                        currentValue={editingTeam.logo || ''}
+                        currentValue={editingTeam?.logo || ''}
                         onChange={(url) => handleInputChange('logo', url)}
                         placeholder="Upload team logo"
                         enableCrop={true}
