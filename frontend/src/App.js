@@ -2769,7 +2769,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
     }
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70]">
             <div className="bg-white rounded-lg max-w-5xl max-h-[95vh] w-full mx-4 flex flex-col">
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b">
