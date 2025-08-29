@@ -10699,10 +10699,16 @@ function App() {
                     console.log('✅ Loaded data from API');
                     // Load from API
                     setTeams(apiData.teams || initialTeams);
-                    setPlayers(apiData.players || initialPlayersList);
+                    
+                    // Link players with users and update players data
+                    const loadedPlayers = apiData.players || initialPlayersList;
+                    const loadedUsers = apiData.users || initialMockUsers;
+                    const linkedPlayers = linkPlayersWithUsers(loadedPlayers, loadedUsers);
+                    
+                    setPlayers(linkedPlayers);
                     setGameTickerData(apiData.gameTickerData || initialGameTickerData);
                     setLeagueSchedule(apiData.leagueSchedule || initialLeagueSchedule);
-                    setUsers(apiData.users || initialMockUsers);
+                    setUsers(loadedUsers);
                     setLeagueInfo(apiData.leagueInfo || {
                         name: "Men's Lacrosse Beer League",
                         contactEmail: "admin@mlbl.org",
@@ -10712,28 +10718,33 @@ function App() {
                     
                     // Also save to localStorage as cache
                     setStoredData('mlbl_teams', apiData.teams || initialTeams);
-                    setStoredData('mlbl_players', apiData.players || initialPlayersList);
+                    setStoredData('mlbl_players', linkedPlayers);
                     setStoredData('mlbl_gameTickerData', apiData.gameTickerData || initialGameTickerData);
                     setStoredData('mlbl_leagueSchedule', apiData.leagueSchedule || initialLeagueSchedule);
-                    setStoredData('mlbl_users', apiData.users || initialMockUsers);
+                    setStoredData('mlbl_users', loadedUsers);
                     setStoredData('mlbl_leagueInfo', apiData.leagueInfo || leagueInfo);
                     setStoredData('mlbl_websiteStyle', apiData.websiteStyle || websiteStyle);
                 } else {
                     console.log('📦 Loading from localStorage fallback');
                     // Fallback to localStorage
+                    const storedPlayers = getStoredData('mlbl_players', initialPlayersList);
+                    const storedUsers = getStoredData('mlbl_users', initialMockUsers);
+                    const linkedPlayers = linkPlayersWithUsers(storedPlayers, storedUsers);
+                    
                     setTeams(getStoredData('mlbl_teams', initialTeams));
-                    setPlayers(getStoredData('mlbl_players', initialPlayersList));
+                    setPlayers(linkedPlayers);
                     setGameTickerData(getStoredData('mlbl_gameTickerData', initialGameTickerData));
                     setLeagueSchedule(getStoredData('mlbl_leagueSchedule', initialLeagueSchedule));
-                    setUsers(getStoredData('mlbl_users', initialMockUsers));
+                    setUsers(storedUsers);
                     setLeagueInfo(getStoredData('mlbl_leagueInfo', leagueInfo));
                     setWebsiteStyle(getStoredData('mlbl_websiteStyle', websiteStyle));
                 }
             } catch (error) {
                 console.error('Error loading data:', error);
-                // Load default values
+                // Load default values with linking
+                const linkedPlayers = linkPlayersWithUsers(initialPlayersList, initialMockUsers);
                 setTeams(initialTeams);
-                setPlayers(initialPlayersList);
+                setPlayers(linkedPlayers);
                 setGameTickerData(initialGameTickerData);
                 setLeagueSchedule(initialLeagueSchedule);
                 setUsers(initialMockUsers);
