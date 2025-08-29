@@ -3876,7 +3876,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                         <div className="flex items-start justify-between">
                                             <div className="flex-grow">
                                                 <button onClick={() => onTeamClick(event.teamId)} className="flex items-center gap-2 mb-2 hover:opacity-80">
-                                                    <img src={event.teamLogo} alt={event.teamName} className="w-6 h-6 rounded-full" />
+                                                    <img src={event.teamLogo} alt={event.teamName} className="w-6 h-6 rounded-full object-contain" />
                                                     <span className="font-semibold text-red-700">{event.teamName}</span>
                                                 </button>
                                                 <h3 className="font-bold text-slate-800 mb-1">{event.title}</h3>
