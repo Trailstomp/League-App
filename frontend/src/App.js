@@ -8308,30 +8308,34 @@ const ChatPage = ({ currentUser }) => {
 // --- ADMIN COMPONENTS ---
 const PlayerForm = ({ initialPlayer, onSave, onCancel, managedTeams, isAdmin }) => {
     const [player, setPlayer] = useState(initialPlayer);
-    const handleChange = (e) => {
+    
+    // Memoized handlers to prevent re-renders
+    const handleChange = useCallback((e) => {
         const { name, value, type, checked } = e.target;
         setPlayer(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-    };
-    const handlePositionChange = (e) => {
+    }, []);
+    
+    const handlePositionChange = useCallback((e) => {
         const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
         setPlayer(prev => ({ ...prev, positions: selectedOptions }));
-    };
+    }, []);
 
-    const handleTeamChange = (e) => {
+    const handleTeamChange = useCallback((e) => {
         const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
         setPlayer(prev => ({ ...prev, teams: selectedOptions }));
-    };
+    }, []);
     
-    const handlePhotoChange = (e) => {
+    const handlePhotoChange = useCallback((e) => {
         if (e.target.files && e.target.files[0]) {
             const fileUrl = URL.createObjectURL(e.target.files[0]);
             setPlayer(prev => ({...prev, photo: fileUrl}));
         }
-    };
-    const handleSubmit = (e) => {
+    }, []);
+    
+    const handleSubmit = useCallback((e) => {
         e.preventDefault();
         onSave(player);
-    };
+    }, [player, onSave]);
     return (
          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
