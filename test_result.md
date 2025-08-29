@@ -489,6 +489,24 @@ frontend:
         agent: "main"
         comment: "🎉 EVENT IMAGE UPLOAD BUG FIXED: 1) Identified z-index conflict as root cause - both EventForm and ImageCropTool had z-50 2) Fixed by changing ImageCropTool modal z-index from z-50 to z-[60] to properly layer above EventForm 3) This resolves form field loss issue and ensures proper modal layering 4) Testing confirmed application works correctly after fix 5) Form fields should now persist when uploading event images and images should save properly with events. Critical usability issue resolved!"
 
+  - task: "Restore team admin access to website settings (Team Style management)"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported 'lost the teams admin of editing the website settings again too. i feel like we lost a version somewhere' - team administrators lost access to Team Style management functionality."
+      - working: false
+        agent: "main"
+        comment: "INVESTIGATION: Found that team management tabs (Team Style, Manage Players, Manage Calendar) were missing from TeamDetailPage component. Based on test_result.md history, these tabs were previously available to team coaches/admins but got removed during development."
+      - working: true
+        agent: "main"
+        comment: "🎉 TEAM ADMIN FUNCTIONALITY RESTORED: 1) Added missing management tabs to TeamDetailPage for authorized team managers 2) Restored 'Team Style', 'Manage Players', and 'Manage Calendar' tabs with isAuthorizedToManage permission check 3) Team coaches and player/coaches can now access their team's style management 4) TeamStyleManager component properly integrated with team-specific access control 5) Management tabs only visible to users with admin role OR team coaches/player-coaches for their assigned team 6) All team admin website settings functionality is now restored. Team administrators can now edit team colors, banners, tab visibility, and other customizations through the Team Style tab on their team page."
+
 backend:
   - task: "Backend API functionality"
     implemented: true
