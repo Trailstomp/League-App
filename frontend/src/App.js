@@ -8787,13 +8787,26 @@ const ScoreManager = ({ leagueSchedule, gameTickerData, setGameTickerData, teams
                                     <span className="text-sm text-slate-500 ml-2">({game.location})</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <input type="number" placeholder={home.logo} className="w-16 p-1 border rounded text-center" disabled={gameData?.status === 'Final'} defaultValue={gameData?.homeScore} onChange={e => handleScoreChange(game.id, 'home', e.target.value)} />
+                                    <input type="number" placeholder="0" className="w-16 p-1 border rounded text-center" disabled={gameData?.status === 'Final'} defaultValue={gameData?.homeScore} onChange={e => handleScoreChange(game.id, 'home', e.target.value)} />
                                     <span>-</span>
-                                    <input type="number" placeholder={away.logo} className="w-16 p-1 border rounded text-center" disabled={gameData?.status === 'Final'} defaultValue={gameData?.awayScore} onChange={e => handleScoreChange(game.id, 'away', e.target.value)} />
+                                    <input type="number" placeholder="0" className="w-16 p-1 border rounded text-center" disabled={gameData?.status === 'Final'} defaultValue={gameData?.awayScore} onChange={e => handleScoreChange(game.id, 'away', e.target.value)} />
                                     {gameData?.status !== 'Final' ? (
                                         <button onClick={() => handleSaveScore(game)} className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-sm">Save</button>
                                     ) : (
-                                        <span className="text-sm font-bold text-green-600 px-3">FINAL</span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-bold text-green-600 px-3">FINAL</span>
+                                            <button 
+                                                onClick={() => {
+                                                    const updatedData = gameTickerData.map(g => 
+                                                        g.id === game.id ? { ...g, status: 'Active' } : g
+                                                    );
+                                                    setGameTickerData(updatedData);
+                                                }}
+                                                className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 text-xs"
+                                            >
+                                                Edit Score
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             </div>
