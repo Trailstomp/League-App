@@ -3836,14 +3836,12 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                     {isAdmin && (
                         <button 
                             onClick={() => {
-                                // Navigate to admin portal with calendar tab
-                                setPage('admin-portal');
-                                // Set admin tab to calendar
+                                // Navigate to admin portal and focus on calendar tab  
+                                navigate('admin-portal');
+                                // Small delay to let navigation complete, then programmatically click calendar tab
                                 setTimeout(() => {
-                                    const adminElement = document.querySelector('[data-tab="calendar"]');
-                                    if (adminElement) {
-                                        adminElement.click();
-                                    }
+                                    // This will be handled by the AdminPage component to open calendar tab
+                                    window.localStorage.setItem('admin_default_tab', 'calendar');
                                 }, 100);
                             }}
                             className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center text-sm"
