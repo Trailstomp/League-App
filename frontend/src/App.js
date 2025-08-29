@@ -10432,7 +10432,11 @@ const SeasonManager = ({ seasons, setSeasons, currentSeason, setCurrentSeason, t
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                                <div>
+                                    <span className="text-slate-500">Division:</span>
+                                    <div className="font-medium">{season.division || 'Field'}</div>
+                                </div>
                                 <div>
                                     <span className="text-slate-500">Start Date:</span>
                                     <div className="font-medium">{season.startDate || 'Not set'}</div>
