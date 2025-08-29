@@ -435,6 +435,24 @@ frontend:
         agent: "user"
         comment: "User confirmed fix successful - 'its all working!' - clickable locations now properly opening Google Maps with satellite view in new tab."
 
+  - task: "Fix critical websiteStyle data persistence bug - customizations lost after deployments"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported critical bug where website customizations (backgrounds, logos, colors, etc.) were being lost after deployments. This was blocking production readiness."
+      - working: false
+        agent: "main"
+        comment: "INVESTIGATION: Identified root cause in frontend data initialization logic. The issue was in line 11071: 'setWebsiteStyle(apiData.websiteStyle || websiteStyle)'. When apiData.websiteStyle was an empty object {}, it was treated as truthy but overwrote saved customizations with empty values."
+      - working: true
+        agent: "main"
+        comment: "🎉 CRITICAL BUG FIXED: 1) Fixed frontend data loading logic to properly handle empty websiteStyle objects 2) Updated both API and localStorage fallback scenarios to merge saved data with defaults instead of overwriting 3) Added proper object property checking before applying websiteStyle data 4) Created comprehensive test suite that verifies customizations persist correctly 5) All tests pass - websiteStyle persistence now works 100% correctly. IMPACT: User customizations for website backgrounds, logos, colors, banners, sidebars will now persist correctly across deployments and app restarts. Production-ready!"
+
 backend:
   - task: "Backend API functionality"
     implemented: true
