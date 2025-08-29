@@ -2625,7 +2625,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
 
     if (isLoading) {
         return (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
                 <div className="bg-white rounded-lg p-6 max-w-sm">
                     <div className="flex items-center space-x-3 mb-4">
                         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
