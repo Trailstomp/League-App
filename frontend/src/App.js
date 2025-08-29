@@ -7187,7 +7187,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
     // Ensure activeTab is visible, fallback to first visible tab
     React.useEffect(() => {
         if (team?.style?.visibleTabs) {
-            const visibleTabs = ['roster', 'schedule', 'media', 'social', 'contact'].filter(
+            const visibleTabs = ['roster', 'schedule', 'media', 'social', 'contact', 'groupme'].filter(
                 tab => team.style.visibleTabs[tab] !== false
             );
             if (!visibleTabs.includes(activeTab) && visibleTabs.length > 0) {
