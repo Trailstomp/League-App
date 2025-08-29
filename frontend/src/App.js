@@ -3835,7 +3835,17 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                     )}
                     {isAdmin && (
                         <button 
-                            onClick={() => window.location.hash = 'admin-portal'}
+                            onClick={() => {
+                                // Navigate to admin portal with calendar tab
+                                setPage('admin-portal');
+                                // Set admin tab to calendar
+                                setTimeout(() => {
+                                    const adminElement = document.querySelector('[data-tab="calendar"]');
+                                    if (adminElement) {
+                                        adminElement.click();
+                                    }
+                                }, 100);
+                            }}
                             className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center text-sm"
                             title="Quick access to calendar management"
                         >
