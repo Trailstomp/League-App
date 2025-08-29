@@ -1687,8 +1687,11 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle, onNavigat
                     }
                     tournaments.get(game.tournamentName).games.push(game);
                 }
-            } else if (tickerFilters.games) {
-                regularGames.push(game);
+            } else {
+                // All non-tournament games are regular games (includes 'League Game', 'game', etc.)
+                if (tickerFilters.games) {
+                    regularGames.push(game);
+                }
             }
         });
         
