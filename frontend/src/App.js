@@ -8187,6 +8187,41 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                         )}
                     </div>
                 )}
+                
+                {/* TEAM MANAGEMENT TABS - Restored for team admins */}
+                {isAuthorizedToManage && activeTab === 'manageplayers' && (
+                    <div className="space-y-6">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Manage Players</h2>
+                        <div className="bg-white rounded-lg shadow p-6">
+                            <PlayerManager players={players} setPlayers={setPlayers} teams={teams} currentUser={currentUser} />
+                        </div>
+                    </div>
+                )}
+                
+                {isAuthorizedToManage && activeTab === 'teamstyle' && (
+                    <div className="space-y-6">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Team Style & Customization</h2>
+                        <div className="bg-white rounded-lg shadow p-6">
+                            <TeamStyleManager teams={teams} setTeams={setTeams} currentUser={currentUser} />
+                        </div>
+                    </div>
+                )}
+                
+                {isAuthorizedToManage && activeTab === 'managecalendar' && (
+                    <div className="space-y-6">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Manage Team Calendar</h2>
+                        <div className="bg-white rounded-lg shadow p-6">
+                            <EventManager 
+                                events={leagueSchedule} 
+                                setEvents={setLeagueSchedule} 
+                                teams={teams} 
+                                currentUser={currentUser}
+                                isTeamSpecific={true}
+                                teamId={teamId}
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
             </div>
             
