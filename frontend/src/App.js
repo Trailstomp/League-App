@@ -3426,7 +3426,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                 <div key={video.id} 
                                      className="relative bg-slate-50 rounded-lg p-4 hover:bg-slate-100 transition-colors cursor-pointer group"
                                      onClick={() => {
-                                         window.open(video.url, '_blank');
+                                         handleVideoClick(video.url);
                                      }}
                                 >
                                     {/* Admin Edit Button Overlay */}
