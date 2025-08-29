@@ -11441,6 +11441,16 @@ function App() {
                         ...apiData.websiteStyle // Overlay saved data
                     } : websiteStyle);
                     
+                    // Load seasons data
+                    if (apiData.seasons) {
+                        setSeasons(apiData.seasons);
+                        setStoredData('mlbl_seasons', apiData.seasons);
+                    }
+                    if (apiData.currentSeason) {
+                        setCurrentSeason(apiData.currentSeason);
+                        setStoredData('mlbl_currentSeason', apiData.currentSeason);
+                    }
+                    
                     // Also save to localStorage as cache
                     setStoredData('mlbl_teams', apiData.teams || initialTeams);
                     setStoredData('mlbl_players', linkedPlayers);
