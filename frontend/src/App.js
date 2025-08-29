@@ -4306,6 +4306,7 @@ const LeagueCalendarManager = ({ teams, setTeams, websiteStyle }) => {
                     onCancel={() => setEditingEvent(null)}
                     teams={teams}
                     isTeamSpecific={false}
+                    formBackgroundColor={formBackgroundColor}
                 />
             )}
             <div className="flex justify-between items-center mb-6">
