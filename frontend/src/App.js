@@ -1032,14 +1032,30 @@ const FileUploadInput = ({
                 ) : currentValue ? (
                     <div className="space-y-2">
                         {accept.includes('image') ? (
-                            <img 
-                                src={currentValue} 
-                                alt="Preview" 
-                                className="max-w-full h-32 mx-auto rounded object-cover"
-                                onError={(e) => {
-                                    e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2Y3ZjdmNyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5Ij5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+';
-                                }}
-                            />
+                            <div className="relative inline-block">
+                                <img 
+                                    src={currentValue} 
+                                    alt="Preview" 
+                                    className="max-w-full max-h-32 mx-auto rounded object-contain"
+                                    style={{ maxHeight: '128px' }}
+                                    onError={(e) => {
+                                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2Y3ZjdmNyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5Ij5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+';
+                                    }}
+                                />
+                                {/* Edit Image Button */}
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setOriginalImageUrl(currentValue);
+                                        setShowCropTool(true);
+                                    }}
+                                    className="absolute top-1 right-1 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-1 shadow-lg transition-colors"
+                                    title="Edit image"
+                                >
+                                    <Settings size={12} />
+                                </button>
+                            </div>
                         ) : accept.includes('video') ? (
                             <div className="bg-slate-200 h-32 flex items-center justify-center rounded">
                                 <span className="text-slate-600">Video selected</span>
