@@ -3409,11 +3409,24 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                         <div className="space-y-4">
                             {mediaContent.videos.map(video => (
                                 <div key={video.id} 
+                                     className="relative bg-slate-50 rounded-lg p-4 hover:bg-slate-100 transition-colors cursor-pointer group"
                                      onClick={() => {
                                          window.open(video.url, '_blank');
                                      }}
-                                     className="bg-slate-50 rounded-lg p-4 hover:bg-slate-100 transition-colors cursor-pointer"
                                 >
+                                    {/* Admin Edit Button Overlay */}
+                                    {isLeagueAdmin && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setEditingVideos(true);
+                                            }}
+                                            className="absolute top-2 right-2 bg-blue-600 bg-opacity-80 hover:bg-opacity-100 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                            title="Edit video gallery"
+                                        >
+                                            <Edit size={14} />
+                                        </button>
+                                    )}
                                     <div className="flex items-center space-x-4">
                                         <div className="relative">
                                             <img 
