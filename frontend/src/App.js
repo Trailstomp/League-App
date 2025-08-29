@@ -8474,13 +8474,20 @@ const TeamManager = ({ teams, setTeams }) => {
             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
                 <h3 className="text-2xl font-bold mb-4">{editingTeam?.id ? 'Edit Team' : 'Add New Team'}</h3>
                 <form onSubmit={handleSave} className="space-y-4">
-                    <input type="text" value={editingTeam.name || ''} onChange={e => setEditingTeam({...editingTeam, name: e.target.value})} placeholder="Team Name" className="w-full p-2 border rounded" required />
+                    <input 
+                        type="text" 
+                        value={editingTeam.name || ''} 
+                        onChange={e => handleInputChange('name', e.target.value)} 
+                        placeholder="Team Name" 
+                        className="w-full p-2 border rounded" 
+                        required 
+                    />
                     
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Division</label>
                         <select 
                             value={editingTeam.division || 'Field'} 
-                            onChange={e => setEditingTeam({...editingTeam, division: e.target.value})} 
+                            onChange={e => handleInputChange('division', e.target.value)} 
                             className="w-full p-2 border rounded" 
                             required
                         >
@@ -8493,7 +8500,7 @@ const TeamManager = ({ teams, setTeams }) => {
                         label="Team Logo"
                         accept="image/*"
                         currentValue={editingTeam.logo || ''}
-                        onChange={(url) => setEditingTeam({...editingTeam, logo: url})}
+                        onChange={(url) => handleInputChange('logo', url)}
                         placeholder="Upload team logo"
                         enableCrop={true}
                         cropAspectRatio="1:1"
