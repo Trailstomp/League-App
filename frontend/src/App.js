@@ -1632,7 +1632,7 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
     const tickerRef = useRef(null);
     const [isHovering, setIsHovering] = useState(false);
 
-    // Combine games and upcoming events
+    // Combine games and upcoming events with tournament consolidation
     const allItems = useMemo(() => {
         // Add date information to games from schedule
         const gamesWithDates = gameTickerData.map(game => {
@@ -1656,8 +1656,32 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
                     break;
                 }
             }
-            return {...game, gameDate, type: 'game', itemType: 'game'};
+            return {...game, gameDate, type: game.type || 'game', itemType: 'game'};
         });
+        
+        // Group tournament games by tournament name
+        const regularGames = [];
+        const tournaments = new Map();
+        
+        gamesWithDates.forEach(game => {
+            if (game.type === 'Tournament' && game.tournamentName) {
+                if (!tournaments.has(game.tournamentName)) {
+                    tournaments.set(game.tournamentName, {
+                        tournamentName: game.tournamentName,
+                        location: game.location,
+                        gameDate: game.gameDate,
+                        games: [],
+                        itemType: 'tournament'
+                    });
+                }
+                tournaments.get(game.tournamentName).games.push(game);
+            } else {
+                regularGames.push(game);
+            }
+        });
+        
+        // Convert tournament Map to array
+        const tournamentItems = Array.from(tournaments.values());
         
         const upcomingEvents = teams.flatMap(team => 
             (team.calendar || [])
@@ -1673,7 +1697,7 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
                 }))
         ).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5); // Show next 5 events
 
-        return [...gamesWithDates, ...upcomingEvents];
+        return [...regularGames, ...tournamentItems, ...upcomingEvents];
     }, [gameTickerData, teams]);
 
     useEffect(() => {
