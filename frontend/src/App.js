@@ -1678,6 +1678,13 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle, onNavigat
                 }
             }
             return {...game, gameDate, type: game.type || 'game', itemType: 'game'};
+        }).filter(game => {
+            // Apply date range filtering
+            if (game.gameDate) {
+                const gameDate = new Date(game.gameDate);
+                return gameDate >= lookBackDate && gameDate <= lookForwardDate;
+            }
+            return true; // Include games without dates for now
         });
         
         // Group tournament games by tournament name
