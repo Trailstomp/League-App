@@ -1766,7 +1766,18 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle, onNavigat
             onMouseLeave={() => setIsHovering(false)}
         >
             <div ref={tickerRef} className="flex space-x-6 overflow-x-auto no-scrollbar">
-                {[...allItems, ...allItems].map((item, index) => {
+                {allItems.length === 0 ? (
+                    // Show placeholder when no items
+                    <div className="flex-shrink-0 w-72 rounded-lg p-2 border opacity-50" style={{ 
+                        backgroundColor: websiteStyle?.tickerItemColor || '#334155',
+                        borderColor: websiteStyle?.tickerBorderColor || '#475569'
+                    }}>
+                        <div className="text-center py-4">
+                            <span className="text-slate-400 text-sm">No ticker items to display</span>
+                        </div>
+                    </div>
+                ) : (
+                    [...allItems, ...allItems].map((item, index) => {
                     if (item.itemType === 'game') {
                         const home = getTeam(item.homeTeam);
                         const away = getTeam(item.awayTeam);
