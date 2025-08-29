@@ -8990,8 +8990,11 @@ const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam, 
     </div>
 );
 
-const TeamManager = ({ teams, setTeams }) => {
+const TeamManager = ({ teams, setTeams, websiteStyle }) => {
     const [editingTeam, setEditingTeam] = useState(null);
+    
+    // Get form background color from website style or default
+    const formBackgroundColor = websiteStyle?.formBackgroundColor || '#f8fafc';
     
     // Memoized handlers to prevent re-renders
     const handleInputChange = useCallback((field, value) => {
