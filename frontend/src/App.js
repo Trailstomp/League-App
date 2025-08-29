@@ -4205,9 +4205,12 @@ const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
     );
 };
 
-const LeagueCalendarManager = ({ teams, setTeams }) => {
+const LeagueCalendarManager = ({ teams, setTeams, websiteStyle }) => {
     const [selectedTeamId, setSelectedTeamId] = useState('all');
     const [editingEvent, setEditingEvent] = useState(null);
+
+    // Get form background color from website style or default
+    const formBackgroundColor = websiteStyle?.formBackgroundColor || '#f8fafc';
 
     const selectedTeam = teams.find(t => t.id === selectedTeamId);
     const events = selectedTeamId === 'all' 
