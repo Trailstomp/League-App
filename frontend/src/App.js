@@ -2804,7 +2804,10 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         cropCanvas.toBlob((blob) => {
             if (blob) {
                 const croppedUrl = URL.createObjectURL(blob);
+                console.log('🎯 ImageCropTool: Created cropped blob URL:', croppedUrl);
                 onCrop(croppedUrl);
+            } else {
+                console.error('❌ ImageCropTool: Failed to create blob from canvas');
             }
         }, 'image/jpeg', 0.9);
     };
