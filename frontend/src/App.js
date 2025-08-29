@@ -1644,6 +1644,17 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle, onNavigat
             other: true
         };
 
+        // Get date range settings
+        const lookBackDays = websiteStyle?.tickerLookBack || 7;
+        const lookForwardDays = websiteStyle?.tickerLookForward || 14;
+        
+        const today = new Date();
+        const lookBackDate = new Date(today);
+        lookBackDate.setDate(today.getDate() - lookBackDays);
+        
+        const lookForwardDate = new Date(today);
+        lookForwardDate.setDate(today.getDate() + lookForwardDays);
+
         // Add date information to games from schedule
         const gamesWithDates = gameTickerData.map(game => {
             // Find the game in the schedule to get its date
