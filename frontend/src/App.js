@@ -7084,7 +7084,7 @@ const TeamInfoManager = ({ team, setTeams }) => {
     );
 };
 
-const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, setPlayers, setTeams, websiteStyle, playMusic, stopAllMusic, musicState, newsItems, setSelectedNewsItem }) => {
+const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, setPlayers, setTeams, websiteStyle, playMusic, stopAllMusic, musicState, newsItems, setSelectedNewsItem, friends, sponsors }) => {
     const team = teams.find(t => t.id === teamId);
     const teamPlayers = players.filter(p => p.teams.includes(teamId) && p.active);
     const [activeTab, setActiveTab] = useState('home');
