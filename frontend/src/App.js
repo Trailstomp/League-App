@@ -11552,6 +11552,21 @@ function App() {
         }
     }, [websiteStyle, dataLoading]);
 
+    // SEASONS AUTO-SAVE
+    useEffect(() => { 
+        if (!dataLoading && seasons.length > 0) {
+            saveDataToAPI('seasons', seasons);
+            setStoredData('mlbl_seasons', seasons);
+        }
+    }, [seasons, dataLoading]);
+    
+    useEffect(() => { 
+        if (!dataLoading && currentSeason) {
+            saveDataToAPI('currentSeason', currentSeason);
+            setStoredData('mlbl_currentSeason', currentSeason);
+        }
+    }, [currentSeason, dataLoading]);
+
     // Hash routing implementation
     useEffect(() => {
         const handleHashChange = () => {
