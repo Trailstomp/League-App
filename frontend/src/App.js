@@ -8569,11 +8569,13 @@ const TeamManager = ({ teams, setTeams }) => {
 
 const ScoreManager = ({ leagueSchedule, gameTickerData, setGameTickerData, teams }) => {
     const [scores, setScores] = useState({});
-    const handleScoreChange = (gameId, team, value) => {
+    
+    // Memoized handlers to prevent re-renders
+    const handleScoreChange = useCallback((gameId, team, value) => {
         setScores(prev => ({ ...prev, [gameId]: { ...prev[gameId], [team]: value } }));
-    };
+    }, []);
 
-    const handleSaveScore = (game) => {
+    const handleSaveScore = useCallback((game) => {
         const gameId = game.id;
         const homeScore = parseInt(scores[gameId]?.home, 10);
         const awayScore = parseInt(scores[gameId]?.away, 10);
@@ -8585,7 +8587,7 @@ const ScoreManager = ({ leagueSchedule, gameTickerData, setGameTickerData, teams
         setGameTickerData(prevData => prevData.map(g => 
             g.id === gameId ? { ...g, homeScore, awayScore, status: 'Final' } : g
         ));
-    };
+    }, [scores, setGameTickerData]);
 
     const getTeam = (id) => teams.find(t => t.id === id);
     return (
