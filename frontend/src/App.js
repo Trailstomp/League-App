@@ -3260,7 +3260,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                             <button
                                 key={team.id}
                                 onClick={() => onTeamClick(team.id)}
-                                className="group bg-white rounded-xl shadow-lg p-3 md:p-6 hover:shadow-xl transform transition-all duration-300 hover:scale-105 relative overflow-hidden"
+                                className="group bg-white rounded-xl shadow-lg p-2 md:p-4 hover:shadow-xl transform transition-all duration-300 hover:scale-105 relative overflow-hidden"
                                 style={{
                                     backgroundColor: team.style?.backgroundColor || '#ffffff',
                                     borderLeft: `6px solid ${team.style?.primaryColor || '#dc2626'}`
