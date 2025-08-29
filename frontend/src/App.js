@@ -7070,7 +7070,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
             >
                 <div className="flex items-center justify-between w-full">
                     <div className="flex items-center">
-                        <img src={team.logo} alt={team.name} className="w-24 h-24 mr-4 rounded-full bg-white p-2 shadow-lg" />
+                        <img src={team.logo} alt={team.name} className="w-24 h-24 mr-4 rounded-full bg-white p-2 shadow-lg object-contain" />
                         <div>
                             <h1 className="text-5xl font-bold text-white tracking-tight drop-shadow-lg">{team.name}</h1>
                             <p className="text-lg text-white opacity-90 drop-shadow-lg">{team.division} Lacrosse</p>
