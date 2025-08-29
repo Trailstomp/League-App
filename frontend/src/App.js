@@ -10111,6 +10111,13 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
             description: 'Manage social media integration'
         },
         { 
+            id: 'communications', 
+            label: 'Communications', 
+            icon: <Mail size={16} />, 
+            permissions: ['system.admin_access'],
+            description: 'Email and SMS messaging center'
+        },
+        { 
             id: 'website', 
             label: 'Website Design', 
             icon: <Palette size={16} />, 
