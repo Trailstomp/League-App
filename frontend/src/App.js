@@ -11793,7 +11793,7 @@ function App() {
                                         }`}
                                         style={{backgroundColor: (page === 'team' && selectedTeam === team.id) ? websiteStyle.accentColor : 'transparent'}}
                                     >
-                                        <img src={team.logo} alt={team.name} className="w-6 h-6 rounded-full bg-white p-0.5" />
+                                        <img src={team.logo} alt={team.name} className="w-6 h-6 rounded-full bg-white p-0.5 object-contain" />
                                         <span className="text-sm">{team.name}</span>
                                    </button>
                                 ))}
