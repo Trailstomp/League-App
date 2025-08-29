@@ -10633,6 +10633,493 @@ const SeasonManager = ({ seasons, setSeasons, currentSeason, setCurrentSeason, t
     );
 };
 
+// ===== FRIENDS MANAGEMENT SYSTEM =====
+const FriendsManager = ({ friends, setFriends }) => {
+    const [editingFriend, setEditingFriend] = useState(null);
+    const [saved, setSaved] = useState(false);
+
+    const handleCreateFriend = () => {
+        setEditingFriend({
+            id: '',
+            name: '',
+            photo: '',
+            description: '',
+            website: '',
+            socialMedia: {
+                twitter: '',
+                facebook: '',
+                instagram: '',
+                youtube: ''
+            }
+        });
+    };
+
+    const handleSaveFriend = (e) => {
+        e.preventDefault();
+        
+        if (!editingFriend.name.trim()) {
+            alert('Please enter a friend name');
+            return;
+        }
+
+        const friendData = {
+            ...editingFriend,
+            id: editingFriend.id || `friend-${Date.now()}`
+        };
+
+        if (editingFriend.id) {
+            setFriends(friends.map(f => f.id === editingFriend.id ? friendData : f));
+        } else {
+            setFriends([...friends, friendData]);
+        }
+
+        setEditingFriend(null);
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+    };
+
+    const handleDeleteFriend = (friendId) => {
+        const friend = friends.find(f => f.id === friendId);
+        if (friend && window.confirm(`Are you sure you want to delete "${friend.name}"?`)) {
+            setFriends(friends.filter(f => f.id !== friendId));
+        }
+    };
+
+    return (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-2xl font-bold text-slate-800">Friends & Partners</h2>
+                    <p className="text-slate-600">Manage league friends, partners, and community connections</p>
+                </div>
+                <button 
+                    onClick={handleCreateFriend}
+                    className="bg-red-800 text-white px-4 py-2 rounded-lg hover:bg-red-900 flex items-center gap-2"
+                >
+                    <Plus size={20} />
+                    Add Friend
+                </button>
+            </div>
+
+            {saved && (
+                <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+                    ✓ Changes saved successfully!
+                </div>
+            )}
+
+            {/* Friends Grid */}
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {friends.length === 0 ? (
+                    <div className="col-span-full text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
+                        <Users className="mx-auto h-12 w-12 text-slate-400 mb-4" />
+                        <h3 className="text-lg font-semibold text-slate-600 mb-2">No Friends Yet</h3>
+                        <p className="text-slate-500 mb-4">Add friends and partners to showcase your community connections</p>
+                        <button 
+                            onClick={handleCreateFriend}
+                            className="bg-red-800 text-white px-6 py-2 rounded-lg hover:bg-red-900"
+                        >
+                            Add First Friend
+                        </button>
+                    </div>
+                ) : (
+                    friends.map(friend => (
+                        <div key={friend.id} className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                            <div className="text-center">
+                                <img 
+                                    src={friend.photo || 'https://placehold.co/100x100/e2e8f0/94a3b8?text=FRIEND'} 
+                                    alt={friend.name} 
+                                    className="w-20 h-20 mx-auto rounded-full object-contain bg-slate-50 p-1"
+                                />
+                                <h3 className="font-semibold text-slate-800 mt-3">{friend.name}</h3>
+                                {friend.description && (
+                                    <p className="text-sm text-slate-600 mt-1">{friend.description}</p>
+                                )}
+                            </div>
+                            
+                            <div className="flex justify-center gap-2 mt-4">
+                                <button 
+                                    onClick={() => setEditingFriend(friend)}
+                                    className="text-slate-500 hover:text-slate-700 p-1"
+                                    title="Edit friend"
+                                >
+                                    <Edit size={18} />
+                                </button>
+                                <button 
+                                    onClick={() => handleDeleteFriend(friend.id)}
+                                    className="text-red-500 hover:text-red-700 p-1"
+                                    title="Delete friend"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {/* Edit Friend Modal */}
+            {editingFriend && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+                    <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+                        <h3 className="text-2xl font-bold mb-4">
+                            {editingFriend.id ? 'Edit Friend' : 'Add New Friend'}
+                        </h3>
+                        <form onSubmit={handleSaveFriend} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                <input 
+                                    type="text" 
+                                    value={editingFriend.name} 
+                                    onChange={e => setEditingFriend({...editingFriend, name: e.target.value})} 
+                                    placeholder="Friend or partner name" 
+                                    className="w-full p-2 border rounded" 
+                                    required 
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Photo</label>
+                                <FileUploadInput
+                                    accept="image/*"
+                                    currentValue={editingFriend.photo || ''}
+                                    onChange={(url) => setEditingFriend({...editingFriend, photo: url})}
+                                    placeholder="Upload friend photo"
+                                    enableCrop={true}
+                                    cropAspectRatio="1:1"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea 
+                                    value={editingFriend.description} 
+                                    onChange={e => setEditingFriend({...editingFriend, description: e.target.value})} 
+                                    placeholder="Brief description or role" 
+                                    className="w-full p-2 border rounded h-20" 
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                                <input 
+                                    type="url" 
+                                    value={editingFriend.website} 
+                                    onChange={e => setEditingFriend({...editingFriend, website: e.target.value})} 
+                                    placeholder="https://..." 
+                                    className="w-full p-2 border rounded" 
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Social Media</label>
+                                <div className="space-y-2">
+                                    {[
+                                        { key: 'twitter', label: 'Twitter', placeholder: '@username' },
+                                        { key: 'facebook', label: 'Facebook', placeholder: 'facebook.com/page' },
+                                        { key: 'instagram', label: 'Instagram', placeholder: '@username' },
+                                        { key: 'youtube', label: 'YouTube', placeholder: 'youtube.com/channel' }
+                                    ].map(social => (
+                                        <input 
+                                            key={social.key}
+                                            type="text" 
+                                            value={editingFriend.socialMedia?.[social.key] || ''} 
+                                            onChange={e => setEditingFriend({
+                                                ...editingFriend, 
+                                                socialMedia: {
+                                                    ...editingFriend.socialMedia,
+                                                    [social.key]: e.target.value
+                                                }
+                                            })} 
+                                            placeholder={`${social.label}: ${social.placeholder}`} 
+                                            className="w-full p-2 border rounded text-sm" 
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <div className="flex justify-end space-x-2 pt-4">
+                                <button type="button" onClick={() => setEditingFriend(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">
+                                    Cancel
+                                </button>
+                                <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">
+                                    {editingFriend.id ? 'Update Friend' : 'Add Friend'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+// ===== SPONSORS MANAGEMENT SYSTEM =====
+const SponsorsManager = ({ sponsors, setSponsors }) => {
+    const [editingSponsor, setEditingSponsor] = useState(null);
+    const [saved, setSaved] = useState(false);
+
+    const handleCreateSponsor = () => {
+        setEditingSponsor({
+            id: '',
+            name: '',
+            logo: '',
+            tier: 'Bronze',
+            website: '',
+            description: '',
+            socialMedia: {
+                twitter: '',
+                facebook: '',
+                instagram: '',
+                youtube: ''
+            }
+        });
+    };
+
+    const handleSaveSponsor = (e) => {
+        e.preventDefault();
+        
+        if (!editingSponsor.name.trim()) {
+            alert('Please enter a sponsor name');
+            return;
+        }
+
+        const sponsorData = {
+            ...editingSponsor,
+            id: editingSponsor.id || `sponsor-${Date.now()}`
+        };
+
+        if (editingSponsor.id) {
+            setSponsors(sponsors.map(s => s.id === editingSponsor.id ? sponsorData : s));
+        } else {
+            setSponsors([...sponsors, sponsorData]);
+        }
+
+        setEditingSponsor(null);
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+    };
+
+    const handleDeleteSponsor = (sponsorId) => {
+        const sponsor = sponsors.find(s => s.id === sponsorId);
+        if (sponsor && window.confirm(`Are you sure you want to delete "${sponsor.name}"?`)) {
+            setSponsors(sponsors.filter(s => s.id !== sponsorId));
+        }
+    };
+
+    const sponsorsByTier = {
+        'Platinum': sponsors.filter(s => s.tier === 'Platinum'),
+        'Gold': sponsors.filter(s => s.tier === 'Gold'),
+        'Silver': sponsors.filter(s => s.tier === 'Silver'),
+        'Bronze': sponsors.filter(s => s.tier === 'Bronze')
+    };
+
+    return (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-2xl font-bold text-slate-800">Sponsors & Supporters</h2>
+                    <p className="text-slate-600">Manage league sponsors organized by tier level</p>
+                </div>
+                <button 
+                    onClick={handleCreateSponsor}
+                    className="bg-red-800 text-white px-4 py-2 rounded-lg hover:bg-red-900 flex items-center gap-2"
+                >
+                    <Plus size={20} />
+                    Add Sponsor
+                </button>
+            </div>
+
+            {saved && (
+                <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+                    ✓ Changes saved successfully!
+                </div>
+            )}
+
+            {sponsors.length === 0 ? (
+                <div className="text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
+                    <Briefcase className="mx-auto h-12 w-12 text-slate-400 mb-4" />
+                    <h3 className="text-lg font-semibold text-slate-600 mb-2">No Sponsors Yet</h3>
+                    <p className="text-slate-500 mb-4">Add sponsors and supporters to showcase your partnerships</p>
+                    <button 
+                        onClick={handleCreateSponsor}
+                        className="bg-red-800 text-white px-6 py-2 rounded-lg hover:bg-red-900"
+                    >
+                        Add First Sponsor
+                    </button>
+                </div>
+            ) : (
+                Object.entries(sponsorsByTier).map(([tier, tierSponsors]) => (
+                    tierSponsors.length > 0 && (
+                        <div key={tier} className="space-y-4">
+                            <div className="flex items-center gap-3">
+                                <h3 className="text-xl font-semibold text-slate-800">{tier} Sponsors</h3>
+                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                    tier === 'Platinum' ? 'bg-purple-100 text-purple-800' :
+                                    tier === 'Gold' ? 'bg-yellow-100 text-yellow-800' :
+                                    tier === 'Silver' ? 'bg-gray-100 text-gray-800' :
+                                    'bg-orange-100 text-orange-800'
+                                }`}>
+                                    {tierSponsors.length} {tierSponsors.length === 1 ? 'Sponsor' : 'Sponsors'}
+                                </span>
+                            </div>
+                            
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                {tierSponsors.map(sponsor => (
+                                    <div key={sponsor.id} className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                                        <div className="text-center">
+                                            <img 
+                                                src={sponsor.logo || 'https://placehold.co/120x80/f1f5f9/64748b?text=SPONSOR'} 
+                                                alt={sponsor.name} 
+                                                className="w-24 h-16 mx-auto rounded object-contain bg-slate-50 p-1"
+                                            />
+                                            <h4 className="font-semibold text-slate-800 mt-3">{sponsor.name}</h4>
+                                            <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium mt-2 ${
+                                                sponsor.tier === 'Platinum' ? 'bg-purple-100 text-purple-800' :
+                                                sponsor.tier === 'Gold' ? 'bg-yellow-100 text-yellow-800' :
+                                                sponsor.tier === 'Silver' ? 'bg-gray-100 text-gray-800' :
+                                                'bg-orange-100 text-orange-800'
+                                            }`}>
+                                                {sponsor.tier}
+                                            </span>
+                                            {sponsor.description && (
+                                                <p className="text-sm text-slate-600 mt-2">{sponsor.description}</p>
+                                            )}
+                                        </div>
+                                        
+                                        <div className="flex justify-center gap-2 mt-4">
+                                            <button 
+                                                onClick={() => setEditingSponsor(sponsor)}
+                                                className="text-slate-500 hover:text-slate-700 p-1"
+                                                title="Edit sponsor"
+                                            >
+                                                <Edit size={18} />
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDeleteSponsor(sponsor.id)}
+                                                className="text-red-500 hover:text-red-700 p-1"
+                                                title="Delete sponsor"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )
+                ))
+            )}
+
+            {/* Edit Sponsor Modal */}
+            {editingSponsor && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+                    <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+                        <h3 className="text-2xl font-bold mb-4">
+                            {editingSponsor.id ? 'Edit Sponsor' : 'Add New Sponsor'}
+                        </h3>
+                        <form onSubmit={handleSaveSponsor} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                                <input 
+                                    type="text" 
+                                    value={editingSponsor.name} 
+                                    onChange={e => setEditingSponsor({...editingSponsor, name: e.target.value})} 
+                                    placeholder="Company or sponsor name" 
+                                    className="w-full p-2 border rounded" 
+                                    required 
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Sponsorship Tier</label>
+                                <select 
+                                    value={editingSponsor.tier} 
+                                    onChange={e => setEditingSponsor({...editingSponsor, tier: e.target.value})} 
+                                    className="w-full p-2 border rounded"
+                                >
+                                    <option value="Platinum">Platinum</option>
+                                    <option value="Gold">Gold</option>
+                                    <option value="Silver">Silver</option>
+                                    <option value="Bronze">Bronze</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Logo</label>
+                                <FileUploadInput
+                                    accept="image/*"
+                                    currentValue={editingSponsor.logo || ''}
+                                    onChange={(url) => setEditingSponsor({...editingSponsor, logo: url})}
+                                    placeholder="Upload sponsor logo"
+                                    enableCrop={true}
+                                    cropAspectRatio="3:2"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea 
+                                    value={editingSponsor.description} 
+                                    onChange={e => setEditingSponsor({...editingSponsor, description: e.target.value})} 
+                                    placeholder="Brief description of the sponsor" 
+                                    className="w-full p-2 border rounded h-20" 
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                                <input 
+                                    type="url" 
+                                    value={editingSponsor.website} 
+                                    onChange={e => setEditingSponsor({...editingSponsor, website: e.target.value})} 
+                                    placeholder="https://..." 
+                                    className="w-full p-2 border rounded" 
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Social Media</label>
+                                <div className="space-y-2">
+                                    {[
+                                        { key: 'twitter', label: 'Twitter', placeholder: '@company' },
+                                        { key: 'facebook', label: 'Facebook', placeholder: 'facebook.com/company' },
+                                        { key: 'instagram', label: 'Instagram', placeholder: '@company' },
+                                        { key: 'youtube', label: 'YouTube', placeholder: 'youtube.com/company' }
+                                    ].map(social => (
+                                        <input 
+                                            key={social.key}
+                                            type="text" 
+                                            value={editingSponsor.socialMedia?.[social.key] || ''} 
+                                            onChange={e => setEditingSponsor({
+                                                ...editingSponsor, 
+                                                socialMedia: {
+                                                    ...editingSponsor.socialMedia,
+                                                    [social.key]: e.target.value
+                                                }
+                                            })} 
+                                            placeholder={`${social.label}: ${social.placeholder}`} 
+                                            className="w-full p-2 border rounded text-sm" 
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <div className="flex justify-end space-x-2 pt-4">
+                                <button type="button" onClick={() => setEditingSponsor(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">
+                                    Cancel
+                                </button>
+                                <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">
+                                    {editingSponsor.id ? 'Update Sponsor' : 'Add Sponsor'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameTickerData, setGameTickerData, currentUser, users, setUsers, websiteStyle, setWebsiteStyle, leagueInfo, setLeagueInfo, seasons, setSeasons, currentSeason, setCurrentSeason, setLeagueSchedule }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [usersSecurityTab, setUsersSecurityTab] = useState('users'); // New state for sub-tabs
