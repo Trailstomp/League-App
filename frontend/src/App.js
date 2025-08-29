@@ -11715,7 +11715,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                 {activeTab === 'schedule' && hasPermission(currentUser, 'events.view') && (
                     <div className="p-6">
                         <h2 className="text-2xl font-bold mb-4">Schedule & Events Management</h2>
-                        <LeagueCalendarManager teams={teams} setTeams={setTeams} />
+                        <LeagueCalendarManager teams={teams} setTeams={setTeams} websiteStyle={websiteStyle} />
                     </div>
                 )}
 
