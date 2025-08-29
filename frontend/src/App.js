@@ -6969,6 +6969,24 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
     const [manageSocialExpanded, setManageSocialExpanded] = useState(false);
     const [manageContactExpanded, setManageContactExpanded] = useState(false);
     const [manageScheduleExpanded, setManageScheduleExpanded] = useState(false);
+    
+    // Event type filtering for team schedule
+    const [teamEventTypeFilters, setTeamEventTypeFilters] = useState({
+        game: true,
+        practice: true,
+        tournament: true,
+        meeting: true,
+        social: true,
+        other: true
+    });
+    
+    // Memoized handler for team event type filter changes
+    const handleTeamEventTypeToggle = useCallback((eventType) => {
+        setTeamEventTypeFilters(prev => ({
+            ...prev,
+            [eventType]: !prev[eventType]
+        }));
+    }, []);
 
     // Ensure activeTab is visible, fallback to first visible tab
     React.useEffect(() => {
