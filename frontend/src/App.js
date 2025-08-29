@@ -961,14 +961,32 @@ const FileUploadInput = ({
     };
 
     const handleCrop = (croppedImageData) => {
-        onChange(croppedImageData);
-        setShowCropTool(false);
+        console.log('🎯 handleCrop called with data:', croppedImageData ? 'data received' : 'no data');
         
-        // Clean up original image URL if it was a blob
-        if (originalImageUrl && originalImageUrl.startsWith('blob:')) {
-            URL.revokeObjectURL(originalImageUrl);
+        // Ensure we have valid data before proceeding
+        if (!croppedImageData) {
+            console.error('❌ No cropped image data received');
+            return;
         }
-        setOriginalImageUrl(null);
+
+        try {
+            // Call onChange with cropped data
+            onChange(croppedImageData);
+            console.log('✅ Image data updated successfully');
+            
+            // Close crop tool
+            setShowCropTool(false);
+            
+            // Clean up original image URL if it was a blob
+            if (originalImageUrl && originalImageUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(originalImageUrl);
+                console.log('🧹 Cleaned up original blob URL');
+            }
+            setOriginalImageUrl(null);
+            
+        } catch (error) {
+            console.error('❌ Error in handleCrop:', error);
+        }
     };
 
     const handleCropCancel = () => {
