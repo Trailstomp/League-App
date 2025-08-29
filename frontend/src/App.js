@@ -10756,6 +10756,20 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
             description: 'Manage teams and divisions'
         },
         { 
+            id: 'friends', 
+            label: 'Friends', 
+            icon: <Users size={16} />, 
+            permissions: ['system.admin_access'],
+            description: 'Manage league friends and partners'
+        },
+        { 
+            id: 'sponsors', 
+            label: 'Sponsors', 
+            icon: <Briefcase size={16} />, 
+            permissions: ['system.admin_access'],
+            description: 'Manage league sponsors and supporters'
+        },
+        { 
             id: 'players', 
             label: 'Players', 
             icon: <UserCheck size={16} />, 
