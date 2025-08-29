@@ -3969,7 +3969,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                             <div key={game.id} className="bg-white p-4 rounded-lg shadow-md flex items-center justify-between">
                                                 <div className="flex items-center">
                                                     <button onClick={() => onTeamClick(away.id)} className="text-center w-28 hover:opacity-80">
-                                                        <img src={away.logo} alt={away.name} className="w-12 h-12 mx-auto rounded-full bg-slate-200 p-1"/>
+                                                        <img src={away.logo} alt={away.name} className="w-12 h-12 mx-auto rounded-full bg-slate-200 p-1 object-contain"/>
                                                         <p className="font-bold text-xs mt-1">{away.name}</p>
                                                     </button>
                                                     <span className="text-xl font-bold text-slate-400 mx-3">@</span>
