@@ -10770,6 +10770,168 @@ const getLeagueContacts = (players, users) => {
     };
 };
 
+// ===== MESSAGING CENTER COMPONENT (DEMO) =====
+
+const MessageCenter = ({ teams, players, users, currentUser }) => {
+    const [selectedTeam, setSelectedTeam] = useState('');
+    const [messageType, setMessageType] = useState('team'); // 'team', 'role', 'league'
+    const [selectedRole, setSelectedRole] = useState('player');
+    const [contacts, setContacts] = useState([]);
+
+    // Update contacts when selections change
+    useEffect(() => {
+        let newContacts = [];
+        
+        if (messageType === 'team' && selectedTeam) {
+            const teamContacts = getTeamContacts(selectedTeam, players, users);
+            newContacts = teamContacts.all;
+        } else if (messageType === 'role') {
+            const roleUsers = getUsersByRole(selectedRole, users);
+            newContacts = roleUsers.map(user => ({
+                type: user.roles.includes('admin') ? 'admin' : selectedRole,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                userId: user.id
+            }));
+        } else if (messageType === 'league') {
+            const leagueContacts = getLeagueContacts(players, users);
+            newContacts = leagueContacts.everyone;
+        }
+        
+        setContacts(newContacts);
+    }, [messageType, selectedTeam, selectedRole, players, users]);
+
+    return (
+        <div className="p-6 bg-white rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-6 text-slate-800">📧 Message Center</h2>
+            
+            {/* Message Type Selection */}
+            <div className="mb-4">
+                <label className="block text-sm font-medium text-slate-700 mb-2">Message Scope</label>
+                <div className="flex space-x-4">
+                    <label className="flex items-center">
+                        <input 
+                            type="radio" 
+                            value="team" 
+                            checked={messageType === 'team'} 
+                            onChange={(e) => setMessageType(e.target.value)}
+                            className="mr-2"
+                        />
+                        Team
+                    </label>
+                    <label className="flex items-center">
+                        <input 
+                            type="radio" 
+                            value="role" 
+                            checked={messageType === 'role'} 
+                            onChange={(e) => setMessageType(e.target.value)}
+                            className="mr-2"
+                        />
+                        By Role
+                    </label>
+                    <label className="flex items-center">
+                        <input 
+                            type="radio" 
+                            value="league" 
+                            checked={messageType === 'league'} 
+                            onChange={(e) => setMessageType(e.target.value)}
+                            className="mr-2"
+                        />
+                        League-wide
+                    </label>
+                </div>
+            </div>
+
+            {/* Team Selection */}
+            {messageType === 'team' && (
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Select Team</label>
+                    <select 
+                        value={selectedTeam} 
+                        onChange={(e) => setSelectedTeam(e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded-md"
+                    >
+                        <option value="">Choose a team...</option>
+                        {teams.filter(t => t.active).map(team => (
+                            <option key={team.id} value={team.id}>{team.name}</option>
+                        ))}
+                    </select>
+                </div>
+            )}
+
+            {/* Role Selection */}
+            {messageType === 'role' && (
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Select Role</label>
+                    <select 
+                        value={selectedRole} 
+                        onChange={(e) => setSelectedRole(e.target.value)}
+                        className="w-full p-2 border border-slate-300 rounded-md"
+                    >
+                        <option value="player">All Players</option>
+                        <option value="coach">All Coaches</option>
+                        <option value="admin">All Admins</option>
+                        <option value="player/coach">Player/Coaches</option>
+                    </select>
+                </div>
+            )}
+
+            {/* Contact List Preview */}
+            <div className="mt-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-3">
+                    Recipients ({contacts.length})
+                </h3>
+                
+                {contacts.length > 0 ? (
+                    <div className="max-h-64 overflow-y-auto bg-slate-50 rounded-md p-4">
+                        {contacts.map((contact, index) => (
+                            <div key={`${contact.userId}-${contact.playerId}-${index}`} className="flex items-center justify-between py-2 border-b border-slate-200 last:border-b-0">
+                                <div>
+                                    <span className="font-medium text-slate-800">{contact.name}</span>
+                                    <span className={`ml-2 px-2 py-1 rounded text-xs font-semibold ${
+                                        contact.type === 'player' ? 'bg-blue-100 text-blue-800' :
+                                        contact.type === 'coach' ? 'bg-green-100 text-green-800' :
+                                        'bg-purple-100 text-purple-800'
+                                    }`}>
+                                        {contact.type}
+                                    </span>
+                                </div>
+                                <div className="text-sm text-slate-600">
+                                    {contact.email}
+                                    {contact.phone && <div>📱 {contact.phone}</div>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-8 text-slate-500">
+                        <Mail className="mx-auto mb-2" size={48} />
+                        <p>No contacts found for the selected criteria</p>
+                    </div>
+                )}
+            </div>
+
+            {/* Action Buttons */}
+            {contacts.length > 0 && (
+                <div className="mt-6 flex space-x-3">
+                    <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center">
+                        <Mail className="mr-2" size={16} />
+                        Send Email ({contacts.length})
+                    </button>
+                    <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center">
+                        <MessageSquare className="mr-2" size={16} />
+                        Send SMS ({contacts.filter(c => c.phone).length})
+                    </button>
+                    <button className="bg-slate-600 text-white px-4 py-2 rounded hover:bg-slate-700">
+                        Export List
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+};
+
 // --- Main App Component ---
 function App() {
     const [page, setPage] = useState('home');
