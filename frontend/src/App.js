@@ -8483,17 +8483,25 @@ const TeamManager = ({ teams, setTeams }) => {
     
     const handleSave = useCallback((e) => {
         e.preventDefault();
-        if (editingTeam.id) {
-            setTeams(teams.map(t => t.id === editingTeam.id ? editingTeam : t));
+        if (editingTeam?.id) {
+            setTeams(currentTeams => currentTeams.map(t => t.id === editingTeam.id ? editingTeam : t));
         } else {
-            setTeams([...teams, { ...editingTeam, id: editingTeam.name.toLowerCase().replace(/\s/g, ''), wins: 0, losses: 0, ties: 0, pf: 0, pa: 0, active: true, media: [], calendar: [] }]);
+            const newTeam = {
+                ...editingTeam,
+                id: editingTeam.name.toLowerCase().replace(/\s/g, '-'),
+                wins: 0, losses: 0, ties: 0, pf: 0, pa: 0,
+                active: true, media: [], calendar: [],
+                social: { twitter: '', instagram: '', facebook: '', youtube: '' },
+                style: { bannerUrl: '', primaryColor: '#ff0000', backgroundColor: '#fef2f2' }
+            };
+            setTeams(currentTeams => [...currentTeams, newTeam]);
         }
         setEditingTeam(null);
-    }, [editingTeam, teams, setTeams]);
+    }, [editingTeam, setTeams]);
     
     const toggleActive = useCallback((team) => {
-        setTeams(teams.map(t => t.id === team.id ? {...t, active: !t.active} : t));
-    }, [teams, setTeams]);
+        setTeams(currentTeams => currentTeams.map(t => t.id === team.id ? {...t, active: !t.active} : t));
+    }, [setTeams]);
 
     const TeamForm = () => (
          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
