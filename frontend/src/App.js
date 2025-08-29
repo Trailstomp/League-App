@@ -10607,6 +10607,169 @@ const initializeData = async (key, defaultValue) => {
     return getStoredData(`mlbl_${key}`, defaultValue);
 };
 
+// ===== USER-PLAYER LINKING & MESSAGING UTILITIES =====
+
+/**
+ * Links players with users based on email matching and adds userId field
+ * @param {Array} players - Array of player objects
+ * @param {Array} users - Array of user objects  
+ * @returns {Array} - Players array with userId field added
+ */
+const linkPlayersWithUsers = (players, users) => {
+    return players.map(player => {
+        // Find matching user by email (case insensitive)
+        const matchingUser = users.find(user => 
+            user.email && player.email && 
+            user.email.toLowerCase() === player.email.toLowerCase()
+        );
+        
+        return {
+            ...player,
+            userId: matchingUser ? matchingUser.id : null,
+            // Keep original email for redundancy
+        };
+    });
+};
+
+/**
+ * Get all players for a team with their linked user data for messaging
+ * @param {string} teamId - Team ID to get players for
+ * @param {Array} players - Players array
+ * @param {Array} users - Users array
+ * @returns {Array} - Players with linked user data
+ */
+const getTeamPlayersForMessaging = (teamId, players, users) => {
+    return players
+        .filter(player => player.teams && player.teams.includes(teamId))
+        .map(player => {
+            const linkedUser = player.userId ? users.find(u => u.id === player.userId) : null;
+            return {
+                ...player,
+                user: linkedUser,
+                // Primary contact info (prefer user data, fallback to player data)
+                primaryEmail: linkedUser?.email || player.email,
+                primaryPhone: linkedUser?.phone || player.phone,
+                canReceiveMessages: !!(linkedUser?.email || player.email), // Has some contact method
+                hasUserAccount: !!linkedUser
+            };
+        });
+};
+
+/**
+ * Get all users by role for messaging (coaches, admins, etc.)
+ * @param {string|Array} roles - Single role string or array of roles
+ * @param {Array} users - Users array
+ * @returns {Array} - Filtered users with specified roles
+ */
+const getUsersByRole = (roles, users) => {
+    const roleArray = Array.isArray(roles) ? roles : [roles];
+    return users.filter(user => 
+        user.status === 'active' && 
+        user.roles && 
+        roleArray.some(role => user.roles.includes(role))
+    );
+};
+
+/**
+ * Get all contacts for a team (players + coaches + team-specific admins)
+ * @param {string} teamId - Team ID
+ * @param {Array} players - Players array
+ * @param {Array} users - Users array
+ * @returns {Object} - Categorized contacts for the team
+ */
+const getTeamContacts = (teamId, players, users) => {
+    const teamPlayers = getTeamPlayersForMessaging(teamId, players, users);
+    const teamCoaches = users.filter(user => 
+        user.status === 'active' && 
+        user.teamId === teamId && 
+        (user.roles.includes('coach') || user.roles.includes('player/coach'))
+    );
+    const admins = getUsersByRole('admin', users);
+    
+    return {
+        players: teamPlayers,
+        coaches: teamCoaches,
+        admins: admins,
+        all: [
+            ...teamPlayers.map(p => ({ 
+                type: 'player', 
+                name: `${p.firstName} ${p.lastName}`, 
+                email: p.primaryEmail, 
+                phone: p.primaryPhone,
+                userId: p.userId,
+                playerId: p.id
+            })),
+            ...teamCoaches.map(c => ({ 
+                type: 'coach', 
+                name: c.name, 
+                email: c.email, 
+                phone: c.phone,
+                userId: c.id
+            })),
+            ...admins.map(a => ({ 
+                type: 'admin', 
+                name: a.name, 
+                email: a.email, 
+                phone: a.phone,
+                userId: a.id
+            }))
+        ].filter(contact => contact.email) // Only include contacts with email
+    };
+};
+
+/**
+ * Get league-wide contacts for mass messaging
+ * @param {Array} players - Players array
+ * @param {Array} users - Users array
+ * @returns {Object} - All league contacts categorized
+ */
+const getLeagueContacts = (players, users) => {
+    const allPlayersWithUsers = players.map(player => {
+        const linkedUser = player.userId ? users.find(u => u.id === player.userId) : null;
+        return {
+            ...player,
+            user: linkedUser,
+            primaryEmail: linkedUser?.email || player.email,
+            primaryPhone: linkedUser?.phone || player.phone
+        };
+    }).filter(p => p.primaryEmail);
+    
+    const allCoaches = getUsersByRole(['coach', 'player/coach'], users);
+    const allAdmins = getUsersByRole('admin', users);
+    
+    return {
+        allPlayers: allPlayersWithUsers,
+        allCoaches: allCoaches,
+        allAdmins: allAdmins,
+        everyone: [
+            ...allPlayersWithUsers.map(p => ({ 
+                type: 'player', 
+                name: `${p.firstName} ${p.lastName}`, 
+                email: p.primaryEmail, 
+                phone: p.primaryPhone,
+                teams: p.teams,
+                userId: p.userId,
+                playerId: p.id
+            })),
+            ...allCoaches.map(c => ({ 
+                type: 'coach', 
+                name: c.name, 
+                email: c.email, 
+                phone: c.phone,
+                teamId: c.teamId,
+                userId: c.id
+            })),
+            ...allAdmins.map(a => ({ 
+                type: 'admin', 
+                name: a.name, 
+                email: a.email, 
+                phone: a.phone,
+                userId: a.id
+            }))
+        ]
+    };
+};
+
 // --- Main App Component ---
 function App() {
     const [page, setPage] = useState('home');
