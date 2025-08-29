@@ -12453,7 +12453,16 @@ function App() {
                                     } w-auto object-contain drop-shadow-lg`}
                                 />
                             )}
-                            <h1 className="text-xl font-bold tracking-wide drop-shadow-lg">
+                            <h1 
+                                className="text-xl font-bold tracking-wide drop-shadow-lg"
+                                style={{
+                                    fontSize: `${websiteStyle.bannerFontSize || 24}px`,
+                                    fontFamily: websiteStyle.bannerFontFamily || 'Inter, sans-serif',
+                                    color: websiteStyle.bannerTextColor || '#ffffff',
+                                    fontWeight: websiteStyle.bannerTextBold ? 'bold' : 'normal',
+                                    textShadow: websiteStyle.bannerTextShadow ? '2px 2px 4px rgba(0,0,0,0.7)' : 'none'
+                                }}
+                            >
                                 {websiteStyle.bannerText || "MLBL"}
                             </h1>
                         </div>
