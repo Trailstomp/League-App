@@ -8542,9 +8542,15 @@ const TeamManager = ({ teams, setTeams }) => {
         if (editingTeam?.id) {
             setTeams(currentTeams => currentTeams.map(t => t.id === editingTeam.id ? editingTeam : t));
         } else {
+            // Ensure we have a valid team name before proceeding
+            if (!editingTeam?.name || editingTeam.name.trim() === '') {
+                alert('Please enter a team name');
+                return;
+            }
+            
             const newTeam = {
                 ...editingTeam,
-                id: editingTeam.name.toLowerCase().replace(/\s/g, '-'),
+                id: editingTeam.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
                 wins: 0, losses: 0, ties: 0, pf: 0, pa: 0,
                 active: true, media: [], calendar: [],
                 social: { twitter: '', instagram: '', facebook: '', youtube: '' },
