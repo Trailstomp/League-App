@@ -2674,6 +2674,15 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         setResizeHandle('');
     };
 
+    // Add wheel event handler for zooming
+    const handleWheel = useCallback((e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const delta = e.deltaY > 0 ? -0.1 : 0.1;
+        setImageScale(prev => Math.max(0.1, Math.min(5, prev + delta)));
+    }, []);
+
     const handleAspectRatioChange = (newRatio) => {
         setCurrentAspectRatio(newRatio);
         const ratioConfig = aspectRatios[newRatio] || aspectRatios['free'];
