@@ -8473,6 +8473,62 @@ const PlayerManager = ({ players, setPlayers, teams, currentUser }) => {
     );
 };
 
+// Team form component - moved outside to prevent recreation
+const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam }) => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+            <h3 className="text-2xl font-bold mb-4">{editingTeam?.id ? 'Edit Team' : 'Add New Team'}</h3>
+            <form onSubmit={handleSave} className="space-y-4">
+                <input 
+                    type="text" 
+                    value={editingTeam?.name || ''} 
+                    onChange={e => handleInputChange('name', e.target.value)} 
+                    placeholder="Team Name" 
+                    className="w-full p-2 border rounded" 
+                    required 
+                    autoFocus
+                />
+                
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Division</label>
+                    <select 
+                        value={editingTeam?.division || 'Field'} 
+                        onChange={e => handleInputChange('division', e.target.value)} 
+                        className="w-full p-2 border rounded" 
+                        required
+                    >
+                        <option value="Field">Field Lacrosse</option>
+                        <option value="Box">Box Lacrosse</option>
+                    </select>
+                </div>
+                
+                <input 
+                    type="email" 
+                    value={editingTeam?.contactEmail || ''} 
+                    onChange={e => handleInputChange('contactEmail', e.target.value)} 
+                    placeholder="Contact Email" 
+                    className="w-full p-2 border rounded" 
+                />
+                
+                <FileUploadInput
+                    label="Team Logo"
+                    accept="image/*"
+                    currentValue={editingTeam?.logo || ''}
+                    onChange={(url) => handleInputChange('logo', url)}
+                    placeholder="Upload team logo"
+                    enableCrop={true}
+                    cropAspectRatio="1:1"
+                />
+                
+                <div className="flex justify-end space-x-2">
+                    <button type="button" onClick={() => setEditingTeam(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
+                    <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Save Team</button>
+                </div>
+            </form>
+        </div>
+    </div>
+);
+
 const TeamManager = ({ teams, setTeams }) => {
     const [editingTeam, setEditingTeam] = useState(null);
     
@@ -8502,8 +8558,6 @@ const TeamManager = ({ teams, setTeams }) => {
     const toggleActive = useCallback((team) => {
         setTeams(currentTeams => currentTeams.map(t => t.id === team.id ? {...t, active: !t.active} : t));
     }, [setTeams]);
-
-    const TeamForm = () => (
          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
                 <h3 className="text-2xl font-bold mb-4">{editingTeam?.id ? 'Edit Team' : 'Add New Team'}</h3>
