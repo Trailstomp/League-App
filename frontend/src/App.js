@@ -8097,7 +8097,27 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                         const away = getTeam(game.away);
                                         if (!home || !away) return null;
                                         return (
-                                            <div key={game.id} className="bg-white p-4 rounded-lg shadow-md flex items-center justify-between">
+                                            <div key={game.id} className="relative bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer group"
+                                                 onClick={() => {
+                                                     // Open game details modal or navigate to game details
+                                                     console.log('Game details for:', game);
+                                                 }}
+                                            >
+                                                {/* Admin Edit Button Overlay */}
+                                                {currentUser && hasPermission(currentUser, 'system.admin_access') && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            // Open game edit modal
+                                                            console.log('Edit game:', game);
+                                                        }}
+                                                        className="absolute top-2 right-2 bg-blue-600 bg-opacity-80 hover:bg-opacity-100 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                                        title="Edit game details"
+                                                    >
+                                                        <Edit size={14} />
+                                                    </button>
+                                                )}
+                                                <div className="flex items-center justify-between">
                                                 <div className="flex items-center">
                                                     <div className="text-center w-32">
                                                         <img src={away.logo} alt={away.name} className="w-16 h-16 mx-auto rounded-full bg-slate-200 p-1 object-contain"/>
