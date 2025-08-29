@@ -8601,12 +8601,18 @@ const TeamManager = ({ teams, setTeams }) => {
                 </form>
             </div>
         </div>
-    );
     return (
         <div>
-            {editingTeam && <TeamForm />}
+            {editingTeam && (
+                <TeamForm 
+                    editingTeam={editingTeam}
+                    handleInputChange={handleInputChange}
+                    handleSave={handleSave}
+                    setEditingTeam={setEditingTeam}
+                />
+            )}
             <div className="flex justify-end mb-4">
-                <button onClick={() => setEditingTeam({name: '', logo: '', division: 'Field', musicUrl: ''})} className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"><Plus className="mr-2 h-4 w-4"/> Add Team</button>
+                <button onClick={() => setEditingTeam({name: '', logo: '', division: 'Field', contactEmail: ''})} className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"><Plus className="mr-2 h-4 w-4"/> Add Team</button>
             </div>
              <ul className="mt-4 space-y-2">
                 {teams.map(t => (
