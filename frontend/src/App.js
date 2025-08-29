@@ -2844,7 +2844,11 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                                 </button>
                             </div>
                             <button
-                                onClick={handleResetImageTransform}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleResetImageTransform();
+                                }}
                                 className="px-2 py-1 bg-white rounded border text-xs hover:bg-gray-50 transition-colors"
                                 title="Reset zoom and pan"
                             >
