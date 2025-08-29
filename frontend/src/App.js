@@ -7905,7 +7905,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                     </div>
                                                     <span className="text-2xl font-bold text-slate-400 mx-4">@</span>
                                                     <div className="text-center w-32">
-                                                        <img src={home.logo} alt={home.name} className="w-16 h-16 mx-auto rounded-full bg-slate-200 p-1"/>
+                                                        <img src={home.logo} alt={home.name} className="w-16 h-16 mx-auto rounded-full bg-slate-200 p-1 object-contain"/>
                                                         <p className="font-bold text-sm mt-1">{home.name}</p>
                                                     </div>
                                                 </div>
