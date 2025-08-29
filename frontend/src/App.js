@@ -2784,8 +2784,14 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
     }
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70]">
-            <div className="bg-white rounded-lg max-w-5xl max-h-[95vh] w-full mx-4 flex flex-col">
+        <div 
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]"
+            onClickCapture={(e) => e.stopPropagation()}
+            style={{ pointerEvents: 'auto' }}
+        >
+            <div className="bg-white rounded-lg max-w-5xl max-h-[95vh] w-full mx-4 flex flex-col"
+                 onClickCapture={(e) => e.stopPropagation()}
+            >
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b">
                     <h3 className="text-lg font-semibold">Crop Image</h3>
