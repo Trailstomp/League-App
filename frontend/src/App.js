@@ -2931,6 +2931,21 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
 
 
     
+    // Helper function to handle YouTube URLs
+    const handleVideoClick = (videoUrl) => {
+        if (!videoUrl) return;
+        
+        // Handle different YouTube URL formats
+        let finalUrl = videoUrl;
+        if (videoUrl.includes('youtube.com/watch?v=') || videoUrl.includes('youtu.be/')) {
+            finalUrl = videoUrl;
+        } else if (videoUrl.includes('youtube.com/embed/')) {
+            finalUrl = videoUrl.replace('/embed/', '/watch?v=');
+        }
+        
+        window.open(finalUrl, '_blank');
+    };
+
     // Mock picture/video content - will be made editable by admin
     const [mediaContent, setMediaContent] = useState({
         pictures: [
