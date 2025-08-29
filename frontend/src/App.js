@@ -8117,21 +8117,21 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                         <Edit size={14} />
                                                     </button>
                                                 )}
-                                                <div className="flex items-center justify-between">
-                                                <div className="flex items-center">
-                                                    <div className="text-center w-32">
-                                                        <img src={away.logo} alt={away.name} className="w-16 h-16 mx-auto rounded-full bg-slate-200 p-1 object-contain"/>
-                                                        <p className="font-bold text-sm mt-1">{away.name}</p>
+                                                    <div className="flex items-center">
+                                                        <div className="text-center w-32">
+                                                            <img src={away.logo} alt={away.name} className="w-16 h-16 mx-auto rounded-full bg-slate-200 p-1 object-contain"/>
+                                                            <p className="font-bold text-sm mt-1">{away.name}</p>
+                                                        </div>
+                                                        <span className="text-2xl font-bold text-slate-400 mx-4">@</span>
+                                                        <div className="text-center w-32">
+                                                            <img src={home.logo} alt={home.name} className="w-16 h-16 mx-auto rounded-full bg-slate-200 p-1 object-contain"/>
+                                                            <p className="font-bold text-sm mt-1">{home.name}</p>
+                                                        </div>
                                                     </div>
-                                                    <span className="text-2xl font-bold text-slate-400 mx-4">@</span>
-                                                    <div className="text-center w-32">
-                                                        <img src={home.logo} alt={home.name} className="w-16 h-16 mx-auto rounded-full bg-slate-200 p-1 object-contain"/>
-                                                        <p className="font-bold text-sm mt-1">{home.name}</p>
+                                                    <div className="text-right">
+                                                        <p className="font-bold text-lg">{game.time}</p>
+                                                        <p className="text-sm text-slate-500">{game.location}</p>
                                                     </div>
-                                                </div>
-                                                <div className="text-right">
-                                                    <p className="font-bold text-lg">{game.time}</p>
-                                                    <p className="text-sm text-slate-500">{game.location}</p>
                                                 </div>
                                             </div>
                                         );
