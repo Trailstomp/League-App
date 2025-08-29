@@ -1632,8 +1632,18 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
     const tickerRef = useRef(null);
     const [isHovering, setIsHovering] = useState(false);
 
-    // Combine games and upcoming events with tournament consolidation
+    // Combine games and upcoming events with tournament consolidation and filtering
     const allItems = useMemo(() => {
+        // Get ticker filter settings from websiteStyle
+        const tickerFilters = websiteStyle?.tickerFilters || {
+            games: true,
+            tournaments: true,
+            practices: true,
+            meetings: true,
+            social: true,
+            other: true
+        };
+
         // Add date information to games from schedule
         const gamesWithDates = gameTickerData.map(game => {
             // Find the game in the schedule to get its date
@@ -1665,17 +1675,19 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
         
         gamesWithDates.forEach(game => {
             if (game.type === 'Tournament' && game.tournamentName) {
-                if (!tournaments.has(game.tournamentName)) {
-                    tournaments.set(game.tournamentName, {
-                        tournamentName: game.tournamentName,
-                        location: game.location,
-                        gameDate: game.gameDate,
-                        games: [],
-                        itemType: 'tournament'
-                    });
+                if (tickerFilters.tournaments) {
+                    if (!tournaments.has(game.tournamentName)) {
+                        tournaments.set(game.tournamentName, {
+                            tournamentName: game.tournamentName,
+                            location: game.location,
+                            gameDate: game.gameDate,
+                            games: [],
+                            itemType: 'tournament'
+                        });
+                    }
+                    tournaments.get(game.tournamentName).games.push(game);
                 }
-                tournaments.get(game.tournamentName).games.push(game);
-            } else {
+            } else if (tickerFilters.games) {
                 regularGames.push(game);
             }
         });
@@ -1685,7 +1697,19 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
         
         const upcomingEvents = teams.flatMap(team => 
             (team.calendar || [])
-                .filter(event => new Date(event.date) >= new Date()) // Only upcoming events
+                .filter(event => {
+                    // Date filter
+                    if (new Date(event.date) < new Date()) return false;
+                    
+                    // Type filter
+                    const eventType = event.type?.toLowerCase() || 'other';
+                    if (eventType.includes('practice') && !tickerFilters.practices) return false;
+                    if (eventType.includes('meeting') && !tickerFilters.meetings) return false;
+                    if (eventType.includes('social') && !tickerFilters.social) return false;
+                    if (!['practice', 'meeting', 'social'].some(type => eventType.includes(type)) && !tickerFilters.other) return false;
+                    
+                    return true;
+                })
                 .slice(0, 3) // Limit per team
                 .map(event => ({
                     ...event,
@@ -1698,7 +1722,7 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
         ).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5); // Show next 5 events
 
         return [...regularGames, ...tournamentItems, ...upcomingEvents];
-    }, [gameTickerData, teams]);
+    }, [gameTickerData, teams, websiteStyle?.tickerFilters]);
 
     useEffect(() => {
         const tickerElement = tickerRef.current;
