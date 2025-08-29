@@ -4133,11 +4133,11 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                     </div>
                 </div>
 
-                {/* League Games */}
+                {/* Past Events */}
                 <div>
                     <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center">
                         <Swords className="mr-2" size={24} />
-                        League Games
+                        Past Events
                     </h2>
                     <div className="space-y-6">
                         {filteredSchedule.map(day => (
