@@ -8184,48 +8184,12 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                     </div>
                 )}
                 
-                {/* TEAM MANAGEMENT TABS - Restored for team admins */}
-                {isAuthorizedToManage && activeTab === 'manageplayers' && (
-                    <div className="space-y-6">
-                        <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Manage Players</h2>
-                        <div className="bg-white rounded-lg shadow p-6">
-                            <PlayerManager players={players} setPlayers={setPlayers} teams={teams} currentUser={currentUser} />
-                        </div>
-                    </div>
-                )}
-                
+                {/* TEAM STYLE MANAGEMENT TAB - For team admins to customize their team */}
                 {isAuthorizedToManage && activeTab === 'teamstyle' && (
                     <div className="space-y-6">
                         <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Team Style & Customization</h2>
                         <div className="bg-white rounded-lg shadow p-6">
                             <TeamStyleManager teams={teams} setTeams={setTeams} currentUser={currentUser} />
-                        </div>
-                    </div>
-                )}
-                
-                {isAuthorizedToManage && activeTab === 'managecalendar' && (
-                    <div className="space-y-6">
-                        <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Manage Team Calendar</h2>
-                        <div className="bg-white rounded-lg shadow p-6">
-                            <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                <p className="text-blue-800">
-                                    <strong>Team Calendar Management:</strong> This section shows your team's schedule. 
-                                    To add/edit events, please use the main Admin Portal → Calendar Management.
-                                </p>
-                            </div>
-                            <div className="space-y-4">
-                                {teamSchedule.filter(day => day.events.some(event => event.teamId === teamId || !event.teamId)).map((day, index) => (
-                                    <div key={index} className="border-l-4 border-red-500 pl-4">
-                                        <h4 className="font-semibold text-slate-800">{day.day}</h4>
-                                        {day.events.filter(event => event.teamId === teamId || !event.teamId).map((event, eventIndex) => (
-                                            <div key={eventIndex} className="mt-2 p-3 bg-slate-50 rounded">
-                                                <div className="font-medium text-slate-800">{event.title}</div>
-                                                <div className="text-sm text-slate-600">{event.time} - {event.location}</div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ))}
-                            </div>
                         </div>
                     </div>
                 )}
