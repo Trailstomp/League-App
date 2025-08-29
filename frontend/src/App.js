@@ -8932,9 +8932,12 @@ const PlayerManager = ({ players, setPlayers, teams, currentUser }) => {
 };
 
 // Team form component - moved outside to prevent recreation
-const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam }) => (
+const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam, formBackgroundColor = '#f8fafc' }) => (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+        <div 
+            className="p-6 rounded-lg shadow-xl w-full max-w-md"
+            style={{ backgroundColor: formBackgroundColor }}
+        >
             <h3 className="text-2xl font-bold mb-4">{editingTeam?.id ? 'Edit Team' : 'Add New Team'}</h3>
             <form onSubmit={handleSave} className="space-y-4">
                 <input 
