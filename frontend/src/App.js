@@ -11448,7 +11448,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
         { 
             id: 'sponsors', 
             label: 'Sponsors', 
-            icon: <Icons.Briefcase size={16} />, 
+            icon: <Briefcase size={16} />, 
             permissions: ['system.admin_access'],
             description: 'Manage league sponsors and supporters'
         },
