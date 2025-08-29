@@ -11068,7 +11068,12 @@ function App() {
                         contactEmail: "admin@mlbl.org",
                         social: { twitter: '#', instagram: '#', facebook: '#' }
                     });
-                    setWebsiteStyle(apiData.websiteStyle || websiteStyle);
+                    // Fix data persistence bug: Only use apiData.websiteStyle if it has actual properties
+                    const hasWebsiteStyleData = apiData.websiteStyle && Object.keys(apiData.websiteStyle).length > 0;
+                    setWebsiteStyle(hasWebsiteStyleData ? {
+                        ...websiteStyle, // Start with defaults
+                        ...apiData.websiteStyle // Overlay saved data
+                    } : websiteStyle);
                     
                     // Also save to localStorage as cache
                     setStoredData('mlbl_teams', apiData.teams || initialTeams);
