@@ -1806,8 +1806,8 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
                                     borderColor: websiteStyle?.tickerBorderColor || '#475569'
                                 }}
                                 onClick={() => {
-                                    // TODO: Navigate to tournament details or schedule page
-                                    console.log('Tournament clicked:', item.tournamentName);
+                                    // Navigate to Events & Schedule page to show tournament details
+                                    navigate('events-schedule');
                                 }}
                                 title="Click to view tournament details"
                             >
