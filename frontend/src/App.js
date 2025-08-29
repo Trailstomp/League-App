@@ -3652,6 +3652,15 @@ const HomePage = ({teams, onTeamClick, leagueInfo, websiteStyle}) => {
 
 const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteStyle, onUpdateRSVP, users, onSendNotification}) => {
     const [selectedTeamSchedule, setSelectedTeamSchedule] = useState('all');
+    const [eventTypeFilters, setEventTypeFilters] = useState({
+        game: true,
+        practice: true,
+        tournament: true,
+        meeting: true,
+        social: true,
+        other: true
+    });
+    
     const getTeam = (id) => teams.find(t => t.id === id);
     const isAdmin = currentUser && currentUser.roles.includes('admin');
     
@@ -3665,10 +3674,24 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         }))
     ).sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // Filter events
-    const filteredEvents = selectedTeamSchedule === 'all' 
-        ? allEvents 
-        : allEvents.filter(event => event.teamId === selectedTeamSchedule);
+    // Filter events by team and type
+    const filteredEvents = allEvents
+        .filter(event => selectedTeamSchedule === 'all' || event.teamId === selectedTeamSchedule)
+        .filter(event => eventTypeFilters[event.type || 'other']);
+    
+    // Memoized handler for event type filter changes
+    const handleEventTypeToggle = useCallback((eventType) => {
+        setEventTypeFilters(prev => ({
+            ...prev,
+            [eventType]: !prev[eventType]
+        }));
+    }, []);
+    
+    // Get unique event types from all events
+    const availableEventTypes = useMemo(() => {
+        const types = new Set(allEvents.map(event => event.type || 'other'));
+        return Array.from(types).sort();
+    }, [allEvents]);
     
     // Group tournament events by title, date, and location
     const groupedEvents = filteredEvents.reduce((groups, event) => {
