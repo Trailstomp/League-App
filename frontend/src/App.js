@@ -11096,7 +11096,13 @@ function App() {
                     setLeagueSchedule(getStoredData('mlbl_leagueSchedule', initialLeagueSchedule));
                     setUsers(storedUsers);
                     setLeagueInfo(getStoredData('mlbl_leagueInfo', leagueInfo));
-                    setWebsiteStyle(getStoredData('mlbl_websiteStyle', websiteStyle));
+                    // Fix localStorage fallback for websiteStyle persistence
+                    const storedWebsiteStyle = getStoredData('mlbl_websiteStyle', null);
+                    const hasStoredWebsiteStyleData = storedWebsiteStyle && Object.keys(storedWebsiteStyle).length > 0;
+                    setWebsiteStyle(hasStoredWebsiteStyleData ? {
+                        ...websiteStyle, // Start with defaults
+                        ...storedWebsiteStyle // Overlay saved data
+                    } : websiteStyle);
                 }
             } catch (error) {
                 console.error('Error loading data:', error);
