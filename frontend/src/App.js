@@ -8117,6 +8117,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                         <Edit size={14} />
                                                     </button>
                                                 )}
+                                                <div className="flex items-center justify-between">
                                                     <div className="flex items-center">
                                                         <div className="text-center w-32">
                                                             <img src={away.logo} alt={away.name} className="w-16 h-16 mx-auto rounded-full bg-slate-200 p-1 object-contain"/>
