@@ -2983,10 +2983,24 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                             {[...newsItems, ...newsItems].map((item, index) => (
                                 <div 
                                     key={`${item.id}-${index}`} 
-                                    className="flex items-center py-6 cursor-pointer hover:bg-red-700 hover:bg-opacity-50 rounded px-4 transition-colors"
+                                    className="relative flex items-center py-6 cursor-pointer hover:bg-red-700 hover:bg-opacity-50 rounded px-4 transition-colors group"
                                     style={{ height: '280px' }}
                                     onClick={() => setSelectedNewsItem(item)}
                                 >
+                                    {/* Admin Edit Button Overlay */}
+                                    {currentUser && hasPermission(currentUser, 'system.admin_access') && index < newsItems.length && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setEditingNewsItem(item);
+                                                setEditingNews(true);
+                                            }}
+                                            className="absolute top-2 right-2 bg-blue-600 bg-opacity-80 hover:bg-opacity-100 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                            title="Edit news item"
+                                        >
+                                            <Edit size={14} />
+                                        </button>
+                                    )}
                                     {item.type === 'image' && item.imageUrl && (
                                         <img 
                                             src={item.imageUrl} 
