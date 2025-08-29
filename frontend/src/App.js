@@ -8688,7 +8688,7 @@ const TeamManager = ({ teams, setTeams }) => {
             
             const newTeam = {
                 ...editingTeam,
-                id: editingTeam.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+                id: editingTeam.id || editingTeam.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
                 wins: 0, losses: 0, ties: 0, pf: 0, pa: 0,
                 active: true, media: [], calendar: [],
                 social: { twitter: '', instagram: '', facebook: '', youtube: '' },
