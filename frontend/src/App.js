@@ -10551,6 +10551,15 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
     const [usersSecurityTab, setUsersSecurityTab] = useState('users'); // New state for sub-tabs
     const [settingsTab, setSettingsTab] = useState('website'); // New state for settings sub-tabs
 
+    // Check for default tab from localStorage (for navigation from Add League Event button)
+    useEffect(() => {
+        const defaultTab = window.localStorage.getItem('admin_default_tab');
+        if (defaultTab) {
+            setActiveTab(defaultTab);
+            window.localStorage.removeItem('admin_default_tab'); // Clear after use
+        }
+    }, []);
+
     // Social Media Credentials State
     const [credentials, setCredentials] = useState(() => {
         const stored = localStorage.getItem('mlbl_social_credentials');
