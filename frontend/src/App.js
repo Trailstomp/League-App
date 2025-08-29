@@ -1793,49 +1793,31 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
                             </div>
                         );
                     } else if (item.itemType === 'tournament') {
-                        // Consolidated tournament card
+                        // Simplified consolidated tournament card
                         const completedGames = item.games.filter(g => g.status === 'Final');
                         const totalGames = item.games.length;
                         
                         return (
-                            <div key={`tournament-${index}`} className="flex-shrink-0 w-80 rounded-lg p-3 border" style={{ 
-                                backgroundColor: websiteStyle?.tickerItemColor || '#334155',
-                                borderColor: websiteStyle?.tickerBorderColor || '#475569'
-                            }}>
+                            <div 
+                                key={`tournament-${index}`} 
+                                className="flex-shrink-0 w-80 rounded-lg p-3 border cursor-pointer hover:opacity-80 transition-opacity" 
+                                style={{ 
+                                    backgroundColor: websiteStyle?.tickerItemColor || '#334155',
+                                    borderColor: websiteStyle?.tickerBorderColor || '#475569'
+                                }}
+                                onClick={() => {
+                                    // TODO: Navigate to tournament details or schedule page
+                                    console.log('Tournament clicked:', item.tournamentName);
+                                }}
+                                title="Click to view tournament details"
+                            >
                                 <div className="text-xs mb-2 flex justify-between" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
                                     <span>{item.location}</span>
                                     <span className="font-bold text-xs text-yellow-400">TOURNAMENT</span>
                                 </div>
-                                <div className="mb-3">
+                                <div className="mb-2">
                                     <div className="text-lg font-bold text-white mb-1">{item.tournamentName}</div>
                                     <div className="text-sm text-yellow-300">{completedGames.length}/{totalGames} Games Complete</div>
-                                </div>
-                                <div className="space-y-1 mb-2 max-h-20 overflow-y-auto">
-                                    {item.games.slice(0, 3).map((game, gameIdx) => {
-                                        const home = getTeam(game.homeTeam);
-                                        const away = getTeam(game.awayTeam);
-                                        if (!home || !away) return null;
-                                        
-                                        return (
-                                            <div key={gameIdx} className="flex items-center justify-between text-xs">
-                                                <div className="flex items-center gap-1">
-                                                    <img src={home.logo} alt={home.name} className="w-4 h-4 rounded-full bg-white p-0.5 object-contain" />
-                                                    <span className="text-white">{home.name}</span>
-                                                    <span className="text-slate-400">vs</span>
-                                                    <img src={away.logo} alt={away.name} className="w-4 h-4 rounded-full bg-white p-0.5 object-contain" />
-                                                    <span className="text-white">{away.name}</span>
-                                                </div>
-                                                {game.status === 'Final' ? (
-                                                    <span className="text-yellow-300 font-semibold">{game.homeScore}-{game.awayScore}</span>
-                                                ) : (
-                                                    <span className="text-slate-400">TBD</span>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                    {item.games.length > 3 && (
-                                        <div className="text-xs text-slate-400 italic">+{item.games.length - 3} more games...</div>
-                                    )}
                                 </div>
                                 <div className="flex justify-between items-center text-xs">
                                     <span className="font-semibold" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
@@ -1845,6 +1827,7 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle}) => {
                                         {completedGames.length === totalGames ? 'COMPLETE' : 'IN PROGRESS'}
                                     </span>
                                 </div>
+                                <div className="text-xs text-slate-400 mt-1 italic">Click for details</div>
                             </div>
                         );
                     } else {
