@@ -9366,7 +9366,8 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
                         <div className="grid grid-cols-2 gap-3">
                             {[
                                 { key: 'home', label: 'Home', default: true },
-                                { key: 'roster', label: 'Roster & Stats', default: true },
+                                { key: 'roster', label: 'Roster', default: true },
+                                { key: 'stats', label: 'Stats', default: true },
                                 { key: 'schedule', label: 'Schedule', default: true },
                                 { key: 'media', label: 'Photos & Videos', default: true },
                                 { key: 'social', label: 'Social', default: true },
