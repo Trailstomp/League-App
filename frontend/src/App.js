@@ -8570,7 +8570,7 @@ const TeamManager = ({ teams, setTeams }) => {
                 <form onSubmit={handleSave} className="space-y-4">
                     <input 
                         type="text" 
-                        value={editingTeam.name || ''} 
+                        value={editingTeam?.name || ''} 
                         onChange={e => handleInputChange('name', e.target.value)} 
                         placeholder="Team Name" 
                         className="w-full p-2 border rounded" 
