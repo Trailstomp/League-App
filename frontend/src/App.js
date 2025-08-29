@@ -10359,6 +10359,13 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
             description: 'Overview and statistics'
         },
         { 
+            id: 'seasons', 
+            label: 'Seasons', 
+            icon: <Trophy size={16} />, 
+            permissions: ['system.admin_access'],
+            description: 'Manage league seasons and periods'
+        },
+        { 
             id: 'teams', 
             label: 'Teams', 
             icon: <Users size={16} />, 
