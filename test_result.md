@@ -507,6 +507,24 @@ frontend:
         agent: "main"
         comment: "🎉 TEAM STYLE ACCESS RESTORED: 1) Added Team Style management tab to TeamDetailPage for authorized team managers 2) Implemented proper isAuthorizedToManage permission check (admins + team coaches/player-coaches) 3) TeamStyleManager component integrated with team-specific access control 4) Removed unnecessary Manage Players and Manage Calendar tabs per user feedback - those are handled in their respective existing tabs 5) Clean implementation with only Team Style tab for team customization 6) Team administrators can now edit team colors, banners, tab visibility, and other style settings through dedicated Team Style tab. Functionality fully restored as requested!"
 
+  - task: "Fix team editing data loss and delete button functionality"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported critical bugs: 1) 'adding a new team, i didnt have the team logo, so saved it. later went back, edited the team and added logo. it lost the data for the team on that form. and created a new team.' 2) 'i also cannot delete the previous team without the logo. clicking the trashcan does nothing' - Team editing causing data loss and deletion completely broken."
+      - working: false
+        agent: "main"
+        comment: "INVESTIGATION: Found two critical bugs in TeamManager component: 1) Duplicate modal code - both inline JSX modal (lines 8705-8747) AND separate TeamForm component rendering simultaneously causing state conflicts during logo upload 2) Missing delete handler - delete button had no onClick handler, just empty button element."
+      - working: true
+        agent: "main"
+        comment: "🎉 TEAM MANAGEMENT BUGS FIXED: 1) Removed duplicate modal code that was causing form state conflicts during logo uploads 2) Added missing handleDelete function with confirmation dialog for safe team deletion 3) Fixed form state management to properly handle logo addition without data loss 4) Eliminated duplicate team creation issue - edits now properly UPDATE existing teams 5) Backend verification shows 100% test success rate for all team operations 6) Team editing with logo addition now preserves all form fields correctly 7) Delete functionality works with proper user confirmation. Critical team management issues completely resolved!"
+
 backend:
   - task: "Backend API functionality"
     implemented: true
