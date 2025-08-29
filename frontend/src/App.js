@@ -8301,7 +8301,7 @@ const ChatPage = ({ currentUser }) => {
                     </div>
                     <div className="p-4 bg-slate-100 border-t">
                         <form onSubmit={handleSendMessage} className="flex">
-                            <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder={`Message in #${channel}`} className="flex-grow border rounded-l-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-800" />
+                            <input type="text" value={newMessage} onChange={handleMessageChange} placeholder={`Message in #${channel}`} className="flex-grow border rounded-l-lg p-2 focus:outline-none focus:ring-2 focus:ring-red-800" />
                             <button type="submit" className="bg-red-800 text-white px-4 rounded-r-lg hover:bg-red-900">Send</button>
                         </form>
                     </div>
