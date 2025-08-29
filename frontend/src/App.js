@@ -3267,7 +3267,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                 }}
                             >
                                 {/* Team Logo - Compact Mobile Rectangle */}
-                                <div className="h-16 sm:h-20 md:h-32 mb-2 md:mb-4 rounded-lg overflow-hidden relative" style={{
+                                <div className="h-12 sm:h-16 md:h-24 mb-1 md:mb-2 rounded-lg overflow-hidden relative" style={{
                                     backgroundColor: team.style?.primaryColor || '#dc2626',
                                     backgroundImage: `linear-gradient(45deg, ${team.style?.primaryColor || '#dc2626'} 0%, ${team.style?.backgroundColor || '#ffffff'} 100%)`
                                 }}>
