@@ -6321,7 +6321,15 @@ const TeamSocialMediaManager = ({ team, setTeams }) => {
         youtube: team.social?.youtube || ''
     });
 
-    const handleSaveSocialMedia = (e) => {
+    // Memoized handlers to prevent re-renders
+    const handleInputChange = useCallback((platform, value) => {
+        setSocialMediaData(prev => ({
+            ...prev,
+            [platform]: value
+        }));
+    }, []);
+
+    const handleSaveSocialMedia = useCallback((e) => {
         e.preventDefault();
         
         setTeams(currentTeams => currentTeams.map(t => {
@@ -6337,14 +6345,7 @@ const TeamSocialMediaManager = ({ team, setTeams }) => {
         }));
         
         alert('Social media settings saved successfully!');
-    };
-
-    const handleInputChange = (platform, value) => {
-        setSocialMediaData(prev => ({
-            ...prev,
-            [platform]: value
-        }));
-    };
+    }, [team.id, socialMediaData, setTeams]);
 
     return (
         <div className="space-y-6">
