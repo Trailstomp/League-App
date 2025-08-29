@@ -158,6 +158,8 @@ async def update_specific_data(data_type: str, data: List[Any] | Dict[str, Any])
             upsert=True
         )
         return {"message": f"{data_type} updated successfully", "timestamp": update_data["lastUpdated"]}
+    except HTTPException:
+        raise  # Re-raise HTTPException as-is (400, 404, etc.)
     except Exception as e:
         logger.error(f"Error updating {data_type}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
