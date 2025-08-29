@@ -7108,13 +7108,9 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                 {(team.style?.visibleTabs?.social !== false) && <TeamTab tabName="social" label="Social" />}
                 {(team.style?.visibleTabs?.contact !== false) && <TeamTab tabName="contact" label="Contact" />}
                 
-                {/* Management Tabs for Authorized Team Managers */}
+                {/* Team Style Management Tab for Authorized Team Managers */}
                 {isAuthorizedToManage && (
-                    <>
-                        <TeamTab tabName="manageplayers" label="Manage Players" />
-                        <TeamTab tabName="teamstyle" label="Team Style" />
-                        <TeamTab tabName="managecalendar" label="Manage Calendar" />
-                    </>
+                    <TeamTab tabName="teamstyle" label="Team Style" />
                 )}
             </div>
             
