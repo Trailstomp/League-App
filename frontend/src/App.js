@@ -8251,7 +8251,12 @@ const ChatPage = ({ currentUser }) => {
     
     useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
-    const handleSendMessage = async (e) => {
+    // Memoized handlers to prevent re-renders
+    const handleMessageChange = useCallback((e) => {
+        setNewMessage(e.target.value);
+    }, []);
+
+    const handleSendMessage = useCallback(async (e) => {
         e.preventDefault();
         if (newMessage.trim() === '' || !currentUser) return;
         
@@ -8265,7 +8270,7 @@ const ChatPage = ({ currentUser }) => {
         
         setMessages(prev => [...prev, message]);
         setNewMessage('');
-    };
+    }, [newMessage, currentUser, setMessages]);
 
     return (
         <div className="p-4 md:p-8 flex flex-col h-full">
