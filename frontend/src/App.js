@@ -10475,6 +10475,19 @@ const SeasonManager = ({ seasons, setSeasons, currentSeason, setCurrentSeason, t
                                 />
                             </div>
                             
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Division</label>
+                                <select 
+                                    value={editingSeason.division || 'Field'} 
+                                    onChange={e => setEditingSeason({...editingSeason, division: e.target.value})} 
+                                    className="w-full p-2 border rounded"
+                                >
+                                    <option value="Field">Field Lacrosse</option>
+                                    <option value="Box">Box Lacrosse</option>
+                                    <option value="Both">Both Divisions</option>
+                                </select>
+                            </div>
+                            
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
