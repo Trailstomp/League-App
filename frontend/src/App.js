@@ -8413,7 +8413,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                         
                         {sponsors.length === 0 ? (
                             <div className="text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
-                                <Briefcase className="mx-auto h-12 w-12 text-slate-400 mb-4" />
+                                <Icons.Briefcase className="mx-auto h-12 w-12 text-slate-400 mb-4" />
                                 <h3 className="text-lg font-semibold text-slate-600 mb-2">No Sponsors Yet</h3>
                                 <p className="text-slate-500">Check back later to see our amazing sponsors and supporters</p>
                             </div>
