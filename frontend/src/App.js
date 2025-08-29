@@ -8580,7 +8580,7 @@ const TeamManager = ({ teams, setTeams }) => {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Division</label>
                         <select 
-                            value={editingTeam.division || 'Field'} 
+                            value={editingTeam?.division || 'Field'} 
                             onChange={e => handleInputChange('division', e.target.value)} 
                             className="w-full p-2 border rounded" 
                             required
