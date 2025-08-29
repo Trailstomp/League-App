@@ -11481,6 +11481,18 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                     </div>
                 )}
 
+                {activeTab === 'friends' && hasPermission(currentUser, 'system.admin_access') && (
+                    <div className="p-6">
+                        <FriendsManager friends={friends} setFriends={setFriends} />
+                    </div>
+                )}
+
+                {activeTab === 'sponsors' && hasPermission(currentUser, 'system.admin_access') && (
+                    <div className="p-6">
+                        <SponsorsManager sponsors={sponsors} setSponsors={setSponsors} />
+                    </div>
+                )}
+
                 {activeTab === 'teams' && hasPermission(currentUser, 'teams.view') && (
                     <div className="p-6">
                         <h2 className="text-2xl font-bold mb-4">Team Management</h2>
