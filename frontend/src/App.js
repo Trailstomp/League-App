@@ -11201,7 +11201,12 @@ function App() {
                     setSelectedTeam(teamId);
                     console.log('Team page set:', teamId);
                 }
-            } else if (hash && hash !== 'home') {
+            } else if (hash === 'home' || hash === '') {
+                // Fix: Handle home navigation properly
+                setPage('home');
+                setSelectedTeam(null);
+                console.log('Home page set');
+            } else if (hash) {
                 // Handle other page navigation
                 setPage(hash);
                 setSelectedTeam(null);
@@ -11209,19 +11214,17 @@ function App() {
             }
         };
 
-        // Only set up routing if teams have loaded
-        if (teams.length > 0) {
-            // Listen for hash changes
-            window.addEventListener('hashchange', handleHashChange);
-            
-            // Parse initial hash on mount
-            handleHashChange();
+        // Fix: Set up routing immediately, don't wait for teams to load
+        // Listen for hash changes
+        window.addEventListener('hashchange', handleHashChange);
+        
+        // Parse initial hash on mount
+        handleHashChange();
 
-            return () => {
-                window.removeEventListener('hashchange', handleHashChange);
-            };
-        }
-    }, [teams]);
+        return () => {
+            window.removeEventListener('hashchange', handleHashChange);
+        };
+    }, [teams]); // Keep teams in dependency to handle team navigation when teams load
 
     // Load news data
     useEffect(() => {
