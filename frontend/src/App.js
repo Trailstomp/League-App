@@ -9410,19 +9410,29 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
                     <div 
                         className="h-32 bg-cover bg-center flex items-end p-4 relative"
                         style={{ 
-                            backgroundImage: style.bannerUrl ? `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${style.bannerUrl})` : `linear-gradient(45deg, ${style.primaryColor}, ${style.primaryColor}dd)`,
-                            fontFamily: style.fontFamily
+                            backgroundImage: (style.bannerContentType === 'image' && style.bannerImage) 
+                                ? `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${style.bannerImage})` 
+                                : `linear-gradient(45deg, ${style.bannerColor || style.primaryColor}, ${(style.bannerColor || style.primaryColor)}dd)`,
+                            fontFamily: style.bannerFontFamily || 'Inter, sans-serif'
                         }}
                     >
                         <div className="flex items-center">
                             <img 
-                                src={selectedTeam.logo} 
-                                alt={selectedTeam.name} 
-                                className="w-16 h-16 mr-3 rounded-full bg-white p-1 shadow-lg" 
+                                src={selectedTeam?.logo || 'https://placehold.co/50x50/ffffff/000000?text=LOGO'} 
+                                alt="Team Logo" 
+                                className="w-8 h-8 rounded-full mr-3 bg-white p-1 object-contain" 
                             />
-                            <h2 className="text-2xl font-bold text-white drop-shadow-lg" style={{ fontFamily: style.fontFamily }}>
-                                {selectedTeam.name}
-                            </h2>
+                            <h3 
+                                className="font-bold tracking-wide"
+                                style={{
+                                    fontSize: `${Math.max(16, (style.bannerFontSize || 24) * 0.8)}px`,
+                                    color: style.bannerTextColor || '#ffffff',
+                                    fontWeight: style.bannerTextBold ? 'bold' : 'normal',
+                                    textShadow: style.bannerTextShadow ? '2px 2px 4px rgba(0,0,0,0.7)' : '0 1px 2px rgba(0,0,0,0.5)'
+                                }}
+                            >
+                                {style.bannerText || selectedTeam?.name || 'Team Name'}
+                            </h3>
                         </div>
                     </div>
                     <div className="p-4" style={{ backgroundColor: style.backgroundColor, fontFamily: style.fontFamily }}>
