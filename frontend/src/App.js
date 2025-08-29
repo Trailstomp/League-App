@@ -11708,6 +11708,10 @@ function App() {
     const [seasons, setSeasons] = useState([]);
     const [currentSeason, setCurrentSeason] = useState(null);
     
+    // FRIENDS AND SPONSORS SYSTEM - NEW STATE  
+    const [friends, setFriends] = useState([]);
+    const [sponsors, setSponsors] = useState([]);
+    
     // SEASONS INFRASTRUCTURE - Data Migration & Setup
     const migrateToSeasons = useCallback(() => {
         // If we have teams/schedule but no seasons, create initial season
