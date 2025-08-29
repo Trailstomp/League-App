@@ -8727,7 +8727,7 @@ const TeamManager = ({ teams, setTeams }) => {
                 {teams.map(t => (
                     <li key={t.id} className={`flex items-center p-3 border rounded-lg bg-white shadow-sm ${!t.active && 'opacity-50 bg-slate-100'}`}>
                         <div className="flex-grow flex items-center gap-3">
-                            <img src={t.logo} alt={t.name} className="w-8 h-8 rounded-full bg-white p-1" />
+                            <img src={t.logo} alt={t.name} className="w-8 h-8 rounded-full bg-white p-1 object-contain" />
                             <span className="font-semibold">{t.name}</span>
                         </div>
                         <div className="flex-shrink-0 ml-4">
