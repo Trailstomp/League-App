@@ -3974,7 +3974,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                                     </button>
                                                     <span className="text-xl font-bold text-slate-400 mx-3">@</span>
                                                     <button onClick={() => onTeamClick(home.id)} className="text-center w-28 hover:opacity-80">
-                                                        <img src={home.logo} alt={home.name} className="w-12 h-12 mx-auto rounded-full bg-slate-200 p-1"/>
+                                                        <img src={home.logo} alt={home.name} className="w-12 h-12 mx-auto rounded-full bg-slate-200 p-1 object-contain"/>
                                                         <p className="font-bold text-xs mt-1">{home.name}</p>
                                                     </button>
                                                 </div>
