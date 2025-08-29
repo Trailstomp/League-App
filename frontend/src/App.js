@@ -9894,6 +9894,43 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                 </div>
                             </div>
                         </div>
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-3">Content Filters</label>
+                            <p className="text-sm text-slate-600 mb-3">Choose what types of events appear in the ticker</p>
+                            <div className="grid grid-cols-2 gap-3">
+                                {[
+                                    { key: 'games', label: 'Games', icon: '🏆', desc: 'Regular season games' },
+                                    { key: 'tournaments', label: 'Tournaments', icon: '🏅', desc: 'Tournament events' },
+                                    { key: 'practices', label: 'Practices', icon: '⚽', desc: 'Team practices' },
+                                    { key: 'meetings', label: 'Meetings', icon: '📅', desc: 'Team meetings' },
+                                    { key: 'social', label: 'Social Events', icon: '🎉', desc: 'Social gatherings' },
+                                    { key: 'other', label: 'Other Events', icon: '📝', desc: 'Other activities' }
+                                ].map(filter => (
+                                    <label key={filter.key} className="flex items-center p-3 border rounded-lg hover:bg-slate-50 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={style.tickerFilters?.[filter.key] !== false}
+                                            onChange={(e) => setStyle(prev => ({
+                                                ...prev,
+                                                tickerFilters: {
+                                                    ...prev.tickerFilters,
+                                                    [filter.key]: e.target.checked
+                                                }
+                                            }))}
+                                            className="mr-3"
+                                        />
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-lg">{filter.icon}</span>
+                                                <span className="font-medium text-slate-700">{filter.label}</span>
+                                            </div>
+                                            <div className="text-xs text-slate-500">{filter.desc}</div>
+                                        </div>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
