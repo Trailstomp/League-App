@@ -10321,6 +10321,28 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                     </div>
                 )}
 
+                {activeTab === 'communications' && hasPermission(currentUser, 'system.admin_access') && (
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-6">Communications Center</h2>
+                        <div className="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-200">
+                            <div className="flex items-center mb-2">
+                                <Mail className="mr-2 text-blue-600" size={20} />
+                                <h3 className="text-lg font-semibold text-blue-800">Message Players & Staff</h3>
+                            </div>
+                            <p className="text-blue-600 text-sm">
+                                Send emails and SMS to team members, coaches, or the entire league. 
+                                Contact lists are automatically generated based on your selections.
+                            </p>
+                        </div>
+                        <MessageCenter 
+                            teams={teams} 
+                            players={players} 
+                            users={users} 
+                            currentUser={currentUser} 
+                        />
+                    </div>
+                )}
+
                 {activeTab === 'website' && hasPermission(currentUser, 'system.settings') && (
                     <div className="p-6">
                         <h2 className="text-2xl font-bold mb-6">Website Design & Styling</h2>
