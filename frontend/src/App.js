@@ -2820,7 +2820,11 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                             <span className="text-sm font-medium">Image:</span>
                             <div className="flex items-center space-x-2">
                                 <button
-                                    onClick={() => handleImageZoom(-0.1)}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleImageZoom(-0.1);
+                                    }}
                                     className="p-1 bg-white rounded border hover:bg-gray-50 transition-colors"
                                     title="Zoom Out"
                                 >
@@ -2828,7 +2832,11 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                                 </button>
                                 <span className="text-xs w-12 text-center">{Math.round(imageScale * 100)}%</span>
                                 <button
-                                    onClick={() => handleImageZoom(0.1)}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleImageZoom(0.1);
+                                    }}
                                     className="p-1 bg-white rounded border hover:bg-gray-50 transition-colors"
                                     title="Zoom In"
                                 >
