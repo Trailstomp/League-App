@@ -12602,7 +12602,7 @@ function App() {
                         
                         <div className="w-10"></div>
                     </div>
-                    <GameTicker teams={teams} gameTickerData={gameTickerData} websiteStyle={websiteStyle} onTeamClick={(teamId) => navigate('team', teamId)} />
+                    <GameTicker teams={teams} gameTickerData={gameTickerData} websiteStyle={websiteStyle} onTeamClick={(teamId) => navigate('team', teamId)} onNavigate={navigate} />
                 </header>
                 <main className="flex-1 overflow-y-auto relative" style={backgroundStyle}>
                     {renderPage()}
