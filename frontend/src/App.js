@@ -8449,7 +8449,13 @@ const PlayerManager = ({ players, setPlayers, teams, currentUser }) => {
 
 const TeamManager = ({ teams, setTeams }) => {
     const [editingTeam, setEditingTeam] = useState(null);
-    const handleSave = (e) => {
+    
+    // Memoized handlers to prevent re-renders
+    const handleInputChange = useCallback((field, value) => {
+        setEditingTeam(prev => ({...prev, [field]: value}));
+    }, []);
+    
+    const handleSave = useCallback((e) => {
         e.preventDefault();
         if (editingTeam.id) {
             setTeams(teams.map(t => t.id === editingTeam.id ? editingTeam : t));
@@ -8457,10 +8463,11 @@ const TeamManager = ({ teams, setTeams }) => {
             setTeams([...teams, { ...editingTeam, id: editingTeam.name.toLowerCase().replace(/\s/g, ''), wins: 0, losses: 0, ties: 0, pf: 0, pa: 0, active: true, media: [], calendar: [] }]);
         }
         setEditingTeam(null);
-    };
-    const toggleActive = (team) => {
+    }, [editingTeam, teams, setTeams]);
+    
+    const toggleActive = useCallback((team) => {
         setTeams(teams.map(t => t.id === team.id ? {...t, active: !t.active} : t));
-    };
+    }, [teams, setTeams]);
 
     const TeamForm = () => (
          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
