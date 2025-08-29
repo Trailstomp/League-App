@@ -9044,6 +9044,7 @@ const TeamManager = ({ teams, setTeams, websiteStyle }) => {
                     handleInputChange={handleInputChange}
                     handleSave={handleSave}
                     setEditingTeam={setEditingTeam}
+                    formBackgroundColor={formBackgroundColor}
                 />
             )}
             <div className="flex justify-end mb-4">
