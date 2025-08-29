@@ -8367,11 +8367,67 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                     <h3 className="text-xl font-semibold text-slate-800 mb-4">Social Media Settings</h3>
                                     <TeamSocialMediaManager team={team} setTeams={setTeams} />
                                 </div>
-                                
-                                <div className="bg-white rounded-lg shadow p-6">
-                                    <h3 className="text-xl font-semibold text-slate-800 mb-4">GroupMe Chat Management</h3>
-                                    <GroupMeManager team={team} setTeams={setTeams} />
+                            </div>
+                        )}
+                    </div>
+                )}
+                
+                {activeTab === 'groupme' && (
+                    <div>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-3xl font-bold text-slate-800 tracking-tight">GroupMe Chats</h2>
+                        </div>
+                        
+                        {/* Display GroupMe Chats */}
+                        <div className="space-y-4 mb-6">
+                            {team.groupMe?.chats && team.groupMe.chats.length > 0 ? (
+                                team.groupMe.chats.map((chat, index) => (
+                                    <div key={index} className="bg-white rounded-lg shadow p-6">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center space-x-4">
+                                                {chat.logoUrl && (
+                                                    <img 
+                                                        src={chat.logoUrl} 
+                                                        alt={`${chat.name} logo`} 
+                                                        className="w-12 h-12 rounded-lg object-contain bg-white" 
+                                                    />
+                                                )}
+                                                <div>
+                                                    <h3 className="text-xl font-semibold text-slate-800">{chat.name}</h3>
+                                                    <p className="text-sm text-slate-600">{chat.description}</p>
+                                                </div>
+                                            </div>
+                                            {chat.qrCode && (
+                                                <div className="text-center">
+                                                    <img src={chat.qrCode} alt="QR Code" className="w-16 h-16 mx-auto mb-2" />
+                                                    <p className="text-xs text-slate-500">Scan to Join</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        {chat.inviteLink && (
+                                            <a 
+                                                href={chat.inviteLink}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                                            >
+                                                Join Chat
+                                            </a>
+                                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="bg-white rounded-lg shadow p-6 text-center">
+                                    <p className="text-slate-500">No GroupMe chats available yet.</p>
                                 </div>
+                            )}
+                        </div>
+                        
+                        {/* GroupMe Management Panel */}
+                        {isAuthorizedToManage && (
+                            <div className="bg-white rounded-lg shadow p-6">
+                                <h3 className="text-xl font-semibold text-slate-800 mb-4">GroupMe Chat Management</h3>
+                                <GroupMeManager team={team} setTeams={setTeams} />
                             </div>
                         )}
                     </div>
