@@ -1719,8 +1719,9 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle, onNavigat
         const upcomingEvents = teams.flatMap(team => 
             (team.calendar || [])
                 .filter(event => {
-                    // Date filter
-                    if (new Date(event.date) < new Date()) return false;
+                    // Date range filter
+                    const eventDate = new Date(event.date);
+                    if (eventDate < lookBackDate || eventDate > lookForwardDate) return false;
                     
                     // Type filter
                     const eventType = event.type?.toLowerCase() || 'other';
