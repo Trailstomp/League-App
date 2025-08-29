@@ -11305,6 +11305,53 @@ function App() {
     const [seasons, setSeasons] = useState([]);
     const [currentSeason, setCurrentSeason] = useState(null);
     
+    // SEASONS INFRASTRUCTURE - Data Migration & Setup
+    const migrateToSeasons = useCallback(() => {
+        // If we have teams/schedule but no seasons, create initial season
+        if (teams.length > 0 && seasons.length === 0) {
+            const initialSeason = {
+                id: 'season-current-2024',
+                name: 'Current Season 2024',
+                startDate: '2024-01-01',
+                endDate: '2024-12-31', 
+                status: 'active',
+                teams: teams.map(team => ({
+                    ...team,
+                    seasonRoster: players
+                        .filter(p => p.teams?.includes(team.id))
+                        .map(p => ({
+                            playerId: p.id,
+                            number: p.number,
+                            positions: p.positions,
+                            active: p.active
+                        }))
+                })),
+                schedule: leagueSchedule,
+                standings: teams.map(team => ({
+                    teamId: team.id,
+                    wins: team.wins || 0,
+                    losses: team.losses || 0,
+                    ties: team.ties || 0,
+                    goalsFor: team.pf || 0,
+                    goalsAgainst: team.pa || 0
+                })),
+                playoffs: { bracket: null, games: [] }
+            };
+            
+            setSeasons([initialSeason]);
+            setCurrentSeason(initialSeason.id);
+            
+            console.log('📅 Migrated existing data to seasons structure');
+        }
+    }, [teams, seasons, players, leagueSchedule, setSeasons, setCurrentSeason]);
+
+    // Auto-migrate on data load
+    useEffect(() => {
+        if (!dataLoading) {
+            migrateToSeasons();
+        }
+    }, [dataLoading, migrateToSeasons]);
+
     const [leagueInfo, setLeagueInfo] = useState({
         name: "Men's Lacrosse Beer League",
         contactEmail: "admin@mlbl.org",
