@@ -435,6 +435,24 @@ frontend:
         agent: "user"
         comment: "User confirmed fix successful - 'its all working!' - clickable locations now properly opening Google Maps with satellite view in new tab."
 
+  - task: "Fix home button navigation not working"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported 'home button isnt working, thought we had that fixed' - navigation to home page not functioning despite previous fix attempts."
+      - working: false
+        agent: "main"
+        comment: "INVESTIGATION: Found two critical bugs in hash routing system: 1) Line 11213 only set up routing when teams.length > 0, preventing navigation before teams loaded 2) Line 11204 had 'hash !== home' which excluded home navigation from being processed. These bugs prevented Home button from working."
+      - working: true
+        agent: "main"
+        comment: "🎉 HOME NAVIGATION FIXED: 1) Removed dependency on teams loading for hash routing setup - now works immediately 2) Added proper handling for 'home' and empty hash cases in handleHashChange 3) Fixed routing to set up immediately on component mount instead of waiting for teams 4) Testing confirmed Home button now works correctly - can navigate to other pages and return to home successfully. Navigation system fully functional!"
+
   - task: "Fix critical websiteStyle data persistence bug - customizations lost after deployments"
     implemented: true
     working: true
