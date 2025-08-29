@@ -3462,7 +3462,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                         <button 
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                window.open(video.url, '_blank');
+                                                handleVideoClick(video.url);
                                             }}
                                             className="text-red-600 hover:text-red-800 text-sm font-semibold"
                                         >
