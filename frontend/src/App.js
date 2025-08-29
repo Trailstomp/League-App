@@ -3836,13 +3836,9 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                     {isAdmin && (
                         <button 
                             onClick={() => {
-                                // Navigate to admin portal and focus on calendar tab  
-                                navigate('admin-portal');
-                                // Small delay to let navigation complete, then programmatically click calendar tab
-                                setTimeout(() => {
-                                    // This will be handled by the AdminPage component to open calendar tab
-                                    window.localStorage.setItem('admin_default_tab', 'calendar');
-                                }, 100);
+                                // Navigate to admin portal and set default tab to calendar
+                                window.localStorage.setItem('admin_default_tab', 'calendar');
+                                window.location.hash = 'admin-portal';
                             }}
                             className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center text-sm"
                             title="Quick access to calendar management"
