@@ -9949,6 +9949,54 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                 ))}
                             </div>
                         </div>
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-3">Date Ranges</label>
+                            <p className="text-sm text-slate-600 mb-3">Control how far back and forward the ticker looks for events</p>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-600 mb-1">
+                                        Look Back: {style.tickerLookBack || 7} days
+                                    </label>
+                                    <input 
+                                        type="range"
+                                        min="0"
+                                        max="30"
+                                        step="1"
+                                        value={style.tickerLookBack || 7}
+                                        onChange={(e) => setStyle(prev => ({...prev, tickerLookBack: parseInt(e.target.value)}))}
+                                        className="w-full"
+                                    />
+                                    <div className="flex justify-between text-xs text-slate-500 mt-1">
+                                        <span>Today only</span>
+                                        <span>30 days ago</span>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-600 mb-1">
+                                        Look Forward: {style.tickerLookForward || 14} days
+                                    </label>
+                                    <input 
+                                        type="range"
+                                        min="1"
+                                        max="90"
+                                        step="1"
+                                        value={style.tickerLookForward || 14}
+                                        onChange={(e) => setStyle(prev => ({...prev, tickerLookForward: parseInt(e.target.value)}))}
+                                        className="w-full"
+                                    />
+                                    <div className="flex justify-between text-xs text-slate-500 mt-1">
+                                        <span>Tomorrow only</span>
+                                        <span>3 months ahead</span>
+                                    </div>
+                                </div>
+                                
+                                <div className="text-xs text-slate-500 bg-slate-100 p-2 rounded">
+                                    📅 Current range: {style.tickerLookBack || 7} days ago to {style.tickerLookForward || 14} days from now
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
