@@ -1883,7 +1883,7 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle, onNavigat
                             </div>
                         );
                     }
-                })}
+                }))}
             </div>
         </div>
     );
