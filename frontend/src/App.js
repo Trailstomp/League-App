@@ -8089,7 +8089,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                         {teamSchedule.map(day => (
                             <div key={day.date}>
                                 <h2 className="text-xl font-semibold text-slate-700 pb-2 border-b-2 border-red-800 mb-3">
-                                    League Games - {new Date(day.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}
+                                    Past Events - {new Date(day.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}
                                 </h2>
                                 <div className="space-y-4">
                                     {day.games.map((game) => {
