@@ -10542,9 +10542,23 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
 };
 
 // --- API SERVICE LAYER ---
-const API_BASE = process.env.NODE_ENV === 'development' 
-    ? 'http://localhost:8001/api' 
-    : (process.env.REACT_APP_BACKEND_URL ? `${process.env.REACT_APP_BACKEND_URL}/api` : 'http://localhost:8001/api');
+// Production-ready API configuration - no localhost fallbacks
+const getApiBase = () => {
+    // Always use REACT_APP_BACKEND_URL if available (production/preview)
+    if (process.env.REACT_APP_BACKEND_URL) {
+        return `${process.env.REACT_APP_BACKEND_URL}/api`;
+    }
+    
+    // Development fallback only when explicitly in development
+    if (process.env.NODE_ENV === 'development') {
+        return 'http://localhost:8001/api';
+    }
+    
+    // Production without env var should fail gracefully
+    throw new Error('REACT_APP_BACKEND_URL environment variable is required for production deployment');
+};
+
+const API_BASE = getApiBase();
 
 const apiService = {
     async loadLeagueData() {
