@@ -7737,11 +7737,47 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                         {/* Team Calendar Events */}
                         {team.calendar && team.calendar.length > 0 && (
                             <div>
-                                <h2 className="text-xl font-semibold text-slate-700 pb-2 border-b-2 border-blue-600 mb-3">
-                                    Team Events
-                                </h2>
+                                <div className="flex justify-between items-center mb-4">
+                                    <h2 className="text-xl font-semibold text-slate-700 pb-2 border-b-2 border-blue-600">
+                                        Team Events
+                                    </h2>
+                                </div>
+                                
+                                {/* Event Type Filters for Team Schedule */}
+                                <div className="mb-4 bg-slate-50 p-4 rounded-lg">
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">Show/Hide Event Types</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {Array.from(new Set(team.calendar.map(event => event.type || 'other'))).sort().map(eventType => {
+                                            const isEnabled = teamEventTypeFilters[eventType];
+                                            const eventTypeColors = {
+                                                game: 'bg-red-100 text-red-800 border-red-200',
+                                                practice: 'bg-blue-100 text-blue-800 border-blue-200',
+                                                tournament: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                                                meeting: 'bg-purple-100 text-purple-800 border-purple-200',
+                                                social: 'bg-green-100 text-green-800 border-green-200',
+                                                other: 'bg-slate-100 text-slate-800 border-slate-200'
+                                            };
+                                            
+                                            return (
+                                                <button
+                                                    key={eventType}
+                                                    onClick={() => handleTeamEventTypeToggle(eventType)}
+                                                    className={`px-2 py-1 rounded border text-xs font-medium transition-all ${
+                                                        isEnabled 
+                                                            ? eventTypeColors[eventType] || eventTypeColors.other
+                                                            : 'bg-slate-50 text-slate-400 border-slate-200 opacity-50'
+                                                    }`}
+                                                    title={`${isEnabled ? 'Hide' : 'Show'} ${eventType} events`}
+                                                >
+                                                    {isEnabled ? '✓' : '✗'} {eventType.charAt(0).toUpperCase() + eventType.slice(1)}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
                                 <div className="space-y-3">
-                                    {team.calendar.map(event => {
+                                    {team.calendar.filter(event => teamEventTypeFilters[event.type || 'other']).map(event => {
                                         if (event.type === 'tournament') {
                                             // Tournament event - show as summary card
                                             return (
