@@ -1807,7 +1807,7 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle, onNavigat
                                 }}
                                 onClick={() => {
                                     // Navigate to Events & Schedule page to show tournament details
-                                    navigate('events-schedule');
+                                    onNavigate('events-schedule');
                                 }}
                                 title="Click to view tournament details"
                             >
