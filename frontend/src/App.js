@@ -3997,7 +3997,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
     const processedTournamentKeys = new Set();
 
     filteredEvents.forEach(event => {
-        if (event.type === 'tournament') {
+        if (event.type && event.type.toLowerCase() === 'tournament') {
             const key = `${event.title}-${event.date}-${event.location}`;
             if (!processedTournamentKeys.has(key)) {
                 displayEvents.push(groupedEvents[key]);
