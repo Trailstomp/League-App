@@ -12758,6 +12758,8 @@ function App() {
         textColor: '#1e293b', // slate-800
         headingColor: '#0f172a', // slate-900
         linkColor: '#2563eb', // blue-600
+        // Form styling
+        formBackgroundColor: '#f8fafc', // slate-50
         // Background image settings
         backgroundImage: '',
         backgroundMode: 'cover', // cover, contain, tile
