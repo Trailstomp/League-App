@@ -4325,7 +4325,7 @@ const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
                                     <td className="py-3 px-6 text-left whitespace-nowrap">
                                         <button onClick={() => onTeamClick(team.id)} className="flex items-center hover:opacity-80">
                                             {index === 0 && <Crown size={16} className="text-yellow-600 mr-1" />}
-                                            <img src={team.logo} alt={team.name} className="w-8 h-8 mr-3 rounded-full bg-white p-1 object-contain" />
+                                            <img src={team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'} alt={team.name} className="w-8 h-8 mr-3 rounded-full bg-white p-1 object-contain" />
                                             <span className="font-medium">{team.name}</span>
                                         </button>
                                     </td>
