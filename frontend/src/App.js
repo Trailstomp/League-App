@@ -1350,53 +1350,157 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
     const generateBracket = () => {
         if (bracketData.teams.length < 2) return;
         
-        const rounds = [];
-        const numTeams = bracketData.teams.length;
-        const numRounds = Math.ceil(Math.log2(numTeams));
+        let sortedTeams = [...bracketData.teams];
         
-        // First round
-        const firstRoundMatches = [];
-        for (let i = 0; i < bracketData.teams.length; i += 2) {
-            if (i + 1 < bracketData.teams.length) {
-                firstRoundMatches.push({
-                    id: `r1-m${i/2 + 1}`,
-                    team1: bracketData.teams[i],
-                    team2: bracketData.teams[i + 1],
+        // Sort teams by ranking if using ranking method
+        if (bracketSettings.seedingMethod === 'ranking') {
+            sortedTeams.sort((a, b) => (a.ranking || 999) - (b.ranking || 999));
+        }
+        
+        // Handle first place bye
+        let workingTeams = [...sortedTeams];
+        let byeTeam = null;
+        
+        if (bracketSettings.firstPlaceBye && workingTeams.length > 2) {
+            byeTeam = workingTeams.shift(); // Remove first place team
+        }
+        
+        const rounds = [];
+        let currentRoundTeams = workingTeams;
+        
+        // Generate bracket based on format
+        if (bracketSettings.format === 'single-elimination') {
+            generateSingleEliminationBracket(currentRoundTeams, byeTeam, rounds);
+        } else if (bracketSettings.format === 'double-elimination') {
+            generateDoubleEliminationBracket(currentRoundTeams, byeTeam, rounds);
+        }
+        
+        const newBracketData = { 
+            ...bracketData, 
+            ...bracketSettings,
+            rounds,
+            byeTeam 
+        };
+        setBracketData(newBracketData);
+        onUpdateEvent({ ...event, bracket: newBracketData });
+    };
+    
+    const generateSingleEliminationBracket = (teams, byeTeam, rounds) => {
+        let currentTeams = [...teams];
+        let roundNumber = 1;
+        
+        // Ensure even number of teams for first round
+        if (currentTeams.length % 2 !== 0) {
+            currentTeams.push({ id: 'bye', name: 'BYE', isBye: true });
+        }
+        
+        while (currentTeams.length > 1) {
+            const matches = [];
+            const nextRoundTeams = [];
+            
+            // Create matches for current round
+            for (let i = 0; i < currentTeams.length; i += 2) {
+                const team1 = currentTeams[i];
+                const team2 = currentTeams[i + 1];
+                
+                const match = {
+                    id: `r${roundNumber}-m${matches.length + 1}`,
+                    team1: team1.isBye ? null : team1,
+                    team2: team2.isBye ? null : team2,
                     winner: null,
                     score1: null,
                     score2: null
-                });
-            }
-        }
-        rounds.push({ round: 1, name: 'First Round', matches: firstRoundMatches });
-        
-        // Subsequent rounds
-        for (let r = 2; r <= numRounds; r++) {
-            const prevRound = rounds[r - 2];
-            const matches = [];
-            for (let i = 0; i < prevRound.matches.length; i += 2) {
-                if (i + 1 < prevRound.matches.length) {
-                    matches.push({
-                        id: `r${r}-m${i/2 + 1}`,
-                        team1: null, // Will be filled by winners
-                        team2: null,
-                        winner: null,
-                        score1: null,
-                        score2: null,
-                        dependsOn: [prevRound.matches[i].id, prevRound.matches[i + 1].id]
-                    });
+                };
+                
+                // Auto-advance if opponent is bye
+                if (team1.isBye) {
+                    match.winner = team2.id;
+                    nextRoundTeams.push(team2);
+                } else if (team2.isBye) {
+                    match.winner = team1.id;
+                    nextRoundTeams.push(team1);
+                } else {
+                    matches.push(match);
                 }
             }
-            const roundName = r === numRounds ? 'Final' : 
-                           r === numRounds - 1 ? 'Semi Final' : 
-                           r === numRounds - 2 ? 'Quarter Final' : 
-                           `Round ${r}`;
-            rounds.push({ round: r, name: roundName, matches });
+            
+            const roundName = getRoundName(roundNumber, Math.ceil(Math.log2(teams.length + (byeTeam ? 1 : 0))));
+            
+            if (matches.length > 0) {
+                rounds.push({ 
+                    round: roundNumber, 
+                    name: roundName, 
+                    matches,
+                    type: 'winners'
+                });
+            }
+            
+            currentTeams = nextRoundTeams;
+            roundNumber++;
         }
         
-        const newBracketData = { ...bracketData, rounds };
-        setBracketData(newBracketData);
-        onUpdateEvent({ ...event, bracket: newBracketData });
+        // Add bye team to final if they exist
+        if (byeTeam && rounds.length > 0) {
+            const finalRound = rounds[rounds.length - 1];
+            if (finalRound.matches.length === 1) {
+                const finalMatch = finalRound.matches[0];
+                if (!finalMatch.team2) {
+                    finalMatch.team2 = byeTeam;
+                } else if (!finalMatch.team1) {
+                    finalMatch.team1 = byeTeam;
+                }
+            }
+        }
+    };
+    
+    const generateDoubleEliminationBracket = (teams, byeTeam, rounds) => {
+        // Simplified double elimination - winners and losers bracket
+        generateSingleEliminationBracket(teams, null, rounds);
+        
+        // Mark as winners bracket
+        rounds.forEach(round => {
+            round.type = 'winners';
+        });
+        
+        // Add losers bracket (simplified version)
+        const losersRounds = [];
+        for (let i = 0; i < rounds.length - 1; i++) {
+            losersRounds.push({
+                round: i + 1,
+                name: `Losers ${i + 1}`,
+                matches: [],
+                type: 'losers'
+            });
+        }
+        
+        // Add grand final
+        rounds.push({
+            round: rounds.length + 1,
+            name: 'Grand Final',
+            matches: [{
+                id: `grand-final`,
+                team1: null, // Winner of winners bracket
+                team2: null, // Winner of losers bracket
+                winner: null,
+                score1: null,
+                score2: null
+            }],
+            type: 'grand-final'
+        });
+        
+        rounds.push(...losersRounds);
+    };
+    
+    const getRoundName = (roundNumber, totalRounds) => {
+        const roundsFromEnd = totalRounds - roundNumber + 1;
+        switch (roundsFromEnd) {
+            case 1: return 'Final';
+            case 2: return 'Semi Final';
+            case 3: return 'Quarter Final';
+            case 4: return 'Round of 16';
+            case 5: return 'Round of 32';
+            default: return `Round ${roundNumber}`;
+        }
     };
     
     const updateMatch = (roundIndex, matchIndex, updates) => {
