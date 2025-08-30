@@ -7863,7 +7863,7 @@ const TeamInfoManager = ({ team, setTeams }) => {
     );
 };
 
-const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, setPlayers, setTeams, websiteStyle, playMusic, stopAllMusic, musicState, getTeamNewsItems, addTeamNewsItem, updateTeamNewsItem, deleteTeamNewsItem, setSelectedNewsItem, friends, sponsors }) => {
+const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, setPlayers, setTeams, websiteStyle, playMusic, stopAllMusic, musicState, getTeamNewsItems, addTeamNewsItem, updateTeamNewsItem, deleteTeamNewsItem, setSelectedNewsItem, friends, sponsors, onEventClick }) => {
     const team = teams.find(t => t.id === teamId);
     const teamPlayers = players.filter(p => p.teams.includes(teamId) && p.active);
     const teamNewsItems = getTeamNewsItems(teamId);
