@@ -4692,7 +4692,11 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                             if (event.teams) {
                                 // Tournament summary card
                                 return (
-                                    <div key={`tournament-${event.title}-${event.date}`} className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                                    <div 
+                                        key={`tournament-${event.title}-${event.date}`} 
+                                        className="bg-yellow-50 rounded-lg p-4 border border-yellow-200 cursor-pointer hover:border-yellow-300 hover:shadow-md transition-all duration-200"
+                                        onClick={() => handleEventClick(event)}
+                                    >
                                         <div className="flex items-start justify-between">
                                             <div className="flex-grow">
                                                 <div className="flex items-center gap-2 mb-2">
