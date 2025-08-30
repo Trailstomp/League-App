@@ -13431,6 +13431,25 @@ function App() {
     const [selectedEventDetail, setSelectedEventDetail] = useState(null);
     const [eventDetailTab, setEventDetailTab] = useState('details');
 
+    // Event detail handlers
+    const handleEventClick = (event) => {
+        setSelectedEventDetail(event);
+        setEventDetailTab('details');
+    };
+
+    const handleUpdateEvent = (updatedEvent) => {
+        // Update the event in teams data
+        setTeams(prevTeams => prevTeams.map(team => ({
+            ...team,
+            calendar: team.calendar?.map(event => 
+                event.id === updatedEvent.id ? updatedEvent : event
+            ) || []
+        })));
+        
+        // Update selected event
+        setSelectedEventDetail(updatedEvent);
+    };
+
     // News system state (team-specific news) 
     const [teamNews, setTeamNews] = useState({}); // Object keyed by teamId
     const [selectedNewsItem, setSelectedNewsItem] = useState(null);
