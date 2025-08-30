@@ -9804,7 +9804,7 @@ const TeamStyleManager = ({ teams, setTeams, currentUser, teamId }) => {
                                 setStyle(prev => ({...prev, musicUrl: e.target.value}));
                                 // Also update the team directly for immediate music functionality
                                 setTeams(prevTeams => prevTeams.map(team => 
-                                    team.id === selectedTeamId ? { ...team, musicUrl: e.target.value } : team
+                                    team.id === currentTeamId ? { ...team, musicUrl: e.target.value } : team
                                 ));
                             }}
                             placeholder="Or enter music URL (MP3, Spotify, SoundCloud, etc.)"
