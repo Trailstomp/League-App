@@ -4647,6 +4647,10 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
     const getTeam = (id) => (teams || []).find(t => t.id === id);
     const isAdmin = currentUser && currentUser.roles && currentUser.roles.includes('admin');
     
+    // Debug logging
+    console.log('DEBUG - leagueSchedule:', leagueSchedule);
+    console.log('DEBUG - leagueSchedule length:', (leagueSchedule || []).length);
+    
     // Get all events from leagueSchedule - handle both formats: [{date, games: []}] and direct events
     const allEvents = (leagueSchedule || []).flatMap(item => {
         // Check if this is the old format (day with games) or new format (direct event)
