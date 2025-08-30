@@ -9832,6 +9832,35 @@ const TeamStyleManager = ({ teams, setTeams, currentUser, teamId }) => {
                         <div className="mt-4">
                             <label className="block font-semibold text-slate-700 mb-2">Background Display Mode</label>
                             <div className="space-y-2">
+                            </div>
+                        </div>
+                        )}
+                        
+                        {/* Background Opacity */}
+                        {style.backgroundType === 'image' && style.pageBackgroundImage && (
+                        <div className="mt-4">
+                            <label className="block font-semibold text-slate-700 mb-2">
+                                Background Opacity: {Math.round(((style.pageBackgroundOpacity !== undefined ? style.pageBackgroundOpacity : 0.1)) * 100)}%
+                            </label>
+                            <input 
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.1"
+                                value={style.pageBackgroundOpacity !== undefined ? style.pageBackgroundOpacity : 0.1}
+                                onChange={(e) => setStyle(prev => ({...prev, pageBackgroundOpacity: parseFloat(e.target.value)}))}
+                                className="w-full"
+                            />
+                            <div className="flex justify-between text-xs text-slate-500 mt-1">
+                                <span>Transparent (Subtle)</span>
+                                <span>Opaque (Bold)</span>
+                            </div>
+                            <p className="text-xs text-slate-500 mt-1">Lower values make the background more subtle for better text readability</p>
+                        </div>
+                        )}
+                        
+                        <p className="text-xs text-slate-500 mt-2">Background image for this team's page</p>
+                    </div>
 
                     {/* === TEAM MUSIC === */}
                     <div className="border-t border-slate-300 pt-4">
