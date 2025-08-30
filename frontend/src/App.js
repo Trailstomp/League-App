@@ -9208,15 +9208,9 @@ const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam, 
                     className="w-full p-2 border rounded" 
                 />
                 
-                <FileUploadInput
-                    label="Team Logo"
-                    accept="image/*"
-                    currentValue={editingTeam?.logo || ''}
-                    onChange={(url) => handleInputChange('logo', url)}
-                    placeholder="Upload team logo"
-                    enableCrop={true}
-                    cropAspectRatio="1:1"
-                />
+                <div className="text-sm text-slate-600 bg-blue-50 p-3 rounded">
+                    <strong>Team Logo:</strong> Configure your team logo in the Team Style settings after saving this team.
+                </div>
                 
                 <div className="flex justify-end space-x-2">
                     <button type="button" onClick={() => setEditingTeam(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
