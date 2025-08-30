@@ -236,7 +236,7 @@ class EventDetailModalTester:
                                         "id": "match_1",
                                         "team1": "team_field_1",
                                         "team2": "team_field_2",
-                                        "winner": null,
+                                        "winner": None,
                                         "score1": 0,
                                         "score2": 0
                                     }
