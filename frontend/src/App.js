@@ -4723,7 +4723,10 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                                     {event.teams.sort((a, b) => a.name.localeCompare(b.name)).map((team, index) => (
                                                         <button
                                                             key={`${team.id}-${index}`}
-                                                            onClick={() => onTeamClick(team.id)}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                onTeamClick(team.id);
+                                                            }}
                                                             className="flex items-center gap-1 bg-white px-2 py-1 rounded-full text-xs hover:shadow-md transition-shadow"
                                                         >
                                                             <img src={team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'} alt={team.name} className="w-4 h-4 rounded-full" />
