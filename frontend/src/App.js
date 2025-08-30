@@ -14611,6 +14611,19 @@ function App() {
                     </div>
                 </div>
             )}
+            
+            {/* Event Detail Modal */}
+            {selectedEventDetail && (
+                <EventDetailModal 
+                    event={selectedEventDetail}
+                    onClose={() => setSelectedEventDetail(null)}
+                    activeTab={eventDetailTab}
+                    setActiveTab={setEventDetailTab}
+                    teams={teams}
+                    currentUser={currentUser}
+                    onUpdateEvent={handleUpdateEvent}
+                />
+            )}
         </div>
     );
 }
