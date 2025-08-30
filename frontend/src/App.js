@@ -5029,7 +5029,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                                             }}
                                             className="rounded"
                                         />
-                                        <img src={team.logo} alt={team.name} className="w-6 h-6 rounded-full" />
+                                        <img src={team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'} alt={team.name} className="w-6 h-6 rounded-full" />
                                         <span className="text-sm font-medium">{team.name}</span>
                                     </label>
                                 ))}
