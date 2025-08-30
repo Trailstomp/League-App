@@ -3876,7 +3876,7 @@ const HomePage = ({teams, onTeamClick, leagueInfo, websiteStyle}) => {
                         >
                             <div className="relative mb-4">
                                 <img 
-                                    src={team.logo} 
+                                    src={team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'} 
                                     alt={team.name} 
                                     className="w-20 h-20 mx-auto rounded-full bg-slate-200 p-2 group-hover:scale-110 transition-transform"
                                 />
