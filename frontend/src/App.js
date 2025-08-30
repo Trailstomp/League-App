@@ -4526,7 +4526,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
     });
     
     const getTeam = (id) => teams.find(t => t.id === id);
-    const isAdmin = currentUser && currentUser.roles.includes('admin');
+    const isAdmin = currentUser && currentUser.roles && currentUser.roles.includes('admin');
     
     // Get all events from leagueSchedule and enrich with team data
     const allEvents = (leagueSchedule || []).map(event => {
