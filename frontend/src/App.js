@@ -13065,49 +13065,53 @@ function App() {
         const loadNewsData = async () => {
             try {
                 const apiData = await apiService.loadLeagueData();
-                if (apiData && apiData.newsItems) {
-                    setNewsItems(apiData.newsItems);
-                    setStoredData('mlbl_newsItems', apiData.newsItems);
+                if (apiData && apiData.teamNews) {
+                    setTeamNews(apiData.teamNews);
+                    setStoredData('mlbl_teamNews', apiData.teamNews);
                 } else {
-                    // Fallback to localStorage or default
-                    const fallbackNews = getStoredData('mlbl_newsItems', [
-                        { 
-                            id: 1, 
-                            type: 'text',
-                            heading: "American Dads Championship Victory",
-                            text: "🏆 American Dads win Dayton Classic Tournament!", 
-                            comments: "Outstanding performance in the finals with a 12-9 victory over the defending champions.",
-                            date: "2025-08-10"
-                        },
-                        { 
-                            id: 2, 
-                            type: 'image',
-                            heading: "Championship Celebration",
-                            text: "📸 Championship celebration photos!", 
-                            imageUrl: "https://placehold.co/400x300/dc2626/FFFFFF?text=Championship+Photos",
-                            comments: "Amazing shots from the post-game celebration and trophy ceremony.",
-                            date: "2025-08-05"
-                        },
-                        { 
-                            id: 3, 
-                            type: 'text',
-                            heading: "OH10 Reaches Finals",
-                            text: "🥍 OH10 Lacrosse advances to championship finals", 
-                            comments: "After a thrilling semi-final match, OH10 secures their spot in the championship game.",
-                            date: "2025-08-03"
-                        },
-                        { 
-                            id: 4, 
-                            type: 'video',
-                            heading: "Game Highlights Available",
-                            text: "🎥 Game highlights now available!", 
-                            videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-                            thumbnailUrl: "https://placehold.co/400x300/f59e0b/FFFFFF?text=Video+Highlights",
-                            comments: "Check out the best plays and goals from this weekend's games.",
-                            date: "2025-08-01"
-                        }
-                    ]);
-                    setNewsItems(fallbackNews);
+                    // Fallback to localStorage or convert old newsItems to team-specific
+                    let fallbackTeamNews = getStoredData('mlbl_teamNews', {});
+                    
+                    // If we have old newsItems, convert them to team-specific format
+                    const oldNewsItems = getStoredData('mlbl_newsItems', []);
+                    if (oldNewsItems.length > 0 && Object.keys(fallbackTeamNews).length === 0) {
+                        // Put all old news under 'league' key
+                        fallbackTeamNews = { league: oldNewsItems };
+                    }
+                    
+                    // If still no news, create some default league news
+                    if (Object.keys(fallbackTeamNews).length === 0) {
+                        fallbackTeamNews = {
+                            league: [
+                                { 
+                                    id: 1, 
+                                    type: 'text',
+                                    heading: "Welcome to MLBL",
+                                    text: "🥍 Welcome to the Mid-Ohio Lacrosse League!", 
+                                    comments: "Stay tuned for the latest updates, game schedules, and team news.",
+                                    date: "2025-08-05"
+                                },
+                                { 
+                                    id: 2, 
+                                    type: 'text',
+                                    heading: "Season Updates",
+                                    text: "📅 Season schedules are now available", 
+                                    comments: "Check your team pages for the complete season schedule and upcoming events.",
+                                    date: "2025-08-04"
+                                },
+                                { 
+                                    id: 3, 
+                                    type: 'text',
+                                    heading: "Championship News",
+                                    text: "🏆 Championship brackets released", 
+                                    comments: "The playoff brackets are now available. Good luck to all teams!",
+                                    date: "2025-08-03"
+                                }
+                            ]
+                        };
+                    }
+                    
+                    setTeamNews(fallbackTeamNews);
                 }
             } catch (error) {
                 console.error('Error loading news data:', error);
