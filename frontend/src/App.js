@@ -9700,9 +9700,8 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
                             accept="image/*"
                             currentValue={style.pageBackgroundImage || ''}
                             onChange={(url) => setStyle(prev => ({...prev, pageBackgroundImage: url}))}
-                            placeholder="Upload team background or enter URL"
-                            enableCrop={true}
-                            cropAspectRatio="free"
+                            placeholder="Upload team background or paste image URL"
+                            enableCrop={false}
                         />
                         
                         {/* Background Display Mode */}
