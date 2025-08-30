@@ -12753,6 +12753,39 @@ function App() {
     const [teamNews, setTeamNews] = useState({}); // Object keyed by teamId
     const [selectedNewsItem, setSelectedNewsItem] = useState(null);
     const [newsLoading, setNewsLoading] = useState(true);
+    
+    // Helper functions for team-specific news
+    const getTeamNewsItems = (teamId) => teamNews[teamId] || [];
+    const setTeamNewsItems = (teamId, newsItems) => {
+        setTeamNews(prev => ({ ...prev, [teamId]: newsItems }));
+    };
+    const addTeamNewsItem = (teamId, newsItem) => {
+        setTeamNews(prev => ({ 
+            ...prev, 
+            [teamId]: [...(prev[teamId] || []), newsItem] 
+        }));
+    };
+    const updateTeamNewsItem = (teamId, newsId, updatedItem) => {
+        setTeamNews(prev => ({ 
+            ...prev, 
+            [teamId]: (prev[teamId] || []).map(item => 
+                item.id === newsId ? { ...item, ...updatedItem } : item
+            )
+        }));
+    };
+    const deleteTeamNewsItem = (teamId, newsId) => {
+        setTeamNews(prev => ({ 
+            ...prev, 
+            [teamId]: (prev[teamId] || []).filter(item => item.id !== newsId)
+        }));
+    };
+    
+    // Get all news items from all teams for the homepage ticker
+    const getAllNewsItems = () => {
+        return Object.values(teamNews).flat().sort((a, b) => 
+            new Date(b.date) - new Date(a.date)
+        );
+    };
     const [websiteStyle, setWebsiteStyle] = useState({
         logoUrl: MlblLogo,
         primaryColor: '#1e293b', // slate-800
