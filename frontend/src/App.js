@@ -8692,7 +8692,11 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                         if (event.type && event.type.toLowerCase() === 'tournament') {
                                             // Tournament event - show as summary card
                                             return (
-                                                <div key={event.id} className="bg-yellow-50 p-4 rounded-lg shadow-sm border border-yellow-200">
+                                                <div 
+                                                    key={event.id} 
+                                                    className="bg-yellow-50 p-4 rounded-lg shadow-sm border border-yellow-200 cursor-pointer hover:border-yellow-300 hover:shadow-md transition-all duration-200"
+                                                    onClick={() => handleEventClick(event)}
+                                                >
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex-grow">
                                                             <div className="flex items-center gap-2 mb-2">
