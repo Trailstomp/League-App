@@ -9182,11 +9182,13 @@ const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam, 
     return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
         <div 
-            className="rounded-lg shadow-xl w-full max-w-md"
             style={{ 
-                backgroundColor: formBackgroundColor + ' !important', 
+                backgroundColor: '#ff0000',
                 padding: '24px',
-                background: `${formBackgroundColor} !important`
+                borderRadius: '8px',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                width: '100%',
+                maxWidth: '28rem'
             }}
         >
             <h3 className="text-xl font-bold text-slate-800 mb-4">
