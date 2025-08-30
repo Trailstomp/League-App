@@ -10057,6 +10057,11 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
     const [style, setStyle] = useState(websiteStyle);
     const [saved, setSaved] = useState(false);
 
+    // Sync local state when websiteStyle prop changes
+    useEffect(() => {
+        setStyle(websiteStyle);
+    }, [websiteStyle]);
+
     const handleSave = () => {
         setWebsiteStyle(style);
         setSaved(true);
