@@ -3259,7 +3259,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                                         setEditingNewsItem(prev => ({...prev, imageUrl: url}));
                                                     }}
                                                     placeholder="Upload image or paste URL"
-                                                    enableCrop={true}
+                                                    enableCrop={false}
                                                     cropAspectRatio="16:9"
                                                 />
                                             )}
