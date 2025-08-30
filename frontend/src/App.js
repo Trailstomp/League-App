@@ -8568,7 +8568,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                     <div className="space-y-6">
                         <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Team Style & Customization</h2>
                         <div className="bg-white rounded-lg shadow p-6">
-                            <TeamStyleManager teams={teams} setTeams={setTeams} currentUser={currentUser} />
+                            <TeamStyleManager teams={teams} setTeams={setTeams} currentUser={currentUser} teamId={teamId} />
                         </div>
                     </div>
                 )}
