@@ -4541,7 +4541,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
             teamId: primaryTeamId,
             // For multi-team events, store all team info
             allTeams: Array.isArray(event.teams) ? event.teams.map(teamId => {
-                const team = teams.find(t => t.id === teamId);
+                const team = (teams || []).find(t => t.id === teamId);
                 return {
                     id: teamId,
                     name: team?.name || 'Unknown Team',
