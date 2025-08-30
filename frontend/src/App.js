@@ -4529,8 +4529,10 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
     const isAdmin = currentUser && currentUser.roles && currentUser.roles.includes('admin');
     
     // Get all events from leagueSchedule (which has structure: [{date, games: []}]) and enrich with team data
-    const allEvents = (leagueSchedule || []).flatMap(day => 
-        (day && day.games ? day.games : []).map(game => {
+    console.log('EventsPage - leagueSchedule:', leagueSchedule);
+    const allEvents = (leagueSchedule || []).flatMap(day => {
+        console.log('Processing day:', day);
+        return (day && day.games ? day.games : []).map(game => {
             // Convert game to event format - add safety check for game object
             if (!game) return null;
             const homeTeam = (teams || []).find(t => t.id === game.home);
