@@ -4706,18 +4706,11 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
             };
         }
     }).filter(event => event !== null).sort((a, b) => new Date(a.date) - new Date(b.date));
-    
-    console.log('DEBUG - allEvents:', allEvents);
-    console.log('DEBUG - allEvents length:', allEvents.length);
 
     // Filter events by team and type
     const filteredEvents = allEvents
         .filter(event => selectedTeamSchedule === 'all' || event.teamId === selectedTeamSchedule)
         .filter(event => eventTypeFilters[event.type || 'other']);
-    
-    console.log('DEBUG - filteredEvents:', filteredEvents);
-    console.log('DEBUG - filteredEvents length:', filteredEvents.length);
-    console.log('DEBUG - eventTypeFilters:', eventTypeFilters);
     
     // Group tournament events by title, date, and location
     const groupedEvents = filteredEvents.reduce((groups, event) => {
