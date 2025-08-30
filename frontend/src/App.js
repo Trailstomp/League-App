@@ -1045,12 +1045,22 @@ const EventDetailsTab = ({ event, isAuthorized, onUpdateEvent, onDeleteEvent }) 
             <div className="flex justify-between items-center">
                 <h3 className="text-xl font-semibold text-gray-800">Event Details</h3>
                 {isAuthorized && (
-                    <button
-                        onClick={() => editing ? handleSave() : setEditing(true)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    >
-                        {editing ? 'Save Changes' : 'Edit Details'}
-                    </button>
+                    <div className="flex space-x-2">
+                        <button
+                            onClick={() => editing ? handleSave() : setEditing(true)}
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        >
+                            {editing ? 'Save Changes' : 'Edit Details'}
+                        </button>
+                        {hasPermission(currentUser, 'system.admin_access') && (
+                            <button
+                                onClick={() => setShowDeleteConfirm(true)}
+                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                            >
+                                Delete Event
+                            </button>
+                        )}
+                    </div>
                 )}
             </div>
             
