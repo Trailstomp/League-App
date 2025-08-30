@@ -1570,7 +1570,7 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
             </div>
             
             {/* Bracket Settings */}
-            {isAuthorized && bracketData.rounds.length === 0 && (
+            {bracketData.rounds.length === 0 && (
                 <div className="bg-gray-50 p-6 rounded-lg">
                     <h4 className="font-semibold mb-4">🏆 Bracket Configuration</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
