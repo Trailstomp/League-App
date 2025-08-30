@@ -9743,6 +9743,24 @@ const TeamStyleManager = ({ teams, setTeams, currentUser, teamId }) => {
                             enableCrop={false}
                         />
                         
+                        {/* Background Image Transparency Control */}
+                        {style.pageBackgroundImage && (
+                            <div className="mt-3">
+                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                    Background Transparency: {Math.round((style.backgroundOpacity || 1) * 100)}%
+                                </label>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step="0.1"
+                                    value={style.backgroundOpacity || 1}
+                                    onChange={(e) => setStyle(prev => ({...prev, backgroundOpacity: parseFloat(e.target.value)}))}
+                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                />
+                            </div>
+                        )}
+                        
                         {/* Background Display Mode */}
                         <div className="mt-4">
                             <label className="block font-semibold text-slate-700 mb-2">Background Display Mode</label>
