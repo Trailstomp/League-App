@@ -12845,6 +12845,10 @@ function App() {
         social: { twitter: '#', instagram: '#', facebook: '#' }
     });
     
+    // Event Detail Modal state
+    const [selectedEventDetail, setSelectedEventDetail] = useState(null);
+    const [eventDetailTab, setEventDetailTab] = useState('details');
+
     // News system state (team-specific news) 
     const [teamNews, setTeamNews] = useState({}); // Object keyed by teamId
     const [selectedNewsItem, setSelectedNewsItem] = useState(null);
