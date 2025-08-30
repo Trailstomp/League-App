@@ -4749,7 +4749,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                     <div 
                                         key={`${event.teamId}-${event.id}`} 
                                         className="bg-blue-50 rounded-lg p-4 border border-blue-200 cursor-pointer hover:border-blue-300 hover:shadow-md transition-all duration-200"
-                                        onClick={() => handleEventClick(event)}
+                                        onClick={() => onEventClick && onEventClick(event)}
                                     >
                                         <div className="flex items-start justify-between">
                                             <div className="flex-grow">
