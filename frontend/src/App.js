@@ -9183,7 +9183,7 @@ const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam, 
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
         <div 
             className="rounded-lg shadow-xl w-full max-w-md"
-            style={{ backgroundColor: '#00ff00', padding: '24px' }}
+            style={{ backgroundColor: formBackgroundColor, padding: '24px' }}
         >
             <h3 className="text-xl font-bold text-slate-800 mb-4">
                 {editingTeam?.id ? 'Edit Team' : 'Add Team'}
