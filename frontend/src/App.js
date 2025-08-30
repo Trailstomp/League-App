@@ -2802,10 +2802,18 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle, onNavigat
                                     backgroundColor: websiteStyle?.tickerItemColor || '#334155',
                                     borderColor: websiteStyle?.tickerBorderColor || '#475569'
                                 }}
-                                onClick={() => {
-                                    // Navigate to Events & Schedule page to show tournament details
-                                    onNavigate('events-schedule');
-                                }}
+                                onClick={() => onEventClick && onEventClick({
+                                    id: `tournament-${item.tournamentName}`,
+                                    title: item.tournamentName,
+                                    type: 'tournament',
+                                    date: item.gameDate,
+                                    location: item.location,
+                                    description: `Tournament with ${item.games.length} games`,
+                                    allTeams: item.games.map(g => ({
+                                        id: g.homeTeam,
+                                        name: teams.find(t => t.id === g.homeTeam)?.name || 'Unknown Team'
+                                    })).filter((team, index, self) => self.findIndex(t => t.id === team.id) === index)
+                                })}
                                 title="Click to view tournament details"
                             >
                                 <div className="text-xs mb-2 flex justify-between" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
