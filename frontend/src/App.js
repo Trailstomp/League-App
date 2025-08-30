@@ -2610,10 +2610,16 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle, onNavigat
                     } else {
                         // Event item
                         return (
-                            <div key={`event-${index}`} className="flex-shrink-0 w-72 rounded-lg p-2 border" style={{ 
-                                backgroundColor: websiteStyle?.tickerItemColor || '#334155',
-                                borderColor: websiteStyle?.tickerBorderColor || '#475569'
-                            }}>
+                            <div 
+                                key={`event-${index}`} 
+                                className="flex-shrink-0 w-72 rounded-lg p-2 border cursor-pointer hover:opacity-90 transition-opacity" 
+                                style={{ 
+                                    backgroundColor: websiteStyle?.tickerItemColor || '#334155',
+                                    borderColor: websiteStyle?.tickerBorderColor || '#475569'
+                                }}
+                                onClick={() => onEventClick && onEventClick(item)}
+                                title="Click to view event details"
+                            >
                                 <div className="text-xs mb-1 flex justify-between" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
                                     <span>{item.location || 'TBA'}</span>
                                     <span className="font-bold text-xs text-blue-400">EVENT</span>
