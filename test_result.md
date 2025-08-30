@@ -867,6 +867,9 @@ metadata:
       - working: false
         agent: "main"
         comment: "🎉 EVENT DETAIL MODAL INTEGRATION COMPLETED: ✅ Added EventDetailModal to main App return statement with all required props (event, onClose, activeTab, setActiveTab, teams, currentUser, onUpdateEvent) ✅ Added onClick handlers to all event cards in EventsPage and team calendars with hover effects and cursor styling for better UX ✅ Implemented proper event propagation handling to prevent modal triggering when clicking child elements (team buttons) ✅ Connected selectedEventDetail and eventDetailTab state management ✅ Modal component fully implemented with tabs for event editing, score management, player stats tracking, attendance management, and tournament bracket generation."
+      - working: false
+        agent: "main"
+        comment: "❌ RUNTIME ERROR BLOCKING FUNCTIONALITY: JavaScript error 'Cannot read properties of undefined (reading map)' in EventsPage component prevents events from being displayed. Issue occurs in data structure mismatch where EventsPage expects team.calendar events but backend provides leagueSchedule array. Multiple fixes attempted: added null safety checks, fixed data mapping, updated tournament handling, but core data flow issue persists. Events cannot be rendered so modal cannot be triggered. Backend testing shows data exists and is correct (Thunder Hawks vs Lightning Bolts, practices, tournaments) but frontend cannot process this data due to runtime errors."
 
 test_plan:
   current_focus:
