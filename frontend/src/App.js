@@ -4889,6 +4889,19 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                         )}
                     </div>
                 </div>
+                
+                {/* Tournament Name - only show when type is tournament */}
+                {editingEvent?.type === 'tournament' && (
+                    <input 
+                        type="text" 
+                        value={editingEvent?.tournamentName || ''} 
+                        onChange={e => setEditingEvent(prev => ({...prev, tournamentName: e.target.value}))} 
+                        placeholder="Tournament Name (e.g., 'Spring Classic', 'Championship Series')" 
+                        className="w-full p-2 border rounded" 
+                        required
+                    />
+                )}
+                
                 <textarea 
                     value={editingEvent?.description || ''} 
                     onChange={e => setEditingEvent(prev => ({...prev, description: e.target.value}))} 
