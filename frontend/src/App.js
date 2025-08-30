@@ -9182,8 +9182,8 @@ const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam, 
     return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
         <div 
-            className="p-6 rounded-lg shadow-xl w-full max-w-md"
-            style={{ backgroundColor: `${formBackgroundColor} !important` }}
+            className="rounded-lg shadow-xl w-full max-w-md"
+            style={{ backgroundColor: formBackgroundColor, padding: '24px' }}
         >
             <h3 className="text-xl font-bold text-slate-800 mb-4">
                 {editingTeam?.id ? 'Edit Team' : 'Add Team'}
