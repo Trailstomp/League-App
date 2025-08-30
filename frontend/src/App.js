@@ -4570,38 +4570,8 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         return Array.from(types).sort();
     }, [allEvents]);
     
-    // Group tournament events by title, date, and location
-    const groupedEvents = filteredEvents.reduce((groups, event) => {
-        if (event.type && event.type.toLowerCase() === 'tournament') {
-            const key = `${event.title}-${event.date}-${event.location}`;
-            if (!groups[key]) {
-                groups[key] = {
-                    ...event,
-                    teams: [],
-                    teamIds: []
-                };
-            }
-            groups[key].teams.push({ name: event.teamName, logo: event.teamLogo, id: event.teamId });
-            groups[key].teamIds.push(event.teamId);
-        }
-        return groups;
-    }, {});
-
-    // Create display events (individual events + tournament summaries)
-    const displayEvents = [];
-    const processedTournamentKeys = new Set();
-
-    filteredEvents.forEach(event => {
-        if (event.type && event.type.toLowerCase() === 'tournament') {
-            const key = `${event.title}-${event.date}-${event.location}`;
-            if (!processedTournamentKeys.has(key)) {
-                displayEvents.push(groupedEvents[key]);
-                processedTournamentKeys.add(key);
-            }
-        } else {
-            displayEvents.push(event);
-        }
-    });
+    // For tournaments, we already have all teams in allTeams, so just use filteredEvents directly
+    const displayEvents = filteredEvents;
 
     // Filter schedule - leagueSchedule is an array of events, not days
     const filteredSchedule = leagueSchedule ? leagueSchedule.filter(event => {
