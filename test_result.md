@@ -855,9 +855,9 @@ metadata:
 
   - task: "Complete Event Detail Modal integration with calendar events"
     implemented: true
-    working: true
+    working: false
     file: "frontend/src/App.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
