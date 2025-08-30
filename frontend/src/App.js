@@ -12749,8 +12749,8 @@ function App() {
         social: { twitter: '#', instagram: '#', facebook: '#' }
     });
     
-    // News system state (moved from NewHomePage)
-    const [newsItems, setNewsItems] = useState([]);
+    // News system state (team-specific news) 
+    const [teamNews, setTeamNews] = useState({}); // Object keyed by teamId
     const [selectedNewsItem, setSelectedNewsItem] = useState(null);
     const [newsLoading, setNewsLoading] = useState(true);
     const [websiteStyle, setWebsiteStyle] = useState({
