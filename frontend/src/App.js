@@ -9184,9 +9184,9 @@ const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam, 
         <div 
             className="rounded-lg shadow-xl w-full max-w-md"
             style={{ 
-                backgroundColor: formBackgroundColor, 
+                backgroundColor: formBackgroundColor + ' !important', 
                 padding: '24px',
-                background: formBackgroundColor // Additional backup
+                background: `${formBackgroundColor} !important`
             }}
         >
             <h3 className="text-xl font-bold text-slate-800 mb-4">
