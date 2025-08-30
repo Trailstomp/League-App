@@ -1880,16 +1880,16 @@ const initialGameTickerData = [
 ];
 
 const initialLeagueSchedule = [
-    { date: '2025-08-09', games: [ 
+    { date: '2025-09-15', games: [ 
         { id: 1, home: 'oh10-lacrosse', away: 'american-dads', time: '1:00 PM', location: 'Dayton' },
         { id: 2, home: 'dayton-eagles', away: 'cincinnati-trash-pandas', time: '2:00 PM', location: 'Dayton' },
         { id: 3, home: 'indiana-lacers', away: 'american-dads', time: '3:00 PM', location: 'Dayton' },
     ] },
-    { date: '2025-08-02', games: [ 
+    { date: '2025-09-22', games: [ 
         { id: 6, home: 'indiana-lacers', away: 'oh10-lacrosse', time: '6:00 PM', location: 'Indy' },
         { id: 7, home: 'indy-sabers', away: 'dayton-eagles', time: '7:00 PM', location: 'Indy' },
     ] },
-     { date: '2025-07-10', games: [ { id: 8, home: 'columbus-ball-hawgs', away: 'dayton-eagles', time: '7:00 PM', location: 'Columbus' } ] },
+     { date: '2025-08-30', games: [ { id: 8, home: 'columbus-ball-hawgs', away: 'dayton-eagles', time: '7:00 PM', location: 'Columbus' } ] },
 ];
 
 const newsFeed = [
