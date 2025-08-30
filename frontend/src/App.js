@@ -10661,6 +10661,60 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                 />
                             </div>
                         </div>
+                        
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Form Background</label>
+                            <div className="relative">
+                                <div 
+                                    className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
+                                    style={{ backgroundColor: style.formBackgroundColor || '#f8fafc' }}
+                                >
+                                    <span className="text-slate-700 font-semibold text-xs bg-white bg-opacity-75 px-2 py-1 rounded">
+                                        Form
+                                    </span>
+                                </div>
+                                <input 
+                                    type="color" 
+                                    value={style.formBackgroundColor || '#f8fafc'}
+                                    onChange={(e) => setStyle(prev => ({...prev, formBackgroundColor: e.target.value}))}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
+                            </div>
+                            <p className="text-xs text-slate-500 mt-1">Background color for all forms and modals</p>
+                        </div>
+                    </div>
+                    
+                    {/* Form Preview */}
+                    <div className="mt-4">
+                        <div 
+                            className="p-4 rounded-lg border-2 border-dashed border-slate-300"
+                            style={{ backgroundColor: style.formBackgroundColor || '#f8fafc' }}
+                        >
+                            <h5 className="font-semibold mb-3" style={{ color: style.textColor }}>
+                                Sample Form Preview
+                            </h5>
+                            <div className="space-y-3">
+                                <input 
+                                    type="text" 
+                                    placeholder="Team name..." 
+                                    className="w-full p-2 border rounded" 
+                                    disabled
+                                />
+                                <input 
+                                    type="email" 
+                                    placeholder="Contact email..." 
+                                    className="w-full p-2 border rounded" 
+                                    disabled
+                                />
+                                <button 
+                                    className="px-4 py-2 rounded text-white" 
+                                    style={{ backgroundColor: style.primaryColor }}
+                                    disabled
+                                >
+                                    Save Team
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
