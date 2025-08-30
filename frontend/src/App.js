@@ -4590,12 +4590,11 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         }
     });
 
-    // Filter schedule
-    const filteredSchedule = leagueSchedule.map(day => {
-        if (selectedTeamSchedule === 'all') return day;
-        const games = day.games.filter(g => g.home === selectedTeamSchedule || g.away === selectedTeamSchedule);
-        return { ...day, games };
-    }).filter(day => day.games.length > 0);
+    // Filter schedule - leagueSchedule is an array of events, not days
+    const filteredSchedule = leagueSchedule ? leagueSchedule.filter(event => {
+        if (selectedTeamSchedule === 'all') return true;
+        return event.teams && event.teams.includes(selectedTeamSchedule);
+    }) : [];
     
     return (
         <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
