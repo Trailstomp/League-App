@@ -1762,7 +1762,7 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle, onNavigat
                 .map(event => ({
                     ...event,
                     teamName: team.name,
-                    teamLogo: team.logo,
+                    teamLogo: team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team',
                     teamId: team.id,
                     itemType: 'event',
                     status: 'Scheduled' // Add scheduled status for upcoming events
