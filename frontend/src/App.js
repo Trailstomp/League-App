@@ -9232,7 +9232,7 @@ const TeamManager = ({ teams, setTeams, websiteStyle }) => {
     const [editingTeam, setEditingTeam] = useState(null);
     
     // Get form background color from website style or default
-    const formBackgroundColor = websiteStyle?.formBackgroundColor || '#ff0000';
+    const formBackgroundColor = websiteStyle?.formBackgroundColor || '#ff00ff'; // Magenta for debugging
     console.log('🔍 TeamManager websiteStyle:', websiteStyle);
     console.log('🎨 TeamManager formBackgroundColor:', formBackgroundColor);
     
