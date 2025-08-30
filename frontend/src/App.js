@@ -962,7 +962,6 @@ const FileUploadInput = ({
 
     const handleCrop = (croppedImageData) => {
         console.log('🎯 FileInput handleCrop called with data:', croppedImageData ? 'data received' : 'no data');
-        console.log('📝 Current form state before onChange:', editingTeam || 'no editing state');
         
         // Ensure we have valid data before proceeding
         if (!croppedImageData) {
