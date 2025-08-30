@@ -9791,7 +9791,7 @@ const TeamStyleManager = ({ teams, setTeams, currentUser, teamId }) => {
                                     setStyle(prev => ({...prev, musicUrl: fileUrl}));
                                     // Also update the team directly for immediate music functionality
                                     setTeams(prevTeams => prevTeams.map(team => 
-                                        team.id === selectedTeamId ? { ...team, musicUrl: fileUrl } : team
+                                        team.id === currentTeamId ? { ...team, musicUrl: fileUrl } : team
                                     ));
                                 }
                             }}
