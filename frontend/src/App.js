@@ -4589,11 +4589,12 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
     // For tournaments, we already have all teams in allTeams, so just use filteredEvents directly
     const displayEvents = filteredEvents;
 
-    // Filter schedule - leagueSchedule is an array of events, not days
-    const filteredSchedule = leagueSchedule ? leagueSchedule.filter(event => {
-        if (selectedTeamSchedule === 'all') return true;
-        return event.teams && event.teams.includes(selectedTeamSchedule);
-    }) : [];
+    // Filter schedule - leagueSchedule is an array of days with games
+    const filteredSchedule = leagueSchedule ? leagueSchedule.map(day => {
+        if (selectedTeamSchedule === 'all') return day;
+        const games = day.games.filter(g => g.home === selectedTeamSchedule || g.away === selectedTeamSchedule);
+        return { ...day, games };
+    }).filter(day => day.games.length > 0) : [];
     
     return (
         <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
