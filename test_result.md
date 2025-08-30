@@ -864,9 +864,9 @@ metadata:
       - working: false
         agent: "main"
         comment: "IMPLEMENTATION: EventDetailModal component exists with complete tab functionality (Details, Scores & Results, Stats, Attendance, Tournament Bracket) but was not integrated into main App component and calendar events lacked onClick handlers to trigger the modal."
-      - working: true
+      - working: false
         agent: "main"
-        comment: "🎉 EVENT DETAIL MODAL INTEGRATION COMPLETED: ✅ Added EventDetailModal to main App return statement with all required props (event, onClose, activeTab, setActiveTab, teams, currentUser, onUpdateEvent) ✅ Added onClick handlers to all event cards in EventsPage and team calendars with hover effects and cursor styling for better UX ✅ Implemented proper event propagation handling to prevent modal triggering when clicking child elements (team buttons) ✅ Connected selectedEventDetail and eventDetailTab state management ✅ Modal renders when calendar events are clicked and includes full functionality: event editing, score management, player stats tracking, attendance management, and tournament bracket generation ✅ Foundation ready for comprehensive testing of all modal features including tab navigation, data persistence, and user permissions."
+        comment: "🎉 EVENT DETAIL MODAL INTEGRATION COMPLETED: ✅ Added EventDetailModal to main App return statement with all required props (event, onClose, activeTab, setActiveTab, teams, currentUser, onUpdateEvent) ✅ Added onClick handlers to all event cards in EventsPage and team calendars with hover effects and cursor styling for better UX ✅ Implemented proper event propagation handling to prevent modal triggering when clicking child elements (team buttons) ✅ Connected selectedEventDetail and eventDetailTab state management ✅ Modal component fully implemented with tabs for event editing, score management, player stats tracking, attendance management, and tournament bracket generation."
 
 test_plan:
   current_focus:
