@@ -13787,7 +13787,7 @@ function App() {
                     
                     setPlayers(linkedPlayers);
                     setGameTickerData(apiData.gameTickerData || initialGameTickerData);
-                    setLeagueSchedule(apiData.leagueSchedule || initialLeagueSchedule);
+                    setLeagueSchedule((apiData.leagueSchedule && apiData.leagueSchedule.length > 0) ? apiData.leagueSchedule : initialLeagueSchedule);
                     setUsers(loadedUsers);
                     setLeagueInfo(apiData.leagueInfo || {
                         name: "Men's Lacrosse Beer League",
