@@ -4689,7 +4689,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                         Upcoming Events
                     </h2>
                     <div className="space-y-4">
-                        {displayEvents.length > 0 ? displayEvents.slice(0, 10).map(event => {
+                        {displayEvents.filter(event => new Date(event.date) >= new Date()).length > 0 ? displayEvents.filter(event => new Date(event.date) >= new Date()).slice(0, 10).map(event => {
                             if (event.allTeams && event.allTeams.length > 1) {
                                 // Tournament summary card
                                 return (
