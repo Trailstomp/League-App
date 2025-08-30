@@ -2862,7 +2862,11 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                     <canvas
                         ref={canvasRef}
                         className="border border-gray-300 cursor-crosshair"
-                        style={{ width: canvasSize.width, height: canvasSize.height }}
+                        style={{ 
+                            width: canvasSize.width, 
+                            height: canvasSize.height,
+                            pointerEvents: 'auto'
+                        }}
                         onMouseDown={handleMouseDown}
                         onMouseMove={handleMouseMove}
                         onMouseUp={handleMouseUp}
