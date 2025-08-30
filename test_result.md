@@ -717,15 +717,18 @@ metadata:
         
   - task: "Update navigation to nest teams by division"
     implemented: true
-    working: false
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "main"
         comment: "Restructured navigation sidebar to show Field Lacrosse and Box Lacrosse as separate nested sections under Teams, each with appropriate icons (Trophy for Field, Shield for Box)."
+      - working: true
+        agent: "testing"
+        comment: "✅ Navigation division nesting verified working perfectly - Sidebar shows 'FIELD LACROSSE' section with Trophy icon and 'BOX LACROSSE' section with Shield icon. Teams are properly organized by division in the navigation structure."
         
   - task: "Update standings to show divisions separately"
     implemented: true
