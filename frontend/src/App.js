@@ -1334,7 +1334,17 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
     const [bracketData, setBracketData] = useState(event.bracket || {
         teams: [],
         rounds: [],
-        format: '8-team-single' // 8-team-single, 16-team-single, etc.
+        format: 'single-elimination',
+        minGames: 1,
+        firstPlaceBye: false,
+        seedingMethod: 'manual' // 'manual' or 'ranking'
+    });
+    
+    const [bracketSettings, setBracketSettings] = useState({
+        format: bracketData.format || 'single-elimination',
+        minGames: bracketData.minGames || 1,
+        firstPlaceBye: bracketData.firstPlaceBye || false,
+        seedingMethod: bracketData.seedingMethod || 'manual'
     });
     
     const generateBracket = () => {
