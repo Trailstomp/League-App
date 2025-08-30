@@ -9185,6 +9185,48 @@ const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam, 
             className="p-6 rounded-lg shadow-xl w-full max-w-md"
             style={{ backgroundColor: formBackgroundColor }}
         >
+            <h3 className="text-xl font-bold text-slate-800 mb-4">
+                {editingTeam?.id ? 'Edit Team' : 'Add Team'}
+            </h3>
+            <form onSubmit={handleSave} className="space-y-4">
+                <input 
+                    type="text" 
+                    value={editingTeam?.name || ''} 
+                    onChange={e => handleInputChange('name', e.target.value)} 
+                    placeholder="Team Name" 
+                    className="w-full p-2 border rounded" 
+                    required 
+                />
+                
+                <input 
+                    type="email" 
+                    value={editingTeam?.contactEmail || ''} 
+                    onChange={e => handleInputChange('contactEmail', e.target.value)} 
+                    placeholder="Contact Email" 
+                    className="w-full p-2 border rounded" 
+                />
+                
+                <div className="text-sm text-slate-600 bg-blue-50 p-3 rounded">
+                    <strong>Team Logo:</strong> Configure your team logo in the Team Style settings after saving this team.
+                </div>
+
+                <div className="flex space-x-2">
+                    <button type="submit" className="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                        Save Team
+                    </button>
+                    <button 
+                        type="button" 
+                        onClick={() => setEditingTeam(null)} 
+                        className="flex-1 bg-slate-500 text-white py-2 px-4 rounded hover:bg-slate-600"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    );
+};
             <h3 className="text-2xl font-bold mb-4">{editingTeam?.id ? 'Edit Team' : 'Add New Team'}</h3>
             <form onSubmit={handleSave} className="space-y-4">
                 <input 
