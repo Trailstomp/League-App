@@ -13829,7 +13829,8 @@ function App() {
                     setTeams(getStoredData('mlbl_teams', initialTeams));
                     setPlayers(linkedPlayers);
                     setGameTickerData(getStoredData('mlbl_gameTickerData', initialGameTickerData));
-                    setLeagueSchedule(getStoredData('mlbl_leagueSchedule', initialLeagueSchedule));
+                    const storedSchedule = getStoredData('mlbl_leagueSchedule', initialLeagueSchedule);
+                    setLeagueSchedule((storedSchedule && storedSchedule.length > 0) ? storedSchedule : initialLeagueSchedule);
                     setUsers(storedUsers);
                     setLeagueInfo(getStoredData('mlbl_leagueInfo', leagueInfo));
                     // Fix localStorage fallback for websiteStyle persistence
