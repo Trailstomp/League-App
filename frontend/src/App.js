@@ -3052,7 +3052,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
         ]
     });
 
-    // News editing functions
+    // News editing functions - for homepage, use first team or create a league news concept
     const handleAddNews = () => {
         const newItem = {
             id: Date.now(),
@@ -3060,20 +3060,27 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
             text: "New announcement - edit this text",
             date: new Date().toISOString().split('T')[0]
         };
-        setNewsItems(prev => [...prev, newItem]);
+        // For homepage news, add to the first available team or create a special "league" entry
+        const targetTeamId = teams.length > 0 ? teams[0].id : 'league';
+        addTeamNewsItem(targetTeamId, newItem);
         setEditingNewsItem(newItem);
     };
 
     const handleSaveNews = (newsId, updatedItem) => {
-        setNewsItems(prev => prev.map(item => 
-            item.id === newsId ? { ...item, ...updatedItem } : item
-        ));
+        // Update news in the first team or league entry
+        const targetTeamId = teams.length > 0 ? teams[0].id : 'league';
+        updateTeamNewsItem(targetTeamId, newsId, updatedItem);
         setEditingNewsItem(null);
     };
 
     const handleDeleteNews = (newsId) => {
-        setNewsItems(prev => prev.filter(item => item.id !== newsId));
+        // Delete from the first team or league entry
+        const targetTeamId = teams.length > 0 ? teams[0].id : 'league';
+        deleteTeamNewsItem(targetTeamId, newsId);
     };
+
+    // Get news items for the homepage ticker
+    const newsItems = getAllNewsItems();
     
     return (
         <div className="min-h-screen" style={getBackgroundStyle(websiteStyle)}>
