@@ -9177,8 +9177,8 @@ const PlayerManager = ({ players, setPlayers, teams, currentUser }) => {
 };
 
 // Team form component - moved outside to prevent recreation  
-const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam, formBackgroundColor = '#f8fafc' }) => {
-    console.log('🎨 TeamForm formBackgroundColor:', formBackgroundColor);
+const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam, formBackgroundColor = '#ff0000' }) => {
+    // Force red background to test if formBackgroundColor is working
     return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
         <div 
