@@ -9663,21 +9663,11 @@ const TeamStyleManager = ({ teams, setTeams, currentUser, teamId }) => {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-6">
-                {currentUser.roles.includes('admin') && (
-                    <div>
-                        <label className="block font-semibold text-slate-700 mb-2">Select Team</label>
-                        <select 
-                            value={selectedTeamId} 
-                            onChange={(e) => setSelectedTeamId(e.target.value)}
-                            className="w-full p-3 border border-slate-300 rounded-lg"
-                        >
-                            {availableTeams.map(team => (
-                                <option key={team.id} value={team.id}>{team.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                )}
-
+                <div className="bg-blue-50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-blue-800">Editing Style for: {selectedTeam.name}</h3>
+                    <p className="text-sm text-blue-600 mt-1">Customize the appearance and layout for this team's page.</p>
+                </div>
+                
                 <form onSubmit={handleSave} className="space-y-6 bg-slate-50 p-6 rounded-lg">
                     <h3 className="text-xl font-bold text-slate-800">Style Controls</h3>
                     
