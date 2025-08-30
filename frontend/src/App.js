@@ -13578,6 +13578,22 @@ function App() {
         setSelectedEventDetail(updatedEvent);
     };
 
+    const handleDeleteEvent = (eventId) => {
+        // Remove event from leagueSchedule
+        setLeagueSchedule(prevSchedule => 
+            prevSchedule.filter(event => event.id !== eventId)
+        );
+        
+        // Remove event from teams calendar data
+        setTeams(prevTeams => prevTeams.map(team => ({
+            ...team,
+            calendar: team.calendar?.filter(event => event.id !== eventId) || []
+        })));
+        
+        // Close modal
+        setSelectedEventDetail(null);
+    };
+
     // News system state (team-specific news) 
     const [teamNews, setTeamNews] = useState({}); // Object keyed by teamId
     const [selectedNewsItem, setSelectedNewsItem] = useState(null);
