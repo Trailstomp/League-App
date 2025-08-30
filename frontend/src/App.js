@@ -9688,9 +9688,8 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
                             accept="image/*"
                             currentValue={style.bannerUrl || ''}
                             onChange={(url) => setStyle(prev => ({...prev, bannerUrl: url}))}
-                            placeholder="Upload team banner or enter URL"
-                            enableCrop={true}
-                            cropAspectRatio="16:9"
+                            placeholder="Upload team banner or paste image URL"
+                            enableCrop={false}
                         />
                     </div>
 
