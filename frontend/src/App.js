@@ -3977,7 +3977,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
     
     // Group tournament events by title, date, and location
     const groupedEvents = filteredEvents.reduce((groups, event) => {
-        if (event.type === 'tournament') {
+        if (event.type && event.type.toLowerCase() === 'tournament') {
             const key = `${event.title}-${event.date}-${event.location}`;
             if (!groups[key]) {
                 groups[key] = {
