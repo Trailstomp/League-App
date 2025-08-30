@@ -2310,14 +2310,14 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         window.addEventListener('beforeunload', preventNavigation);
         window.addEventListener('hashchange', preventHashChange, true); // Use capture phase
         
-        // Set pointer events on body to prevent interaction with parent elements
-        const originalPointerEvents = document.body.style.pointerEvents;
-        document.body.style.pointerEvents = 'none';
+        // Use overflow hidden instead of pointer-events to prevent scrolling without blocking interactions
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
         
         return () => {
             window.removeEventListener('beforeunload', preventNavigation);
             window.removeEventListener('hashchange', preventHashChange, true);
-            document.body.style.pointerEvents = originalPointerEvents;
+            document.body.style.overflow = originalOverflow;
         };
     }, []);
 
