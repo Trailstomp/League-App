@@ -2520,10 +2520,27 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle, onNavigat
                         if (!home || !away) return null;
                         
                         return (
-                            <div key={`game-${index}`} className="flex-shrink-0 w-72 rounded-lg p-2 border" style={{ 
-                                backgroundColor: websiteStyle?.tickerItemColor || '#334155',
-                                borderColor: websiteStyle?.tickerBorderColor || '#475569'
-                            }}>
+                            <div 
+                                key={`game-${index}`} 
+                                className="flex-shrink-0 w-72 rounded-lg p-2 border cursor-pointer hover:opacity-90 transition-opacity" 
+                                style={{ 
+                                    backgroundColor: websiteStyle?.tickerItemColor || '#334155',
+                                    borderColor: websiteStyle?.tickerBorderColor || '#475569'
+                                }}
+                                onClick={() => onEventClick && onEventClick({
+                                    id: item.id,
+                                    title: `${home.name} vs ${away.name}`,
+                                    type: 'game',
+                                    date: item.gameDate,
+                                    location: item.location,
+                                    homeTeam: item.homeTeam,
+                                    awayTeam: item.awayTeam,
+                                    homeScore: item.homeScore,
+                                    awayScore: item.awayScore,
+                                    status: item.status
+                                })}
+                                title="Click to view game details"
+                            >
                                 <div className="text-xs mb-1 flex justify-between" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
                                     <span>{item.location}</span>
                                     <span className="font-bold text-xs text-red-400">GAME</span>
