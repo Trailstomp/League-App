@@ -1924,16 +1924,91 @@ const initialGameTickerData = [
 ];
 
 const initialLeagueSchedule = [
-    { date: '2025-09-15', games: [ 
-        { id: 1, home: 'oh10-lacrosse', away: 'american-dads', time: '1:00 PM', location: 'Dayton' },
-        { id: 2, home: 'dayton-eagles', away: 'cincinnati-trash-pandas', time: '2:00 PM', location: 'Dayton' },
-        { id: 3, home: 'indiana-lacers', away: 'american-dads', time: '3:00 PM', location: 'Dayton' },
-    ] },
-    { date: '2025-09-22', games: [ 
-        { id: 6, home: 'indiana-lacers', away: 'oh10-lacrosse', time: '6:00 PM', location: 'Indy' },
-        { id: 7, home: 'indy-sabers', away: 'dayton-eagles', time: '7:00 PM', location: 'Indy' },
-    ] },
-     { date: '2025-08-30', games: [ { id: 8, home: 'columbus-ball-hawgs', away: 'dayton-eagles', time: '7:00 PM', location: 'Columbus' } ] },
+    // Individual events format - current backend provides
+    {
+        id: 'event_game_1',
+        title: 'Thunder Hawks vs Lightning Bolts',
+        type: 'game',
+        date: '2025-09-06',
+        time: '14:00',
+        location: 'Central Sports Complex',
+        homeTeam: 'field-lacrosse',
+        awayTeam: 'box-lacrosse', 
+        homeScore: 0,
+        awayScore: 0,
+        status: 'scheduled',
+        teamId: 'field-lacrosse',
+        teamName: 'Thunder Hawks',
+        description: 'Championship game between Thunder Hawks and Lightning Bolts'
+    },
+    {
+        id: 'event_practice_1',
+        title: 'Thunder Hawks Practice',
+        type: 'practice',
+        date: '2025-09-01',
+        time: '18:00',
+        location: 'Training Field A',
+        teamId: 'field-lacrosse',
+        teamName: 'Thunder Hawks',
+        description: 'Regular team practice session'
+    },
+    {
+        id: 'event_tournament_1',
+        title: 'Spring Championship Tournament',
+        type: 'tournament',
+        date: '2025-09-13',
+        time: '09:00',
+        location: 'Tournament Complex',
+        teamId: 'field-lacrosse',
+        teamName: 'Thunder Hawks',
+        description: 'Annual spring tournament featuring multiple teams',
+        allTeams: [
+            {
+                id: 'field-lacrosse',
+                name: 'Thunder Hawks',
+                logo: 'https://placehold.co/200x200/FF6B35/ffffff?text=TH'
+            },
+            {
+                id: 'box-lacrosse', 
+                name: 'Lightning Bolts',
+                logo: 'https://placehold.co/200x200/FFD23F/000000?text=LB'
+            },
+            {
+                id: 'storm-riders',
+                name: 'Storm Riders', 
+                logo: 'https://placehold.co/200x200/3A86FF/ffffff?text=SR'
+            }
+        ]
+    },
+    // Add another tournament event with same details to test collation
+    {
+        id: 'event_tournament_2',
+        title: 'Spring Championship Tournament',
+        type: 'tournament',
+        date: '2025-09-13',
+        time: '09:00',
+        location: 'Tournament Complex',
+        teamId: 'box-lacrosse',
+        teamName: 'Lightning Bolts',
+        description: 'Annual spring tournament featuring multiple teams',
+        allTeams: [
+            {
+                id: 'field-lacrosse',
+                name: 'Thunder Hawks',
+                logo: 'https://placehold.co/200x200/FF6B35/ffffff?text=TH'
+            },
+            {
+                id: 'box-lacrosse',
+                name: 'Lightning Bolts', 
+                logo: 'https://placehold.co/200x200/FFD23F/000000?text=LB'
+            },
+            {
+                id: 'storm-riders',
+                name: 'Storm Riders',
+                logo: 'https://placehold.co/200x200/3A86FF/ffffff?text=SR'
+            }
+        ]
+    }
 ];
 
 const newsFeed = [
