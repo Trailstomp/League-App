@@ -3635,7 +3635,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                                     }));
                                                 }}
                                                 placeholder="Upload photo or paste URL"
-                                                enableCrop={true}
+                                                enableCrop={false}
                                                 cropAspectRatio="free"
                                             />
                                             <textarea 
@@ -3761,7 +3761,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                                     }));
                                                 }}
                                                 placeholder="Upload thumbnail image"
-                                                enableCrop={true}
+                                                enableCrop={false}
                                                 cropAspectRatio="16:9"
                                             />
                                             <textarea 
@@ -4897,7 +4897,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                         currentValue={editingEvent.imageUrl || ''}
                         onChange={(url) => setEditingEvent(prev => ({...prev, imageUrl: url}))}
                         placeholder="Upload event image"
-                        enableCrop={true}
+                        enableCrop={false}
                         cropAspectRatio="16:9"
                     />
                 </div>
@@ -5047,7 +5047,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                         currentValue={editingEvent.imageUrl || ''}
                         onChange={(url) => setEditingEvent(prev => ({...prev, imageUrl: url}))}
                         placeholder="Upload event image"
-                        enableCrop={true}
+                        enableCrop={false}
                         cropAspectRatio="16:9"
                     />
                 </div>
@@ -5421,7 +5421,7 @@ const ItemForm = ({ editingItem, setEditingItem, onSave, onCancel, itemType, gal
                                         currentValue={itemData.url || ''}
                                         onChange={(url) => setItemData(prev => ({...prev, url: url}))}
                                         placeholder="Upload gallery photo"
-                                        enableCrop={true}
+                                        enableCrop={false}
                                         cropAspectRatio="free"
                                     />
                                 </div>
@@ -6924,7 +6924,7 @@ const GroupMeManager = ({ team, setTeams }) => {
                                     currentValue={groupMeData.image}
                                     onChange={(url) => setGroupMeData(prev => ({...prev, image: url}))}
                                     placeholder="Upload chat group image"
-                                    enableCrop={true}
+                                    enableCrop={false}
                                     cropAspectRatio="1:1"
                                 />
                             </div>
@@ -8912,7 +8912,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                         currentValue={editingPlayer.photo || ''}
                                         onChange={(url) => setEditingPlayer({...editingPlayer, photo: url})}
                                         placeholder="Upload player photo"
-                                        enableCrop={true}
+                                        enableCrop={false}
                                         cropAspectRatio="1:1"
                                     />
                                 </div>
@@ -9095,7 +9095,7 @@ const PlayerForm = ({ initialPlayer, onSave, onCancel, managedTeams, isAdmin }) 
                             currentValue={player.photo || ''}
                             onChange={(url) => setPlayer(prev => ({...prev, photo: url}))}
                             placeholder="Upload player photo"
-                            enableCrop={true}
+                            enableCrop={false}
                             cropAspectRatio="1:1"
                         />
                     </div>
@@ -10221,7 +10221,7 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                             currentValue={style.bannerImage || ''}
                                             onChange={(url) => setStyle(prev => ({...prev, bannerImage: url}))}
                                             placeholder="Upload banner image"
-                                            enableCrop={true}
+                                            enableCrop={false}
                                             cropAspectRatio="16:9"
                                         />
                                     </div>
@@ -10257,7 +10257,7 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                     currentValue={style.bannerLogo || ''}
                                     onChange={(url) => setStyle(prev => ({...prev, bannerLogo: url}))}
                                     placeholder="Upload header logo or enter URL"
-                                    enableCrop={true}
+                                    enableCrop={false}
                                     cropAspectRatio="1:1"
                                 />
                             </div>
@@ -10466,7 +10466,7 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                 currentValue={style.sidebarLogo || ''}
                                 onChange={(url) => setStyle(prev => ({...prev, sidebarLogo: url}))}
                                 placeholder="Upload sidebar logo"
-                                enableCrop={true}
+                                enableCrop={false}
                                 cropAspectRatio="1:1"
                             />
                             <p className="text-xs text-slate-500 mt-1">Logo displayed in top corner of sidebar navigation</p>
@@ -10479,7 +10479,7 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                 currentValue={style.sidebarImage || ''}
                                 onChange={(url) => setStyle(prev => ({...prev, sidebarImage: url}))}
                                 placeholder="Upload sidebar background or enter URL"
-                                enableCrop={true}
+                                enableCrop={false}
                                 cropAspectRatio="free"
                             />
                         </div>
@@ -10554,7 +10554,7 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                     currentValue={style.backgroundImage || ''}
                                     onChange={(url) => setStyle(prev => ({...prev, backgroundImage: url}))}
                                     placeholder="Upload page background or enter URL"
-                                    enableCrop={true}
+                                    enableCrop={false}
                                     cropAspectRatio="free"
                                 />
                             </div>
@@ -10679,7 +10679,7 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
                                 currentValue={style.overlayLogo || ''}
                                 onChange={(url) => setStyle(prev => ({...prev, overlayLogo: url}))}
                                 placeholder="Upload watermark logo or enter URL"
-                                enableCrop={true}
+                                enableCrop={false}
                                 cropAspectRatio="1:1"
                             />
                             <p className="text-xs text-slate-500 mt-1">Appears subtly on all pages</p>
@@ -11210,7 +11210,7 @@ const FriendsManager = ({ friends, setFriends }) => {
                                     currentValue={editingFriend.photo || ''}
                                     onChange={(url) => setEditingFriend({...editingFriend, photo: url})}
                                     placeholder="Upload friend photo"
-                                    enableCrop={true}
+                                    enableCrop={false}
                                     cropAspectRatio="1:1"
                                 />
                             </div>
@@ -11477,7 +11477,7 @@ const SponsorsManager = ({ sponsors, setSponsors }) => {
                                     currentValue={editingSponsor.logo || ''}
                                     onChange={(url) => setEditingSponsor({...editingSponsor, logo: url})}
                                     placeholder="Upload sponsor logo"
-                                    enableCrop={true}
+                                    enableCrop={false}
                                     cropAspectRatio="3:2"
                                 />
                             </div>
