@@ -9606,19 +9606,20 @@ const UserManager = ({ users, setUsers, teams }) => {
     );
 };
 
-const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
-    const [selectedTeamId, setSelectedTeamId] = useState(
-        currentUser.roles.includes('admin') ? teams[0]?.id : currentUser.teamId
-    );
-    const [style, setStyle] = useState({});
+const TeamStyleManager = ({ teams, setTeams, currentUser, teamId }) => {
+    // Use the passed teamId or fall back to user's team
+    const currentTeamId = teamId || currentUser.teamId;
+    const selectedTeam = teams.find(t => t.id === currentTeamId);
+    
+    const [style, setStyle] = useState(selectedTeam?.style || {});
     const [saved, setSaved] = useState(false);
 
-    // Filter teams based on user role
-    const availableTeams = currentUser.roles.includes('admin') 
-        ? teams 
-        : teams.filter(t => t.id === currentUser.teamId);
-
-    const selectedTeam = teams.find(t => t.id === selectedTeamId);
+    // Update style when selectedTeam changes
+    useEffect(() => {
+        if (selectedTeam?.style) {
+            setStyle(selectedTeam.style);
+        }
+    }, [selectedTeam]);
 
     // Initialize style when team changes
     React.useEffect(() => {
