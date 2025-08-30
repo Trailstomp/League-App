@@ -3943,7 +3943,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         (team.calendar || []).map(event => ({
             ...event,
             teamName: team.name,
-            teamLogo: team.logo,
+            teamLogo: team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team',
             teamId: team.id
         }))
     ).sort((a, b) => new Date(a.date) - new Date(b.date));
