@@ -3389,7 +3389,8 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                     <img 
                                         src={team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'} 
                                         alt={team.name} 
-                                        className={`w-full h-full group-hover:scale-110 transition-transform ${getLogoStyle(websiteStyle)} opacity-90`}
+                                        className={`w-full h-full group-hover:scale-110 transition-transform ${getLogoStyle(websiteStyle)}`}
+                                        style={{ opacity: team.style?.logoOpacity || 1 }}
                                     />
                                     {/* Overlay for better contrast */}
                                     <div className="absolute inset-0 bg-black bg-opacity-10"></div>
