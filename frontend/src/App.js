@@ -9227,51 +9227,6 @@ const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam, 
     </div>
     );
 };
-            <h3 className="text-2xl font-bold mb-4">{editingTeam?.id ? 'Edit Team' : 'Add New Team'}</h3>
-            <form onSubmit={handleSave} className="space-y-4">
-                <input 
-                    type="text" 
-                    value={editingTeam?.name || ''} 
-                    onChange={e => handleInputChange('name', e.target.value)} 
-                    placeholder="Team Name" 
-                    className="w-full p-2 border rounded" 
-                    required 
-                    autoFocus
-                />
-                
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Division</label>
-                    <select 
-                        value={editingTeam?.division || 'Field'} 
-                        onChange={e => handleInputChange('division', e.target.value)} 
-                        className="w-full p-2 border rounded" 
-                        required
-                    >
-                        <option value="Field">Field Lacrosse</option>
-                        <option value="Box">Box Lacrosse</option>
-                    </select>
-                </div>
-                
-                <input 
-                    type="email" 
-                    value={editingTeam?.contactEmail || ''} 
-                    onChange={e => handleInputChange('contactEmail', e.target.value)} 
-                    placeholder="Contact Email" 
-                    className="w-full p-2 border rounded" 
-                />
-                
-                <div className="text-sm text-slate-600 bg-blue-50 p-3 rounded">
-                    <strong>Team Logo:</strong> Configure your team logo in the Team Style settings after saving this team.
-                </div>
-                
-                <div className="flex justify-end space-x-2">
-                    <button type="button" onClick={() => setEditingTeam(null)} className="bg-slate-500 text-white px-4 py-2 rounded hover:bg-slate-600">Cancel</button>
-                    <button type="submit" className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900">Save Team</button>
-                </div>
-            </form>
-        </div>
-    </div>
-);
 
 const TeamManager = ({ teams, setTeams, websiteStyle }) => {
     const [editingTeam, setEditingTeam] = useState(null);
