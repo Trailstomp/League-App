@@ -1985,7 +1985,7 @@ const initialLeagueSchedule = [
         id: 'event_tournament_2',
         title: 'Spring Championship Tournament',
         type: 'tournament',
-        date: '2025-09-13',
+        date: '2025-12-13',
         time: '09:00',
         location: 'Tournament Complex',
         teamId: 'box-lacrosse',
