@@ -7254,6 +7254,7 @@ const TeamInfoManager = ({ team, setTeams }) => {
 const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, setPlayers, setTeams, websiteStyle, playMusic, stopAllMusic, musicState, getTeamNewsItems, addTeamNewsItem, updateTeamNewsItem, deleteTeamNewsItem, setSelectedNewsItem, friends, sponsors }) => {
     const team = teams.find(t => t.id === teamId);
     const teamPlayers = players.filter(p => p.teams.includes(teamId) && p.active);
+    const teamNewsItems = getTeamNewsItems(teamId);
     const [activeTab, setActiveTab] = useState('home');
     const [selectedPlayer, setSelectedPlayer] = useState(null);
     const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
