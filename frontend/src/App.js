@@ -4649,7 +4649,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                         className="p-3 border border-slate-300 rounded-md shadow-sm"
                     >
                         <option value="all">All Teams</option>
-                        {teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name)).map(team => 
+                        {(teams || []).filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name)).map(team => 
                             <option key={team.id} value={team.id}>{team.name}</option>
                         )}
                     </select>
