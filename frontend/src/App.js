@@ -4547,7 +4547,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                     name: team?.name || 'Unknown Team',
                     logo: team?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
                 };
-            }) : []
+            }).filter(team => team && team.name) : []
         };
     }).sort((a, b) => new Date(a.date) - new Date(b.date));
 
