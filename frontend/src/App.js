@@ -4648,7 +4648,10 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                     participants: 0
                 };
             }
-            // Add unique teams to the tournament
+            // Add unique teams to the tournament - ensure allTeams is always an array
+            if (!groups[key].allTeams) {
+                groups[key].allTeams = [];
+            }
             if (event.teamId && !groups[key].allTeams.find(t => t.id === event.teamId)) {
                 groups[key].allTeams.push({
                     id: event.teamId,
