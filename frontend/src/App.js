@@ -2012,7 +2012,7 @@ const PlayerCardModal = ({ player, teamStyle, teams, isOpen, onClose }) => {
                     {primaryTeam && (
                         <div className="absolute top-4 left-4 w-16 h-16 bg-white rounded-full border-4 border-white shadow-lg flex items-center justify-center">
                             <img 
-                                src={primaryTeam.logo} 
+                                src={primaryTeam.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'} 
                                 alt={primaryTeam.name}
                                 className="w-12 h-12 rounded-full object-contain"
                             />
