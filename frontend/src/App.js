@@ -14766,6 +14766,7 @@ function App() {
                     teams={teams}
                     currentUser={currentUser}
                     onUpdateEvent={handleUpdateEvent}
+                    onDeleteEvent={handleDeleteEvent}
                 />
             )}
         </div>
