@@ -3380,7 +3380,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                     backgroundImage: `linear-gradient(45deg, ${team.style?.primaryColor || '#dc2626'} 0%, ${team.style?.backgroundColor || '#ffffff'} 100%)`
                                 }}>
                                     <img 
-                                        src={team.logo} 
+                                        src={team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'} 
                                         alt={team.name} 
                                         className={`w-full h-full group-hover:scale-110 transition-transform ${getLogoStyle(websiteStyle)} opacity-90`}
                                     />
