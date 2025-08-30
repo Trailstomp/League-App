@@ -2059,7 +2059,7 @@ const PlayerCardModal = ({ player, teamStyle, teams, isOpen, onClose }) => {
                                             className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm flex items-center"
                                         >
                                             <img 
-                                                src={team.logo} 
+                                                src={team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'} 
                                                 alt={team.name}
                                                 className="w-4 h-4 rounded-full object-contain mr-2"
                                             />
