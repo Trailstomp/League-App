@@ -4591,11 +4591,12 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
     const displayEvents = filteredEvents;
 
     // Filter schedule - leagueSchedule is an array of days with games
-    const filteredSchedule = leagueSchedule ? leagueSchedule.map(day => {
+    const filteredSchedule = (leagueSchedule || []).map(day => {
+        if (!day || !day.games) return null;
         if (selectedTeamSchedule === 'all') return day;
-        const games = day.games.filter(g => g.home === selectedTeamSchedule || g.away === selectedTeamSchedule);
+        const games = day.games.filter(g => g && (g.home === selectedTeamSchedule || g.away === selectedTeamSchedule));
         return { ...day, games };
-    }).filter(day => day.games.length > 0) : [];
+    }).filter(day => day && day.games && day.games.length > 0);
     
     return (
         <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
