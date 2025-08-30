@@ -4593,6 +4593,46 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         .filter(event => selectedTeamSchedule === 'all' || event.teamId === selectedTeamSchedule)
         .filter(event => eventTypeFilters[event.type || 'other']);
     
+    // Group tournament events by title, date, and location
+    const groupedEvents = filteredEvents.reduce((groups, event) => {
+        if (event.type && event.type.toLowerCase() === 'tournament') {
+            const key = `${event.title}-${event.date}-${event.location || 'no-location'}`;
+            if (!groups[key]) {
+                groups[key] = {
+                    ...event,
+                    allTeams: [],
+                    participants: 0
+                };
+            }
+            // Add unique teams to the tournament
+            if (event.teamId && !groups[key].allTeams.find(t => t.id === event.teamId)) {
+                groups[key].allTeams.push({
+                    id: event.teamId,
+                    name: event.teamName,
+                    logo: event.teamLogo
+                });
+            }
+            groups[key].participants = groups[key].allTeams.length;
+        }
+        return groups;
+    }, {});
+
+    // Create display events list combining individual and grouped events
+    const displayEvents = [];
+    const processedTournamentKeys = new Set();
+    
+    filteredEvents.forEach(event => {
+        if (event.type && event.type.toLowerCase() === 'tournament') {
+            const key = `${event.title}-${event.date}-${event.location || 'no-location'}`;
+            if (!processedTournamentKeys.has(key)) {
+                displayEvents.push(groupedEvents[key]);
+                processedTournamentKeys.add(key);
+            }
+        } else {
+            displayEvents.push(event);
+        }
+    });
+    
     // Memoized handler for event type filter changes
     const handleEventTypeToggle = useCallback((eventType) => {
         setEventTypeFilters(prev => ({
@@ -4606,9 +4646,6 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         const types = new Set(allEvents.map(event => event.type || 'other'));
         return Array.from(types).sort();
     }, [allEvents]);
-    
-    // For tournaments, we already have all teams in allTeams, so just use filteredEvents directly
-    const displayEvents = filteredEvents;
 
     // Filter schedule - leagueSchedule is an array of days with games
     const filteredSchedule = (leagueSchedule || []).map(day => {
