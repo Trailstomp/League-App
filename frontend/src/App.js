@@ -9677,9 +9677,8 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
                             accept="image/*"
                             currentValue={style.logoUrl || ''}
                             onChange={(url) => setStyle(prev => ({...prev, logoUrl: url}))}
-                            placeholder="Upload team logo"
-                            enableCrop={true}
-                            cropAspectRatio="1:1"
+                            placeholder="Upload team logo or paste image URL"
+                            enableCrop={false}
                         />
                     </div>
 
