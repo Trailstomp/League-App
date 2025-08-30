@@ -4701,7 +4701,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                     </h2>
                     <div className="space-y-4">
                         {displayEvents.length > 0 ? displayEvents.slice(0, 10).map(event => {
-                            if (event.teams) {
+                            if (event.allTeams && event.allTeams.length > 1) {
                                 // Tournament summary card
                                 return (
                                     <div 
@@ -4729,10 +4729,10 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                                     <img src={event.imageUrl} alt="Tournament" className="w-full h-32 object-cover rounded-lg mb-3" />
                                                 )}
                                                 <div className="mb-2">
-                                                    <span className="text-sm font-semibold text-slate-700">Participating Teams ({event.teams.length}):</span>
+                                                    <span className="text-sm font-semibold text-slate-700">Participating Teams ({event.allTeams.length}):</span>
                                                 </div>
                                                 <div className="flex flex-wrap gap-2 mb-3">
-                                                    {event.teams.sort((a, b) => a.name.localeCompare(b.name)).map((team, index) => (
+                                                    {event.allTeams.sort((a, b) => a.name.localeCompare(b.name)).map((team, index) => (
                                                         <button
                                                             key={`${team.id}-${index}`}
                                                             onClick={(e) => {
@@ -4741,7 +4741,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                                             }}
                                                             className="flex items-center gap-1 bg-white px-2 py-1 rounded-full text-xs hover:shadow-md transition-shadow"
                                                         >
-                                                            <img src={team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'} alt={team.name} className="w-4 h-4 rounded-full" />
+                                                            <img src={team.logo} alt={team.name} className="w-4 h-4 rounded-full" />
                                                             <span className="text-slate-700">{team.name}</span>
                                                         </button>
                                                     ))}
