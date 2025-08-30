@@ -986,7 +986,7 @@ const EventDetailModal = ({ event, onClose, activeTab, setActiveTab, teams, curr
                 {/* Tab Content */}
                 <div className="flex-1 overflow-y-auto p-6">
                     {activeTab === 'details' && (
-                        <EventDetailsTab event={event} isAuthorized={isAuthorized} onUpdateEvent={onUpdateEvent} />
+                        <EventDetailsTab event={event} isAuthorized={isAuthorized} onUpdateEvent={onUpdateEvent} onDeleteEvent={onDeleteEvent} currentUser={currentUser} />
                     )}
                     {activeTab === 'scores' && (
                         <EventScoresTab event={event} teams={teams} isAuthorized={isAuthorized} onUpdateEvent={onUpdateEvent} />
