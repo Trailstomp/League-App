@@ -1023,13 +1023,21 @@ const TabButton = ({ label, tabKey, activeTab, setActiveTab }) => (
 // === EVENT DETAIL TAB COMPONENTS ===
 
 // Details Tab
-const EventDetailsTab = ({ event, isAuthorized, onUpdateEvent }) => {
+const EventDetailsTab = ({ event, isAuthorized, onUpdateEvent, onDeleteEvent }) => {
     const [editing, setEditing] = useState(false);
     const [formData, setFormData] = useState(event);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     
     const handleSave = () => {
         onUpdateEvent(formData);
         setEditing(false);
+    };
+    
+    const handleDelete = () => {
+        if (onDeleteEvent) {
+            onDeleteEvent(event.id);
+        }
+        setShowDeleteConfirm(false);
     };
     
     return (
