@@ -903,8 +903,7 @@ test_plan:
     - "Event notification system (text/email)"
     - "Advanced recurring events"
     - "Project redeployment with new name: League Management App"
-  stuck_tasks:
-    - "Complete Event Detail Modal integration with calendar events"
+  stuck_tasks: []
   test_all: false
   test_priority: "stuck_first"
   backend_testing_complete: true
