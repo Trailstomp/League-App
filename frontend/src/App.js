@@ -1557,29 +1557,135 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
                         >
                             Generate Bracket
                         </button>
+                        {bracketData.rounds.length > 0 && (
+                            <button
+                                onClick={() => setBracketData({...bracketData, rounds: []})}
+                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                            >
+                                Reset Bracket
+                            </button>
+                        )}
                     </div>
                 )}
             </div>
             
-            {/* Team Selection */}
+            {/* Bracket Settings */}
+            {isAuthorized && bracketData.rounds.length === 0 && (
+                <div className="bg-gray-50 p-6 rounded-lg">
+                    <h4 className="font-semibold mb-4">🏆 Bracket Configuration</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Tournament Format</label>
+                            <select
+                                value={bracketSettings.format}
+                                onChange={(e) => setBracketSettings({...bracketSettings, format: e.target.value})}
+                                className="w-full p-2 border rounded-md"
+                            >
+                                <option value="single-elimination">Single Elimination</option>
+                                <option value="double-elimination">Double Elimination</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Seeding Method</label>
+                            <select
+                                value={bracketSettings.seedingMethod}
+                                onChange={(e) => setBracketSettings({...bracketSettings, seedingMethod: e.target.value})}
+                                className="w-full p-2 border rounded-md"
+                            >
+                                <option value="manual">Manual Placement</option>
+                                <option value="ranking">By Team Ranking</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Minimum Games per Team</label>
+                            <input
+                                type="number"
+                                min="1"
+                                max="5"
+                                value={bracketSettings.minGames}
+                                onChange={(e) => setBracketSettings({...bracketSettings, minGames: parseInt(e.target.value)})}
+                                className="w-full p-2 border rounded-md"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="flex items-center space-x-2">
+                                <input
+                                    type="checkbox"
+                                    checked={bracketSettings.firstPlaceBye}
+                                    onChange={(e) => setBracketSettings({...bracketSettings, firstPlaceBye: e.target.checked})}
+                                    className="rounded"
+                                />
+                                <span className="text-sm font-medium text-gray-700">First Place Team Gets Bye</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div className="text-xs text-gray-600 mb-4">
+                        <p><strong>Single Elimination:</strong> Teams eliminated after one loss</p>
+                        <p><strong>Double Elimination:</strong> Teams have two chances (winners & losers bracket)</p>
+                        <p><strong>First Place Bye:</strong> Top seeded team automatically advances to later round</p>
+                    </div>
+                </div>
+            )}
+
+            {/* Team Selection and Management */}
             {isAuthorized && bracketData.rounds.length === 0 && (
                 <div className="bg-blue-50 p-6 rounded-lg">
-                    <h4 className="font-semibold mb-4">Add Teams to Tournament</h4>
+                    <h4 className="font-semibold mb-4">Team Selection & Seeding</h4>
+                    
+                    {bracketSettings.seedingMethod === 'ranking' && (
+                        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                            <p className="text-sm text-yellow-800">
+                                <strong>Ranking Mode:</strong> Teams will be seeded by their current standings/ranking. 
+                                Make sure team rankings are up to date before generating the bracket.
+                            </p>
+                        </div>
+                    )}
+                    
                     <div className="flex flex-wrap gap-2 mb-4">
                         {teams.map(team => (
                             <button
                                 key={team.id}
                                 onClick={() => addTeamToBracket(team.id)}
                                 disabled={bracketData.teams.find(t => t.id === team.id)}
-                                className="px-3 py-2 bg-white border rounded hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400"
+                                className="px-3 py-2 bg-white border rounded hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 flex items-center gap-2"
                             >
                                 {team.name}
+                                {bracketSettings.seedingMethod === 'ranking' && (
+                                    <span className="text-xs text-gray-500">#{team.ranking || '?'}</span>
+                                )}
                             </button>
                         ))}
                     </div>
-                    <div className="text-sm text-gray-600">
-                        Selected Teams ({bracketData.teams.length}): {bracketData.teams.map(t => t.name).join(', ')}
-                    </div>
+                    
+                    {/* Selected Teams Display */}
+                    {bracketData.teams.length > 0 && (
+                        <div className="mt-4">
+                            <h5 className="font-medium mb-2">Selected Teams ({bracketData.teams.length}):</h5>
+                            <div className="flex flex-wrap gap-2">
+                                {bracketData.teams.map((team, index) => (
+                                    <div key={team.id} className="bg-white px-3 py-1 rounded border flex items-center gap-2">
+                                        <span className="text-sm font-medium">#{index + 1}</span>
+                                        <span>{team.name}</span>
+                                        <button
+                                            onClick={() => {
+                                                setBracketData({
+                                                    ...bracketData,
+                                                    teams: bracketData.teams.filter(t => t.id !== team.id)
+                                                });
+                                            }}
+                                            className="text-red-500 hover:text-red-700 text-xs"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
             
