@@ -9735,6 +9735,69 @@ const TeamStyleManager = ({ teams, setTeams, currentUser, teamId }) => {
 
                     {/* === TEAM BACKGROUND IMAGE === */}
                     <div className="border-t border-slate-300 pt-4">
+                        <label className="block font-semibold text-slate-700 mb-3">Page Background</label>
+                        
+                        {/* Background Type Selection */}
+                        <div className="mb-4">
+                            <div className="space-y-2">
+                                <label className="flex items-center space-x-2 border rounded p-3 cursor-pointer hover:bg-slate-50">
+                                    <input 
+                                        type="radio" 
+                                        name="backgroundType" 
+                                        value="color" 
+                                        checked={(style.backgroundType || 'color') === 'color'}
+                                        onChange={(e) => setStyle(prev => ({...prev, backgroundType: e.target.value}))} 
+                                        className="text-blue-600"
+                                    />
+                                    <div>
+                                        <div className="font-medium">Background Color</div>
+                                        <div className="text-xs text-slate-500">Use solid color background</div>
+                                    </div>
+                                </label>
+                                
+                                <label className="flex items-center space-x-2 border rounded p-3 cursor-pointer hover:bg-slate-50">
+                                    <input 
+                                        type="radio" 
+                                        name="backgroundType" 
+                                        value="image" 
+                                        checked={(style.backgroundType || 'color') === 'image'}
+                                        onChange={(e) => setStyle(prev => ({...prev, backgroundType: e.target.value}))} 
+                                        className="text-blue-600"
+                                    />
+                                    <div>
+                                        <div className="font-medium">Background Image</div>
+                                        <div className="text-xs text-slate-500">Use custom background image</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Background Color Option */}
+                        {(!style.backgroundType || style.backgroundType === 'color') && (
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
+                                <div className="relative">
+                                    <div 
+                                        className="w-full h-12 border rounded-lg cursor-pointer flex items-center px-3"
+                                        style={{ backgroundColor: style.backgroundColor || '#fef2f2' }}
+                                    >
+                                        <span className="text-slate-700 font-semibold text-xs bg-white bg-opacity-75 px-2 py-1 rounded">
+                                            Background
+                                        </span>
+                                    </div>
+                                    <input 
+                                        type="color" 
+                                        value={style.backgroundColor || '#fef2f2'}
+                                        onChange={(e) => setStyle(prev => ({...prev, backgroundColor: e.target.value}))}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Background Image Option */}
+                        {style.backgroundType === 'image' && (
+                            <>
                         <FileUploadInput
                             label="Team Page Background Image"
                             accept="image/*"
@@ -9761,8 +9824,11 @@ const TeamStyleManager = ({ teams, setTeams, currentUser, teamId }) => {
                                 />
                             </div>
                         )}
+                            </>
+                        )}
                         
-                        {/* Background Display Mode */}
+                        {/* Background Display Mode - only show for images */}
+                        {style.backgroundType === 'image' && style.pageBackgroundImage && (
                         <div className="mt-4">
                             <label className="block font-semibold text-slate-700 mb-2">Background Display Mode</label>
                             <div className="space-y-2">
