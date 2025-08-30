@@ -13123,13 +13123,13 @@ function App() {
         loadNewsData();
     }, []);
 
-    // Save news items when they change
+    // Save team news when they change
     useEffect(() => { 
-        if (!newsLoading && newsItems.length > 0) {
-            apiService.updateSpecificData('newsItems', newsItems);
-            setStoredData('mlbl_newsItems', newsItems);
+        if (!newsLoading && Object.keys(teamNews).length > 0) {
+            apiService.updateSpecificData('teamNews', teamNews);
+            setStoredData('mlbl_teamNews', teamNews);
         }
-    }, [newsItems, newsLoading]);
+    }, [teamNews, newsLoading]);
 
     // Sidebar collapsible sections state
     const [sidebarSections, setSidebarSections] = useState({
