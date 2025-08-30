@@ -4740,7 +4740,11 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                             } else {
                                 // Regular event card
                                 return (
-                                    <div key={`${event.teamId}-${event.id}`} className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                                    <div 
+                                        key={`${event.teamId}-${event.id}`} 
+                                        className="bg-blue-50 rounded-lg p-4 border border-blue-200 cursor-pointer hover:border-blue-300 hover:shadow-md transition-all duration-200"
+                                        onClick={() => handleEventClick(event)}
+                                    >
                                         <div className="flex items-start justify-between">
                                             <div className="flex-grow">
                                                 <button onClick={() => onTeamClick(event.teamId)} className="flex items-center gap-2 mb-2 hover:opacity-80">
