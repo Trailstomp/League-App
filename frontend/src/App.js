@@ -9675,7 +9675,7 @@ const TeamStyleManager = ({ teams, setTeams, currentUser }) => {
                         <FileUploadInput
                             label="Team Logo"
                             accept="image/*"
-                            currentValue={style.logoUrl || selectedTeam.logo || ''}
+                            currentValue={style.logoUrl || ''}
                             onChange={(url) => setStyle(prev => ({...prev, logoUrl: url}))}
                             placeholder="Upload team logo"
                             enableCrop={true}
