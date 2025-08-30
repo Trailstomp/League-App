@@ -2547,7 +2547,7 @@ const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle, onNavigat
                                 </div>
                                 <div className="space-y-1 mb-2">
                                     <div className="flex items-center justify-between text-sm">
-                                        <button onClick={() => onTeamClick(home.id)} className="flex items-center gap-2 hover:opacity-80">
+                                        <button onClick={(e) => { e.stopPropagation(); onTeamClick(home.id); }} className="flex items-center gap-2 hover:opacity-80">
                                             <img src={home.logo} alt={home.name} className="w-6 h-6 rounded-full bg-white p-0.5 object-contain" />
                                             <span className="font-medium text-white">{home.name}</span>
                                         </button>
