@@ -4528,49 +4528,65 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
     const getTeam = (id) => (teams || []).find(t => t.id === id);
     const isAdmin = currentUser && currentUser.roles && currentUser.roles.includes('admin');
     
-    // Get all events from leagueSchedule (which has structure: [{date, games: []}]) and enrich with team data
-    console.log('EventsPage - leagueSchedule:', leagueSchedule);
-    const allEvents = (leagueSchedule || []).flatMap(day => {
-        console.log('Processing day:', day);
-        return (day && day.games ? day.games : []).map(game => {
-            // Convert game to event format - add safety check for game object
-            if (!game) return null;
-            const homeTeam = (teams || []).find(t => t.id === game.home);
-            const awayTeam = (teams || []).find(t => t.id === game.away);
+    // Get all events from leagueSchedule - handle both formats: [{date, games: []}] and direct events
+    const allEvents = (leagueSchedule || []).flatMap(item => {
+        // Check if this is the old format (day with games) or new format (direct event)
+        if (item.games && Array.isArray(item.games)) {
+            // Old format: {date, games: []}
+            return item.games.map(game => {
+                if (!game) return null;
+                const homeTeam = (teams || []).find(t => t.id === game.home);
+                const awayTeam = (teams || []).find(t => t.id === game.away);
+                
+                return {
+                    id: game.id,
+                    title: `${homeTeam?.name || 'Home Team'} vs ${awayTeam?.name || 'Away Team'}`,
+                    type: 'game',
+                    date: item.date,
+                    time: game.time,
+                    location: game.location,
+                    homeTeam: game.home,
+                    awayTeam: game.away,
+                    homeScore: game.homeScore || 0,
+                    awayScore: game.awayScore || 0,
+                    status: game.status || 'scheduled',
+                    teamName: homeTeam?.name || 'Unknown Team',
+                    teamLogo: homeTeam?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team',
+                    teamId: game.home,
+                    allTeams: [
+                        {
+                            id: game.home,
+                            name: homeTeam?.name || 'Home Team',
+                            logo: homeTeam?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
+                        },
+                        {
+                            id: game.away,
+                            name: awayTeam?.name || 'Away Team', 
+                            logo: awayTeam?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
+                        }
+                    ].filter(team => team && team.name)
+                };
+            });
+        } else {
+            // New format: direct event object {id, type, title, date, time, ...}
+            if (!item || !item.id) return null;
             
+            // For events that already have complete data, use them directly
             return {
-                id: game.id,
-                title: `${homeTeam?.name || 'Home Team'} vs ${awayTeam?.name || 'Away Team'}`,
-                type: 'game',
-                date: day.date,
-                time: game.time,
-                location: game.location,
-                homeTeam: game.home,
-                awayTeam: game.away,
-                homeScore: game.homeScore || 0,
-                awayScore: game.awayScore || 0,
-                status: game.status || 'scheduled',
-                teamName: homeTeam?.name || 'Unknown Team',
-                teamLogo: homeTeam?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team',
-                teamId: game.home,
-                // For games, store both team info
-                allTeams: [
-                    {
-                        id: game.home,
-                        name: homeTeam?.name || 'Home Team',
-                        logo: homeTeam?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
-                    },
-                    {
-                        id: game.away,
-                        name: awayTeam?.name || 'Away Team', 
-                        logo: awayTeam?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
-                    }
-                ].filter(team => team && team.name)
+                id: item.id,
+                title: item.title,
+                type: item.type || 'event',
+                date: item.date,
+                time: item.time,
+                location: item.location,
+                description: item.description,
+                teamId: item.teamId,
+                teamName: item.teamName || 'League Event',
+                teamLogo: item.teamLogo || 'https://placehold.co/200x200/cccccc/666666?text=Event',
+                allTeams: item.allTeams || []
             };
-        })
+        }
     }).filter(event => event !== null).sort((a, b) => new Date(a.date) - new Date(b.date));
-    
-    console.log('EventsPage - allEvents:', allEvents);
 
     // Filter events by team and type
     const filteredEvents = allEvents
