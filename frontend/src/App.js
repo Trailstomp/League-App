@@ -9645,7 +9645,7 @@ const TeamStyleManager = ({ teams, setTeams, currentUser, teamId }) => {
     const handleSave = (e) => {
         e.preventDefault();
         setTeams(prevTeams => prevTeams.map(team => 
-            team.id === selectedTeamId ? { ...team, style } : team
+            team.id === currentTeamId ? { ...team, style } : team
         ));
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
