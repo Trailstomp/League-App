@@ -1120,6 +1120,32 @@ const EventDetailsTab = ({ event, isAuthorized, onUpdateEvent, onDeleteEvent, cu
                     )}
                 </div>
             )}
+            
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[110]">
+                    <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+                        <h3 className="text-lg font-semibold text-red-600 mb-4">Delete Event</h3>
+                        <p className="text-gray-700 mb-6">
+                            Are you sure you want to delete "{event.title}"? This action cannot be undone.
+                        </p>
+                        <div className="flex justify-end space-x-3">
+                            <button
+                                onClick={() => setShowDeleteConfirm(false)}
+                                className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDelete}
+                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                            >
+                                Delete Event
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
