@@ -922,6 +922,588 @@ const getLogoStyle = (websiteStyle) => {
            'object-fill';
 };
 
+// === EVENT DETAIL MODAL COMPONENT ===
+const EventDetailModal = ({ event, onClose, activeTab, setActiveTab, teams, currentUser, onUpdateEvent }) => {
+    if (!event) return null;
+    
+    const isAuthorized = currentUser && (
+        hasPermission(currentUser, 'system.admin_access') ||
+        (event.teamId && currentUser.teamId === event.teamId)
+    );
+    
+    const getEventStatusColor = (status) => {
+        switch(status) {
+            case 'scheduled': return 'bg-blue-100 text-blue-800';
+            case 'live': return 'bg-green-100 text-green-800';
+            case 'completed': return 'bg-gray-100 text-gray-800';
+            default: return 'bg-blue-100 text-blue-800';
+        }
+    };
+    
+    const eventStatus = event.status || 'scheduled';
+    
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]" onClick={onClose}>
+            <div className="bg-white rounded-lg max-w-6xl max-h-[90vh] w-full mx-4 flex flex-col" onClick={e => e.stopPropagation()}>
+                {/* Modal Header */}
+                <div className="p-6 border-b bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-t-lg">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <div className="flex items-center space-x-3 mb-2">
+                                <h2 className="text-2xl font-bold">{event.title}</h2>
+                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getEventStatusColor(eventStatus)}`}>
+                                    {eventStatus.charAt(0).toUpperCase() + eventStatus.slice(1)}
+                                </span>
+                            </div>
+                            <div className="flex items-center space-x-4 text-blue-100">
+                                <span>📅 {new Date(event.date).toLocaleDateString()}</span>
+                                {event.time && <span>⏰ {event.time}</span>}
+                                {event.location && <span>📍 {event.location}</span>}
+                                <span className="capitalize">🏷️ {event.type}</span>
+                            </div>
+                        </div>
+                        <button onClick={onClose} className="text-white hover:text-gray-300">
+                            <X size={24} />
+                        </button>
+                    </div>
+                </div>
+                
+                {/* Tab Navigation */}
+                <div className="border-b bg-gray-50">
+                    <div className="flex space-x-0">
+                        <TabButton label="Details" tabKey="details" activeTab={activeTab} setActiveTab={setActiveTab} />
+                        {(event.type === 'game' || event.type === 'tournament') && (
+                            <TabButton label="Scores & Results" tabKey="scores" activeTab={activeTab} setActiveTab={setActiveTab} />
+                        )}
+                        <TabButton label="Stats" tabKey="stats" activeTab={activeTab} setActiveTab={setActiveTab} />
+                        <TabButton label="Attendance" tabKey="attendance" activeTab={activeTab} setActiveTab={setActiveTab} />
+                        {event.type === 'tournament' && (
+                            <TabButton label="Bracket" tabKey="bracket" activeTab={activeTab} setActiveTab={setActiveTab} />
+                        )}
+                    </div>
+                </div>
+                
+                {/* Tab Content */}
+                <div className="flex-1 overflow-y-auto p-6">
+                    {activeTab === 'details' && (
+                        <EventDetailsTab event={event} isAuthorized={isAuthorized} onUpdateEvent={onUpdateEvent} />
+                    )}
+                    {activeTab === 'scores' && (
+                        <EventScoresTab event={event} teams={teams} isAuthorized={isAuthorized} onUpdateEvent={onUpdateEvent} />
+                    )}
+                    {activeTab === 'stats' && (
+                        <EventStatsTab event={event} teams={teams} isAuthorized={isAuthorized} onUpdateEvent={onUpdateEvent} />
+                    )}
+                    {activeTab === 'attendance' && (
+                        <EventAttendanceTab event={event} teams={teams} isAuthorized={isAuthorized} onUpdateEvent={onUpdateEvent} />
+                    )}
+                    {activeTab === 'bracket' && event.type === 'tournament' && (
+                        <TournamentBracketTab event={event} teams={teams} isAuthorized={isAuthorized} onUpdateEvent={onUpdateEvent} />
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Tab Button Component
+const TabButton = ({ label, tabKey, activeTab, setActiveTab }) => (
+    <button
+        onClick={() => setActiveTab(tabKey)}
+        className={`px-6 py-3 font-medium border-b-2 transition-colors ${
+            activeTab === tabKey
+                ? 'border-blue-500 text-blue-600 bg-white'
+                : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+        }`}
+    >
+        {label}
+    </button>
+);
+
+// === EVENT DETAIL TAB COMPONENTS ===
+
+// Details Tab
+const EventDetailsTab = ({ event, isAuthorized, onUpdateEvent }) => {
+    const [editing, setEditing] = useState(false);
+    const [formData, setFormData] = useState(event);
+    
+    const handleSave = () => {
+        onUpdateEvent(formData);
+        setEditing(false);
+    };
+    
+    return (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <h3 className="text-xl font-semibold text-gray-800">Event Details</h3>
+                {isAuthorized && (
+                    <button
+                        onClick={() => editing ? handleSave() : setEditing(true)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    >
+                        {editing ? 'Save Changes' : 'Edit Details'}
+                    </button>
+                )}
+            </div>
+            
+            {editing ? (
+                <div className="space-y-4 bg-gray-50 p-6 rounded-lg">
+                    <input
+                        type="text"
+                        value={formData.title}
+                        onChange={(e) => setFormData({...formData, title: e.target.value})}
+                        className="w-full p-3 border rounded"
+                        placeholder="Event Title"
+                    />
+                    <div className="grid grid-cols-2 gap-4">
+                        <input
+                            type="date"
+                            value={formData.date}
+                            onChange={(e) => setFormData({...formData, date: e.target.value})}
+                            className="w-full p-3 border rounded"
+                        />
+                        <input
+                            type="time"
+                            value={formData.time || ''}
+                            onChange={(e) => setFormData({...formData, time: e.target.value})}
+                            className="w-full p-3 border rounded"
+                        />
+                    </div>
+                    <input
+                        type="text"
+                        value={formData.location || ''}
+                        onChange={(e) => setFormData({...formData, location: e.target.value})}
+                        className="w-full p-3 border rounded"
+                        placeholder="Location"
+                    />
+                    <textarea
+                        value={formData.description || ''}
+                        onChange={(e) => setFormData({...formData, description: e.target.value})}
+                        className="w-full p-3 border rounded h-32"
+                        placeholder="Event Description"
+                    />
+                    
+                    <div className="flex space-x-2">
+                        <button onClick={handleSave} className="px-4 py-2 bg-green-600 text-white rounded">
+                            Save
+                        </button>
+                        <button onClick={() => setEditing(false)} className="px-4 py-2 bg-gray-600 text-white rounded">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            ) : (
+                <div className="bg-white border rounded-lg p-6 space-y-4">
+                    <div><strong>Description:</strong> {event.description || 'No description provided'}</div>
+                    <div><strong>Type:</strong> <span className="capitalize">{event.type}</span></div>
+                    <div><strong>Status:</strong> <span className="capitalize">{event.status || 'scheduled'}</span></div>
+                    {event.tournamentName && (
+                        <div><strong>Tournament:</strong> {event.tournamentName}</div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
+
+// Scores Tab  
+const EventScoresTab = ({ event, teams, isAuthorized, onUpdateEvent }) => {
+    const [editing, setEditing] = useState(false);
+    const [scores, setScores] = useState({
+        homeTeam: event.homeTeam || '',
+        awayTeam: event.awayTeam || '', 
+        homeScore: event.homeScore || 0,
+        awayScore: event.awayScore || 0,
+        status: event.status || 'scheduled'
+    });
+    
+    const handleSave = () => {
+        onUpdateEvent({...event, ...scores});
+        setEditing(false);
+    };
+    
+    return (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <h3 className="text-xl font-semibold text-gray-800">Scores & Results</h3>
+                {isAuthorized && (
+                    <button
+                        onClick={() => editing ? handleSave() : setEditing(true)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    >
+                        {editing ? 'Save Scores' : 'Edit Scores'}
+                    </button>
+                )}
+            </div>
+            
+            {editing ? (
+                <div className="bg-gray-50 p-6 rounded-lg space-y-6">
+                    <div className="grid grid-cols-2 gap-6">
+                        <div>
+                            <label className="block font-medium mb-2">Home Team</label>
+                            <select
+                                value={scores.homeTeam}
+                                onChange={(e) => setScores({...scores, homeTeam: e.target.value})}
+                                className="w-full p-3 border rounded"
+                            >
+                                <option value="">Select Team</option>
+                                {teams.map(team => (
+                                    <option key={team.id} value={team.id}>{team.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block font-medium mb-2">Away Team</label>
+                            <select
+                                value={scores.awayTeam}
+                                onChange={(e) => setScores({...scores, awayTeam: e.target.value})}
+                                className="w-full p-3 border rounded"
+                            >
+                                <option value="">Select Team</option>
+                                {teams.map(team => (
+                                    <option key={team.id} value={team.id}>{team.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-6">
+                        <div>
+                            <label className="block font-medium mb-2">Home Score</label>
+                            <input
+                                type="number"
+                                value={scores.homeScore}
+                                onChange={(e) => setScores({...scores, homeScore: parseInt(e.target.value) || 0})}
+                                className="w-full p-3 border rounded text-2xl text-center"
+                                min="0"
+                            />
+                        </div>
+                        <div>
+                            <label className="block font-medium mb-2">Away Score</label>
+                            <input
+                                type="number"
+                                value={scores.awayScore}
+                                onChange={(e) => setScores({...scores, awayScore: parseInt(e.target.value) || 0})}
+                                className="w-full p-3 border rounded text-2xl text-center"
+                                min="0"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label className="block font-medium mb-2">Game Status</label>
+                        <select
+                            value={scores.status}
+                            onChange={(e) => setScores({...scores, status: e.target.value})}
+                            className="w-full p-3 border rounded"
+                        >
+                            <option value="scheduled">Scheduled</option>
+                            <option value="live">Live</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    
+                    <div className="flex space-x-2">
+                        <button onClick={handleSave} className="px-4 py-2 bg-green-600 text-white rounded">
+                            Save Scores
+                        </button>
+                        <button onClick={() => setEditing(false)} className="px-4 py-2 bg-gray-600 text-white rounded">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            ) : (
+                <div className="bg-white border rounded-lg p-6">
+                    {event.homeTeam && event.awayTeam ? (
+                        <div className="text-center">
+                            <div className="flex justify-center items-center space-x-8 mb-4">
+                                <div className="text-center">
+                                    <div className="font-semibold text-lg">
+                                        {teams.find(t => t.id === event.homeTeam)?.name || 'Home Team'}
+                                    </div>
+                                    <div className="text-4xl font-bold text-blue-600 mt-2">
+                                        {event.homeScore || 0}
+                                    </div>
+                                </div>
+                                <div className="text-2xl font-bold text-gray-400">VS</div>
+                                <div className="text-center">
+                                    <div className="font-semibold text-lg">
+                                        {teams.find(t => t.id === event.awayTeam)?.name || 'Away Team'}
+                                    </div>
+                                    <div className="text-4xl font-bold text-red-600 mt-2">
+                                        {event.awayScore || 0}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="text-sm text-gray-600 capitalize">
+                                Status: {event.status || 'scheduled'}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="text-center text-gray-500 py-8">
+                            <p>No teams or scores set yet.</p>
+                            {isAuthorized && (
+                                <button
+                                    onClick={() => setEditing(true)}
+                                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+                                >
+                                    Add Teams & Scores
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
+
+// Stats Tab
+const EventStatsTab = ({ event, teams, isAuthorized, onUpdateEvent }) => {
+    return (
+        <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-gray-800">Player Statistics</h3>
+            <div className="bg-gray-50 p-8 rounded-lg text-center">
+                <p className="text-gray-600 mb-4">Player statistics coming soon!</p>
+                <p className="text-sm text-gray-500">Track goals, assists, saves, and more.</p>
+            </div>
+        </div>
+    );
+};
+
+// Attendance Tab
+const EventAttendanceTab = ({ event, teams, isAuthorized, onUpdateEvent }) => {
+    return (
+        <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-gray-800">Attendance Tracking</h3>
+            <div className="bg-gray-50 p-8 rounded-lg text-center">
+                <p className="text-gray-600 mb-4">Attendance tracking coming soon!</p>
+                <p className="text-sm text-gray-500">Track who attended practices and games.</p>
+            </div>
+        </div>
+    );
+};
+
+// === TOURNAMENT BRACKET TAB ===
+const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => {
+    const [bracketData, setBracketData] = useState(event.bracket || {
+        teams: [],
+        rounds: [],
+        format: '8-team-single' // 8-team-single, 16-team-single, etc.
+    });
+    
+    const generateBracket = () => {
+        if (bracketData.teams.length < 2) return;
+        
+        const rounds = [];
+        const numTeams = bracketData.teams.length;
+        const numRounds = Math.ceil(Math.log2(numTeams));
+        
+        // First round
+        const firstRoundMatches = [];
+        for (let i = 0; i < bracketData.teams.length; i += 2) {
+            if (i + 1 < bracketData.teams.length) {
+                firstRoundMatches.push({
+                    id: `r1-m${i/2 + 1}`,
+                    team1: bracketData.teams[i],
+                    team2: bracketData.teams[i + 1],
+                    winner: null,
+                    score1: null,
+                    score2: null
+                });
+            }
+        }
+        rounds.push({ round: 1, name: 'First Round', matches: firstRoundMatches });
+        
+        // Subsequent rounds
+        for (let r = 2; r <= numRounds; r++) {
+            const prevRound = rounds[r - 2];
+            const matches = [];
+            for (let i = 0; i < prevRound.matches.length; i += 2) {
+                if (i + 1 < prevRound.matches.length) {
+                    matches.push({
+                        id: `r${r}-m${i/2 + 1}`,
+                        team1: null, // Will be filled by winners
+                        team2: null,
+                        winner: null,
+                        score1: null,
+                        score2: null,
+                        dependsOn: [prevRound.matches[i].id, prevRound.matches[i + 1].id]
+                    });
+                }
+            }
+            const roundName = r === numRounds ? 'Final' : 
+                           r === numRounds - 1 ? 'Semi Final' : 
+                           r === numRounds - 2 ? 'Quarter Final' : 
+                           `Round ${r}`;
+            rounds.push({ round: r, name: roundName, matches });
+        }
+        
+        const newBracketData = { ...bracketData, rounds };
+        setBracketData(newBracketData);
+        onUpdateEvent({ ...event, bracket: newBracketData });
+    };
+    
+    const updateMatch = (roundIndex, matchIndex, updates) => {
+        const newBracketData = { ...bracketData };
+        newBracketData.rounds[roundIndex].matches[matchIndex] = {
+            ...newBracketData.rounds[roundIndex].matches[matchIndex],
+            ...updates
+        };
+        
+        // Auto-advance winner to next round
+        if (updates.winner) {
+            const match = newBracketData.rounds[roundIndex].matches[matchIndex];
+            const nextRoundIndex = roundIndex + 1;
+            
+            if (nextRoundIndex < newBracketData.rounds.length) {
+                const nextRound = newBracketData.rounds[nextRoundIndex];
+                for (let nextMatch of nextRound.matches) {
+                    if (nextMatch.dependsOn && nextMatch.dependsOn.includes(match.id)) {
+                        if (!nextMatch.team1) {
+                            nextMatch.team1 = updates.winner;
+                        } else if (!nextMatch.team2) {
+                            nextMatch.team2 = updates.winner;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        
+        setBracketData(newBracketData);
+        onUpdateEvent({ ...event, bracket: newBracketData });
+    };
+    
+    const addTeamToBracket = (teamId) => {
+        const team = teams.find(t => t.id === teamId);
+        if (team && !bracketData.teams.find(t => t.id === teamId)) {
+            setBracketData({
+                ...bracketData,
+                teams: [...bracketData.teams, { id: team.id, name: team.name }]
+            });
+        }
+    };
+    
+    return (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <h3 className="text-xl font-semibold text-gray-800">Tournament Bracket</h3>
+                {isAuthorized && (
+                    <div className="flex space-x-2">
+                        <button
+                            onClick={generateBracket}
+                            disabled={bracketData.teams.length < 2}
+                            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400"
+                        >
+                            Generate Bracket
+                        </button>
+                    </div>
+                )}
+            </div>
+            
+            {/* Team Selection */}
+            {isAuthorized && bracketData.rounds.length === 0 && (
+                <div className="bg-blue-50 p-6 rounded-lg">
+                    <h4 className="font-semibold mb-4">Add Teams to Tournament</h4>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                        {teams.map(team => (
+                            <button
+                                key={team.id}
+                                onClick={() => addTeamToBracket(team.id)}
+                                disabled={bracketData.teams.find(t => t.id === team.id)}
+                                className="px-3 py-2 bg-white border rounded hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400"
+                            >
+                                {team.name}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                        Selected Teams ({bracketData.teams.length}): {bracketData.teams.map(t => t.name).join(', ')}
+                    </div>
+                </div>
+            )}
+            
+            {/* Bracket Visualization */}
+            {bracketData.rounds.length > 0 ? (
+                <div className="bg-white border rounded-lg p-6 overflow-x-auto">
+                    <div className="flex space-x-8 min-w-max">
+                        {bracketData.rounds.map((round, roundIndex) => (
+                            <div key={round.round} className="flex-shrink-0">
+                                <h4 className="font-semibold text-center mb-4 text-sm text-gray-600">
+                                    {round.name}
+                                </h4>
+                                <div className="space-y-4">
+                                    {round.matches.map((match, matchIndex) => (
+                                        <div key={match.id} className="bg-gray-50 border rounded-lg p-4 w-48">
+                                            <div className="space-y-2">
+                                                <div className={`p-2 rounded text-sm ${match.winner === match.team1?.id ? 'bg-green-100 font-semibold' : 'bg-white'}`}>
+                                                    {match.team1?.name || 'TBD'}
+                                                    {isAuthorized && match.team1 && match.team2 && (
+                                                        <input
+                                                            type="number"
+                                                            value={match.score1 || ''}
+                                                            onChange={(e) => updateMatch(roundIndex, matchIndex, { score1: parseInt(e.target.value) || 0 })}
+                                                            className="w-12 ml-2 text-xs border rounded text-center"
+                                                            min="0"
+                                                        />
+                                                    )}
+                                                </div>
+                                                <div className="text-xs text-center text-gray-500">vs</div>
+                                                <div className={`p-2 rounded text-sm ${match.winner === match.team2?.id ? 'bg-green-100 font-semibold' : 'bg-white'}`}>
+                                                    {match.team2?.name || 'TBD'}
+                                                    {isAuthorized && match.team1 && match.team2 && (
+                                                        <input
+                                                            type="number"
+                                                            value={match.score2 || ''}
+                                                            onChange={(e) => updateMatch(roundIndex, matchIndex, { score2: parseInt(e.target.value) || 0 })}
+                                                            className="w-12 ml-2 text-xs border rounded text-center"
+                                                            min="0"
+                                                        />
+                                                    )}
+                                                </div>
+                                            </div>
+                                            
+                                            {isAuthorized && match.team1 && match.team2 && (match.score1 !== null && match.score2 !== null) && !match.winner && (
+                                                <div className="mt-2 space-x-1">
+                                                    <button
+                                                        onClick={() => updateMatch(roundIndex, matchIndex, { winner: match.team1.id })}
+                                                        className="text-xs px-2 py-1 bg-green-600 text-white rounded"
+                                                    >
+                                                        {match.team1.name} Wins
+                                                    </button>
+                                                    <button
+                                                        onClick={() => updateMatch(roundIndex, matchIndex, { winner: match.team2.id })}
+                                                        className="text-xs px-2 py-1 bg-green-600 text-white rounded"
+                                                    >
+                                                        {match.team2.name} Wins
+                                                    </button>
+                                                </div>
+                                            )}
+                                            
+                                            {match.winner && (
+                                                <div className="mt-2 text-xs text-center font-semibold text-green-600">
+                                                    Winner: {bracketData.teams.find(t => t.id === match.winner)?.name}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ) : (
+                <div className="bg-gray-50 p-8 rounded-lg text-center">
+                    <p className="text-gray-600 mb-4">🏆 No bracket generated yet</p>
+                    <p className="text-sm text-gray-500">Add teams and click "Generate Bracket" to create the tournament bracket.</p>
+                </div>
+            )}
+        </div>
+    );
+};
+
 // File Upload Component
 const FileUploadInput = ({ 
     label, 
