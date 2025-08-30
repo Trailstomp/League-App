@@ -4719,6 +4719,10 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         .filter(event => selectedTeamSchedule === 'all' || event.teamId === selectedTeamSchedule)
         .filter(event => eventTypeFilters[event.type || 'other']);
     
+    console.log('DEBUG - filteredEvents:', filteredEvents);
+    console.log('DEBUG - filteredEvents length:', filteredEvents.length);
+    console.log('DEBUG - eventTypeFilters:', eventTypeFilters);
+    
     // Group tournament events by title, date, and location
     const groupedEvents = filteredEvents.reduce((groups, event) => {
         if (event.type && event.type.toLowerCase() === 'tournament') {
