@@ -923,7 +923,7 @@ const getLogoStyle = (websiteStyle) => {
 };
 
 // === EVENT DETAIL MODAL COMPONENT ===
-const EventDetailModal = ({ event, onClose, activeTab, setActiveTab, teams, currentUser, onUpdateEvent }) => {
+const EventDetailModal = ({ event, onClose, activeTab, setActiveTab, teams, currentUser, onUpdateEvent, onDeleteEvent }) => {
     if (!event) return null;
     
     const isAuthorized = currentUser && (
