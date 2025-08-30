@@ -1632,7 +1632,7 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
             )}
 
             {/* Team Selection and Management */}
-            {isAuthorized && bracketData.rounds.length === 0 && (
+            {bracketData.rounds.length === 0 && (
                 <div className="bg-blue-50 p-6 rounded-lg">
                     <h4 className="font-semibold mb-4">Team Selection & Seeding</h4>
                     
