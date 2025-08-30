@@ -4702,7 +4702,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                                     <span className="text-sm font-semibold text-slate-700">Participating Teams ({event.allTeams.length}):</span>
                                                 </div>
                                                 <div className="flex flex-wrap gap-2 mb-3">
-                                                    {(event.allTeams || []).sort((a, b) => a.name.localeCompare(b.name)).map((team, index) => (
+                                                    {(event.allTeams || []).filter(team => team && team.name).sort((a, b) => a.name.localeCompare(b.name)).map((team, index) => (
                                                         <button
                                                             key={`${team.id}-${index}`}
                                                             onClick={(e) => {
