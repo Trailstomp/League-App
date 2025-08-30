@@ -4525,14 +4525,14 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         other: true
     });
     
-    const getTeam = (id) => teams.find(t => t.id === id);
+    const getTeam = (id) => (teams || []).find(t => t.id === id);
     const isAdmin = currentUser && currentUser.roles && currentUser.roles.includes('admin');
     
     // Get all events from leagueSchedule and enrich with team data
     const allEvents = (leagueSchedule || []).map(event => {
         // For events with multiple teams, use the first team for display
         const primaryTeamId = Array.isArray(event.teams) ? event.teams[0] : event.teams;
-        const primaryTeam = teams.find(t => t.id === primaryTeamId);
+        const primaryTeam = (teams || []).find(t => t.id === primaryTeamId);
         
         return {
             ...event,
