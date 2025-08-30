@@ -9232,7 +9232,9 @@ const TeamManager = ({ teams, setTeams, websiteStyle }) => {
     const [editingTeam, setEditingTeam] = useState(null);
     
     // Get form background color from website style or default
-    const formBackgroundColor = websiteStyle?.formBackgroundColor || '#f8fafc';
+    const formBackgroundColor = websiteStyle?.formBackgroundColor || '#ff0000';
+    console.log('🔍 TeamManager websiteStyle:', websiteStyle);
+    console.log('🎨 TeamManager formBackgroundColor:', formBackgroundColor);
     
     // Memoized handlers to prevent re-renders
     const handleInputChange = useCallback((field, value) => {
