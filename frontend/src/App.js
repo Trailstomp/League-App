@@ -4530,7 +4530,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
     
     // Get all events from leagueSchedule (which has structure: [{date, games: []}]) and enrich with team data
     const allEvents = (leagueSchedule || []).flatMap(day => 
-        (day.games || []).map(game => {
+        (day && day.games ? day.games : []).map(game => {
             // Convert game to event format
             const homeTeam = (teams || []).find(t => t.id === game.home);
             const awayTeam = (teams || []).find(t => t.id === game.away);
