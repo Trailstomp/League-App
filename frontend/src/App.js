@@ -9683,6 +9683,24 @@ const TeamStyleManager = ({ teams, setTeams, currentUser, teamId }) => {
                             placeholder="Upload team logo or paste image URL"
                             enableCrop={false}
                         />
+                        
+                        {/* Logo Transparency Control */}
+                        {style.logoUrl && (
+                            <div className="mt-3">
+                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                    Logo Transparency: {Math.round((style.logoOpacity || 1) * 100)}%
+                                </label>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step="0.1"
+                                    value={style.logoOpacity || 1}
+                                    onChange={(e) => setStyle(prev => ({...prev, logoOpacity: parseFloat(e.target.value)}))}
+                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <div>
@@ -9694,6 +9712,24 @@ const TeamStyleManager = ({ teams, setTeams, currentUser, teamId }) => {
                             placeholder="Upload team banner or paste image URL"
                             enableCrop={false}
                         />
+                        
+                        {/* Banner Transparency Control */}
+                        {style.bannerUrl && (
+                            <div className="mt-3">
+                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                    Banner Transparency: {Math.round((style.bannerOpacity || 1) * 100)}%
+                                </label>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step="0.1"
+                                    value={style.bannerOpacity || 1}
+                                    onChange={(e) => setStyle(prev => ({...prev, bannerOpacity: parseFloat(e.target.value)}))}
+                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     {/* === TEAM BACKGROUND IMAGE === */}
