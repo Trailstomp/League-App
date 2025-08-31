@@ -15518,14 +15518,16 @@ function App() {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
                         <EventForm
-                            event={editingEvent}
+                            editingEvent={editingEvent}
+                            setEditingEvent={setEditingEvent}
                             teams={teams}
                             onSave={(eventData) => {
-                                if (editingEvent.title === '') {
+                                if (!editingEvent.title || editingEvent.title === '') {
                                     // Creating new event
                                     const newEvent = {
                                         ...eventData,
-                                        id: `event_${Date.now()}`
+                                        id: `event_${Date.now()}`,
+                                        teamLogo: teams.find(t => t.id === eventData.teamId)?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
                                     };
                                     setLeagueSchedule(prev => [...prev, newEvent]);
                                 } else {
@@ -15537,7 +15539,7 @@ function App() {
                                 setEditingEvent(null);
                             }}
                             onCancel={() => setEditingEvent(null)}
-                            websiteStyle={websiteStyle}
+                            formBackgroundColor={websiteStyle?.formBackgroundColor || '#f8fafc'}
                         />
                     </div>
                 </div>
