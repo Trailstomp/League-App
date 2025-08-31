@@ -5475,6 +5475,32 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                         onClick={() => onEventClick && onEventClick(event)}
                                         title="Click to view event details"
                                     >
+                                        {/* Edit/Delete Buttons */}
+                                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onEditEvent && onEditEvent(event);
+                                                }}
+                                                className="bg-blue-600 text-white p-1 rounded hover:bg-blue-700"
+                                                title="Edit event"
+                                            >
+                                                <Edit size={14} />
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (confirm(`Delete "${event.title}"?`)) {
+                                                        onDeleteEvent && onDeleteEvent(event.id);
+                                                    }
+                                                }}
+                                                className="bg-red-600 text-white p-1 rounded hover:bg-red-700"
+                                                title="Delete event"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
+
                                         <div className="flex items-start justify-between">
                                             <div className="flex-grow">
                                                 <button 
