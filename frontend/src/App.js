@@ -15481,14 +15481,17 @@ function App() {
                             teams={teams}
                             onSave={(e) => {
                                 e.preventDefault();
+                                console.log('Save handler called with editingEvent:', editingEvent);
                                 
                                 if (!editingEvent.id) {
                                     // Creating new event
+                                    console.log('Creating new event...');
                                     const newEvent = {
                                         ...editingEvent,
                                         id: `event_${Date.now()}`,
                                         teamLogo: teams.find(t => t.id === editingEvent.teamId)?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
                                     };
+                                    console.log('New event data:', newEvent);
                                     setLeagueSchedule(prev => [...prev, newEvent]);
                                 } else {
                                     // Updating existing event
