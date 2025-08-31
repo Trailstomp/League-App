@@ -15512,6 +15512,36 @@ function App() {
                     onDeleteEvent={handleDeleteEvent}
                 />
             )}
+            
+            {/* Event Edit/Create Form Modal */}
+            {editingEvent && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+                        <EventForm
+                            event={editingEvent}
+                            teams={teams}
+                            onSave={(eventData) => {
+                                if (editingEvent.title === '') {
+                                    // Creating new event
+                                    const newEvent = {
+                                        ...eventData,
+                                        id: `event_${Date.now()}`
+                                    };
+                                    setLeagueSchedule(prev => [...prev, newEvent]);
+                                } else {
+                                    // Updating existing event
+                                    setLeagueSchedule(prev => 
+                                        prev.map(e => e.id === eventData.id ? eventData : e)
+                                    );
+                                }
+                                setEditingEvent(null);
+                            }}
+                            onCancel={() => setEditingEvent(null)}
+                            websiteStyle={websiteStyle}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
