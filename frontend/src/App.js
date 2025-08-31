@@ -5405,10 +5405,28 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Upcoming Events */}
                 <div>
-                    <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center">
-                        <Calendar className="mr-2" size={24} />
-                        Upcoming Events
-                    </h2>
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-2xl font-bold text-slate-800 flex items-center">
+                            <Calendar className="mr-2" size={24} />
+                            Upcoming Events
+                        </h2>
+                        <button
+                            onClick={() => onEditEvent && onEditEvent({
+                                id: `event_${Date.now()}`,
+                                title: '',
+                                type: 'event',
+                                date: '',
+                                time: '',
+                                location: '',
+                                description: '',
+                                teamId: '',
+                                teamName: ''
+                            })}
+                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center"
+                        >
+                            <Plus className="mr-2 h-4 w-4"/> Add Event
+                        </button>
+                    </div>
                     <div className="space-y-4">
                         {displayEvents.filter(event => new Date(event.date) >= new Date()).length > 0 ? displayEvents.filter(event => new Date(event.date) >= new Date()).slice(0, 10).map(event => {
                             if (event.allTeams && event.allTeams.length > 1) {
