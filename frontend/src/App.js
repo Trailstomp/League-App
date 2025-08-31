@@ -5402,19 +5402,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                             <BarChart2 className="mr-2 h-4 w-4"/> Event Dashboard
                         </button>
                     )}
-                    {isAdmin && (
-                        <button 
-                            onClick={() => {
-                                // Navigate to admin portal and set default tab to calendar
-                                window.localStorage.setItem('admin_default_tab', 'calendar');
-                                window.location.hash = 'admin-portal';
-                            }}
-                            className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center text-sm"
-                            title="Quick access to calendar management"
-                        >
-                            <Plus className="mr-2 h-4 w-4"/> Add League Event
-                        </button>
-                    )}
+
                 </div>
             </div>
             
