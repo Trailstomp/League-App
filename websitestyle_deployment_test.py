@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 WebsiteStyle Deployment Data Persistence Test
-Comprehensive testing for the deployment data persistence fix.
+SAFETY: This test now uses non-destructive test data that won't overwrite user customizations.
 Tests banners, logos, backgrounds persistence and deployment scenarios.
 """
 
@@ -10,6 +10,10 @@ import json
 import sys
 from datetime import datetime
 import time
+
+# SAFETY: Use test-specific keys that won't overwrite production data
+TEST_WEBSITESTYLE_KEY = "test_websitestyle_backup"
+PRODUCTION_BACKUP_KEY = "production_websitestyle_backup"
 
 # Get backend URL from frontend .env file
 def get_backend_url():
