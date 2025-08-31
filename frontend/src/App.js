@@ -14426,10 +14426,27 @@ function App() {
                     });
                     // Fix data persistence bug: Only use apiData.websiteStyle if it has actual properties
                     const hasWebsiteStyleData = apiData.websiteStyle && Object.keys(apiData.websiteStyle).length > 0;
-                    setWebsiteStyle(hasWebsiteStyleData ? {
-                        ...websiteStyle, // Start with defaults
-                        ...apiData.websiteStyle // Overlay saved data
-                    } : websiteStyle);
+                    
+                    // For deployment safety: also check localStorage for websiteStyle first
+                    const storedWebsiteStyleBackup = getStoredData('mlbl_websiteStyle', null);
+                    const hasStoredBackup = storedWebsiteStyleBackup && Object.keys(storedWebsiteStyleBackup).length > 0;
+                    
+                    // Priority: API data > localStorage backup > defaults
+                    let finalWebsiteStyle = websiteStyle; // Start with defaults
+                    
+                    if (hasStoredBackup) {
+                        finalWebsiteStyle = { ...finalWebsiteStyle, ...storedWebsiteStyleBackup };
+                        console.log('🔄 Restored websiteStyle from localStorage backup during API load');
+                    }
+                    
+                    if (hasWebsiteStyleData) {
+                        finalWebsiteStyle = { ...finalWebsiteStyle, ...apiData.websiteStyle };
+                        console.log('✅ Loaded websiteStyle from API');
+                    } else if (hasStoredBackup) {
+                        console.log('⚠️ API websiteStyle empty, using localStorage backup');
+                    }
+                    
+                    setWebsiteStyle(finalWebsiteStyle);
                     
                     // Load seasons data
                     if (apiData.seasons) {
