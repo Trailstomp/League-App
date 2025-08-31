@@ -36,7 +36,8 @@ class WebsiteStyleDeploymentTester:
         self.test_results = []
         self.failed_tests = []
         
-        print(f"🚀 WEBSITESTYLE DEPLOYMENT PERSISTENCE TESTING")
+        print(f"🚀 WEBSITESTYLE DEPLOYMENT PERSISTENCE TESTING (SAFE MODE)")
+        print(f"⚠️  This test now uses non-destructive test data to avoid overwriting user customizations")
         print(f"Testing at: {self.api_base}")
         print("=" * 80)
 
