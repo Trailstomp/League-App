@@ -1821,74 +1821,94 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
                 </div>
             )}
             
-            {/* Bracket Visualization */}
+            {/* Enhanced Bracket Visualization */}
             {bracketData.rounds.length > 0 ? (
-                <div className="bg-white border rounded-lg p-6 overflow-x-auto">
-                    <div className="flex space-x-8 min-w-max">
-                        {bracketData.rounds.map((round, roundIndex) => (
-                            <div key={round.round} className="flex-shrink-0">
-                                <h4 className="font-semibold text-center mb-4 text-sm text-gray-600">
-                                    {round.name}
-                                </h4>
-                                <div className="space-y-4">
-                                    {round.matches.map((match, matchIndex) => (
-                                        <div key={match.id} className="bg-gray-50 border rounded-lg p-4 w-48">
-                                            <div className="space-y-2">
-                                                <div className={`p-2 rounded text-sm ${match.winner === match.team1?.id ? 'bg-green-100 font-semibold' : 'bg-white'}`}>
-                                                    {match.team1?.name || 'TBD'}
-                                                    {isAuthorized && match.team1 && match.team2 && (
-                                                        <input
-                                                            type="number"
-                                                            value={match.score1 || ''}
-                                                            onChange={(e) => updateMatch(roundIndex, matchIndex, { score1: parseInt(e.target.value) || 0 })}
-                                                            className="w-12 ml-2 text-xs border rounded text-center"
-                                                            min="0"
-                                                        />
-                                                    )}
-                                                </div>
-                                                <div className="text-xs text-center text-gray-500">vs</div>
-                                                <div className={`p-2 rounded text-sm ${match.winner === match.team2?.id ? 'bg-green-100 font-semibold' : 'bg-white'}`}>
-                                                    {match.team2?.name || 'TBD'}
-                                                    {isAuthorized && match.team1 && match.team2 && (
-                                                        <input
-                                                            type="number"
-                                                            value={match.score2 || ''}
-                                                            onChange={(e) => updateMatch(roundIndex, matchIndex, { score2: parseInt(e.target.value) || 0 })}
-                                                            className="w-12 ml-2 text-xs border rounded text-center"
-                                                            min="0"
-                                                        />
-                                                    )}
-                                                </div>
+                <div className="space-y-8">
+                    {/* Winners Bracket */}
+                    <div className="bg-gradient-to-r from-green-50 to-blue-50 border rounded-lg p-6">
+                        <h4 className="text-lg font-bold text-center mb-6 text-green-700">
+                            🏆 Winners Bracket
+                        </h4>
+                        <div className="overflow-x-auto">
+                            <div className="flex space-x-8 min-w-max">
+                                {bracketData.rounds.filter(r => r.type === 'winners').map((round, roundIndex) => (
+                                    <div key={`winners-${round.round}`} className="flex-shrink-0">
+                                        <h5 className="font-semibold text-center mb-4 text-sm text-gray-700 bg-white px-3 py-1 rounded">
+                                            {round.name}
+                                        </h5>
+                                        <div className="space-y-6">
+                                            {round.matches.map((match, matchIndex) => (
+                                                <BracketMatchCard 
+                                                    key={match.id}
+                                                    match={match}
+                                                    onUpdateMatch={(updates) => updateMatch(bracketData.rounds.indexOf(round), matchIndex, updates)}
+                                                    isAuthorized={isAuthorized}
+                                                    bracketType="winners"
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Losers Bracket */}
+                    {bracketData.rounds.some(r => r.type === 'losers') && (
+                        <div className="bg-gradient-to-r from-red-50 to-orange-50 border rounded-lg p-6">
+                            <h4 className="text-lg font-bold text-center mb-6 text-red-700">
+                                🥉 Losers Bracket
+                            </h4>
+                            <div className="overflow-x-auto">
+                                <div className="flex space-x-8 min-w-max">
+                                    {bracketData.rounds.filter(r => r.type === 'losers').map((round, roundIndex) => (
+                                        <div key={`losers-${round.round}`} className="flex-shrink-0">
+                                            <h5 className="font-semibold text-center mb-4 text-sm text-gray-700 bg-white px-3 py-1 rounded">
+                                                {round.name}
+                                            </h5>
+                                            <div className="space-y-6">
+                                                {round.matches.map((match, matchIndex) => (
+                                                    <BracketMatchCard 
+                                                        key={match.id}
+                                                        match={match}
+                                                        onUpdateMatch={(updates) => updateMatch(bracketData.rounds.indexOf(round), matchIndex, updates)}
+                                                        isAuthorized={isAuthorized}
+                                                        bracketType="losers"
+                                                    />
+                                                ))}
                                             </div>
-                                            
-                                            {isAuthorized && match.team1 && match.team2 && (match.score1 !== null && match.score2 !== null) && !match.winner && (
-                                                <div className="mt-2 space-x-1">
-                                                    <button
-                                                        onClick={() => updateMatch(roundIndex, matchIndex, { winner: match.team1.id })}
-                                                        className="text-xs px-2 py-1 bg-green-600 text-white rounded"
-                                                    >
-                                                        {match.team1.name} Wins
-                                                    </button>
-                                                    <button
-                                                        onClick={() => updateMatch(roundIndex, matchIndex, { winner: match.team2.id })}
-                                                        className="text-xs px-2 py-1 bg-green-600 text-white rounded"
-                                                    >
-                                                        {match.team2.name} Wins
-                                                    </button>
-                                                </div>
-                                            )}
-                                            
-                                            {match.winner && (
-                                                <div className="mt-2 text-xs text-center font-semibold text-green-600">
-                                                    Winner: {bracketData.teams.find(t => t.id === match.winner)?.name}
-                                                </div>
-                                            )}
                                         </div>
                                     ))}
                                 </div>
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    )}
+
+                    {/* Grand Final */}
+                    {bracketData.rounds.some(r => r.type === 'grand-final') && (
+                        <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border-2 border-yellow-300 rounded-lg p-6">
+                            <h4 className="text-xl font-bold text-center mb-6 text-yellow-700">
+                                🥇 Grand Final
+                            </h4>
+                            <div className="flex justify-center">
+                                {bracketData.rounds.filter(r => r.type === 'grand-final').map((round, roundIndex) => (
+                                    <div key={`grand-final-${round.round}`} className="flex-shrink-0">
+                                        <div className="space-y-6">
+                                            {round.matches.map((match, matchIndex) => (
+                                                <BracketMatchCard 
+                                                    key={match.id}
+                                                    match={match}
+                                                    onUpdateMatch={(updates) => updateMatch(bracketData.rounds.indexOf(round), matchIndex, updates)}
+                                                    isAuthorized={isAuthorized}
+                                                    bracketType="grand-final"
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             ) : (
                 <div className="bg-gray-50 p-8 rounded-lg text-center">
