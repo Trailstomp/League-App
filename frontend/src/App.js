@@ -14576,8 +14576,17 @@ function App() {
     
     useEffect(() => { 
         if (!dataLoading) {
+            // Save to API
             saveDataToAPI('websiteStyle', websiteStyle);
+            // Save to localStorage (primary backup)
             setStoredData('mlbl_websiteStyle', websiteStyle);
+            // Save to additional backup key for deployment safety
+            setStoredData('mlbl_websiteStyle_backup', {
+                ...websiteStyle,
+                timestamp: Date.now(),
+                version: 'backup'
+            });
+            console.log('💾 WebsiteStyle saved with deployment backup');
         }
     }, [websiteStyle, dataLoading]);
 
