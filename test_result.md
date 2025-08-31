@@ -58,7 +58,7 @@
 ##
 ## agent_communication:
 ##     -agent: "main"  # or "testing" or "user"
-##     -message: "Communication message between agents"
+##     -message: "Main agent updating test results: Backend testing identified 4 residual events in database that need clearing: Thunder Hawks vs Lightning Bolts (game), Thunder Hawks Practice (practice), and 2 Spring Championship Tournament events. These are preventing the clean slate needed for event CRUD testing. About to clear database events to establish fresh state."
 
 # Protocol Guidelines for Main agent
 #
