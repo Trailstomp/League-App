@@ -2934,7 +2934,7 @@ const RoleManager = ({ users, setUsers }) => {
         </div>
     );
 };
-const GameTicker = ({teams, gameTickerData, onTeamClick, websiteStyle, onNavigate, onEventClick}) => {
+const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigate, onEventClick}) => {
     const getTeam = (id) => teams.find(t => t.id === id);
     const tickerRef = useRef(null);
     const [isHovering, setIsHovering] = useState(false);
