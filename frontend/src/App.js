@@ -1725,25 +1725,23 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h3 className="text-xl font-semibold text-gray-800">Tournament Bracket</h3>
-                {isAuthorized && (
-                    <div className="flex space-x-2">
+                <div className="flex space-x-2">
+                    <button
+                        onClick={generateBracket}
+                        disabled={bracketData.teams.length < 2}
+                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400"
+                    >
+                        Generate Bracket
+                    </button>
+                    {bracketData.rounds.length > 0 && (
                         <button
-                            onClick={generateBracket}
-                            disabled={bracketData.teams.length < 2}
-                            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400"
+                            onClick={() => setBracketData({...bracketData, rounds: []})}
+                            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                         >
-                            Generate Bracket
+                            Reset Bracket
                         </button>
-                        {bracketData.rounds.length > 0 && (
-                            <button
-                                onClick={() => setBracketData({...bracketData, rounds: []})}
-                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                            >
-                                Reset Bracket
-                            </button>
-                        )}
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
             
             {/* Bracket Settings */}
