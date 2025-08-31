@@ -1920,6 +1920,169 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
     );
 };
 
+// Enhanced Bracket Match Card Component
+const BracketMatchCard = ({ match, onUpdateMatch, isAuthorized, bracketType }) => {
+    const [editingScores, setEditingScores] = useState(false);
+    const [tempScore1, setTempScore1] = useState(match.score1 || '');
+    const [tempScore2, setTempScore2] = useState(match.score2 || '');
+    
+    const handleScoreEdit = () => {
+        const score1 = parseInt(tempScore1) || 0;
+        const score2 = parseInt(tempScore2) || 0;
+        onUpdateMatch({ score1, score2 });
+        setEditingScores(false);
+    };
+    
+    const getCardStyle = () => {
+        switch (bracketType) {
+            case 'winners': return 'bg-gradient-to-br from-green-100 to-blue-100 border-green-200';
+            case 'losers': return 'bg-gradient-to-br from-red-100 to-orange-100 border-red-200';
+            case 'grand-final': return 'bg-gradient-to-br from-yellow-100 to-amber-100 border-yellow-300';
+            default: return 'bg-white border-gray-200';
+        }
+    };
+    
+    const getWinnerStyle = (team) => {
+        if (match.winner?.id === team?.id) {
+            return bracketType === 'winners' ? 'bg-green-200 font-bold text-green-800' :
+                   bracketType === 'losers' ? 'bg-orange-200 font-bold text-orange-800' :
+                   'bg-yellow-200 font-bold text-yellow-800';
+        }
+        return 'bg-white';
+    };
+    
+    return (
+        <div className={`${getCardStyle()} border-2 rounded-xl p-4 w-56 shadow-lg`}>
+            {/* Match ID and Status */}
+            <div className="text-xs text-center text-gray-500 mb-2">
+                {match.id} • {match.status || 'pending'}
+            </div>
+            
+            <div className="space-y-3">
+                {/* Team 1 */}
+                <div className={`p-3 rounded-lg text-sm font-medium ${getWinnerStyle(match.team1)}`}>
+                    <div className="flex justify-between items-center">
+                        <span className="flex-1">{match.team1?.name || 'TBD'}</span>
+                        {match.team1 && match.team2 && (
+                            <div className="text-right">
+                                {editingScores ? (
+                                    <input
+                                        type="number"
+                                        value={tempScore1}
+                                        onChange={(e) => setTempScore1(e.target.value)}
+                                        className="w-12 text-center border rounded text-xs"
+                                        min="0"
+                                    />
+                                ) : (
+                                    <span className="font-bold text-lg">{match.score1 ?? '-'}</span>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+                
+                {/* VS Divider */}
+                <div className="text-center text-xs font-semibold text-gray-500">VS</div>
+                
+                {/* Team 2 */}
+                <div className={`p-3 rounded-lg text-sm font-medium ${getWinnerStyle(match.team2)}`}>
+                    <div className="flex justify-between items-center">
+                        <span className="flex-1">{match.team2?.name || 'TBD'}</span>
+                        {match.team1 && match.team2 && (
+                            <div className="text-right">
+                                {editingScores ? (
+                                    <input
+                                        type="number"
+                                        value={tempScore2}
+                                        onChange={(e) => setTempScore2(e.target.value)}
+                                        className="w-12 text-center border rounded text-xs"
+                                        min="0"
+                                    />
+                                ) : (
+                                    <span className="font-bold text-lg">{match.score2 ?? '-'}</span>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+            
+            {/* Score Entry and Actions */}
+            {isAuthorized && match.team1 && match.team2 && (
+                <div className="mt-4 space-y-2">
+                    {editingScores ? (
+                        <div className="flex space-x-1">
+                            <button
+                                onClick={handleScoreEdit}
+                                className="flex-1 text-xs px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                            >
+                                Save
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setEditingScores(false);
+                                    setTempScore1(match.score1 || '');
+                                    setTempScore2(match.score2 || '');
+                                }}
+                                className="flex-1 text-xs px-2 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="space-y-2">
+                            <button
+                                onClick={() => {
+                                    setEditingScores(true);
+                                    setTempScore1(match.score1 || '');
+                                    setTempScore2(match.score2 || '');
+                                }}
+                                className="w-full text-xs px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            >
+                                {match.score1 !== null || match.score2 !== null ? 'Edit Score' : 'Enter Score'}
+                            </button>
+                            
+                            {/* Quick Winner Selection */}
+                            {!match.winner && (
+                                <div className="flex space-x-1">
+                                    <button
+                                        onClick={() => onUpdateMatch({ winner: match.team1 })}
+                                        className="flex-1 text-xs px-1 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                                    >
+                                        {match.team1.name} Wins
+                                    </button>
+                                    <button
+                                        onClick={() => onUpdateMatch({ winner: match.team2 })}
+                                        className="flex-1 text-xs px-1 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                                    >
+                                        {match.team2.name} Wins
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
+            
+            {/* Winner Display */}
+            {match.winner && (
+                <div className="mt-3 text-center">
+                    <div className="text-xs font-bold text-green-600 bg-green-100 px-2 py-1 rounded">
+                        🏆 Winner: {match.winner.name}
+                    </div>
+                </div>
+            )}
+            
+            {/* Special Notes */}
+            {match.note && (
+                <div className="mt-2 text-xs text-center text-gray-600 italic">
+                    {match.note}
+                </div>
+            )}
+        </div>
+    );
+};
+
 // File Upload Component
 const FileUploadInput = ({ 
     label, 
