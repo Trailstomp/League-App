@@ -13449,13 +13449,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                                     <Users className="mb-2" size={20} />
                                     <div className="text-sm font-semibold">Manage Teams</div>
                                 </button>
-                                <button 
-                                    onClick={() => setActiveTab('schedule')}
-                                    className="p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                                >
-                                    <Calendar className="mb-2" size={20} />
-                                    <div className="text-sm font-semibold">Add Event</div>
-                                </button>
+
                                 <button 
                                     onClick={() => setActiveTab('users')}
                                     className="p-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
