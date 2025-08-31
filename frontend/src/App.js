@@ -15483,7 +15483,11 @@ function App() {
                                 e.preventDefault();
                                 console.log('Save handler called with editingEvent:', editingEvent);
                                 
-                                if (!editingEvent.id) {
+                                // Check if this is a new event vs existing event
+                                // New events either have no id or an id that starts with 'event_' (temporary)
+                                const isNewEvent = !editingEvent.id || editingEvent.id.startsWith('event_');
+                                
+                                if (isNewEvent) {
                                     // Creating new event
                                     console.log('Creating new event...');
                                     const newEvent = {
