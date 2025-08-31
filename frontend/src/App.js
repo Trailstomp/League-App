@@ -1052,14 +1052,12 @@ const EventDetailsTab = ({ event, isAuthorized, onUpdateEvent, onDeleteEvent, cu
                         >
                             {editing ? 'Save Changes' : 'Edit Details'}
                         </button>
-                        {hasPermission(currentUser, 'system.admin_access') && (
-                            <button
-                                onClick={() => setShowDeleteConfirm(true)}
-                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                            >
-                                Delete Event
-                            </button>
-                        )}
+                        <button
+                            onClick={() => setShowDeleteConfirm(true)}
+                            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                        >
+                            Delete Event
+                        </button>
                     </div>
                 )}
             </div>
