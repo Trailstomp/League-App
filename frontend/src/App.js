@@ -15120,7 +15120,7 @@ function App() {
         } else {
             switch (page) {
                 case 'home': pageComponent = <NewHomePage teams={teams} onTeamClick={(teamId) => navigate('team', teamId)} leagueInfo={leagueInfo} currentUser={currentUser} websiteStyle={websiteStyle} setCurrentUser={setCurrentUser} getAllNewsItems={getAllNewsItems} setSelectedNewsItem={setSelectedNewsItem} addTeamNewsItem={addTeamNewsItem} updateTeamNewsItem={updateTeamNewsItem} deleteTeamNewsItem={deleteTeamNewsItem} />; break;
-                case 'events': pageComponent = <EventsPage teams={teams} leagueSchedule={leagueSchedule} onTeamClick={(teamId) => navigate('team', teamId)} currentUser={currentUser} websiteStyle={websiteStyle} onUpdateRSVP={handleUpdateRSVP} users={users} onSendNotification={sendEventNotification} onEventClick={handleEventClick} />; break;
+                case 'events': pageComponent = <EventsPage teams={teams} leagueSchedule={leagueSchedule} onTeamClick={(teamId) => navigate('team', teamId)} currentUser={currentUser} websiteStyle={websiteStyle} onUpdateRSVP={handleUpdateRSVP} users={users} onSendNotification={sendEventNotification} onEventClick={handleEventClick} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} />; break;
                 case 'event-dashboard': pageComponent = <EventDashboard teams={teams} currentUser={currentUser} onSendNotification={sendEventNotification} websiteStyle={websiteStyle} />; break;
                 case 'standings': pageComponent = <StandingsPage teams={teams} onTeamClick={(teamId) => navigate('team', teamId)} websiteStyle={websiteStyle} />; break;
                 case 'league_contact': pageComponent = <LeagueContactPage websiteStyle={websiteStyle} leagueInfo={leagueInfo} />; break;
