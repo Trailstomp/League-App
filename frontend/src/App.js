@@ -1459,40 +1459,111 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
     };
     
     const generateDoubleEliminationBracket = (teams, byeTeam, rounds) => {
-        // Simplified double elimination - winners and losers bracket
-        generateSingleEliminationBracket(teams, null, rounds);
+        let workingTeams = [...teams];
         
-        // Mark as winners bracket
-        rounds.forEach(round => {
-            round.type = 'winners';
-        });
-        
-        // Add losers bracket (simplified version)
-        const losersRounds = [];
-        for (let i = 0; i < rounds.length - 1; i++) {
-            losersRounds.push({
-                round: i + 1,
-                name: `Losers ${i + 1}`,
-                matches: [],
-                type: 'losers'
-            });
+        // Add bye team if specified
+        if (byeTeam) {
+            workingTeams.unshift(byeTeam);
         }
+        
+        // Ensure power of 2
+        const nextPowerOf2 = Math.pow(2, Math.ceil(Math.log2(workingTeams.length)));
+        while (workingTeams.length < nextPowerOf2) {
+            workingTeams.push({ id: `bye-${workingTeams.length}`, name: 'BYE', isBye: true });
+        }
+        
+        // Generate winners bracket first
+        generateSingleEliminationBracket(teams, byeTeam, rounds);
+        
+        // Calculate losers bracket structure
+        const winnersRounds = rounds.length;
+        const losersRounds = [];
+        
+        // Losers bracket has more complex structure
+        // First losers round gets first round losers
+        let losersRoundNumber = 1;
+        
+        // Create initial losers bracket rounds
+        for (let i = 0; i < winnersRounds - 1; i++) {
+            const winnersRound = rounds[i];
+            const numMatches = Math.ceil(winnersRound.matches.length / 2);
+            
+            if (i === 0) {
+                // First losers round: first round losers play each other
+                losersRounds.push({
+                    round: losersRoundNumber,
+                    name: `Losers Round ${losersRoundNumber}`,
+                    matches: Array.from({ length: numMatches }, (_, idx) => ({
+                        id: `losers-r${losersRoundNumber}-m${idx + 1}`,
+                        team1: null, // Will be filled with losers
+                        team2: null,
+                        winner: null,
+                        loser: null,
+                        score1: null,
+                        score2: null,
+                        status: 'pending',
+                        dependsOn: [`winners-r1-m${idx * 2 + 1}`, `winners-r1-m${idx * 2 + 2}`]
+                    })),
+                    type: 'losers'
+                });
+            } else {
+                // Subsequent losers rounds: mix losers with previous losers bracket winners
+                losersRounds.push({
+                    round: losersRoundNumber,
+                    name: `Losers Round ${losersRoundNumber}`,
+                    matches: Array.from({ length: numMatches }, (_, idx) => ({
+                        id: `losers-r${losersRoundNumber}-m${idx + 1}`,
+                        team1: null, // Winner from previous losers round
+                        team2: null, // Loser from winners bracket
+                        winner: null,
+                        loser: null,
+                        score1: null,
+                        score2: null,
+                        status: 'pending',
+                        dependsOn: [`winners-r${i + 1}-m${idx + 1}`, `losers-r${losersRoundNumber - 1}-m${idx + 1}`]
+                    })),
+                    type: 'losers'
+                });
+            }
+            losersRoundNumber++;
+        }
+        
+        // Add losers final
+        losersRounds.push({
+            round: losersRoundNumber,
+            name: 'Losers Final',
+            matches: [{
+                id: `losers-final`,
+                team1: null, // Winner of last losers round
+                team2: null, // Loser of winners final (if any)
+                winner: null,
+                loser: null,
+                score1: null,
+                score2: null,
+                status: 'pending'
+            }],
+            type: 'losers'
+        });
         
         // Add grand final
         rounds.push({
-            round: rounds.length + 1,
+            round: winnersRounds + losersRounds.length + 1,
             name: 'Grand Final',
             matches: [{
                 id: `grand-final`,
                 team1: null, // Winner of winners bracket
                 team2: null, // Winner of losers bracket
                 winner: null,
+                loser: null,
                 score1: null,
-                score2: null
+                score2: null,
+                status: 'pending',
+                note: 'Winner of losers bracket must beat winners bracket winner twice'
             }],
             type: 'grand-final'
         });
         
+        // Add all losers rounds to main rounds array
         rounds.push(...losersRounds);
     };
     
