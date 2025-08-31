@@ -6168,20 +6168,25 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
             <h3 className="text-2xl font-bold mb-4">{editingEvent?.id ? 'Edit Event' : 'Add New Event'}</h3>
             <form onSubmit={onSave} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input 
-                        type="date" 
-                        value={editingEvent?.date || ''} 
-                        onChange={e => setEditingEvent(prev => ({...prev, date: e.target.value}))} 
-                        className="w-full p-2 border rounded" 
-                        required 
-                    />
-                    <select 
-                        value={editingEvent?.time || ''} 
-                        onChange={e => setEditingEvent(prev => ({...prev, time: e.target.value}))} 
-                        className="w-full p-2 border rounded" 
-                        required 
-                    >
-                        <option value="">Select Time</option>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Event Date *</label>
+                        <input 
+                            type="date" 
+                            value={editingEvent?.date || ''} 
+                            onChange={e => setEditingEvent(prev => ({...prev, date: e.target.value}))} 
+                            className="w-full p-2 border rounded" 
+                            required 
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Event Time *</label>
+                        <select 
+                            value={editingEvent?.time || ''} 
+                            onChange={e => setEditingEvent(prev => ({...prev, time: e.target.value}))} 
+                            className="w-full p-2 border rounded" 
+                            required 
+                        >
+                            <option value="">Select Time</option>
                         {Array.from({ length: 96 }, (_, i) => {
                             const hour = Math.floor(i / 4);
                             const minute = (i % 4) * 15;
