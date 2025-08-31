@@ -14465,7 +14465,8 @@ function App() {
                     setStoredData('mlbl_leagueSchedule', apiData.leagueSchedule || initialLeagueSchedule);
                     setStoredData('mlbl_users', loadedUsers);
                     setStoredData('mlbl_leagueInfo', apiData.leagueInfo || leagueInfo);
-                    setStoredData('mlbl_websiteStyle', hasWebsiteStyleData ? apiData.websiteStyle : websiteStyle);
+                    // Save to localStorage for deployment safety
+                    setStoredData('mlbl_websiteStyle', finalWebsiteStyle);
                 } else {
                     console.log('📦 Loading from localStorage fallback');
                     // Fallback to localStorage
