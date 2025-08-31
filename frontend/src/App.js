@@ -6281,23 +6281,29 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                 
                 {/* Tournament Name - only show when type is tournament */}
                 {editingEvent?.type === 'tournament' && (
-                    <input 
-                        type="text" 
-                        value={editingEvent?.tournamentName || ''} 
-                        onChange={e => setEditingEvent(prev => ({...prev, tournamentName: e.target.value}))} 
-                        placeholder="Tournament Name (e.g., 'Spring Classic', 'Championship Series')" 
-                        className="w-full p-2 border rounded" 
-                        required
-                    />
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Tournament Name *</label>
+                        <input 
+                            type="text" 
+                            value={editingEvent?.tournamentName || ''} 
+                            onChange={e => setEditingEvent(prev => ({...prev, tournamentName: e.target.value}))} 
+                            placeholder="e.g., 'Spring Classic', 'Championship Series'" 
+                            className="w-full p-2 border rounded" 
+                            required
+                        />
+                    </div>
                 )}
                 
-                <textarea 
-                    value={editingEvent?.description || ''} 
-                    onChange={e => setEditingEvent(prev => ({...prev, description: e.target.value}))} 
-                    placeholder="Description (optional)" 
-                    className="w-full p-2 border rounded" 
-                    rows="3"
-                />
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea 
+                        value={editingEvent?.description || ''} 
+                        onChange={e => setEditingEvent(prev => ({...prev, description: e.target.value}))} 
+                        placeholder="Enter event description (optional)" 
+                        className="w-full p-2 border rounded" 
+                        rows="3"
+                    />
+                </div>
                 
                 {/* Event Photo Upload */}
                 <div>
