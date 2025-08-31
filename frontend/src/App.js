@@ -6201,14 +6201,17 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                     </select>
                     </div>
                 </div>
-                <input 
-                    type="text" 
-                    value={editingEvent?.title || ''} 
-                    onChange={e => setEditingEvent(prev => ({...prev, title: e.target.value}))} 
-                    placeholder="Event Title" 
-                    className="w-full p-2 border rounded" 
-                    required 
-                />
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Event Title *</label>
+                    <input 
+                        type="text" 
+                        value={editingEvent?.title || ''} 
+                        onChange={e => setEditingEvent(prev => ({...prev, title: e.target.value}))} 
+                        placeholder="Enter event title" 
+                        className="w-full p-2 border rounded" 
+                        required 
+                    />
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <select 
                         value={editingEvent?.type || 'practice'} 
