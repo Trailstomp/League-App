@@ -3078,7 +3078,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
         ).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5); // Show next 5 events
 
         return [...regularGames, ...tournamentItems, ...upcomingEvents];
-    }, [gameTickerData, teams, websiteStyle?.tickerFilters]);
+    }, [leagueSchedule, teams, websiteStyle?.tickerFilters]);
 
     useEffect(() => {
         const tickerElement = tickerRef.current;
