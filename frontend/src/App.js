@@ -15495,10 +15495,12 @@ function App() {
                                     setLeagueSchedule(prev => [...prev, newEvent]);
                                 } else {
                                     // Updating existing event
+                                    console.log('Updating existing event...');
                                     setLeagueSchedule(prev => 
                                         prev.map(e => e.id === editingEvent.id ? editingEvent : e)
                                     );
                                 }
+                                console.log('Closing modal...');
                                 setEditingEvent(null);
                             }}
                             onCancel={() => setEditingEvent(null)}
