@@ -1983,12 +1983,14 @@ const BracketMatchCard = ({ match, onUpdateMatch, isAuthorized, bracketType }) =
     };
     
     const getWinnerStyle = (team) => {
-        if (match.winner?.id === team?.id) {
-            return bracketType === 'winners' ? 'bg-green-200 font-bold text-green-800' :
-                   bracketType === 'losers' ? 'bg-orange-200 font-bold text-orange-800' :
-                   'bg-yellow-200 font-bold text-yellow-800';
+        // Only highlight if there's actually a winner and this team is the winner
+        if (match.winner && match.winner.id === team?.id) {
+            return bracketType === 'winners' ? 'bg-green-200 font-bold text-green-800 border-2 border-green-400' :
+                   bracketType === 'losers' ? 'bg-orange-200 font-bold text-orange-800 border-2 border-orange-400' :
+                   'bg-yellow-200 font-bold text-yellow-800 border-2 border-yellow-400';
         }
-        return 'bg-white';
+        // Default styling for teams without winner determination
+        return 'bg-white border border-gray-200';
     };
     
     return (
