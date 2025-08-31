@@ -1624,43 +1624,83 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
         const currentRound = bracketData.rounds[roundIndex];
         const matchId = completedMatch.id;
         
-        // Find next round matches that depend on this match
-        bracketData.rounds.forEach((round, rIndex) => {
-            round.matches.forEach((match, mIndex) => {
-                if (match.dependsOn && match.dependsOn.includes(matchId)) {
-                    // Advance winner
-                    if (!match.team1) {
-                        match.team1 = completedMatch.winner;
-                    } else if (!match.team2) {
-                        match.team2 = completedMatch.winner;
+        // For winners bracket, advance winner to next winners round
+        if (currentRound.type === 'winners') {
+            const nextWinnersRound = bracketData.rounds.find(r => 
+                r.type === 'winners' && r.round === currentRound.round + 1
+            );
+            
+            if (nextWinnersRound) {
+                // Find the appropriate match in next round
+                const currentMatchIndex = currentRound.matches.findIndex(m => m.id === matchId);
+                const nextMatchIndex = Math.floor(currentMatchIndex / 2);
+                
+                if (nextWinnersRound.matches[nextMatchIndex]) {
+                    const nextMatch = nextWinnersRound.matches[nextMatchIndex];
+                    
+                    // Determine which slot (team1 or team2) based on match index
+                    if (currentMatchIndex % 2 === 0) {
+                        nextMatch.team1 = completedMatch.winner;
+                    } else {
+                        nextMatch.team2 = completedMatch.winner;
                     }
                 }
+            }
+            
+            // Also advance loser to losers bracket if double elimination
+            if (bracketSettings.format === 'double-elimination' && completedMatch.loser) {
+                const losersRounds = bracketData.rounds.filter(r => r.type === 'losers');
                 
-                // Handle losers bracket advancement
-                if (currentRound.type === 'winners' && round.type === 'losers') {
-                    // Advance loser to appropriate losers bracket match
-                    if (match.dependsOn && match.dependsOn.includes(matchId)) {
-                        if (!match.team1) {
-                            match.team1 = completedMatch.loser;
-                        } else if (!match.team2) {
-                            match.team2 = completedMatch.loser;
+                // Logic for advancing losers to appropriate losers bracket position
+                // This is complex and depends on the specific losers bracket structure
+                // For now, we'll use a simplified approach
+                const appropriateLosersRound = losersRounds.find(r => r.round === currentRound.round);
+                if (appropriateLosersRound) {
+                    const availableMatch = appropriateLosersRound.matches.find(m => !m.team1 || !m.team2);
+                    if (availableMatch) {
+                        if (!availableMatch.team1) {
+                            availableMatch.team1 = completedMatch.loser;
+                        } else if (!availableMatch.team2) {
+                            availableMatch.team2 = completedMatch.loser;
                         }
                     }
                 }
-            });
-        });
+            }
+        }
+        
+        // For losers bracket, advance winner to next losers round
+        if (currentRound.type === 'losers') {
+            const nextLosersRound = bracketData.rounds.find(r => 
+                r.type === 'losers' && r.round === currentRound.round + 1
+            );
+            
+            if (nextLosersRound) {
+                const currentMatchIndex = currentRound.matches.findIndex(m => m.id === matchId);
+                const nextMatchIndex = Math.floor(currentMatchIndex / 2);
+                
+                if (nextLosersRound.matches[nextMatchIndex]) {
+                    const nextMatch = nextLosersRound.matches[nextMatchIndex];
+                    
+                    if (currentMatchIndex % 2 === 0) {
+                        nextMatch.team1 = completedMatch.winner;
+                    } else {
+                        nextMatch.team2 = completedMatch.winner;
+                    }
+                }
+            }
+        }
         
         // Handle grand final qualification
         if (currentRound.name === 'Final' && currentRound.type === 'winners') {
             const grandFinal = bracketData.rounds.find(r => r.type === 'grand-final');
-            if (grandFinal) {
+            if (grandFinal && grandFinal.matches[0]) {
                 grandFinal.matches[0].team1 = completedMatch.winner;
             }
         }
         
         if (currentRound.name === 'Losers Final') {
             const grandFinal = bracketData.rounds.find(r => r.type === 'grand-final');
-            if (grandFinal) {
+            if (grandFinal && grandFinal.matches[0]) {
                 grandFinal.matches[0].team2 = completedMatch.winner;
             }
         }
