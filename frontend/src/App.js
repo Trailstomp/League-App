@@ -15493,7 +15493,7 @@ function App() {
                                 } else {
                                     // Updating existing event
                                     setLeagueSchedule(prev => 
-                                        prev.map(e => e.id === eventData.id ? eventData : e)
+                                        prev.map(e => e.id === editingEvent.id ? editingEvent : e)
                                     );
                                 }
                                 setEditingEvent(null);
