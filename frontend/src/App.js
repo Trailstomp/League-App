@@ -6199,6 +6199,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                             );
                         })}
                     </select>
+                    </div>
                 </div>
                 <input 
                     type="text" 
