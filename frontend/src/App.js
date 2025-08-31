@@ -13505,12 +13505,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                     </div>
                 )}
 
-                {activeTab === 'schedule' && hasPermission(currentUser, 'events.view') && (
-                    <div className="p-6">
-                        <h2 className="text-2xl font-bold mb-4">Schedule & Events Management</h2>
-                        <LeagueCalendarManager teams={teams} setTeams={setTeams} websiteStyle={websiteStyle} />
-                    </div>
-                )}
+
 
                 {activeTab === 'media' && hasPermission(currentUser, 'media.view') && (
                     <div className="p-6">
