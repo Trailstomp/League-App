@@ -15479,8 +15479,10 @@ function App() {
                             editingEvent={editingEvent}
                             setEditingEvent={setEditingEvent}
                             teams={teams}
-                            onSave={(eventData) => {
-                                if (!editingEvent.id || !editingEvent.title) {
+                            onSave={(e) => {
+                                e.preventDefault();
+                                
+                                if (!editingEvent.id) {
                                     // Creating new event
                                     const newEvent = {
                                         ...editingEvent,
