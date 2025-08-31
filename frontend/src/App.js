@@ -14290,6 +14290,9 @@ function App() {
     // Event Detail Modal state
     const [selectedEventDetail, setSelectedEventDetail] = useState(null);
     const [eventDetailTab, setEventDetailTab] = useState('details');
+    
+    // Event editing state
+    const [editingEvent, setEditingEvent] = useState(null);
 
     // Event detail handlers
     const handleEventClick = (event) => {
