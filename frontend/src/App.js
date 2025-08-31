@@ -5187,7 +5187,7 @@ const HomePage = ({teams, onTeamClick, leagueInfo, websiteStyle}) => {
     );
 };
 
-const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteStyle, onUpdateRSVP, users, onSendNotification, onEventClick}) => {
+const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteStyle, onUpdateRSVP, users, onSendNotification, onEventClick, onEditEvent, onDeleteEvent}) => {
     const [selectedTeamSchedule, setSelectedTeamSchedule] = useState('all');
     const [eventTypeFilters, setEventTypeFilters] = useState({
         game: true,
