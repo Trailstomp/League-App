@@ -14350,6 +14350,26 @@ function App() {
             new Date(b.date) - new Date(a.date)
         );
     };
+    // Emergency backup recovery system for deployment data loss
+    const recoverWebsiteStyleFromBackup = useCallback(() => {
+        const backup = getStoredData('mlbl_websiteStyle_backup', null);
+        if (backup && backup.version === 'backup') {
+            const recoveredStyle = { ...backup };
+            delete recoveredStyle.timestamp;
+            delete recoveredStyle.version;
+            setWebsiteStyle(recoveredStyle);
+            console.log('🚨 Recovered websiteStyle from emergency backup');
+            return true;
+        }
+        return false;
+    }, []);
+
+    // Add emergency recovery to window for manual recovery if needed
+    useEffect(() => {
+        window.recoverWebsiteStyle = recoverWebsiteStyleFromBackup;
+        return () => delete window.recoverWebsiteStyle;
+    }, [recoverWebsiteStyleFromBackup]);
+
     const [websiteStyle, setWebsiteStyle] = useState({
         logoUrl: MlblLogo,
         primaryColor: '#1e293b', // slate-800
