@@ -14304,8 +14304,15 @@ function App() {
             calendar: team.calendar?.filter(event => event.id !== eventId) || []
         })));
         
-        // Close modal
-        setSelectedEventDetail(null);
+        // Close modal if it's showing this event
+        if (selectedEventDetail && selectedEventDetail.id === eventId) {
+            setSelectedEventDetail(null);
+        }
+    };
+
+    const handleEditEvent = (event) => {
+        // Open the event in edit mode
+        setEditingEvent(event);
     };
 
     // News system state (team-specific news) 
