@@ -5416,10 +5416,36 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                 return (
                                     <div 
                                         key={`tournament-${event.title}-${event.date}`} 
-                                        className="bg-yellow-50 rounded-lg p-4 border border-yellow-200 cursor-pointer hover:border-yellow-300 hover:shadow-md transition-all duration-200"
+                                        className="bg-yellow-50 rounded-lg p-4 border border-yellow-200 cursor-pointer hover:border-yellow-300 hover:shadow-md transition-all duration-200 group relative"
                                         onClick={() => onEventClick && onEventClick(event)}
                                         title="Click to view tournament details"
                                     >
+                                        {/* Edit/Delete Buttons */}
+                                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onEditEvent && onEditEvent(event);
+                                                }}
+                                                className="bg-blue-600 text-white p-1 rounded hover:bg-blue-700"
+                                                title="Edit tournament"
+                                            >
+                                                <Edit size={14} />
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (confirm(`Delete tournament "${event.title}"?`)) {
+                                                        onDeleteEvent && onDeleteEvent(event.id);
+                                                    }
+                                                }}
+                                                className="bg-red-600 text-white p-1 rounded hover:bg-red-700"
+                                                title="Delete tournament"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
+
                                         <div className="flex items-start justify-between">
                                             <div className="flex-grow">
                                                 <div className="flex items-center gap-2 mb-2">
