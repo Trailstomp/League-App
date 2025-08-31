@@ -2962,36 +2962,63 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
         const lookForwardDate = new Date(today);
         lookForwardDate.setDate(today.getDate() + lookForwardDays);
 
-        // Add date information to games from schedule
-        const gamesWithDates = gameTickerData.map(game => {
-            // Find the game in the schedule to get its date
-            let gameDate = null;
-            for (const day of [
-                { date: '2025-08-09', games: [ 
-                    { id: 1, home: 'oh10-lacrosse', away: 'american-dads', time: '1:00 PM', location: 'Dayton' },
-                    { id: 2, home: 'dayton-eagles', away: 'cincinnati-trash-pandas', time: '2:00 PM', location: 'Dayton' },
-                    { id: 3, home: 'indiana-lacers', away: 'american-dads', time: '3:00 PM', location: 'Dayton' },
-                ] },
-                { date: '2025-08-02', games: [ 
-                    { id: 6, home: 'indiana-lacers', away: 'oh10-lacrosse', time: '6:00 PM', location: 'Indy' },
-                    { id: 7, home: 'indy-sabers', away: 'dayton-eagles', time: '7:00 PM', location: 'Indy' },
-                ] },
-                { date: '2025-07-10', games: [ { id: 8, home: 'columbus-ball-hawgs', away: 'dayton-eagles', time: '7:00 PM', location: 'Columbus' } ] },
-            ]) {
-                const scheduleGame = day.games.find(g => g.id === game.id);
-                if (scheduleGame) {
-                    gameDate = day.date;
-                    break;
-                }
+        // Process leagueSchedule data to create ticker items
+        const allTickerItems = [];
+        
+        // Process individual events from leagueSchedule
+        (leagueSchedule || []).forEach(event => {
+            if (event.type === 'game') {
+                allTickerItems.push({
+                    id: event.id,
+                    homeTeam: event.homeTeam,
+                    awayTeam: event.awayTeam,
+                    homeScore: event.homeScore || 0,
+                    awayScore: event.awayScore || 0,
+                    location: event.location,
+                    gameDate: event.date,
+                    time: event.time,
+                    status: event.status || 'scheduled',
+                    itemType: 'game'
+                });
+            } else if (event.type === 'tournament') {
+                allTickerItems.push({
+                    id: event.id,
+                    tournamentName: event.title,
+                    location: event.location,
+                    gameDate: event.date,
+                    time: event.time,
+                    teamName: event.teamName,
+                    teamId: event.teamId,
+                    status: event.status || 'scheduled',
+                    itemType: 'tournament',
+                    games: event.allTeams ? event.allTeams.map(team => ({
+                        homeTeam: team.id,
+                        awayTeam: team.id
+                    })) : []
+                });
+            } else {
+                // Other events (practice, etc.)
+                allTickerItems.push({
+                    id: event.id,
+                    title: event.title,
+                    location: event.location,
+                    gameDate: event.date,
+                    time: event.time,
+                    teamName: event.teamName,
+                    teamId: event.teamId,
+                    status: event.status || 'scheduled',
+                    itemType: 'event'
+                });
             }
-            return {...game, gameDate, type: game.type || 'game', itemType: 'game'};
-        }).filter(game => {
-            // Apply date range filtering
-            if (game.gameDate) {
-                const gameDate = new Date(game.gameDate);
-                return gameDate >= lookBackDate && gameDate <= lookForwardDate;
+        });
+
+        // Apply date range filtering
+        const gamesWithDates = allTickerItems.filter(item => {
+            if (item.gameDate) {
+                const itemDate = new Date(item.gameDate);
+                return itemDate >= lookBackDate && itemDate <= lookForwardDate;
             }
-            return true; // Include games without dates for now
+            return true; // Include items without dates for now
         });
         
         // Group tournament games by tournament name
