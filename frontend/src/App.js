@@ -1581,33 +1581,89 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
     
     const updateMatch = (roundIndex, matchIndex, updates) => {
         const newBracketData = { ...bracketData };
-        newBracketData.rounds[roundIndex].matches[matchIndex] = {
-            ...newBracketData.rounds[roundIndex].matches[matchIndex],
-            ...updates
-        };
+        const match = newBracketData.rounds[roundIndex].matches[matchIndex];
         
-        // Auto-advance winner to next round
-        if (updates.winner) {
-            const match = newBracketData.rounds[roundIndex].matches[matchIndex];
-            const nextRoundIndex = roundIndex + 1;
+        // Update match with new data
+        Object.assign(match, updates);
+        
+        // Determine winner and loser based on scores
+        if (updates.score1 !== undefined && updates.score2 !== undefined && 
+            updates.score1 !== null && updates.score2 !== null) {
             
-            if (nextRoundIndex < newBracketData.rounds.length) {
-                const nextRound = newBracketData.rounds[nextRoundIndex];
-                for (let nextMatch of nextRound.matches) {
-                    if (nextMatch.dependsOn && nextMatch.dependsOn.includes(match.id)) {
-                        if (!nextMatch.team1) {
-                            nextMatch.team1 = updates.winner;
-                        } else if (!nextMatch.team2) {
-                            nextMatch.team2 = updates.winner;
-                        }
-                        break;
-                    }
-                }
+            if (updates.score1 > updates.score2) {
+                match.winner = match.team1;
+                match.loser = match.team2;
+            } else if (updates.score2 > updates.score1) {
+                match.winner = match.team2;
+                match.loser = match.team1;
+            } else {
+                // Tie - no winner determined yet
+                match.winner = null;
+                match.loser = null;
             }
+            
+            if (match.winner) {
+                match.status = 'completed';
+                advanceTeams(newBracketData, match, roundIndex);
+            }
+        }
+        
+        // Manual winner selection (overrides score-based winner)
+        if (updates.winner && match.team1 && match.team2) {
+            match.winner = updates.winner;
+            match.loser = match.winner.id === match.team1.id ? match.team2 : match.team1;
+            match.status = 'completed';
+            advanceTeams(newBracketData, match, roundIndex);
         }
         
         setBracketData(newBracketData);
         onUpdateEvent({ ...event, bracket: newBracketData });
+    };
+    
+    const advanceTeams = (bracketData, completedMatch, roundIndex) => {
+        const currentRound = bracketData.rounds[roundIndex];
+        const matchId = completedMatch.id;
+        
+        // Find next round matches that depend on this match
+        bracketData.rounds.forEach((round, rIndex) => {
+            round.matches.forEach((match, mIndex) => {
+                if (match.dependsOn && match.dependsOn.includes(matchId)) {
+                    // Advance winner
+                    if (!match.team1) {
+                        match.team1 = completedMatch.winner;
+                    } else if (!match.team2) {
+                        match.team2 = completedMatch.winner;
+                    }
+                }
+                
+                // Handle losers bracket advancement
+                if (currentRound.type === 'winners' && round.type === 'losers') {
+                    // Advance loser to appropriate losers bracket match
+                    if (match.dependsOn && match.dependsOn.includes(matchId)) {
+                        if (!match.team1) {
+                            match.team1 = completedMatch.loser;
+                        } else if (!match.team2) {
+                            match.team2 = completedMatch.loser;
+                        }
+                    }
+                }
+            });
+        });
+        
+        // Handle grand final qualification
+        if (currentRound.name === 'Final' && currentRound.type === 'winners') {
+            const grandFinal = bracketData.rounds.find(r => r.type === 'grand-final');
+            if (grandFinal) {
+                grandFinal.matches[0].team1 = completedMatch.winner;
+            }
+        }
+        
+        if (currentRound.name === 'Losers Final') {
+            const grandFinal = bracketData.rounds.find(r => r.type === 'grand-final');
+            if (grandFinal) {
+                grandFinal.matches[0].team2 = completedMatch.winner;
+            }
+        }
     };
     
     const addTeamToBracket = (teamId) => {
