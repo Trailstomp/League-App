@@ -15480,12 +15480,12 @@ function App() {
                             setEditingEvent={setEditingEvent}
                             teams={teams}
                             onSave={(eventData) => {
-                                if (!editingEvent.title || editingEvent.title === '') {
+                                if (!editingEvent.id || !editingEvent.title) {
                                     // Creating new event
                                     const newEvent = {
-                                        ...eventData,
+                                        ...editingEvent,
                                         id: `event_${Date.now()}`,
-                                        teamLogo: teams.find(t => t.id === eventData.teamId)?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
+                                        teamLogo: teams.find(t => t.id === editingEvent.teamId)?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
                                     };
                                     setLeagueSchedule(prev => [...prev, newEvent]);
                                 } else {
