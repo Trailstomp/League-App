@@ -1417,7 +1417,12 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
                     loser: null,
                     score1: null,
                     score2: null,
-                    status: 'pending'
+                    status: 'pending',
+                    // Add dependencies for proper team advancement
+                    dependsOn: roundNumber > 1 ? [
+                        `winners-r${roundNumber - 1}-m${i + 1}`,
+                        `winners-r${roundNumber - 1}-m${i + 2}`
+                    ] : null
                 };
                 
                 // Auto-advance byes
