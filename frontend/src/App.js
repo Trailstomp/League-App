@@ -6213,20 +6213,24 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                     />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <select 
-                        value={editingEvent?.type || 'practice'} 
-                        onChange={e => setEditingEvent(prev => ({...prev, type: e.target.value}))} 
-                        className="w-full p-2 border rounded"
-                    >
-                        <option value="practice">Practice</option>
-                        <option value="game">Game</option>
-                        <option value="scrimmage">Scrimmage</option>
-                        <option value="tournament">Tournament</option>
-                        <option value="social">Social Event</option>
-                        <option value="meeting">Team Meeting</option>
-                    </select>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Event Type</label>
+                        <select 
+                            value={editingEvent?.type || 'practice'} 
+                            onChange={e => setEditingEvent(prev => ({...prev, type: e.target.value}))} 
+                            className="w-full p-2 border rounded"
+                        >
+                            <option value="practice">Practice</option>
+                            <option value="game">Game</option>
+                            <option value="scrimmage">Scrimmage</option>
+                            <option value="tournament">Tournament</option>
+                            <option value="social">Social Event</option>
+                            <option value="meeting">Team Meeting</option>
+                        </select>
+                    </div>
                     {/* Location Dropdown from Team Locations */}
                     <div className="relative">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Event Location *</label>
                         <select 
                             value={editingEvent?.location || ''} 
                             onChange={e => setEditingEvent(prev => ({...prev, location: e.target.value}))} 
