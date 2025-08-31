@@ -2438,26 +2438,7 @@ const initialMockUsers = [
 ];
 
 const initialTeams = [
-    { id: 'oh10-lacrosse', name: 'OH10 Lacrosse', logo: 'https://lh3.googleusercontent.com/d/12Piww7Y46hHbAbnDZwxsFDBfuSKbq2RR', wins: 4, losses: 2, ties: 0, pf: 65, pa: 59, contactEmail: 'cschrudder23@gmail.com', social: { twitter: '#', instagram: '#', facebook: '#' }, active: true, media: [], calendar: [
-        { 
-            id: 'oh10-practice-1', 
-            title: 'Weekly Practice', 
-            date: '2025-01-15', 
-            time: '18:00', 
-            type: 'practice', 
-            location: 'Local Field', 
-            description: 'Regular team practice session',
-            rsvp: {
-                enabled: true,
-                responses: [
-                    { userId: 1, userName: 'Chandler Schrudder', status: 'yes', timestamp: '2025-01-10T10:00:00Z' },
-                    { userId: 2, userName: 'John Smith', status: 'yes', timestamp: '2025-01-10T14:30:00Z' }
-                ],
-                requiresResponse: true,
-                remindersSent: []
-            }
-        }
-    ], division: 'Field', musicUrl: '', style: { bannerUrl: '', primaryColor: '#ff0000', backgroundColor: '#fef2f2' } },
+    { id: 'oh10-lacrosse', name: 'OH10 Lacrosse', logo: 'https://lh3.googleusercontent.com/d/12Piww7Y46hHbAbnDZwxsFDBfuSKbq2RR', wins: 4, losses: 2, ties: 0, pf: 65, pa: 59, contactEmail: 'cschrudder23@gmail.com', social: { twitter: '#', instagram: '#', facebook: '#' }, active: true, media: [], calendar: [], division: 'Field', musicUrl: '', style: { bannerUrl: '', primaryColor: '#ff0000', backgroundColor: '#fef2f2' } },
     { id: 'american-dads', name: 'American Dads', logo: 'https://lh3.googleusercontent.com/d/1_YssV72EQ9Y3gtXzjM8S0eAJCGQMFpJ6', wins: 4, losses: 0, ties: 0, pf: 56, pa: 10, contactEmail: 'coach@gmail.com', social: { twitter: '#', instagram: '#', facebook: '#' }, active: true, media: [], calendar: [
         {
             id: 'dads-game-1',
