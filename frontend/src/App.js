@@ -3494,7 +3494,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
     
     return (
         <div 
-            className="text-white py-2 overflow-hidden shadow-lg"
+            className="text-white py-1 overflow-hidden shadow-lg"
             style={{ backgroundColor: websiteStyle?.tickerColor || '#1e293b' }}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
