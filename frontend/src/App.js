@@ -404,23 +404,7 @@ const AdvancedColorPicker = ({
                     />
                 </div>
                 
-                {/* Eyedropper Button */}
-                {showEyedropper && (
-                    <button
-                        type="button"
-                        onClick={handleEyedropper}
-                        className={`px-4 py-2 rounded-lg border-2 transition-colors flex items-center gap-2 ${
-                            eyedropperSupported 
-                                ? 'border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100' 
-                                : 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed'
-                        }`}
-                        disabled={!eyedropperSupported}
-                        title={eyedropperSupported ? 'Pick color from screen' : 'Eyedropper not supported in this browser'}
-                    >
-                        <Eye size={16} />
-                        <span className="text-sm font-medium">Pick</span>
-                    </button>
-                )}
+
             </div>
             
             {/* Color Preset Palette */}
