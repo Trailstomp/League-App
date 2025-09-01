@@ -10201,7 +10201,9 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                 )}
             </div>
             
-            <div className="p-4 rounded-lg" style={{ backgroundColor: team.style?.backgroundColor || 'transparent' }}>
+            {/* Main content container with padding */}
+            <div className="p-4 md:p-8">
+                <div className="rounded-lg" style={{ backgroundColor: team.style?.backgroundColor || 'transparent' }}>
                 {activeTab === 'home' && (
                     <div className="space-y-6">
                         {/* Team Hero Section */}
