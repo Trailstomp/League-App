@@ -12966,12 +12966,12 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
     const [saved, setSaved] = useState(false);
     const [activeSubtask, setActiveSubtask] = useState('colors');
 
-    const teamSubtasks = [
-        { id: 'colors', name: 'Colors & Themes', icon: Palette },
-        { id: 'logos', name: 'Logo & Branding', icon: Star },
-        { id: 'hero', name: 'Hero & Banner', icon: Layout },
-        { id: 'typography', name: 'Typography', icon: Type },
-        { id: 'layout', name: 'Layout & UI', icon: Briefcase }
+    const teamZones = [
+        { id: 'themes', name: 'Colors & Themes', icon: Palette },
+        { id: 'hero', name: 'Hero Zone', icon: Layout },
+        { id: 'sidebar', name: 'Sidebar Zone', icon: Menu },
+        { id: 'content', name: 'Content Zone', icon: Type },
+        { id: 'forms', name: 'Forms Zone', icon: Briefcase }
     ];
 
     const handleSave = () => {
