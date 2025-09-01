@@ -7013,8 +7013,8 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
 const TeamCalendarManager = ({ team, teams, setTeams, websiteStyle }) => {
     const [editingEvent, setEditingEvent] = useState(null);
     
-    // Get form background color from website style or default
-    const formBackgroundColor = websiteStyle?.formBackgroundColor || '#f8fafc';
+    // Get form background color from team style first, then website style, or default
+    const formBackgroundColor = team.style?.formBackgroundColor || websiteStyle?.formBackgroundColor || '#f8fafc';
 
     const handleSave = (e) => {
         e.preventDefault();
