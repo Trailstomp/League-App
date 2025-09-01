@@ -13237,7 +13237,15 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
                 customIntro: teamStyle.customIntro,
                 style: {
                     ...t.style,
-                    ...teamStyle
+                    // Only save non-empty values to avoid overwriting existing data
+                    ...Object.fromEntries(
+                        Object.entries(teamStyle).filter(([key, value]) => {
+                            // Skip description and customIntro as they're handled separately
+                            if (key === 'description' || key === 'customIntro') return false;
+                            // Only include values that are not empty strings, null, or undefined
+                            return value !== '' && value !== null && value !== undefined;
+                        })
+                    )
                 }
             } : t
         ));
