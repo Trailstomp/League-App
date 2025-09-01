@@ -10065,81 +10065,17 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                 
                 {/* COMBINED FRIENDS & SPONSORS TAB with inline editing */}
                 {activeTab === 'friends-sponsors' && (
-                    <div className="space-y-6">
-                        <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Friends & Partners</h2>
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {friends.length === 0 ? (
-                                <div className="col-span-full text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
-                                    <Users className="mx-auto h-12 w-12 text-slate-400 mb-4" />
-                                    <h3 className="text-lg font-semibold text-slate-600 mb-2">No Friends Yet</h3>
-                                    <p className="text-slate-500">Check back later to see our friends and community partners</p>
-                                </div>
-                            ) : (
-                                friends.map(friend => (
-                                    <div key={friend.id} className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-                                        <div className="text-center">
-                                            <img 
-                                                src={friend.photo || 'https://placehold.co/100x100/e2e8f0/94a3b8?text=FRIEND'} 
-                                                alt={friend.name} 
-                                                className="w-20 h-20 mx-auto rounded-full object-contain bg-slate-50 p-1"
-                                            />
-                                            <h3 className="font-semibold text-slate-800 mt-3">{friend.name}</h3>
-                                            {friend.description && (
-                                                <p className="text-sm text-slate-600 mt-1">{friend.description}</p>
-                                            )}
-                                        </div>
-                                        
-                                        <div className="flex justify-center gap-2 mt-4">
-                                            {friend.website && (
-                                                <a 
-                                                    href={friend.website} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer"
-                                                    className="text-blue-500 hover:text-blue-700 p-1"
-                                                    title="Visit website"
-                                                >
-                                                    <Globe size={18} />
-                                                </a>
-                                            )}
-                                            {friend.socialMedia?.twitter && (
-                                                <a 
-                                                    href={`https://twitter.com/${friend.socialMedia.twitter.replace('@', '')}`} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer"
-                                                    className="text-blue-400 hover:text-blue-600 p-1"
-                                                    title="Twitter"
-                                                >
-                                                    <Twitter size={18} />
-                                                </a>
-                                            )}
-                                            {friend.socialMedia?.facebook && (
-                                                <a 
-                                                    href={friend.socialMedia.facebook.startsWith('http') ? friend.socialMedia.facebook : `https://facebook.com/${friend.socialMedia.facebook}`} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer"
-                                                    className="text-blue-600 hover:text-blue-800 p-1"
-                                                    title="Facebook"
-                                                >
-                                                    <Facebook size={18} />
-                                                </a>
-                                            )}
-                                            {friend.socialMedia?.instagram && (
-                                                <a 
-                                                    href={`https://instagram.com/${friend.socialMedia.instagram.replace('@', '')}`} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer"
-                                                    className="text-pink-500 hover:text-pink-700 p-1"
-                                                    title="Instagram"
-                                                >
-                                                    <Instagram size={18} />
-                                                </a>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
+                    <FriendsSponsorsTab 
+                        team={team}
+                        teams={teams}
+                        setTeams={setTeams}
+                        friends={friends}
+                        sponsors={sponsors}
+                        setFriends={setFriends}
+                        setSponsors={setSponsors}
+                        isAuthorizedToManage={isAuthorizedToManage}
+                        websiteStyle={websiteStyle}
+                    />
                 )}
                 
                 {/* SPONSORS TAB - Display team sponsors */}
