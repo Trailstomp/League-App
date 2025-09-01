@@ -13485,8 +13485,6 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
                 return <TeamColorsThemeManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} team={team} websiteStyle={websiteStyle} />;
             case 'hero':
                 return <TeamHeroZoneManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} team={team} websiteStyle={websiteStyle} />;
-            case 'sidebar':
-                return <TeamSidebarZoneManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} />;
             case 'content':
                 return <TeamContentZoneManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} />;
             case 'forms':
