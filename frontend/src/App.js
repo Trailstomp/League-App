@@ -10824,16 +10824,14 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                     </div>
                 )}
                 
-                {/* COMBINED FRIENDS & SPONSORS TAB with inline editing */}
-                {activeTab === 'friends-sponsors' && (
-                    <FriendsSponsorsTab 
+                {/* FRIENDS TAB with inline editing */}
+                {activeTab === 'friends' && (
+                    <FriendsTab 
                         team={team}
                         teams={teams}
                         setTeams={setTeams}
                         friends={friends}
-                        sponsors={sponsors}
                         setFriends={setFriends}
-                        setSponsors={setSponsors}
                         isAuthorizedToManage={isAuthorizedToManage}
                         websiteStyle={websiteStyle}
                     />
