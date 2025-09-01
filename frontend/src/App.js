@@ -817,6 +817,7 @@ const ToggleLeft = (props) => <Icon name="ToggleLeft" {...props} />;
 const ToggleRight = (props) => <Icon name="ToggleRight" {...props} />;
 const Plus = (props) => <Icon name="Plus" {...props} />;
 const Trash2 = (props) => <Icon name="Trash2" {...props} />;
+const Heart = (props) => <Icon name="Heart" {...props} />;
 const Twitter = (props) => <Icon name="Twitter" {...props} />;
 const Instagram = (props) => <Icon name="Instagram" {...props} />;
 const Facebook = (props) => <Icon name="Facebook" {...props} />;
