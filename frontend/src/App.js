@@ -13553,53 +13553,121 @@ const ColorThemeSelector = ({ style, setStyle, logoUrl }) => {
                 </div>
             </div>
             
-            {/* Logo-based Themes */}
+            {/* Logo-based Color Assignment */}
             {logoUrl && (
                 <div>
                     <div className="flex items-center justify-between mb-3">
-                        <h5 className="font-semibold text-slate-700">Logo-Based Themes</h5>
+                        <h5 className="font-semibold text-slate-700">Logo Color Assignment</h5>
                         <button
                             onClick={extractLogoColors}
                             disabled={extractingColors}
                             className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 transition-colors"
                         >
-                            {extractingColors ? 'Extracting...' : 'Refresh Colors'}
+                            {extractingColors ? 'Extract Colors' : 'Refresh Colors'}
                         </button>
                     </div>
                     
                     {logoColors.length > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            {logoColors.map((color, index) => {
-                                const theme = generateThemeFromColor(color, `Logo Color ${index + 1}`);
-                                return (
-                                    <div
-                                        key={color}
-                                        className={`p-3 border-2 rounded-lg cursor-pointer text-center transition-all hover:shadow-md ${
-                                            selectedTheme === theme.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300'
-                                        }`}
-                                    >
+                        <div className="space-y-4">
+                            {/* Extracted Colors Display */}
+                            <div className="grid grid-cols-3 gap-4">
+                                {logoColors.map((colorObj, index) => (
+                                    <div key={index} className="text-center">
                                         <div 
-                                            className="w-full h-8 rounded mb-2"
-                                            style={{ backgroundColor: color }}
+                                            className="w-full h-16 rounded-lg border-2 border-slate-300 mb-2"
+                                            style={{ backgroundColor: colorObj.hex }}
                                         />
-                                        <span className="text-xs text-slate-600 block mb-2">{color}</span>
-                                        <button
-                                            onClick={() => handleApplyTheme(theme)}
-                                            className={`w-full py-1 px-2 rounded text-xs font-medium transition-colors ${
-                                                selectedTheme === theme.id 
-                                                    ? 'bg-blue-600 text-white' 
-                                                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                                            }`}
-                                        >
-                                            {selectedTheme === theme.id ? '✓ Applied' : 'Apply'}
-                                        </button>
+                                        <div className="text-sm font-medium text-slate-700">{colorObj.name}</div>
+                                        <div className="text-xs text-slate-500">{colorObj.description}</div>
+                                        <div className="text-xs text-slate-600 font-mono">{colorObj.hex}</div>
                                     </div>
-                                );
-                            })}
+                                ))}
+                            </div>
+                            
+                            {/* Color Assignment Options */}
+                            <div className="border-t pt-4">
+                                <h6 className="text-sm font-semibold text-slate-700 mb-3">Assign Colors to Website Elements:</h6>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {logoColors.map((colorObj, colorIndex) => (
+                                        <div key={colorIndex} className="bg-white p-4 rounded-lg border border-slate-200">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <div 
+                                                    className="w-4 h-4 rounded"
+                                                    style={{ backgroundColor: colorObj.hex }}
+                                                />
+                                                <span className="font-medium text-slate-700">{colorObj.name} Color</span>
+                                                <span className="text-xs text-slate-500">({colorObj.description})</span>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <button
+                                                    onClick={() => setStyle(prev => ({...prev, primaryColor: colorObj.hex}))}
+                                                    className="w-full text-left px-3 py-2 text-sm bg-slate-50 hover:bg-slate-100 rounded border transition-colors"
+                                                >
+                                                    → Use as Primary Color
+                                                </button>
+                                                <button
+                                                    onClick={() => setStyle(prev => ({...prev, bannerColor: colorObj.hex}))}
+                                                    className="w-full text-left px-3 py-2 text-sm bg-slate-50 hover:bg-slate-100 rounded border transition-colors"
+                                                >
+                                                    → Use as Banner Color
+                                                </button>
+                                                <button
+                                                    onClick={() => setStyle(prev => ({...prev, linkColor: colorObj.hex}))}
+                                                    className="w-full text-left px-3 py-2 text-sm bg-slate-50 hover:bg-slate-100 rounded border transition-colors"
+                                                >
+                                                    → Use as Link Color
+                                                </button>
+                                                <button
+                                                    onClick={() => setStyle(prev => ({...prev, headingColor: colorObj.hex}))}
+                                                    className="w-full text-left px-3 py-2 text-sm bg-slate-50 hover:bg-slate-100 rounded border transition-colors"
+                                                >
+                                                    → Use as Heading Color
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                {/* Quick Apply All Button */}
+                                <div className="mt-4 text-center">
+                                    <button
+                                        onClick={() => {
+                                            if (logoColors.length >= 3) {
+                                                setStyle(prev => ({
+                                                    ...prev,
+                                                    primaryColor: logoColors[0].hex,
+                                                    bannerColor: logoColors[0].hex,
+                                                    linkColor: logoColors[1].hex,
+                                                    headingColor: logoColors[2].hex,
+                                                    accentColor: logoColors[1].hex
+                                                }));
+                                            }
+                                        }}
+                                        disabled={logoColors.length < 3}
+                                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
+                                    >
+                                        ✨ Apply All Logo Colors Automatically
+                                    </button>
+                                    <p className="text-xs text-slate-500 mt-1">
+                                        Primary → Banner & Primary, Secondary → Links & Accent, Accent → Headings
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     ) : (
-                        <div className="text-center py-4 text-slate-500 border-2 border-dashed border-slate-300 rounded-lg">
-                            {extractingColors ? 'Analyzing logo colors...' : 'Upload a logo to extract colors'}
+                        <div className="text-center py-6 text-slate-500 border-2 border-dashed border-slate-300 rounded-lg">
+                            {extractingColors ? (
+                                <div>
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+                                    <p>Analyzing logo colors...</p>
+                                </div>
+                            ) : (
+                                <div>
+                                    <Palette className="mx-auto h-8 w-8 text-slate-400 mb-2" />
+                                    <p>Upload a logo above to extract its colors</p>
+                                    <p className="text-xs mt-1">We'll find the 3 main colors for you to use</p>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
