@@ -9378,17 +9378,22 @@ const FriendsSponsorsTab = ({
         const newFriend = {
             id: `friend_${Date.now()}`,
             ...friendData,
-            teamId: team.id, // Mark as team-specific
             dateAdded: new Date().toISOString()
         };
 
-        // Add to team's friends array
-        const updatedTeam = {
-            ...team,
-            friends: [...teamFriends, newFriend]
-        };
-
-        setTeams(teams.map(t => t.id === team.id ? updatedTeam : t));
+        if (team && team.id) {
+            // Team-specific friend
+            newFriend.teamId = team.id;
+            const updatedTeam = {
+                ...team,
+                friends: [...teamFriends, newFriend]
+            };
+            setTeams(teams.map(t => t.id === team.id ? updatedTeam : t));
+        } else {
+            // League-wide friend (admin panel)
+            setFriends([...friends, newFriend]);
+        }
+        
         setShowAddFriend(false);
     };
 
