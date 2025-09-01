@@ -13181,6 +13181,21 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
         customIntro: team.customIntro || false,
         ...team.style
     });
+
+    // Reset team style when team changes to prevent cross-contamination
+    useEffect(() => {
+        setTeamStyle({
+            description: team.description || '',
+            primaryColor: team.style?.primaryColor || websiteStyle.primaryColor || '#dc2626',
+            backgroundColor: team.style?.backgroundColor || websiteStyle.teamHeroBackgroundColor || '#f8fafc',
+            textColor: team.style?.textColor || websiteStyle.teamHeroTextColor || '#1f2937',
+            fontFamily: team.style?.fontFamily || websiteStyle.teamHeroFontFamily || 'Inter, sans-serif',
+            bannerImage: team.style?.bannerImage || '',
+            logoUrl: team.style?.logoUrl || '',
+            customIntro: team.customIntro || false,
+            ...team.style
+        });
+    }, [team.id, team.style, team.description, team.customIntro, websiteStyle]);
     const [saved, setSaved] = useState(false);
     const [activeSubtask, setActiveSubtask] = useState('themes');
 
