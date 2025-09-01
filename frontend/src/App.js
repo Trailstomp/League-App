@@ -377,10 +377,10 @@ const AdvancedColorPicker = ({
             <label className="block font-semibold text-slate-700 mb-2">{label}</label>
             
             <div className="flex gap-2">
-                {/* Color Display & Input */}
+                {/* Color Display Only */}
                 <div className="relative flex-1">
                     <div 
-                        className="w-full h-12 border-2 border-slate-300 rounded-lg cursor-pointer flex items-center px-3 hover:border-slate-400 transition-colors"
+                        className="w-full h-12 border-2 border-slate-300 rounded-lg flex items-center px-3"
                         style={{ backgroundColor: value }}
                         onClick={() => setIsOpen(!isOpen)}
                     >
@@ -394,14 +394,6 @@ const AdvancedColorPicker = ({
                             {value.toUpperCase()}
                         </span>
                     </div>
-                    
-                    {/* Hidden HTML color input for fallback */}
-                    <input 
-                        type="color" 
-                        value={value}
-                        onChange={(e) => onChange(e.target.value)}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
                 </div>
                 
                 {/* Eyedropper Button */}
