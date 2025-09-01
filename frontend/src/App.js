@@ -13401,32 +13401,32 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
                 <p className="text-slate-600">Customize how {team.name} appears to visitors</p>
             </div>
 
-            {/* Team Subtask Navigation */}
+            {/* Team Zone Navigation */}
             <div className="mb-8">
                 <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-4">
-                    {teamSubtasks.map((subtask) => {
-                        const IconComponent = subtask.icon;
+                    {teamZones.map((zone) => {
+                        const IconComponent = zone.icon;
                         return (
                             <button
-                                key={subtask.id}
-                                onClick={() => setActiveSubtask(subtask.id)}
+                                key={zone.id}
+                                onClick={() => setActiveSubtask(zone.id)}
                                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium ${
-                                    activeSubtask === subtask.id
+                                    activeSubtask === zone.id
                                         ? 'bg-red-600 text-white shadow-md'
                                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                                 }`}
                             >
                                 <IconComponent size={16} />
-                                {subtask.name}
+                                {zone.name}
                             </button>
                         );
                     })}
                 </div>
             </div>
 
-            {/* Active Subtask Content */}
+            {/* Active Zone Content */}
             <div className="space-y-6">
-                {renderSubtaskContent()}
+                {renderZoneContent()}
             </div>
 
             {/* Save Button */}
