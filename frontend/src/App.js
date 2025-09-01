@@ -1972,7 +1972,29 @@ const BracketMatchCard = ({ match, onUpdateMatch, isAuthorized, bracketType }) =
     const handleScoreEdit = () => {
         const score1 = parseInt(tempScore1) || 0;
         const score2 = parseInt(tempScore2) || 0;
-        onUpdateMatch({ score1, score2 });
+        
+        // Determine winner and loser
+        let winner = null;
+        let loser = null;
+        if (score1 > score2) {
+            winner = match.team1;
+            loser = match.team2;
+        } else if (score2 > score1) {
+            winner = match.team2;
+            loser = match.team1;
+        }
+        
+        // Update the match with scores and winner
+        const updatedMatch = {
+            ...match,
+            score1,
+            score2,
+            winner,
+            loser,
+            status: score1 !== score2 ? 'completed' : 'pending'
+        };
+        
+        onUpdateMatch(updatedMatch);
         setEditingScores(false);
     };
     
