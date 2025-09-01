@@ -8784,7 +8784,7 @@ const FriendCard = ({ friend, isAuthorizedToManage, onEdit, onDelete, websiteSty
                         className="text-red-600 hover:text-red-800 p-1 ml-1"
                         title="Delete"
                     >
-                        <Trash className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" />
                     </button>
                 </div>
             )}
