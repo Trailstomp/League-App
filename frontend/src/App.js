@@ -8708,6 +8708,260 @@ const TeamInfoManager = ({ team, setTeams }) => {
     );
 };
 
+// Combined Friends & Sponsors Tab Component with Inline Editing
+const FriendsSponsorsTab = ({ 
+    team, 
+    teams, 
+    setTeams, 
+    friends = [], 
+    sponsors = [], 
+    setFriends, 
+    setSponsors, 
+    isAuthorizedToManage, 
+    websiteStyle 
+}) => {
+    const [editingFriend, setEditingFriend] = useState(null);
+    const [editingSponsor, setEditingSponsor] = useState(null);
+    const [showAddFriend, setShowAddFriend] = useState(false);
+    const [showAddSponsor, setShowAddSponsor] = useState(false);
+
+    // Get team-specific friends and sponsors
+    const teamFriends = team?.friends || [];
+    const teamSponsors = team?.sponsors || [];
+
+    // Combine league and team data
+    const allFriends = [...friends, ...teamFriends];
+    const allSponsors = [...sponsors, ...teamSponsors];
+
+    const handleAddFriend = (friendData) => {
+        const newFriend = {
+            id: `friend_${Date.now()}`,
+            ...friendData,
+            teamId: team.id, // Mark as team-specific
+            dateAdded: new Date().toISOString()
+        };
+
+        // Add to team's friends array
+        const updatedTeam = {
+            ...team,
+            friends: [...teamFriends, newFriend]
+        };
+
+        setTeams(teams.map(t => t.id === team.id ? updatedTeam : t));
+        setShowAddFriend(false);
+    };
+
+    const handleAddSponsor = (sponsorData) => {
+        const newSponsor = {
+            id: `sponsor_${Date.now()}`,
+            ...sponsorData,
+            teamId: team.id, // Mark as team-specific
+            dateAdded: new Date().toISOString()
+        };
+
+        // Add to team's sponsors array
+        const updatedTeam = {
+            ...team,
+            sponsors: [...teamSponsors, newSponsor]
+        };
+
+        setTeams(teams.map(t => t.id === team.id ? updatedTeam : t));
+        setShowAddSponsor(false);
+    };
+
+    const handleEditFriend = (friendId, friendData) => {
+        if (friendData.teamId) {
+            // Team-specific friend
+            const updatedTeam = {
+                ...team,
+                friends: teamFriends.map(f => f.id === friendId ? { ...f, ...friendData } : f)
+            };
+            setTeams(teams.map(t => t.id === team.id ? updatedTeam : t));
+        } else {
+            // League-wide friend
+            setFriends(friends.map(f => f.id === friendId ? { ...f, ...friendData } : f));
+        }
+        setEditingFriend(null);
+    };
+
+    const handleEditSponsor = (sponsorId, sponsorData) => {
+        if (sponsorData.teamId) {
+            // Team-specific sponsor
+            const updatedTeam = {
+                ...team,
+                sponsors: teamSponsors.map(s => s.id === sponsorId ? { ...s, ...sponsorData } : s)
+            };
+            setTeams(teams.map(t => t.id === team.id ? updatedTeam : t));
+        } else {
+            // League-wide sponsor
+            setSponsors(sponsors.map(s => s.id === sponsorId ? { ...s, ...sponsorData } : s));
+        }
+        setEditingSponsor(null);
+    };
+
+    const handleDeleteFriend = (friendId, isTeamSpecific) => {
+        if (isTeamSpecific) {
+            const updatedTeam = {
+                ...team,
+                friends: teamFriends.filter(f => f.id !== friendId)
+            };
+            setTeams(teams.map(t => t.id === team.id ? updatedTeam : t));
+        } else {
+            setFriends(friends.filter(f => f.id !== friendId));
+        }
+    };
+
+    const handleDeleteSponsor = (sponsorId, isTeamSpecific) => {
+        if (isTeamSpecific) {
+            const updatedTeam = {
+                ...team,
+                sponsors: teamSponsors.filter(s => s.id !== sponsorId)
+            };
+            setTeams(teams.map(t => t.id === team.id ? updatedTeam : t));
+        } else {
+            setSponsors(sponsors.filter(s => s.id !== sponsorId));
+        }
+    };
+
+    return (
+        <div className="space-y-8">
+            <div className="text-center">
+                <h2 className="text-3xl font-bold text-slate-800 mb-2 tracking-tight">Friends & Sponsors</h2>
+                <p className="text-slate-600">Our amazing community partners and supporters</p>
+            </div>
+
+            {/* FRIENDS SECTION */}
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-2xl font-semibold text-slate-800 flex items-center">
+                        <Users className="mr-3 h-6 w-6 text-blue-600" />
+                        Friends & Partners
+                        <span className="ml-3 text-sm font-normal text-slate-500">({allFriends.length})</span>
+                    </h3>
+                    {isAuthorizedToManage && (
+                        <button
+                            onClick={() => setShowAddFriend(true)}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                        >
+                            <Plus className="h-4 w-4" />
+                            Add Friend
+                        </button>
+                    )}
+                </div>
+
+                {allFriends.length === 0 ? (
+                    <div className="text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
+                        <Users className="mx-auto h-12 w-12 text-slate-400 mb-4" />
+                        <h4 className="text-lg font-semibold text-slate-600 mb-2">No Friends Yet</h4>
+                        <p className="text-slate-500">
+                            {isAuthorizedToManage 
+                                ? "Click 'Add Friend' to start building your community network"
+                                : "Check back later to see our friends and community partners"
+                            }
+                        </p>
+                    </div>
+                ) : (
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {allFriends.map(friend => (
+                            <FriendCard
+                                key={friend.id}
+                                friend={friend}
+                                isAuthorizedToManage={isAuthorizedToManage}
+                                onEdit={(data) => handleEditFriend(friend.id, data)}
+                                onDelete={() => handleDeleteFriend(friend.id, !!friend.teamId)}
+                                websiteStyle={websiteStyle}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* SPONSORS SECTION */}
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-2xl font-semibold text-slate-800 flex items-center">
+                        <Briefcase className="mr-3 h-6 w-6 text-green-600" />
+                        Sponsors & Supporters
+                        <span className="ml-3 text-sm font-normal text-slate-500">({allSponsors.length})</span>
+                    </h3>
+                    {isAuthorizedToManage && (
+                        <button
+                            onClick={() => setShowAddSponsor(true)}
+                            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
+                        >
+                            <Plus className="h-4 w-4" />
+                            Add Sponsor
+                        </button>
+                    )}
+                </div>
+
+                {allSponsors.length === 0 ? (
+                    <div className="text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
+                        <Briefcase className="mx-auto h-12 w-12 text-slate-400 mb-4" />
+                        <h4 className="text-lg font-semibold text-slate-600 mb-2">No Sponsors Yet</h4>
+                        <p className="text-slate-500">
+                            {isAuthorizedToManage 
+                                ? "Click 'Add Sponsor' to showcase your supporters"
+                                : "Check back later to see our amazing sponsors and supporters"
+                            }
+                        </p>
+                    </div>
+                ) : (
+                    <div className="space-y-8">
+                        {['Platinum', 'Gold', 'Silver', 'Bronze'].map(tier => {
+                            const tierSponsors = allSponsors.filter(s => s.tier === tier);
+                            return tierSponsors.length > 0 && (
+                                <div key={tier} className="space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <span className={`w-4 h-4 rounded-full ${
+                                            tier === 'Platinum' ? 'bg-purple-500' :
+                                            tier === 'Gold' ? 'bg-yellow-400' :
+                                            tier === 'Silver' ? 'bg-gray-400' :
+                                            'bg-amber-600'
+                                        }`}></span>
+                                        <h4 className="text-xl font-semibold text-slate-800">{tier} Sponsors</h4>
+                                        <span className="text-sm text-slate-500">({tierSponsors.length})</span>
+                                    </div>
+                                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                        {tierSponsors.map(sponsor => (
+                                            <SponsorCard
+                                                key={sponsor.id}
+                                                sponsor={sponsor}
+                                                isAuthorizedToManage={isAuthorizedToManage}
+                                                onEdit={(data) => handleEditSponsor(sponsor.id, data)}
+                                                onDelete={() => handleDeleteSponsor(sponsor.id, !!sponsor.teamId)}
+                                                websiteStyle={websiteStyle}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+
+            {/* ADD FRIEND MODAL */}
+            {showAddFriend && (
+                <AddFriendModal
+                    onSave={handleAddFriend}
+                    onCancel={() => setShowAddFriend(false)}
+                    websiteStyle={websiteStyle}
+                />
+            )}
+
+            {/* ADD SPONSOR MODAL */}
+            {showAddSponsor && (
+                <AddSponsorModal
+                    onSave={handleAddSponsor}
+                    onCancel={() => setShowAddSponsor(false)}
+                    websiteStyle={websiteStyle}
+                />
+            )}
+        </div>
+    );
+};
+
 const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, setPlayers, setTeams, websiteStyle, playMusic, stopAllMusic, musicState, getTeamNewsItems, addTeamNewsItem, updateTeamNewsItem, deleteTeamNewsItem, setSelectedNewsItem, friends, sponsors, onEventClick }) => {
     const team = teams.find(t => t.id === teamId);
     const teamPlayers = players.filter(p => p.teams.includes(teamId) && p.active);
