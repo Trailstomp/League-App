@@ -972,7 +972,7 @@ const EventDetailModal = ({ event, onClose, activeTab, setActiveTab, teams, curr
                 <div className="border-b bg-gray-50">
                     <div className="flex space-x-0">
                         <TabButton label="Details" tabKey="details" activeTab={activeTab} setActiveTab={setActiveTab} />
-                        {(event.type === 'game' || event.type === 'tournament') && (
+                        {(event.type === 'game') && (
                             <TabButton label="Scores & Results" tabKey="scores" activeTab={activeTab} setActiveTab={setActiveTab} />
                         )}
                         <TabButton label="Stats" tabKey="stats" activeTab={activeTab} setActiveTab={setActiveTab} />
