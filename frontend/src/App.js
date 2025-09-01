@@ -13188,17 +13188,36 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
 
     // Reset team style when team changes to prevent cross-contamination
     useEffect(() => {
-        setTeamStyle({
+        // Only set values that actually exist to avoid overwriting with empty values
+        const newTeamStyle = {
             description: team.description || '',
-            primaryColor: team.style?.primaryColor || websiteStyle.primaryColor || '#dc2626',
-            backgroundColor: team.style?.backgroundColor || websiteStyle.teamHeroBackgroundColor || '#f8fafc',
-            textColor: team.style?.textColor || websiteStyle.teamHeroTextColor || '#1f2937',
-            fontFamily: team.style?.fontFamily || websiteStyle.teamHeroFontFamily || 'Inter, sans-serif',
-            bannerImage: team.style?.bannerImage || '',
-            logoUrl: team.style?.logoUrl || '',
             customIntro: team.customIntro || false,
-            ...team.style
-        });
+        };
+        
+        // Only add style properties that exist on the team
+        if (team.style) {
+            Object.keys(team.style).forEach(key => {
+                if (team.style[key] !== undefined && team.style[key] !== null) {
+                    newTeamStyle[key] = team.style[key];
+                }
+            });
+        }
+        
+        // Set fallback colors only if team doesn't have them
+        if (!team.style?.primaryColor) {
+            newTeamStyle.primaryColor = websiteStyle.primaryColor || '#dc2626';
+        }
+        if (!team.style?.backgroundColor) {
+            newTeamStyle.backgroundColor = websiteStyle.teamHeroBackgroundColor || '#f8fafc';
+        }
+        if (!team.style?.textColor) {
+            newTeamStyle.textColor = websiteStyle.teamHeroTextColor || '#1f2937';
+        }
+        if (!team.style?.fontFamily) {
+            newTeamStyle.fontFamily = websiteStyle.teamHeroFontFamily || 'Inter, sans-serif';
+        }
+        
+        setTeamStyle(newTeamStyle);
     }, [team.id, team.style, team.description, team.customIntro, websiteStyle]);
     const [saved, setSaved] = useState(false);
     const [activeSubtask, setActiveSubtask] = useState('themes');
