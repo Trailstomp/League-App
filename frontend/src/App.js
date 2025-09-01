@@ -1329,13 +1329,26 @@ const EventAttendanceTab = ({ event, teams, isAuthorized, onUpdateEvent }) => {
 
 // === TOURNAMENT BRACKET TAB ===
 const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => {
-    const [bracketData, setBracketData] = useState(event.bracket || {
-        teams: [],
-        rounds: [],
-        format: 'single-elimination',
-        minGames: 1,
-        firstPlaceBye: false,
-        seedingMethod: 'manual' // 'manual' or 'ranking'
+    // Initialize bracket data with better integration
+    const [bracketData, setBracketData] = useState(() => {
+        const initialBracket = event.bracket || {
+            teams: [],
+            rounds: [],
+            format: 'single-elimination',
+            minGames: 1,
+            firstPlaceBye: false,
+            seedingMethod: 'manual'
+        };
+        
+        // Auto-populate teams from event if available
+        if (event.teams && event.teams.length > 0 && initialBracket.teams.length === 0) {
+            initialBracket.teams = event.teams.map(team => ({
+                id: team.id || team.teamId,
+                name: team.name || team.teamName
+            }));
+        }
+        
+        return initialBracket;
     });
     
     const [bracketSettings, setBracketSettings] = useState({
