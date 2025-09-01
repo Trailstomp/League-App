@@ -13237,7 +13237,6 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
     const teamZones = [
         { id: 'themes', name: 'Colors & Themes', icon: Palette },
         { id: 'hero', name: 'Hero Zone', icon: Layout },
-        { id: 'sidebar', name: 'Sidebar Zone', icon: Menu },
         { id: 'content', name: 'Content Zone', icon: Type },
         { id: 'forms', name: 'Forms Zone', icon: Briefcase }
     ];
