@@ -483,10 +483,9 @@ const AdvancedColorPicker = ({
     );
 };
 
-// Color Extraction Utility for Logo-based Themes
+// Enhanced Color Extraction Utility - Extracts 3 main colors from logo
 const extractColorsFromImage = (imageUrl) => {
     return new Promise((resolve) => {
-        // Create a canvas to analyze the image
         const img = new Image();
         img.crossOrigin = 'anonymous';
         
@@ -495,7 +494,7 @@ const extractColorsFromImage = (imageUrl) => {
             const ctx = canvas.getContext('2d');
             
             // Scale down for performance
-            const maxSize = 100;
+            const maxSize = 150;
             const scale = Math.min(maxSize / img.width, maxSize / img.height);
             canvas.width = img.width * scale;
             canvas.height = img.height * scale;
@@ -505,30 +504,40 @@ const extractColorsFromImage = (imageUrl) => {
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const pixels = imageData.data;
             
-            // Color frequency analysis
+            // Advanced color frequency analysis
             const colorCounts = {};
             
-            for (let i = 0; i < pixels.length; i += 16) { // Sample every 4th pixel for performance
+            for (let i = 0; i < pixels.length; i += 12) { // Sample more pixels for better accuracy
                 const r = pixels[i];
                 const g = pixels[i + 1];
                 const b = pixels[i + 2];
                 const a = pixels[i + 3];
                 
-                // Skip transparent/white pixels
-                if (a < 128 || (r > 240 && g > 240 && b > 240)) continue;
+                // Skip transparent, very light, and very dark pixels
+                if (a < 128 || 
+                    (r > 235 && g > 235 && b > 235) || 
+                    (r < 20 && g < 20 && b < 20)) continue;
                 
-                // Group similar colors
-                const key = `${Math.floor(r/32)*32},${Math.floor(g/32)*32},${Math.floor(b/32)*32}`;
+                // Group similar colors with better clustering
+                const key = `${Math.floor(r/24)*24},${Math.floor(g/24)*24},${Math.floor(b/24)*24}`;
                 colorCounts[key] = (colorCounts[key] || 0) + 1;
             }
             
-            // Get top colors
+            // Get top 3 most prominent colors
             const sortedColors = Object.entries(colorCounts)
                 .sort(([,a], [,b]) => b - a)
-                .slice(0, 8)
-                .map(([color]) => {
+                .slice(0, 3)
+                .map(([color], index) => {
                     const [r, g, b] = color.split(',').map(Number);
-                    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+                    const hex = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+                    
+                    // Assign descriptive names based on color dominance
+                    const names = ['Primary', 'Secondary', 'Accent'];
+                    return {
+                        hex: hex,
+                        name: names[index],
+                        description: getColorDescription(r, g, b)
+                    };
                 });
             
             resolve(sortedColors);
@@ -537,12 +546,32 @@ const extractColorsFromImage = (imageUrl) => {
         img.onerror = () => resolve([]);
         
         // Handle data URLs and regular URLs
-        if (imageUrl.startsWith('data:')) {
-            img.src = imageUrl;
-        } else {
-            img.src = imageUrl;
-        }
+        img.src = imageUrl;
     });
+};
+
+// Helper function to describe colors
+const getColorDescription = (r, g, b) => {
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const diff = max - min;
+    
+    if (diff < 30) {
+        if (max < 80) return 'Dark Gray';
+        if (max > 200) return 'Light Gray';
+        return 'Gray';
+    }
+    
+    if (r === max) {
+        if (g > b) return 'Orange/Yellow';
+        return 'Red/Pink';
+    } else if (g === max) {
+        if (r > b) return 'Yellow/Green';
+        return 'Green';
+    } else {
+        if (r > g) return 'Purple/Blue';
+        return 'Blue';
+    }
 };
 
 // Theme System Component
