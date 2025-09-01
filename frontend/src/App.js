@@ -9258,7 +9258,7 @@ const FriendsTab = ({
     };
 
     const handleEditFriend = (friendId, friendData) => {
-        if (friendData.teamId) {
+        if (friendData.teamId && team && team.id) {
             // Team-specific friend
             const updatedTeam = {
                 ...team,
@@ -9273,7 +9273,7 @@ const FriendsTab = ({
     };
 
     const handleDeleteFriend = (friendId, isTeamSpecific) => {
-        if (isTeamSpecific) {
+        if (isTeamSpecific && team && team.id) {
             const updatedTeam = {
                 ...team,
                 friends: teamFriends.filter(f => f.id !== friendId)
