@@ -9366,14 +9366,15 @@ const SponsorCard = ({ sponsor, isAuthorizedToManage, onEdit, onDelete, websiteS
                         value={editData.website || ''}
                         onChange={(e) => setEditData({...editData, website: e.target.value})}
                         className="w-full p-2 border rounded"
-                        placeholder="Website URL"
+                        placeholder="Website URL (optional)"
                     />
-                    <input
-                        type="url"
-                        value={editData.logo || ''}
-                        onChange={(e) => setEditData({...editData, logo: e.target.value})}
-                        className="w-full p-2 border rounded"
-                        placeholder="Logo URL"
+                    <FileUploadInput
+                        accept="image/*"
+                        currentValue={editData.logo || ''}
+                        onChange={(url) => setEditData({...editData, logo: url})}
+                        placeholder="Upload sponsor logo"
+                        enableCrop={false}
+                        cropAspectRatio="1:1"
                     />
                     <div className="flex space-x-2">
                         <button onClick={handleSave} className="flex-1 bg-green-600 text-white py-2 px-3 rounded text-sm hover:bg-green-700">
