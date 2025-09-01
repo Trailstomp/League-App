@@ -9762,8 +9762,8 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                 {(team.style?.visibleTabs?.groupme !== false) && <TeamTab tabName="groupme" label="GroupMe" />}
                 {(team.style?.visibleTabs?.contact !== false) && <TeamTab tabName="contact" label="Contact" />}
                 
-                {/* Public Friends Tab */}
-                <TeamTab tabName="friends" label="Friends" />
+                {/* Public Friends & Sponsors Tab */}
+                <TeamTab tabName="friends" label="Friends & Sponsors" />
                 
                 {/* Team Style Management Tab for Authorized Team Managers */}
                 {isAuthorizedToManage && (
