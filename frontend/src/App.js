@@ -9195,16 +9195,12 @@ const AddSponsorModal = ({ onSave, onCancel, websiteStyle }) => {
                             placeholder="https://sponsor-website.com"
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Logo URL</label>
-                        <input
-                            type="url"
-                            value={sponsorData.logo}
-                            onChange={(e) => setSponsorData({...sponsorData, logo: e.target.value})}
-                            className="w-full p-2 border rounded"
-                            placeholder="https://example.com/logo.png"
-                        />
-                    </div>
+                    <ImageUpload
+                        value={sponsorData.logo}
+                        onChange={(url) => setSponsorData({...sponsorData, logo: url})}
+                        placeholder="https://example.com/logo.png"
+                        label="Logo"
+                    />
                     <div className="flex space-x-3">
                         <button type="submit" className="flex-1 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
                             Add Sponsor
