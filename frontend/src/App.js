@@ -8733,10 +8733,9 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
         currentUser.roles.includes('admin') || 
         ((currentUser.roles.includes('coach') || currentUser.roles.includes('player/coach')) && currentUser.teamId === teamId)
     );
-    const teamSchedule = leagueSchedule.map(day => ({
-        ...day,
-        games: day.games.filter(g => g.home === teamId || g.away === teamId)
-    })).filter(day => day.games.length > 0);
+    const teamSchedule = leagueSchedule
+        .filter(event => event && (event.teamId === teamId || event.home === teamId || event.away === teamId))
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     if (!team) return <div className="p-8 text-center text-red-500">Team not found!</div>;
 
