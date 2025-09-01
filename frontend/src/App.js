@@ -13157,7 +13157,7 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
         ...team.style
     });
     const [saved, setSaved] = useState(false);
-    const [activeSubtask, setActiveSubtask] = useState('colors');
+    const [activeSubtask, setActiveSubtask] = useState('themes');
 
     const teamZones = [
         { id: 'themes', name: 'Colors & Themes', icon: Palette },
