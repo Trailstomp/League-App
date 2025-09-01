@@ -13258,62 +13258,7 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
     };
 
     // Create remaining zone managers
-    const TeamSidebarZoneManager = ({ teamStyle, setTeamStyle }) => (
-        <div className="bg-slate-50 p-6 rounded-lg">
-            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
-                <Menu className="mr-2" size={20} />
-                Sidebar Zone - Team Navigation
-            </h4>
-            
-            <div className="space-y-6">
-                <div>
-                    <h5 className="font-semibold text-slate-700 mb-3">Background</h5>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <AdvancedColorPicker
-                            label="Sidebar Background Color"
-                            value={teamStyle.sidebarBackgroundColor || '#1e293b'}
-                            onChange={(color) => setTeamStyle(prev => ({...prev, sidebarBackgroundColor: color}))}
-                        />
-                        
-                        <div>
-                            <label className="block font-semibold text-slate-700 mb-2">Sidebar Background Image</label>
-                            <FileUploadInput
-                                accept="image/*"
-                                currentValue={teamStyle.sidebarBackgroundImage || ''}
-                                onChange={(url) => setTeamStyle(prev => ({...prev, sidebarBackgroundImage: url}))}
-                                placeholder="Upload sidebar background"
-                                enableCrop={false}
-                            />
-                        </div>
-                    </div>
-                </div>
 
-                <div>
-                    <h5 className="font-semibold text-slate-700 mb-3">Text</h5>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <AdvancedColorPicker
-                            label="Navigation Text Color"
-                            value={teamStyle.sidebarTextColor || '#f1f5f9'}
-                            onChange={(color) => setTeamStyle(prev => ({...prev, sidebarTextColor: color}))}
-                        />
-
-                        <div>
-                            <label className="block font-semibold text-slate-700 mb-2">Navigation Font</label>
-                            <select 
-                                value={teamStyle.sidebarFontFamily || 'Inter, sans-serif'}
-                                onChange={(e) => setTeamStyle(prev => ({...prev, sidebarFontFamily: e.target.value}))}
-                                className="w-full p-3 border border-slate-300 rounded-lg"
-                            >
-                                <option value="Inter, sans-serif">Inter (Modern)</option>
-                                <option value="Arial, sans-serif">Arial (Clean)</option>
-                                <option value="Georgia, serif">Georgia (Classic)</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
 
     const TeamContentZoneManager = ({ teamStyle, setTeamStyle }) => (
         <div className="bg-slate-50 p-6 rounded-lg">
