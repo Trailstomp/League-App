@@ -978,7 +978,7 @@ const EventDetailModal = ({ event, onClose, activeTab, setActiveTab, teams, curr
                         <TabButton label="Stats" tabKey="stats" activeTab={activeTab} setActiveTab={setActiveTab} />
                         <TabButton label="Attendance" tabKey="attendance" activeTab={activeTab} setActiveTab={setActiveTab} />
                         {event.type === 'tournament' && (
-                            <TabButton label="Bracket" tabKey="bracket" activeTab={activeTab} setActiveTab={setActiveTab} />
+                            <TabButton label="Tournament Bracket" tabKey="bracket" activeTab={activeTab} setActiveTab={setActiveTab} />
                         )}
                     </div>
                 </div>
