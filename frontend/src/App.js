@@ -10182,7 +10182,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
     return (
         <div className="min-h-screen" style={teamBackgroundStyle}>
             {/* Navigation tabs moved outside padding container - sticky positioning */}
-            <div className="sticky top-20 z-10 bg-white flex border-b shadow-sm px-4 md:px-8 py-2">
+            <div className="sticky top-20 z-30 bg-white flex border-b shadow-sm px-4 md:px-8 py-2">
                 {(team.style?.visibleTabs?.home !== false) && <TeamTab tabName="home" label="Home" />}
                 {(team.style?.visibleTabs?.roster !== false) && <TeamTab tabName="roster" label="Roster" />}
                 {(team.style?.visibleTabs?.stats !== false) && <TeamTab tabName="stats" label="Stats" />}
