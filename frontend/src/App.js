@@ -10196,6 +10196,14 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
             >
                 <div className="flex items-center justify-between w-full">
                     <div className="flex items-center">
+                        {/* Menu Button for Team Pages */}
+                        <button 
+                            onClick={() => setIsMenuOpen(!isMenuOpen)} 
+                            className="p-2 rounded-md hover:bg-black hover:bg-opacity-20 text-white transition-colors mr-4"
+                        >
+                            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        </button>
+                        
                         <img src={team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'} alt={team.name} className="w-24 h-24 mr-4 rounded-full bg-white p-2 shadow-lg object-contain" style={{ opacity: team.style?.logoOpacity || 1 }} />
                         <div>
                             <h1 className="text-5xl font-bold text-white tracking-tight drop-shadow-lg">{team.name}</h1>
