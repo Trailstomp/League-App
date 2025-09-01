@@ -2790,17 +2790,7 @@ const FileUploadInput = ({
                 )}
             </div>
             
-            {/* URL Input as Fallback */}
-            <div className="text-xs">
-                <label className="text-slate-500">Or paste URL:</label>
-                <input 
-                    type="url"
-                    value={typeof currentValue === 'string' && currentValue.startsWith('http') ? currentValue : ''}
-                    onChange={(e) => onChange(e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full p-1 border rounded text-xs mt-1"
-                />
-            </div>
+
 
             {/* Crop Tool Modal */}
             {showCropTool && originalImageUrl && (
