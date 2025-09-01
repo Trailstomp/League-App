@@ -12612,13 +12612,29 @@ const TeamColorsThemeManager = ({ teamStyle, setTeamStyle, team, websiteStyle })
                 <div className="mb-6">
                     <div className="flex items-center justify-between mb-3">
                         <h5 className="font-semibold text-slate-700">Team Logo Color Assignment</h5>
-                        <button
-                            onClick={extractLogoColors}
-                            disabled={extractingColors}
-                            className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 transition-colors"
-                        >
-                            {extractingColors ? 'Extracting...' : 'Extract Logo Colors'}
-                        </button>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => {
+                                    console.log('🔄 Manual color extraction triggered');
+                                    extractLogoColors();
+                                }}
+                                disabled={extractingColors || !teamStyle.logoUrl}
+                                className={`text-sm px-3 py-1 rounded transition-colors font-medium ${
+                                    extractingColors 
+                                        ? 'bg-gray-100 text-gray-500' 
+                                        : teamStyle.logoUrl 
+                                            ? 'bg-red-100 text-red-700 hover:bg-red-200' 
+                                            : 'bg-gray-100 text-gray-400'
+                                }`}
+                            >
+                                {extractingColors ? 'Extracting...' : '🎨 Extract Colors'}
+                            </button>
+                            {logoColors.length > 0 && (
+                                <span className="text-xs text-green-600 flex items-center">
+                                    ✓ {logoColors.length} colors found
+                                </span>
+                            )}
+                        </div>
                     </div>
                     
                     {logoColors.length > 0 ? (
