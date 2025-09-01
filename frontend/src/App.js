@@ -3610,7 +3610,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
                                         {completedGames.length === totalGames ? 'COMPLETE' : 'IN PROGRESS'}
                                     </span>
                                 </div>
-                                <div className="text-xs text-slate-400 mt-1 italic">Click for details</div>
+
                             </div>
                         );
                     } else {
