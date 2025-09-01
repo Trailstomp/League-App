@@ -4938,7 +4938,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                                     onChange={(url) => {
                                                         setEditingNewsItem(prev => ({...prev, imageUrl: url}));
                                                     }}
-                                                    placeholder="Upload image or paste URL"
+                                                    placeholder="Upload news image"
                                                     enableCrop={false}
                                                     cropAspectRatio="16:9"
                                                 />
