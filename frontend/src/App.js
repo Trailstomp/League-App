@@ -8909,7 +8909,7 @@ const SponsorCard = ({ sponsor, isAuthorizedToManage, onEdit, onDelete, websiteS
                         className="bg-white text-red-600 hover:text-red-800 p-1 rounded shadow ml-1"
                         title="Delete"
                     >
-                        <Trash className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" />
                     </button>
                 </div>
             )}
