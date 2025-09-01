@@ -12303,64 +12303,246 @@ const UserManager = ({ users, setUsers, teams }) => {
     );
 };
 
-// Team-Specific Style Manager
-const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
-    const [teamStyle, setTeamStyle] = useState({
-        description: team.description || '',
-        primaryColor: team.style?.primaryColor || websiteStyle.primaryColor || '#dc2626',
-        backgroundColor: team.style?.backgroundColor || websiteStyle.teamHeroBackgroundColor || '#f8fafc',
-        textColor: team.style?.textColor || websiteStyle.teamHeroTextColor || '#1f2937',
-        fontFamily: team.style?.fontFamily || websiteStyle.teamHeroFontFamily || 'Inter, sans-serif',
-        bannerImage: team.style?.bannerImage || '',
-        logoUrl: team.style?.logoUrl || '',
-        customIntro: team.customIntro || false,
-        ...team.style
-    });
-    const [saved, setSaved] = useState(false);
+// Team Logo & Branding Manager
+const TeamLogoBrandingManager = ({ teamStyle, setTeamStyle, team }) => {
+    return (
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <Star className="mr-2" size={20} />
+                Team Logo & Branding
+            </h4>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Team Logo</label>
+                        <FileUploadInput
+                            accept="image/*"
+                            currentValue={teamStyle.logoUrl}
+                            onChange={(url) => setTeamStyle(prev => ({...prev, logoUrl: url}))}
+                            placeholder="Upload team logo"
+                            enableCrop={false}
+                            cropAspectRatio="1:1"
+                        />
+                        <p className="text-xs text-slate-500 mt-1">Primary logo for {team.name}</p>
+                    </div>
 
-    const handleSave = () => {
-        setTeams(prevTeams => prevTeams.map(t => 
-            t.id === team.id ? { 
-                ...t, 
-                description: teamStyle.description,
-                customIntro: teamStyle.customIntro,
-                style: {
-                    ...t.style,
-                    primaryColor: teamStyle.primaryColor,
-                    backgroundColor: teamStyle.backgroundColor,
-                    textColor: teamStyle.textColor,
-                    fontFamily: teamStyle.fontFamily,
-                    bannerImage: teamStyle.bannerImage,
-                    logoUrl: teamStyle.logoUrl
-                }
-            } : t
-        ));
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Logo Display Style</label>
+                        <select 
+                            value={teamStyle.logoStyle || 'contain'}
+                            onChange={(e) => setTeamStyle(prev => ({...prev, logoStyle: e.target.value}))}
+                            className="w-full p-3 border border-slate-300 rounded-lg"
+                        >
+                            <option value="contain">Fit (Maintain aspect ratio)</option>
+                            <option value="cover">Fill (May crop image)</option>
+                            <option value="fill">Stretch (May distort image)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Team Badge/Emblem</label>
+                        <FileUploadInput
+                            accept="image/*"
+                            currentValue={teamStyle.badgeUrl || ''}
+                            onChange={(url) => setTeamStyle(prev => ({...prev, badgeUrl: url}))}
+                            placeholder="Upload team badge"
+                            enableCrop={false}
+                            cropAspectRatio="1:1"
+                        />
+                        <p className="text-xs text-slate-500 mt-1">Optional secondary badge or emblem</p>
+                    </div>
+
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Team Mascot Image</label>
+                        <FileUploadInput
+                            accept="image/*"
+                            currentValue={teamStyle.mascotUrl || ''}
+                            onChange={(url) => setTeamStyle(prev => ({...prev, mascotUrl: url}))}
+                            placeholder="Upload mascot image"
+                            enableCrop={false}
+                            cropAspectRatio="free"
+                        />
+                        <p className="text-xs text-slate-500 mt-1">Team mascot or character image</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Team Colors & Theme Manager
+const TeamColorsThemeManager = ({ teamStyle, setTeamStyle, team, websiteStyle }) => {
+    const [selectedTheme, setSelectedTheme] = useState(null);
+    
+    const teamThemes = [
+        {
+            id: 'team-red',
+            name: "Team Red",
+            colors: {
+                primaryColor: '#dc2626',
+                backgroundColor: '#fef2f2',
+                textColor: '#1f2937',
+                accentColor: '#ef4444',
+                formBackgroundColor: '#fef2f2'
+            }
+        },
+        {
+            id: 'team-blue',
+            name: "Team Blue",
+            colors: {
+                primaryColor: '#2563eb',
+                backgroundColor: '#eff6ff',
+                textColor: '#1f2937',
+                accentColor: '#3b82f6',
+                formBackgroundColor: '#eff6ff'
+            }
+        },
+        {
+            id: 'team-green',
+            name: "Team Green",
+            colors: {
+                primaryColor: '#059669',
+                backgroundColor: '#f0fdf4',
+                textColor: '#1f2937',  
+                accentColor: '#10b981',
+                formBackgroundColor: '#f0fdf4'
+            }
+        },
+        {
+            id: 'team-purple',
+            name: "Team Purple",
+            colors: {
+                primaryColor: '#7c3aed',
+                backgroundColor: '#faf5ff',
+                textColor: '#1f2937',
+                accentColor: '#8b5cf6',
+                formBackgroundColor: '#faf5ff'
+            }
+        },
+        {
+            id: 'team-orange',
+            name: "Team Orange",
+            colors: {
+                primaryColor: '#ea580c',
+                backgroundColor: '#fff7ed',
+                textColor: '#1f2937',
+                accentColor: '#f97316',
+                formBackgroundColor: '#fff7ed'
+            }
+        }
+    ];
+
+    const handleApplyTheme = (theme) => {
+        setSelectedTheme(theme.id);
+        setTeamStyle(prev => ({ ...prev, ...theme.colors }));
     };
 
+    return (
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <Palette className="mr-2" size={20} />
+                Team Colors & Themes
+            </h4>
+            
+            {/* Team Themes */}
+            <div className="mb-6">
+                <h5 className="font-semibold text-slate-700 mb-3">Team Color Themes</h5>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {teamThemes.map((theme) => (
+                        <div
+                            key={theme.id}
+                            className={`p-4 border-2 rounded-lg cursor-pointer transition-all hover:shadow-md ${
+                                selectedTheme === theme.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300'
+                            }`}
+                        >
+                            <div className="flex items-center gap-2 mb-3">
+                                <div 
+                                    className="w-4 h-4 rounded-full"
+                                    style={{ backgroundColor: theme.colors.primaryColor }}
+                                />
+                                <span className="font-medium text-slate-800">{theme.name}</span>
+                            </div>
+                            <div className="flex gap-1 mb-3">
+                                {Object.entries(theme.colors).slice(0, 4).map(([key, color]) => (
+                                    <div
+                                        key={key}
+                                        className="w-3 h-3 rounded"
+                                        style={{ backgroundColor: color }}
+                                        title={key}
+                                    />
+                                ))}
+                            </div>
+                            <button
+                                onClick={() => handleApplyTheme(theme)}
+                                className={`w-full py-2 px-3 rounded text-sm font-medium transition-colors ${
+                                    selectedTheme === theme.id 
+                                        ? 'bg-blue-600 text-white' 
+                                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                }`}
+                            >
+                                {selectedTheme === theme.id ? '✓ Applied' : 'Apply Theme'}
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Custom Colors */}
+            <div>
+                <h5 className="font-semibold text-slate-700 mb-3">Custom Team Colors</h5>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <AdvancedColorPicker
+                        label="Primary Team Color"
+                        value={teamStyle.primaryColor}
+                        onChange={(color) => setTeamStyle(prev => ({...prev, primaryColor: color}))}
+                    />
+
+                    <AdvancedColorPicker
+                        label="Secondary/Accent Color"
+                        value={teamStyle.accentColor || teamStyle.primaryColor}
+                        onChange={(color) => setTeamStyle(prev => ({...prev, accentColor: color}))}
+                    />
+
+                    <AdvancedColorPicker
+                        label="Background Color"
+                        value={teamStyle.backgroundColor}
+                        onChange={(color) => setTeamStyle(prev => ({...prev, backgroundColor: color}))}
+                    />
+
+                    <AdvancedColorPicker
+                        label="Text Color"
+                        value={teamStyle.textColor}
+                        onChange={(color) => setTeamStyle(prev => ({...prev, textColor: color}))}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Team Hero & Banner Manager
+const TeamHeroBannerManager = ({ teamStyle, setTeamStyle, team, websiteStyle }) => {
     const getDefaultIntro = () => {
         const template = websiteStyle.teamIntroTemplate || 'Follow {teamName} for the latest updates, photos, and team information.';
         return template.replace('{teamName}', team.name);
     };
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <div className="border-b border-slate-200 pb-4 mb-6">
-                <h3 className="text-2xl font-bold text-slate-800 mb-2">Team Appearance</h3>
-                <p className="text-slate-600">Customize how {team.name} appears to visitors</p>
-            </div>
-
-            <div className="space-y-6">
-                {/* Team Intro Statement */}
-                <div className="bg-slate-50 p-6 rounded-lg">
-                    <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
-                        <Type className="mr-2" size={20} />
-                        Team Intro Statement
-                    </h4>
-                    
-                    <div className="space-y-4">
-                        <div className="flex items-center space-x-4">
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <Layout className="mr-2" size={20} />
+                Team Hero & Banner
+            </h4>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                    {/* Team Intro Statement */}
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Team Introduction</label>
+                        <div className="flex items-center space-x-4 mb-4">
                             <label className="flex items-center">
                                 <input
                                     type="radio"
@@ -12369,7 +12551,7 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
                                     onChange={() => setTeamStyle(prev => ({...prev, customIntro: false}))}
                                     className="mr-2"
                                 />
-                                Use Default Template
+                                Use League Template
                             </label>
                             <label className="flex items-center">
                                 <input
@@ -12384,134 +12566,130 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
                         </div>
 
                         {teamStyle.customIntro ? (
-                            <div>
-                                <label className="block font-semibold text-slate-700 mb-2">Custom Team Introduction</label>
-                                <textarea 
-                                    value={teamStyle.description}
-                                    onChange={(e) => setTeamStyle(prev => ({...prev, description: e.target.value}))}
-                                    className="w-full p-3 border border-slate-300 rounded-lg h-24"
-                                    placeholder="Write a custom introduction for your team..."
-                                />
-                            </div>
+                            <textarea 
+                                value={teamStyle.description}
+                                onChange={(e) => setTeamStyle(prev => ({...prev, description: e.target.value}))}
+                                className="w-full p-3 border border-slate-300 rounded-lg h-24"
+                                placeholder="Write a custom introduction for your team..."
+                            />
                         ) : (
                             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                                 <p className="text-slate-700">
-                                    <strong>Using default template:</strong> {getDefaultIntro()}
-                                </p>
-                                <p className="text-sm text-slate-500 mt-2">
-                                    This template is set by the league administrator and will automatically include your team name.
+                                    <strong>Using league template:</strong> {getDefaultIntro()}
                                 </p>
                             </div>
                         )}
                     </div>
-                </div>
 
-                {/* Team Colors */}
-                <div className="bg-slate-50 p-6 rounded-lg">
-                    <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
-                        <Palette className="mr-2" size={20} />
-                        Team Colors
-                    </h4>
-                    
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <AdvancedColorPicker
-                            label="Primary Team Color"
-                            value={teamStyle.primaryColor}
-                            onChange={(color) => setTeamStyle(prev => ({...prev, primaryColor: color}))}
+                    {/* Hero Background */}
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Hero Background Image</label>
+                        <FileUploadInput
+                            accept="image/*"
+                            currentValue={teamStyle.bannerImage}
+                            onChange={(url) => setTeamStyle(prev => ({...prev, bannerImage: url}))}
+                            placeholder="Upload hero background"
+                            enableCrop={false}
+                            cropAspectRatio="16:9"
                         />
-
-                        <AdvancedColorPicker
-                            label="Background Color"
-                            value={teamStyle.backgroundColor}
-                            onChange={(color) => setTeamStyle(prev => ({...prev, backgroundColor: color}))}
-                        />
-
-                        <AdvancedColorPicker
-                            label="Text Color"
-                            value={teamStyle.textColor}
-                            onChange={(color) => setTeamStyle(prev => ({...prev, textColor: color}))}
-                        />
-
-                        <div>
-                            <label className="block font-semibold text-slate-700 mb-2">Font Family</label>
-                            <select 
-                                value={teamStyle.fontFamily}
-                                onChange={(e) => setTeamStyle(prev => ({...prev, fontFamily: e.target.value}))}
-                                className="w-full p-3 border border-slate-300 rounded-lg"
+                        {teamStyle.bannerImage && (
+                            <button
+                                onClick={() => setTeamStyle(prev => ({...prev, bannerImage: ''}))}
+                                className="mt-2 text-sm text-red-600 hover:text-red-800"
                             >
-                                <option value="Inter, sans-serif">Inter (Modern)</option>
-                                <option value="Arial, sans-serif">Arial (Clean)</option>
-                                <option value="Georgia, serif">Georgia (Classic)</option>
-                                <option value="'Times New Roman', serif">Times New Roman</option>
-                                <option value="Impact, sans-serif">Impact (Bold)</option>
-                                <option value="Helvetica, sans-serif">Helvetica</option>
-                                <option value="Verdana, sans-serif">Verdana</option>
-                            </select>
-                        </div>
+                                🗑️ Remove Background Image
+                            </button>
+                        )}
                     </div>
                 </div>
 
-                {/* Team Images */}
-                <div className="bg-slate-50 p-6 rounded-lg">
-                    <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
-                        <ImageIcon className="mr-2" size={20} />
-                        Team Images
-                    </h4>
-                    
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <label className="block font-semibold text-slate-700 mb-2">Team Logo</label>
-                            <FileUploadInput
-                                accept="image/*"
-                                currentValue={teamStyle.logoUrl}
-                                onChange={(url) => setTeamStyle(prev => ({...prev, logoUrl: url}))}
-                                placeholder="Upload team logo"
-                                enableCrop={false}
-                                cropAspectRatio="1:1"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block font-semibold text-slate-700 mb-2">Hero Background Image (Optional)</label>
-                            <FileUploadInput
-                                accept="image/*"
-                                currentValue={teamStyle.bannerImage}
-                                onChange={(url) => setTeamStyle(prev => ({...prev, bannerImage: url}))}
-                                placeholder="Upload hero background"
-                                enableCrop={false}
-                                cropAspectRatio="16:9"
-                            />
-                            {teamStyle.bannerImage && (
-                                <button
-                                    onClick={() => setTeamStyle(prev => ({...prev, bannerImage: ''}))}
-                                    className="mt-2 text-sm text-red-600 hover:text-red-800"
-                                >
-                                    🗑️ Remove Background Image
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Team Style Preview */}
-                <div className="bg-slate-50 p-6 rounded-lg">
-                    <h4 className="text-xl font-semibold text-slate-800 mb-4">Preview</h4>
-                    
-                    <div className="border-2 border-dashed border-slate-300 rounded-lg overflow-hidden">
-                        <div 
-                            className="p-8 text-center"
-                            style={{ 
-                                backgroundColor: teamStyle.backgroundColor,
-                                backgroundImage: teamStyle.bannerImage ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${teamStyle.bannerImage})` : 'none',
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center'
-                            }}
+                <div className="space-y-4">
+                    {/* Typography Settings */}
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Team Font Family</label>
+                        <select 
+                            value={teamStyle.fontFamily}
+                            onChange={(e) => setTeamStyle(prev => ({...prev, fontFamily: e.target.value}))}
+                            className="w-full p-3 border border-slate-300 rounded-lg"
                         >
+                            <option value="Inter, sans-serif">Inter (Modern)</option>
+                            <option value="Arial, sans-serif">Arial (Clean)</option>
+                            <option value="Georgia, serif">Georgia (Classic)</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                            <option value="Impact, sans-serif">Impact (Bold)</option>
+                            <option value="Helvetica, sans-serif">Helvetica</option>
+                            <option value="Verdana, sans-serif">Verdana</option>
+                        </select>
+                    </div>
+
+                    {/* Hero Text Styling */}
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Hero Text Size</label>
+                        <div className="flex items-center gap-4">
+                            <input 
+                                type="range"
+                                min="24"
+                                max="60"
+                                step="4"
+                                value={teamStyle.heroFontSize || 48}
+                                onChange={(e) => setTeamStyle(prev => ({...prev, heroFontSize: parseInt(e.target.value)}))}
+                                className="flex-1"
+                            />
+                            <span className="text-sm font-medium text-slate-600 w-12">
+                                {teamStyle.heroFontSize || 48}px
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Hero Effects */}
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Hero Text Effects</label>
+                        <div className="space-y-2">
+                            <label className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    checked={teamStyle.heroTextShadow || false}
+                                    onChange={(e) => setTeamStyle(prev => ({...prev, heroTextShadow: e.target.checked}))}
+                                    className="mr-2"
+                                />
+                                Text Shadow
+                            </label>
+                            <label className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    checked={teamStyle.heroTextBold || true}
+                                    onChange={(e) => setTeamStyle(prev => ({...prev, heroTextBold: e.target.checked}))}
+                                    className="mr-2"
+                                />
+                                Bold Text
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Hero Preview */}
+            <div className="mt-6">
+                <h5 className="font-semibold text-slate-700 mb-3">Hero Section Preview</h5>
+                <div className="border-2 border-dashed border-slate-300 rounded-lg overflow-hidden">
+                    <div 
+                        className="h-48 flex items-center justify-center relative"
+                        style={{ 
+                            backgroundColor: teamStyle.backgroundColor,
+                            backgroundImage: teamStyle.bannerImage ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${teamStyle.bannerImage})` : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}
+                    >
+                        <div className="text-center z-10 relative">
                             <h1 
-                                className="text-3xl font-bold mb-4"
+                                className="mb-4"
                                 style={{ 
                                     color: teamStyle.primaryColor,
-                                    fontFamily: teamStyle.fontFamily
+                                    fontFamily: teamStyle.fontFamily,
+                                    fontSize: `${Math.min(teamStyle.heroFontSize || 48, 36)}px`,
+                                    fontWeight: teamStyle.heroTextBold ? 'bold' : 'normal',
+                                    textShadow: teamStyle.heroTextShadow ? '2px 2px 4px rgba(0,0,0,0.7)' : 'none'
                                 }}
                             >
                                 Welcome to {team.name}
@@ -12529,13 +12707,316 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
                     </div>
                 </div>
             </div>
+        </div>
+    );
+};
+
+// Team Typography Manager
+const TeamTypographyManager = ({ teamStyle, setTeamStyle }) => {
+    return (
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <Type className="mr-2" size={20} />
+                Team Typography
+            </h4>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                    <AdvancedColorPicker
+                        label="Heading Color"
+                        value={teamStyle.headingColor || teamStyle.primaryColor}
+                        onChange={(color) => setTeamStyle(prev => ({...prev, headingColor: color}))}
+                    />
+
+                    <AdvancedColorPicker
+                        label="Body Text Color"
+                        value={teamStyle.textColor}
+                        onChange={(color) => setTeamStyle(prev => ({...prev, textColor: color}))}
+                    />
+
+                    <AdvancedColorPicker
+                        label="Link Color"
+                        value={teamStyle.linkColor || teamStyle.primaryColor}
+                        onChange={(color) => setTeamStyle(prev => ({...prev, linkColor: color}))}
+                    />
+                </div>
+
+                <div className="space-y-4">
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Font Family</label>
+                        <select 
+                            value={teamStyle.fontFamily}
+                            onChange={(e) => setTeamStyle(prev => ({...prev, fontFamily: e.target.value}))}
+                            className="w-full p-3 border border-slate-300 rounded-lg"
+                        >
+                            <option value="Inter, sans-serif">Inter (Modern)</option>
+                            <option value="Arial, sans-serif">Arial (Clean)</option>
+                            <option value="Georgia, serif">Georgia (Classic)</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                            <option value="Impact, sans-serif">Impact (Bold)</option>
+                            <option value="Helvetica, sans-serif">Helvetica</option>
+                            <option value="Verdana, sans-serif">Verdana</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Base Font Size</label>
+                        <div className="flex items-center gap-4">
+                            <input 
+                                type="range"
+                                min="14"
+                                max="20"
+                                step="1"
+                                value={teamStyle.baseFontSize || 16}
+                                onChange={(e) => setTeamStyle(prev => ({...prev, baseFontSize: parseInt(e.target.value)}))}
+                                className="flex-1"
+                            />
+                            <span className="text-sm font-medium text-slate-600 w-12">
+                                {teamStyle.baseFontSize || 16}px
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Line Height</label>
+                        <select 
+                            value={teamStyle.lineHeight || '1.6'}
+                            onChange={(e) => setTeamStyle(prev => ({...prev, lineHeight: e.target.value}))}
+                            className="w-full p-3 border border-slate-300 rounded-lg"
+                        >
+                            <option value="1.2">Tight (1.2)</option>
+                            <option value="1.4">Snug (1.4)</option>
+                            <option value="1.6">Normal (1.6)</option>
+                            <option value="1.8">Relaxed (1.8)</option>
+                            <option value="2.0">Loose (2.0)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            {/* Typography Preview */}
+            <div className="mt-6">
+                <h5 className="font-semibold text-slate-700 mb-3">Typography Preview</h5>
+                <div className="p-6 border-2 border-dashed border-slate-300 rounded-lg">
+                    <div style={{ fontFamily: teamStyle.fontFamily, fontSize: `${teamStyle.baseFontSize || 16}px`, lineHeight: teamStyle.lineHeight }}>
+                        <h2 
+                            className="text-2xl font-bold mb-3"
+                            style={{ color: teamStyle.headingColor || teamStyle.primaryColor, fontFamily: teamStyle.fontFamily }}
+                        >
+                            Team Content Heading
+                        </h2>
+                        <p 
+                            className="mb-4"
+                            style={{ color: teamStyle.textColor, fontFamily: teamStyle.fontFamily, lineHeight: teamStyle.lineHeight }}
+                        >
+                            This is how your team's content will look with the selected typography settings. The text will use your chosen font family, size, and line height for optimal readability.
+                        </p>
+                        <p style={{ color: teamStyle.textColor, fontFamily: teamStyle.fontFamily }}>
+                            Here's a <a href="#" style={{ color: teamStyle.linkColor || teamStyle.primaryColor, textDecoration: 'underline' }}>sample link</a> showing how links will appear in your team's content.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Team Layout & UI Manager
+const TeamLayoutUIManager = ({ teamStyle, setTeamStyle }) => {
+    return (
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <Briefcase className="mr-2" size={20} />
+                Team Layout & UI
+            </h4>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                    <AdvancedColorPicker
+                        label="Form Background Color"
+                        value={teamStyle.formBackgroundColor || '#f8fafc'}
+                        onChange={(color) => setTeamStyle(prev => ({...prev, formBackgroundColor: color}))}
+                    />
+
+                    <AdvancedColorPicker
+                        label="Button Color"
+                        value={teamStyle.buttonColor || teamStyle.primaryColor}
+                        onChange={(color) => setTeamStyle(prev => ({...prev, buttonColor: color}))}
+                    />
+                </div>
+
+                <div className="space-y-4">
+                    <AdvancedColorPicker
+                        label="Card Background Color"
+                        value={teamStyle.cardBackgroundColor || '#ffffff'}
+                        onChange={(color) => setTeamStyle(prev => ({...prev, cardBackgroundColor: color}))}
+                    />
+
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Button Border Radius</label>
+                        <div className="flex items-center gap-4">
+                            <input 
+                                type="range"
+                                min="0"
+                                max="20"
+                                step="2"
+                                value={teamStyle.buttonBorderRadius || 8}
+                                onChange={(e) => setTeamStyle(prev => ({...prev, buttonBorderRadius: parseInt(e.target.value)}))}
+                                className="flex-1"
+                            />
+                            <span className="text-sm font-medium text-slate-600 w-12">
+                                {teamStyle.buttonBorderRadius || 8}px
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* UI Preview */}
+            <div className="mt-6">
+                <h5 className="font-semibold text-slate-700 mb-3">UI Elements Preview</h5>
+                <div className="grid md:grid-cols-2 gap-4">
+                    {/* Form Preview */}
+                    <div 
+                        className="p-4 rounded-lg border-2 border-dashed border-slate-300"
+                        style={{ backgroundColor: teamStyle.formBackgroundColor || '#f8fafc' }}
+                    >
+                        <h6 className="font-semibold mb-3" style={{ color: teamStyle.textColor }}>Contact Form</h6>
+                        <div className="space-y-3">
+                            <input 
+                                type="text" 
+                                placeholder="Your name..." 
+                                className="w-full p-2 border rounded"
+                                style={{ fontFamily: teamStyle.fontFamily }}
+                                disabled
+                            />
+                            <button 
+                                className="px-4 py-2 text-white font-semibold"
+                                style={{ 
+                                    backgroundColor: teamStyle.buttonColor || teamStyle.primaryColor,
+                                    borderRadius: `${teamStyle.buttonBorderRadius || 8}px`,
+                                    fontFamily: teamStyle.fontFamily
+                                }}
+                                disabled
+                            >
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Card Preview */}
+                    <div 
+                        className="p-4 rounded-lg border-2 border-dashed border-slate-300"
+                        style={{ backgroundColor: teamStyle.cardBackgroundColor || '#ffffff' }}
+                    >
+                        <h6 className="font-semibold mb-2" style={{ color: teamStyle.headingColor || teamStyle.primaryColor }}>Content Card</h6>
+                        <p className="text-sm mb-3" style={{ color: teamStyle.textColor }}>This shows how content cards will look on your team page.</p>
+                        <a href="#" style={{ color: teamStyle.linkColor || teamStyle.primaryColor, textDecoration: 'underline' }}>Read more</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Enhanced Team-Specific Style Manager with Subtasks
+const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
+    const [teamStyle, setTeamStyle] = useState({
+        description: team.description || '',
+        primaryColor: team.style?.primaryColor || websiteStyle.primaryColor || '#dc2626',
+        backgroundColor: team.style?.backgroundColor || websiteStyle.teamHeroBackgroundColor || '#f8fafc',
+        textColor: team.style?.textColor || websiteStyle.teamHeroTextColor || '#1f2937',
+        fontFamily: team.style?.fontFamily || websiteStyle.teamHeroFontFamily || 'Inter, sans-serif',
+        bannerImage: team.style?.bannerImage || '',
+        logoUrl: team.style?.logoUrl || '',
+        customIntro: team.customIntro || false,
+        ...team.style
+    });
+    const [saved, setSaved] = useState(false);
+    const [activeSubtask, setActiveSubtask] = useState('colors');
+
+    const teamSubtasks = [
+        { id: 'colors', name: 'Colors & Themes', icon: Palette },
+        { id: 'logos', name: 'Logo & Branding', icon: Star },
+        { id: 'hero', name: 'Hero & Banner', icon: Layout },
+        { id: 'typography', name: 'Typography', icon: Type },
+        { id: 'layout', name: 'Layout & UI', icon: Briefcase }
+    ];
+
+    const handleSave = () => {
+        setTeams(prevTeams => prevTeams.map(t => 
+            t.id === team.id ? { 
+                ...t, 
+                description: teamStyle.description,
+                customIntro: teamStyle.customIntro,
+                style: {
+                    ...t.style,
+                    ...teamStyle
+                }
+            } : t
+        ));
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+    };
+
+    const renderSubtaskContent = () => {
+        switch(activeSubtask) {
+            case 'colors':
+                return <TeamColorsThemeManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} team={team} websiteStyle={websiteStyle} />;
+            case 'logos':
+                return <TeamLogoBrandingManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} team={team} />;
+            case 'hero':
+                return <TeamHeroBannerManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} team={team} websiteStyle={websiteStyle} />;
+            case 'typography':
+                return <TeamTypographyManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} />;
+            case 'layout':
+                return <TeamLayoutUIManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} />;
+            default:
+                return <TeamColorsThemeManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} team={team} websiteStyle={websiteStyle} />;
+        }
+    };
+
+    return (
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <div className="border-b border-slate-200 pb-4 mb-6">
+                <h3 className="text-2xl font-bold text-slate-800 mb-2">Team Appearance</h3>
+                <p className="text-slate-600">Customize how {team.name} appears to visitors</p>
+            </div>
+
+            {/* Team Subtask Navigation */}
+            <div className="mb-8">
+                <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-4">
+                    {teamSubtasks.map((subtask) => {
+                        const IconComponent = subtask.icon;
+                        return (
+                            <button
+                                key={subtask.id}
+                                onClick={() => setActiveSubtask(subtask.id)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium ${
+                                    activeSubtask === subtask.id
+                                        ? 'bg-red-600 text-white shadow-md'
+                                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                }`}
+                            >
+                                <IconComponent size={16} />
+                                {subtask.name}
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* Active Subtask Content */}
+            <div className="space-y-6">
+                {renderSubtaskContent()}
+            </div>
 
             {/* Save Button */}
             <div className="flex justify-end pt-6 border-t border-slate-200 mt-6">
                 {saved && <span className="text-green-600 font-semibold mr-4 flex items-center"><span className="mr-1">✓</span> Team Style Saved!</span>}
                 <button 
                     onClick={handleSave}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                    className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors font-semibold"
                 >
                     Save Team Style
                 </button>
