@@ -8714,6 +8714,88 @@ const TeamInfoManager = ({ team, setTeams }) => {
     );
 };
 
+// Simple Image Upload Component
+const ImageUpload = ({ value, onChange, placeholder, label }) => {
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef(null);
+
+    const handleFileSelect = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Check file type
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file');
+            return;
+        }
+
+        // Check file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image size must be less than 5MB');
+            return;
+        }
+
+        setIsUploading(true);
+        
+        try {
+            // Convert to base64 for simple storage
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                onChange(e.target.result);
+                setIsUploading(false);
+            };
+            reader.onerror = () => {
+                alert('Error reading file');
+                setIsUploading(false);
+            };
+            reader.readAsDataURL(file);
+        } catch (error) {
+            alert('Error uploading image');
+            setIsUploading(false);
+        }
+    };
+
+    return (
+        <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+            <div className="flex gap-2">
+                <input
+                    type="url"
+                    value={value || ''}
+                    onChange={(e) => onChange(e.target.value)}
+                    className="flex-1 p-2 border rounded"
+                    placeholder={placeholder}
+                />
+                <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 text-sm"
+                >
+                    {isUploading ? 'Uploading...' : 'Upload'}
+                </button>
+            </div>
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+            />
+            {value && (
+                <div className="mt-2">
+                    <img 
+                        src={value} 
+                        alt="Preview" 
+                        className="w-20 h-20 object-cover border rounded"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                </div>
+            )}
+        </div>
+    );
+};
+
 // Friend Card Component with Inline Editing
 const FriendCard = ({ friend, isAuthorizedToManage, onEdit, onDelete, websiteStyle }) => {
     const [isEditing, setIsEditing] = useState(false);
