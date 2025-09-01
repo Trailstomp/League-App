@@ -486,64 +486,98 @@ const AdvancedColorPicker = ({
 // Enhanced Color Extraction Utility - Extracts 3 main colors from logo
 const extractColorsFromImage = (imageUrl) => {
     return new Promise((resolve) => {
+        console.log('🎨 Starting color extraction for:', imageUrl.substring(0, 50) + '...');
+        
         const img = new Image();
-        img.crossOrigin = 'anonymous';
+        // Remove crossOrigin for data URLs to avoid CORS issues
+        if (!imageUrl.startsWith('data:')) {
+            img.crossOrigin = 'anonymous';
+        }
         
         img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // Scale down for performance
-            const maxSize = 150;
-            const scale = Math.min(maxSize / img.width, maxSize / img.height);
-            canvas.width = img.width * scale;
-            canvas.height = img.height * scale;
-            
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const pixels = imageData.data;
-            
-            // Advanced color frequency analysis
-            const colorCounts = {};
-            
-            for (let i = 0; i < pixels.length; i += 12) { // Sample more pixels for better accuracy
-                const r = pixels[i];
-                const g = pixels[i + 1];
-                const b = pixels[i + 2];
-                const a = pixels[i + 3];
+            try {
+                console.log('📸 Image loaded successfully, size:', img.width, 'x', img.height);
                 
-                // Skip transparent, very light, and very dark pixels
-                if (a < 128 || 
-                    (r > 235 && g > 235 && b > 235) || 
-                    (r < 20 && g < 20 && b < 20)) continue;
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
                 
-                // Group similar colors with better clustering
-                const key = `${Math.floor(r/24)*24},${Math.floor(g/24)*24},${Math.floor(b/24)*24}`;
-                colorCounts[key] = (colorCounts[key] || 0) + 1;
-            }
-            
-            // Get top 3 most prominent colors
-            const sortedColors = Object.entries(colorCounts)
-                .sort(([,a], [,b]) => b - a)
-                .slice(0, 3)
-                .map(([color], index) => {
-                    const [r, g, b] = color.split(',').map(Number);
-                    const hex = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+                // Scale down for performance but keep reasonable size
+                const maxSize = 200;
+                const scale = Math.min(maxSize / img.width, maxSize / img.height);
+                canvas.width = Math.max(img.width * scale, 50);
+                canvas.height = Math.max(img.height * scale, 50);
+                
+                console.log('🖼️ Canvas size:', canvas.width, 'x', canvas.height);
+                
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const pixels = imageData.data;
+                
+                console.log('🔍 Analyzing', pixels.length / 4, 'pixels');
+                
+                // Advanced color frequency analysis
+                const colorCounts = {};
+                let validPixels = 0;
+                
+                for (let i = 0; i < pixels.length; i += 16) { // Sample every 4th pixel
+                    const r = pixels[i];
+                    const g = pixels[i + 1];
+                    const b = pixels[i + 2];
+                    const a = pixels[i + 3];
                     
-                    // Assign descriptive names based on color dominance
-                    const names = ['Primary', 'Secondary', 'Accent'];
-                    return {
-                        hex: hex,
-                        name: names[index],
-                        description: getColorDescription(r, g, b)
-                    };
-                });
-            
-            resolve(sortedColors);
+                    // Skip transparent, very light, and very dark pixels
+                    if (a < 200 || 
+                        (r > 240 && g > 240 && b > 240) || 
+                        (r < 15 && g < 15 && b < 15)) continue;
+                    
+                    validPixels++;
+                    
+                    // Group similar colors with looser clustering for better results
+                    const key = `${Math.floor(r/30)*30},${Math.floor(g/30)*30},${Math.floor(b/30)*30}`;
+                    colorCounts[key] = (colorCounts[key] || 0) + 1;
+                }
+                
+                console.log('✓ Valid pixels found:', validPixels);
+                console.log('🎨 Unique color groups:', Object.keys(colorCounts).length);
+                
+                if (Object.keys(colorCounts).length === 0) {
+                    console.log('❌ No valid colors found');
+                    resolve([]);
+                    return;
+                }
+                
+                // Get top 3 most prominent colors
+                const sortedColors = Object.entries(colorCounts)
+                    .sort(([,a], [,b]) => b - a)
+                    .slice(0, 3)
+                    .map(([color], index) => {
+                        const [r, g, b] = color.split(',').map(Number);
+                        const hex = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+                        
+                        // Assign descriptive names based on color dominance
+                        const names = ['Primary', 'Secondary', 'Accent'];
+                        return {
+                            hex: hex,
+                            name: names[index],
+                            description: getColorDescription(r, g, b),
+                            count: colorCounts[color]
+                        };
+                    });
+                
+                console.log('🎯 Extracted colors:', sortedColors);
+                resolve(sortedColors);
+                
+            } catch (error) {
+                console.error('❌ Error during color extraction:', error);
+                resolve([]);
+            }
         };
         
-        img.onerror = () => resolve([]);
+        img.onerror = (error) => {
+            console.error('❌ Failed to load image for color extraction:', error);
+            resolve([]);
+        };
         
         // Handle data URLs and regular URLs
         img.src = imageUrl;
