@@ -10191,12 +10191,35 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                 {activeTab === 'home' && (
                     <div className="space-y-6">
                         {/* Team Hero Section */}
-                        <div className="text-center py-8">
-                            <h1 className="text-4xl font-bold mb-4" style={{ color: team.style?.primaryColor || '#dc2626' }}>
+                        <div 
+                            className="text-center py-8 rounded-lg"
+                            style={{ 
+                                backgroundColor: team.style?.backgroundColor || websiteStyle.teamHeroBackgroundColor || '#f8fafc',
+                                backgroundImage: team.style?.bannerImage ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${team.style?.bannerImage})` : 'none',
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center'
+                            }}
+                        >
+                            <h1 
+                                className="text-4xl font-bold mb-4" 
+                                style={{ 
+                                    color: team.style?.primaryColor || '#dc2626',
+                                    fontFamily: team.style?.fontFamily || websiteStyle.teamHeroFontFamily || 'Inter, sans-serif'
+                                }}
+                            >
                                 Welcome to {team.name}
                             </h1>
-                            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                                {team.description || `Follow ${team.name} for the latest updates, photos, and team information.`}
+                            <p 
+                                className="text-xl max-w-2xl mx-auto"
+                                style={{ 
+                                    color: team.style?.textColor || websiteStyle.teamHeroTextColor || '#1f2937',
+                                    fontFamily: team.style?.fontFamily || websiteStyle.teamHeroFontFamily || 'Inter, sans-serif'
+                                }}
+                            >
+                                {team.customIntro && team.description ? 
+                                    team.description : 
+                                    (websiteStyle.teamIntroTemplate || 'Follow {teamName} for the latest updates, photos, and team information.').replace('{teamName}', team.name)
+                                }
                             </p>
                         </div>
 
