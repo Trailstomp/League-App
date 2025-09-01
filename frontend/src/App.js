@@ -13155,18 +13155,240 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
         setTimeout(() => setSaved(false), 2000);
     };
 
-    const renderSubtaskContent = () => {
+    // Create remaining zone managers
+    const TeamSidebarZoneManager = ({ teamStyle, setTeamStyle }) => (
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <Menu className="mr-2" size={20} />
+                Sidebar Zone - Team Navigation
+            </h4>
+            
+            <div className="space-y-6">
+                <div>
+                    <h5 className="font-semibold text-slate-700 mb-3">Background</h5>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <AdvancedColorPicker
+                            label="Sidebar Background Color"
+                            value={teamStyle.sidebarBackgroundColor || '#1e293b'}
+                            onChange={(color) => setTeamStyle(prev => ({...prev, sidebarBackgroundColor: color}))}
+                        />
+                        
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Sidebar Background Image</label>
+                            <FileUploadInput
+                                accept="image/*"
+                                currentValue={teamStyle.sidebarBackgroundImage || ''}
+                                onChange={(url) => setTeamStyle(prev => ({...prev, sidebarBackgroundImage: url}))}
+                                placeholder="Upload sidebar background"
+                                enableCrop={false}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 className="font-semibold text-slate-700 mb-3">Text</h5>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <AdvancedColorPicker
+                            label="Navigation Text Color"
+                            value={teamStyle.sidebarTextColor || '#f1f5f9'}
+                            onChange={(color) => setTeamStyle(prev => ({...prev, sidebarTextColor: color}))}
+                        />
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Navigation Font</label>
+                            <select 
+                                value={teamStyle.sidebarFontFamily || 'Inter, sans-serif'}
+                                onChange={(e) => setTeamStyle(prev => ({...prev, sidebarFontFamily: e.target.value}))}
+                                className="w-full p-3 border border-slate-300 rounded-lg"
+                            >
+                                <option value="Inter, sans-serif">Inter (Modern)</option>
+                                <option value="Arial, sans-serif">Arial (Clean)</option>
+                                <option value="Georgia, serif">Georgia (Classic)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const TeamContentZoneManager = ({ teamStyle, setTeamStyle }) => (
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <Type className="mr-2" size={20} />
+                Content Zone - Main Content Area
+            </h4>
+            
+            <div className="space-y-6">
+                <div>
+                    <h5 className="font-semibold text-slate-700 mb-3">Background</h5>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <AdvancedColorPicker
+                            label="Content Background Color"
+                            value={teamStyle.contentBackgroundColor || '#ffffff'}
+                            onChange={(color) => setTeamStyle(prev => ({...prev, contentBackgroundColor: color}))}
+                        />
+                        
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Content Background Image</label>
+                            <FileUploadInput
+                                accept="image/*"
+                                currentValue={teamStyle.contentBackgroundImage || ''}
+                                onChange={(url) => setTeamStyle(prev => ({...prev, contentBackgroundImage: url}))}
+                                placeholder="Upload content background"
+                                enableCrop={false}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 className="font-semibold text-slate-700 mb-3">Text</h5>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <AdvancedColorPicker
+                            label="Content Text Color"
+                            value={teamStyle.contentTextColor || teamStyle.textColor || '#1f2937'}
+                            onChange={(color) => setTeamStyle(prev => ({...prev, contentTextColor: color}))}
+                        />
+
+                        <AdvancedColorPicker
+                            label="Content Heading Color"
+                            value={teamStyle.contentHeadingColor || teamStyle.primaryColor || '#dc2626'}
+                            onChange={(color) => setTeamStyle(prev => ({...prev, contentHeadingColor: color}))}
+                        />
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Content Font</label>
+                            <select 
+                                value={teamStyle.contentFontFamily || teamStyle.fontFamily || 'Inter, sans-serif'}
+                                onChange={(e) => setTeamStyle(prev => ({...prev, contentFontFamily: e.target.value}))}
+                                className="w-full p-3 border border-slate-300 rounded-lg"
+                            >
+                                <option value="Inter, sans-serif">Inter (Modern)</option>
+                                <option value="Arial, sans-serif">Arial (Clean)</option>
+                                <option value="Georgia, serif">Georgia (Classic)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Font Size: {teamStyle.contentFontSize || 16}px</label>
+                            <input 
+                                type="range"
+                                min="12"
+                                max="20"
+                                step="1"
+                                value={teamStyle.contentFontSize || 16}
+                                onChange={(e) => setTeamStyle(prev => ({...prev, contentFontSize: parseInt(e.target.value)}))}
+                                className="w-full"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const TeamFormsZoneManager = ({ teamStyle, setTeamStyle }) => (
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <Briefcase className="mr-2" size={20} />
+                Forms Zone - Forms & Modals
+            </h4>
+            
+            <div className="space-y-6">
+                <div>
+                    <h5 className="font-semibold text-slate-700 mb-3">Background</h5>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <AdvancedColorPicker
+                            label="Form Background Color"
+                            value={teamStyle.formBackgroundColor || '#f8fafc'}
+                            onChange={(color) => setTeamStyle(prev => ({...prev, formBackgroundColor: color}))}
+                        />
+
+                        <AdvancedColorPicker
+                            label="Button Color"
+                            value={teamStyle.buttonColor || teamStyle.primaryColor || '#dc2626'}
+                            onChange={(color) => setTeamStyle(prev => ({...prev, buttonColor: color}))}
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <h5 className="font-semibold text-slate-700 mb-3">Text</h5>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <AdvancedColorPicker
+                            label="Form Text Color"
+                            value={teamStyle.formTextColor || teamStyle.textColor || '#1f2937'}
+                            onChange={(color) => setTeamStyle(prev => ({...prev, formTextColor: color}))}
+                        />
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Form Font</label>
+                            <select 
+                                value={teamStyle.formFontFamily || teamStyle.fontFamily || 'Inter, sans-serif'}
+                                onChange={(e) => setTeamStyle(prev => ({...prev, formFontFamily: e.target.value}))}
+                                className="w-full p-3 border border-slate-300 rounded-lg"
+                            >
+                                <option value="Inter, sans-serif">Inter (Modern)</option>
+                                <option value="Arial, sans-serif">Arial (Clean)</option>
+                                <option value="Georgia, serif">Georgia (Classic)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Form Preview */}
+                <div>
+                    <h5 className="font-semibold text-slate-700 mb-3">Forms Preview</h5>
+                    <div 
+                        className="p-6 rounded-lg border-2 border-dashed border-slate-300"
+                        style={{ 
+                            backgroundColor: teamStyle.formBackgroundColor || '#f8fafc',
+                            fontFamily: teamStyle.formFontFamily || teamStyle.fontFamily || 'Inter, sans-serif'
+                        }}
+                    >
+                        <h6 className="font-semibold mb-4" style={{ color: teamStyle.formTextColor || teamStyle.textColor || '#1f2937' }}>
+                            Contact Team
+                        </h6>
+                        <div className="space-y-3">
+                            <input 
+                                type="text" 
+                                placeholder="Your name..." 
+                                className="w-full p-3 border rounded"
+                                disabled
+                            />
+                            <textarea 
+                                placeholder="Your message..." 
+                                className="w-full p-3 border rounded h-20"
+                                disabled
+                            />
+                            <button 
+                                className="px-6 py-3 text-white font-semibold rounded-lg"
+                                style={{ backgroundColor: teamStyle.buttonColor || teamStyle.primaryColor || '#dc2626' }}
+                                disabled
+                            >
+                                Send Message
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderZoneContent = () => {
         switch(activeSubtask) {
-            case 'colors':
+            case 'themes':
                 return <TeamColorsThemeManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} team={team} websiteStyle={websiteStyle} />;
-            case 'logos':
-                return <TeamLogoBrandingManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} team={team} />;
             case 'hero':
-                return <TeamHeroBannerManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} team={team} websiteStyle={websiteStyle} />;
-            case 'typography':
-                return <TeamTypographyManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} />;
-            case 'layout':
-                return <TeamLayoutUIManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} />;
+                return <TeamHeroZoneManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} team={team} websiteStyle={websiteStyle} />;
+            case 'sidebar':
+                return <TeamSidebarZoneManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} />;
+            case 'content':
+                return <TeamContentZoneManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} />;
+            case 'forms':
+                return <TeamFormsZoneManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} />;
             default:
                 return <TeamColorsThemeManager teamStyle={teamStyle} setTeamStyle={setTeamStyle} team={team} websiteStyle={websiteStyle} />;
         }
