@@ -12677,8 +12677,8 @@ const TeamColorsThemeManager = ({ teamStyle, setTeamStyle, team, websiteStyle })
     );
 };
 
-// Team Hero & Banner Manager
-const TeamHeroBannerManager = ({ teamStyle, setTeamStyle, team, websiteStyle }) => {
+// Team Hero Zone Manager
+const TeamHeroZoneManager = ({ teamStyle, setTeamStyle, team, websiteStyle }) => {
     const getDefaultIntro = () => {
         const template = websiteStyle.teamIntroTemplate || 'Follow {teamName} for the latest updates, photos, and team information.';
         return template.replace('{teamName}', team.name);
@@ -12688,19 +12688,137 @@ const TeamHeroBannerManager = ({ teamStyle, setTeamStyle, team, websiteStyle }) 
         <div className="bg-slate-50 p-6 rounded-lg">
             <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
                 <Layout className="mr-2" size={20} />
-                Team Hero & Banner
+                Hero Zone - Team Page Header
             </h4>
             
-            <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                    {/* Team Intro Statement */}
-                    <div>
-                        <label className="block font-semibold text-slate-700 mb-2">Team Introduction</label>
+            <div className="space-y-6">
+                {/* Background Settings */}
+                <div>
+                    <h5 className="font-semibold text-slate-700 mb-3">Background</h5>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <AdvancedColorPicker
+                            label="Background Color"
+                            value={teamStyle.heroBackgroundColor || teamStyle.backgroundColor || '#f8fafc'}
+                            onChange={(color) => setTeamStyle(prev => ({...prev, heroBackgroundColor: color}))}
+                        />
+                        
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Background Image</label>
+                            <FileUploadInput
+                                accept="image/*"
+                                currentValue={teamStyle.heroBackgroundImage || ''}
+                                onChange={(url) => setTeamStyle(prev => ({...prev, heroBackgroundImage: url}))}
+                                placeholder="Upload hero background"
+                                enableCrop={false}
+                                cropAspectRatio="16:6"
+                            />
+                            {teamStyle.heroBackgroundImage && (
+                                <button
+                                    onClick={() => setTeamStyle(prev => ({...prev, heroBackgroundImage: ''}))}
+                                    className="mt-2 text-sm text-red-600 hover:text-red-800"
+                                >
+                                    🗑️ Remove Background Image
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Logo Display */}
+                <div>
+                    <h5 className="font-semibold text-slate-700 mb-3">Team Logo Display</h5>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="flex items-center mb-2">
+                                <input
+                                    type="checkbox"
+                                    checked={teamStyle.showLogoInHero !== false}
+                                    onChange={(e) => setTeamStyle(prev => ({...prev, showLogoInHero: e.target.checked}))}
+                                    className="mr-2"
+                                />
+                                <span className="font-semibold text-slate-700">Show Team Logo in Hero</span>
+                            </label>
+                            <p className="text-sm text-slate-500">Display the team logo in the hero section</p>
+                        </div>
+
+                        {teamStyle.showLogoInHero !== false && (
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Logo Size</label>
+                                <select 
+                                    value={teamStyle.heroLogoSize || 'medium'}
+                                    onChange={(e) => setTeamStyle(prev => ({...prev, heroLogoSize: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg"
+                                >
+                                    <option value="small">Small (64px)</option>
+                                    <option value="medium">Medium (96px)</option>
+                                    <option value="large">Large (128px)</option>
+                                </select>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Text Settings */}
+                <div>
+                    <h5 className="font-semibold text-slate-700 mb-3">Text & Typography</h5>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                            <AdvancedColorPicker
+                                label="Hero Title Color"
+                                value={teamStyle.heroTitleColor || teamStyle.primaryColor || '#dc2626'}
+                                onChange={(color) => setTeamStyle(prev => ({...prev, heroTitleColor: color}))}
+                            />
+
+                            <AdvancedColorPicker
+                                label="Hero Text Color"
+                                value={teamStyle.heroTextColor || teamStyle.textColor || '#1f2937'}
+                                onChange={(color) => setTeamStyle(prev => ({...prev, heroTextColor: color}))}
+                            />
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Font Family</label>
+                                <select 
+                                    value={teamStyle.heroFontFamily || teamStyle.fontFamily || 'Inter, sans-serif'}
+                                    onChange={(e) => setTeamStyle(prev => ({...prev, heroFontFamily: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg"
+                                >
+                                    <option value="Inter, sans-serif">Inter (Modern)</option>
+                                    <option value="Arial, sans-serif">Arial (Clean)</option>
+                                    <option value="Georgia, serif">Georgia (Classic)</option>
+                                    <option value="'Times New Roman', serif">Times New Roman</option>
+                                    <option value="Impact, sans-serif">Impact (Bold)</option>
+                                    <option value="Helvetica, sans-serif">Helvetica</option>
+                                    <option value="Verdana, sans-serif">Verdana</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Title Size: {teamStyle.heroTitleSize || 48}px</label>
+                                <input 
+                                    type="range"
+                                    min="24"
+                                    max="72"
+                                    step="4"
+                                    value={teamStyle.heroTitleSize || 48}
+                                    onChange={(e) => setTeamStyle(prev => ({...prev, heroTitleSize: parseInt(e.target.value)}))}
+                                    className="w-full"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Content Settings */}
+                <div>
+                    <h5 className="font-semibold text-slate-700 mb-3">Hero Content</h5>
+                    <div className="space-y-4">
                         <div className="flex items-center space-x-4 mb-4">
                             <label className="flex items-center">
                                 <input
                                     type="radio"
-                                    name="introType"
+                                    name="heroIntroType"
                                     checked={!teamStyle.customIntro}
                                     onChange={() => setTeamStyle(prev => ({...prev, customIntro: false}))}
                                     className="mr-2"
@@ -12710,7 +12828,7 @@ const TeamHeroBannerManager = ({ teamStyle, setTeamStyle, team, websiteStyle }) 
                             <label className="flex items-center">
                                 <input
                                     type="radio"
-                                    name="introType"
+                                    name="heroIntroType"
                                     checked={teamStyle.customIntro}
                                     onChange={() => setTeamStyle(prev => ({...prev, customIntro: true}))}
                                     className="mr-2"
@@ -12734,129 +12852,53 @@ const TeamHeroBannerManager = ({ teamStyle, setTeamStyle, team, websiteStyle }) 
                             </div>
                         )}
                     </div>
-
-                    {/* Hero Background */}
-                    <div>
-                        <label className="block font-semibold text-slate-700 mb-2">Hero Background Image</label>
-                        <FileUploadInput
-                            accept="image/*"
-                            currentValue={teamStyle.bannerImage}
-                            onChange={(url) => setTeamStyle(prev => ({...prev, bannerImage: url}))}
-                            placeholder="Upload hero background"
-                            enableCrop={false}
-                            cropAspectRatio="16:9"
-                        />
-                        {teamStyle.bannerImage && (
-                            <button
-                                onClick={() => setTeamStyle(prev => ({...prev, bannerImage: ''}))}
-                                className="mt-2 text-sm text-red-600 hover:text-red-800"
-                            >
-                                🗑️ Remove Background Image
-                            </button>
-                        )}
-                    </div>
                 </div>
 
-                <div className="space-y-4">
-                    {/* Typography Settings */}
-                    <div>
-                        <label className="block font-semibold text-slate-700 mb-2">Team Font Family</label>
-                        <select 
-                            value={teamStyle.fontFamily}
-                            onChange={(e) => setTeamStyle(prev => ({...prev, fontFamily: e.target.value}))}
-                            className="w-full p-3 border border-slate-300 rounded-lg"
+                {/* Hero Preview */}
+                <div>
+                    <h5 className="font-semibold text-slate-700 mb-3">Hero Zone Preview</h5>
+                    <div className="border-2 border-dashed border-slate-300 rounded-lg overflow-hidden">
+                        <div 
+                            className="h-64 flex items-center justify-center relative"
+                            style={{ 
+                                backgroundColor: teamStyle.heroBackgroundColor || teamStyle.backgroundColor || '#f8fafc',
+                                backgroundImage: teamStyle.heroBackgroundImage ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${teamStyle.heroBackgroundImage})` : 'none',
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center'
+                            }}
                         >
-                            <option value="Inter, sans-serif">Inter (Modern)</option>
-                            <option value="Arial, sans-serif">Arial (Clean)</option>
-                            <option value="Georgia, serif">Georgia (Classic)</option>
-                            <option value="'Times New Roman', serif">Times New Roman</option>
-                            <option value="Impact, sans-serif">Impact (Bold)</option>
-                            <option value="Helvetica, sans-serif">Helvetica</option>
-                            <option value="Verdana, sans-serif">Verdana</option>
-                        </select>
-                    </div>
-
-                    {/* Hero Text Styling */}
-                    <div>
-                        <label className="block font-semibold text-slate-700 mb-2">Hero Text Size</label>
-                        <div className="flex items-center gap-4">
-                            <input 
-                                type="range"
-                                min="24"
-                                max="60"
-                                step="4"
-                                value={teamStyle.heroFontSize || 48}
-                                onChange={(e) => setTeamStyle(prev => ({...prev, heroFontSize: parseInt(e.target.value)}))}
-                                className="flex-1"
-                            />
-                            <span className="text-sm font-medium text-slate-600 w-12">
-                                {teamStyle.heroFontSize || 48}px
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* Hero Effects */}
-                    <div>
-                        <label className="block font-semibold text-slate-700 mb-2">Hero Text Effects</label>
-                        <div className="space-y-2">
-                            <label className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    checked={teamStyle.heroTextShadow || false}
-                                    onChange={(e) => setTeamStyle(prev => ({...prev, heroTextShadow: e.target.checked}))}
-                                    className="mr-2"
-                                />
-                                Text Shadow
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    checked={teamStyle.heroTextBold || true}
-                                    onChange={(e) => setTeamStyle(prev => ({...prev, heroTextBold: e.target.checked}))}
-                                    className="mr-2"
-                                />
-                                Bold Text
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Hero Preview */}
-            <div className="mt-6">
-                <h5 className="font-semibold text-slate-700 mb-3">Hero Section Preview</h5>
-                <div className="border-2 border-dashed border-slate-300 rounded-lg overflow-hidden">
-                    <div 
-                        className="h-48 flex items-center justify-center relative"
-                        style={{ 
-                            backgroundColor: teamStyle.backgroundColor,
-                            backgroundImage: teamStyle.bannerImage ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${teamStyle.bannerImage})` : 'none',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                        }}
-                    >
-                        <div className="text-center z-10 relative">
-                            <h1 
-                                className="mb-4"
-                                style={{ 
-                                    color: teamStyle.primaryColor,
-                                    fontFamily: teamStyle.fontFamily,
-                                    fontSize: `${Math.min(teamStyle.heroFontSize || 48, 36)}px`,
-                                    fontWeight: teamStyle.heroTextBold ? 'bold' : 'normal',
-                                    textShadow: teamStyle.heroTextShadow ? '2px 2px 4px rgba(0,0,0,0.7)' : 'none'
-                                }}
-                            >
-                                Welcome to {team.name}
-                            </h1>
-                            <p 
-                                className="text-lg max-w-2xl mx-auto"
-                                style={{ 
-                                    color: teamStyle.textColor,
-                                    fontFamily: teamStyle.fontFamily
-                                }}
-                            >
-                                {teamStyle.customIntro ? teamStyle.description : getDefaultIntro()}
-                            </p>
+                            <div className="text-center z-10 relative">
+                                {teamStyle.showLogoInHero !== false && teamStyle.logoUrl && (
+                                    <img 
+                                        src={teamStyle.logoUrl} 
+                                        alt="Team Logo"
+                                        className="mx-auto mb-4 object-contain"
+                                        style={{ 
+                                            width: teamStyle.heroLogoSize === 'small' ? '64px' : teamStyle.heroLogoSize === 'large' ? '128px' : '96px',
+                                            height: teamStyle.heroLogoSize === 'small' ? '64px' : teamStyle.heroLogoSize === 'large' ? '128px' : '96px'
+                                        }}
+                                    />
+                                )}
+                                <h1 
+                                    className="mb-4 font-bold"
+                                    style={{ 
+                                        color: teamStyle.heroTitleColor || teamStyle.primaryColor || '#dc2626',
+                                        fontFamily: teamStyle.heroFontFamily || teamStyle.fontFamily || 'Inter, sans-serif',
+                                        fontSize: `${Math.min(teamStyle.heroTitleSize || 48, 36)}px`
+                                    }}
+                                >
+                                    Welcome to {team.name}
+                                </h1>
+                                <p 
+                                    className="text-lg max-w-2xl mx-auto"
+                                    style={{ 
+                                        color: teamStyle.heroTextColor || teamStyle.textColor || '#1f2937',
+                                        fontFamily: teamStyle.heroFontFamily || teamStyle.fontFamily || 'Inter, sans-serif'
+                                    }}
+                                >
+                                    {teamStyle.customIntro ? teamStyle.description : getDefaultIntro()}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
