@@ -13408,6 +13408,247 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
     );
 };
 
+// Team-Specific Style Manager
+const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
+    const [teamStyle, setTeamStyle] = useState({
+        description: team.description || '',
+        primaryColor: team.style?.primaryColor || websiteStyle.primaryColor || '#dc2626',
+        backgroundColor: team.style?.backgroundColor || websiteStyle.teamHeroBackgroundColor || '#f8fafc',
+        textColor: team.style?.textColor || websiteStyle.teamHeroTextColor || '#1f2937',
+        fontFamily: team.style?.fontFamily || websiteStyle.teamHeroFontFamily || 'Inter, sans-serif',
+        bannerImage: team.style?.bannerImage || '',
+        logoUrl: team.style?.logoUrl || '',
+        customIntro: team.customIntro || false,
+        ...team.style
+    });
+    const [saved, setSaved] = useState(false);
+
+    const handleSave = () => {
+        setTeams(prevTeams => prevTeams.map(t => 
+            t.id === team.id ? { 
+                ...t, 
+                description: teamStyle.description,
+                customIntro: teamStyle.customIntro,
+                style: {
+                    ...t.style,
+                    primaryColor: teamStyle.primaryColor,
+                    backgroundColor: teamStyle.backgroundColor,
+                    textColor: teamStyle.textColor,
+                    fontFamily: teamStyle.fontFamily,
+                    bannerImage: teamStyle.bannerImage,
+                    logoUrl: teamStyle.logoUrl
+                }
+            } : t
+        ));
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+    };
+
+    const getDefaultIntro = () => {
+        const template = websiteStyle.teamIntroTemplate || 'Follow {teamName} for the latest updates, photos, and team information.';
+        return template.replace('{teamName}', team.name);
+    };
+
+    return (
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <div className="border-b border-slate-200 pb-4 mb-6">
+                <h3 className="text-2xl font-bold text-slate-800 mb-2">Team Appearance</h3>
+                <p className="text-slate-600">Customize how {team.name} appears to visitors</p>
+            </div>
+
+            <div className="space-y-6">
+                {/* Team Intro Statement */}
+                <div className="bg-slate-50 p-6 rounded-lg">
+                    <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
+                        <Type className="mr-2" size={20} />
+                        Team Intro Statement
+                    </h4>
+                    
+                    <div className="space-y-4">
+                        <div className="flex items-center space-x-4">
+                            <label className="flex items-center">
+                                <input
+                                    type="radio"
+                                    name="introType"
+                                    checked={!teamStyle.customIntro}
+                                    onChange={() => setTeamStyle(prev => ({...prev, customIntro: false}))}
+                                    className="mr-2"
+                                />
+                                Use Default Template
+                            </label>
+                            <label className="flex items-center">
+                                <input
+                                    type="radio"
+                                    name="introType"
+                                    checked={teamStyle.customIntro}
+                                    onChange={() => setTeamStyle(prev => ({...prev, customIntro: true}))}
+                                    className="mr-2"
+                                />
+                                Custom Intro
+                            </label>
+                        </div>
+
+                        {teamStyle.customIntro ? (
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Custom Team Introduction</label>
+                                <textarea 
+                                    value={teamStyle.description}
+                                    onChange={(e) => setTeamStyle(prev => ({...prev, description: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg h-24"
+                                    placeholder="Write a custom introduction for your team..."
+                                />
+                            </div>
+                        ) : (
+                            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                <p className="text-slate-700">
+                                    <strong>Using default template:</strong> {getDefaultIntro()}
+                                </p>
+                                <p className="text-sm text-slate-500 mt-2">
+                                    This template is set by the league administrator and will automatically include your team name.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Team Colors */}
+                <div className="bg-slate-50 p-6 rounded-lg">
+                    <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
+                        <Palette className="mr-2" size={20} />
+                        Team Colors
+                    </h4>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <AdvancedColorPicker
+                            label="Primary Team Color"
+                            value={teamStyle.primaryColor}
+                            onChange={(color) => setTeamStyle(prev => ({...prev, primaryColor: color}))}
+                        />
+
+                        <AdvancedColorPicker
+                            label="Background Color"
+                            value={teamStyle.backgroundColor}
+                            onChange={(color) => setTeamStyle(prev => ({...prev, backgroundColor: color}))}
+                        />
+
+                        <AdvancedColorPicker
+                            label="Text Color"
+                            value={teamStyle.textColor}
+                            onChange={(color) => setTeamStyle(prev => ({...prev, textColor: color}))}
+                        />
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Font Family</label>
+                            <select 
+                                value={teamStyle.fontFamily}
+                                onChange={(e) => setTeamStyle(prev => ({...prev, fontFamily: e.target.value}))}
+                                className="w-full p-3 border border-slate-300 rounded-lg"
+                            >
+                                <option value="Inter, sans-serif">Inter (Modern)</option>
+                                <option value="Arial, sans-serif">Arial (Clean)</option>
+                                <option value="Georgia, serif">Georgia (Classic)</option>
+                                <option value="'Times New Roman', serif">Times New Roman</option>
+                                <option value="Impact, sans-serif">Impact (Bold)</option>
+                                <option value="Helvetica, sans-serif">Helvetica</option>
+                                <option value="Verdana, sans-serif">Verdana</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Team Images */}
+                <div className="bg-slate-50 p-6 rounded-lg">
+                    <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
+                        <ImageIcon className="mr-2" size={20} />
+                        Team Images
+                    </h4>
+                    
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Team Logo</label>
+                            <FileUploadInput
+                                accept="image/*"
+                                currentValue={teamStyle.logoUrl}
+                                onChange={(url) => setTeamStyle(prev => ({...prev, logoUrl: url}))}
+                                placeholder="Upload team logo"
+                                enableCrop={false}
+                                cropAspectRatio="1:1"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Hero Background Image (Optional)</label>
+                            <FileUploadInput
+                                accept="image/*"
+                                currentValue={teamStyle.bannerImage}
+                                onChange={(url) => setTeamStyle(prev => ({...prev, bannerImage: url}))}
+                                placeholder="Upload hero background"
+                                enableCrop={false}
+                                cropAspectRatio="16:9"
+                            />
+                            {teamStyle.bannerImage && (
+                                <button
+                                    onClick={() => setTeamStyle(prev => ({...prev, bannerImage: ''}))}
+                                    className="mt-2 text-sm text-red-600 hover:text-red-800"
+                                >
+                                    🗑️ Remove Background Image
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Team Style Preview */}
+                <div className="bg-slate-50 p-6 rounded-lg">
+                    <h4 className="text-xl font-semibold text-slate-800 mb-4">Preview</h4>
+                    
+                    <div className="border-2 border-dashed border-slate-300 rounded-lg overflow-hidden">
+                        <div 
+                            className="p-8 text-center"
+                            style={{ 
+                                backgroundColor: teamStyle.backgroundColor,
+                                backgroundImage: teamStyle.bannerImage ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${teamStyle.bannerImage})` : 'none',
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center'
+                            }}
+                        >
+                            <h1 
+                                className="text-3xl font-bold mb-4"
+                                style={{ 
+                                    color: teamStyle.primaryColor,
+                                    fontFamily: teamStyle.fontFamily
+                                }}
+                            >
+                                Welcome to {team.name}
+                            </h1>
+                            <p 
+                                className="text-lg max-w-2xl mx-auto"
+                                style={{ 
+                                    color: teamStyle.textColor,
+                                    fontFamily: teamStyle.fontFamily
+                                }}
+                            >
+                                {teamStyle.customIntro ? teamStyle.description : getDefaultIntro()}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Save Button */}
+            <div className="flex justify-end pt-6 border-t border-slate-200 mt-6">
+                {saved && <span className="text-green-600 font-semibold mr-4 flex items-center"><span className="mr-1">✓</span> Team Style Saved!</span>}
+                <button 
+                    onClick={handleSave}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                >
+                    Save Team Style
+                </button>
+            </div>
+        </div>
+    );
+};
+
 // ===== SEASONS MANAGEMENT SYSTEM =====
 const SeasonManager = ({ seasons, setSeasons, currentSeason, setCurrentSeason, teams, setTeams, players, setPlayers, leagueSchedule, setLeagueSchedule }) => {
     const [editingSeason, setEditingSeason] = useState(null);
