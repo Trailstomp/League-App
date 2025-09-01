@@ -14321,7 +14321,8 @@ function App() {
     // Event detail handlers
     const handleEventClick = (event) => {
         setSelectedEventDetail(event);
-        setEventDetailTab('details');
+        // Set default tab based on event type
+        setEventDetailTab(event.type === 'tournament' ? 'bracket' : 'details');
     };
 
     const handleUpdateEvent = (updatedEvent) => {
