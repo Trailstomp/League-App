@@ -1760,7 +1760,16 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
             {/* Bracket Settings */}
             {bracketData.rounds.length === 0 && (
                 <div className="bg-gray-50 p-6 rounded-lg">
-                    <h4 className="font-semibold mb-4">🏆 Bracket Configuration</h4>
+                    <h4 className="font-semibold mb-4">🏆 Tournament Team Management</h4>
+                    <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-sm text-blue-800 font-medium">📍 How Tournament Scoring Works:</p>
+                        <ul className="text-sm text-blue-700 mt-2 space-y-1">
+                            <li>• Add teams below by clicking on them</li>
+                            <li>• Click "Generate Bracket" to create matchups</li>
+                            <li>• Enter scores directly in the bracket matches</li>
+                            <li>• Winners automatically advance to next round</li>
+                        </ul>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Tournament Format</label>
