@@ -5315,7 +5315,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
                                                         )
                                                     }));
                                                 }}
-                                                placeholder="Upload photo or paste URL"
+                                                placeholder="Upload photo"
                                                 enableCrop={false}
                                                 cropAspectRatio="free"
                                             />
