@@ -13513,7 +13513,7 @@ const FriendsManager = ({ friends, setFriends }) => {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h2 className="text-2xl font-bold text-slate-800">Friends & Partners</h2>
+                    <h2 className="text-2xl font-bold text-slate-800">Friends & Sponsors</h2>
                     <p className="text-slate-600">Manage league friends, partners, and community connections</p>
                 </div>
                 <button 
