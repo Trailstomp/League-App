@@ -14298,7 +14298,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                             <Users className="mr-3" size={24} />
                             League Friends & Sponsors
                         </h2>
-                        <p className="text-slate-600 mb-6">Manage league-wide friends and partners that appear on all team pages.</p>
+                        <p className="text-slate-600 mb-6">Manage league-wide friends, partners, and sponsors that appear on all team pages.</p>
                         <FriendsTab 
                             team={null}
                             teams={[]}
