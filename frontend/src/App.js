@@ -9296,7 +9296,7 @@ const FriendsTab = ({
                 <div className="flex items-center justify-between">
                     <h3 className="text-2xl font-semibold text-slate-800 flex items-center">
                         <Users className="mr-3 h-6 w-6 text-blue-600" />
-                        Friends & Partners
+                        Friends & Sponsors
                         <span className="ml-3 text-sm font-normal text-slate-500">({allFriends.length})</span>
                     </h3>
                     {isAuthorizedToManage && (
