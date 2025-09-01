@@ -10063,8 +10063,8 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                     </div>
                 )}
                 
-                {/* FRIENDS TAB - Display team friends and partners */}
-                {activeTab === 'friends' && (
+                {/* COMBINED FRIENDS & SPONSORS TAB with inline editing */}
+                {activeTab === 'friends-sponsors' && (
                     <div className="space-y-6">
                         <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Friends & Partners</h2>
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
