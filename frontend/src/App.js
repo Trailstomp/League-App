@@ -10816,6 +10816,8 @@ const TeamManager = ({ teams, setTeams, websiteStyle, seasons = [], currentSeaso
                     handleSave={handleSave}
                     setEditingTeam={setEditingTeam}
                     formBackgroundColor={formBackgroundColor}
+                    seasons={seasons}
+                    currentSeason={currentSeason}
                 />
             )}
             <div className="flex justify-end mb-4">
