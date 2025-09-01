@@ -8708,6 +8708,433 @@ const TeamInfoManager = ({ team, setTeams }) => {
     );
 };
 
+// Friend Card Component with Inline Editing
+const FriendCard = ({ friend, isAuthorizedToManage, onEdit, onDelete, websiteStyle }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editData, setEditData] = useState(friend);
+
+    const handleSave = () => {
+        onEdit(editData);
+        setIsEditing(false);
+    };
+
+    const handleCancel = () => {
+        setEditData(friend);
+        setIsEditing(false);
+    };
+
+    if (isEditing) {
+        return (
+            <div className="bg-white border-2 border-blue-300 rounded-lg p-4 shadow-sm">
+                <div className="space-y-3">
+                    <input
+                        type="text"
+                        value={editData.name}
+                        onChange={(e) => setEditData({...editData, name: e.target.value})}
+                        className="w-full p-2 border rounded"
+                        placeholder="Friend Name"
+                    />
+                    <input
+                        type="text"
+                        value={editData.description || ''}
+                        onChange={(e) => setEditData({...editData, description: e.target.value})}
+                        className="w-full p-2 border rounded"
+                        placeholder="Description/Relationship"
+                    />
+                    <input
+                        type="url"
+                        value={editData.website || ''}
+                        onChange={(e) => setEditData({...editData, website: e.target.value})}
+                        className="w-full p-2 border rounded"
+                        placeholder="Website URL"
+                    />
+                    <input
+                        type="url"
+                        value={editData.photo || ''}
+                        onChange={(e) => setEditData({...editData, photo: e.target.value})}
+                        className="w-full p-2 border rounded"
+                        placeholder="Photo URL"
+                    />
+                    <div className="flex space-x-2">
+                        <button onClick={handleSave} className="flex-1 bg-blue-600 text-white py-2 px-3 rounded text-sm hover:bg-blue-700">
+                            Save
+                        </button>
+                        <button onClick={handleCancel} className="flex-1 bg-gray-500 text-white py-2 px-3 rounded text-sm hover:bg-gray-600">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow relative group">
+            {isAuthorizedToManage && (
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                        onClick={() => setIsEditing(true)}
+                        className="text-blue-600 hover:text-blue-800 p-1"
+                        title="Edit"
+                    >
+                        <Edit className="h-4 w-4" />
+                    </button>
+                    <button
+                        onClick={() => confirm('Delete this friend?') && onDelete()}
+                        className="text-red-600 hover:text-red-800 p-1 ml-1"
+                        title="Delete"
+                    >
+                        <Trash className="h-4 w-4" />
+                    </button>
+                </div>
+            )}
+            
+            <div className="text-center">
+                <img 
+                    src={friend.photo || 'https://placehold.co/100x100/e2e8f0/94a3b8?text=FRIEND'} 
+                    alt={friend.name} 
+                    className="w-20 h-20 mx-auto rounded-full object-cover bg-slate-50 p-1"
+                />
+                <h3 className="font-semibold text-slate-800 mt-3">{friend.name}</h3>
+                {friend.description && (
+                    <p className="text-sm text-slate-600 mt-1">{friend.description}</p>
+                )}
+                {friend.teamId && (
+                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full mt-2">
+                        Team Friend
+                    </span>
+                )}
+            </div>
+            
+            {friend.website && (
+                <div className="text-center mt-4">
+                    <a 
+                        href={friend.website} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 text-sm flex items-center justify-center gap-1"
+                    >
+                        <Globe className="h-4 w-4" />
+                        Visit Website
+                    </a>
+                </div>
+            )}
+        </div>
+    );
+};
+
+// Sponsor Card Component with Inline Editing
+const SponsorCard = ({ sponsor, isAuthorizedToManage, onEdit, onDelete, websiteStyle }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editData, setEditData] = useState(sponsor);
+
+    const handleSave = () => {
+        onEdit(editData);
+        setIsEditing(false);
+    };
+
+    const handleCancel = () => {
+        setEditData(sponsor);
+        setIsEditing(false);
+    };
+
+    if (isEditing) {
+        return (
+            <div className="bg-white border-2 border-green-300 rounded-lg p-4 shadow-sm">
+                <div className="space-y-3">
+                    <input
+                        type="text"
+                        value={editData.name}
+                        onChange={(e) => setEditData({...editData, name: e.target.value})}
+                        className="w-full p-2 border rounded"
+                        placeholder="Sponsor Name"
+                    />
+                    <textarea
+                        value={editData.description || ''}
+                        onChange={(e) => setEditData({...editData, description: e.target.value})}
+                        className="w-full p-2 border rounded"
+                        placeholder="Description"
+                        rows="2"
+                    />
+                    <select
+                        value={editData.tier}
+                        onChange={(e) => setEditData({...editData, tier: e.target.value})}
+                        className="w-full p-2 border rounded"
+                    >
+                        <option value="Bronze">Bronze</option>
+                        <option value="Silver">Silver</option>
+                        <option value="Gold">Gold</option>
+                        <option value="Platinum">Platinum</option>
+                    </select>
+                    <input
+                        type="url"
+                        value={editData.website || ''}
+                        onChange={(e) => setEditData({...editData, website: e.target.value})}
+                        className="w-full p-2 border rounded"
+                        placeholder="Website URL"
+                    />
+                    <input
+                        type="url"
+                        value={editData.logo || ''}
+                        onChange={(e) => setEditData({...editData, logo: e.target.value})}
+                        className="w-full p-2 border rounded"
+                        placeholder="Logo URL"
+                    />
+                    <div className="flex space-x-2">
+                        <button onClick={handleSave} className="flex-1 bg-green-600 text-white py-2 px-3 rounded text-sm hover:bg-green-700">
+                            Save
+                        </button>
+                        <button onClick={handleCancel} className="flex-1 bg-gray-500 text-white py-2 px-3 rounded text-sm hover:bg-gray-600">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow relative group">
+            {isAuthorizedToManage && (
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    <button
+                        onClick={() => setIsEditing(true)}
+                        className="bg-white text-blue-600 hover:text-blue-800 p-1 rounded shadow"
+                        title="Edit"
+                    >
+                        <Edit className="h-4 w-4" />
+                    </button>
+                    <button
+                        onClick={() => confirm('Delete this sponsor?') && onDelete()}
+                        className="bg-white text-red-600 hover:text-red-800 p-1 rounded shadow ml-1"
+                        title="Delete"
+                    >
+                        <Trash className="h-4 w-4" />
+                    </button>
+                </div>
+            )}
+            
+            <div className="h-24 bg-slate-50 flex items-center justify-center p-4">
+                <img 
+                    src={sponsor.logo || 'https://placehold.co/120x80/f1f5f9/64748b?text=SPONSOR'} 
+                    alt={sponsor.name} 
+                    className="max-w-full max-h-full object-contain"
+                />
+            </div>
+            
+            <div className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold text-slate-800">{sponsor.name}</h4>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        sponsor.tier === 'Platinum' ? 'bg-purple-100 text-purple-800' :
+                        sponsor.tier === 'Gold' ? 'bg-yellow-100 text-yellow-800' :
+                        sponsor.tier === 'Silver' ? 'bg-gray-100 text-gray-800' :
+                        'bg-amber-100 text-amber-800'
+                    }`}>
+                        {sponsor.tier}
+                    </span>
+                </div>
+                
+                {sponsor.description && (
+                    <p className="text-sm text-slate-600 mb-3">{sponsor.description}</p>
+                )}
+                
+                <div className="flex items-center justify-between">
+                    {sponsor.website && (
+                        <a 
+                            href={sponsor.website} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
+                        >
+                            <Globe className="h-4 w-4" />
+                            Visit Website
+                        </a>
+                    )}
+                    
+                    {sponsor.teamId && (
+                        <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                            Team Sponsor
+                        </span>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Add Friend Modal
+const AddFriendModal = ({ onSave, onCancel, websiteStyle }) => {
+    const [friendData, setFriendData] = useState({
+        name: '',
+        description: '',
+        website: '',
+        photo: ''
+    });
+
+    const handleSave = (e) => {
+        e.preventDefault();
+        if (friendData.name.trim()) {
+            onSave(friendData);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div 
+                className="bg-white rounded-lg p-6 w-full max-w-md mx-4"
+                style={{ backgroundColor: websiteStyle?.formBackgroundColor || '#ffffff' }}
+            >
+                <h3 className="text-xl font-bold text-slate-800 mb-4">Add New Friend</h3>
+                <form onSubmit={handleSave} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                        <input
+                            type="text"
+                            value={friendData.name}
+                            onChange={(e) => setFriendData({...friendData, name: e.target.value})}
+                            className="w-full p-2 border rounded"
+                            placeholder="Friend or partner name"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <input
+                            type="text"
+                            value={friendData.description}
+                            onChange={(e) => setFriendData({...friendData, description: e.target.value})}
+                            className="w-full p-2 border rounded"
+                            placeholder="Relationship or description"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                        <input
+                            type="url"
+                            value={friendData.website}
+                            onChange={(e) => setFriendData({...friendData, website: e.target.value})}
+                            className="w-full p-2 border rounded"
+                            placeholder="https://example.com"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Photo URL</label>
+                        <input
+                            type="url"
+                            value={friendData.photo}
+                            onChange={(e) => setFriendData({...friendData, photo: e.target.value})}
+                            className="w-full p-2 border rounded"
+                            placeholder="https://example.com/photo.jpg"
+                        />
+                    </div>
+                    <div className="flex space-x-3">
+                        <button type="submit" className="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                            Add Friend
+                        </button>
+                        <button type="button" onClick={onCancel} className="flex-1 bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+// Add Sponsor Modal
+const AddSponsorModal = ({ onSave, onCancel, websiteStyle }) => {
+    const [sponsorData, setSponsorData] = useState({
+        name: '',
+        description: '',
+        tier: 'Bronze',
+        website: '',
+        logo: ''
+    });
+
+    const handleSave = (e) => {
+        e.preventDefault();
+        if (sponsorData.name.trim()) {
+            onSave(sponsorData);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div 
+                className="bg-white rounded-lg p-6 w-full max-w-md mx-4"
+                style={{ backgroundColor: websiteStyle?.formBackgroundColor || '#ffffff' }}
+            >
+                <h3 className="text-xl font-bold text-slate-800 mb-4">Add New Sponsor</h3>
+                <form onSubmit={handleSave} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                        <input
+                            type="text"
+                            value={sponsorData.name}
+                            onChange={(e) => setSponsorData({...sponsorData, name: e.target.value})}
+                            className="w-full p-2 border rounded"
+                            placeholder="Sponsor name"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea
+                            value={sponsorData.description}
+                            onChange={(e) => setSponsorData({...sponsorData, description: e.target.value})}
+                            className="w-full p-2 border rounded"
+                            placeholder="What they sponsor or support"
+                            rows="2"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Sponsorship Tier</label>
+                        <select
+                            value={sponsorData.tier}
+                            onChange={(e) => setSponsorData({...sponsorData, tier: e.target.value})}
+                            className="w-full p-2 border rounded"
+                        >
+                            <option value="Bronze">Bronze</option>
+                            <option value="Silver">Silver</option>
+                            <option value="Gold">Gold</option>
+                            <option value="Platinum">Platinum</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                        <input
+                            type="url"
+                            value={sponsorData.website}
+                            onChange={(e) => setSponsorData({...sponsorData, website: e.target.value})}
+                            className="w-full p-2 border rounded"
+                            placeholder="https://sponsor-website.com"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Logo URL</label>
+                        <input
+                            type="url"
+                            value={sponsorData.logo}
+                            onChange={(e) => setSponsorData({...sponsorData, logo: e.target.value})}
+                            className="w-full p-2 border rounded"
+                            placeholder="https://example.com/logo.png"
+                        />
+                    </div>
+                    <div className="flex space-x-3">
+                        <button type="submit" className="flex-1 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+                            Add Sponsor
+                        </button>
+                        <button type="button" onClick={onCancel} className="flex-1 bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
 // Combined Friends & Sponsors Tab Component with Inline Editing
 const FriendsSponsorsTab = ({ 
     team, 
