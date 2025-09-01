@@ -12658,20 +12658,28 @@ const TeamColorsThemeManager = ({ teamStyle, setTeamStyle, team, websiteStyle })
                             <div className="text-center pt-4 border-t">
                                 <button
                                     onClick={() => {
-                                        if (logoColors.length >= 3) {
-                                            setTeamStyle(prev => ({
-                                                ...prev,
+                                        console.log('🎨 Applying team logo colors:', logoColors);
+                                        if (logoColors.length >= 1) {
+                                            const newStyle = {
                                                 primaryColor: logoColors[0].hex,
-                                                accentColor: logoColors[1].hex,
-                                                textColor: logoColors[2].hex,
-                                                heroBackgroundColor: adjustColorOpacity(logoColors[0].hex, 0.1)
-                                            }));
+                                                accentColor: logoColors.length > 1 ? logoColors[1].hex : logoColors[0].hex,
+                                                heroTitleColor: logoColors[0].hex,
+                                                buttonColor: logoColors[0].hex,
+                                            };
+                                            
+                                            if (logoColors.length > 2) {
+                                                newStyle.textColor = logoColors[2].hex;
+                                                newStyle.heroTextColor = logoColors[2].hex;
+                                            }
+                                            
+                                            console.log('✅ Applying colors:', newStyle);
+                                            setTeamStyle(prev => ({ ...prev, ...newStyle }));
                                         }
                                     }}
-                                    disabled={logoColors.length < 3}
+                                    disabled={logoColors.length < 1}
                                     className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50"
                                 >
-                                    ✨ Apply Team Logo Colors
+                                    ✨ Apply Team Logo Colors ({logoColors.length} colors)
                                 </button>
                                 <p className="text-xs text-slate-500 mt-1">
                                     Uses logo colors for team primary, accent, and text colors
