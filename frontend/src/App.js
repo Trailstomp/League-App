@@ -3441,6 +3441,9 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
         // Convert tournament Map to array
         const tournamentItems = Array.from(tournaments.values());
         
+        // Get list of tournament names already processed from leagueSchedule to avoid duplicates
+        const existingTournamentNames = new Set(tournamentItems.map(t => t.tournamentName));
+        
         const upcomingEvents = teams.flatMap(team => 
             (team.calendar || [])
                 .filter(event => {
@@ -3448,8 +3451,13 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
                     const eventDate = new Date(event.date);
                     if (eventDate < lookBackDate || eventDate > lookForwardDate) return false;
                     
-                    // Type filter
+                    // Skip tournaments that are already in the main schedule to prevent duplicates
                     const eventType = event.type?.toLowerCase() || 'other';
+                    if (eventType.includes('tournament') && event.tournamentName && existingTournamentNames.has(event.tournamentName)) {
+                        return false;
+                    }
+                    
+                    // Type filter
                     if (eventType.includes('practice') && !tickerFilters.practices) return false;
                     if (eventType.includes('meeting') && !tickerFilters.meetings) return false;
                     if (eventType.includes('social') && !tickerFilters.social) return false;
