@@ -9240,14 +9240,15 @@ const FriendCard = ({ friend, isAuthorizedToManage, onEdit, onDelete, websiteSty
                         value={editData.website || ''}
                         onChange={(e) => setEditData({...editData, website: e.target.value})}
                         className="w-full p-2 border rounded"
-                        placeholder="Website URL"
+                        placeholder="Website URL (optional)"
                     />
-                    <input
-                        type="url"
-                        value={editData.photo || ''}
-                        onChange={(e) => setEditData({...editData, photo: e.target.value})}
-                        className="w-full p-2 border rounded"
-                        placeholder="Photo URL"
+                    <FileUploadInput
+                        accept="image/*"
+                        currentValue={editData.photo || ''}
+                        onChange={(url) => setEditData({...editData, photo: url})}
+                        placeholder="Upload friend's photo"
+                        enableCrop={false}
+                        cropAspectRatio="1:1"
                     />
                     <div className="flex space-x-2">
                         <button onClick={handleSave} className="flex-1 bg-blue-600 text-white py-2 px-3 rounded text-sm hover:bg-blue-700">
