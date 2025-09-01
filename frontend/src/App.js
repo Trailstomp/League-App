@@ -12544,9 +12544,562 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
     );
 };
 
+// Logo & Branding Manager Component
+const LogoBrandingManager = ({ style, setStyle }) => {
+    return (
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <Star className="mr-2" size={20} />
+                Logo & Branding
+            </h4>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Main Logo</label>
+                        <FileUploadInput
+                            accept="image/*"
+                            currentValue={style.logoUrl || ''}
+                            onChange={(url) => setStyle(prev => ({...prev, logoUrl: url}))}
+                            placeholder="Upload main logo"
+                            enableCrop={false}
+                            cropAspectRatio="free"
+                        />
+                        <p className="text-xs text-slate-500 mt-1">Primary logo used throughout the site</p>
+                    </div>
+
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Logo Display Style</label>
+                        <select 
+                            value={style.logoStyle || 'contain'}
+                            onChange={(e) => setStyle(prev => ({...prev, logoStyle: e.target.value}))}
+                            className="w-full p-3 border border-slate-300 rounded-lg"
+                        >
+                            <option value="contain">Fit (Maintain aspect ratio)</option>
+                            <option value="cover">Fill (May crop image)</option>
+                            <option value="fill">Stretch (May distort image)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Sidebar Logo</label>
+                        <FileUploadInput
+                            accept="image/*"
+                            currentValue={style.sidebarLogo || ''}
+                            onChange={(url) => setStyle(prev => ({...prev, sidebarLogo: url}))}
+                            placeholder="Optional sidebar logo"
+                            enableCrop={false}
+                            cropAspectRatio="1:1"
+                        />
+                        <p className="text-xs text-slate-500 mt-1">Logo for navigation sidebar (square recommended)</p>
+                    </div>
+
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Page Watermark</label>
+                        <FileUploadInput
+                            accept="image/*"
+                            currentValue={style.overlayLogo || ''}
+                            onChange={(url) => setStyle(prev => ({...prev, overlayLogo: url}))}
+                            placeholder="Optional watermark logo"
+                            enableCrop={false}
+                            cropAspectRatio="1:1"
+                        />
+                        <p className="text-xs text-slate-500 mt-1">Subtle watermark on all pages</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Banner & Header Customizer Component
+const BannerHeaderCustomizer = ({ style, setStyle }) => {
+    return (
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <Layout className="mr-2" size={20} />
+                Banner & Header
+            </h4>
+            
+            {/* Main Site Banner */}
+            <div className="mb-8">
+                <h5 className="text-lg font-semibold text-slate-700 mb-4 pb-2 border-b">Main Site Banner</h5>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                        {/* Banner Background Type */}
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Background Type</label>
+                            <div className="flex gap-4 mb-4">
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="mainBannerType"
+                                        value="color"
+                                        checked={!style.bannerImage || style.bannerType === 'color'}
+                                        onChange={() => setStyle(prev => ({...prev, bannerType: 'color', bannerImage: ''}))}
+                                        className="mr-2"
+                                    />
+                                    Solid Color
+                                </label>
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="mainBannerType"
+                                        value="image"
+                                        checked={style.bannerType === 'image' && style.bannerImage}
+                                        onChange={() => setStyle(prev => ({...prev, bannerType: 'image'}))}
+                                        className="mr-2"
+                                    />
+                                    Background Image
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Banner Color or Image */}
+                        {(!style.bannerImage || style.bannerType === 'color') ? (
+                            <AdvancedColorPicker
+                                label="Banner Background Color"
+                                value={style.bannerColor || style.primaryColor || '#1e293b'}
+                                onChange={(color) => setStyle(prev => ({...prev, bannerColor: color, bannerType: 'color'}))}
+                            />
+                        ) : (
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Banner Background Image</label>
+                                <FileUploadInput
+                                    accept="image/*"
+                                    currentValue={style.bannerImage || ''}
+                                    onChange={(url) => setStyle(prev => ({...prev, bannerImage: url, bannerType: 'image'}))}
+                                    placeholder="Upload banner background image"
+                                    enableCrop={false}
+                                    cropAspectRatio="16:3"
+                                />
+                                {style.bannerImage && (
+                                    <button
+                                        onClick={() => setStyle(prev => ({...prev, bannerImage: '', bannerType: 'color'}))}
+                                        className="mt-2 text-sm text-red-600 hover:text-red-800"
+                                    >
+                                        🗑️ Remove Banner Image
+                                    </button>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Banner Text */}
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Banner Text</label>
+                            <input 
+                                type="text"
+                                value={style.bannerText || 'MLBL'}
+                                onChange={(e) => setStyle(prev => ({...prev, bannerText: e.target.value}))}
+                                className="w-full p-3 border border-slate-300 rounded-lg"
+                                placeholder="Your league name or title"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        {/* Banner Text Color */}
+                        <AdvancedColorPicker
+                            label="Banner Text Color"
+                            value={style.bannerTextColor || '#ffffff'}
+                            onChange={(color) => setStyle(prev => ({...prev, bannerTextColor: color}))}
+                        />
+
+                        {/* Font Settings */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Font Family</label>
+                                <select 
+                                    value={style.bannerFontFamily || 'Inter, sans-serif'}
+                                    onChange={(e) => setStyle(prev => ({...prev, bannerFontFamily: e.target.value}))}
+                                    className="w-full p-2 border border-slate-300 rounded-lg"
+                                >
+                                    <option value="Inter, sans-serif">Inter (Modern)</option>
+                                    <option value="Arial, sans-serif">Arial (Clean)</option>
+                                    <option value="Georgia, serif">Georgia (Classic)</option>
+                                    <option value="'Times New Roman', serif">Times New Roman</option>
+                                    <option value="Impact, sans-serif">Impact (Bold)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">
+                                    Font Size: {style.bannerFontSize || 24}px
+                                </label>
+                                <input 
+                                    type="range"
+                                    min="16"
+                                    max="60"
+                                    step="2"
+                                    value={style.bannerFontSize || 24}
+                                    onChange={(e) => setStyle(prev => ({...prev, bannerFontSize: parseInt(e.target.value)}))}
+                                    className="w-full"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Banner Logo */}
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Banner Logo (Optional)</label>
+                            <FileUploadInput
+                                accept="image/*"
+                                currentValue={style.bannerLogo || ''}
+                                onChange={(url) => setStyle(prev => ({...prev, bannerLogo: url}))}
+                                placeholder="Upload banner logo"
+                                enableCrop={false}
+                                cropAspectRatio="2:1"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Team Page Hero Section */}
+            <div>
+                <h5 className="text-lg font-semibold text-slate-700 mb-4 pb-2 border-b">Team Page Hero Section</h5>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                        <AdvancedColorPicker
+                            label="Team Hero Background Color"
+                            value={style.teamHeroBackgroundColor || '#f8fafc'}
+                            onChange={(color) => setStyle(prev => ({...prev, teamHeroBackgroundColor: color}))}
+                        />
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Default Team Intro Template</label>
+                            <textarea 
+                                value={style.teamIntroTemplate || 'Follow {teamName} for the latest updates, photos, and team information.'}
+                                onChange={(e) => setStyle(prev => ({...prev, teamIntroTemplate: e.target.value}))}
+                                className="w-full p-3 border border-slate-300 rounded-lg h-20"
+                                placeholder="Default intro text for teams (use {teamName} as placeholder)"
+                            />
+                            <p className="text-xs text-slate-500 mt-1">Use {'{teamName}'} as a placeholder for the team name</p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <AdvancedColorPicker
+                            label="Team Hero Text Color"
+                            value={style.teamHeroTextColor || '#1f2937'}
+                            onChange={(color) => setStyle(prev => ({...prev, teamHeroTextColor: color}))}
+                        />
+
+                        <div>
+                            <label className="block font-semibold text-slate-700 mb-2">Team Hero Font</label>
+                            <select 
+                                value={style.teamHeroFontFamily || 'Inter, sans-serif'}
+                                onChange={(e) => setStyle(prev => ({...prev, teamHeroFontFamily: e.target.value}))}
+                                className="w-full p-3 border border-slate-300 rounded-lg"
+                            >
+                                <option value="Inter, sans-serif">Inter (Modern)</option>
+                                <option value="Arial, sans-serif">Arial (Clean)</option>
+                                <option value="Georgia, serif">Georgia (Classic)</option>
+                                <option value="'Times New Roman', serif">Times New Roman</option>
+                                <option value="Impact, sans-serif">Impact (Bold)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {/* Banner Preview */}
+            <div className="mt-6">
+                <h5 className="text-lg font-semibold text-slate-700 mb-3">Banner Preview</h5>
+                <div className="border-2 border-dashed border-slate-300 rounded-lg overflow-hidden">
+                    {/* Main Banner Preview */}
+                    <div 
+                        className="h-24 flex items-center justify-center relative"
+                        style={{ 
+                            backgroundColor: style.bannerType === 'color' ? (style.bannerColor || style.primaryColor || '#1e293b') : '#1e293b',
+                            backgroundImage: style.bannerType === 'image' && style.bannerImage ? `url(${style.bannerImage})` : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}
+                    >
+                        <div className="text-center">
+                            <h3 
+                                className="font-bold"
+                                style={{ 
+                                    color: style.bannerTextColor || '#ffffff',
+                                    fontFamily: style.bannerFontFamily || 'Inter, sans-serif',
+                                    fontSize: `${Math.min(style.bannerFontSize || 24, 20)}px`
+                                }}
+                            >
+                                {style.bannerText || 'MLBL'}
+                            </h3>
+                        </div>
+                    </div>
+                    
+                    {/* Team Hero Preview */}
+                    <div 
+                        className="h-20 flex items-center justify-center border-t"
+                        style={{ 
+                            backgroundColor: style.teamHeroBackgroundColor || '#f8fafc'
+                        }}
+                    >
+                        <div className="text-center">
+                            <h4 
+                                className="text-lg font-bold mb-1"
+                                style={{ 
+                                    color: style.teamHeroTextColor || '#1f2937',
+                                    fontFamily: style.teamHeroFontFamily || 'Inter, sans-serif'
+                                }}
+                            >
+                                Welcome to Sample Team
+                            </h4>
+                            <p 
+                                className="text-sm"
+                                style={{ 
+                                    color: style.teamHeroTextColor || '#1f2937',
+                                    fontFamily: style.teamHeroFontFamily || 'Inter, sans-serif',
+                                    opacity: 0.8
+                                }}
+                            >
+                                {(style.teamIntroTemplate || 'Follow {teamName} for the latest updates, photos, and team information.').replace('{teamName}', 'Sample Team')}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Enhanced Color & Theme Selector Component with Working Theme Selection
+const ColorThemeSelector = ({ style, setStyle, logoUrl }) => {
+    const [logoColors, setLogoColors] = useState([]);
+    const [extractingColors, setExtractingColors] = useState(false);
+    const [selectedTheme, setSelectedTheme] = useState(null);
+    
+    const predefinedThemes = [
+        {
+            id: 'professional-blue',
+            name: "Professional Blue",
+            colors: {
+                primaryColor: '#1e40af',
+                accentColor: '#3b82f6',
+                bannerColor: '#1e40af',
+                textColor: '#1f2937',
+                headingColor: '#111827',
+                linkColor: '#2563eb',
+                formBackgroundColor: '#f8fafc',
+                teamHeroBackgroundColor: '#f1f5f9',
+                teamHeroTextColor: '#1f2937'
+            }
+        },
+        {
+            id: 'sports-red',
+            name: "Sports Red",
+            colors: {
+                primaryColor: '#dc2626',
+                accentColor: '#ef4444',
+                bannerColor: '#dc2626',
+                textColor: '#1f2937',
+                headingColor: '#111827',
+                linkColor: '#dc2626',
+                formBackgroundColor: '#fef2f2',
+                teamHeroBackgroundColor: '#fef2f2',
+                teamHeroTextColor: '#1f2937'
+            }
+        },
+        {
+            id: 'forest-green',
+            name: "Forest Green",
+            colors: {
+                primaryColor: '#059669',
+                accentColor: '#10b981',
+                bannerColor: '#059669',
+                textColor: '#1f2937',
+                headingColor: '#111827',
+                linkColor: '#059669',
+                formBackgroundColor: '#f0fdf4',
+                teamHeroBackgroundColor: '#f0fdf4',
+                teamHeroTextColor: '#1f2937'
+            }
+        },
+        {
+            id: 'royal-purple',
+            name: "Royal Purple",
+            colors: {
+                primaryColor: '#7c3aed',
+                accentColor: '#8b5cf6',
+                bannerColor: '#7c3aed',
+                textColor: '#1f2937',
+                headingColor: '#111827',
+                linkColor: '#7c3aed',
+                formBackgroundColor: '#faf5ff',
+                teamHeroBackgroundColor: '#faf5ff',
+                teamHeroTextColor: '#1f2937'
+            }
+        },
+        {
+            id: 'classic-black',
+            name: "Classic Black",
+            colors: {
+                primaryColor: '#1f2937',
+                accentColor: '#374151',
+                bannerColor: '#1f2937',
+                textColor: '#1f2937',
+                headingColor: '#111827',
+                linkColor: '#1f2937',
+                formBackgroundColor: '#f9fafb',
+                teamHeroBackgroundColor: '#f9fafb',
+                teamHeroTextColor: '#1f2937'
+            }
+        }
+    ];
+    
+    const extractLogoColors = async () => {
+        if (!logoUrl) return;
+        
+        setExtractingColors(true);
+        try {
+            const colors = await extractColorsFromImage(logoUrl);
+            setLogoColors(colors);
+        } catch (error) {
+            console.error('Failed to extract colors:', error);
+        }
+        setExtractingColors(false);
+    };
+    
+    useEffect(() => {
+        if (logoUrl) {
+            extractLogoColors();
+        }
+    }, [logoUrl]);
+    
+    const generateThemeFromColor = (color, name) => ({
+        id: `logo-${color}`,
+        name,
+        colors: {
+            primaryColor: color,
+            accentColor: adjustColorBrightness(color, 20),
+            bannerColor: color,
+            textColor: '#1f2937',
+            headingColor: '#111827',
+            linkColor: color,
+            formBackgroundColor: adjustColorOpacity(color, 0.05),
+            teamHeroBackgroundColor: adjustColorOpacity(color, 0.05),
+            teamHeroTextColor: '#1f2937'
+        }
+    });
+
+    const handleApplyTheme = (theme) => {
+        setSelectedTheme(theme.id);
+        setStyle(prev => ({ ...prev, ...theme.colors }));
+    };
+    
+    return (
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <Palette className="mr-2" size={20} />
+                Color Themes
+            </h4>
+            
+            {/* Predefined Themes */}
+            <div className="mb-6">
+                <h5 className="font-semibold text-slate-700 mb-3">Predefined Themes</h5>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {predefinedThemes.map((theme) => (
+                        <div
+                            key={theme.id}
+                            className={`p-4 border-2 rounded-lg cursor-pointer transition-all hover:shadow-md ${
+                                selectedTheme === theme.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300'
+                            }`}
+                        >
+                            <div className="flex items-center gap-2 mb-3">
+                                <div 
+                                    className="w-4 h-4 rounded-full"
+                                    style={{ backgroundColor: theme.colors.primaryColor }}
+                                />
+                                <span className="font-medium text-slate-800">{theme.name}</span>
+                            </div>
+                            <div className="flex gap-1 mb-3">
+                                {Object.entries(theme.colors).slice(0, 4).map(([key, color]) => (
+                                    <div
+                                        key={key}
+                                        className="w-3 h-3 rounded"
+                                        style={{ backgroundColor: color }}
+                                        title={key}
+                                    />
+                                ))}
+                            </div>
+                            <button
+                                onClick={() => handleApplyTheme(theme)}
+                                className={`w-full py-2 px-3 rounded text-sm font-medium transition-colors ${
+                                    selectedTheme === theme.id 
+                                        ? 'bg-blue-600 text-white' 
+                                        : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                }`}
+                            >
+                                {selectedTheme === theme.id ? '✓ Applied' : 'Apply Theme'}
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+            
+            {/* Logo-based Themes */}
+            {logoUrl && (
+                <div>
+                    <div className="flex items-center justify-between mb-3">
+                        <h5 className="font-semibold text-slate-700">Logo-Based Themes</h5>
+                        <button
+                            onClick={extractLogoColors}
+                            disabled={extractingColors}
+                            className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 transition-colors"
+                        >
+                            {extractingColors ? 'Extracting...' : 'Refresh Colors'}
+                        </button>
+                    </div>
+                    
+                    {logoColors.length > 0 ? (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            {logoColors.map((color, index) => {
+                                const theme = generateThemeFromColor(color, `Logo Color ${index + 1}`);
+                                return (
+                                    <div
+                                        key={color}
+                                        className={`p-3 border-2 rounded-lg cursor-pointer text-center transition-all hover:shadow-md ${
+                                            selectedTheme === theme.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300'
+                                        }`}
+                                    >
+                                        <div 
+                                            className="w-full h-8 rounded mb-2"
+                                            style={{ backgroundColor: color }}
+                                        />
+                                        <span className="text-xs text-slate-600 block mb-2">{color}</span>
+                                        <button
+                                            onClick={() => handleApplyTheme(theme)}
+                                            className={`w-full py-1 px-2 rounded text-xs font-medium transition-colors ${
+                                                selectedTheme === theme.id 
+                                                    ? 'bg-blue-600 text-white' 
+                                                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                            }`}
+                                        >
+                                            {selectedTheme === theme.id ? '✓ Applied' : 'Apply'}
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="text-center py-4 text-slate-500 border-2 border-dashed border-slate-300 rounded-lg">
+                            {extractingColors ? 'Analyzing logo colors...' : 'Upload a logo to extract colors'}
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
+
 const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
     const [style, setStyle] = useState(websiteStyle);
     const [saved, setSaved] = useState(false);
+    const [activeSubtask, setActiveSubtask] = useState('themes');
 
     // Sync local state when websiteStyle prop changes
     useEffect(() => {
@@ -12559,9 +13112,15 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
         setTimeout(() => setSaved(false), 2000);
     };
 
-    const handleApplyTheme = (themeColors) => {
-        setStyle(prev => ({ ...prev, ...themeColors }));
-    };
+    const subtasks = [
+        { id: 'themes', name: 'Colors & Themes', icon: Palette },
+        { id: 'logos', name: 'Logo & Branding', icon: Star },
+        { id: 'banners', name: 'Banner & Header', icon: Layout },
+        { id: 'typography', name: 'Typography', icon: Type },
+        { id: 'backgrounds', name: 'Backgrounds', icon: ImageIcon },
+        { id: 'forms', name: 'Forms & UI', icon: Briefcase },
+        { id: 'navigation', name: 'Navigation', icon: Menu }
+    ];
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-sm border">
