@@ -12404,9 +12404,11 @@ const TeamLogoBrandingManager = ({ teamStyle, setTeamStyle, team }) => {
     );
 };
 
-// Team Colors & Theme Manager
+// Team Colors & Theme Manager with Logo Color Extraction
 const TeamColorsThemeManager = ({ teamStyle, setTeamStyle, team, websiteStyle }) => {
     const [selectedTheme, setSelectedTheme] = useState(null);
+    const [logoColors, setLogoColors] = useState([]);
+    const [extractingColors, setExtractingColors] = useState(false);
     
     const teamThemes = [
         {
@@ -12466,6 +12468,25 @@ const TeamColorsThemeManager = ({ teamStyle, setTeamStyle, team, websiteStyle })
         }
     ];
 
+    const extractLogoColors = async () => {
+        if (!teamStyle.logoUrl) return;
+        
+        setExtractingColors(true);
+        try {
+            const colors = await extractColorsFromImage(teamStyle.logoUrl);
+            setLogoColors(colors);
+        } catch (error) {
+            console.error('Failed to extract colors:', error);
+        }
+        setExtractingColors(false);
+    };
+    
+    useEffect(() => {
+        if (teamStyle.logoUrl) {
+            extractLogoColors();
+        }
+    }, [teamStyle.logoUrl]);
+
     const handleApplyTheme = (theme) => {
         setSelectedTheme(theme.id);
         setTeamStyle(prev => ({ ...prev, ...theme.colors }));
@@ -12478,15 +12499,117 @@ const TeamColorsThemeManager = ({ teamStyle, setTeamStyle, team, websiteStyle })
                 Team Colors & Themes
             </h4>
             
+            {/* Team Logo Upload */}
+            <div className="mb-6">
+                <h5 className="font-semibold text-slate-700 mb-3">Team Logo</h5>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <FileUploadInput
+                            accept="image/*"
+                            currentValue={teamStyle.logoUrl || ''}
+                            onChange={(url) => setTeamStyle(prev => ({...prev, logoUrl: url}))}
+                            placeholder="Upload team logo"
+                            enableCrop={false}
+                            cropAspectRatio="1:1"
+                        />
+                    </div>
+                    {teamStyle.logoUrl && (
+                        <div className="flex items-center justify-center">
+                            <div className="text-center">
+                                <img 
+                                    src={teamStyle.logoUrl} 
+                                    alt="Team Logo Preview"
+                                    className="w-24 h-24 object-contain mx-auto mb-2 border-2 border-slate-200 rounded-lg"
+                                />
+                                <p className="text-sm text-slate-600">Logo Preview</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Logo Color Extraction */}
+            {teamStyle.logoUrl && (
+                <div className="mb-6">
+                    <div className="flex items-center justify-between mb-3">
+                        <h5 className="font-semibold text-slate-700">Team Logo Color Assignment</h5>
+                        <button
+                            onClick={extractLogoColors}
+                            disabled={extractingColors}
+                            className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 transition-colors"
+                        >
+                            {extractingColors ? 'Extracting...' : 'Extract Logo Colors'}
+                        </button>
+                    </div>
+                    
+                    {logoColors.length > 0 ? (
+                        <div className="space-y-4">
+                            {/* Extracted Colors Display */}
+                            <div className="grid grid-cols-3 gap-4">
+                                {logoColors.map((colorObj, index) => (
+                                    <div key={index} className="text-center">
+                                        <div 
+                                            className="w-full h-16 rounded-lg border-2 border-slate-300 mb-2"
+                                            style={{ backgroundColor: colorObj.hex }}
+                                        />
+                                        <div className="text-sm font-medium text-slate-700">{colorObj.name}</div>
+                                        <div className="text-xs text-slate-500">{colorObj.description}</div>
+                                        <div className="text-xs text-slate-600 font-mono">{colorObj.hex}</div>
+                                    </div>
+                                ))}
+                            </div>
+                            
+                            {/* Quick Apply Team Logo Colors */}
+                            <div className="text-center pt-4 border-t">
+                                <button
+                                    onClick={() => {
+                                        if (logoColors.length >= 3) {
+                                            setTeamStyle(prev => ({
+                                                ...prev,
+                                                primaryColor: logoColors[0].hex,
+                                                accentColor: logoColors[1].hex,
+                                                textColor: logoColors[2].hex,
+                                                heroBackgroundColor: adjustColorOpacity(logoColors[0].hex, 0.1)
+                                            }));
+                                        }
+                                    }}
+                                    disabled={logoColors.length < 3}
+                                    className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50"
+                                >
+                                    ✨ Apply Team Logo Colors
+                                </button>
+                                <p className="text-xs text-slate-500 mt-1">
+                                    Uses logo colors for team primary, accent, and text colors
+                                </p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="text-center py-6 text-slate-500 border-2 border-dashed border-slate-300 rounded-lg">
+                            {extractingColors ? (
+                                <div>
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500 mx-auto mb-2"></div>
+                                    <p>Analyzing team logo colors...</p>
+                                </div>
+                            ) : (
+                                <div>
+                                    <Palette className="mx-auto h-8 w-8 text-slate-400 mb-2" />
+                                    <p>Upload a team logo to extract its colors</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
+            
             {/* Team Themes */}
             <div className="mb-6">
-                <h5 className="font-semibold text-slate-700 mb-3">Team Color Themes</h5>
+                <h5 className="font-semibold text-slate-700 mb-3">Predefined Team Themes</h5>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {teamThemes.map((theme) => (
                         <div
                             key={theme.id}
                             className={`p-4 border-2 rounded-lg cursor-pointer transition-all hover:shadow-md ${
-                                selectedTheme === theme.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300'
+                                selectedTheme === theme.id ? 'border-red-500 bg-red-50' : 'border-slate-200 hover:border-slate-300'
                             }`}
                         >
                             <div className="flex items-center gap-2 mb-3">
@@ -12510,7 +12633,7 @@ const TeamColorsThemeManager = ({ teamStyle, setTeamStyle, team, websiteStyle })
                                 onClick={() => handleApplyTheme(theme)}
                                 className={`w-full py-2 px-3 rounded text-sm font-medium transition-colors ${
                                     selectedTheme === theme.id 
-                                        ? 'bg-blue-600 text-white' 
+                                        ? 'bg-red-600 text-white' 
                                         : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                                 }`}
                             >
