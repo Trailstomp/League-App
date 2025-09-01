@@ -17773,7 +17773,6 @@ function App() {
                         <div className="w-10"></div>
                     </div>
                     <GameTicker teams={teams} leagueSchedule={leagueSchedule} websiteStyle={websiteStyle} onTeamClick={(teamId) => navigate('team', teamId)} onNavigate={navigate} onEventClick={handleEventClick} />
-                        </div>
                     </header>
                 )}
                 <main className="flex-1 overflow-y-auto relative" style={backgroundStyle}>
