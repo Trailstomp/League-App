@@ -2664,7 +2664,7 @@ const FileUploadInput = ({
             // Close crop tool
             setShowCropTool(false);
             
-            // Clean up original image URL if it was a blob
+            // Clean up original image URL if it was a blob (no cleanup needed for data URLs)
             if (originalImageUrl && originalImageUrl.startsWith('blob:')) {
                 URL.revokeObjectURL(originalImageUrl);
                 console.log('🧹 Cleaned up original blob URL');
