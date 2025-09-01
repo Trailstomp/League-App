@@ -14081,15 +14081,24 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                     </div>
                 )}
 
-                {activeTab === 'friends' && hasPermission(currentUser, 'system.admin_access') && (
+                {activeTab === 'friends-sponsors' && hasPermission(currentUser, 'system.admin_access') && (
                     <div className="p-6">
-                        <FriendsManager friends={friends} setFriends={setFriends} />
-                    </div>
-                )}
-
-                {activeTab === 'sponsors' && hasPermission(currentUser, 'system.admin_access') && (
-                    <div className="p-6">
-                        <SponsorsManager sponsors={sponsors} setSponsors={setSponsors} />
+                        <h2 className="text-2xl font-bold mb-6 flex items-center">
+                            <Heart className="mr-3" size={24} />
+                            League Friends & Sponsors
+                        </h2>
+                        <p className="text-slate-600 mb-6">Manage league-wide friends, partners, and sponsors that appear on all team pages.</p>
+                        <FriendsSponsorsTab 
+                            team={null}
+                            teams={[]}
+                            setTeams={() => {}}
+                            friends={friends}
+                            sponsors={sponsors}
+                            setFriends={setFriends}
+                            setSponsors={setSponsors}
+                            isAuthorizedToManage={true}
+                            websiteStyle={websiteStyle}
+                        />
                     </div>
                 )}
 
