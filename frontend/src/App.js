@@ -9106,16 +9106,12 @@ const AddFriendModal = ({ onSave, onCancel, websiteStyle }) => {
                             placeholder="https://example.com"
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Photo URL</label>
-                        <input
-                            type="url"
-                            value={friendData.photo}
-                            onChange={(e) => setFriendData({...friendData, photo: e.target.value})}
-                            className="w-full p-2 border rounded"
-                            placeholder="https://example.com/photo.jpg"
-                        />
-                    </div>
+                    <ImageUpload
+                        value={friendData.photo}
+                        onChange={(url) => setFriendData({...friendData, photo: url})}
+                        placeholder="https://example.com/photo.jpg"
+                        label="Photo"
+                    />
                     <div className="flex space-x-3">
                         <button type="submit" className="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
                             Add Friend
