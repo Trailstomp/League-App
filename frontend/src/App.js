@@ -9287,8 +9287,8 @@ const FriendsTab = ({
     return (
         <div className="space-y-8">
             <div className="text-center">
-                <h2 className="text-3xl font-bold text-slate-800 mb-2 tracking-tight">Friends & Partners</h2>
-                <p className="text-slate-600">Our amazing community partners and supporters</p>
+                <h2 className="text-3xl font-bold text-slate-800 mb-2 tracking-tight">Friends & Sponsors</h2>
+                <p className="text-slate-600">Our amazing friends, partners, and sponsors</p>
             </div>
 
             {/* FRIENDS SECTION */}
