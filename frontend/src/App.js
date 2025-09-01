@@ -12531,21 +12531,38 @@ const TeamColorsThemeManager = ({ teamStyle, setTeamStyle, team, websiteStyle })
     ];
 
     const extractLogoColors = async () => {
-        if (!teamStyle.logoUrl) return;
+        if (!teamStyle.logoUrl) {
+            console.log('❌ No logo URL provided for color extraction');
+            return;
+        }
         
+        console.log('🎨 Extracting colors from team logo...');
         setExtractingColors(true);
+        
         try {
             const colors = await extractColorsFromImage(teamStyle.logoUrl);
+            console.log('✅ Team logo colors extracted:', colors);
             setLogoColors(colors);
         } catch (error) {
-            console.error('Failed to extract colors:', error);
+            console.error('❌ Failed to extract team logo colors:', error);
+            setLogoColors([]);
         }
+        
         setExtractingColors(false);
     };
     
     useEffect(() => {
-        if (teamStyle.logoUrl) {
+        console.log('📸 Team logo URL changed:', teamStyle.logoUrl ? 'Logo present' : 'No logo');
+        if (teamStyle.logoUrl && teamStyle.logoUrl.startsWith('data:')) {
+            console.log('🔄 Triggering color extraction for new team logo');
+            // Add small delay to ensure image is fully processed
+            setTimeout(() => {
+                extractLogoColors();
+            }, 500);
+        } else if (teamStyle.logoUrl) {
             extractLogoColors();
+        } else {
+            setLogoColors([]);
         }
     }, [teamStyle.logoUrl]);
 
