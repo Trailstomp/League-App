@@ -10761,7 +10761,7 @@ const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam, 
     );
 };
 
-const TeamManager = ({ teams, setTeams, websiteStyle }) => {
+const TeamManager = ({ teams, setTeams, websiteStyle, seasons = [], currentSeason }) => {
     const [editingTeam, setEditingTeam] = useState(null);
     
     // Get form background color from website style or default
