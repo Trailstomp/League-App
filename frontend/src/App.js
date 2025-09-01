@@ -11457,7 +11457,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                     />
                 )}
 
-            </div>
+                </div>
             </div>
             
             {/* Image Popup Modal */}
