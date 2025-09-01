@@ -14074,10 +14074,10 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
         },
         { 
             id: 'friends', 
-            label: 'Friends', 
+            label: 'Friends & Sponsors', 
             icon: <Users size={16} />, 
             permissions: ['system.admin_access'],
-            description: 'Manage league friends and partners'
+            description: 'Manage league friends, partners and sponsors'
         },
         { 
             id: 'players', 
