@@ -1467,8 +1467,12 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
             for (const match of matches) {
                 if (match.winner) {
                     currentRoundTeams.push(match.winner);
+                } else if (match.status === 'completed') {
+                    // Match completed but no winner (shouldn't happen, but safety check)
+                    currentRoundTeams.push(null);
                 } else {
-                    currentRoundTeams.push(null); // TBD
+                    // Match pending - create placeholder for next round
+                    currentRoundTeams.push({ id: `pending-${match.id}`, name: 'TBD', isPending: true });
                 }
             }
             
