@@ -10668,7 +10668,7 @@ const PlayerManager = ({ players, setPlayers, teams, currentUser }) => {
 };
 
 // Team form component - moved outside to prevent recreation  
-const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam, formBackgroundColor = '#f8fafc' }) => {
+const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam, formBackgroundColor = '#f8fafc', seasons = [], currentSeason }) => {
     return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
         <div 
@@ -10678,32 +10678,69 @@ const TeamForm = ({ editingTeam, handleInputChange, handleSave, setEditingTeam, 
                 borderRadius: '8px',
                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
                 width: '100%',
-                maxWidth: '28rem'
+                maxWidth: '32rem'
             }}
         >
             <h3 className="text-xl font-bold text-slate-800 mb-4">
                 {editingTeam?.id ? 'Edit Team' : 'Add Team'}
             </h3>
             <form onSubmit={handleSave} className="space-y-4">
-                <input 
-                    type="text" 
-                    value={editingTeam?.name || ''} 
-                    onChange={e => handleInputChange('name', e.target.value)} 
-                    placeholder="Team Name" 
-                    className="w-full p-2 border rounded" 
-                    required 
-                />
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Team Name *</label>
+                    <input 
+                        type="text" 
+                        value={editingTeam?.name || ''} 
+                        onChange={e => handleInputChange('name', e.target.value)} 
+                        placeholder="Enter team name" 
+                        className="w-full p-2 border rounded" 
+                        required 
+                    />
+                </div>
                 
-                <input 
-                    type="email" 
-                    value={editingTeam?.contactEmail || ''} 
-                    onChange={e => handleInputChange('contactEmail', e.target.value)} 
-                    placeholder="Contact Email" 
-                    className="w-full p-2 border rounded" 
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Division *</label>
+                        <select 
+                            value={editingTeam?.division || 'Field'} 
+                            onChange={e => handleInputChange('division', e.target.value)} 
+                            className="w-full p-2 border rounded"
+                            required
+                        >
+                            <option value="Field">Field Lacrosse</option>
+                            <option value="Box">Box Lacrosse</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Season</label>
+                        <select 
+                            value={editingTeam?.seasonId || currentSeason || ''} 
+                            onChange={e => handleInputChange('seasonId', e.target.value)} 
+                            className="w-full p-2 border rounded"
+                        >
+                            <option value="">Current Season</option>
+                            {seasons.map(season => (
+                                <option key={season.id} value={season.id}>
+                                    {season.name} {season.id === currentSeason ? '(Current)' : ''}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
+                    <input 
+                        type="email" 
+                        value={editingTeam?.contactEmail || ''} 
+                        onChange={e => handleInputChange('contactEmail', e.target.value)} 
+                        placeholder="team@example.com" 
+                        className="w-full p-2 border rounded" 
+                    />
+                </div>
                 
                 <div className="text-sm text-slate-600 bg-blue-50 p-3 rounded">
-                    <strong>Team Logo:</strong> Configure your team logo in the Team Style settings after saving this team.
+                    <strong>Team Customization:</strong> Configure team logo, colors, and styling in the Team Style settings after saving this team.
                 </div>
 
                 <div className="flex space-x-2">
