@@ -2621,18 +2621,28 @@ const FileUploadInput = ({
         if (file) {
             setIsUploading(true);
             
-            // Create object URL for preview
-            const objectUrl = URL.createObjectURL(file);
+            // Convert file to base64 data URL for persistence
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const dataUrl = e.target.result;
+                
+                // If it's an image and crop is enabled, show crop tool
+                if (accept.includes('image') && enableCrop) {
+                    setOriginalImageUrl(dataUrl);
+                    setShowCropTool(true);
+                    setIsUploading(false);
+                } else {
+                    onChange(dataUrl);
+                    setIsUploading(false);
+                }
+            };
             
-            // If it's an image and crop is enabled, show crop tool
-            if (accept.includes('image') && enableCrop) {
-                setOriginalImageUrl(objectUrl);
-                setShowCropTool(true);
+            reader.onerror = () => {
+                console.error('❌ Failed to read file');
                 setIsUploading(false);
-            } else {
-                onChange(objectUrl);
-                setIsUploading(false);
-            }
+            };
+            
+            reader.readAsDataURL(file);
         }
     };
 
