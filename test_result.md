@@ -113,6 +113,18 @@ user_problem_statement: |
   CURRENT WORK: Implementing fixes to remove unwanted sidebar controls and ensure styling changes apply to live UI elements rather than just preview components.
   
 frontend:
+  - task: "Fix Website Style Manager Issues - Remove Sidebar Zone and Fix Form/Banner Styling"
+    implemented: true
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "IMPLEMENTATION IN PROGRESS: User reported critical styling issues: 'teams don't need to be able to edit the sidebar, and its not working anyway. infact I don't see any of the form colors or banners working.' Starting fixes: 1) SIDEBAR ZONE REMOVAL: Successfully removed TeamSidebarZoneManager component and 'sidebar' case from team styling switch statement. Teams can no longer access sidebar styling controls. 2) FORM STYLING INVESTIGATION: Found that TeamCalendarManager was using global websiteStyle.formBackgroundColor instead of team-specific styling. Fixed to use team.style?.formBackgroundColor first. 3) BANNER STYLING CHECK: Banner appears to be working correctly in screenshot (red banner visible), but need to verify all functionality. NEXT: Complete form styling fixes and ensure all styling changes apply to live UI elements, not just previews."
+
   - task: "Enhance news ticker to show popup with full-size images and click functionality"
     implemented: true
     working: true
