@@ -13096,6 +13096,510 @@ const ColorThemeSelector = ({ style, setStyle, logoUrl }) => {
     );
 };
 
+// Typography Manager Component
+const TypographyManager = ({ style, setStyle }) => {
+    return (
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <Type className="mr-2" size={20} />
+                Text & Typography
+            </h4>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                    <AdvancedColorPicker
+                        label="Body Text Color"
+                        value={style.textColor || '#1e293b'}
+                        onChange={(color) => setStyle(prev => ({...prev, textColor: color}))}
+                    />
+
+                    <AdvancedColorPicker
+                        label="Heading Color"
+                        value={style.headingColor || '#0f172a'}
+                        onChange={(color) => setStyle(prev => ({...prev, headingColor: color}))}
+                    />
+
+                    <AdvancedColorPicker
+                        label="Link Color"
+                        value={style.linkColor || '#2563eb'}
+                        onChange={(color) => setStyle(prev => ({...prev, linkColor: color}))}
+                    />
+                </div>
+
+                <div className="space-y-4">
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Primary Font Family</label>
+                        <select 
+                            value={style.fontFamily || 'Inter, sans-serif'}
+                            onChange={(e) => setStyle(prev => ({...prev, fontFamily: e.target.value}))}
+                            className="w-full p-3 border border-slate-300 rounded-lg"
+                        >
+                            <option value="Inter, sans-serif">Inter (Modern)</option>
+                            <option value="Arial, sans-serif">Arial (Clean)</option>
+                            <option value="Georgia, serif">Georgia (Classic)</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                            <option value="Helvetica, sans-serif">Helvetica</option>
+                            <option value="Verdana, sans-serif">Verdana</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Base Font Size</label>
+                        <div className="flex items-center gap-4">
+                            <input 
+                                type="range"
+                                min="12"
+                                max="20"
+                                step="1"
+                                value={style.baseFontSize || 16}
+                                onChange={(e) => setStyle(prev => ({...prev, baseFontSize: parseInt(e.target.value)}))}
+                                className="flex-1"
+                            />
+                            <span className="text-sm font-medium text-slate-600 w-12">
+                                {style.baseFontSize || 16}px
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Line Height</label>
+                        <select 
+                            value={style.lineHeight || '1.6'}
+                            onChange={(e) => setStyle(prev => ({...prev, lineHeight: e.target.value}))}
+                            className="w-full p-3 border border-slate-300 rounded-lg"
+                        >
+                            <option value="1.2">Tight (1.2)</option>
+                            <option value="1.4">Snug (1.4)</option>
+                            <option value="1.6">Normal (1.6)</option>
+                            <option value="1.8">Relaxed (1.8)</option>
+                            <option value="2.0">Loose (2.0)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            {/* Typography Preview */}
+            <div className="mt-6">
+                <h5 className="font-semibold text-slate-700 mb-3">Typography Preview</h5>
+                <div className="p-6 border-2 border-dashed border-slate-300 rounded-lg">
+                    <div style={{ fontFamily: style.fontFamily, fontSize: `${style.baseFontSize || 16}px`, lineHeight: style.lineHeight }}>
+                        <h1 
+                            className="text-3xl font-bold mb-4"
+                            style={{ color: style.headingColor, fontFamily: style.fontFamily }}
+                        >
+                            Main Heading (H1)
+                        </h1>
+                        <h2 
+                            className="text-2xl font-semibold mb-3"
+                            style={{ color: style.headingColor, fontFamily: style.fontFamily }}
+                        >
+                            Section Heading (H2)
+                        </h2>
+                        <p 
+                            className="mb-4"
+                            style={{ color: style.textColor, fontFamily: style.fontFamily, lineHeight: style.lineHeight }}
+                        >
+                            This is a paragraph of body text that shows how your chosen typography settings will look across your website. It includes enough text to demonstrate line height and readability.
+                        </p>
+                        <p style={{ color: style.textColor, fontFamily: style.fontFamily }}>
+                            Here's a <a href="#" style={{ color: style.linkColor, textDecoration: 'underline' }}>sample link</a> to show link colors in context with body text.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Backgrounds Manager Component
+const BackgroundsManager = ({ style, setStyle }) => {
+    return (
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <ImageIcon className="mr-2" size={20} />
+                Page Backgrounds
+            </h4>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                    <AdvancedColorPicker
+                        label="Page Background Color"
+                        value={style.pageBackgroundColor || '#f1f5f9'}
+                        onChange={(color) => setStyle(prev => ({...prev, pageBackgroundColor: color}))}
+                    />
+
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Background Image (Optional)</label>
+                        <FileUploadInput
+                            accept="image/*"
+                            currentValue={style.backgroundImage || ''}
+                            onChange={(url) => setStyle(prev => ({...prev, backgroundImage: url}))}
+                            placeholder="Upload page background"
+                            enableCrop={false}
+                            cropAspectRatio="free"
+                        />
+                        {style.backgroundImage && (
+                            <button
+                                onClick={() => setStyle(prev => ({...prev, backgroundImage: ''}))}
+                                className="mt-2 text-sm text-red-600 hover:text-red-800"
+                            >
+                                🗑️ Remove Background Image
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    {style.backgroundImage && (
+                        <>
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Display Mode</label>
+                                <select 
+                                    value={style.backgroundMode || 'cover'}
+                                    onChange={(e) => setStyle(prev => ({...prev, backgroundMode: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg"
+                                >
+                                    <option value="cover">Cover (Fill screen)</option>
+                                    <option value="contain">Contain (Fit to screen)</option>
+                                    <option value="repeat">Repeat (Tile pattern)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">
+                                    Image Opacity: {Math.round((style.backgroundOpacity || 0.1) * 100)}%
+                                </label>
+                                <input 
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step="0.1"
+                                    value={style.backgroundOpacity || 0.1}
+                                    onChange={(e) => setStyle(prev => ({...prev, backgroundOpacity: parseFloat(e.target.value)}))}
+                                    className="w-full"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2">Background Position</label>
+                                <select 
+                                    value={style.backgroundPosition || 'center'}
+                                    onChange={(e) => setStyle(prev => ({...prev, backgroundPosition: e.target.value}))}
+                                    className="w-full p-3 border border-slate-300 rounded-lg"
+                                >
+                                    <option value="center">Center</option>
+                                    <option value="top">Top</option>
+                                    <option value="bottom">Bottom</option>
+                                    <option value="left">Left</option>
+                                    <option value="right">Right</option>
+                                </select>
+                            </div>
+                        </>
+                    )}
+                </div>
+            </div>
+
+            {/* Background Preview */}
+            <div className="mt-6">
+                <h5 className="font-semibold text-slate-700 mb-3">Background Preview</h5>
+                <div 
+                    className="h-32 border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center relative overflow-hidden"
+                    style={{
+                        backgroundColor: style.pageBackgroundColor || '#f1f5f9',
+                        backgroundImage: style.backgroundImage ? `url(${style.backgroundImage})` : 'none',
+                        backgroundSize: style.backgroundMode || 'cover',
+                        backgroundPosition: style.backgroundPosition || 'center',
+                        backgroundRepeat: style.backgroundMode === 'repeat' ? 'repeat' : 'no-repeat'
+                    }}
+                >
+                    {style.backgroundImage && (
+                        <div 
+                            className="absolute inset-0"
+                            style={{ 
+                                backgroundColor: style.pageBackgroundColor || '#f1f5f9',
+                                opacity: 1 - (style.backgroundOpacity || 0.1)
+                            }}
+                        />
+                    )}
+                    <div className="relative z-10 text-center">
+                        <h4 className="text-lg font-semibold text-slate-800">Page Content Area</h4>
+                        <p className="text-sm text-slate-600">This shows how your background will look</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Forms & UI Manager Component
+const FormsUIManager = ({ style, setStyle }) => {
+    return (
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <Briefcase className="mr-2" size={20} />
+                Forms & UI Elements
+            </h4>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                    <AdvancedColorPicker
+                        label="Form Background Color"
+                        value={style.formBackgroundColor || '#f8fafc'}
+                        onChange={(color) => setStyle(prev => ({...prev, formBackgroundColor: color}))}
+                    />
+                    <p className="text-xs text-slate-500">Background color for all forms and modals</p>
+
+                    <AdvancedColorPicker
+                        label="Primary Button Color"
+                        value={style.primaryColor || '#1e293b'}
+                        onChange={(color) => setStyle(prev => ({...prev, primaryColor: color}))}
+                    />
+                    <p className="text-xs text-slate-500">Color for primary buttons and accents</p>
+                </div>
+
+                <div className="space-y-4">
+                    <AdvancedColorPicker
+                        label="Input Border Color"
+                        value={style.inputBorderColor || '#d1d5db'}
+                        onChange={(color) => setStyle(prev => ({...prev, inputBorderColor: color}))}
+                    />
+
+                    <AdvancedColorPicker
+                        label="Input Focus Color"
+                        value={style.inputFocusColor || '#3b82f6'}
+                        onChange={(color) => setStyle(prev => ({...prev, inputFocusColor: color}))}
+                    />
+
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Button Border Radius</label>
+                        <div className="flex items-center gap-4">
+                            <input 
+                                type="range"
+                                min="0"
+                                max="20"
+                                step="2"
+                                value={style.buttonBorderRadius || 8}
+                                onChange={(e) => setStyle(prev => ({...prev, buttonBorderRadius: parseInt(e.target.value)}))}
+                                className="flex-1"
+                            />
+                            <span className="text-sm font-medium text-slate-600 w-12">
+                                {style.buttonBorderRadius || 8}px
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {/* Forms Preview */}
+            <div className="mt-6">
+                <h5 className="font-semibold text-slate-700 mb-3">Forms Preview</h5>
+                <div 
+                    className="p-6 rounded-lg border-2 border-dashed border-slate-300"
+                    style={{ backgroundColor: style.formBackgroundColor || '#f8fafc' }}
+                >
+                    <h6 className="font-semibold mb-4" style={{ color: style.textColor }}>
+                        Sample Form
+                    </h6>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1" style={{ color: style.textColor }}>
+                                Team Name
+                            </label>
+                            <input 
+                                type="text" 
+                                placeholder="Enter team name..." 
+                                className="w-full p-3 border-2 rounded-lg transition-colors"
+                                style={{ 
+                                    fontFamily: style.fontFamily,
+                                    borderColor: style.inputBorderColor || '#d1d5db',
+                                    '--focus-color': style.inputFocusColor || '#3b82f6'
+                                }}
+                                disabled
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1" style={{ color: style.textColor }}>
+                                Contact Email
+                            </label>
+                            <input 
+                                type="email" 
+                                placeholder="team@example.com" 
+                                className="w-full p-3 border-2 rounded-lg"
+                                style={{ 
+                                    fontFamily: style.fontFamily,
+                                    borderColor: style.inputBorderColor || '#d1d5db'
+                                }}
+                                disabled
+                            />
+                        </div>
+                        <div className="flex gap-3">
+                            <button 
+                                className="px-6 py-3 text-white font-semibold transition-colors"
+                                style={{ 
+                                    backgroundColor: style.primaryColor, 
+                                    fontFamily: style.fontFamily,
+                                    borderRadius: `${style.buttonBorderRadius || 8}px`
+                                }}
+                                disabled
+                            >
+                                Save Team
+                            </button>
+                            <button 
+                                className="px-6 py-3 border-2 font-semibold transition-colors rounded-lg"
+                                style={{ 
+                                    color: style.textColor,
+                                    borderColor: style.inputBorderColor || '#d1d5db',
+                                    fontFamily: style.fontFamily,
+                                    borderRadius: `${style.buttonBorderRadius || 8}px`
+                                }}
+                                disabled
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Navigation Manager Component
+const NavigationManager = ({ style, setStyle }) => {
+    return (
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <Menu className="mr-2" size={20} />
+                Navigation Sidebar
+            </h4>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                    <div>
+                        <label className="block font-semibold text-slate-700 mb-2">Sidebar Background Image</label>
+                        <FileUploadInput
+                            accept="image/*"
+                            currentValue={style.sidebarImage || ''}
+                            onChange={(url) => setStyle(prev => ({...prev, sidebarImage: url}))}
+                            placeholder="Upload sidebar background"
+                            enableCrop={false}
+                            cropAspectRatio="free"
+                        />
+                        {style.sidebarImage && (
+                            <button
+                                onClick={() => setStyle(prev => ({...prev, sidebarImage: ''}))}
+                                className="mt-2 text-sm text-red-600 hover:text-red-800"
+                            >
+                                🗑️ Remove Sidebar Image
+                            </button>
+                        )}
+                    </div>
+
+                    <AdvancedColorPicker
+                        label="Sidebar Background Color"
+                        value={style.sidebarBackgroundColor || '#1e293b'}
+                        onChange={(color) => setStyle(prev => ({...prev, sidebarBackgroundColor: color}))}
+                    />
+                </div>
+
+                <div className="space-y-4">
+                    {style.sidebarImage && (
+                        <>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-600 mb-1">Display Mode</label>
+                                <select 
+                                    value={style.sidebarMode || 'cover'}
+                                    onChange={(e) => setStyle(prev => ({...prev, sidebarMode: e.target.value}))}
+                                    className="w-full p-2 border border-slate-300 rounded"
+                                >
+                                    <option value="cover">Cover (Fill)</option>
+                                    <option value="contain">Contain (Fit)</option>
+                                    <option value="repeat">Repeat (Tile)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-600 mb-1">
+                                    Image Opacity: {Math.round((style.sidebarOpacity || 0.2) * 100)}%
+                                </label>
+                                <input 
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step="0.1"
+                                    value={style.sidebarOpacity || 0.2}
+                                    onChange={(e) => setStyle(prev => ({...prev, sidebarOpacity: parseFloat(e.target.value)}))}
+                                    className="w-full"
+                                />
+                            </div>
+                        </>
+                    )}
+
+                    <AdvancedColorPicker
+                        label="Navigation Text Color"
+                        value={style.sidebarTextColor || '#f1f5f9'}
+                        onChange={(color) => setStyle(prev => ({...prev, sidebarTextColor: color}))}
+                    />
+
+                    <AdvancedColorPicker
+                        label="Active Link Color"
+                        value={style.sidebarActiveColor || '#3b82f6'}
+                        onChange={(color) => setStyle(prev => ({...prev, sidebarActiveColor: color}))}
+                    />
+                </div>
+            </div>
+
+            {/* Navigation Preview */}
+            <div className="mt-6">
+                <h5 className="font-semibold text-slate-700 mb-3">Navigation Preview</h5>
+                <div className="border-2 border-dashed border-slate-300 rounded-lg overflow-hidden">
+                    <div 
+                        className="w-64 h-48 relative"
+                        style={{
+                            backgroundColor: style.sidebarBackgroundColor || '#1e293b',
+                            backgroundImage: style.sidebarImage ? `url(${style.sidebarImage})` : 'none',
+                            backgroundSize: style.sidebarMode || 'cover',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: style.sidebarMode === 'repeat' ? 'repeat' : 'no-repeat'
+                        }}
+                    >
+                        {style.sidebarImage && (
+                            <div 
+                                className="absolute inset-0"
+                                style={{ 
+                                    backgroundColor: style.sidebarBackgroundColor || '#1e293b',
+                                    opacity: 1 - (style.sidebarOpacity || 0.2)
+                                }}
+                            />
+                        )}
+                        <div className="relative z-10 p-4">
+                            <h6 className="text-lg font-semibold mb-4" style={{ color: style.sidebarTextColor || '#f1f5f9' }}>
+                                Navigation
+                            </h6>
+                            <div className="space-y-2">
+                                <div 
+                                    className="p-2 rounded"
+                                    style={{ backgroundColor: style.sidebarActiveColor || '#3b82f6' }}
+                                >
+                                    <span style={{ color: '#ffffff' }}>Home (Active)</span>
+                                </div>
+                                <div className="p-2 hover:bg-opacity-20 hover:bg-white rounded">
+                                    <span style={{ color: style.sidebarTextColor || '#f1f5f9' }}>Teams</span>
+                                </div>
+                                <div className="p-2 hover:bg-opacity-20 hover:bg-white rounded">
+                                    <span style={{ color: style.sidebarTextColor || '#f1f5f9' }}>Schedule</span>
+                                </div>
+                                <div className="p-2 hover:bg-opacity-20 hover:bg-white rounded">
+                                    <span style={{ color: style.sidebarTextColor || '#f1f5f9' }}>News</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
     const [style, setStyle] = useState(websiteStyle);
     const [saved, setSaved] = useState(false);
