@@ -10223,19 +10223,36 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                     <div className="space-y-6">
                         {/* Team Hero Section */}
                         <div 
-                            className="text-center py-8 rounded-lg"
+                            className="text-center py-8 rounded-lg relative"
                             style={{ 
-                                backgroundColor: team.style?.backgroundColor || websiteStyle.teamHeroBackgroundColor || '#f8fafc',
-                                backgroundImage: team.style?.bannerImage ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${team.style?.bannerImage})` : 'none',
+                                backgroundColor: team.style?.heroBackgroundColor || team.style?.backgroundColor || websiteStyle.teamHeroBackgroundColor || '#f8fafc',
+                                backgroundImage: team.style?.heroBackgroundImage ? `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${team.style?.heroBackgroundImage})` : 'none',
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center'
                             }}
                         >
+                            {/* Team Logo Display */}
+                            {team.style?.showLogoInHero !== false && team.style?.logoUrl && (
+                                <div className="mb-6">
+                                    <img 
+                                        src={team.style.logoUrl} 
+                                        alt={`${team.name} Logo`}
+                                        className="mx-auto object-contain rounded-lg"
+                                        style={{ 
+                                            width: team.style?.heroLogoSize === 'small' ? '64px' : team.style?.heroLogoSize === 'large' ? '128px' : '96px',
+                                            height: team.style?.heroLogoSize === 'small' ? '64px' : team.style?.heroLogoSize === 'large' ? '128px' : '96px',
+                                            maxWidth: '100%'
+                                        }}
+                                    />
+                                </div>
+                            )}
+
                             <h1 
-                                className="text-4xl font-bold mb-4" 
+                                className="font-bold mb-4" 
                                 style={{ 
-                                    color: team.style?.primaryColor || '#dc2626',
-                                    fontFamily: team.style?.fontFamily || websiteStyle.teamHeroFontFamily || 'Inter, sans-serif'
+                                    color: team.style?.heroTitleColor || team.style?.primaryColor || '#dc2626',
+                                    fontFamily: team.style?.heroFontFamily || team.style?.fontFamily || websiteStyle.teamHeroFontFamily || 'Inter, sans-serif',
+                                    fontSize: `${team.style?.heroTitleSize || 48}px`
                                 }}
                             >
                                 Welcome to {team.name}
@@ -10243,8 +10260,8 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                             <p 
                                 className="text-xl max-w-2xl mx-auto"
                                 style={{ 
-                                    color: team.style?.textColor || websiteStyle.teamHeroTextColor || '#1f2937',
-                                    fontFamily: team.style?.fontFamily || websiteStyle.teamHeroFontFamily || 'Inter, sans-serif'
+                                    color: team.style?.heroTextColor || team.style?.textColor || websiteStyle.teamHeroTextColor || '#1f2937',
+                                    fontFamily: team.style?.heroFontFamily || team.style?.fontFamily || websiteStyle.teamHeroFontFamily || 'Inter, sans-serif'
                                 }}
                             >
                                 {team.customIntro && team.description ? 
@@ -10252,6 +10269,17 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                     (websiteStyle.teamIntroTemplate || 'Follow {teamName} for the latest updates, photos, and team information.').replace('{teamName}', team.name)
                                 }
                             </p>
+
+                            {/* Team Badge/Emblem Display (if uploaded) */}
+                            {team.style?.badgeUrl && (
+                                <div className="absolute top-4 right-4">
+                                    <img 
+                                        src={team.style.badgeUrl} 
+                                        alt={`${team.name} Badge`}
+                                        className="w-16 h-16 object-contain"
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         {/* Quick Team Stats - Moved Above News Feed and Made Smaller */}
