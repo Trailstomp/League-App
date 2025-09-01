@@ -332,6 +332,422 @@ const Icon = ({ name, ...props }) => {
   return IconComponent ? <IconComponent {...props} /> : null;
 };
 
+// Enhanced Color Picker Component with Eyedropper
+const AdvancedColorPicker = ({ 
+    label, 
+    value, 
+    onChange, 
+    showEyedropper = true,
+    presetColors = [],
+    className = "" 
+}) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [eyedropperSupported, setEyedropperSupported] = useState(false);
+    
+    useEffect(() => {
+        // Check if EyeDropper API is supported
+        setEyedropperSupported('EyeDropper' in window);
+    }, []);
+    
+    const handleEyedropper = async () => {
+        if (!eyedropperSupported) {
+            alert('Eyedropper is not supported in this browser. Try Chrome 95+ or Edge 95+');
+            return;
+        }
+        
+        try {
+            const eyeDropper = new window.EyeDropper();
+            const result = await eyeDropper.open();
+            onChange(result.sRGBHex);
+        } catch (err) {
+            console.log('Eyedropper was cancelled or failed:', err);
+        }
+    };
+    
+    const defaultPresets = [
+        '#1e293b', '#991b1b', '#2563eb', '#059669', '#7c2d12', '#7c3aed',
+        '#dc2626', '#ea580c', '#ca8a04', '#16a34a', '#0891b2', '#9333ea',
+        '#000000', '#374151', '#6b7280', '#9ca3af', '#d1d5db', '#ffffff'
+    ];
+    
+    const allPresets = presetColors.length > 0 ? presetColors : defaultPresets;
+    
+    return (
+        <div className={`relative ${className}`}>
+            <label className="block font-semibold text-slate-700 mb-2">{label}</label>
+            
+            <div className="flex gap-2">
+                {/* Color Display & Input */}
+                <div className="relative flex-1">
+                    <div 
+                        className="w-full h-12 border-2 border-slate-300 rounded-lg cursor-pointer flex items-center px-3 hover:border-slate-400 transition-colors"
+                        style={{ backgroundColor: value }}
+                        onClick={() => setIsOpen(!isOpen)}
+                    >
+                        <span 
+                            className="font-semibold text-sm px-2 py-1 rounded shadow-sm"
+                            style={{ 
+                                color: value === '#ffffff' || value === '#f8fafc' ? '#000000' : '#ffffff',
+                                backgroundColor: value === '#ffffff' || value === '#f8fafc' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)'
+                            }}
+                        >
+                            {value.toUpperCase()}
+                        </span>
+                    </div>
+                    
+                    {/* Hidden HTML color input for fallback */}
+                    <input 
+                        type="color" 
+                        value={value}
+                        onChange={(e) => onChange(e.target.value)}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    />
+                </div>
+                
+                {/* Eyedropper Button */}
+                {showEyedropper && (
+                    <button
+                        type="button"
+                        onClick={handleEyedropper}
+                        className={`px-4 py-2 rounded-lg border-2 transition-colors flex items-center gap-2 ${
+                            eyedropperSupported 
+                                ? 'border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100' 
+                                : 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed'
+                        }`}
+                        disabled={!eyedropperSupported}
+                        title={eyedropperSupported ? 'Pick color from screen' : 'Eyedropper not supported in this browser'}
+                    >
+                        <Eye size={16} />
+                        <span className="text-sm font-medium">Pick</span>
+                    </button>
+                )}
+            </div>
+            
+            {/* Color Preset Palette */}
+            {isOpen && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-slate-200 rounded-lg shadow-lg z-20 p-4">
+                    <div className="mb-3">
+                        <p className="text-sm font-medium text-slate-700 mb-2">Quick Colors</p>
+                        <div className="grid grid-cols-6 gap-2">
+                            {allPresets.map((color) => (
+                                <button
+                                    key={color}
+                                    className={`w-8 h-8 rounded-lg border-2 transition-all hover:scale-110 ${
+                                        value === color ? 'border-slate-800 shadow-md' : 'border-slate-300'
+                                    }`}
+                                    style={{ backgroundColor: color }}
+                                    onClick={() => {
+                                        onChange(color);
+                                        setIsOpen(false);
+                                    }}
+                                    title={color}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                    
+                    <div className="pt-3 border-t border-slate-200">
+                        <p className="text-sm font-medium text-slate-700 mb-2">Custom Color</p>
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={value}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (val.match(/^#[0-9A-Fa-f]{6}$/)) {
+                                        onChange(val);
+                                    }
+                                }}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                                placeholder="#1e293b"
+                            />
+                            <button
+                                onClick={() => setIsOpen(false)}
+                                className="px-3 py-2 bg-slate-600 text-white rounded-lg text-sm hover:bg-slate-700"
+                            >
+                                Done
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            {/* Backdrop to close popup */}
+            {isOpen && (
+                <div 
+                    className="fixed inset-0 z-10" 
+                    onClick={() => setIsOpen(false)}
+                />
+            )}
+        </div>
+    );
+};
+
+// Color Extraction Utility for Logo-based Themes
+const extractColorsFromImage = (imageUrl) => {
+    return new Promise((resolve) => {
+        // Create a canvas to analyze the image
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Scale down for performance
+            const maxSize = 100;
+            const scale = Math.min(maxSize / img.width, maxSize / img.height);
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const pixels = imageData.data;
+            
+            // Color frequency analysis
+            const colorCounts = {};
+            
+            for (let i = 0; i < pixels.length; i += 16) { // Sample every 4th pixel for performance
+                const r = pixels[i];
+                const g = pixels[i + 1];
+                const b = pixels[i + 2];
+                const a = pixels[i + 3];
+                
+                // Skip transparent/white pixels
+                if (a < 128 || (r > 240 && g > 240 && b > 240)) continue;
+                
+                // Group similar colors
+                const key = `${Math.floor(r/32)*32},${Math.floor(g/32)*32},${Math.floor(b/32)*32}`;
+                colorCounts[key] = (colorCounts[key] || 0) + 1;
+            }
+            
+            // Get top colors
+            const sortedColors = Object.entries(colorCounts)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 8)
+                .map(([color]) => {
+                    const [r, g, b] = color.split(',').map(Number);
+                    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+                });
+            
+            resolve(sortedColors);
+        };
+        
+        img.onerror = () => resolve([]);
+        
+        // Handle data URLs and regular URLs
+        if (imageUrl.startsWith('data:')) {
+            img.src = imageUrl;
+        } else {
+            img.src = imageUrl;
+        }
+    });
+};
+
+// Theme System Component
+const ThemeSelector = ({ currentStyle, onApplyTheme, logoUrl }) => {
+    const [logoColors, setLogoColors] = useState([]);
+    const [extractingColors, setExtractingColors] = useState(false);
+    
+    const predefinedThemes = [
+        {
+            name: "Professional Blue",
+            colors: {
+                primaryColor: '#1e40af',
+                accentColor: '#3b82f6',
+                bannerColor: '#1e40af',
+                textColor: '#1f2937',
+                headingColor: '#111827',
+                linkColor: '#2563eb',
+                formBackgroundColor: '#f8fafc'
+            }
+        },
+        {
+            name: "Sports Red",
+            colors: {
+                primaryColor: '#dc2626',
+                accentColor: '#ef4444',
+                bannerColor: '#dc2626',
+                textColor: '#1f2937',
+                headingColor: '#111827',
+                linkColor: '#dc2626',
+                formBackgroundColor: '#fef2f2'
+            }
+        },
+        {
+            name: "Forest Green",
+            colors: {
+                primaryColor: '#059669',
+                accentColor: '#10b981',
+                bannerColor: '#059669',
+                textColor: '#1f2937',
+                headingColor: '#111827',
+                linkColor: '#059669',
+                formBackgroundColor: '#f0fdf4'
+            }
+        },
+        {
+            name: "Royal Purple",
+            colors: {
+                primaryColor: '#7c3aed',
+                accentColor: '#8b5cf6',
+                bannerColor: '#7c3aed',
+                textColor: '#1f2937',
+                headingColor: '#111827',
+                linkColor: '#7c3aed',
+                formBackgroundColor: '#faf5ff'
+            }
+        },
+        {
+            name: "Classic Black",
+            colors: {
+                primaryColor: '#1f2937',
+                accentColor: '#374151',
+                bannerColor: '#1f2937',
+                textColor: '#1f2937',
+                headingColor: '#111827',
+                linkColor: '#1f2937',
+                formBackgroundColor: '#f9fafb'
+            }
+        }
+    ];
+    
+    const extractLogoColors = async () => {
+        if (!logoUrl) return;
+        
+        setExtractingColors(true);
+        try {
+            const colors = await extractColorsFromImage(logoUrl);
+            setLogoColors(colors);
+        } catch (error) {
+            console.error('Failed to extract colors:', error);
+        }
+        setExtractingColors(false);
+    };
+    
+    useEffect(() => {
+        if (logoUrl) {
+            extractLogoColors();
+        }
+    }, [logoUrl]);
+    
+    const generateThemeFromColor = (color, name) => ({
+        name,
+        colors: {
+            primaryColor: color,
+            accentColor: adjustColorBrightness(color, 20),
+            bannerColor: color,
+            textColor: '#1f2937',
+            headingColor: '#111827',
+            linkColor: color,
+            formBackgroundColor: adjustColorOpacity(color, 0.05)
+        }
+    });
+    
+    return (
+        <div className="bg-slate-50 p-6 rounded-lg">
+            <h4 className="text-xl font-semibold text-slate-800 mb-4 flex items-center border-b border-slate-200 pb-3">
+                <Palette className="mr-2" size={20} />
+                Color Themes
+            </h4>
+            
+            {/* Predefined Themes */}
+            <div className="mb-6">
+                <h5 className="font-semibold text-slate-700 mb-3">Predefined Themes</h5>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {predefinedThemes.map((theme) => (
+                        <button
+                            key={theme.name}
+                            onClick={() => onApplyTheme(theme.colors)}
+                            className="p-3 border-2 border-slate-200 rounded-lg hover:border-slate-300 text-left transition-colors"
+                        >
+                            <div className="flex items-center gap-2 mb-2">
+                                <div 
+                                    className="w-4 h-4 rounded-full"
+                                    style={{ backgroundColor: theme.colors.primaryColor }}
+                                />
+                                <span className="font-medium text-slate-800">{theme.name}</span>
+                            </div>
+                            <div className="flex gap-1">
+                                {Object.entries(theme.colors).slice(0, 4).map(([key, color]) => (
+                                    <div
+                                        key={key}
+                                        className="w-3 h-3 rounded"
+                                        style={{ backgroundColor: color }}
+                                        title={key}
+                                    />
+                                ))}
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            </div>
+            
+            {/* Logo-based Themes */}
+            {logoUrl && (
+                <div>
+                    <div className="flex items-center justify-between mb-3">
+                        <h5 className="font-semibold text-slate-700">Logo-Based Themes</h5>
+                        <button
+                            onClick={extractLogoColors}
+                            disabled={extractingColors}
+                            className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200"
+                        >
+                            {extractingColors ? 'Extracting...' : 'Refresh Colors'}
+                        </button>
+                    </div>
+                    
+                    {logoColors.length > 0 ? (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            {logoColors.map((color, index) => {
+                                const theme = generateThemeFromColor(color, `Logo Color ${index + 1}`);
+                                return (
+                                    <button
+                                        key={color}
+                                        onClick={() => onApplyTheme(theme.colors)}
+                                        className="p-2 border-2 border-slate-200 rounded-lg hover:border-slate-300 text-center transition-colors"
+                                    >
+                                        <div 
+                                            className="w-full h-8 rounded mb-1"
+                                            style={{ backgroundColor: color }}
+                                        />
+                                        <span className="text-xs text-slate-600">{color}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="text-center py-4 text-slate-500 border-2 border-dashed border-slate-300 rounded-lg">
+                            {extractingColors ? 'Analyzing logo colors...' : 'Upload a logo to extract colors'}
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
+
+// Helper functions for color manipulation
+const adjustColorBrightness = (color, percent) => {
+    const num = parseInt(color.replace("#", ""), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = (num >> 16) + amt;
+    const G = (num >> 8 & 0x00FF) + amt;
+    const B = (num & 0x0000FF) + amt;
+    return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+        (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+};
+
+const adjustColorOpacity = (color, opacity) => {
+    const num = parseInt(color.replace("#", ""), 16);
+    const R = (num >> 16);
+    const G = (num >> 8 & 0x00FF);
+    const B = (num & 0x0000FF);
+    return `rgba(${R}, ${G}, ${B}, ${opacity})`;
+};
+
 // Enhanced Image Component with Fit Options
 const EnhancedImage = ({ 
     src, 
