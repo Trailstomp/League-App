@@ -17710,21 +17710,23 @@ function App() {
             {/* Main Content Area */}
             <div className="w-full">
                 <div className={`transition-all duration-300 ease-in-out ${isMenuOpen ? 'pl-64' : 'pl-0'} min-h-screen flex flex-col`}>
-                <header className="sticky top-0 z-20">
-                    <div 
-                        className="text-white p-4 flex justify-between items-center shadow-md relative overflow-hidden"
-                        style={{
-                            backgroundColor: (websiteStyle.bannerType === 'image' && websiteStyle.bannerImage) ? 
-                                'transparent' : 
-                                (websiteStyle.bannerColor || websiteStyle.primaryColor),
-                            backgroundImage: (websiteStyle.bannerType === 'image' && websiteStyle.bannerImage) ? 
-                                `linear-gradient(rgba(0,0,0,${1 - (websiteStyle.bannerOpacity !== undefined ? websiteStyle.bannerOpacity : 0.3)}), rgba(0,0,0,${1 - (websiteStyle.bannerOpacity !== undefined ? websiteStyle.bannerOpacity : 0.3)})), url(${websiteStyle.bannerImage})` : 
-                                'none',
-                            backgroundSize: websiteStyle.bannerMode === 'contain' ? 'contain' : websiteStyle.bannerMode === 'repeat' ? 'auto' : 'cover',
-                            backgroundRepeat: websiteStyle.bannerMode === 'repeat' ? 'repeat' : 'no-repeat',
-                            backgroundPosition: 'center'
-                        }}
-                    >
+                {/* Hide header on team pages */}
+                {!(page === 'team' && selectedTeam) && (
+                    <header className="sticky top-0 z-20">
+                        <div 
+                            className="text-white p-4 flex justify-between items-center shadow-md relative overflow-hidden"
+                            style={{
+                                backgroundColor: (websiteStyle.bannerType === 'image' && websiteStyle.bannerImage) ? 
+                                    'transparent' : 
+                                    (websiteStyle.bannerColor || websiteStyle.primaryColor),
+                                backgroundImage: (websiteStyle.bannerType === 'image' && websiteStyle.bannerImage) ? 
+                                    `linear-gradient(rgba(0,0,0,${1 - (websiteStyle.bannerOpacity !== undefined ? websiteStyle.bannerOpacity : 0.3)}), rgba(0,0,0,${1 - (websiteStyle.bannerOpacity !== undefined ? websiteStyle.bannerOpacity : 0.3)})), url(${websiteStyle.bannerImage})` : 
+                                    'none',
+                                backgroundSize: websiteStyle.bannerMode === 'contain' ? 'contain' : websiteStyle.bannerMode === 'repeat' ? 'auto' : 'cover',
+                                backgroundRepeat: websiteStyle.bannerMode === 'repeat' ? 'repeat' : 'no-repeat',
+                                backgroundPosition: 'center'
+                            }}
+                        >
                          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 rounded-md hover:bg-black hover:bg-opacity-20 text-white transition-colors">
                             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
