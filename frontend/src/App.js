@@ -3569,7 +3569,11 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
                                 </div>
                                 <div className="flex justify-between items-center text-xs">
                                     <span className="font-semibold" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
-                                        {item.gameDate ? new Date(item.gameDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date TBA'}
+                                        {(() => {
+                                            if (!item.gameDate) return 'Date TBA';
+                                            const dateObj = new Date(item.gameDate);
+                                            return isNaN(dateObj.getTime()) ? 'Date TBA' : dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                                        })()}
                                     </span>
                                     <span className="font-bold text-green-400 tracking-wider">{item.status}</span>
                                 </div>
