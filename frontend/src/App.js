@@ -3002,7 +3002,7 @@ const initialLeagueSchedule = [
         time: '9:00 AM',
         location: 'Tournament Complex',
         description: 'Annual winter tournament featuring all league teams',
-        imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop&crop=center'
+        imageUrl: 'https://via.placeholder.com/800x400/dc2626/ffffff?text=Tournament'
     },
     {
         id: 'practice-1',
