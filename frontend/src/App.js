@@ -2983,7 +2983,7 @@ const initialLeagueSchedule = [
         id: 'game-1',
         type: 'game',
         title: 'OH10 Lacrosse vs American Dads',
-        date: '2025-12-15',
+        date: '2025-09-15',
         time: '2:00 PM',
         location: 'Main Field Complex',
         homeTeam: 'oh10-lacrosse',
@@ -2997,7 +2997,7 @@ const initialLeagueSchedule = [
         id: 'tournament-1',
         type: 'tournament',
         title: 'Winter Championship',
-        date: '2025-12-22',
+        date: '2025-09-22',
         time: '9:00 AM',
         location: 'Tournament Complex',
         description: 'Annual winter tournament featuring all league teams'
@@ -3006,7 +3006,7 @@ const initialLeagueSchedule = [
         id: 'practice-1',
         type: 'practice',
         title: 'Team Practice',
-        date: '2025-12-10',
+        date: '2025-09-10',
         time: '6:00 PM',
         location: 'Practice Field',
         teamId: 'oh10-lacrosse',
@@ -3014,7 +3014,7 @@ const initialLeagueSchedule = [
     }
 ];
 
-console.log('🔧 DEBUG: Initial League Schedule:', initialLeagueSchedule);
+console.log('🔧 DEBUG: Updated Initial League Schedule with September dates:', initialLeagueSchedule);
 
 const newsFeed = [
     { id: 1, title: 'American Dads Dominate Dayton Classic', date: '2025-08-10', snippet: 'The American Dads team swept the competition at the Dayton Classic tournament this past weekend, securing the championship with a decisive 13-5 victory...' },
