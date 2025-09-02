@@ -12433,7 +12433,17 @@ const TeamManager = ({ teams, setTeams, websiteStyle, seasons = [], currentSeaso
                     <li key={t.id} className={`flex items-center p-3 border rounded-lg bg-white shadow-sm ${!t.active && 'opacity-50 bg-slate-100'}`}>
                         <div className="flex-grow flex items-center gap-3">
                             <img src={t.logo} alt={t.name} className="w-8 h-8 rounded-full bg-white p-1 object-contain" />
-                            <span className="font-semibold">{t.name}</span>
+                            <div className="flex flex-col">
+                                <span className="font-semibold">{t.name}</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs text-gray-500">{t.division}</span>
+                                    {t.isExternal && (
+                                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                                            External
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                         <div className="flex-shrink-0 ml-4">
                             <button onClick={() => toggleActive(t)} className={`mr-2 p-1 ${t.active ? 'text-green-500' : 'text-slate-500'}`}>
