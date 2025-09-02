@@ -3391,7 +3391,9 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
         const allTickerItems = [];
         
         // Process individual events from leagueSchedule
+        console.log('🔧 DEBUG: GameTicker - Processing leagueSchedule:', leagueSchedule);
         (leagueSchedule || []).forEach(event => {
+            console.log('🔧 DEBUG: GameTicker - Processing event:', event);
             if (event.type === 'game') {
                 allTickerItems.push({
                     id: event.id,
