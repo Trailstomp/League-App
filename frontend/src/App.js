@@ -3017,7 +3017,7 @@ const initialLeagueSchedule = [
     }
 ];
 
-console.log('🔧 DEBUG: Updated Initial League Schedule with September dates:', initialLeagueSchedule);
+
 
 const newsFeed = [
     { id: 1, title: 'American Dads Dominate Dayton Classic', date: '2025-08-10', snippet: 'The American Dads team swept the competition at the Dayton Classic tournament this past weekend, securing the championship with a decisive 13-5 victory...' },
