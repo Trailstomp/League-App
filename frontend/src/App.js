@@ -3623,7 +3623,8 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
                                         {(() => {
                                             if (!item.gameDate) return 'Date TBA';
                                             const dateObj = new Date(item.gameDate);
-                                            return isNaN(dateObj.getTime()) ? 'Date TBA' : dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                                            const dateStr = isNaN(dateObj.getTime()) ? 'Date TBA' : dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                                            return `${dateStr} • ${item.time || 'Time TBA'}`;
                                         })}
                                     </span>
                                     <span className="font-bold text-green-400 tracking-wider">{item.status}</span>
