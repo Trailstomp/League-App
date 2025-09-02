@@ -2979,7 +2979,39 @@ const initialGameTickerData = [
 ];
 
 const initialLeagueSchedule = [
-    // Empty array - let users add their own events for testing
+    {
+        id: 'game-1',
+        type: 'game',
+        title: 'OH10 Lacrosse vs American Dads',
+        date: '2025-01-05',
+        time: '2:00 PM',
+        location: 'Main Field Complex',
+        homeTeam: 'oh10-lacrosse',
+        awayTeam: 'american-dads',
+        teamId: 'oh10-lacrosse',
+        status: 'scheduled',
+        homeScore: 0,
+        awayScore: 0
+    },
+    {
+        id: 'tournament-1',
+        type: 'tournament',
+        title: 'Winter Championship',
+        date: '2025-01-12',
+        time: '9:00 AM',
+        location: 'Tournament Complex',
+        description: 'Annual winter tournament featuring all league teams'
+    },
+    {
+        id: 'practice-1',
+        type: 'practice',
+        title: 'Team Practice',
+        date: '2025-01-08',
+        time: '6:00 PM',
+        location: 'Practice Field',
+        teamId: 'oh10-lacrosse',
+        teamName: 'OH10 Lacrosse'
+    }
 ];
 
 const newsFeed = [
