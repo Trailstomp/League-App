@@ -7005,7 +7005,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                 <div>
                     <div className="flex items-center justify-between mb-2">
                         <label className="block text-sm font-medium text-gray-700">Event Photo (Optional)</label>
-                        {editingEvent.imageUrl && (
+                        {safeEditingEvent.imageUrl && (
                             <button
                                 type="button"
                                 onClick={() => setEditingEvent(prev => ({...prev, imageUrl: ''}))}
