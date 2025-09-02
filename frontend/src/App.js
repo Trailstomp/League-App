@@ -18113,6 +18113,45 @@ function App() {
                             </div>
                         )}
                       </div>
+                      
+                      {/* Non-League Teams Section */}
+                      <div className="mt-3">
+                        <button 
+                            onClick={() => setSidebarSections(prev => ({...prev, nonLeagueTeams: !prev.nonLeagueTeams}))}
+                            className="w-full text-left px-2 py-1 hover:bg-slate-700 hover:bg-opacity-50 rounded transition-colors"
+                        >
+                            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 flex items-center justify-between">
+                                <div className="flex items-center">
+                                    <Globe size={12} className="mr-1" /> Non-League Teams
+                                </div>
+                                <div className={`transform transition-transform ${sidebarSections.nonLeagueTeams ? 'rotate-180' : ''}`}>
+                                    <ArrowDown size={12} />
+                                </div>
+                            </h3>
+                        </button>
+                        {sidebarSections.nonLeagueTeams && (
+                            <div className="space-y-1 mt-2">
+                                {teams.filter(t => t.active && t.isExternal).sort((a, b) => a.name.localeCompare(b.name)).map(team => (
+                                   <button
+                                        key={team.id}
+                                        onClick={() => navigate('team', team.id)}
+                                        className={`flex items-center space-x-3 p-2 rounded-md w-full text-left transition-colors ml-2 ${
+                                            page === 'team' && selectedTeam === team.id
+                                                ? 'text-white'
+                                                : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                                        }`}
+                                        style={{backgroundColor: (page === 'team' && selectedTeam === team.id) ? websiteStyle.accentColor : 'transparent'}}
+                                    >
+                                        <img src={team.style?.logoUrl || team.logo || 'https://placehold.co/200x200/cccccc/666666?text=External'} alt={team.name} className="w-6 h-6 rounded-full bg-white p-0.5 object-contain" />
+                                        <span className="text-sm">{team.name}</span>
+                                        <span className="bg-blue-100 text-blue-800 px-1 py-0.5 rounded-full text-xs ml-auto">
+                                            Ext
+                                        </span>
+                                   </button>
+                                ))}
+                            </div>
+                        )}
+                      </div>
                     </div>
                 </nav>
                 <div className="p-2 border-t border-slate-700">
