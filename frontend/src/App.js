@@ -10161,14 +10161,6 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
 
     if (!team) return <div className="p-8 text-center text-red-500">Team not found!</div>;
 
-    // Authorization check for team management features  
-    const isAuthorizedToManage = currentUser && (
-        currentUser.role === 'admin' || 
-        (currentUser.roles && currentUser.roles.includes('coach')) ||
-        (currentUser.roles && currentUser.roles.includes('player/coach')) ||
-        (team && team.managers && team.managers.includes(currentUser.username))
-    );
-
     const handleSocialSave = (newSocial) => {
         setTeams(prevTeams => prevTeams.map(t =>
             t.id === teamId ? { ...t, social: newSocial } : t
