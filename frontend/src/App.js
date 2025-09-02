@@ -7106,33 +7106,102 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                     )}
                 </div>
                 
-                {/* Team Selection */}
+                {/* Team Selection - Separated League and External Teams */}
                 {!isTeamSpecific && (
-                    <div>
-                        <label className="block font-semibold text-slate-700 mb-2">Teams</label>
-                        <div className="border rounded-lg p-3 max-h-32 overflow-y-auto bg-slate-50">
-                            <div className="grid grid-cols-1 gap-2">
-                                {teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name)).map(team => (
-                                    <label key={team.id} className="flex items-center space-x-2 hover:bg-white p-1 rounded">
-                                        <input
-                                            type="checkbox"
-                                            checked={(editingEvent?.teamIds || []).includes(team.id)}
-                                            onChange={(e) => {
-                                                const teamIds = editingEvent?.teamIds || [];
-                                                const newTeamIds = e.target.checked
-                                                    ? [...teamIds, team.id]
-                                                    : teamIds.filter(id => id !== team.id);
-                                                setEditingEvent(prev => ({...prev, teamIds: newTeamIds}));
-                                            }}
-                                            className="rounded"
-                                        />
-                                        <img src={team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'} alt={team.name} className="w-6 h-6 rounded-full" />
-                                        <span className="text-sm font-medium">{team.name}</span>
-                                    </label>
-                                ))}
+                    <div className="space-y-4">
+                        {/* League Teams Section */}
+                        <div>
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="block font-semibold text-slate-700">League Teams</label>
+                                <label className="flex items-center space-x-2 text-sm text-slate-600">
+                                    <input
+                                        type="checkbox"
+                                        checked={(() => {
+                                            const leagueTeams = teams.filter(t => t.active && !t.isExternal);
+                                            const selectedLeagueTeams = (editingEvent?.teamIds || []).filter(id => 
+                                                leagueTeams.some(team => team.id === id)
+                                            );
+                                            return leagueTeams.length > 0 && selectedLeagueTeams.length === leagueTeams.length;
+                                        })()}
+                                        onChange={(e) => {
+                                            const leagueTeams = teams.filter(t => t.active && !t.isExternal);
+                                            const currentTeamIds = editingEvent?.teamIds || [];
+                                            const externalTeamIds = currentTeamIds.filter(id => 
+                                                teams.some(team => team.id === id && team.isExternal)
+                                            );
+                                            
+                                            const newTeamIds = e.target.checked
+                                                ? [...externalTeamIds, ...leagueTeams.map(t => t.id)]
+                                                : externalTeamIds;
+                                                
+                                            setEditingEvent(prev => ({...prev, teamIds: newTeamIds}));
+                                        }}
+                                        className="rounded"
+                                    />
+                                    <span>Select All</span>
+                                </label>
+                            </div>
+                            <div className="border rounded-lg p-3 max-h-32 overflow-y-auto bg-slate-50">
+                                <div className="grid grid-cols-1 gap-2">
+                                    {teams.filter(t => t.active && !t.isExternal).sort((a, b) => a.name.localeCompare(b.name)).map(team => (
+                                        <label key={team.id} className="flex items-center space-x-2 hover:bg-white p-1 rounded">
+                                            <input
+                                                type="checkbox"
+                                                checked={(editingEvent?.teamIds || []).includes(team.id)}
+                                                onChange={(e) => {
+                                                    const teamIds = editingEvent?.teamIds || [];
+                                                    const newTeamIds = e.target.checked
+                                                        ? [...teamIds, team.id]
+                                                        : teamIds.filter(id => id !== team.id);
+                                                    setEditingEvent(prev => ({...prev, teamIds: newTeamIds}));
+                                                }}
+                                                className="rounded"
+                                            />
+                                            <img src={team.style?.logoUrl || team.logo || 'https://placehold.co/200x200/cccccc/666666?text=Team'} alt={team.name} className="w-6 h-6 rounded-full" />
+                                            <span className="text-sm font-medium">{team.name}</span>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                        <p className="text-xs text-slate-500 mt-1">Select which team(s) this event applies to</p>
+
+                        {/* External Teams Section */}
+                        {teams.filter(t => t.active && t.isExternal).length > 0 && (
+                            <div>
+                                <label className="block font-semibold text-slate-700 mb-2 flex items-center">
+                                    <Globe size={16} className="mr-2" />
+                                    External Teams
+                                </label>
+                                <div className="border rounded-lg p-3 max-h-32 overflow-y-auto bg-blue-50">
+                                    <div className="grid grid-cols-1 gap-2">
+                                        {teams.filter(t => t.active && t.isExternal).sort((a, b) => a.name.localeCompare(b.name)).map(team => (
+                                            <label key={team.id} className="flex items-center space-x-2 hover:bg-white p-1 rounded">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={(editingEvent?.teamIds || []).includes(team.id)}
+                                                    onChange={(e) => {
+                                                        const teamIds = editingEvent?.teamIds || [];
+                                                        const newTeamIds = e.target.checked
+                                                            ? [...teamIds, team.id]
+                                                            : teamIds.filter(id => id !== team.id);
+                                                        setEditingEvent(prev => ({...prev, teamIds: newTeamIds}));
+                                                    }}
+                                                    className="rounded"
+                                                />
+                                                <img src={team.style?.logoUrl || team.logo || 'https://placehold.co/200x200/cccccc/666666?text=External'} alt={team.name} className="w-6 h-6 rounded-full" />
+                                                <span className="text-sm font-medium">{team.name}</span>
+                                                <span className="bg-blue-100 text-blue-800 px-1 py-0.5 rounded-full text-xs ml-auto">
+                                                    External
+                                                </span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                                <p className="text-xs text-blue-600 mt-1">Games against these teams won't affect league standings</p>
+                            </div>
+                        )}
+
+                        <p className="text-xs text-slate-500">Select which team(s) this event applies to</p>
                     </div>
                 )}
 
