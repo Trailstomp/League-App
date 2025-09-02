@@ -5747,6 +5747,14 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         other: true
     });
     
+    // Authorization check for event management
+    const isAuthorizedToManage = currentUser && (
+        currentUser.role === 'admin' || 
+        (currentUser.roles && currentUser.roles.includes('admin')) ||
+        (currentUser.roles && currentUser.roles.includes('coach')) ||
+        (currentUser.roles && currentUser.roles.includes('player/coach'))
+    );
+
     const getTeam = (id) => (teams || []).find(t => t.id === id);
     const isAdmin = currentUser && currentUser.roles && currentUser.roles.includes('admin');
     
