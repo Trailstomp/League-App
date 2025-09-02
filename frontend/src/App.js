@@ -6136,7 +6136,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                                     )}
                                                 </div>
                                                 {event.imageUrl && (
-                                                    <img src={event.imageUrl} alt="Event" className="w-full h-32 object-cover rounded-lg mb-3" />
+                                                    <img src={event.imageUrl} alt="Event" className="w-full h-20 object-cover rounded-lg mb-3" />
                                                 )}
                                                 {event.description && (
                                                     <p className="text-sm text-slate-600 mb-3">{event.description}</p>
