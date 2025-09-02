@@ -18547,11 +18547,19 @@ function App() {
                                 // New events either have no id or an id that starts with 'event_' (temporary)
                                 const isNewEvent = !editingEvent.id || editingEvent.id.startsWith('event_');
                                 
+                                // Process custom location
+                                const processedEvent = {
+                                    ...editingEvent,
+                                    location: (editingEvent.location === 'custom' && editingEvent.customLocation) 
+                                        ? editingEvent.customLocation 
+                                        : editingEvent.location
+                                };
+
                                 if (isNewEvent) {
                                     // Creating new event
                                     console.log('Creating new event...');
                                     const newEvent = {
-                                        ...editingEvent,
+                                        ...processedEvent,
                                         id: `event_${Date.now()}`,
                                         teamLogo: teams.find(t => t.id === editingEvent.teamId)?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
                                     };
@@ -18561,7 +18569,7 @@ function App() {
                                     // Updating existing event
                                     console.log('Updating existing event...');
                                     setLeagueSchedule(prev => 
-                                        prev.map(e => e.id === editingEvent.id ? editingEvent : e)
+                                        prev.map(e => e.id === editingEvent.id ? processedEvent : e)
                                     );
                                 }
                                 console.log('Closing modal...');
