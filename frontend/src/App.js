@@ -10592,27 +10592,48 @@ const TournamentBracketManager = ({ event, teams, onUpdateEvent, onClose }) => {
                                         </div>
                                         
                                         {/* Team 2 */}
-                                        {match.team2 ? (
-                                            <div className="flex items-center justify-between mb-2">
-                                                <div className="flex items-center gap-2">
-                                                    <img 
-                                                        src={match.team2?.logo || match.team2?.style?.logoUrl || 'https://placehold.co/32x32?text=T2'} 
-                                                        alt={match.team2?.name} 
-                                                        className="w-6 h-6 rounded-full" 
-                                                    />
-                                                    <span className="font-medium">{match.team2?.name}</span>
-                                                </div>
-                                                <input
-                                                    type="number"
-                                                    value={bracket[match.id]?.score2 || 0}
-                                                    onChange={(e) => updateMatch(match.id, 'score2', parseInt(e.target.value) || 0)}
-                                                    className="w-16 p-1 border rounded text-center"
-                                                    min="0"
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2 flex-1">
+                                                <img 
+                                                    src={match.team2?.logo || match.team2?.style?.logoUrl || 'https://placehold.co/32x32?text=T2'} 
+                                                    alt={match.team2?.name} 
+                                                    className="w-6 h-6 rounded-full" 
                                                 />
+                                                <select
+                                                    value={match.team2?.id || ''}
+                                                    onChange={(e) => updateMatch(match.id, 'team2', e.target.value)}
+                                                    className="flex-1 p-1 border rounded text-sm"
+                                                >
+                                                    <option value="">Select Team 2 (or leave empty for Bye)</option>
+                                                    {/* League Teams First */}
+                                                    <optgroup label="League Teams">
+                                                        {sortedTeams.filter(t => !t.isExternal).map(team => (
+                                                            <option key={team.id} value={team.id}>
+                                                                {team.name}
+                                                            </option>
+                                                        ))}
+                                                    </optgroup>
+                                                    {/* Non-League Teams at the End */}
+                                                    {sortedTeams.filter(t => t.isExternal).length > 0 && (
+                                                        <optgroup label="Non-League Teams">
+                                                            {sortedTeams.filter(t => t.isExternal).map(team => (
+                                                                <option key={team.id} value={team.id}>
+                                                                    {team.name}
+                                                                </option>
+                                                            ))}
+                                                        </optgroup>
+                                                    )}
+                                                </select>
                                             </div>
-                                        ) : (
-                                            <div className="text-gray-500 text-sm text-center">Bye</div>
-                                        )}
+                                            <input
+                                                type="number"
+                                                value={bracket[match.id]?.score2 || 0}
+                                                onChange={(e) => updateMatch(match.id, 'score2', parseInt(e.target.value) || 0)}
+                                                className="w-16 p-1 border rounded text-center ml-2"
+                                                min="0"
+                                                disabled={!match.team2}
+                                            />
+                                        </div>
                                         
                                         {/* Match Status */}
                                         <select
