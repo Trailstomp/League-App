@@ -17555,9 +17555,15 @@ function App() {
         console.log('🔍 EDIT EVENT DEBUG - Event data being loaded:', event);
         console.log('🔍 imageUrl in event:', event.imageUrl);
         console.log('🔍 teamIds in event:', event.teamIds);
+        console.log('🔍 Full event keys:', Object.keys(event));
         
         // Open the event in edit mode
-        setEditingEvent(event);
+        setEditingEvent({
+            ...event,
+            // Ensure these fields exist even if they're missing from the saved event
+            imageUrl: event.imageUrl || '',
+            teamIds: event.teamIds || []
+        });
     };
 
     // News system state (team-specific news) 
