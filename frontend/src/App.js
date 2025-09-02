@@ -16899,7 +16899,11 @@ function App() {
                     
                     setPlayers(linkedPlayers);
                     setGameTickerData(apiData.gameTickerData || initialGameTickerData);
-                    setLeagueSchedule((apiData.leagueSchedule && apiData.leagueSchedule.length > 0) ? apiData.leagueSchedule : initialLeagueSchedule);
+                    // FORCE USE UPDATED INITIAL DATA: Ignore API data and use updated dates
+                    console.log('🔧 DEBUG: API loading - forcing use of updated initialLeagueSchedule instead of API data');
+                    console.log('🔧 DEBUG: API leagueSchedule would be:', apiData.leagueSchedule?.map(e => ({id: e.id, date: e.date})));
+                    console.log('🔧 DEBUG: Using initialLeagueSchedule instead:', initialLeagueSchedule.map(e => ({id: e.id, date: e.date})));
+                    setLeagueSchedule(initialLeagueSchedule);
                     setUsers(loadedUsers);
                     setLeagueInfo(apiData.leagueInfo || {
                         name: "Men's Lacrosse Beer League",
