@@ -3703,7 +3703,12 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
                                 </div>
                                 <div className="flex justify-between items-center text-xs">
                                     <span className="font-semibold" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
-                                        {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })} • {item.time}
+                                        {(() => {
+                                            if (!item.date) return 'Date TBA';
+                                            const dateObj = new Date(item.date);
+                                            const dateStr = isNaN(dateObj.getTime()) ? 'Date TBA' : dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                                            return `${dateStr} • ${item.time || 'Time TBA'}`;
+                                        })()}
                                     </span>
                                     <span className="font-bold tracking-wider text-orange-400">
                                         {item.status || 'SCHEDULED'}
