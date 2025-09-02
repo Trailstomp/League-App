@@ -7070,22 +7070,22 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                                                     ))}
                                                 </div>
                                             </div>
-                                            <button
-                                                type="button"
-                                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                                                onClick={() => {
-                                                    if (setBracketEvent && typeof setBracketEvent === 'function') {
+                                            {setBracketEvent && typeof setBracketEvent === 'function' && (
+                                                <button
+                                                    type="button"
+                                                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                                    onClick={() => {
                                                         // Save current event first
                                                         const eventWithBracket = {
                                                             ...editingEvent,
                                                             id: editingEvent.id || `event_${Date.now()}`
                                                         };
                                                         setBracketEvent(eventWithBracket);
-                                                    }
-                                                }}
-                                            >
-                                                Manage Bracket
-                                            </button>
+                                                    }}
+                                                >
+                                                    Manage Bracket
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 );
