@@ -2997,7 +2997,7 @@ const initialLeagueSchedule = [
         id: 'tournament-1',
         type: 'tournament',
         title: 'Winter Championship',
-        date: '2025-09-22',
+        date: '2025-12-22',
         time: '9:00 AM',
         location: 'Tournament Complex',
         description: 'Annual winter tournament featuring all league teams'
