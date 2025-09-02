@@ -10192,9 +10192,9 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
 
     return (
         <div className="min-h-screen" style={teamBackgroundStyle}>
-            {/* Team Navigation Tabs - positioned below header and ticker */}
-            <div className="sticky top-20 z-40 bg-white border-b border-slate-200 px-4 md:px-8 py-2">
-                <div className="flex flex-wrap gap-2">
+            <div className="p-4 md:p-8">
+                {/* Team Navigation Tabs - normal positioning without sticky */}
+                <div className="flex border-b mb-6 flex-wrap">
                     {(team.style?.visibleTabs?.home !== false) && <TeamTab tabName="home" label="Home" />}
                     {(team.style?.visibleTabs?.roster !== false) && <TeamTab tabName="roster" label="Roster" />}
                     {(team.style?.visibleTabs?.stats !== false) && <TeamTab tabName="stats" label="Stats" />}
@@ -10212,10 +10212,6 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                         <TeamTab tabName="teamstyle" label="Team Style" />
                     )}
                 </div>
-            </div>
-            
-            {/* Main content container with padding */}
-            <div className="p-4 md:p-8">
                 <div className="rounded-lg" style={{ backgroundColor: team.style?.backgroundColor || 'transparent' }}>
                 {activeTab === 'home' && (
                     <div className="space-y-6">
