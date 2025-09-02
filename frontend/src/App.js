@@ -10845,7 +10845,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                         </td>
                                                     </tr>
                                                 );
-                                            }) : (
+                                            })) : (
                                             <tr>
                                                 <td colSpan="9" className="text-center py-8 text-slate-500">
                                                     No players found for this team
