@@ -6863,7 +6863,20 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
             style={{ backgroundColor: formBackgroundColor }}
         >
             <h3 className="text-2xl font-bold mb-4">{editingEvent?.id ? 'Edit Event' : 'Add New Event'}</h3>
-            <form onSubmit={onSave} className="space-y-4">
+            <form onSubmit={(e) => {
+                // Process custom location before saving
+                if (safeEditingEvent.location === 'custom' && safeEditingEvent.customLocation) {
+                    setEditingEvent(prev => ({
+                        ...prev,
+                        location: safeEditingEvent.customLocation
+                    }));
+                    // Need to delay the save to allow state update
+                    setTimeout(() => onSave(e), 0);
+                    e.preventDefault();
+                } else {
+                    onSave(e);
+                }
+            }} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Event Date *</label>
