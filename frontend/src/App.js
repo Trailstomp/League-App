@@ -6864,18 +6864,19 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
         >
             <h3 className="text-2xl font-bold mb-4">{editingEvent?.id ? 'Edit Event' : 'Add New Event'}</h3>
             <form onSubmit={(e) => {
-                // Process custom location before saving
-                if (safeEditingEvent.location === 'custom' && safeEditingEvent.customLocation) {
-                    setEditingEvent(prev => ({
-                        ...prev,
-                        location: safeEditingEvent.customLocation
-                    }));
-                    // Need to delay the save to allow state update
-                    setTimeout(() => onSave(e), 0);
-                    e.preventDefault();
-                } else {
-                    onSave(e);
-                }
+                e.preventDefault();
+                
+                // Process the event data, handling custom location
+                const eventToSave = {
+                    ...editingEvent,
+                    location: (editingEvent?.location === 'custom' && editingEvent?.customLocation) 
+                        ? editingEvent.customLocation 
+                        : editingEvent?.location || ''
+                };
+                
+                // Update the editingEvent with processed data and call onSave
+                setEditingEvent(eventToSave);
+                onSave({ ...e, target: { ...e.target, eventData: eventToSave } });
             }} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
