@@ -16661,8 +16661,7 @@ const MessageCenter = ({ teams, players, users, currentUser }) => {
 function App() {
     const [page, setPage] = useState('home');
     const [selectedTeam, setSelectedTeam] = useState(null);
-    // Temporarily set admin user for testing - REMOVE IN PRODUCTION
-    const [currentUser, setCurrentUser] = useState({ id: 1, name: 'Admin Ali', roleIds: ['super_admin'], teamId: null, email: 'admin@mlbl.org', role: 'admin', roles: ['admin'], status: 'active', createdAt: '2024-01-01' });
+    const [currentUser, setCurrentUser] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(window.innerWidth > 768);
     const [showLogin, setShowLogin] = useState(false);
     const [authMode, setAuthMode] = useState('login'); // 'login', 'register'
