@@ -11611,6 +11611,14 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                     </div>
                 )}
                 
+                {/* LOCATIONS MANAGEMENT TAB - For team admins to manage fields/venues */}
+                {isAuthorizedToManage && activeTab === 'locations' && (
+                    <div className="space-y-6">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-6 tracking-tight">Team Locations & Fields</h2>
+                        <TeamLocationsManager team={team} setTeams={setTeams} />
+                    </div>
+                )}
+                
                 {/* FRIENDS TAB with inline editing */}
                 {activeTab === 'friends' && (
                     <FriendsTab 
