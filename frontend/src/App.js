@@ -10233,6 +10233,187 @@ const FriendsSponsorsTab = ({
     );
 };
 
+// Team Locations Manager Component
+const TeamLocationsManager = ({ team, setTeams }) => {
+    const [editingLocation, setEditingLocation] = useState(null);
+    const [locations, setLocations] = useState(team.locations || []);
+
+    const handleSaveLocation = () => {
+        if (!editingLocation.name || !editingLocation.address) {
+            alert('Please fill in location name and address');
+            return;
+        }
+
+        let updatedLocations;
+        if (editingLocation.id) {
+            // Editing existing location
+            updatedLocations = locations.map(loc => 
+                loc.id === editingLocation.id ? editingLocation : loc
+            );
+        } else {
+            // Adding new location
+            const newLocation = {
+                ...editingLocation,
+                id: `loc_${Date.now()}`
+            };
+            updatedLocations = [...locations, newLocation];
+        }
+
+        setLocations(updatedLocations);
+        
+        // Update team in parent state
+        setTeams(currentTeams => currentTeams.map(t => 
+            t.id === team.id ? { ...t, locations: updatedLocations } : t
+        ));
+        
+        setEditingLocation(null);
+    };
+
+    const handleDeleteLocation = (locationId) => {
+        if (confirm('Are you sure you want to delete this location?')) {
+            const updatedLocations = locations.filter(loc => loc.id !== locationId);
+            setLocations(updatedLocations);
+            
+            setTeams(currentTeams => currentTeams.map(t => 
+                t.id === team.id ? { ...t, locations: updatedLocations } : t
+            ));
+        }
+    };
+
+    return (
+        <div className="space-y-6">
+            {/* Add/Edit Location Form */}
+            {editingLocation && (
+                <div className="bg-white border rounded-lg p-6">
+                    <h3 className="text-lg font-semibold mb-4">
+                        {editingLocation.id ? 'Edit Location' : 'Add New Location'}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Location Name *</label>
+                            <input
+                                type="text"
+                                value={editingLocation.name || ''}
+                                onChange={(e) => setEditingLocation(prev => ({...prev, name: e.target.value}))}
+                                placeholder="e.g., Main Field, Practice Arena"
+                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Location Type</label>
+                            <select
+                                value={editingLocation.type || 'Field'}
+                                onChange={(e) => setEditingLocation(prev => ({...prev, type: e.target.value}))}
+                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="Field">Field</option>
+                                <option value="Arena">Arena</option>
+                                <option value="Practice Field">Practice Field</option>
+                                <option value="Training Center">Training Center</option>
+                                <option value="Stadium">Stadium</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
+                            <input
+                                type="text"
+                                value={editingLocation.address || ''}
+                                onChange={(e) => setEditingLocation(prev => ({...prev, address: e.target.value}))}
+                                placeholder="Full address including city and state"
+                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                            <textarea
+                                value={editingLocation.notes || ''}
+                                onChange={(e) => setEditingLocation(prev => ({...prev, notes: e.target.value}))}
+                                placeholder="Additional notes about this location"
+                                rows="2"
+                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                    </div>
+                    <div className="flex justify-end gap-2 mt-4">
+                        <button
+                            onClick={() => setEditingLocation(null)}
+                            className="px-4 py-2 text-gray-600 border rounded hover:bg-gray-50"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleSaveLocation}
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        >
+                            Save Location
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Locations List */}
+            <div className="bg-white border rounded-lg">
+                <div className="p-4 border-b flex justify-between items-center">
+                    <h3 className="text-lg font-semibold">Team Locations</h3>
+                    <button
+                        onClick={() => setEditingLocation({ name: '', address: '', type: 'Field', notes: '' })}
+                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center gap-2"
+                    >
+                        <Plus size={16} />
+                        Add Location
+                    </button>
+                </div>
+                <div className="p-4">
+                    {locations.length === 0 ? (
+                        <p className="text-gray-500 text-center py-8">No locations added yet. Add your first location to get started.</p>
+                    ) : (
+                        <div className="space-y-3">
+                            {locations.map(location => (
+                                <div key={location.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <h4 className="font-semibold text-lg">{location.name}</h4>
+                                                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                                                    {location.type}
+                                                </span>
+                                            </div>
+                                            <p className="text-gray-600 mb-1">
+                                                <MapPin size={14} className="inline mr-1" />
+                                                {location.address}
+                                            </p>
+                                            {location.notes && (
+                                                <p className="text-gray-500 text-sm">{location.notes}</p>
+                                            )}
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => setEditingLocation(location)}
+                                                className="text-blue-600 hover:text-blue-800 p-1"
+                                                title="Edit location"
+                                            >
+                                                <Edit size={16} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteLocation(location.id)}
+                                                className="text-red-600 hover:text-red-800 p-1"
+                                                title="Delete location"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, setPlayers, setTeams, websiteStyle, playMusic, stopAllMusic, musicState, getTeamNewsItems, addTeamNewsItem, updateTeamNewsItem, deleteTeamNewsItem, setSelectedNewsItem, friends, sponsors, setFriends, setSponsors, onEventClick, isMenuOpen }) => {
     const [activeTab, setActiveTab] = useState('home');
 
