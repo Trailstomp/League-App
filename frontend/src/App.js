@@ -17543,6 +17543,11 @@ function App() {
     };
 
     const handleEditEvent = (event) => {
+        // Debug: Log the event data being passed to edit form
+        console.log('🔍 EDIT EVENT DEBUG - Event data being loaded:', event);
+        console.log('🔍 imageUrl in event:', event.imageUrl);
+        console.log('🔍 teamIds in event:', event.teamIds);
+        
         // Open the event in edit mode
         setEditingEvent(event);
     };
