@@ -3013,7 +3013,7 @@ const initialLeagueSchedule = [
         location: 'Practice Field',
         teamId: 'oh10-lacrosse',
         teamName: 'OH10 Lacrosse',
-        imageUrl: 'https://images.unsplash.com/photo-1544819667-3c2b57c1bbcc?w=800&h=400&fit=crop&crop=center'
+        imageUrl: 'https://via.placeholder.com/800x400/059669/ffffff?text=Practice'
     }
 ];
 
