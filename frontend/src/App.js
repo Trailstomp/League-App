@@ -3447,12 +3447,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
             if (item.gameDate) {
                 const itemDate = new Date(item.gameDate);
                 const inRange = itemDate >= lookBackDate && itemDate <= lookForwardDate;
-                console.log('🔧 DEBUG: GameTicker - Date filter:', {
-                    item: item.id,
-                    gameDate: item.gameDate,
-                    itemDate: itemDate,
-                    inRange: inRange
-                });
+
                 return inRange;
             }
             return true; // Include items without dates for now
