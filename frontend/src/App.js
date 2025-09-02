@@ -3424,7 +3424,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
             } else if (event.type === 'tournament') {
                 allTickerItems.push({
                     id: event.id,
-                    tournamentName: event.title,
+                    tournamentName: event.title, // Use event title as tournament name
                     location: event.location,
                     gameDate: event.date,
                     time: event.time,
