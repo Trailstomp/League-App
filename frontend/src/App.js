@@ -2991,7 +2991,8 @@ const initialLeagueSchedule = [
         teamId: 'oh10-lacrosse',
         status: 'scheduled',
         homeScore: 0,
-        awayScore: 0
+        awayScore: 0,
+        imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=400&fit=crop&crop=center'
     },
     {
         id: 'tournament-1',
@@ -3000,7 +3001,8 @@ const initialLeagueSchedule = [
         date: '2025-09-22',
         time: '9:00 AM',
         location: 'Tournament Complex',
-        description: 'Annual winter tournament featuring all league teams'
+        description: 'Annual winter tournament featuring all league teams',
+        imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop&crop=center'
     },
     {
         id: 'practice-1',
@@ -3010,7 +3012,8 @@ const initialLeagueSchedule = [
         time: '6:00 PM',
         location: 'Practice Field',
         teamId: 'oh10-lacrosse',
-        teamName: 'OH10 Lacrosse'
+        teamName: 'OH10 Lacrosse',
+        imageUrl: 'https://images.unsplash.com/photo-1544819667-3c2b57c1bbcc?w=800&h=400&fit=crop&crop=center'
     }
 ];
 
