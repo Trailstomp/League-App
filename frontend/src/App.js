@@ -10882,7 +10882,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                     ) : (
                                         <div className="text-slate-500">No statistics available</div>
                                     );
-                                })()}
+                                })}
                             </div>
                             
                             <div className="bg-white rounded-lg shadow p-4">
