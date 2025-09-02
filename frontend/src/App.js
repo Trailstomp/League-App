@@ -5877,6 +5877,13 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-4xl font-bold text-slate-800 tracking-tight">League Events & Schedule</h1>
+                
+                {/* DEBUG DISPLAY */}
+                <div className="bg-yellow-100 border border-yellow-400 p-4 mb-4 rounded">
+                    <strong>🔧 DEBUG INFO:</strong>
+                    <br />LeagueSchedule Length: {leagueSchedule?.length || 0}
+                    <br />LeagueSchedule Data: {JSON.stringify(leagueSchedule, null, 2)}
+                </div>
                 <div className="flex space-x-2">
                     {(isAdmin || hasPermission(currentUser, 'events.view')) && (
                         <button 
