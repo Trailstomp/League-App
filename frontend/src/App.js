@@ -7019,7 +7019,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                     <FileUploadInput
                         label=""
                         accept="image/*"
-                        currentValue={editingEvent.imageUrl || ''}
+                        currentValue={safeEditingEvent.imageUrl}
                         onChange={(url) => setEditingEvent(prev => ({...prev, imageUrl: url}))}
                         placeholder="Upload event image"
                         enableCrop={false}
