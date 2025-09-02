@@ -6284,19 +6284,23 @@ const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
 );
 
 const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
-    const fieldTeams = teams.filter(t => t.active && t.division === 'Field').sort((a, b) => {
+    // League teams (exclude external teams from standings)
+    const fieldTeams = teams.filter(t => t.active && t.division === 'Field' && !t.isExternal).sort((a, b) => {
         const scoreA = a.wins * 2 + a.ties;
         const scoreB = b.wins * 2 + b.ties;
         if (scoreA !== scoreB) return scoreB - scoreA;
         return (b.pf - b.pa) - (a.pf - a.pa);
     });
     
-    const boxTeams = teams.filter(t => t.active && t.division === 'Box').sort((a, b) => {
+    const boxTeams = teams.filter(t => t.active && t.division === 'Box' && !t.isExternal).sort((a, b) => {
         const scoreA = a.wins * 2 + a.ties;
-        const scoreB = b.wins * 2 + b.ties;
+        const scoreB = b.wins * 2 + b.tips;
         if (scoreA !== scoreB) return scoreB - scoreA;
         return (b.pf - b.pa) - (a.pf - a.pa);
     });
+    
+    // External teams (for reference but don't count in league standings)
+    const externalTeams = teams.filter(t => t.active && t.isExternal);
 
     const renderStandingsTable = (divisionTeams, divisionName) => (
         <div className="mb-8">
