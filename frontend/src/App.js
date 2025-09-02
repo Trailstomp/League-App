@@ -6902,7 +6902,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                     <label className="block text-sm font-medium text-gray-700 mb-1">Event Title *</label>
                     <input 
                         type="text" 
-                        value={editingEvent?.title || ''} 
+                        value={safeEditingEvent.title} 
                         onChange={e => setEditingEvent(prev => ({...prev, title: e.target.value}))} 
                         placeholder="Enter event title" 
                         className="w-full p-2 border rounded" 
