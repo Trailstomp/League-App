@@ -18904,6 +18904,8 @@ function App() {
                             onSave={(e) => {
                                 e.preventDefault();
                                 console.log('Save handler called with editingEvent:', editingEvent);
+                                console.log('🔍 SAVE DEBUG - editingEvent.imageUrl:', editingEvent?.imageUrl);
+                                console.log('🔍 SAVE DEBUG - editingEvent.teamIds:', editingEvent?.teamIds);
                                 
                                 // Tournament events will use the event title as tournament name
                                 
