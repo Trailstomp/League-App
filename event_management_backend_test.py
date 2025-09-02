@@ -492,9 +492,9 @@ class EventManagementTester:
         try:
             # Test all basic endpoints still work
             endpoints_to_test = [
-                ("GET /api/", "Health check"),
-                ("GET /api/status", "Status checks"),
-                ("GET /api/league-data", "League data retrieval")
+                ("/api/", "Health check"),
+                ("/api/status", "Status checks"),
+                ("/api/league-data", "League data retrieval")
             ]
             
             all_working = True
