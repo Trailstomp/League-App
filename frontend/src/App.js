@@ -5959,9 +5959,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                             );
                         })}
                     </div>
-                    <p className="text-xs text-slate-500 mt-2">
-                        Click to show/hide event types. Showing {Object.values(eventTypeFilters).filter(Boolean).length} of {availableEventTypes.length} event types.
-                    </p>
+
                 </div>
             </div>
 
