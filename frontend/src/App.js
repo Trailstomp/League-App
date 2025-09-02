@@ -7169,7 +7169,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                                                 type="checkbox"
                                                 checked={safeEditingEvent.teamIds.includes(team.id)}
                                                 onChange={(e) => {
-                                                    const teamIds = safeEditingEvent.teamIds;
+                                                    const teamIds = editingEvent?.teamIds || [];
                                                     const newTeamIds = e.target.checked
                                                         ? [...teamIds, team.id]
                                                         : teamIds.filter(id => id !== team.id);
