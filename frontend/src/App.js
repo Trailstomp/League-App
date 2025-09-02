@@ -7114,31 +7114,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                     </div>
                 )}
                 
-                {/* Event Photo Upload */}
-                <div>
-                    <div className="flex items-center justify-between mb-2">
-                        <label className="block text-sm font-medium text-gray-700">Event Photo (Optional)</label>
-                        {safeEditingEvent.imageUrl && (
-                            <button
-                                type="button"
-                                onClick={() => setEditingEvent(prev => ({...prev, imageUrl: ''}))}
-                                className="text-red-600 hover:text-red-800 text-sm flex items-center gap-1"
-                            >
-                                <X size={16} />
-                                Remove Image
-                            </button>
-                        )}
-                    </div>
-                    <FileUploadInput
-                        label=""
-                        accept="image/*"
-                        currentValue={safeEditingEvent.imageUrl}
-                        onChange={(url) => setEditingEvent(prev => ({...prev, imageUrl: url}))}
-                        placeholder="Upload event image"
-                        enableCrop={false}
-                        cropAspectRatio="16:9"
-                    />
-                </div>
+
                 
                 {/* RSVP Settings */}
                 <div className="border rounded-lg p-4 bg-green-50">
