@@ -6869,7 +6869,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                         <label className="block text-sm font-medium text-gray-700 mb-1">Event Date *</label>
                         <input 
                             type="date" 
-                            value={editingEvent?.date || ''} 
+                            value={safeEditingEvent.date} 
                             onChange={e => setEditingEvent(prev => ({...prev, date: e.target.value}))} 
                             className="w-full p-2 border rounded" 
                             required 
