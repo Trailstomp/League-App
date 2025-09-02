@@ -6836,7 +6836,27 @@ const LeagueInfoManager = ({ leagueInfo, setLeagueInfo, websiteStyle, setWebsite
     );
 };
 
-const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isTeamSpecific = false, currentTeamId = null, formBackgroundColor = '#f8fafc' }) => (
+const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isTeamSpecific = false, currentTeamId = null, formBackgroundColor = '#f8fafc' }) => {
+    // Debug logging to help identify issues
+    console.log('EventForm rendered with editingEvent:', editingEvent);
+    
+    // Ensure editingEvent has all required fields with defaults
+    const safeEditingEvent = {
+        id: '',
+        title: '',
+        type: 'event',
+        date: '',
+        time: '',
+        location: '',
+        description: '',
+        teamId: '',
+        teamIds: [],
+        imageUrl: '',
+        customLocation: '',
+        ...editingEvent
+    };
+
+    return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
         <div 
             className="p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
