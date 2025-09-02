@@ -6853,6 +6853,11 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
         teamIds: [],
         imageUrl: '',
         customLocation: '',
+        homeScore: 0,
+        awayScore: 0,
+        homeTeam: '',
+        awayTeam: '',
+        status: 'scheduled',
         ...editingEvent
     };
 
