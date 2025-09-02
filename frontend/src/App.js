@@ -6185,6 +6185,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                 <p>No upcoming events found.</p>
                                 <p className="text-xs text-slate-400 mt-2">Total events: {displayEvents.length}</p>
                             </div>
+                        );
                         })()}
                     </div>
                 </div>
