@@ -11143,7 +11143,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                     </div>
                                                     {event.imageUrl && (
                                                         <div className="mt-3">
-                                                            <img src={event.imageUrl} alt="Event" className="w-full h-20 object-cover rounded-lg" />
+                                                            <img src={event.imageUrl} alt="Event" className="w-32 h-24 object-cover rounded-lg" />
                                                         </div>
                                                     )}
                                                 </div>
