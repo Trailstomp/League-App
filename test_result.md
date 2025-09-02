@@ -659,6 +659,18 @@ frontend:
         agent: "main"
         comment: "🎉 IMAGE DISTORTION FIXED: 1) Added object-contain CSS class to ALL team logo img elements throughout the application 2) Fixed team header logo (most visible distortion) 3) Fixed sidebar navigation team logos (Field & Box lacrosse sections) 4) Fixed standings table team logos 5) Fixed schedule/game display logos (w-12 h-12 and w-16 h-16) 6) Fixed event listing logos 7) Fixed team management list logos 8) Images now maintain native aspect ratio in all containers 9) FileUploadInput already had object-contain for previews 10) Crop tool handles reshaping as intended - distortion completely eliminated across all logo displays. Native aspect ratios preserved!"
 
+  - task: "Fix event team selection and score saving issues + improve bracket team editing"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported two new issues: 1) Adding teams when creating event on details page and adding score did not save - team selections and scores not persisting 2) When putting bracket together, need ability to edit teams with dropdown list and put non-league teams at the end of dropdown lists."
+
   - task: "Fix duplicate photo upload sections in EventForm causing image editing issues"
     implemented: true
     working: true
