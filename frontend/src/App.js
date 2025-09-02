@@ -5807,6 +5807,8 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
             };
         }
     }).filter(event => event !== null).sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    console.log('🔧 DEBUG: EventsPage - All processed events:', processedEvents.map(e => ({id: e.id, type: e.type, date: e.date, title: e.title})));
 
     // Filter events by team and type
     const filteredEvents = allEvents
