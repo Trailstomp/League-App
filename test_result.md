@@ -57,8 +57,8 @@
 ##   test_priority: "high_first"  # or "sequential" or "stuck_first"
 ##
 ## agent_communication:
-##     -agent: "main"  # or "testing" or "user"
-##     -message: "Main agent updating test results: Backend testing identified 4 residual events in database that need clearing: Thunder Hawks vs Lightning Bolts (game), Thunder Hawks Practice (practice), and 2 Spring Championship Tournament events. These are preventing the clean slate needed for event CRUD testing. About to clear database events to establish fresh state."
+##     -agent: "main"
+##     -message: "CRITICAL BUG INVESTIGATION STARTED: Investigating duplicate photo upload sections in EventForm component as identified in current_work. Found duplicate sections at lines 7117-7141 and 7349-7373 causing image editing issues. About to remove duplicate and fix related form persistence problems."
 
 # Protocol Guidelines for Main agent
 #
