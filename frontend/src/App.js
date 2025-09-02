@@ -6969,8 +6969,8 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                                 value={safeEditingEvent.customLocation} 
                                 onChange={e => setEditingEvent(prev => ({
                                     ...prev, 
-                                    customLocation: e.target.value,
-                                    location: e.target.value || 'custom' // Keep location updated for saving
+                                    customLocation: e.target.value
+                                    // Keep location as 'custom' while typing
                                 }))} 
                                 placeholder="Enter custom location" 
                                 className="w-full p-2 border rounded mt-2" 
