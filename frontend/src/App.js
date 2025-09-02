@@ -3376,7 +3376,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
 
         // Get date range settings
         const lookBackDays = websiteStyle?.tickerLookBack || 7;
-        const lookForwardDays = websiteStyle?.tickerLookForward || 14;
+        const lookForwardDays = websiteStyle?.tickerLookForward || 120; // Extended to 4 months
         
         const today = new Date();
         const lookBackDate = new Date(today);
