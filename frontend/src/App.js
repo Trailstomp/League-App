@@ -16958,7 +16958,10 @@ function App() {
                     
                     setTeams(getStoredData('mlbl_teams', initialTeams));
                     setPlayers(linkedPlayers);
-                    setGameTickerData(getStoredData('mlbl_gameTickerData', initialGameTickerData));
+                    // FORCE RESET: Clear game ticker data too
+                    console.log('🔧 DEBUG: Forcing game ticker data reset');
+                    localStorage.removeItem('mlbl_gameTickerData');
+                    setGameTickerData(initialGameTickerData);
                     // FORCE RESET: Clear old stored data and use updated initialLeagueSchedule
                     console.log('🔧 DEBUG: Forcing league schedule reset to use updated dates');
                     localStorage.removeItem('mlbl_leagueSchedule');
