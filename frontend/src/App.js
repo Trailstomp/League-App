@@ -16959,8 +16959,11 @@ function App() {
                     setTeams(getStoredData('mlbl_teams', initialTeams));
                     setPlayers(linkedPlayers);
                     setGameTickerData(getStoredData('mlbl_gameTickerData', initialGameTickerData));
-                    const storedSchedule = getStoredData('mlbl_leagueSchedule', initialLeagueSchedule);
-                    setLeagueSchedule((storedSchedule && storedSchedule.length > 0) ? storedSchedule : initialLeagueSchedule);
+                    // FORCE RESET: Clear old stored data and use updated initialLeagueSchedule
+                    console.log('🔧 DEBUG: Forcing league schedule reset to use updated dates');
+                    localStorage.removeItem('mlbl_leagueSchedule');
+                    setLeagueSchedule(initialLeagueSchedule);
+                    setStoredData('mlbl_leagueSchedule', initialLeagueSchedule);
                     setUsers(storedUsers);
                     setLeagueInfo(getStoredData('mlbl_leagueInfo', leagueInfo));
                     // Fix localStorage fallback for websiteStyle persistence
