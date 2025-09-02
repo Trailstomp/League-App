@@ -3465,7 +3465,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
         const tournaments = new Map();
         
         gamesWithDates.forEach(game => {
-            if (game.type && game.type.toLowerCase() === 'tournament' && game.tournamentName) {
+            if (game.itemType === 'tournament' && game.tournamentName) {
                 if (tickerFilters.tournaments) {
                     if (!tournaments.has(game.tournamentName)) {
                         tournaments.set(game.tournamentName, {
