@@ -5971,22 +5971,24 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                             <Calendar className="mr-2" size={24} />
                             Upcoming Events
                         </h2>
-                        <button
-                            onClick={() => onEditEvent && onEditEvent({
-                                id: `event_${Date.now()}`,
-                                title: '',
-                                type: 'event',
-                                date: '',
-                                time: '',
-                                location: '',
-                                description: '',
-                                teamId: '',
-                                teamName: ''
-                            })}
-                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center"
-                        >
-                            <Plus className="mr-2 h-4 w-4"/> Add Event
-                        </button>
+                        {isAuthorizedToManage && (
+                            <button
+                                onClick={() => onEditEvent && onEditEvent({
+                                    id: `event_${Date.now()}`,
+                                    title: '',
+                                    type: 'event',
+                                    date: '',
+                                    time: '',
+                                    location: '',
+                                    description: '',
+                                    teamId: '',
+                                    teamName: ''
+                                })}
+                                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center"
+                            >
+                                <Plus className="mr-2 h-4 w-4"/> Add Event
+                            </button>
+                        )}
                     </div>
                     <div className="space-y-4">
                         {(() => {
