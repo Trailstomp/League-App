@@ -2992,7 +2992,7 @@ const initialLeagueSchedule = [
         status: 'scheduled',
         homeScore: 0,
         awayScore: 0,
-        imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=400&fit=crop&crop=center'
+        imageUrl: 'https://via.placeholder.com/800x400/1e40af/ffffff?text=Game+Event'
     },
     {
         id: 'tournament-1',
