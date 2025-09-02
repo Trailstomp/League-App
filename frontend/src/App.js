@@ -7022,7 +7022,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                                             </label>
                                             <input
                                                 type="number"
-                                                value={editingEvent?.homeScore || safeEditingEvent.homeScore || ''}
+                                                value={safeEditingEvent.homeScore || ''}
                                                 onChange={(e) => setEditingEvent(prev => ({
                                                     ...prev, 
                                                     homeScore: parseInt(e.target.value) || 0,
