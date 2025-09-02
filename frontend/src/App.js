@@ -17552,7 +17552,8 @@ function App() {
     // Sidebar collapsible sections state
     const [sidebarSections, setSidebarSections] = useState({
         fieldLacrosse: true,
-        boxLacrosse: true
+        boxLacrosse: true,
+        nonLeagueTeams: false  // Closed by default as requested
     });
 
     useEffect(() => {
