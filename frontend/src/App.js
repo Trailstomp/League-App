@@ -17755,6 +17755,117 @@ function App() {
                         <div className="w-10"></div>
                     </div>
                     <GameTicker teams={teams} leagueSchedule={leagueSchedule} websiteStyle={websiteStyle} onTeamClick={(teamId) => navigate('team', teamId)} onNavigate={navigate} onEventClick={handleEventClick} />
+                    
+                    {/* Team Navigation Tabs - only show when on a team page */}
+                    {page === 'team' && selectedTeam && (() => {
+                        const team = teams.find(t => t.id === selectedTeam);
+                        const isAuthorizedToManage = currentUser && (currentUser.role === 'admin' || (team && team.managers && team.managers.includes(currentUser.username)));
+                        
+                        return (
+                            <div className="bg-white border-t border-slate-200 px-4 md:px-8 py-2 flex flex-wrap gap-2">
+                                {(team?.style?.visibleTabs?.home !== false) && (
+                                    <button 
+                                        onClick={() => navigate('team', selectedTeam, 'home')}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                            teamActiveTab === 'home' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        Home
+                                    </button>
+                                )}
+                                {(team?.style?.visibleTabs?.roster !== false) && (
+                                    <button 
+                                        onClick={() => navigate('team', selectedTeam, 'roster')}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                            teamActiveTab === 'roster' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        Roster
+                                    </button>
+                                )}
+                                {(team?.style?.visibleTabs?.stats !== false) && (
+                                    <button 
+                                        onClick={() => navigate('team', selectedTeam, 'stats')}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                            teamActiveTab === 'stats' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        Stats
+                                    </button>
+                                )}
+                                {(team?.style?.visibleTabs?.schedule !== false) && (
+                                    <button 
+                                        onClick={() => navigate('team', selectedTeam, 'schedule')}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                            teamActiveTab === 'schedule' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        Schedule
+                                    </button>
+                                )}
+                                {(team?.style?.visibleTabs?.media !== false) && (
+                                    <button 
+                                        onClick={() => navigate('team', selectedTeam, 'media')}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                            teamActiveTab === 'media' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        Photos & Videos
+                                    </button>
+                                )}
+                                {(team?.style?.visibleTabs?.social !== false) && (
+                                    <button 
+                                        onClick={() => navigate('team', selectedTeam, 'social')}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                            teamActiveTab === 'social' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        Social
+                                    </button>
+                                )}
+                                {(team?.style?.visibleTabs?.groupme !== false) && (
+                                    <button 
+                                        onClick={() => navigate('team', selectedTeam, 'groupme')}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                            teamActiveTab === 'groupme' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        GroupMe
+                                    </button>
+                                )}
+                                {(team?.style?.visibleTabs?.contact !== false) && (
+                                    <button 
+                                        onClick={() => navigate('team', selectedTeam, 'contact')}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                            teamActiveTab === 'contact' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        Contact
+                                    </button>
+                                )}
+                                
+                                <button 
+                                    onClick={() => navigate('team', selectedTeam, 'friends')}
+                                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                        teamActiveTab === 'friends' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                    }`}
+                                >
+                                    Friends & Sponsors
+                                </button>
+                                
+                                {isAuthorizedToManage && (
+                                    <button 
+                                        onClick={() => navigate('team', selectedTeam, 'teamstyle')}
+                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                            teamActiveTab === 'teamstyle' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                        }`}
+                                    >
+                                        Team Style
+                                    </button>
+                                )}
+                            </div>
+                        );
+                    })()}
                 </header>
                 <main className="flex-1 overflow-y-auto relative" style={backgroundStyle}>
                     {renderPage()}
