@@ -3668,7 +3668,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
                                             if (!item.gameDate) return 'Date TBA';
                                             const dateObj = new Date(item.gameDate);
                                             return isNaN(dateObj.getTime()) ? 'Date TBA' : dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                                        })()}
+                                        })}
                                     </span>
                                     <span className="font-bold tracking-wider text-yellow-400">
                                         {completedGames.length === totalGames ? 'COMPLETE' : 'IN PROGRESS'}
