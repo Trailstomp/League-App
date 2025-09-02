@@ -6047,7 +6047,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                                     )}
                                                 </div>
                                                 {event.imageUrl && (
-                                                    <img src={event.imageUrl} alt="Tournament" className="w-full h-32 object-cover rounded-lg mb-3" />
+                                                    <img src={event.imageUrl} alt="Tournament" className="w-full h-20 object-cover rounded-lg mb-3" />
                                                 )}
                                                 <div className="mb-2">
                                                     <span className="text-sm font-semibold text-slate-700">Participating Teams ({event.allTeams.length}):</span>
