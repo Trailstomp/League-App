@@ -3453,7 +3453,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
             return true; // Include items without dates for now
         });
         
-        console.log('🔧 DEBUG: GameTicker - Filtered items:', gamesWithDates);
+
         
         // Group tournament games by tournament name
         const regularGames = [];
