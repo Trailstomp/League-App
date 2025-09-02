@@ -3708,7 +3708,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
                                             const dateObj = new Date(item.date);
                                             const dateStr = isNaN(dateObj.getTime()) ? 'Date TBA' : dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                                             return `${dateStr} • ${item.time || 'Time TBA'}`;
-                                        })()}
+                                        })}
                                     </span>
                                     <span className="font-bold tracking-wider text-orange-400">
                                         {item.status || 'SCHEDULED'}
