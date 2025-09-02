@@ -6836,7 +6836,7 @@ const LeagueInfoManager = ({ leagueInfo, setLeagueInfo, websiteStyle, setWebsite
     );
 };
 
-const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isTeamSpecific = false, currentTeamId = null, formBackgroundColor = '#f8fafc' }) => {
+const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isTeamSpecific = false, currentTeamId = null, formBackgroundColor = '#f8fafc', setBracketEvent }) => {
     // Debug logging to help identify issues
     console.log('EventForm rendered with editingEvent:', editingEvent);
     
