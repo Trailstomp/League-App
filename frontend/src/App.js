@@ -2983,7 +2983,7 @@ const initialLeagueSchedule = [
         id: 'game-1',
         type: 'game',
         title: 'OH10 Lacrosse vs American Dads',
-        date: '2025-09-15',
+        date: '2025-12-15',
         time: '2:00 PM',
         location: 'Main Field Complex',
         homeTeam: 'oh10-lacrosse',
