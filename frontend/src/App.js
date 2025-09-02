@@ -6179,7 +6179,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                     </div>
                                 );
                             }
-                        }) : (
+                        })) : (
                             <div className="text-center py-8 text-slate-500">
                                 <Calendar className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
                                 <p>No upcoming events found.</p>
