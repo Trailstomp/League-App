@@ -6969,17 +6969,9 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                                 value={safeEditingEvent.customLocation} 
                                 onChange={e => setEditingEvent(prev => ({
                                     ...prev, 
-                                    customLocation: e.target.value
+                                    customLocation: e.target.value,
+                                    location: e.target.value || 'custom' // Keep location updated for saving
                                 }))} 
-                                onBlur={e => {
-                                    // Update the main location when user finishes typing
-                                    if (e.target.value.trim()) {
-                                        setEditingEvent(prev => ({
-                                            ...prev,
-                                            location: e.target.value.trim()
-                                        }));
-                                    }
-                                }}
                                 placeholder="Enter custom location" 
                                 className="w-full p-2 border rounded mt-2" 
                                 required
