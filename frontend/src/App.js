@@ -6956,20 +6956,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                     </div>
                 </div>
                 
-                {/* Tournament Name - only show when type is tournament */}
-                {editingEvent?.type === 'tournament' && (
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Tournament Name *</label>
-                        <input 
-                            type="text" 
-                            value={editingEvent?.tournamentName || ''} 
-                            onChange={e => setEditingEvent(prev => ({...prev, tournamentName: e.target.value}))} 
-                            placeholder="e.g., 'Spring Classic', 'Championship Series'" 
-                            className="w-full p-2 border rounded" 
-                            required
-                        />
-                    </div>
-                )}
+
                 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
