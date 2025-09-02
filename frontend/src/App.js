@@ -17759,7 +17759,12 @@ function App() {
                     {/* Team Navigation Tabs - only show when on a team page */}
                     {page === 'team' && selectedTeam && (() => {
                         const team = teams.find(t => t.id === selectedTeam);
-                        const isAuthorizedToManage = currentUser && (currentUser.role === 'admin' || (team && team.managers && team.managers.includes(currentUser.username)));
+                        const isAuthorizedToManage = currentUser && (
+                            currentUser.role === 'admin' || 
+                            (currentUser.roles && currentUser.roles.includes('coach')) ||
+                            (currentUser.roles && currentUser.roles.includes('player/coach')) ||
+                            (team && team.managers && team.managers.includes(currentUser.username))
+                        );
                         
                         return (
                             <div className="bg-white border-t border-slate-200 px-4 md:px-8 py-2 flex flex-wrap gap-2">
