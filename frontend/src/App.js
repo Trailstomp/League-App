@@ -10457,6 +10457,164 @@ const FriendsSponsorsTab = ({
     );
 };
 
+// Tournament Bracket Manager Component
+const TournamentBracketManager = ({ event, teams, onUpdateEvent, onClose }) => {
+    const [bracket, setBracket] = useState(event.bracket || {});
+    const [rounds, setRounds] = useState([]);
+    
+    const eventTeams = (event.teamIds || []).map(id => teams.find(t => t.id === id)).filter(Boolean);
+    
+    useEffect(() => {
+        // Initialize bracket structure
+        if (eventTeams.length > 0) {
+            const numTeams = eventTeams.length;
+            const numRounds = Math.ceil(Math.log2(numTeams));
+            const roundsData = [];
+            
+            // First round - all teams
+            let currentRound = {
+                name: numRounds === 1 ? 'Final' : `Round 1`,
+                matches: []
+            };
+            
+            // Pair teams for first round
+            for (let i = 0; i < numTeams; i += 2) {
+                const match = {
+                    id: `r1_m${Math.floor(i/2)}`,
+                    team1: eventTeams[i],
+                    team2: eventTeams[i + 1] || null, // Bye if odd number
+                    score1: bracket[`r1_m${Math.floor(i/2)}`]?.score1 || 0,
+                    score2: bracket[`r1_m${Math.floor(i/2)}`]?.score2 || 0,
+                    status: bracket[`r1_m${Math.floor(i/2)}`]?.status || 'scheduled'
+                };
+                currentRound.matches.push(match);
+            }
+            roundsData.push(currentRound);
+            
+            setRounds(roundsData);
+        }
+    }, [eventTeams.length]);
+    
+    const updateMatch = (matchId, field, value) => {
+        setBracket(prev => ({
+            ...prev,
+            [matchId]: {
+                ...prev[matchId],
+                [field]: value
+            }
+        }));
+    };
+    
+    const saveBracket = () => {
+        const updatedEvent = {
+            ...event,
+            bracket,
+            status: 'in-progress'
+        };
+        onUpdateEvent(updatedEvent);
+        onClose();
+    };
+    
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold">Tournament Bracket: {event.title}</h2>
+                    <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+                        <X size={24} />
+                    </button>
+                </div>
+                
+                <div className="space-y-6">
+                    {rounds.map((round, roundIndex) => (
+                        <div key={roundIndex} className="border rounded-lg p-4">
+                            <h3 className="text-lg font-semibold mb-4 text-center">{round.name}</h3>
+                            <div className="grid gap-4" style={{gridTemplateColumns: `repeat(${Math.max(1, Math.ceil(round.matches.length / 2))}, 1fr)`}}>
+                                {round.matches.map((match, matchIndex) => (
+                                    <div key={match.id} className="border rounded-lg p-4 bg-gray-50">
+                                        <div className="text-sm text-gray-600 mb-2 text-center">
+                                            Match {matchIndex + 1}
+                                        </div>
+                                        
+                                        {/* Team 1 */}
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <img 
+                                                    src={match.team1?.logo || match.team1?.style?.logoUrl || 'https://placehold.co/32x32?text=T1'} 
+                                                    alt={match.team1?.name} 
+                                                    className="w-6 h-6 rounded-full" 
+                                                />
+                                                <span className="font-medium">{match.team1?.name}</span>
+                                            </div>
+                                            <input
+                                                type="number"
+                                                value={bracket[match.id]?.score1 || 0}
+                                                onChange={(e) => updateMatch(match.id, 'score1', parseInt(e.target.value) || 0)}
+                                                className="w-16 p-1 border rounded text-center"
+                                                min="0"
+                                            />
+                                        </div>
+                                        
+                                        {/* Team 2 */}
+                                        {match.team2 ? (
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center gap-2">
+                                                    <img 
+                                                        src={match.team2?.logo || match.team2?.style?.logoUrl || 'https://placehold.co/32x32?text=T2'} 
+                                                        alt={match.team2?.name} 
+                                                        className="w-6 h-6 rounded-full" 
+                                                    />
+                                                    <span className="font-medium">{match.team2?.name}</span>
+                                                </div>
+                                                <input
+                                                    type="number"
+                                                    value={bracket[match.id]?.score2 || 0}
+                                                    onChange={(e) => updateMatch(match.id, 'score2', parseInt(e.target.value) || 0)}
+                                                    className="w-16 p-1 border rounded text-center"
+                                                    min="0"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="text-gray-500 text-sm text-center">Bye</div>
+                                        )}
+                                        
+                                        {/* Match Status */}
+                                        <select
+                                            value={bracket[match.id]?.status || 'scheduled'}
+                                            onChange={(e) => updateMatch(match.id, 'status', e.target.value)}
+                                            className="w-full p-1 border rounded text-sm"
+                                        >
+                                            <option value="scheduled">Scheduled</option>
+                                            <option value="in-progress">In Progress</option>
+                                            <option value="completed">Completed</option>
+                                        </select>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                
+                <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 text-gray-600 border rounded hover:bg-gray-50"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={saveBracket}
+                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2"
+                    >
+                        <Trophy size={16} />
+                        Save Bracket
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 // Team Locations Manager Component
 const TeamLocationsManager = ({ team, setTeams }) => {
     const [editingLocation, setEditingLocation] = useState(null);
