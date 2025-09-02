@@ -1311,6 +1311,7 @@ const Type = (props) => <Icon name="Type" {...props} />;
 const Star = (props) => <Icon name="Star" {...props} />;
 const Share2 = (props) => <Icon name="Share2" {...props} />;
 const Globe = (props) => <Icon name="Globe" {...props} />;
+const Info = (props) => <Icon name="Info" {...props} />;
 const Briefcase = (props) => <Icon name="Briefcase" {...props} />;
 
 // --- ASSETS ---
