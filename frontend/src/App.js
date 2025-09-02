@@ -7469,6 +7469,7 @@ const TeamCalendarManager = ({ team, teams, setTeams, websiteStyle }) => {
                     isTeamSpecific={false} // Allow team selection even from team calendar
                     currentTeamId={team.id}
                     formBackgroundColor={formBackgroundColor}
+                    setBracketEvent={null}
                 />
             )}
             <div className="flex justify-between items-center mb-6">
