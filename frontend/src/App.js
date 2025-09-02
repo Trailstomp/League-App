@@ -5815,6 +5815,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                 teamId: item.teamId,
                 teamName: item.teamName || 'League Event',
                 teamLogo: item.teamLogo || 'https://placehold.co/200x200/cccccc/666666?text=Event',
+                imageUrl: item.imageUrl,  // Include imageUrl property
                 allTeams: item.allTeams || []
             };
         }
