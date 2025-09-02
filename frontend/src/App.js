@@ -16948,7 +16948,7 @@ function App() {
                     setStoredData('mlbl_teams', apiData.teams || initialTeams);
                     setStoredData('mlbl_players', linkedPlayers);
                     setStoredData('mlbl_gameTickerData', apiData.gameTickerData || initialGameTickerData);
-                    setStoredData('mlbl_leagueSchedule', apiData.leagueSchedule || initialLeagueSchedule);
+                    setStoredData('mlbl_leagueSchedule', initialLeagueSchedule); // Force store updated dates
                     setStoredData('mlbl_users', loadedUsers);
                     setStoredData('mlbl_leagueInfo', apiData.leagueInfo || leagueInfo);
                     // Save to localStorage for deployment safety
