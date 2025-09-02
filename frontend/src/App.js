@@ -10215,31 +10215,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
 
     return (
         <div className="min-h-screen" style={teamBackgroundStyle}>
-            {/* Navigation tabs - dynamically positioned below header and ticker with buffer */}
-            <div 
-                className="fixed left-0 right-0 z-30 bg-white flex border-b shadow-sm px-4 md:px-8 py-2 transition-all duration-300 ease-in-out"
-                style={{ 
-                    top: `${headerHeight + 40}px`, // Add 40px buffer to account for ticker content height
-                    marginLeft: isMenuOpen ? '256px' : '0px' 
-                }}
-            >
-                {(team.style?.visibleTabs?.home !== false) && <TeamTab tabName="home" label="Home" />}
-                {(team.style?.visibleTabs?.roster !== false) && <TeamTab tabName="roster" label="Roster" />}
-                {(team.style?.visibleTabs?.stats !== false) && <TeamTab tabName="stats" label="Stats" />}
-                {(team.style?.visibleTabs?.schedule !== false) && <TeamTab tabName="schedule" label="Schedule" />}
-                {(team.style?.visibleTabs?.media !== false) && <TeamTab tabName="media" label="Photos & Videos" />}
-                {(team.style?.visibleTabs?.social !== false) && <TeamTab tabName="social" label="Social" />}
-                {(team.style?.visibleTabs?.groupme !== false) && <TeamTab tabName="groupme" label="GroupMe" />}
-                {(team.style?.visibleTabs?.contact !== false) && <TeamTab tabName="contact" label="Contact" />}
-                
-                {/* Public Friends & Sponsors Tab */}
-                <TeamTab tabName="friends" label="Friends & Sponsors" />
-                
-                {/* Team Style Management Tab for Authorized Team Managers */}
-                {isAuthorizedToManage && (
-                    <TeamTab tabName="teamstyle" label="Team Style" />
-                )}
-            </div>
+
             
             {/* Main content container with padding */}
             <div className="p-4 md:p-8">
