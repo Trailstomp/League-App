@@ -3439,14 +3439,26 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
             }
         });
 
+        console.log('🔧 DEBUG: GameTicker - All ticker items before filtering:', allTickerItems);
+        console.log('🔧 DEBUG: GameTicker - Date range:', { lookBackDate, lookForwardDate });
+        
         // Apply date range filtering
         const gamesWithDates = allTickerItems.filter(item => {
             if (item.gameDate) {
                 const itemDate = new Date(item.gameDate);
-                return itemDate >= lookBackDate && itemDate <= lookForwardDate;
+                const inRange = itemDate >= lookBackDate && itemDate <= lookForwardDate;
+                console.log('🔧 DEBUG: GameTicker - Date filter:', {
+                    item: item.id,
+                    gameDate: item.gameDate,
+                    itemDate: itemDate,
+                    inRange: inRange
+                });
+                return inRange;
             }
             return true; // Include items without dates for now
         });
+        
+        console.log('🔧 DEBUG: GameTicker - Filtered items:', gamesWithDates);
         
         // Group tournament games by tournament name
         const regularGames = [];
