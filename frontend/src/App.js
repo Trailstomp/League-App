@@ -5743,6 +5743,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
     const isAdmin = currentUser && currentUser.roles && currentUser.roles.includes('admin');
     
     // Get all events from leagueSchedule - handle both formats: [{date, games: []}] and direct events
+    console.log('🔧 DEBUG: EventsPage - Processing events, leagueSchedule length:', leagueSchedule?.length || 0);
     const allEvents = (leagueSchedule || []).flatMap(item => {
         // Check if this is the old format (day with games) or new format (direct event)
         if (item.games && Array.isArray(item.games)) {
