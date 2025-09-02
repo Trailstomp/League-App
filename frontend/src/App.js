@@ -3006,7 +3006,7 @@ const initialLeagueSchedule = [
         id: 'practice-1',
         type: 'practice',
         title: 'Team Practice',
-        date: '2025-09-10',
+        date: '2025-12-10',
         time: '6:00 PM',
         location: 'Practice Field',
         teamId: 'oh10-lacrosse',
