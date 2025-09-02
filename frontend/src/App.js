@@ -10237,6 +10237,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
     const getTeam = (id) => teams.find(t => t.id === id);
     const isAuthorizedToManage = currentUser && (
         currentUser.role === 'admin' || 
+        (currentUser.roles && currentUser.roles.includes('admin')) ||
         (currentUser.roles && currentUser.roles.includes('coach')) ||
         (currentUser.roles && currentUser.roles.includes('player/coach')) ||
         (team && team.managers && team.managers.includes(currentUser.username))
