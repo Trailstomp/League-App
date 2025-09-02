@@ -16962,11 +16962,20 @@ function App() {
                     console.log('🔧 DEBUG: Forcing game ticker data reset');
                     localStorage.removeItem('mlbl_gameTickerData');
                     setGameTickerData(initialGameTickerData);
-                    // FORCE RESET: Clear old stored data and use updated initialLeagueSchedule
-                    console.log('🔧 DEBUG: Forcing league schedule reset to use updated dates');
+                    // FORCE RESET: Always use updated initialLeagueSchedule with current dates
+                    console.log('🔧 DEBUG: Forcing league schedule to use updated September dates');
+                    console.log('🔧 DEBUG: InitialLeagueSchedule has dates:', initialLeagueSchedule.map(e => e.date));
                     localStorage.removeItem('mlbl_leagueSchedule');
+                    
+                    // Force overwrite any existing data
                     setLeagueSchedule(initialLeagueSchedule);
                     setStoredData('mlbl_leagueSchedule', initialLeagueSchedule);
+                    
+                    // Double-check by logging what we set
+                    setTimeout(() => {
+                        const verifyData = getStoredData('mlbl_leagueSchedule', []);
+                        console.log('🔧 DEBUG: Verified stored data has dates:', verifyData.map(e => e.date));
+                    }, 1000);
                     setUsers(storedUsers);
                     setLeagueInfo(getStoredData('mlbl_leagueInfo', leagueInfo));
                     // Fix localStorage fallback for websiteStyle persistence
