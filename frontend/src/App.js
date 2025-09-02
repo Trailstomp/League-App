@@ -6865,7 +6865,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                                         {location.name} {!isTeamSpecific ? `(${location.teamName})` : ''}
                                     </option>
                                 ));
-                            })()}
+                            })}
                             <option value="custom">+ Add Custom Location</option>
                         </select>
                         
