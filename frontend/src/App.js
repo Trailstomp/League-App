@@ -10219,7 +10219,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
             <div 
                 className="fixed left-0 right-0 z-30 bg-white flex border-b shadow-sm px-4 md:px-8 py-2 transition-all duration-300 ease-in-out"
                 style={{ 
-                    top: `${headerHeight + 16}px`, // Add 16px buffer below ticker
+                    top: `${headerHeight + 24}px`, // Add 24px buffer below ticker
                     marginLeft: isMenuOpen ? '256px' : '0px' 
                 }}
             >
