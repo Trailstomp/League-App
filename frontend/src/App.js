@@ -10353,6 +10353,11 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                     {(team.style?.visibleTabs?.stats !== false) && <TeamTab tabName="stats" label="Stats" />}
                     {(team.style?.visibleTabs?.schedule !== false) && <TeamTab tabName="schedule" label="Schedule" />}
                     {(team.style?.visibleTabs?.media !== false) && <TeamTab tabName="media" label="Photos & Videos" />}
+                    
+                    {/* Locations Management Tab for Authorized Team Managers */}
+                    {isAuthorizedToManage && (
+                        <TeamTab tabName="locations" label="Locations" />
+                    )}
                     {(team.style?.visibleTabs?.social !== false) && <TeamTab tabName="social" label="Social" />}
                     {(team.style?.visibleTabs?.groupme !== false) && <TeamTab tabName="groupme" label="GroupMe" />}
                     {(team.style?.visibleTabs?.contact !== false) && <TeamTab tabName="contact" label="Contact" />}
