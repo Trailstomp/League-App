@@ -10083,10 +10083,35 @@ const FriendsSponsorsTab = ({
 
 const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, setPlayers, setTeams, websiteStyle, playMusic, stopAllMusic, musicState, getTeamNewsItems, addTeamNewsItem, updateTeamNewsItem, deleteTeamNewsItem, setSelectedNewsItem, friends, sponsors, setFriends, setSponsors, onEventClick, isMenuOpen }) => {
     const [headerHeight, setHeaderHeight] = useState(120); // Default fallback
+    const [activeTab, setActiveTab] = useState('home');
+
+    // Dynamically calculate header height to position nav tabs correctly
+    useEffect(() => {
+        const calculateHeaderHeight = () => {
+            const header = document.querySelector('header');
+            if (header) {
+                const rect = header.getBoundingClientRect();
+                setHeaderHeight(rect.height);
+            }
+        };
+
+        calculateHeaderHeight();
+        
+        // Recalculate on window resize
+        window.addEventListener('resize', calculateHeaderHeight);
+        
+        // Recalculate after a short delay to account for dynamic content
+        const timeout = setTimeout(calculateHeaderHeight, 500);
+
+        return () => {
+            window.removeEventListener('resize', calculateHeaderHeight);
+            clearTimeout(timeout);
+        };
+    }, []);
+
     const team = teams.find(t => t.id === teamId);
     const teamPlayers = players.filter(p => p.teams.includes(teamId) && p.active);
     const teamNewsItems = getTeamNewsItems(teamId);
-    const [activeTab, setActiveTab] = useState('home');
     const [selectedPlayer, setSelectedPlayer] = useState(null);
     const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
     const [selectedImagePopup, setSelectedImagePopup] = useState(null);
