@@ -18930,6 +18930,8 @@ function App() {
                                         teamLogo: teams.find(t => t.id === editingEvent.teamId)?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
                                     };
                                     console.log('New event data:', newEvent);
+                                    console.log('🔍 SAVE DEBUG - newEvent.imageUrl:', newEvent.imageUrl);
+                                    console.log('🔍 SAVE DEBUG - newEvent.teamIds:', newEvent.teamIds);
                                     setLeagueSchedule(prev => [...prev, newEvent]);
                                 } else {
                                     // Updating existing event
