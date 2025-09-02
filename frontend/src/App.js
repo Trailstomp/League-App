@@ -7206,7 +7206,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                                             <label key={team.id} className="flex items-center space-x-2 hover:bg-white p-1 rounded">
                                                 <input
                                                     type="checkbox"
-                                                    checked={(editingEvent?.teamIds || []).includes(team.id)}
+                                                    checked={safeEditingEvent.teamIds.includes(team.id)}
                                                     onChange={(e) => {
                                                         const teamIds = editingEvent?.teamIds || [];
                                                         const newTeamIds = e.target.checked
