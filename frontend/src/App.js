@@ -5998,9 +5998,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                     <div className="space-y-4">
                         {(() => {
                             const upcomingEvents = displayEvents.filter(event => new Date(event.date) >= new Date());
-                            console.log('🔧 DEBUG: EventsPage - Display events before final filter:', displayEvents.map(e => ({id: e.id, type: e.type, date: e.date, title: e.title})));
-                            console.log('🔧 DEBUG: EventsPage - Upcoming events after final filter:', upcomingEvents.map(e => ({id: e.id, type: e.type, date: e.date, title: e.title})));
-                            console.log('🔧 DEBUG: EventsPage - Current date for comparison:', new Date());
+
                             return upcomingEvents.length > 0 ? upcomingEvents.slice(0, 10).map(event => {
                             if (event.allTeams && event.allTeams.length > 1) {
                                 // Tournament summary card
