@@ -10550,19 +10550,43 @@ const TournamentBracketManager = ({ event, teams, onUpdateEvent, onClose }) => {
                                         
                                         {/* Team 1 */}
                                         <div className="flex items-center justify-between mb-2">
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-2 flex-1">
                                                 <img 
                                                     src={match.team1?.logo || match.team1?.style?.logoUrl || 'https://placehold.co/32x32?text=T1'} 
                                                     alt={match.team1?.name} 
                                                     className="w-6 h-6 rounded-full" 
                                                 />
-                                                <span className="font-medium">{match.team1?.name}</span>
+                                                <select
+                                                    value={match.team1?.id || ''}
+                                                    onChange={(e) => updateMatch(match.id, 'team1', e.target.value)}
+                                                    className="flex-1 p-1 border rounded text-sm"
+                                                >
+                                                    <option value="">Select Team 1</option>
+                                                    {/* League Teams First */}
+                                                    <optgroup label="League Teams">
+                                                        {sortedTeams.filter(t => !t.isExternal).map(team => (
+                                                            <option key={team.id} value={team.id}>
+                                                                {team.name}
+                                                            </option>
+                                                        ))}
+                                                    </optgroup>
+                                                    {/* Non-League Teams at the End */}
+                                                    {sortedTeams.filter(t => t.isExternal).length > 0 && (
+                                                        <optgroup label="Non-League Teams">
+                                                            {sortedTeams.filter(t => t.isExternal).map(team => (
+                                                                <option key={team.id} value={team.id}>
+                                                                    {team.name}
+                                                                </option>
+                                                            ))}
+                                                        </optgroup>
+                                                    )}
+                                                </select>
                                             </div>
                                             <input
                                                 type="number"
                                                 value={bracket[match.id]?.score1 || 0}
                                                 onChange={(e) => updateMatch(match.id, 'score1', parseInt(e.target.value) || 0)}
-                                                className="w-16 p-1 border rounded text-center"
+                                                className="w-16 p-1 border rounded text-center ml-2"
                                                 min="0"
                                             />
                                         </div>
