@@ -659,23 +659,20 @@ frontend:
         agent: "main"
         comment: "🎉 IMAGE DISTORTION FIXED: 1) Added object-contain CSS class to ALL team logo img elements throughout the application 2) Fixed team header logo (most visible distortion) 3) Fixed sidebar navigation team logos (Field & Box lacrosse sections) 4) Fixed standings table team logos 5) Fixed schedule/game display logos (w-12 h-12 and w-16 h-16) 6) Fixed event listing logos 7) Fixed team management list logos 8) Images now maintain native aspect ratio in all containers 9) FileUploadInput already had object-contain for previews 10) Crop tool handles reshaping as intended - distortion completely eliminated across all logo displays. Native aspect ratios preserved!"
 
-  - task: "Implement Seasons Infrastructure for League Management"
-    implemented: true
-    working: true
+  - task: "Fix duplicate photo upload sections in EventForm causing image editing issues"
+    implemented: false
+    working: false
     file: "frontend/src/App.js"
     stuck_count: 0
-    priority: "high"
-    needs_retesting: false
+    priority: "critical"
+    needs_retesting: true
     status_history:
       - working: false
         agent: "user"
-        comment: "User requested comprehensive seasons infrastructure to manage multiple seasons with custom rosters, port forward functionality, historical stats, and tournament bracket foundation. This is critical for expandability and future SaaS development."
+        comment: "User reported critical event editing bugs: 1) Event image not visible/editable during editing 2) Team selections not persisting 3) Cannot edit team or location fields 4) Bracket scoring issues if not set at scheduling time. Initial investigation identified duplicate photo upload sections at lines 7117-7141 and 7349-7373."
       - working: false
         agent: "main"
-        comment: "IMPLEMENTATION STARTED: Designed seasons architecture with season-specific rosters, custom naming, roster porting between seasons, historical data preservation, and tournament bracket foundation. Created SeasonManager component with full CRUD operations, data migration system, and integration with existing state management."
-      - working: true
-        agent: "main"
-        comment: "🎉 SEASONS INFRASTRUCTURE COMPLETE: 1) SeasonManager component with create/edit/delete/activate seasons 2) Season-specific rosters with port forward functionality 3) Data migration system to move current data to 'Current Season 2024' 4) Comprehensive state management (seasons, currentSeason) 5) Auto-save functionality for seasons persistence 6) Admin portal integration with dedicated Seasons tab 7) API and localStorage persistence support 8) Historical stats foundation 9) Tournament bracket structure ready 10) Clean UI with status indicators and action buttons 11) Full data model supporting teams, schedules, standings per season 12) Ready for SaaS multi-tenant expansion. FOUNDATION SET for advanced league management!"
+        comment: "INVESTIGATION: Found two identical photo upload sections in EventForm component: First section (lines 7117-7141) after Game Status field, Second section (lines 7349-7373) near end of form before Save/Cancel buttons. This duplication is likely causing state conflicts and form issues. About to remove duplicate and implement single, properly positioned photo upload section."
 
 backend:
   - task: "Backend API functionality"
