@@ -6947,7 +6947,11 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                             <input 
                                 type="text" 
                                 value={editingEvent?.customLocation || ''} 
-                                onChange={e => setEditingEvent(prev => ({...prev, customLocation: e.target.value}))} 
+                                onChange={e => setEditingEvent(prev => ({
+                                    ...prev, 
+                                    customLocation: e.target.value,
+                                    location: e.target.value || 'custom' // Use custom location text as the main location
+                                }))} 
                                 placeholder="Enter custom location" 
                                 className="w-full p-2 border rounded mt-2" 
                                 required
