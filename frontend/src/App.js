@@ -3014,6 +3014,8 @@ const initialLeagueSchedule = [
     }
 ];
 
+console.log('🔧 DEBUG: Initial League Schedule:', initialLeagueSchedule);
+
 const newsFeed = [
     { id: 1, title: 'American Dads Dominate Dayton Classic', date: '2025-08-10', snippet: 'The American Dads team swept the competition at the Dayton Classic tournament this past weekend, securing the championship with a decisive 13-5 victory...' },
     { id: 2, title: 'Indy Gauntlet Tournament Recap', date: '2025-08-03', snippet: 'OH10 and the Indy Lacers came out on top in a hard-fought weekend of lacrosse at the Indy Gauntlet tournament...' },
