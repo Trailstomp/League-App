@@ -6993,7 +6993,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                     <textarea 
-                        value={editingEvent?.description || ''} 
+                        value={safeEditingEvent.description} 
                         onChange={e => setEditingEvent(prev => ({...prev, description: e.target.value}))} 
                         placeholder="Enter event description (optional)" 
                         className="w-full p-2 border rounded" 
