@@ -2945,7 +2945,7 @@ const ClickableLocation = ({ locationName, teams, className = "", children }) =>
 
 // --- DATA IMPORTED FROM SPREADSHEETS ---
 const initialMockUsers = [
-    { id: 1, name: 'Admin Ali', roleIds: ['super_admin'], teamId: null, email: 'admin@mlbl.org', roles: ['admin'], status: 'active', createdAt: '2024-01-01' },
+    { id: 1, name: 'Admin Ali', roleIds: ['super_admin'], teamId: null, email: 'admin@mlbl.org', role: 'admin', roles: ['admin'], status: 'active', createdAt: '2024-01-01' },
     { id: 2, name: 'Coach Chandler (OH10)', roleIds: ['team_coach'], teamId: 'oh10-lacrosse', email: 'cschrudder23@gmail.com', roles: ['coach'], status: 'active', createdAt: '2024-01-15' },
     { id: 3, name: 'Player Pat (Dayton)', roleIds: ['player'], teamId: 'dayton-eagles', email: 'pat@test.com', roles: ['player'], status: 'active', createdAt: '2024-02-01' },
     { id: 4, name: 'Coach Dave (Dads)', roleIds: ['team_coach'], teamId: 'american-dads', email: 'dave@test.com', roles: ['coach'], status: 'active', createdAt: '2024-02-15' },
