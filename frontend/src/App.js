@@ -12427,7 +12427,9 @@ const TeamManager = ({ teams, setTeams, websiteStyle, seasons = [], currentSeaso
                 </button>
             </div>
              <ul className="mt-4 space-y-2">
-                {teams.map(t => (
+                {teams
+                    .filter(t => showExternalTeams ? t.isExternal : !t.isExternal)
+                    .map(t => (
                     <li key={t.id} className={`flex items-center p-3 border rounded-lg bg-white shadow-sm ${!t.active && 'opacity-50 bg-slate-100'}`}>
                         <div className="flex-grow flex items-center gap-3">
                             <img src={t.logo} alt={t.name} className="w-8 h-8 rounded-full bg-white p-1 object-contain" />
