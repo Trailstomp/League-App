@@ -17441,6 +17441,7 @@ function App() {
     
     // Event editing state
     const [editingEvent, setEditingEvent] = useState(null);
+    const [bracketEvent, setBracketEvent] = useState(null);
 
     // Event detail handlers
     const handleEventClick = (event) => {
