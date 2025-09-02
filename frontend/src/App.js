@@ -10215,11 +10215,11 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
 
     return (
         <div className="min-h-screen" style={teamBackgroundStyle}>
-            {/* Navigation tabs - dynamically positioned below header and ticker */}
+            {/* Navigation tabs - dynamically positioned below header and ticker with buffer */}
             <div 
                 className="fixed left-0 right-0 z-30 bg-white flex border-b shadow-sm px-4 md:px-8 py-2 transition-all duration-300 ease-in-out"
                 style={{ 
-                    top: `${headerHeight}px`,
+                    top: `${headerHeight + 16}px`, // Add 16px buffer below ticker
                     marginLeft: isMenuOpen ? '256px' : '0px' 
                 }}
             >
