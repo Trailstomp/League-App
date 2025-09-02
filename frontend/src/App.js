@@ -6913,7 +6913,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Event Type</label>
                         <select 
-                            value={editingEvent?.type || 'practice'} 
+                            value={safeEditingEvent.type} 
                             onChange={e => setEditingEvent(prev => ({...prev, type: e.target.value}))} 
                             className="w-full p-2 border rounded"
                         >
