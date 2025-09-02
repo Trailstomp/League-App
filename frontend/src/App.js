@@ -17766,9 +17766,7 @@ function App() {
                                 {(team?.style?.visibleTabs?.home !== false) && (
                                     <button 
                                         onClick={() => navigate('team', selectedTeam, 'home')}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                            teamActiveTab === 'home' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                                        }`}
+                                        className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
                                     >
                                         Home
                                     </button>
@@ -17776,9 +17774,7 @@ function App() {
                                 {(team?.style?.visibleTabs?.roster !== false) && (
                                     <button 
                                         onClick={() => navigate('team', selectedTeam, 'roster')}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                            teamActiveTab === 'roster' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                                        }`}
+                                        className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
                                     >
                                         Roster
                                     </button>
@@ -17786,9 +17782,7 @@ function App() {
                                 {(team?.style?.visibleTabs?.stats !== false) && (
                                     <button 
                                         onClick={() => navigate('team', selectedTeam, 'stats')}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                            teamActiveTab === 'stats' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                                        }`}
+                                        className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
                                     >
                                         Stats
                                     </button>
@@ -17796,9 +17790,7 @@ function App() {
                                 {(team?.style?.visibleTabs?.schedule !== false) && (
                                     <button 
                                         onClick={() => navigate('team', selectedTeam, 'schedule')}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                            teamActiveTab === 'schedule' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                                        }`}
+                                        className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
                                     >
                                         Schedule
                                     </button>
@@ -17806,9 +17798,7 @@ function App() {
                                 {(team?.style?.visibleTabs?.media !== false) && (
                                     <button 
                                         onClick={() => navigate('team', selectedTeam, 'media')}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                            teamActiveTab === 'media' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                                        }`}
+                                        className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
                                     >
                                         Photos & Videos
                                     </button>
@@ -17816,9 +17806,7 @@ function App() {
                                 {(team?.style?.visibleTabs?.social !== false) && (
                                     <button 
                                         onClick={() => navigate('team', selectedTeam, 'social')}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                            teamActiveTab === 'social' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                                        }`}
+                                        className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
                                     >
                                         Social
                                     </button>
@@ -17826,9 +17814,7 @@ function App() {
                                 {(team?.style?.visibleTabs?.groupme !== false) && (
                                     <button 
                                         onClick={() => navigate('team', selectedTeam, 'groupme')}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                            teamActiveTab === 'groupme' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                                        }`}
+                                        className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
                                     >
                                         GroupMe
                                     </button>
@@ -17836,9 +17822,7 @@ function App() {
                                 {(team?.style?.visibleTabs?.contact !== false) && (
                                     <button 
                                         onClick={() => navigate('team', selectedTeam, 'contact')}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                            teamActiveTab === 'contact' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                                        }`}
+                                        className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
                                     >
                                         Contact
                                     </button>
@@ -17846,9 +17830,7 @@ function App() {
                                 
                                 <button 
                                     onClick={() => navigate('team', selectedTeam, 'friends')}
-                                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                        teamActiveTab === 'friends' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                                    }`}
+                                    className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
                                 >
                                     Friends & Sponsors
                                 </button>
@@ -17856,9 +17838,7 @@ function App() {
                                 {isAuthorizedToManage && (
                                     <button 
                                         onClick={() => navigate('team', selectedTeam, 'teamstyle')}
-                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                            teamActiveTab === 'teamstyle' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                                        }`}
+                                        className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
                                     >
                                         Team Style
                                     </button>
