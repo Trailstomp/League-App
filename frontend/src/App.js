@@ -3440,8 +3440,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
             }
         });
 
-        console.log('🔧 DEBUG: GameTicker - All ticker items before filtering:', allTickerItems);
-        console.log('🔧 DEBUG: GameTicker - Date range:', { lookBackDate, lookForwardDate });
+
         
         // Apply date range filtering
         const gamesWithDates = allTickerItems.filter(item => {
