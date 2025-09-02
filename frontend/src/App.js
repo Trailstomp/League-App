@@ -7138,7 +7138,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                                         type="checkbox"
                                         checked={(() => {
                                             const leagueTeams = teams.filter(t => t.active && !t.isExternal);
-                                            const selectedLeagueTeams = safeEditingEvent.teamIds.filter(id => 
+                                            const selectedLeagueTeams = (editingEvent?.teamIds || []).filter(id => 
                                                 leagueTeams.some(team => team.id === id)
                                             );
                                             return leagueTeams.length > 0 && selectedLeagueTeams.length === leagueTeams.length;
