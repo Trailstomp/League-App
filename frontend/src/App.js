@@ -18165,12 +18165,7 @@ function App() {
                                 e.preventDefault();
                                 console.log('Save handler called with editingEvent:', editingEvent);
                                 
-                                // Validate required fields for tournaments
-                                if (editingEvent?.type === 'tournament' && !editingEvent?.tournamentName) {
-                                    console.error('Tournament name is required but missing');
-                                    alert('Tournament name is required for tournament events');
-                                    return;
-                                }
+                                // Tournament events will use the event title as tournament name
                                 
                                 // Check if this is a new event vs existing event
                                 // New events either have no id or an id that starts with 'event_' (temporary)
