@@ -7145,7 +7145,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                                         })()}
                                         onChange={(e) => {
                                             const leagueTeams = teams.filter(t => t.active && !t.isExternal);
-                                            const currentTeamIds = safeEditingEvent.teamIds;
+                                            const currentTeamIds = editingEvent?.teamIds || [];
                                             const externalTeamIds = currentTeamIds.filter(id => 
                                                 teams.some(team => team.id === id && team.isExternal)
                                             );
