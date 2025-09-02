@@ -6966,7 +6966,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                         {safeEditingEvent.location === 'custom' && (
                             <input 
                                 type="text" 
-                                value={editingEvent?.customLocation || ''} 
+                                value={safeEditingEvent.customLocation} 
                                 onChange={e => setEditingEvent(prev => ({
                                     ...prev, 
                                     customLocation: e.target.value
