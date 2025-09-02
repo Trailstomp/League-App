@@ -10448,6 +10448,15 @@ const TournamentBracketManager = ({ event, teams, onUpdateEvent, onClose }) => {
     
     const eventTeams = (event.teamIds || []).map(id => teams.find(t => t.id === id)).filter(Boolean);
     
+    // Sort teams with non-league teams at the end
+    const sortedTeams = teams.filter(t => t.active).sort((a, b) => {
+        // Non-league teams go to the end
+        if (a.isExternal && !b.isExternal) return 1;
+        if (!a.isExternal && b.isExternal) return -1;
+        // Otherwise sort alphabetically
+        return a.name.localeCompare(b.name);
+    });
+    
     useEffect(() => {
         // Initialize bracket structure
         if (eventTeams.length > 0) {
@@ -10487,6 +10496,25 @@ const TournamentBracketManager = ({ event, teams, onUpdateEvent, onClose }) => {
                 [field]: value
             }
         }));
+        
+        // If updating team1 or team2, also update the rounds state
+        if (field === 'team1' || field === 'team2') {
+            setRounds(prevRounds => {
+                return prevRounds.map(round => ({
+                    ...round,
+                    matches: round.matches.map(match => {
+                        if (match.id === matchId) {
+                            const selectedTeam = value ? teams.find(t => t.id === value) : null;
+                            return {
+                                ...match,
+                                [field]: selectedTeam
+                            };
+                        }
+                        return match;
+                    })
+                }));
+            });
+        }
     };
     
     const saveBracket = () => {
