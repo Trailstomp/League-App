@@ -7253,7 +7253,8 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
             </form>
         </div>
     </div>
-);
+    );
+};
 
 const TeamCalendarManager = ({ team, teams, setTeams, websiteStyle }) => {
     const [editingEvent, setEditingEvent] = useState(null);
