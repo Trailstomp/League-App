@@ -6861,6 +6861,12 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
         status: 'scheduled',
         ...editingEvent
     };
+    
+    // Debug: Log form data
+    console.log('📝 EVENTFORM DEBUG - editingEvent received:', editingEvent);
+    console.log('📝 EVENTFORM DEBUG - safeEditingEvent created:', safeEditingEvent);
+    console.log('📝 imageUrl in safeEditingEvent:', safeEditingEvent.imageUrl);
+    console.log('📝 teamIds in safeEditingEvent:', safeEditingEvent.teamIds);
 
     return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
