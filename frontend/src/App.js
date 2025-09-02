@@ -18874,6 +18874,21 @@ function App() {
                     </div>
                 </div>
             )}
+            
+            {/* Tournament Bracket Modal */}
+            {bracketEvent && (
+                <TournamentBracketManager
+                    event={bracketEvent}
+                    teams={teams}
+                    onUpdateEvent={(updatedEvent) => {
+                        setLeagueSchedule(prev => 
+                            prev.map(e => e.id === updatedEvent.id ? updatedEvent : e)
+                        );
+                        setBracketEvent(null);
+                    }}
+                    onClose={() => setBracketEvent(null)}
+                />
+            )}
         </div>
     );
 }
