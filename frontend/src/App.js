@@ -7073,8 +7073,12 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                                                 type="button"
                                                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                                                 onClick={() => {
-                                                    // TODO: Open bracket management tool
-                                                    alert('Bracket management tool coming soon!');
+                                                    // Save current event first
+                                                    const eventWithBracket = {
+                                                        ...editingEvent,
+                                                        id: editingEvent.id || `event_${Date.now()}`
+                                                    };
+                                                    setBracketEvent(eventWithBracket);
                                                 }}
                                             >
                                                 Manage Bracket
