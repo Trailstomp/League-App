@@ -6294,7 +6294,7 @@ const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
     
     const boxTeams = teams.filter(t => t.active && t.division === 'Box' && !t.isExternal).sort((a, b) => {
         const scoreA = a.wins * 2 + a.ties;
-        const scoreB = b.wins * 2 + b.tips;
+        const scoreB = b.wins * 2 + b.ties;
         if (scoreA !== scoreB) return scoreB - scoreA;
         return (b.pf - b.pa) - (a.pf - a.pa);
     });
