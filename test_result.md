@@ -660,16 +660,19 @@ frontend:
         comment: "🎉 IMAGE DISTORTION FIXED: 1) Added object-contain CSS class to ALL team logo img elements throughout the application 2) Fixed team header logo (most visible distortion) 3) Fixed sidebar navigation team logos (Field & Box lacrosse sections) 4) Fixed standings table team logos 5) Fixed schedule/game display logos (w-12 h-12 and w-16 h-16) 6) Fixed event listing logos 7) Fixed team management list logos 8) Images now maintain native aspect ratio in all containers 9) FileUploadInput already had object-contain for previews 10) Crop tool handles reshaping as intended - distortion completely eliminated across all logo displays. Native aspect ratios preserved!"
 
   - task: "Fix event team selection and score saving issues + improve bracket team editing"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
         comment: "User reported two new issues: 1) Adding teams when creating event on details page and adding score did not save - team selections and scores not persisting 2) When putting bracket together, need ability to edit teams with dropdown list and put non-league teams at the end of dropdown lists."
+      - working: true
+        agent: "main"
+        comment: "🎉 BOTH ISSUES COMPLETELY RESOLVED: 1) TEAM SELECTION & SCORE SAVING FIXED: Fixed inconsistent use of safeEditingEvent vs editingEvent in form fields - scores now use editingEvent?.homeScore || safeEditingEvent.homeScore for proper state synchronization, team checkboxes now use (editingEvent?.teamIds || safeEditingEvent.teamIds) for consistent selection state 2) BRACKET TEAM EDITING ENHANCED: Added dropdown selectors to replace static team names in TournamentBracketManager, implemented team sorting with non-league teams at end using optgroups (League Teams first, Non-League Teams second), added real-time bracket state updates when teams are changed 3) Application tested successfully with no console errors. Both event creation/editing and bracket management now work as expected!"
 
   - task: "Fix duplicate photo upload sections in EventForm causing image editing issues"
     implemented: true
