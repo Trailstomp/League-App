@@ -6992,6 +6992,118 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                         rows="3"
                     />
                 </div>
+
+                {/* Scoring Section - Show for games and tournaments */}
+                {(safeEditingEvent.type === 'game' || safeEditingEvent.type === 'tournament') && (
+                    <div className="border-t pt-4 mt-4">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <Trophy className="mr-2" size={20} />
+                            Game Scoring
+                        </h4>
+                        
+                        {/* Determine if this is a 2-team game or multi-team tournament */}
+                        {(() => {
+                            const selectedTeams = safeEditingEvent.teamIds || [];
+                            const teamObjects = selectedTeams.map(id => teams.find(t => t.id === id)).filter(Boolean);
+                            
+                            if (selectedTeams.length === 2) {
+                                // Two-team game scoring
+                                return (
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="text-center">
+                                            <label className="block font-medium mb-2">
+                                                {teamObjects[0]?.name || 'Team 1'} Score
+                                            </label>
+                                            <input
+                                                type="number"
+                                                value={safeEditingEvent.homeScore || ''}
+                                                onChange={(e) => setEditingEvent(prev => ({
+                                                    ...prev, 
+                                                    homeScore: parseInt(e.target.value) || 0,
+                                                    homeTeam: selectedTeams[0]
+                                                }))}
+                                                className="w-full p-3 border rounded text-xl text-center"
+                                                min="0"
+                                                placeholder="0"
+                                            />
+                                        </div>
+                                        <div className="text-center">
+                                            <label className="block font-medium mb-2">
+                                                {teamObjects[1]?.name || 'Team 2'} Score
+                                            </label>
+                                            <input
+                                                type="number"
+                                                value={safeEditingEvent.awayScore || ''}
+                                                onChange={(e) => setEditingEvent(prev => ({
+                                                    ...prev, 
+                                                    awayScore: parseInt(e.target.value) || 0,
+                                                    awayTeam: selectedTeams[1]
+                                                }))}
+                                                className="w-full p-3 border rounded text-xl text-center"
+                                                min="0"
+                                                placeholder="0"
+                                            />
+                                        </div>
+                                    </div>
+                                );
+                            } else if (selectedTeams.length > 2) {
+                                // Multi-team tournament - show bracket indication
+                                return (
+                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <h5 className="font-semibold text-blue-800">Tournament Bracket</h5>
+                                                <p className="text-sm text-blue-600">
+                                                    {selectedTeams.length} teams selected - Use bracket system for scoring
+                                                </p>
+                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                    {teamObjects.map(team => (
+                                                        <span key={team.id} className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                                                            {team.name}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                                onClick={() => {
+                                                    // TODO: Open bracket management tool
+                                                    alert('Bracket management tool coming soon!');
+                                                }}
+                                            >
+                                                Manage Bracket
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            } else {
+                                // Need more teams for scoring
+                                return (
+                                    <div className="text-center py-4 text-gray-500">
+                                        <p>Select teams above to enable scoring</p>
+                                    </div>
+                                );
+                            }
+                        })()}
+                        
+                        {/* Game Status */}
+                        <div className="mt-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Game Status</label>
+                            <select 
+                                value={safeEditingEvent.status || 'scheduled'} 
+                                onChange={e => setEditingEvent(prev => ({...prev, status: e.target.value}))} 
+                                className="w-full p-2 border rounded"
+                            >
+                                <option value="scheduled">Scheduled</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                                <option value="postponed">Postponed</option>
+                            </select>
+                        </div>
+                    </div>
+                )}
                 
                 {/* Event Photo Upload */}
                 <div>
