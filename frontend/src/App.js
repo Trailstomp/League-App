@@ -6351,6 +6351,57 @@ const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
             <h1 className="text-4xl font-bold text-slate-800 mb-6 tracking-tight">League Standings</h1>
             {fieldTeams.length > 0 && renderStandingsTable(fieldTeams, 'Field')}
             {boxTeams.length > 0 && renderStandingsTable(boxTeams, 'Box')}
+            
+            {/* External/Non-League Teams Section */}
+            {externalTeams.length > 0 && (
+                <div className="mt-8">
+                    <h2 className="text-2xl font-bold text-slate-700 mb-4 flex items-center">
+                        <Globe className="mr-2" size={24} />
+                        External Teams (Non-League)
+                    </h2>
+                    <div className="bg-white rounded-lg shadow-md overflow-x-auto">
+                        <div className="p-4 bg-blue-50 border-b">
+                            <p className="text-sm text-blue-700">
+                                <Info className="inline mr-2" size={16} />
+                                These teams are available for scheduling games but do not count towards league standings.
+                            </p>
+                        </div>
+                        <table className="w-full table-auto">
+                            <thead className="bg-slate-100 text-slate-600 uppercase text-sm leading-normal">
+                                <tr>
+                                    <th className="py-3 px-6 text-left">Team</th>
+                                    <th className="py-3 px-6 text-center">Location</th>
+                                    <th className="py-3 px-6 text-center">Contact</th>
+                                    <th className="py-3 px-6 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody className="text-slate-700 text-sm font-light">
+                                {externalTeams.map((team) => (
+                                    <tr key={team.id} className="border-b border-slate-200 hover:bg-slate-50">
+                                        <td className="py-3 px-6 text-left whitespace-nowrap">
+                                            <div className="flex items-center">
+                                                <img src={team.logo || 'https://picsum.photos/40/40?random=external'} alt={team.name} className="w-8 h-8 rounded-full mr-3" />
+                                                <span className="font-medium">{team.name}</span>
+                                            </div>
+                                        </td>
+                                        <td className="py-3 px-6 text-center">
+                                            {team.locations?.[0]?.address || 'TBD'}
+                                        </td>
+                                        <td className="py-3 px-6 text-center">
+                                            {team.contactEmail || 'N/A'}
+                                        </td>
+                                        <td className="py-3 px-6 text-center">
+                                            <span className="bg-blue-100 text-blue-800 py-1 px-2 rounded-full text-xs">
+                                                Available
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
