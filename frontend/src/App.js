@@ -12389,8 +12389,42 @@ const TeamManager = ({ teams, setTeams, websiteStyle, seasons = [], currentSeaso
                     currentSeason={currentSeason}
                 />
             )}
-            <div className="flex justify-end mb-4">
-                <button onClick={() => setEditingTeam({name: '', contactEmail: '', division: 'Field', seasonId: currentSeason || ''})} className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"><Plus className="mr-2 h-4 w-4"/> Add Team</button>
+            <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-2">
+                        <input
+                            type="radio"
+                            name="teamType"
+                            checked={!showExternalTeams}
+                            onChange={() => setShowExternalTeams(false)}
+                            className="rounded"
+                        />
+                        <span>League Teams</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                        <input
+                            type="radio"
+                            name="teamType"
+                            checked={showExternalTeams}
+                            onChange={() => setShowExternalTeams(true)}
+                            className="rounded"
+                        />
+                        <span>External Teams</span>
+                    </label>
+                </div>
+                <button 
+                    onClick={() => setEditingTeam({
+                        name: '', 
+                        contactEmail: '', 
+                        division: showExternalTeams ? 'External' : 'Field', 
+                        isExternal: showExternalTeams,
+                        seasonId: currentSeason || ''
+                    })} 
+                    className="bg-red-800 text-white px-4 py-2 rounded hover:bg-red-900 flex items-center"
+                >
+                    <Plus className="mr-2 h-4 w-4"/> 
+                    Add {showExternalTeams ? 'External' : 'League'} Team
+                </button>
             </div>
              <ul className="mt-4 space-y-2">
                 {teams.map(t => (
