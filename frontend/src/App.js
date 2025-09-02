@@ -6963,7 +6963,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                             <option value="custom">+ Add Custom Location</option>
                         </select>
                         
-                        {safeEditingEvent.location === 'custom' && (
+                        {(safeEditingEvent.location === 'custom' || safeEditingEvent.customLocation) && (
                             <input 
                                 type="text" 
                                 value={safeEditingEvent.customLocation} 
