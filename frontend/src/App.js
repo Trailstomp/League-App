@@ -3664,7 +3664,14 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
                                 </div>
                                 <div className="mb-2">
                                     <div className="text-lg font-bold text-white mb-1">{item.tournamentName}</div>
-                                    <div className="text-sm text-yellow-300">{completedGames.length}/{totalGames} Games Complete</div>
+                                    <div className="text-sm text-yellow-300 mb-1">{completedGames.length}/{totalGames} Games Complete</div>
+                                    <div className="text-xs text-slate-300">
+                                        Teams: {item.games.map(g => {
+                                            const team = teams.find(t => t.id === g.homeTeam);
+                                            return team ? team.name : 'Unknown';
+                                        }).filter((name, index, self) => self.indexOf(name) === index).slice(0, 3).join(', ')}
+                                        {item.games.length > 3 ? '...' : ''}
+                                    </div>
                                 </div>
                                 <div className="flex justify-between items-center text-xs">
                                     <span className="font-semibold" style={{ color: websiteStyle?.tickerTextColor || '#94a3b8' }}>
