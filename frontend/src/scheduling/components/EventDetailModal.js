@@ -161,7 +161,8 @@ const EventDetailModal = ({
                             getTeamInfo={getTeamInfo}
                             editMode={editMode}
                             userCanEdit={userCanEdit}
-                            onUpdateGameStats={onUpdateRSVP} // Reuse for now, will need dedicated handler
+                            onUpdateGameStats={onUpdateGameStats}
+                            gameStats={gameStats}
                         />
                     )}
 
@@ -171,7 +172,8 @@ const EventDetailModal = ({
                             teams={teams}
                             editMode={editMode}
                             userCanEdit={userCanEdit}
-                            onUpdateTournament={onUpdateRSVP} // Reuse for now, will need dedicated handler
+                            onUpdateTournament={onUpdateTournament}
+                            tournamentData={tournamentData}
                         />
                     )}
                 </div>
