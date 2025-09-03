@@ -1408,16 +1408,8 @@ const getLogoStyle = (websiteStyle) => {
 // the new modular EventDetailModal from ./scheduling/components/EventDetailModal.js
 
 // Old EventDetailModal and corrupted components removed - see proper implementations below
-                        )}
-                    </div>
-                </div>
-                
-                {/* Tab Content */}
-                <div className="flex-1 overflow-y-auto p-6">
-                    {activeTab === 'details' && (
-                        <EventDetailsTab event={event} isAuthorized={isAuthorized} onUpdateEvent={onUpdateEvent} onDeleteEvent={onDeleteEvent} currentUser={currentUser} />
-                    )}
-                    {activeTab === 'scores' && (
+
+// File Upload Component
                         <EventScoresTab event={event} teams={teams} isAuthorized={isAuthorized} onUpdateEvent={onUpdateEvent} />
                     )}
                     {activeTab === 'stats' && (
