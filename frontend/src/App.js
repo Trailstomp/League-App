@@ -13041,7 +13041,7 @@ const UserManager = ({ users, setUsers, teams }) => {
                         <div className="grid grid-cols-2 gap-2">
                            {['player', 'coach', 'player/coach', 'admin'].map(role => (
                                <label key={role} className="flex items-center space-x-2">
-                                   <input type="checkbox" checked={editingUser.roles.includes(role)} onChange={e => handleRoleChange(role, e.target.checked)} />
+                                   <input type="checkbox" checked={editingUser.roles && editingUser.roles.includes(role)} onChange={e => handleRoleChange(role, e.target.checked)} />
                                    <span className="capitalize">{role}</span>
                                </label>
                            ))}
