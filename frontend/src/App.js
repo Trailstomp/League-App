@@ -7005,11 +7005,17 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
     
     // Update parent state when local team selection changes
     useEffect(() => {
+        const sortedTeamIds = [...selectedTeamIds].sort((a, b) => {
+            const teamA = teams.find(t => t.id === a);
+            const teamB = teams.find(t => t.id === b);
+            return (teamA?.name || '').localeCompare(teamB?.name || '');
+        });
+        
         setEditingEvent(prev => ({
             ...prev,
-            teamIds: selectedTeamIds
+            teamIds: sortedTeamIds
         }));
-    }, [selectedTeamIds, setEditingEvent]);
+    }, [selectedTeamIds, setEditingEvent, teams]);
     
     console.log('🚀 NEW APPROACH - safeEditingEvent with local teamIds:', safeEditingEvent.teamIds);
 
