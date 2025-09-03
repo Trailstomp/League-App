@@ -16900,6 +16900,38 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                                     </div>
                                     
                                     <div className="bg-white p-4 rounded-md border">
+                                        <h4 className="font-medium text-slate-800 mb-2">Google Maps API</h4>
+                                        <p className="text-sm text-slate-600 mb-3">Maps integration for event locations</p>
+                                        <input 
+                                            type="text" 
+                                            placeholder="Enter Google Maps API Key"
+                                            value={leagueInfo?.googleMapsApiKey || ''}
+                                            onChange={(e) => setLeagueInfo(prev => ({
+                                                ...prev,
+                                                googleMapsApiKey: e.target.value
+                                            }))}
+                                            className="w-full p-2 border rounded text-sm mb-2"
+                                        />
+                                        <div className="flex justify-between items-center">
+                                            <button 
+                                                onClick={() => {
+                                                    // Save the API key
+                                                    const updatedInfo = { ...leagueInfo, googleMapsApiKey: leagueInfo?.googleMapsApiKey || '' };
+                                                    // In a real app, this would save to the backend
+                                                    localStorage.setItem('mlbl_league_info', JSON.stringify(updatedInfo));
+                                                    alert('Google Maps API key saved!');
+                                                }}
+                                                className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+                                            >
+                                                Save API Key
+                                            </button>
+                                            <span className={`text-xs px-2 py-1 rounded ${leagueInfo?.googleMapsApiKey ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                                                {leagueInfo?.googleMapsApiKey ? 'Configured' : 'Not Set'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="bg-white p-4 rounded-md border">
                                         <h4 className="font-medium text-slate-800 mb-2">Payment Processing</h4>
                                         <p className="text-sm text-slate-600 mb-3">Stripe, PayPal integration</p>
                                         <button className="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-700">
