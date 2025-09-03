@@ -6599,6 +6599,16 @@ const LeagueCalendarManager = ({ teams, setTeams, websiteStyle, leagueLocations 
         setEditingEvent(null);
     };
 
+    const handleEditEvent = (event) => {
+        // Open the event in edit mode
+        setEditingEvent({
+            ...event,
+            // Ensure these fields exist even if they're missing from the saved event
+            imageUrl: event.imageUrl || '',
+            teamIds: event.teamIds || []
+        });
+    };
+
     return (
         <div className="max-w-6xl mx-auto">
             {editingEvent && (
