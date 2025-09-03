@@ -205,27 +205,66 @@ const SimpleEventForm = ({
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Event Image/Logo URL
+                            Event Image/Logo
                         </label>
-                        <input
-                            type="url"
-                            value={eventData.imageUrl || ''}
-                            onChange={(e) => updateField('imageUrl', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="https://example.com/event-image.jpg"
-                        />
-                        {eventData.imageUrl && (
-                            <div className="mt-2">
-                                <img 
-                                    src={eventData.imageUrl} 
-                                    alt="Event preview"
-                                    className="w-full h-32 object-cover rounded border border-gray-200"
-                                    onError={(e) => {
-                                        e.target.style.display = 'none';
-                                    }}
-                                />
+                        <div className="space-y-3">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                        console.log('📸 Image file selected:', file.name, file.size);
+                                        
+                                        // Check file size (limit to 5MB)
+                                        if (file.size > 5 * 1024 * 1024) {
+                                            alert('Image file too large. Please choose a file under 5MB.');
+                                            return;
+                                        }
+                                        
+                                        // Convert to base64
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => {
+                                            const base64 = e.target.result;
+                                            console.log('📸 Image converted to base64, length:', base64.length);
+                                            updateField('imageUrl', base64);
+                                        };
+                                        reader.readAsDataURL(file);
+                                    }
+                                }}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                            />
+                            
+                            {/* Image Preview */}
+                            {eventData.imageUrl && (
+                                <div className="relative">
+                                    <img 
+                                        src={eventData.imageUrl} 
+                                        alt="Event preview"
+                                        className="w-full h-32 object-cover rounded border border-gray-200"
+                                        onError={(e) => {
+                                            console.error('Image preview failed to load');
+                                            e.target.style.display = 'none';
+                                        }}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            updateField('imageUrl', '');
+                                            console.log('📸 Image removed');
+                                        }}
+                                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                                        title="Remove image"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                            )}
+                            
+                            <div className="text-xs text-gray-500">
+                                Upload an image file (JPG, PNG, GIF) up to 5MB
                             </div>
-                        )}
+                        </div>
                     </div>
 
                     <div>
