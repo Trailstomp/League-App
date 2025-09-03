@@ -10653,7 +10653,10 @@ const TournamentBracketManager = ({ event, teams, onUpdateEvent, onClose }) => {
     const [bracket, setBracket] = useState(event.bracket || {});
     const [rounds, setRounds] = useState([]);
     
-    const eventTeams = (event.teamIds || []).map(id => teams.find(t => t.id === id)).filter(Boolean);
+    const eventTeams = (event.teamIds || [])
+        .map(id => teams.find(t => t.id === id))
+        .filter(Boolean)
+        .sort((a, b) => a.name.localeCompare(b.name));
     
     // Sort teams with non-league teams at the end
     const sortedTeams = teams.filter(t => t.active).sort((a, b) => {
