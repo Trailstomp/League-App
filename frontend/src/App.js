@@ -18842,7 +18842,7 @@ function App() {
         } else {
             switch (page) {
                 case 'home': pageComponent = <NewHomePage teams={teams} onTeamClick={(teamId) => navigate('team', teamId)} leagueInfo={leagueInfo} currentUser={currentUser} websiteStyle={websiteStyle} setCurrentUser={setCurrentUser} getAllNewsItems={getAllNewsItems} setSelectedNewsItem={setSelectedNewsItem} addTeamNewsItem={addTeamNewsItem} updateTeamNewsItem={updateTeamNewsItem} deleteTeamNewsItem={deleteTeamNewsItem} />; break;
-                case 'events': pageComponent = <EventsPage teams={teams} leagueSchedule={leagueSchedule} onTeamClick={(teamId) => navigate('team', teamId)} currentUser={currentUser} websiteStyle={websiteStyle} onUpdateRSVP={handleUpdateRSVP} users={users} onSendNotification={sendEventNotification} onEventClick={handleEventClick} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} leagueInfo={leagueInfo} />; break;
+                case 'events': pageComponent = <EventsPage teams={teams} leagueSchedule={leagueSchedule} onTeamClick={(teamId) => navigate('team', teamId)} currentUser={currentUser} websiteStyle={websiteStyle} onUpdateRSVP={handleUpdateRSVP} users={users} onSendNotification={sendEventNotification} onEventClick={handleEventClick} onEditEvent={handleEditEvent} onDeleteEvent={handleDeleteEvent} leagueInfo={leagueInfo} gameStatistics={gameStatistics} tournamentData={tournamentData} onUpdateGameStats={updateGameStats} onUpdateTournament={updateTournament} />; break;
                 case 'new-scheduling': 
                     pageComponent = <SchedulingModule teams={teams} leagueSchedule={leagueSchedule} setLeagueSchedule={setLeagueSchedule} currentUser={currentUser} leagueLocations={leagueLocations} />; 
                     break;
