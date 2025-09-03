@@ -18942,7 +18942,12 @@ function App() {
                                     console.log('🔍 SAVE DEBUG - newEvent.teamIds:', newEvent.teamIds);
                                     console.log('🔍 SAVE DEBUG - processedEvent.teamIds:', processedEvent.teamIds);
                                     console.log('🔍 SAVE DEBUG - editingEvent.teamIds:', editingEvent.teamIds);
-                                    setLeagueSchedule(prev => [...prev, newEvent]);
+                                    setLeagueSchedule(prev => {
+                                        const newSchedule = [...prev, newEvent];
+                                        console.log('🔍 SAVE DEBUG - Updated leagueSchedule with new event');
+                                        console.log('🔍 SAVE DEBUG - Event in schedule:', newSchedule.find(e => e.id === newEvent.id));
+                                        return newSchedule;
+                                    });
                                 } else {
                                     // Updating existing event
                                     console.log('Updating existing event...');
