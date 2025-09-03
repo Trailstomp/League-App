@@ -6388,6 +6388,20 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                     </div>
                 </div>
             </div>
+            
+            {/* Event Detail Modal */}
+            {showEventModal && (
+                <EventDetailModal
+                    event={selectedEvent}
+                    isOpen={showEventModal}
+                    onClose={closeEventModal}
+                    currentUser={currentUser}
+                    teams={teams}
+                    users={users}
+                    leagueInfo={leagueInfo}
+                    onUpdateRSVP={onUpdateRSVP}
+                />
+            )}
         </div>
     );
 };
