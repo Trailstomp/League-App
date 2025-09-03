@@ -1,5 +1,10 @@
 import React from 'react';
-import { Calendar, Users, Trophy, Clock } from 'lucide-react';
+
+// Simple icon components to replace lucide-react
+const Calendar = () => <span>📅</span>;
+const Users = () => <span>👥</span>;
+const Trophy = () => <span>🏆</span>;
+const Clock = () => <span>🕐</span>;
 
 /**
  * Event Statistics - Quick overview of scheduling data
