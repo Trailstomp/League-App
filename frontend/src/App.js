@@ -12011,7 +12011,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                 <div 
                                                     key={event.id} 
                                                     className="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-200 cursor-pointer hover:border-blue-300 hover:shadow-md transition-all duration-200"
-                                                    onClick={() => onEventClick && onEventClick(event)}
+                                                    onClick={() => handleEventCardClick(event)}
                                                 >
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex-grow">
