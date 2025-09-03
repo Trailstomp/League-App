@@ -224,7 +224,7 @@ const EventCalendar = ({
                                             <div className="space-y-2 text-sm text-gray-600">
                                                 {/* Time */}
                                                 <div className="flex items-center">
-                                                    <Clock size={14} className="mr-2 text-gray-400" />
+                                                    <span className="mr-2 text-gray-400"><Clock /></span>
                                                     <span>{formatTime(event.time)}</span>
                                                 </div>
 
