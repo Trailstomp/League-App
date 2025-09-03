@@ -143,18 +143,46 @@ const EventCalendar = ({
                     </div>
                     
                     {/* Controls */}
-                    <div className="flex gap-3">
-                        {/* Filter */}
-                        <select
-                            value={filterType}
-                            onChange={(e) => setFilterType(e.target.value)}
-                            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="all">All Events ({leagueSchedule.length})</option>
-                            <option value="game">Games ({leagueSchedule.filter(e => e.type === 'game').length})</option>
-                            <option value="practice">Practices ({leagueSchedule.filter(e => e.type === 'practice').length})</option>
-                            <option value="tournament">Tournaments ({leagueSchedule.filter(e => e.type === 'tournament').length})</option>
-                        </select>
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        {/* Event Type Checkboxes */}
+                        <div className="flex flex-wrap items-center gap-3">
+                            <span className="text-sm font-medium text-gray-700">Show:</span>
+                            {[
+                                { type: 'game', label: '🏆 Games', count: leagueSchedule.filter(e => e.type === 'game').length },
+                                { type: 'practice', label: '🏃 Practices', count: leagueSchedule.filter(e => e.type === 'practice').length },
+                                { type: 'tournament', label: '🎯 Tournaments', count: leagueSchedule.filter(e => e.type === 'tournament').length },
+                                { type: 'event', label: '📅 Events', count: leagueSchedule.filter(e => e.type === 'event').length }
+                            ].map(({ type, label, count }) => (
+                                <label key={type} className="flex items-center text-sm cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedEventTypes.includes(type)}
+                                        onChange={() => handleEventTypeToggle(type)}
+                                        className="mr-2 rounded"
+                                    />
+                                    <span className={selectedEventTypes.includes(type) ? 'text-gray-800' : 'text-gray-500'}>
+                                        {label} ({count})
+                                    </span>
+                                </label>
+                            ))}
+                            
+                            {/* Quick actions */}
+                            <div className="flex gap-2 ml-4">
+                                <button
+                                    onClick={selectAllEventTypes}
+                                    className="text-xs text-blue-600 hover:text-blue-800"
+                                >
+                                    All
+                                </button>
+                                <span className="text-gray-300">|</span>
+                                <button
+                                    onClick={clearAllEventTypes}
+                                    className="text-xs text-gray-600 hover:text-gray-800"
+                                >
+                                    None
+                                </button>
+                            </div>
+                        </div>
 
                         {/* View Mode */}
                         <div className="flex border border-gray-300 rounded-md overflow-hidden">
@@ -162,13 +190,13 @@ const EventCalendar = ({
                                 onClick={() => setViewMode('list')}
                                 className={`px-3 py-2 text-sm ${viewMode === 'list' ? 'bg-blue-100 text-blue-800' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
                             >
-                                List
+                                📋 List
                             </button>
                             <button
                                 onClick={() => setViewMode('grid')}
                                 className={`px-3 py-2 text-sm border-l border-gray-300 ${viewMode === 'grid' ? 'bg-blue-100 text-blue-800' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
                             >
-                                Grid
+                                🔲 Cards
                             </button>
                         </div>
                     </div>
