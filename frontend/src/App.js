@@ -1408,20 +1408,6 @@ const getLogoStyle = (websiteStyle) => {
 // the new modular EventDetailModal from ./scheduling/components/EventDetailModal.js
 
 // File Upload Component
-const FileUploadInput = ({ 
-    label, 
-    accept, 
-    currentValue, 
-    onChange, 
-    placeholder, 
-    enableCrop = false, 
-    cropAspectRatio = 'free', 
-    cropContext = 'header',
-    showAspectRatioPresets = false,
-    allowCustomAspectRatio = false 
-}) => {
-    const [isDragging, setIsDragging] = useState(false);
-                                    {eventStatus.charAt(0).toUpperCase() + eventStatus.slice(1)}
                                 </span>
                             </div>
                             <div className="flex items-center space-x-4 text-blue-100">
