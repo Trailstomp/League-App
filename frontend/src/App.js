@@ -17275,7 +17275,7 @@ const MessageCenter = ({ teams, players, users, currentUser }) => {
         } else if (messageType === 'role') {
             const roleUsers = getUsersByRole(selectedRole, users);
             newContacts = roleUsers.map(user => ({
-                type: user.roles.includes('admin') ? 'admin' : selectedRole,
+                type: user.roles && user.roles.includes('admin') ? 'admin' : selectedRole,
                 name: user.name,
                 email: user.email,
                 phone: user.phone,
