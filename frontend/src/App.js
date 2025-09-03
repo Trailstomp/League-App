@@ -17169,7 +17169,7 @@ const getTeamContacts = (teamId, players, users) => {
     const teamCoaches = users.filter(user => 
         user.status === 'active' && 
         user.teamId === teamId && 
-        (user.roles.includes('coach') || user.roles.includes('player/coach'))
+        (userHasRole(user, 'coach') || userHasRole(user, 'player/coach'))
     );
     const admins = getUsersByRole('admin', users);
     
