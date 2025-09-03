@@ -5867,9 +5867,13 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
     
     // Authorization check for event management
     const isAuthorizedToManage = currentUser && (
+        // Check admin role
         currentUser.role === 'admin' || 
-        (currentUser.roles && currentUser.roles.includes('admin')) ||
-        (currentUser.roles && currentUser.roles.includes('coach')) ||
+        currentUser.roles?.includes('admin') ||
+        // Check coach role  
+        currentUser.role === 'coach' ||
+        currentUser.roles?.includes('coach') ||
+        // Check specific permission
         hasPermission(currentUser, 'events.create')
     );
 
