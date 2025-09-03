@@ -5865,7 +5865,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         other: true
     });
     
-    // Authorization check for event management
+    // Move authorization checks inside component to make them reactive
     const isAuthorizedToManage = currentUser && (
         // Check admin role
         currentUser.role === 'admin' || 
