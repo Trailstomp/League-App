@@ -1404,7 +1404,8 @@ const getLogoStyle = (websiteStyle) => {
 };
 
 // === OLD EVENT DETAIL MODAL - REPLACED WITH SCHEDULING MODULE VERSION ===
-// const EventDetailModal = ({ event, isOpen, onClose, activeTab, setActiveTab, teams, currentUser, users, leagueInfo, onUpdateRSVP, onUpdateEvent, onDeleteEvent }) => {
+/*
+const OldEventDetailModal = ({ event, isOpen, onClose, activeTab, setActiveTab, teams, currentUser, users, leagueInfo, onUpdateRSVP, onUpdateEvent, onDeleteEvent }) => {
     if (!event || !isOpen) return null;
     
     const isAuthorized = currentUser && (
