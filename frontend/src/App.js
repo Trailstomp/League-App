@@ -17605,6 +17605,55 @@ function App() {
 
     const [page, setPage] = useState('home');
     const [selectedTeam, setSelectedTeam] = useState(null);
+    // Helper function to save league locations to API
+    const saveLeagueLocationsToAPI = async (newLeagueLocations) => {
+        try {
+            // Prepare full league data with updated locations
+            const fullLeagueData = {
+                teams: teams,
+                players: players,
+                leagueSchedule: leagueSchedule,
+                users: users,
+                leagueInfo: leagueInfo,
+                websiteStyle: websiteStyle,
+                gameTickerData: gameTickerData,
+                seasons: seasons,
+                currentSeason: currentSeason,
+                friends: friends,
+                sponsors: sponsors,
+                leagueLocations: newLeagueLocations
+            };
+            
+            const success = await apiService.saveLeagueData(fullLeagueData);
+            if (success) {
+                console.log('✅ League locations saved to API successfully');
+            } else {
+                console.warn('⚠️ Failed to save league locations to API');
+            }
+            return success;
+        } catch (error) {
+            console.error('❌ Error saving league locations to API:', error);
+            return false;
+        }
+    };
+
+    // Enhanced setLeagueLocations that also saves to API
+    const updateLeagueLocations = async (newLocationsOrUpdater) => {
+        let newLocations;
+        
+        if (typeof newLocationsOrUpdater === 'function') {
+            newLocations = newLocationsOrUpdater(leagueLocations);
+        } else {
+            newLocations = newLocationsOrUpdater;
+        }
+        
+        // Update local state
+        setLeagueLocations(newLocations);
+        
+        // Save to API
+        await saveLeagueLocationsToAPI(newLocations);
+    };
+
     const [currentUser, setCurrentUser] = useState(null);
     const [leagueLocations, setLeagueLocations] = useState([]);
     const [isMenuOpen, setIsMenuOpen] = useState(window.innerWidth > 768);
