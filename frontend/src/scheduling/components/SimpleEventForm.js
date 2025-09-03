@@ -262,6 +262,7 @@ const SimpleEventForm = ({
                         <div><strong>Title:</strong> {eventData.title || 'Empty'}</div>
                         <div><strong>Date:</strong> {eventData.date || 'Not set'}</div>
                         <div><strong>Location:</strong> {eventData.location || 'Not set'}</div>
+                        <div><strong>Image URL:</strong> {eventData.imageUrl ? '✅ Set' : '❌ None'}</div>
                     </div>
                     <div>
                         <div><strong>Teams Selected:</strong> {eventData.teamIds.length}</div>
