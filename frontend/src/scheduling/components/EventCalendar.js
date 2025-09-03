@@ -47,6 +47,7 @@ const EventCalendar = ({
     // Helper function to get team info
     const getTeamInfo = (teamId) => {
         const team = teams.find(t => t.id === teamId);
+        console.log('🔍 Team lookup for ID:', teamId, 'Found:', team?.name, 'Logo:', team?.style?.logoUrl);
         return team || { id: teamId, name: `Unknown Team (${teamId})`, style: {} };
     };
 
