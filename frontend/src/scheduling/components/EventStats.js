@@ -86,7 +86,7 @@ const EventStats = ({ leagueSchedule = [], teams = [] }) => {
                     return (
                         <div key={stat.title} className={`p-4 rounded-lg border ${colorClasses[stat.color]}`}>
                             <div className="flex items-center justify-between mb-2">
-                                <IconComponent size={20} />
+                                <span className="text-xl"><IconComponent /></span>
                                 <span className="text-2xl font-bold">{stat.value}</span>
                             </div>
                             <div className="text-sm font-medium mb-1">{stat.title}</div>
