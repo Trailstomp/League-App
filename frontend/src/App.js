@@ -2953,6 +2953,94 @@ const ClickableLocation = ({ locationName, teams, className = "", children }) =>
     );
 };
 
+// Enhanced Event Location with Map component
+const EventLocationMap = ({ locationName, teams, leagueInfo, size = "small" }) => {
+    const address = findLocationAddress(locationName, teams);
+    const apiKey = leagueInfo?.googleMapsApiKey;
+    
+    const handleClick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const searchTerm = address || locationName;
+        const mapsUrl = `https://maps.google.com/maps?q=${encodeURIComponent(searchTerm)}&t=k`;
+        window.open(mapsUrl, '_blank');
+    };
+    
+    // Determine map dimensions based on size
+    const dimensions = {
+        small: { width: 100, height: 80 },
+        medium: { width: 150, height: 120 },
+        large: { width: 200, height: 160 }
+    };
+    
+    const { width, height } = dimensions[size] || dimensions.small;
+    
+    // Generate Google Maps Static API URL if API key is available
+    const mapImageUrl = apiKey && (address || locationName) 
+        ? `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(address || locationName)}&zoom=15&size=${width}x${height}&markers=color:red%7C${encodeURIComponent(address || locationName)}&key=${apiKey}&scale=2`
+        : null;
+    
+    return (
+        <div className="flex items-center space-x-2">
+            {mapImageUrl ? (
+                <div 
+                    onClick={handleClick}
+                    className="cursor-pointer hover:opacity-80 transition-opacity rounded-lg overflow-hidden border border-gray-200 shadow-sm hover:shadow-md"
+                    title={`Click to view ${locationName} on Google Maps`}
+                >
+                    <img 
+                        src={mapImageUrl}
+                        alt={`Map of ${locationName}`}
+                        className="w-full h-full object-cover"
+                        style={{ width: `${width}px`, height: `${height}px` }}
+                        onError={(e) => {
+                            // Fallback if map image fails to load
+                            e.target.style.display = 'none';
+                            e.target.nextElementSibling.style.display = 'flex';
+                        }}
+                    />
+                    {/* Fallback element for failed map loads */}
+                    <div 
+                        className="hidden items-center justify-center bg-gray-100 text-gray-500 text-xs"
+                        style={{ width: `${width}px`, height: `${height}px` }}
+                    >
+                        <div className="text-center">
+                            <MapPin className="mx-auto mb-1" size={16} />
+                            Map unavailable
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                // Fallback for no API key - show clickable location text
+                <ClickableLocation 
+                    locationName={locationName}
+                    teams={teams}
+                    className="flex items-center text-blue-600 hover:text-blue-800"
+                >
+                    <MapPin className="mr-1 h-4 w-4"/>
+                    {locationName}
+                </ClickableLocation>
+            )}
+            
+            {/* Location name and address */}
+            <div className="flex flex-col">
+                <span 
+                    onClick={handleClick}
+                    className="cursor-pointer text-blue-600 hover:text-blue-800 hover:underline text-sm font-medium"
+                    title={`Click to view ${locationName} on Google Maps`}
+                >
+                    {locationName}
+                </span>
+                {address && address !== locationName && (
+                    <span className="text-xs text-gray-500 max-w-48 truncate">
+                        {address}
+                    </span>
+                )}
+            </div>
+        </div>
+    );
+};
+
 // --- DATA IMPORTED FROM SPREADSHEETS ---
 const initialMockUsers = [
     { id: 1, name: 'Admin Ali', roleIds: ['super_admin'], teamId: null, email: 'admin@mlbl.org', role: 'admin', roles: ['admin'], status: 'active', createdAt: '2024-01-01' },
