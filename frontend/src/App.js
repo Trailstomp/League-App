@@ -17789,7 +17789,8 @@ function App() {
                         const verifyData = getStoredData('mlbl_leagueSchedule', []);
                         console.log('🔧 DEBUG: Verified stored data has dates:', verifyData.map(e => e.date));
                     }, 1000);
-                    setUsers(storedUsers);
+                    // FORCE USE PROPER ADMIN USERS: Use initialMockUsers to restore Admin Ali and Coach accounts
+                    setUsers(initialMockUsers);
                     setLeagueInfo(getStoredData('mlbl_leagueInfo', leagueInfo));
                     // Fix localStorage fallback for websiteStyle persistence
                     const storedWebsiteStyle = getStoredData('mlbl_websiteStyle', null);
