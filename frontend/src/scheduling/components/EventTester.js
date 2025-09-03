@@ -107,7 +107,7 @@ const EventTester = ({ teams = [], leagueSchedule = [], setLeagueSchedule, curre
                     </div>
                 </div>
             ) : (
-                <EventForm
+                <SimpleEventForm
                     initialEvent={editingEvent}
                     teams={teams}
                     leagueSchedule={leagueSchedule}
