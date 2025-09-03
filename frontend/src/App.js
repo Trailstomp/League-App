@@ -5841,6 +5841,18 @@ const HomePage = ({teams, onTeamClick, leagueInfo, websiteStyle}) => {
 const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteStyle, onUpdateRSVP, users, onSendNotification, onEventClick, onEditEvent, onDeleteEvent, leagueInfo}) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showEventModal, setShowEventModal] = useState(false);
+    
+    // Handle event card click - open detail modal instead of edit
+    const handleEventCardClick = (event) => {
+        setSelectedEvent(event);
+        setShowEventModal(true);
+    };
+
+    // Close modal
+    const closeEventModal = () => {
+        setShowEventModal(false);
+        setSelectedEvent(null);
+    };
 
     const [selectedTeamSchedule, setSelectedTeamSchedule] = useState('all');
     const [eventTypeFilters, setEventTypeFilters] = useState({
