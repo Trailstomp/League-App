@@ -1408,7 +1408,6 @@ const getLogoStyle = (websiteStyle) => {
 // the new modular EventDetailModal from ./scheduling/components/EventDetailModal.js
 
 // File Upload Component
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]" onClick={onClose}>
             <div className="bg-white rounded-lg max-w-6xl max-h-[90vh] w-full mx-4 flex flex-col" onClick={e => e.stopPropagation()}>
                 {/* Modal Header */}
                 <div className="p-6 border-b bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-t-lg">
