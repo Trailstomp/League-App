@@ -6435,6 +6435,10 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                     users={users}
                     leagueInfo={leagueInfo}
                     onUpdateRSVP={onUpdateRSVP}
+                    gameStats={selectedEvent ? gameStatistics[selectedEvent.id] : null}
+                    tournamentData={selectedEvent ? tournamentData[selectedEvent.id] : null}
+                    onUpdateGameStats={onUpdateGameStats}
+                    onUpdateTournament={onUpdateTournament}
                 />
             )}
         </div>
