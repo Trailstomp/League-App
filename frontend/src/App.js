@@ -13111,8 +13111,8 @@ const UserManager = ({ users, setUsers, teams }) => {
                                         )}
                                     </div>
                                     <div className="flex-shrink-0 ml-4 flex items-center gap-4">
-                                        <span className={`font-semibold capitalize px-2 py-1 rounded-full text-xs ${user.roles.length > 0 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                                            {user.roles.length > 0 ? user.roles.join(', ') : 'Unassigned'}
+                                        <span className={`font-semibold capitalize px-2 py-1 rounded-full text-xs ${(user.roles && user.roles.length > 0) || user.role ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                            {user.roles && user.roles.length > 0 ? user.roles.join(', ') : user.role || 'Unassigned'}
                                         </span>
                                         <button onClick={() => setEditingUser(user)} className="text-slate-500 hover:text-slate-700 p-1">
                                             <Edit size={18}/>
