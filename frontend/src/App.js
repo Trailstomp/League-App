@@ -4969,7 +4969,7 @@ const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle,
             {/* Admin Controls - Positioned outside ticker for better visibility */}
             {currentUser && (
                 <div className="bg-slate-700 text-white px-4 py-2 text-center">
-                    <span className="text-sm">Logged in as: <strong>{currentUser.name}</strong> ({currentUser.roles.join(', ')})</span>
+                    <span className="text-sm">Logged in as: <strong>{currentUser.name}</strong> ({currentUser.roles ? currentUser.roles.join(', ') : currentUser.role || 'User'})</span>
                 </div>
             )}
             
