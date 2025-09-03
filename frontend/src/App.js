@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { SchedulingModule } from './scheduling';
 import LeagueLocationsManager from './scheduling/components/LeagueLocationsManager';
+import useStatistics from './scheduling/hooks/useStatistics';
 import "./App.css";
 
 // Custom Icon Library - SVG-based icons to replace lucide-react
