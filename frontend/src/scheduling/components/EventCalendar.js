@@ -1,5 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Calendar, Clock, MapPin, Users, Edit, Trash2 } from 'lucide-react';
+
+// Simple icon components to replace lucide-react
+const Calendar = () => <span>📅</span>;
+const Clock = () => <span>🕐</span>;
+const MapPin = () => <span>📍</span>;
+const Users = () => <span>👥</span>;
+const Edit = () => <span>✏️</span>;
+const Trash2 = () => <span>🗑️</span>;
 
 /**
  * Event Calendar Display - Clean, visual calendar with all events
