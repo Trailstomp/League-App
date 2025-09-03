@@ -6932,7 +6932,7 @@ const LeagueInfoManager = ({ leagueInfo, setLeagueInfo, websiteStyle, setWebsite
     );
 };
 
-const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isTeamSpecific = false, currentTeamId = null, formBackgroundColor = '#f8fafc', setBracketEvent, leagueLocations = [] }) => {
+const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isTeamSpecific = false, currentTeamId = null, formBackgroundColor = '#f8fafc', setBracketEvent, leagueLocations = [], currentUser = null }) => {
     // Debug logging
     console.log('🔧 EVENTFORM DEBUG - leagueLocations received:', leagueLocations);
     console.log('🔧 EVENTFORM DEBUG - leagueLocations count:', leagueLocations.length);
