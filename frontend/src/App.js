@@ -7077,6 +7077,11 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                                     });
                                 }
                                 
+                                // Add league-wide locations
+                                if (leagueLocations && leagueLocations.length > 0) {
+                                    allLocations.push(...leagueLocations.map(loc => ({...loc, teamName: 'League'})));
+                                }
+                                
                                 return allLocations.map(location => (
                                     <option key={`${location.teamName}-${location.id}`} value={location.name}>
                                         {location.name} {!isTeamSpecific ? `(${location.teamName})` : ''}
