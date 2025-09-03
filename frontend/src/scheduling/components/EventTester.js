@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import EventForm from './EventForm';
+import SimpleEventForm from './SimpleEventForm';
 
 /**
  * EventTester - Test the clean EventForm workflow
