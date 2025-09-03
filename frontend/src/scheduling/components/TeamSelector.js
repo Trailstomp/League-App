@@ -111,7 +111,10 @@ const TeamSelector = ({ teams = [], teamSelection, title = "Select Teams" }) => 
                                 <input
                                     type="checkbox"
                                     checked={teamSelection.isTeamSelected(team.id)}
-                                    onChange={() => teamSelection.toggleTeam(team.id)}
+                                    onChange={() => {
+                                        console.log('🔍 CLICKING TEAM:', { id: team.id, name: team.name, fullTeam: team });
+                                        teamSelection.toggleTeam(team.id);
+                                    }}
                                     className="mr-3 rounded"
                                 />
                                 <div className="flex items-center flex-1">
