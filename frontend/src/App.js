@@ -11103,6 +11103,13 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
         }));
     }, []);
 
+    // Handle event card click
+    const handleEventCardClick = (event) => {
+        if (onEventClick) {
+            onEventClick(event);
+        }
+    };
+
     // Ensure activeTab is visible, fallback to first visible tab
     React.useEffect(() => {
         if (team?.style?.visibleTabs) {
