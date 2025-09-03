@@ -1408,15 +1408,6 @@ const getLogoStyle = (websiteStyle) => {
 // the new modular EventDetailModal from ./scheduling/components/EventDetailModal.js
 
 const FileUploadInput = ({
-                            </div>
-                            <div className="flex items-center space-x-4 text-blue-100">
-                                <span>📅 {new Date(event.date).toLocaleDateString()}</span>
-                                {event.time && <span>⏰ {event.time}</span>}
-                                {event.location && <span>📍 {event.location}</span>}
-                                <span className="capitalize">🏷️ {event.type}</span>
-                            </div>
-                        </div>
-                        <button onClick={onClose} className="text-white hover:text-gray-300">
                             <X size={24} />
                         </button>
                     </div>
