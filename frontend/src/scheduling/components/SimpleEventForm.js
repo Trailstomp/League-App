@@ -204,6 +204,31 @@ const SimpleEventForm = ({
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Event Image/Logo URL
+                        </label>
+                        <input
+                            type="url"
+                            value={eventData.imageUrl || ''}
+                            onChange={(e) => updateField('imageUrl', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="https://example.com/event-image.jpg"
+                        />
+                        {eventData.imageUrl && (
+                            <div className="mt-2">
+                                <img 
+                                    src={eventData.imageUrl} 
+                                    alt="Event preview"
+                                    className="w-full h-32 object-cover rounded border border-gray-200"
+                                    onError={(e) => {
+                                        e.target.style.display = 'none';
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
                             Description
                         </label>
                         <textarea
