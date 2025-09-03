@@ -227,104 +227,116 @@ const EventCalendar = ({
                                 </div>
 
                                 {/* Events for this date */}
-                                <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-3'}>
+                                <div className={viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3' : 'space-y-3'}>
                                     {events.map(event => (
                                         <div
                                             key={event.id}
-                                            className="event-card bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200"
+                                            className="event-card bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200 cursor-pointer"
                                         >
-                                            <div className="flex justify-between items-start mb-3">
-                                                <div className="flex-1">
-                                                    <h3 className="font-semibold text-gray-800 text-lg mb-1">
-                                                        {event.title || 'Untitled Event'}
-                                                    </h3>
-                                                    <div className={`inline-block px-2 py-1 rounded-full text-xs font-medium border ${getEventTypeColor(event.type)}`}>
-                                                        {event.type || 'event'}
-                                                    </div>
-                                                </div>
-                                                
-                                                {/* Actions */}
-                                                {canEdit(event) && (
-                                                    <div className="flex space-x-1 ml-2">
-                                                        <button
-                                                            onClick={() => onEditEvent && onEditEvent(event)}
-                                                            className="p-1 text-blue-600 hover:bg-blue-100 rounded"
-                                                            title="Edit event"
-                                                        >
-                                                            <Edit />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => onDeleteEvent && onDeleteEvent(event.id)}
-                                                            className="p-1 text-red-600 hover:bg-red-100 rounded"
-                                                            title="Delete event"
-                                                        >
-                                                            <Trash2 />
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* Event Details */}
-                                            <div className="space-y-2 text-sm text-gray-600">
-                                                {/* Time */}
-                                                <div className="flex items-center">
-                                                    <span className="mr-2 text-gray-400"><Clock /></span>
-                                                    <span>{formatTime(event.time)}</span>
-                                                </div>
-
-                                                {/* Location */}
-                                                {event.location && (
-                                                    <div className="flex items-center">
-                                                        <span className="mr-2 text-gray-400"><MapPin /></span>
-                                                        <span>{event.location}</span>
-                                                    </div>
-                                                )}
-
-                                                {/* Teams */}
-                                                {event.teamIds && event.teamIds.length > 0 && (
-                                                    <div className="flex items-start">
-                                                        <span className="mr-2 text-gray-400 mt-0.5"><Users /></span>
-                                                        <div className="flex-1">
-                                                            <div className="flex flex-wrap gap-1">
-                                                                {event.teamIds.slice(0, 3).map(teamId => {
-                                                                    const team = getTeamInfo(teamId);
-                                                                    return (
-                                                                        <span
-                                                                            key={teamId}
-                                                                            className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
-                                                                        >
-                                                                            {team.style?.logoUrl && (
-                                                                                <img 
-                                                                                    src={team.style.logoUrl} 
-                                                                                    alt=""
-                                                                                    className="w-3 h-3 rounded mr-1"
-                                                                                />
-                                                                            )}
-                                                                            {team.name}
-                                                                        </span>
-                                                                    );
-                                                                })}
-                                                                {event.teamIds.length > 3 && (
-                                                                    <span className="text-xs text-gray-500">
-                                                                        +{event.teamIds.length - 3} more
-                                                                    </span>
-                                                                )}
-                                                            </div>
+                                            {/* Event Image */}
+                                            {event.imageUrl && (
+                                                <img 
+                                                    src={event.imageUrl}
+                                                    alt={event.title}
+                                                    className="w-full h-32 object-cover"
+                                                />
+                                            )}
+                                            
+                                            <div className="p-3">
+                                                {/* Header */}
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <div className="flex-1 min-w-0">
+                                                        <h3 className="font-semibold text-gray-800 text-sm truncate mb-1">
+                                                            {event.title || 'Untitled Event'}
+                                                        </h3>
+                                                        <div className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${getEventTypeColor(event.type)}`}>
+                                                            {event.type === 'game' ? '🏆' : event.type === 'practice' ? '🏃' : event.type === 'tournament' ? '🎯' : '📅'} {event.type || 'event'}
                                                         </div>
                                                     </div>
-                                                )}
+                                                    
+                                                    {/* Actions */}
+                                                    {canEdit(event) && (
+                                                        <div className="flex ml-2">
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    onEditEvent && onEditEvent(event);
+                                                                }}
+                                                                className="p-1 text-blue-600 hover:bg-blue-100 rounded text-xs"
+                                                                title="Edit event"
+                                                            >
+                                                                <Edit />
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    onDeleteEvent && onDeleteEvent(event.id);
+                                                                }}
+                                                                className="p-1 text-red-600 hover:bg-red-100 rounded text-xs ml-1"
+                                                                title="Delete event"
+                                                            >
+                                                                <Trash2 />
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
 
-                                                {/* Description */}
+                                                {/* Compact Event Details */}
+                                                <div className="space-y-1 text-xs text-gray-600">
+                                                    {/* Time */}
+                                                    <div className="flex items-center">
+                                                        <span className="mr-1"><Clock /></span>
+                                                        <span>{formatTime(event.time)}</span>
+                                                    </div>
+
+                                                    {/* Location */}
+                                                    {event.location && (
+                                                        <div className="flex items-center">
+                                                            <span className="mr-1"><MapPin /></span>
+                                                            <span className="truncate">{event.location}</span>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Teams - Compact Display */}
+                                                    {event.teamIds && event.teamIds.length > 0 && (
+                                                        <div className="flex items-center">
+                                                            <span className="mr-1"><Users /></span>
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="flex flex-wrap gap-1">
+                                                                    {event.teamIds.slice(0, 2).map(teamId => {
+                                                                        const team = getTeamInfo(teamId);
+                                                                        return (
+                                                                            <div key={teamId} className="flex items-center bg-gray-100 rounded px-1.5 py-0.5">
+                                                                                {team.style?.logoUrl && (
+                                                                                    <img 
+                                                                                        src={team.style.logoUrl} 
+                                                                                        alt=""
+                                                                                        className="w-3 h-3 rounded mr-1"
+                                                                                    />
+                                                                                )}
+                                                                                <span className="text-xs text-gray-700 truncate max-w-16">
+                                                                                    {team.name}
+                                                                                </span>
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                    {event.teamIds.length > 2 && (
+                                                                        <span className="text-xs text-gray-500 bg-gray-100 rounded px-1.5 py-0.5">
+                                                                            +{event.teamIds.length - 2}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Description - Very compact */}
                                                 {event.description && (
-                                                    <div className="text-xs text-gray-500 mt-2 line-clamp-2">
+                                                    <div className="text-xs text-gray-500 mt-2 line-clamp-1">
                                                         {event.description}
                                                     </div>
                                                 )}
-                                            </div>
-
-                                            {/* Debug info for development */}
-                                            <div className="mt-3 pt-2 border-t border-gray-100 text-xs text-gray-400">
-                                                ID: {event.id} | Teams: {event.teamIds?.length || 0}
                                             </div>
                                         </div>
                                     ))}
