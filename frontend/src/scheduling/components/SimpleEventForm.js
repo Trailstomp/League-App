@@ -165,12 +165,32 @@ const SimpleEventForm = ({
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Time
                             </label>
-                            <input
-                                type="time"
+                            <select
                                 value={eventData.time}
                                 onChange={(e) => updateField('time', e.target.value)}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
+                            >
+                                <option value="">Select time</option>
+                                {(() => {
+                                    const times = [];
+                                    for (let hour = 0; hour < 24; hour++) {
+                                        for (let minute = 0; minute < 60; minute += 15) {
+                                            const time24 = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                                            const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                                            const ampm = hour < 12 ? 'AM' : 'PM';
+                                            const minuteStr = minute.toString().padStart(2, '0');
+                                            const display = `${hour12}:${minuteStr} ${ampm}`;
+                                            
+                                            times.push(
+                                                <option key={time24} value={time24}>
+                                                    {display}
+                                                </option>
+                                            );
+                                        }
+                                    }
+                                    return times;
+                                })()}
+                            </select>
                         </div>
                     </div>
 
