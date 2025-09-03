@@ -10986,7 +10986,7 @@ const TeamLocationsManager = ({ team, setTeams }) => {
     );
 };
 
-const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, setPlayers, setTeams, websiteStyle, playMusic, stopAllMusic, musicState, getTeamNewsItems, addTeamNewsItem, updateTeamNewsItem, deleteTeamNewsItem, setSelectedNewsItem, friends, sponsors, setFriends, setSponsors, onEventClick, onEditEvent, onDeleteEvent, isMenuOpen }) => {
+const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, setPlayers, setTeams, websiteStyle, playMusic, stopAllMusic, musicState, getTeamNewsItems, addTeamNewsItem, updateTeamNewsItem, deleteTeamNewsItem, setSelectedNewsItem, friends, sponsors, setFriends, setSponsors, onEventClick, onEditEvent, onDeleteEvent, isMenuOpen, leagueLocations = [] }) => {
     const [activeTab, setActiveTab] = useState('home');
 
     const team = teams.find(t => t.id === teamId);
