@@ -15,6 +15,10 @@ const EventDetailModal = ({
     leagueInfo = {},
     onUpdateEvent,
     onUpdateRSVP,
+    gameStats = null,
+    tournamentData = null,
+    onUpdateGameStats,
+    onUpdateTournament,
     isOpen = false 
 }) => {
     const [activeTab, setActiveTab] = useState('details');
