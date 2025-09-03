@@ -1409,15 +1409,8 @@ const getLogoStyle = (websiteStyle) => {
 
 // Old EventDetailModal and corrupted components removed - see proper implementations below
 
-// File Upload Component
-                    {activeTab === 'bracket' && event.type === 'tournament' && (
-                        <TournamentBracketTab event={event} teams={teams} isAuthorized={isAuthorized} onUpdateEvent={onUpdateEvent} />
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-};
+// Note: Old inline EventDetailModal component and related code removed
+// The new EventDetailModal is imported from './scheduling/components/EventDetailModal'
 
 // Tab Button Component
 const TabButton = ({ label, tabKey, activeTab, setActiveTab }) => (
