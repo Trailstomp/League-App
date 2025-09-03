@@ -32,12 +32,16 @@ const useTeamSelection = (initialTeamIds = [], availableTeams = []) => {
     }, []);
 
     const toggleTeam = useCallback((teamId) => {
+        console.log('🔄 TOGGLE TEAM called with teamId:', teamId, 'type:', typeof teamId);
         setSelectedTeamIds(prev => {
             const isSelected = prev.includes(teamId);
             console.log(`🔄 Toggling team ${teamId}: ${isSelected ? 'OFF' : 'ON'}`);
-            return isSelected 
+            console.log('🔄 Previous selectedTeamIds:', prev);
+            const newIds = isSelected 
                 ? prev.filter(id => id !== teamId)
                 : [...prev, teamId];
+            console.log('🔄 New selectedTeamIds:', newIds);
+            return newIds;
         });
     }, []);
 
