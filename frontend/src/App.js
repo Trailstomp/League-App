@@ -5875,27 +5875,15 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
 
     // Check if user can edit a specific event
     const canEditEvent = (event) => {
-        console.log('🔧 DEBUG canEditEvent:', { event: event.title, currentUser: currentUser?.email, userRole: currentUser?.role, userRoles: currentUser?.roles });
-        
-        if (!currentUser) {
-            console.log('🔧 DEBUG: No current user');
-            return false;
-        }
+        if (!currentUser) return false;
         
         // Admins can edit any event
         if (currentUser.role === 'admin' || currentUser.roles?.includes('admin')) {
-            console.log('🔧 DEBUG: User is admin - can edit');
             return true;
         }
         
         // Coaches can edit events for their teams
         if (currentUser.role === 'coach' || currentUser.roles?.includes('coach')) {
-            console.log('🔧 DEBUG: User is coach - checking team association');
-            console.log('🔧 DEBUG: User teamId:', currentUser.teamId);
-            console.log('🔧 DEBUG: Event teamIds:', event.teamIds);
-            console.log('🔧 DEBUG: Event teamId:', event.teamId);
-            
-            // Check if the coach's team is involved in the event
             const userTeamId = currentUser.teamId;
             if (userTeamId && (
                 event.teamIds?.includes(userTeamId) || 
@@ -5903,17 +5891,12 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                 event.homeTeam === userTeamId ||
                 event.awayTeam === userTeamId
             )) {
-                console.log('🔧 DEBUG: Coach can edit this event - team match found');
                 return true;
-            } else {
-                console.log('🔧 DEBUG: Coach cannot edit - no team match');
             }
         }
         
         // Check general events.edit permission
-        const hasEditPermission = hasPermission(currentUser, 'events.edit');
-        console.log('🔧 DEBUG: General events.edit permission:', hasEditPermission);
-        return hasEditPermission;
+        return hasPermission(currentUser, 'events.edit');
     };
 
     const getTeam = (id) => (teams || []).find(t => t.id === id);
