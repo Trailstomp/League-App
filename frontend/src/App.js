@@ -16530,6 +16530,13 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
             description: 'Manage league friends, partners and sponsors'
         },
         { 
+            id: 'locations', 
+            label: 'Locations', 
+            icon: <MapPin size={16} />, 
+            permissions: ['system.admin_access'],
+            description: 'Manage league-wide event locations'
+        },
+        { 
             id: 'players', 
             label: 'Players', 
             icon: <UserCheck size={16} />, 
