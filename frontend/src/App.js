@@ -5870,8 +5870,37 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         currentUser.role === 'admin' || 
         (currentUser.roles && currentUser.roles.includes('admin')) ||
         (currentUser.roles && currentUser.roles.includes('coach')) ||
-        (currentUser.roles && currentUser.roles.includes('player/coach'))
+        hasPermission(currentUser, 'events.create')
     );
+
+    // Check if user can edit a specific event
+    const canEditEvent = (event) => {
+        if (!currentUser) return false;
+        
+        // Admins can edit any event
+        if (currentUser.role === 'admin' || currentUser.roles?.includes('admin')) {
+            return true;
+        }
+        
+        // Coaches can edit events for their teams
+        if (currentUser.role === 'coach' || currentUser.roles?.includes('coach')) {
+            // Find the coach's team
+            const userTeam = teams.find(team => 
+                team.players?.some(player => player.email === currentUser.email) ||
+                team.coaches?.some(coach => coach.email === currentUser.email)
+            );
+            
+            if (userTeam && (
+                event.teamIds?.includes(userTeam.id) || 
+                event.teamId === userTeam.id
+            )) {
+                return true;
+            }
+        }
+        
+        // Check general events.edit permission
+        return hasPermission(currentUser, 'events.edit');
+    };
 
     const getTeam = (id) => (teams || []).find(t => t.id === id);
     const isAdmin = userHasRole(currentUser, 'admin');
