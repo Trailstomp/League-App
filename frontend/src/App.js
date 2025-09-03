@@ -5769,7 +5769,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
     );
 
     const getTeam = (id) => (teams || []).find(t => t.id === id);
-    const isAdmin = currentUser && currentUser.roles && currentUser.roles.includes('admin');
+    const isAdmin = userHasRole(currentUser, 'admin');
     
     // Get all events from leagueSchedule - handle both formats: [{date, games: []}] and direct events
 
