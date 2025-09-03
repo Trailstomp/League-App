@@ -7604,6 +7604,7 @@ const TeamCalendarManager = ({ team, teams, setTeams, websiteStyle, leagueLocati
                     currentTeamId={team.id}
                     formBackgroundColor={formBackgroundColor}
                     setBracketEvent={null}
+                    leagueLocations={leagueLocations}
                 />
             )}
             <div className="flex justify-between items-center mb-6">
