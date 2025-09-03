@@ -19305,13 +19305,13 @@ function App() {
             {selectedEventDetail && (
                 <EventDetailModal 
                     event={selectedEventDetail}
+                    isOpen={true}
                     onClose={() => setSelectedEventDetail(null)}
-                    activeTab={eventDetailTab}
-                    setActiveTab={setEventDetailTab}
                     teams={teams}
                     currentUser={currentUser}
+                    users={users}
+                    leagueInfo={leagueInfo}
                     onUpdateEvent={handleUpdateEvent}
-                    onDeleteEvent={handleDeleteEvent}
                 />
             )}
             
