@@ -7324,13 +7324,14 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                                             <label key={team.id} className="flex items-center space-x-2 hover:bg-white p-1 rounded">
                                                 <input
                                                     type="checkbox"
-                                                    checked={safeEditingEvent.teamIds.includes(team.id)}
+                                                    checked={selectedTeamIds.includes(team.id)}
                                                     onChange={(e) => {
-                                                        const currentTeamIds = safeEditingEvent.teamIds;
-                                                        const newTeamIds = e.target.checked
-                                                            ? [...currentTeamIds, team.id]
-                                                            : currentTeamIds.filter(id => id !== team.id);
-                                                        setEditingEvent(prev => ({...prev, teamIds: newTeamIds}));
+                                                        // NEW APPROACH: Update local state directly
+                                                        setSelectedTeamIds(prev => 
+                                                            e.target.checked
+                                                                ? [...prev, team.id]
+                                                                : prev.filter(id => id !== team.id)
+                                                        );
                                                     }}
                                                     className="rounded"
                                                 />
