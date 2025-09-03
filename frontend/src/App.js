@@ -17419,21 +17419,22 @@ const MessageCenter = ({ teams, players, users, currentUser }) => {
     );
 };
 
+// Helper function to check user roles - supports both old (role string) and new (roles array) formats
+const userHasRole = (user, roleToCheck) => {
+    if (!user) return false;
+    // New format: roles array
+    if (user.roles && Array.isArray(user.roles)) {
+        return user.roles.includes(roleToCheck);
+    }
+    // Old format: role string
+    if (user.role) {
+        return user.role === roleToCheck;
+    }
+    return false;
+};
+
 // --- Main App Component ---
 function App() {
-    // Helper function to check user roles - supports both old (role string) and new (roles array) formats
-    const userHasRole = (user, roleToCheck) => {
-        if (!user) return false;
-        // New format: roles array
-        if (user.roles && Array.isArray(user.roles)) {
-            return user.roles.includes(roleToCheck);
-        }
-        // Old format: role string
-        if (user.role) {
-            return user.role === roleToCheck;
-        }
-        return false;
-    };
 
     const [page, setPage] = useState('home');
     const [selectedTeam, setSelectedTeam] = useState(null);
