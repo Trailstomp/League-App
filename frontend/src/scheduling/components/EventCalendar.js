@@ -316,33 +316,37 @@ const EventCalendar = ({
                                                         </div>
                                                     )}
 
-                                                    {/* Teams - Compact Display */}
+                                                    {/* Teams - Enhanced Display with Logos */}
                                                     {event.teamIds && event.teamIds.length > 0 && (
-                                                        <div className="flex items-center">
-                                                            <span className="mr-1"><Users /></span>
+                                                        <div className="flex items-start">
+                                                            <span className="mr-1 mt-0.5">{LacrosseIcons.teams}</span>
                                                             <div className="flex-1 min-w-0">
-                                                                <div className="flex flex-wrap gap-1">
-                                                                    {event.teamIds.slice(0, 2).map(teamId => {
+                                                                <div className="space-y-1">
+                                                                    {event.teamIds.slice(0, 3).map(teamId => {
                                                                         const team = getTeamInfo(teamId);
                                                                         return (
-                                                                            <div key={teamId} className="flex items-center bg-gray-100 rounded px-1.5 py-0.5">
-                                                                                {team.style?.logoUrl && (
+                                                                            <div key={teamId} className="flex items-center bg-gradient-to-r from-blue-50 to-purple-50 rounded-md px-2 py-1 border border-blue-100">
+                                                                                {team.style?.logoUrl ? (
                                                                                     <img 
                                                                                         src={team.style.logoUrl} 
-                                                                                        alt=""
-                                                                                        className="w-3 h-3 rounded mr-1"
+                                                                                        alt={team.name}
+                                                                                        className="w-4 h-4 rounded-full mr-2 border border-white shadow-sm"
                                                                                     />
+                                                                                ) : (
+                                                                                    <span className="w-4 h-4 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center mr-2">
+                                                                                        {team.name.charAt(0)}
+                                                                                    </span>
                                                                                 )}
-                                                                                <span className="text-xs text-gray-700 truncate max-w-16">
+                                                                                <span className="text-xs font-medium text-gray-800 truncate flex-1">
                                                                                     {team.name}
                                                                                 </span>
                                                                             </div>
                                                                         );
                                                                     })}
-                                                                    {event.teamIds.length > 2 && (
-                                                                        <span className="text-xs text-gray-500 bg-gray-100 rounded px-1.5 py-0.5">
-                                                                            +{event.teamIds.length - 2}
-                                                                        </span>
+                                                                    {event.teamIds.length > 3 && (
+                                                                        <div className="text-xs text-gray-500 bg-gray-100 rounded px-2 py-1 text-center">
+                                                                            +{event.teamIds.length - 3} more teams
+                                                                        </div>
                                                                     )}
                                                                 </div>
                                                             </div>
