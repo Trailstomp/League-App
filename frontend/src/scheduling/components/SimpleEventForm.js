@@ -26,6 +26,7 @@ const SimpleEventForm = ({
             description: initialEvent?.description || '',
             type: initialEvent?.type || 'event',
             imageUrl: initialEvent?.imageUrl || '',
+            imageStyle: initialEvent?.imageStyle || 'cover',
         };
 
         // Handle team IDs - support both formats
