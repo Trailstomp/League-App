@@ -269,7 +269,7 @@ const EventCalendar = ({
                                                             {event.title || 'Untitled Event'}
                                                         </h3>
                                                         <div className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${getEventTypeColor(event.type)}`}>
-                                                            {event.type === 'game' ? '🏆' : event.type === 'practice' ? '🏃' : event.type === 'tournament' ? '🎯' : '📅'} {event.type || 'event'}
+                                                            {LacrosseIcons[event.type] || LacrosseIcons.event} {event.type || 'event'}
                                                         </div>
                                                     </div>
                                                     
