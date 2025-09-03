@@ -2583,7 +2583,7 @@ const BracketMatchCard = ({ match, onUpdateMatch, isAuthorized, bracketType }) =
         </div>
     );
 };
-*/
+
 // === END OF OLD EVENT DETAIL MODAL SYSTEM ===
 
 // File Upload Component
