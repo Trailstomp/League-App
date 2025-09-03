@@ -7555,7 +7555,7 @@ const TeamCalendarManager = ({ team, teams, setTeams, websiteStyle }) => {
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    <button onClick={() => setEditingEvent(event)} className="text-slate-500 hover:text-slate-700 p-1"><Edit size={18}/></button>
+                                    <button onClick={() => handleEditEvent(event)} className="text-slate-500 hover:text-slate-700 p-1"><Edit size={18}/></button>
                                     <button onClick={() => handleDelete(event.id)} className="text-red-500 hover:text-red-700 p-1"><Trash2 size={18}/></button>
                                 </div>
                             </li>
