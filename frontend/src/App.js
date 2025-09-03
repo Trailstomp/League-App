@@ -1409,7 +1409,6 @@ const getLogoStyle = (websiteStyle) => {
 
 // File Upload Component
 const FileUploadInput = ({
-                        <div>
                             <div className="flex items-center space-x-3 mb-2">
                                 <h2 className="text-2xl font-bold">{event.title}</h2>
                                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getEventStatusColor(eventStatus)}`}>
