@@ -11931,7 +11931,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                                                 <div 
                                                     key={event.id} 
                                                     className="bg-yellow-50 p-4 rounded-lg shadow-sm border border-yellow-200 cursor-pointer hover:border-yellow-300 hover:shadow-md transition-all duration-200 group relative"
-                                                    onClick={() => onEventClick && onEventClick(event)}
+                                                    onClick={() => handleEventCardClick(event)}
                                                     title="Click to view tournament details"
                                                 >
                                                     {/* Edit/Delete Buttons */}
