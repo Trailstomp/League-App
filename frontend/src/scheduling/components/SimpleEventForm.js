@@ -200,13 +200,60 @@ const SimpleEventForm = ({
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Location
                         </label>
-                        <input
-                            type="text"
-                            value={eventData.location}
-                            onChange={(e) => updateField('location', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Event location"
-                        />
+                        {(() => {
+                            // Get all available locations
+                            const teamLocations = teams.reduce((acc, team) => {
+                                if (team.locations && team.locations.length > 0) {
+                                    team.locations.forEach(location => {
+                                        acc.push({
+                                            value: location.name,
+                                            label: `🥍 ${location.name} (${team.name})`,
+                                            type: 'team',
+                                            teamName: team.name
+                                        });
+                                    });
+                                }
+                                return acc;
+                            }, []);
+
+                            const leagueLocationOptions = leagueLocations.map(location => ({
+                                value: location.name,
+                                label: `🏛️ ${location.name}${location.address ? ` - ${location.address}` : ''}`,
+                                type: 'league'
+                            }));
+
+                            const allLocationOptions = [...teamLocations, ...leagueLocationOptions];
+
+                            return (
+                                <div className="space-y-2">
+                                    <select
+                                        value={eventData.location}
+                                        onChange={(e) => updateField('location', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">🏟️ Select location or enter custom</option>
+                                        {allLocationOptions.map((option, index) => (
+                                            <option key={index} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    
+                                    {/* Custom location input */}
+                                    <input
+                                        type="text"
+                                        value={eventData.location}
+                                        onChange={(e) => updateField('location', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Or type custom location..."
+                                    />
+                                    
+                                    <div className="text-xs text-gray-500">
+                                        📍 Available: {teamLocations.length} team locations, {leagueLocationOptions.length} league locations
+                                    </div>
+                                </div>
+                            );
+                        })()}
                     </div>
 
                     <div>
