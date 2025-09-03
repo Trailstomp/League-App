@@ -3750,6 +3750,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
                                         id: g.homeTeam,
                                         name: teams.find(t => t.id === g.homeTeam)?.name || 'Unknown Team'
                                     })).filter((team, index, self) => self.findIndex(t => t.id === team.id) === index)
+                                      .sort((a, b) => a.name.localeCompare(b.name))
                                 })}
                                 title="Click to view tournament details"
                             >
