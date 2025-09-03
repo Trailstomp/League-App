@@ -1,10 +1,18 @@
 import React from 'react';
 
-// Simple icon components to replace lucide-react
-const Calendar = () => <span>📅</span>;
-const Users = () => <span>👥</span>;
-const Trophy = () => <span>🏆</span>;
-const Clock = () => <span>🕐</span>;
+// Lacrosse-themed icon system
+const LacrosseIcons = {
+    calendar: '📅',
+    teams: '🥍',      // Lacrosse stick for teams
+    games: '🏆',      // Trophy for games
+    practice: '🏃‍♂️',   // Running for practice
+    stats: '📊',      // Chart for statistics
+};
+
+const Calendar = () => <span>{LacrosseIcons.calendar}</span>;
+const Users = () => <span>{LacrosseIcons.teams}</span>;
+const Trophy = () => <span>{LacrosseIcons.games}</span>;
+const Clock = () => <span>{LacrosseIcons.practice}</span>;
 
 /**
  * Event Statistics - Quick overview of scheduling data
