@@ -18557,6 +18557,9 @@ function App() {
                     <NavItem icon={<Swords size={20} />} label="Standings" pageName="standings" />
                     <NavItem icon={<Mail size={20} />} label="League Contact" pageName="league_contact" />
                     {currentUser && <NavItem icon={<MessageSquare size={20} />} label="Chat" pageName="chat" />}
+                    {currentUser && (
+                        <NavItem icon={<Calendar size={20} />} label="🚀 New Scheduling" pageName="new-scheduling" />
+                    )}
                     <div className="pt-4 mt-4 border-t border-slate-700">
                       <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-2">Teams</h2>
                       
