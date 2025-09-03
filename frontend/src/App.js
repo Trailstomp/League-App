@@ -1413,8 +1413,19 @@ const getLogoStyle = (websiteStyle) => {
 // The new EventDetailModal is imported from './scheduling/components/EventDetailModal'
 
 // File Upload Component
-const FileUploadInput = ({
-    <button
+const FileUploadInput = ({ 
+    label, 
+    accept, 
+    currentValue, 
+    onChange, 
+    placeholder, 
+    enableCrop = false, 
+    cropAspectRatio = 'free', 
+    cropContext = 'header',
+    showAspectRatioPresets = false,
+    allowCustomAspectRatio = false 
+}) => {
+    const [isDragging, setIsDragging] = useState(false);
         onClick={() => setActiveTab(tabKey)}
         className={`px-6 py-3 font-medium border-b-2 transition-colors ${
             activeTab === tabKey
