@@ -12631,7 +12631,7 @@ const PlayerForm = ({ initialPlayer, onSave, onCancel, managedTeams, isAdmin }) 
 
 const PlayerManager = ({ players, setPlayers, teams, currentUser }) => {
     const [editingPlayer, setEditingPlayer] = useState(null);
-    const isAdmin = currentUser.roles.includes('admin');
+    const isAdmin = userHasRole(currentUser, 'admin');
     
     const managedTeams = isAdmin
         ? teams 
