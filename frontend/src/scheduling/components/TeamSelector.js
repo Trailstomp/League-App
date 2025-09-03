@@ -16,6 +16,18 @@ const TeamSelector = ({ teams = [], teamSelection, title = "Select Teams" }) => 
         selectedCount: teamSelection.selectedCount
     });
 
+    // DEBUG: Check team data structure
+    console.log('🔍 TEAM DEBUG - First 3 teams:', teams.slice(0, 3).map(team => ({
+        id: team.id,
+        name: team.name,
+        active: team.active,
+        isExternal: team.isExternal
+    })));
+    console.log('🔍 TEAM DEBUG - League teams:', leagueTeams.slice(0, 3).map(team => ({
+        id: team.id,
+        name: team.name
+    })));
+
     return (
         <div className="team-selector">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
