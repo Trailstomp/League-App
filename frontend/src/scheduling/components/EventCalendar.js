@@ -214,7 +214,7 @@ const EventCalendar = ({
                                                             className="p-1 text-red-600 hover:bg-red-100 rounded"
                                                             title="Delete event"
                                                         >
-                                                            <Trash2 size={14} />
+                                                            <Trash2 />
                                                         </button>
                                                     </div>
                                                 )}
