@@ -17883,6 +17883,7 @@ function App() {
                     setLeagueSchedule(initialLeagueSchedule);
                     // FORCE USE PROPER ADMIN USERS: Use initialMockUsers to restore Admin Ali and Coach accounts
                     setUsers(initialMockUsers);
+                    setLeagueLocations(apiData.leagueLocations || []);
                     setLeagueInfo(apiData.leagueInfo || {
                         name: "Men's Lacrosse Beer League",
                         contactEmail: "admin@mlbl.org",
