@@ -17153,7 +17153,7 @@ const getUsersByRole = (roles, users) => {
     return users.filter(user => 
         user.status === 'active' && 
         user.roles && 
-        roleArray.some(role => user.roles.includes(role))
+        roleArray.some(role => user.roles && user.roles.includes(role))
     );
 };
 
