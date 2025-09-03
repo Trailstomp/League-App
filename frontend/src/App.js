@@ -6508,7 +6508,7 @@ const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
     );
 };
 
-const LeagueCalendarManager = ({ teams, setTeams, websiteStyle }) => {
+const LeagueCalendarManager = ({ teams, setTeams, websiteStyle, leagueLocations = [] }) => {
     const [selectedTeamId, setSelectedTeamId] = useState('all');
     const [editingEvent, setEditingEvent] = useState(null);
 
