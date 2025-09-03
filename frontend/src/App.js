@@ -1426,8 +1426,9 @@ const FileUploadInput = ({
     allowCustomAspectRatio = false 
 }) => {
     const [isDragging, setIsDragging] = useState(false);
-
-// === EVENT DETAIL TAB COMPONENTS ===
+    // Temporary minimal implementation - see full implementation below
+    return <div>FileUploadInput - Implemented below</div>;
+};
 
 // Details Tab
 const EventDetailsTab = ({ event, isAuthorized, onUpdateEvent, onDeleteEvent, currentUser }) => {
