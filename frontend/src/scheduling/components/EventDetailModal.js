@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { EnhancedScoresTab } from './EnhancedScoring';
+import TournamentBracketsTab from './TournamentBrackets';
 
 /**
  * Event Detail Modal - Comprehensive event viewing and management
