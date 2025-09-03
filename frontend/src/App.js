@@ -6207,7 +6207,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                     <div 
                                         key={`${event.teamId}-${event.id}`} 
                                         className="bg-blue-50 rounded-lg p-4 border border-blue-200 cursor-pointer hover:border-blue-300 hover:shadow-md transition-all duration-200 group relative"
-                                        onClick={() => onEventClick && onEventClick(event)}
+                                        onClick={() => handleEventCardClick(event)}
                                         title="Click to view event details"
                                     >
                                         {/* Edit/Delete Buttons */}
