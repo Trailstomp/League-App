@@ -6,7 +6,7 @@ import EventTester from './EventTester';
  * New Scheduling Module - Clean Architecture Entry Point
  * This will eventually replace the complex event management in App.js
  */
-const SchedulingModule = ({ teams = [], leagueSchedule = [], setLeagueSchedule, currentUser }) => {
+const SchedulingModule = ({ teams = [], leagueSchedule = [], setLeagueSchedule, currentUser, leagueLocations = [] }) => {
     const [viewMode, setViewMode] = useState('dashboard'); // 'dashboard' or 'tester'
     
     return (
