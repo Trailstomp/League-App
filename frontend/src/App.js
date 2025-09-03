@@ -18057,7 +18057,12 @@ function App() {
             }
 
             // Find user by email - handle cases where u.email might be undefined
-            const user = users.find(u => u.email && u.email.toLowerCase() === email.toLowerCase() && u.status === 'active');
+            const user = users.find(u => {
+                if (!u.email) return false; // Skip users without email
+                const emailMatch = u.email.toLowerCase() === email.toLowerCase();
+                const isActive = u.status === 'active' || !u.status; // Default to active if no status
+                return emailMatch && isActive;
+            });
             
             if (!user) {
                 alert('Invalid email or account not active. Please check your credentials or contact an admin.');
