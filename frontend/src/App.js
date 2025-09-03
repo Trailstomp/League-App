@@ -6982,6 +6982,12 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
     console.log('🚀 NEW APPROACH - selectedTeamIds:', selectedTeamIds);
     
     // Ensure editingEvent has all required fields with defaults
+    const sortedSelectedTeamIds = [...selectedTeamIds].sort((a, b) => {
+        const teamA = teams.find(t => t.id === a);
+        const teamB = teams.find(t => t.id === b);
+        return (teamA?.name || '').localeCompare(teamB?.name || '');
+    });
+    
     const safeEditingEvent = {
         id: '',
         title: '',
@@ -6991,7 +6997,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
         location: '',
         description: '',
         teamId: '',
-        teamIds: selectedTeamIds, // Use our local state
+        teamIds: sortedSelectedTeamIds, // Use our sorted local state
         imageUrl: '',
         customLocation: '',
         homeScore: 0,
@@ -7000,7 +7006,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
         awayTeam: '',
         status: 'scheduled',
         ...editingEvent,
-        teamIds: selectedTeamIds // Override with our local state
+        teamIds: sortedSelectedTeamIds // Override with our sorted local state
     };
     
     // Update parent state when local team selection changes
