@@ -18267,7 +18267,11 @@ function App() {
                         <LoginForm />
 
                         {/* Quick Login (for demo/testing) */}
-                        {users.filter(u => u.status === 'active' && u.roles.length > 0).length > 0 && (
+                        {(() => {
+                            console.log('🔍 DEBUG: users state in AuthModal:', users);
+                            console.log('🔍 DEBUG: users with roles:', users.filter(u => u.status === 'active' && u.roles.length > 0));
+                            return users.filter(u => u.status === 'active' && u.roles.length > 0).length > 0;
+                        })() && (
                             <div className="mb-6 border-t pt-4">
                                 <h3 className="text-sm font-semibold mb-3 text-slate-600">Quick Login (Demo Mode):</h3>
                                 <div className="grid grid-cols-1 gap-2">
