@@ -18940,6 +18940,8 @@ function App() {
                                     console.log('New event data:', newEvent);
                                     console.log('🔍 SAVE DEBUG - newEvent.imageUrl:', newEvent.imageUrl);
                                     console.log('🔍 SAVE DEBUG - newEvent.teamIds:', newEvent.teamIds);
+                                    console.log('🔍 SAVE DEBUG - processedEvent.teamIds:', processedEvent.teamIds);
+                                    console.log('🔍 SAVE DEBUG - editingEvent.teamIds:', editingEvent.teamIds);
                                     setLeagueSchedule(prev => [...prev, newEvent]);
                                 } else {
                                     // Updating existing event
