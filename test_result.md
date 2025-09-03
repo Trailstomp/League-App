@@ -701,6 +701,21 @@ frontend:
         agent: "testing"
         comment: "🎯 COMPREHENSIVE BACKEND VERIFICATION AFTER EVENTFORM FIXES COMPLETED: Executed comprehensive backend testing suite specifically focused on event-related functionality after EventForm duplicate photo upload section fixes. STANDARD BACKEND TESTING: All 12 basic backend tests passed (100% success rate) - Health check endpoint responding correctly (49.66ms), GET/POST status endpoints working perfectly, GET/POST league-data endpoints fully functional, database persistence verified, all services running properly via supervisor. EVENT-FOCUSED TESTING: Created and executed specialized event_backend_test.py with 4 comprehensive tests (100% success rate): ✅ Event Data Structure Storage - Successfully saved league data with complex event structures including photos, RSVP data, tournament brackets, and all EventForm fields ✅ Event Data Retrieval - Retrieved events with proper structure validation, confirmed all required fields (id, title, date, time, location, type) present ✅ Event Photo Handling - Verified base64 photo data persists correctly through save/retrieve cycles (407 chars), proper data:image/ format maintained ✅ Team-Event Integration - Confirmed 100% valid team reference integrity between teams and events. CRITICAL ASSESSMENT: Backend API fully supports EventForm functionality with zero regressions after duplicate photo upload section fixes. All event creation, editing, photo upload, and team integration operations work perfectly. Database persistence excellent with response times 49-56ms. All services (backend, frontend, mongodb, code-server) running properly. CONCLUSION: EventForm fixes have NO impact on backend functionality as expected - backend remains fully operational and ready for production use."
 
+  - task: "Fix Coach Permissions - isAuthorizedToManage function not working for Coach Chandler"
+    implemented: true
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 1
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "URGENT COACH PERMISSIONS RETEST - User reported missing Add Event button for Coach Chandler (OH10). Previously missing due to isAuthorizedToManage condition. Need to verify fix for isAuthorizedToManage function (line 5869-5876) that now properly checks for currentUser.roles?.includes('coach')."
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL FAILURE: Comprehensive testing reveals Coach Chandler permissions are NOT WORKING despite isAuthorizedToManage fix. FAILED TESTS: ❌ Add Event button NOT VISIBLE to Coach Chandler ❌ Edit/Delete buttons do NOT appear on hover for OH10 team events ❌ currentUser object is null/undefined in browser state ❌ User authentication state not properly maintained. ROOT CAUSE: While isAuthorizedToManage function code looks correct (lines 5869-5878), the currentUser object is not being properly stored/accessed in the browser, causing all permission checks to fail. Login process works (Coach Chandler login successful) but user object not persisting in application state. URGENT: This is a critical authentication state management bug that makes all coach permissions non-functional."
+
 backend:
   - task: "Backend API functionality"
     implemented: true
