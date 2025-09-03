@@ -1408,8 +1408,6 @@ const getLogoStyle = (websiteStyle) => {
 // the new modular EventDetailModal from ./scheduling/components/EventDetailModal.js
 
 const FileUploadInput = ({
-                {/* Modal Header */}
-                <div className="p-6 border-b bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-t-lg">
                     <div className="flex justify-between items-start">
                         <div>
                             <div className="flex items-center space-x-3 mb-2">
