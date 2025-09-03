@@ -18269,8 +18269,11 @@ function App() {
                         {/* Quick Login (for demo/testing) */}
                         {(() => {
                             console.log('🔍 DEBUG: users state in AuthModal:', users);
-                            console.log('🔍 DEBUG: users with roles:', users.filter(u => u.status === 'active' && u.roles.length > 0));
-                            return users.filter(u => u.status === 'active' && u.roles.length > 0).length > 0;
+                            console.log('🔍 DEBUG: first user structure:', users[0]);
+                            console.log('🔍 DEBUG: users with active status:', users.filter(u => u.status === 'active'));
+                            console.log('🔍 DEBUG: users with roles:', users.filter(u => u.roles && u.roles.length > 0));
+                            console.log('🔍 DEBUG: users with both:', users.filter(u => u.status === 'active' && u.roles && u.roles.length > 0));
+                            return users.filter(u => u.status === 'active' && u.roles && u.roles.length > 0).length > 0;
                         })() && (
                             <div className="mb-6 border-t pt-4">
                                 <h3 className="text-sm font-semibold mb-3 text-slate-600">Quick Login (Demo Mode):</h3>
