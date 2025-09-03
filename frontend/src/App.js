@@ -1407,8 +1407,7 @@ const getLogoStyle = (websiteStyle) => {
 // The old inline EventDetailModal component has been removed and replaced with
 // the new modular EventDetailModal from ./scheduling/components/EventDetailModal.js
 
-// File Upload Component
-                                </span>
+const FileUploadInput = ({
                             </div>
                             <div className="flex items-center space-x-4 text-blue-100">
                                 <span>📅 {new Date(event.date).toLocaleDateString()}</span>
