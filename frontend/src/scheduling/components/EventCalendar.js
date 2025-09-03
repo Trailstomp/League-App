@@ -19,8 +19,8 @@ const EventCalendar = ({
     onDeleteEvent,
     currentUser 
 }) => {
-    const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
-    const [filterType, setFilterType] = useState('all'); // 'all', 'game', 'practice', 'tournament'
+    const [viewMode, setViewMode] = useState('grid'); // 'list' or 'grid'
+    const [selectedEventTypes, setSelectedEventTypes] = useState(['game', 'practice', 'tournament', 'event']); // Multiple selection
 
     console.log('📅 EventCalendar rendered with:', {
         eventsCount: leagueSchedule.length,
