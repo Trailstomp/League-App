@@ -6931,7 +6931,7 @@ const LeagueInfoManager = ({ leagueInfo, setLeagueInfo, websiteStyle, setWebsite
     );
 };
 
-const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isTeamSpecific = false, currentTeamId = null, formBackgroundColor = '#f8fafc', setBracketEvent }) => {
+const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isTeamSpecific = false, currentTeamId = null, formBackgroundColor = '#f8fafc', setBracketEvent, leagueLocations = [] }) => {
     // COMPLETELY NEW APPROACH: Use local state for team selections
     const [selectedTeamIds, setSelectedTeamIds] = useState(() => {
         // Initialize from editingEvent.teamIds or legacy teamId or empty array
