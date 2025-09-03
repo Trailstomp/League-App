@@ -44,6 +44,7 @@ const SchedulingModule = ({ teams = [], leagueSchedule = [], setLeagueSchedule, 
                     leagueSchedule={leagueSchedule}
                     setLeagueSchedule={setLeagueSchedule}
                     currentUser={currentUser}
+                    leagueLocations={leagueLocations}
                 />
             ) : (
                 <div className="space-y-6">
