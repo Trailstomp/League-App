@@ -239,7 +239,7 @@ const EventCalendar = ({
                                                 {/* Teams */}
                                                 {event.teamIds && event.teamIds.length > 0 && (
                                                     <div className="flex items-start">
-                                                        <Users size={14} className="mr-2 text-gray-400 mt-0.5" />
+                                                        <span className="mr-2 text-gray-400 mt-0.5"><Users /></span>
                                                         <div className="flex-1">
                                                             <div className="flex flex-wrap gap-1">
                                                                 {event.teamIds.slice(0, 3).map(teamId => {
