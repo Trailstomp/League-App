@@ -1403,8 +1403,8 @@ const getLogoStyle = (websiteStyle) => {
            'object-fill';
 };
 
-// === EVENT DETAIL MODAL COMPONENT ===
-const EventDetailModal = ({ event, isOpen, onClose, activeTab, setActiveTab, teams, currentUser, users, leagueInfo, onUpdateRSVP, onUpdateEvent, onDeleteEvent }) => {
+// === OLD EVENT DETAIL MODAL - REPLACED WITH SCHEDULING MODULE VERSION ===
+// const EventDetailModal = ({ event, isOpen, onClose, activeTab, setActiveTab, teams, currentUser, users, leagueInfo, onUpdateRSVP, onUpdateEvent, onDeleteEvent }) => {
     if (!event || !isOpen) return null;
     
     const isAuthorized = currentUser && (
