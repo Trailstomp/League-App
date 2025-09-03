@@ -163,10 +163,10 @@ const EventCalendar = ({
                         <div className="flex flex-wrap items-center gap-3">
                             <span className="text-sm font-medium text-gray-700">Show:</span>
                             {[
-                                { type: 'game', label: '🏆 Games', count: leagueSchedule.filter(e => e.type === 'game').length },
-                                { type: 'practice', label: '🏃 Practices', count: leagueSchedule.filter(e => e.type === 'practice').length },
-                                { type: 'tournament', label: '🎯 Tournaments', count: leagueSchedule.filter(e => e.type === 'tournament').length },
-                                { type: 'event', label: '📅 Events', count: leagueSchedule.filter(e => e.type === 'event').length }
+                                { type: 'game', label: `${LacrosseIcons.game} Games`, count: leagueSchedule.filter(e => e.type === 'game').length },
+                                { type: 'practice', label: `${LacrosseIcons.practice} Practices`, count: leagueSchedule.filter(e => e.type === 'practice').length },
+                                { type: 'tournament', label: `${LacrosseIcons.tournament} Tournaments`, count: leagueSchedule.filter(e => e.type === 'tournament').length },
+                                { type: 'event', label: `${LacrosseIcons.event} Events`, count: leagueSchedule.filter(e => e.type === 'event').length }
                             ].map(({ type, label, count }) => (
                                 <label key={type} className="flex items-center text-sm cursor-pointer">
                                     <input
