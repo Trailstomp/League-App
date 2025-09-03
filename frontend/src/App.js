@@ -1419,7 +1419,19 @@ const getLogoStyle = (websiteStyle) => {
     );
 };
 
-// Tab Button Component - Removed (old EventDetailModal component no longer needed)
+// Tab Button Component
+const TabButton = ({ label, tabKey, activeTab, setActiveTab }) => (
+    <button
+        onClick={() => setActiveTab(tabKey)}
+        className={`px-6 py-3 font-medium border-b-2 transition-colors ${
+            activeTab === tabKey
+                ? 'border-blue-500 text-blue-600 bg-white'
+                : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+        }`}
+    >
+        {label}
+    </button>
+);
 
 // === EVENT DETAIL TAB COMPONENTS ===
 
@@ -17816,6 +17828,7 @@ function App() {
     
     // Event Detail Modal state
     const [selectedEventDetail, setSelectedEventDetail] = useState(null);
+    const [eventDetailTab, setEventDetailTab] = useState('details');
     
     // Event editing state
     const [editingEvent, setEditingEvent] = useState(null);
