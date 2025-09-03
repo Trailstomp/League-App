@@ -5912,7 +5912,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                             name: awayTeam?.name || 'Away Team', 
                             logo: awayTeam?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
                         }
-                    ].filter(team => team && team.name)
+                    ].filter(team => team && team.name).sort((a, b) => a.name.localeCompare(b.name))
                 };
             });
         } else {
