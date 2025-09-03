@@ -3130,7 +3130,7 @@ const hasPermission = (user, permission) => {
     if (!user || !user.roleIds) return false;
     return user.roleIds.some(roleId => {
         const role = getAllRoles().find(r => r.id === roleId);
-        return role && role.permissions.includes(permission);
+        return role && role.permissions && role.permissions.includes(permission);
     });
 };
 
