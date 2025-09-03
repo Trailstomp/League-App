@@ -304,14 +304,14 @@ const EventCalendar = ({
                                                 <div className="space-y-1 text-xs text-gray-600">
                                                     {/* Time */}
                                                     <div className="flex items-center">
-                                                        <span className="mr-1"><Clock /></span>
+                                                        <span className="mr-1">{LacrosseIcons.time}</span>
                                                         <span>{formatTime(event.time)}</span>
                                                     </div>
 
                                                     {/* Location */}
                                                     {event.location && (
                                                         <div className="flex items-center">
-                                                            <span className="mr-1"><MapPin /></span>
+                                                            <span className="mr-1">{LacrosseIcons.location}</span>
                                                             <span className="truncate">{event.location}</span>
                                                         </div>
                                                     )}
