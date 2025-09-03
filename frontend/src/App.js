@@ -1412,8 +1412,8 @@ const getLogoStyle = (websiteStyle) => {
 // Note: Old inline EventDetailModal component and related code removed
 // The new EventDetailModal is imported from './scheduling/components/EventDetailModal'
 
-// Tab Button Component
-const TabButton = ({ label, tabKey, activeTab, setActiveTab }) => (
+// File Upload Component
+const FileUploadInput = ({
     <button
         onClick={() => setActiveTab(tabKey)}
         className={`px-6 py-3 font-medium border-b-2 transition-colors ${
