@@ -1088,8 +1088,8 @@ metadata:
     implemented: true
     working: false
     file: "frontend/src/App.js"
-    stuck_count: 0
-    priority: "high"
+    stuck_count: 1
+    priority: "critical"
     needs_retesting: false
     status_history:
       - working: false
@@ -1098,6 +1098,24 @@ metadata:
       - working: false
         agent: "main"
         comment: "🎉 EVENT DETAIL MODAL INTEGRATION COMPLETED: ✅ Added EventDetailModal to main App return statement with all required props (event, onClose, activeTab, setActiveTab, teams, currentUser, onUpdateEvent) ✅ Added onClick handlers to all event cards in EventsPage and team calendars with hover effects and cursor styling for better UX ✅ Implemented proper event propagation handling to prevent modal triggering when clicking child elements (team buttons) ✅ Connected selectedEventDetail and eventDetailTab state management ✅ Modal component fully implemented with tabs for event editing, score management, player stats tracking, attendance management, and tournament bracket generation."
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL FAILURE: EventDetailModal integration is NOT FUNCTIONAL. FAILED TESTS: ❌ Modal does not open when clicking event cards - JavaScript runtime error 'setActiveTab is not a function' TypeError prevents modal from opening ❌ Enhanced Scoring & Tournament Brackets features completely inaccessible due to modal failure ❌ Tab switching system broken - setActiveTab function not properly defined or passed to modal components ❌ All enhanced features (team statistics, goalie stats, tournament bracket creation) cannot be tested because modal won't open. SUCCESSFUL TESTS: ✅ Event cards display correctly (12 found) ✅ Click handlers are present on event cards ✅ Modal component exists in code with proper tab structure ✅ Coach permissions working (Add Event button visible). ROOT CAUSE: JavaScript runtime errors in modal tab management system preventing EventDetailModal from functioning. The integration exists but is broken due to setActiveTab function errors."
+
+  - task: "Enhanced Scoring & Tournament Brackets System Testing"
+    implemented: true
+    working: false
+    file: "frontend/src/App.js"
+    stuck_count: 1
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Enhanced Scoring & Tournament Brackets system implemented with EventDetailModal tabs, comprehensive tournament management, enhanced scoring interface, and coach permissions. Ready for comprehensive testing."
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL FAILURE: Comprehensive testing reveals Enhanced Scoring & Tournament Brackets system is NOT FUNCTIONAL. FAILED TESTS: ❌ EventDetailModal does not open when clicking event cards - modal functionality completely broken ❌ Enhanced Scoring features not accessible - no team statistics, goalie stats, or live scoring interface detected ❌ Tournament Brackets tab not accessible - cannot test bracket creation, format options, or team management ❌ JavaScript runtime errors present: 'setActiveTab is not a function' TypeError preventing modal tab functionality ❌ Modal tab switching system broken due to JavaScript errors. SUCCESSFUL TESTS: ✅ Coach Chandler login working correctly ✅ Events page navigation functional ✅ Event cards display properly (12 found) ✅ Add Event button visible (coach permissions working) ✅ No console JavaScript errors during basic navigation. ROOT CAUSE: Modal system has critical JavaScript errors preventing EventDetailModal from opening, making all enhanced scoring and tournament bracket features completely inaccessible. The implementation exists in code but is not functional due to runtime errors."
       - working: true
         agent: "main"
         comment: "🎉 JAVASCRIPT ERROR COMPLETELY RESOLVED: Fixed critical data structure mismatch - backend provides individual event objects but frontend expected {date, games: []} format. Implemented flexible data processing that handles both formats: old format (days with games array) and new format (direct event objects). ✅ Events now display correctly (3 event cards visible: Thunder Hawks Practice, Thunder Hawks vs Lightning Bolts) ✅ Event filtering working (Game/Practice/Tournament toggles functional) ✅ EventsPage rendering without errors ✅ All null safety checks in place ✅ Date filtering for upcoming/past events working ✅ Event Detail Modal integration ready for testing - events are clickable and should trigger modal opening. JavaScript runtime error permanently eliminated!"
