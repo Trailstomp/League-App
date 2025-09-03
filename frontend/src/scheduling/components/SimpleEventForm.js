@@ -10,6 +10,7 @@ const SimpleEventForm = ({
     teams = [], 
     leagueSchedule = [], 
     setLeagueSchedule,
+    leagueLocations = [],
     onSave,
     onCancel 
 }) => {
