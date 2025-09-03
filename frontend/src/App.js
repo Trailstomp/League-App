@@ -16782,7 +16782,16 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                     </div>
                 )}
 
-
+                {activeTab === 'locations' && hasPermission(currentUser, 'system.admin_access') && (
+                    <div className="p-6">
+                        <h2 className="text-2xl font-bold mb-4">League Locations</h2>
+                        <LeagueLocationsManager 
+                            teams={teams} 
+                            leagueLocations={leagueLocations} 
+                            setLeagueLocations={setLeagueLocations} 
+                        />
+                    </div>
+                )}
 
                 {activeTab === 'media' && hasPermission(currentUser, 'media.view') && (
                     <div className="p-6">
