@@ -255,13 +255,35 @@ const SimpleEventForm = ({
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                             />
                             
+                            {/* Image Display Options */}
+                            {eventData.imageUrl && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Image Display Style
+                                    </label>
+                                    <select
+                                        value={eventData.imageStyle || 'cover'}
+                                        onChange={(e) => updateField('imageStyle', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    >
+                                        <option value="cover">🖼️ Fill (crop to fit)</option>
+                                        <option value="contain">📐 Fit (show full image)</option>
+                                        <option value="fill">📏 Stretch (may distort)</option>
+                                    </select>
+                                </div>
+                            )}
+                            
                             {/* Image Preview */}
                             {eventData.imageUrl && (
                                 <div className="relative">
                                     <img 
                                         src={eventData.imageUrl} 
                                         alt="Event preview"
-                                        className="w-full h-32 object-cover rounded border border-gray-200"
+                                        className={`w-full h-32 rounded border border-gray-200 ${
+                                            eventData.imageStyle === 'contain' ? 'object-contain bg-gray-50' :
+                                            eventData.imageStyle === 'fill' ? 'object-fill' :
+                                            'object-cover'
+                                        }`}
                                         onError={(e) => {
                                             console.error('Image preview failed to load');
                                             e.target.style.display = 'none';
@@ -271,6 +293,7 @@ const SimpleEventForm = ({
                                         type="button"
                                         onClick={() => {
                                             updateField('imageUrl', '');
+                                            updateField('imageStyle', 'cover');
                                             console.log('📸 Image removed');
                                         }}
                                         className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
@@ -282,7 +305,7 @@ const SimpleEventForm = ({
                             )}
                             
                             <div className="text-xs text-gray-500">
-                                Upload an image file (JPG, PNG, GIF) up to 5MB
+                                📸 Upload an image file (JPG, PNG, GIF) up to 5MB
                             </div>
                         </div>
                     </div>
