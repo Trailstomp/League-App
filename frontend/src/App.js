@@ -17933,7 +17933,9 @@ function App() {
                     setLeagueSchedule(initialLeagueSchedule);
                     // FORCE USE PROPER ADMIN USERS: Use initialMockUsers to restore Admin Ali and Coach accounts
                     setUsers(initialMockUsers);
+                    console.log('🔧 DEBUG: Loading league locations from API:', apiData.leagueLocations);
                     setLeagueLocations(apiData.leagueLocations || []);
+                    console.log('🔧 DEBUG: League locations set to:', apiData.leagueLocations || []);
                     setLeagueInfo(apiData.leagueInfo || {
                         name: "Men's Lacrosse Beer League",
                         contactEmail: "admin@mlbl.org",
