@@ -17712,7 +17712,8 @@ function App() {
                     console.log('🔧 DEBUG: API leagueSchedule would be:', apiData.leagueSchedule?.map(e => ({id: e.id, date: e.date})));
                     console.log('🔧 DEBUG: Using initialLeagueSchedule instead:', initialLeagueSchedule.map(e => ({id: e.id, date: e.date})));
                     setLeagueSchedule(initialLeagueSchedule);
-                    setUsers(loadedUsers);
+                    // FORCE USE PROPER ADMIN USERS: Use initialMockUsers to restore Admin Ali and Coach accounts
+                    setUsers(initialMockUsers);
                     setLeagueInfo(apiData.leagueInfo || {
                         name: "Men's Lacrosse Beer League",
                         contactEmail: "admin@mlbl.org",
