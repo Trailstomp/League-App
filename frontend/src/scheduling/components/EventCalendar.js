@@ -26,7 +26,7 @@ const EventCalendar = ({
         eventsCount: leagueSchedule.length,
         teamsCount: teams.length,
         viewMode,
-        filterType
+        selectedEventTypes
     });
 
     // Helper function to get team info
