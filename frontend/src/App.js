@@ -7263,23 +7263,23 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                                         type="checkbox"
                                         checked={(() => {
                                             const leagueTeams = teams.filter(t => t.active && !t.isExternal);
-                                            const selectedLeagueTeams = (editingEvent?.teamIds || []).filter(id => 
+                                            const selectedLeagueTeams = selectedTeamIds.filter(id => 
                                                 leagueTeams.some(team => team.id === id)
                                             );
                                             return leagueTeams.length > 0 && selectedLeagueTeams.length === leagueTeams.length;
                                         })()}
                                         onChange={(e) => {
+                                            // NEW APPROACH: Direct local state management
                                             const leagueTeams = teams.filter(t => t.active && !t.isExternal);
-                                            const currentTeamIds = safeEditingEvent.teamIds;
-                                            const externalTeamIds = currentTeamIds.filter(id => 
+                                            const externalTeamIds = selectedTeamIds.filter(id => 
                                                 teams.some(team => team.id === id && team.isExternal)
                                             );
                                             
-                                            const newTeamIds = e.target.checked
-                                                ? [...externalTeamIds, ...leagueTeams.map(t => t.id)]
-                                                : externalTeamIds;
-                                                
-                                            setEditingEvent(prev => ({...prev, teamIds: newTeamIds}));
+                                            setSelectedTeamIds(
+                                                e.target.checked
+                                                    ? [...externalTeamIds, ...leagueTeams.map(t => t.id)]
+                                                    : externalTeamIds
+                                            );
                                         }}
                                         className="rounded"
                                     />
