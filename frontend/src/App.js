@@ -6584,7 +6584,11 @@ const LeagueCalendarManager = ({ teams, setTeams, websiteStyle, leagueLocations 
         const baseEvent = {
             ...editingEvent,
             id: editingEvent.id || Date.now(),
-            teamIds: editingEvent.teamIds || []
+            teamIds: (editingEvent.teamIds || []).sort((a, b) => {
+                const teamA = teams.find(t => t.id === a);
+                const teamB = teams.find(t => t.id === b);
+                return (teamA?.name || '').localeCompare(teamB?.name || '');
+            })
         };
 
         const eventsToAdd = generateRecurringEvents(baseEvent);
