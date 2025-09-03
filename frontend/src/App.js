@@ -1412,23 +1412,7 @@ const getLogoStyle = (websiteStyle) => {
 // Note: Old inline EventDetailModal component and related code removed
 // The new EventDetailModal is imported from './scheduling/components/EventDetailModal'
 
-// File Upload Component
-const FileUploadInput = ({ 
-    label, 
-    accept, 
-    currentValue, 
-    onChange, 
-    placeholder, 
-    enableCrop = false, 
-    cropAspectRatio = 'free', 
-    cropContext = 'header',
-    showAspectRatioPresets = false,
-    allowCustomAspectRatio = false 
-}) => {
-    const [isDragging, setIsDragging] = useState(false);
-    // Temporary minimal implementation - see full implementation below
-    return <div>FileUploadInput - Implemented below</div>;
-};
+// File Upload Component (duplicate removed - see implementation above)
 
 // Details Tab
 const EventDetailsTab = ({ event, isAuthorized, onUpdateEvent, onDeleteEvent, currentUser }) => {
