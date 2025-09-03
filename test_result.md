@@ -1107,13 +1107,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Complete Event Detail Modal integration with calendar events"
-    - "Event Registration & RSVP System with yes/no tracking"
-    - "Attendance tracking for practices and games"
-    - "Event notification system (text/email)"
-    - "Advanced recurring events"
-    - "Project redeployment with new name: League Management App"
-  stuck_tasks: []
+    - "Fix Coach Permissions - isAuthorizedToManage function not working for Coach Chandler"
+  stuck_tasks:
+    - "Fix Coach Permissions - isAuthorizedToManage function not working for Coach Chandler"
   test_all: false
   test_priority: "stuck_first"
   backend_testing_complete: true
