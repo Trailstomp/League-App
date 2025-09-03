@@ -19115,6 +19115,7 @@ function App() {
                             setEditingEvent={setEditingEvent}
                             teams={teams}
                             setBracketEvent={setBracketEvent}
+                            leagueLocations={leagueLocations}
                             onSave={(e) => {
                                 e.preventDefault();
                                 console.log('Save handler called with editingEvent:', editingEvent);
