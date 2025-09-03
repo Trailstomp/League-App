@@ -5891,20 +5891,17 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         // Coaches can edit events for their teams
         if (currentUser.role === 'coach' || currentUser.roles?.includes('coach')) {
             console.log('🔧 DEBUG: User is coach - checking team association');
-            
-            // Find the coach's team
-            const userTeam = teams.find(team => 
-                team.players?.some(player => player.email === currentUser.email) ||
-                team.coaches?.some(coach => coach.email === currentUser.email)
-            );
-            
-            console.log('🔧 DEBUG: User team found:', userTeam?.name);
+            console.log('🔧 DEBUG: User teamId:', currentUser.teamId);
             console.log('🔧 DEBUG: Event teamIds:', event.teamIds);
             console.log('🔧 DEBUG: Event teamId:', event.teamId);
             
-            if (userTeam && (
-                event.teamIds?.includes(userTeam.id) || 
-                event.teamId === userTeam.id
+            // Check if the coach's team is involved in the event
+            const userTeamId = currentUser.teamId;
+            if (userTeamId && (
+                event.teamIds?.includes(userTeamId) || 
+                event.teamId === userTeamId ||
+                event.homeTeam === userTeamId ||
+                event.awayTeam === userTeamId
             )) {
                 console.log('🔧 DEBUG: Coach can edit this event - team match found');
                 return true;
