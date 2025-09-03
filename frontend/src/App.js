@@ -1407,8 +1407,8 @@ const getLogoStyle = (websiteStyle) => {
 // The old inline EventDetailModal component has been removed and replaced with
 // the new modular EventDetailModal from ./scheduling/components/EventDetailModal.js
 
+// File Upload Component
 const FileUploadInput = ({
-                    <div className="flex justify-between items-start">
                         <div>
                             <div className="flex items-center space-x-3 mb-2">
                                 <h2 className="text-2xl font-bold">{event.title}</h2>
