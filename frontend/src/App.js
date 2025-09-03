@@ -1407,8 +1407,7 @@ const getLogoStyle = (websiteStyle) => {
 // The old inline EventDetailModal component has been removed and replaced with
 // the new modular EventDetailModal from ./scheduling/components/EventDetailModal.js
 
-// File Upload Component
-            <div className="bg-white rounded-lg max-w-6xl max-h-[90vh] w-full mx-4 flex flex-col" onClick={e => e.stopPropagation()}>
+const FileUploadInput = ({
                 {/* Modal Header */}
                 <div className="p-6 border-b bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-t-lg">
                     <div className="flex justify-between items-start">
