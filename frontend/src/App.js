@@ -7074,22 +7074,39 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
                                         allLocations.push(...currentTeam.locations.map(loc => ({...loc, teamName: currentTeam.name})));
                                     }
                                 } else {
-                                    // For league events, show all teams' locations
-                                    teams.forEach(team => {
-                                        if (team.locations) {
-                                            allLocations.push(...team.locations.map(loc => ({...loc, teamName: team.name})));
+                                    // Check if current user is a coach (only show their team's locations + league locations)
+                                    const isCoach = currentUser?.role === 'coach' || currentUser?.roles?.includes('coach');
+                                    const userTeam = isCoach ? teams.find(team => 
+                                        team.players?.some(player => player.email === currentUser.email) ||
+                                        team.coaches?.some(coach => coach.email === currentUser.email)
+                                    ) : null;
+                                    
+                                    if (isCoach && userTeam) {
+                                        // Coaches see only their team's locations
+                                        if (userTeam.locations) {
+                                            allLocations.push(...userTeam.locations.map(loc => ({...loc, teamName: userTeam.name})));
                                         }
-                                    });
+                                    } else {
+                                        // Admins see all team locations
+                                        teams.forEach(team => {
+                                            if (team.locations) {
+                                                allLocations.push(...team.locations.map(loc => ({...loc, teamName: team.name})));
+                                            }
+                                        });
+                                    }
                                 }
                                 
-                                // Add league-wide locations
+                                // Add league-wide locations (visible to all)
                                 if (leagueLocations && leagueLocations.length > 0) {
                                     allLocations.push(...leagueLocations.map(loc => ({...loc, teamName: 'League'})));
                                 }
                                 
-                                return allLocations.map(location => (
-                                    <option key={`${location.teamName}-${location.id}`} value={location.name}>
-                                        {location.name} {!isTeamSpecific ? `(${location.teamName})` : ''}
+                                // Sort locations alphabetically
+                                const sortedLocations = allLocations.sort((a, b) => a.name.localeCompare(b.name));
+                                
+                                return sortedLocations.map(location => (
+                                    <option key={`${location.teamName}-${location.id || location.name}`} value={location.name}>
+                                        {location.teamName === 'League' ? '🏛️' : '🥍'} {location.name} {!isTeamSpecific ? `(${location.teamName})` : ''}
                                     </option>
                                 ));
                             })}
