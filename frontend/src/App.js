@@ -6143,9 +6143,11 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                                     <span>{new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' })}</span>
                                                     <span>{event.time}</span>
                                                     {event.location && (
-                                                        <ClickableLocation 
+                                                        <EventLocationMap 
                                                             locationName={event.location}
                                                             teams={teams}
+                                                            leagueInfo={leagueInfo}
+                                                            size="small"
                                                         />
                                                     )}
                                                 </div>
