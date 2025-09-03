@@ -11272,7 +11272,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                         )}
 
                         {/* Team GroupMe Chats - Only visible to players, coaches, and admins */}
-                        {currentUser && (currentUser.roles.includes('player') || currentUser.roles.includes('coach') || currentUser.roles.includes('player/coach') || currentUser.roles.includes('admin')) && team.groupMes && team.groupMes.length > 0 && (
+                        {currentUser && (userHasRole(currentUser, 'player') || userHasRole(currentUser, 'coach') || userHasRole(currentUser, 'player/coach') || userHasRole(currentUser, 'admin')) && team.groupMes && team.groupMes.length > 0 && (
                             <div className="mb-8">
                                 <h2 className="text-2xl font-bold text-slate-800 mb-4 tracking-tight">Team Chat Groups</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
