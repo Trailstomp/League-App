@@ -1408,21 +1408,6 @@ const getLogoStyle = (websiteStyle) => {
 // the new modular EventDetailModal from ./scheduling/components/EventDetailModal.js
 
 const FileUploadInput = ({
-                            <X size={24} />
-                        </button>
-                    </div>
-                </div>
-                
-                {/* Tab Navigation */}
-                <div className="border-b bg-gray-50">
-                    <div className="flex space-x-0">
-                        <TabButton label="Details" tabKey="details" activeTab={activeTab} setActiveTab={setActiveTab} />
-                        {(event.type === 'game') && (
-                            <TabButton label="Scores & Results" tabKey="scores" activeTab={activeTab} setActiveTab={setActiveTab} />
-                        )}
-                        <TabButton label="Stats" tabKey="stats" activeTab={activeTab} setActiveTab={setActiveTab} />
-                        <TabButton label="Attendance" tabKey="attendance" activeTab={activeTab} setActiveTab={setActiveTab} />
-                        {event.type === 'tournament' && (
                             <TabButton label="Tournament Bracket" tabKey="bracket" activeTab={activeTab} setActiveTab={setActiveTab} />
                         )}
                     </div>
