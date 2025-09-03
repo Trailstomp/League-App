@@ -1404,25 +1404,8 @@ const getLogoStyle = (websiteStyle) => {
 };
 
 // === OLD EVENT DETAIL MODAL - REPLACED WITH SCHEDULING MODULE VERSION ===
-/*
-const OldEventDetailModal = ({ event, isOpen, onClose, activeTab, setActiveTab, teams, currentUser, users, leagueInfo, onUpdateRSVP, onUpdateEvent, onDeleteEvent }) => {
-    if (!event || !isOpen) return null;
-    
-    const isAuthorized = currentUser && (
-        hasPermission(currentUser, 'system.admin_access') ||
-        (event.teamId && currentUser.teamId === event.teamId)
-    );
-    
-    const getEventStatusColor = (status) => {
-        switch(status) {
-            case 'scheduled': return 'bg-blue-100 text-blue-800';
-            case 'live': return 'bg-green-100 text-green-800';
-            case 'completed': return 'bg-gray-100 text-gray-800';
-            default: return 'bg-blue-100 text-blue-800';
-        }
-    };
-    
-    const eventStatus = event.status || 'scheduled';
+// The old inline EventDetailModal component has been removed and replaced with
+// the new modular EventDetailModal from ./scheduling/components/EventDetailModal.js
     
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]" onClick={onClose}>
