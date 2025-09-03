@@ -151,21 +151,23 @@ const EventDetailModal = ({
                     )}
 
                     {activeTab === 'scores' && (
-                        <ScoresTab 
+                        <EnhancedScoresTab 
                             event={event}
                             teams={teams}
                             getTeamInfo={getTeamInfo}
                             editMode={editMode}
                             userCanEdit={userCanEdit}
+                            onUpdateGameStats={onUpdateRSVP} // Reuse for now, will need dedicated handler
                         />
                     )}
 
                     {activeTab === 'brackets' && (
-                        <BracketsTab 
+                        <TournamentBracketsTab 
                             event={event}
                             teams={teams}
                             editMode={editMode}
                             userCanEdit={userCanEdit}
+                            onUpdateTournament={onUpdateRSVP} // Reuse for now, will need dedicated handler
                         />
                     )}
                 </div>
