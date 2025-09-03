@@ -1407,8 +1407,7 @@ const getLogoStyle = (websiteStyle) => {
 // The old inline EventDetailModal component has been removed and replaced with
 // the new modular EventDetailModal from ./scheduling/components/EventDetailModal.js
 
-const FileUploadInput = ({
-                            <TabButton label="Tournament Bracket" tabKey="bracket" activeTab={activeTab} setActiveTab={setActiveTab} />
+// Old EventDetailModal and corrupted components removed - see proper implementations below
                         )}
                     </div>
                 </div>
