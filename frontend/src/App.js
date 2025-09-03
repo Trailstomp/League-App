@@ -6838,8 +6838,20 @@ const LeagueInfoManager = ({ leagueInfo, setLeagueInfo, websiteStyle, setWebsite
 };
 
 const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isTeamSpecific = false, currentTeamId = null, formBackgroundColor = '#f8fafc', setBracketEvent }) => {
-    // Debug logging to help identify issues
-    console.log('EventForm rendered with editingEvent:', editingEvent);
+    // COMPLETELY NEW APPROACH: Use local state for team selections
+    const [selectedTeamIds, setSelectedTeamIds] = useState(() => {
+        // Initialize from editingEvent.teamIds or legacy teamId or empty array
+        if (editingEvent?.teamIds && Array.isArray(editingEvent.teamIds)) {
+            return [...editingEvent.teamIds];
+        } else if (editingEvent?.teamId) {
+            return [editingEvent.teamId];
+        }
+        return [];
+    });
+    
+    // Debug logging
+    console.log('🚀 NEW APPROACH - EventForm rendered with editingEvent:', editingEvent);
+    console.log('🚀 NEW APPROACH - selectedTeamIds:', selectedTeamIds);
     
     // Ensure editingEvent has all required fields with defaults
     const safeEditingEvent = {
@@ -6851,7 +6863,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
         location: '',
         description: '',
         teamId: '',
-        teamIds: [],
+        teamIds: selectedTeamIds, // Use our local state
         imageUrl: '',
         customLocation: '',
         homeScore: 0,
@@ -6859,14 +6871,19 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
         homeTeam: '',
         awayTeam: '',
         status: 'scheduled',
-        ...editingEvent
+        ...editingEvent,
+        teamIds: selectedTeamIds // Override with our local state
     };
     
-    // Debug: Log form data
-    console.log('📝 EVENTFORM DEBUG - editingEvent received:', editingEvent);
-    console.log('📝 EVENTFORM DEBUG - safeEditingEvent created:', safeEditingEvent);
-    console.log('📝 imageUrl in safeEditingEvent:', safeEditingEvent.imageUrl);
-    console.log('📝 teamIds in safeEditingEvent:', safeEditingEvent.teamIds);
+    // Update parent state when local team selection changes
+    useEffect(() => {
+        setEditingEvent(prev => ({
+            ...prev,
+            teamIds: selectedTeamIds
+        }));
+    }, [selectedTeamIds, setEditingEvent]);
+    
+    console.log('🚀 NEW APPROACH - safeEditingEvent with local teamIds:', safeEditingEvent.teamIds);
 
     return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
