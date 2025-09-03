@@ -5980,7 +5980,11 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         if (event.type && event.type.toLowerCase() === 'tournament') {
             const key = `${event.title}-${event.date}-${event.location || 'no-location'}`;
             if (!processedTournamentKeys.has(key)) {
-                displayEvents.push(groupedEvents[key]);
+                const groupedEvent = {
+                    ...groupedEvents[key],
+                    allTeams: (groupedEvents[key].allTeams || []).sort((a, b) => a.name.localeCompare(b.name))
+                };
+                displayEvents.push(groupedEvent);
                 processedTournamentKeys.add(key);
             }
         } else {
