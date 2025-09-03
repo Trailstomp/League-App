@@ -238,7 +238,11 @@ const EventCalendar = ({
                                                 <img 
                                                     src={event.imageUrl}
                                                     alt={event.title}
-                                                    className="w-full h-32 object-cover"
+                                                    className={`w-full h-32 ${
+                                                        event.imageStyle === 'contain' ? 'object-contain bg-gray-50' :
+                                                        event.imageStyle === 'fill' ? 'object-fill' :
+                                                        'object-cover'
+                                                    }`}
                                                 />
                                             )}
                                             
