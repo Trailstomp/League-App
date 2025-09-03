@@ -1406,8 +1406,8 @@ const getLogoStyle = (websiteStyle) => {
 // === OLD EVENT DETAIL MODAL - REPLACED WITH SCHEDULING MODULE VERSION ===
 // The old inline EventDetailModal component has been removed and replaced with
 // the new modular EventDetailModal from ./scheduling/components/EventDetailModal.js
-    
-    return (
+
+// File Upload Component
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]" onClick={onClose}>
             <div className="bg-white rounded-lg max-w-6xl max-h-[90vh] w-full mx-4 flex flex-col" onClick={e => e.stopPropagation()}>
                 {/* Modal Header */}
