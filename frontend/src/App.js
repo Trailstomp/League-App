@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { SchedulingModule } from './scheduling';
 import "./App.css";
 
 // Custom Icon Library - SVG-based icons to replace lucide-react
