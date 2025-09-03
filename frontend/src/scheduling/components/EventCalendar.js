@@ -207,7 +207,7 @@ const EventCalendar = ({
                                                             className="p-1 text-blue-600 hover:bg-blue-100 rounded"
                                                             title="Edit event"
                                                         >
-                                                            <Edit size={14} />
+                                                            <Edit />
                                                         </button>
                                                         <button
                                                             onClick={() => onDeleteEvent && onDeleteEvent(event.id)}
