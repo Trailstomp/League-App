@@ -17740,7 +17740,18 @@ const userHasRole = (user, roleToCheck) => {
 
 // --- Main App Component ---
 function App() {
-
+    // Enhanced Statistics Management
+    const {
+        gameStatistics,
+        tournamentData,
+        seasonStats,
+        updateGameStats,
+        updateTournament,
+        getTeamSeasonStats,
+        getTeamRankings
+    } = useStatistics();
+    
+    // Core application state
     const [page, setPage] = useState('home');
     const [selectedTeam, setSelectedTeam] = useState(null);
     // Helper function to save league locations to API
