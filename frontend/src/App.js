@@ -6123,7 +6123,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                                     <div 
                                         key={`tournament-${event.title}-${event.date}`} 
                                         className="bg-yellow-50 rounded-lg p-4 border border-yellow-200 cursor-pointer hover:border-yellow-300 hover:shadow-md transition-all duration-200 group relative"
-                                        onClick={() => onEventClick && onEventClick(event)}
+                                        onClick={() => handleEventCardClick(event)}
                                         title="Click to view tournament details"
                                     >
                                         {/* Edit/Delete Buttons */}
