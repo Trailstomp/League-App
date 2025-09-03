@@ -166,6 +166,7 @@ const SchedulingDashboard = ({
                         teams={teams}
                         leagueSchedule={leagueSchedule}
                         setLeagueSchedule={setLeagueSchedule}
+                        leagueLocations={leagueLocations}
                         onSave={handleSaveEvent}
                         onCancel={handleCancelEvent}
                     />
