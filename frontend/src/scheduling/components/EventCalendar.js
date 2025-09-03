@@ -163,7 +163,7 @@ const EventCalendar = ({
             <div className="p-6">
                 {Object.keys(eventsByDate).length === 0 ? (
                     <div className="text-center py-12">
-                        <Calendar className="mx-auto mb-4 text-gray-400" size={48} />
+                        <div className="text-6xl mx-auto mb-4 text-gray-400"><Calendar /></div>
                         <h3 className="text-lg font-medium text-gray-600 mb-2">No Events Scheduled</h3>
                         <p className="text-gray-500">Create your first event to get started!</p>
                     </div>
