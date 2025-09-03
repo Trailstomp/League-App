@@ -25,6 +25,7 @@ const SimpleEventForm = ({
             location: initialEvent?.location || '',
             description: initialEvent?.description || '',
             type: initialEvent?.type || 'event',
+            imageUrl: initialEvent?.imageUrl || '',
         };
 
         // Handle team IDs - support both formats
