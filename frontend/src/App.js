@@ -18952,7 +18952,20 @@ function App() {
                                     // Updating existing event
                                     console.log('Updating existing event...');
                                     setLeagueSchedule(prev => 
-                                        prev.map(e => e.id === editingEvent.id ? processedEvent : e)
+                                        prev.map(e => {
+                                            if (e.id === editingEvent.id) {
+                                                // Merge original event data with processed changes to preserve all fields
+                                                const updatedEvent = {
+                                                    ...e, // Original event data (preserves all fields)
+                                                    ...processedEvent // Updated form data (overwrites changed fields)
+                                                };
+                                                console.log('🔍 SAVE DEBUG - Original event:', e);
+                                                console.log('🔍 SAVE DEBUG - Processed changes:', processedEvent);
+                                                console.log('🔍 SAVE DEBUG - Merged updated event:', updatedEvent);
+                                                return updatedEvent;
+                                            }
+                                            return e;
+                                        })
                                     );
                                 }
                                 console.log('Closing modal...');
