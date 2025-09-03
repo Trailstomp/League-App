@@ -1408,9 +1408,19 @@ const getLogoStyle = (websiteStyle) => {
 // the new modular EventDetailModal from ./scheduling/components/EventDetailModal.js
 
 // File Upload Component
-const FileUploadInput = ({
-                            <div className="flex items-center space-x-3 mb-2">
-                                <h2 className="text-2xl font-bold">{event.title}</h2>
+const FileUploadInput = ({ 
+    label, 
+    accept, 
+    currentValue, 
+    onChange, 
+    placeholder, 
+    enableCrop = false, 
+    cropAspectRatio = 'free', 
+    cropContext = 'header',
+    showAspectRatioPresets = false,
+    allowCustomAspectRatio = false 
+}) => {
+    const [isDragging, setIsDragging] = useState(false);
                                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getEventStatusColor(eventStatus)}`}>
                                     {eventStatus.charAt(0).toUpperCase() + eventStatus.slice(1)}
                                 </span>
