@@ -58,7 +58,7 @@
 ##
 ## agent_communication:
 ##     -agent: "main"
-##     -message: "🎯 CRITICAL TEAM SELECTION ISSUE FIXED: User can now see teams but checkboxes weren't sticking when clicked. Root cause: Inconsistent state management - checkboxes read from safeEditingEvent.teamIds but onChange handlers also read from safeEditingEvent.teamIds then update editingEvent, creating disconnect. FIXED: Updated onChange handlers to read from editingEvent?.teamIds || safeEditingEvent.teamIds for consistent state flow. Team selection checkboxes should now properly stick when clicked. Application tested successfully with no errors."
+##     -message: "🎯 CRITICAL INVESTIGATION STARTED: Addressing critical data persistence issues where event photos, team selections, and custom locations are not persisting after save/reload cycles. Found main issue in onSave handler (line 18955) where existing event updates use processedEvent based on incomplete editingEvent state instead of merging with original saved data. WebSocket connection error also identified: 'ws://localhost:443/ws' failed. No React component error found yet but continuing investigation. Next steps: Fix leagueSchedule state update mechanism and resolve WebSocket issues."
 
 # Protocol Guidelines for Main agent
 #
