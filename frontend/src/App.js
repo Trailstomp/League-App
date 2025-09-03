@@ -18276,7 +18276,11 @@ function App() {
                             <div className="mb-6 border-t pt-4">
                                 <h3 className="text-sm font-semibold mb-3 text-slate-600">Quick Login (Demo Mode):</h3>
                                 <div className="grid grid-cols-1 gap-2">
-                                    {users.filter(u => u.status === 'active' && u.roles.length > 0).slice(0, 3).map(user => (
+                                    {users.filter(u => {
+                                        const hasActiveStatus = u.status === 'active' || !u.status;
+                                        const hasRoles = (u.roles && u.roles.length > 0) || u.role;
+                                        return hasActiveStatus && hasRoles;
+                                    }).slice(0, 3).map(user => (
                                         <button 
                                             key={user.id} 
                                             onClick={() => handleQuickLogin(user)} 
