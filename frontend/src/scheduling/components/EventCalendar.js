@@ -231,7 +231,7 @@ const EventCalendar = ({
                                                 {/* Location */}
                                                 {event.location && (
                                                     <div className="flex items-center">
-                                                        <MapPin size={14} className="mr-2 text-gray-400" />
+                                                        <span className="mr-2 text-gray-400"><MapPin /></span>
                                                         <span>{event.location}</span>
                                                     </div>
                                                 )}
