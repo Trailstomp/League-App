@@ -11819,7 +11819,7 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
                         {isAuthorizedToManage && manageScheduleExpanded && (
                             <div className="bg-white rounded-lg shadow p-6 mb-6">
                                 <h3 className="text-xl font-semibold text-slate-800 mb-4">Schedule & Event Management</h3>
-                                <TeamCalendarManager team={team} teams={teams} setTeams={setTeams} websiteStyle={websiteStyle} leagueLocations={leagueLocations} />
+                                <TeamCalendarManager team={team} teams={teams} setTeams={setTeams} websiteStyle={websiteStyle} leagueLocations={leagueLocations} currentUser={currentUser} />
                             </div>
                         )}
                         
