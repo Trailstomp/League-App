@@ -35,11 +35,27 @@ const EventCalendar = ({
         return team || { id: teamId, name: `Unknown Team (${teamId})`, style: {} };
     };
 
+    // Handle event type filter changes
+    const handleEventTypeToggle = (eventType) => {
+        setSelectedEventTypes(prev => 
+            prev.includes(eventType)
+                ? prev.filter(type => type !== eventType)
+                : [...prev, eventType]
+        );
+    };
+
+    const selectAllEventTypes = () => {
+        setSelectedEventTypes(['game', 'practice', 'tournament', 'event']);
+    };
+
+    const clearAllEventTypes = () => {
+        setSelectedEventTypes([]);
+    };
+
     // Filter and sort events
     const filteredEvents = useMemo(() => {
         let filtered = leagueSchedule.filter(event => {
-            if (filterType === 'all') return true;
-            return event.type === filterType;
+            return selectedEventTypes.includes(event.type || 'event');
         });
 
         // Sort by date, then by time
@@ -51,7 +67,7 @@ const EventCalendar = ({
         });
 
         return filtered;
-    }, [leagueSchedule, filterType]);
+    }, [leagueSchedule, selectedEventTypes]);
 
     // Group events by date for better display
     const eventsByDate = useMemo(() => {
