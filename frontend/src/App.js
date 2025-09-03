@@ -7516,7 +7516,7 @@ const EventForm = ({ editingEvent, setEditingEvent, onSave, onCancel, teams, isT
     );
 };
 
-const TeamCalendarManager = ({ team, teams, setTeams, websiteStyle, leagueLocations = [] }) => {
+const TeamCalendarManager = ({ team, teams, setTeams, websiteStyle, leagueLocations = [], currentUser }) => {
     const [editingEvent, setEditingEvent] = useState(null);
     
     // Get form background color from team style first, then website style, or default
