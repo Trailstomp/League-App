@@ -17459,6 +17459,7 @@ function App() {
     const [page, setPage] = useState('home');
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
+    const [leagueLocations, setLeagueLocations] = useState([]);
     const [isMenuOpen, setIsMenuOpen] = useState(window.innerWidth > 768);
     const [showLogin, setShowLogin] = useState(false);
     const [authMode, setAuthMode] = useState('login'); // 'login', 'register'
