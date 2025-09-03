@@ -4825,7 +4825,7 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
 // --- Page Components ---
 const NewHomePage = ({teams, onTeamClick, leagueInfo, currentUser, websiteStyle, setCurrentUser, getAllNewsItems, setSelectedNewsItem, addTeamNewsItem, updateTeamNewsItem, deleteTeamNewsItem}) => {
     const sortedTeams = teams.filter(t => t.active).sort((a, b) => a.name.localeCompare(b.name));
-    const isLeagueAdmin = currentUser && currentUser.roles.includes('admin');
+    const isLeagueAdmin = userHasRole(currentUser, 'admin');
     
     // State for editing modes
     const [editingNews, setEditingNews] = useState(false);
