@@ -1410,14 +1410,6 @@ const getLogoStyle = (websiteStyle) => {
 // Old EventDetailModal and corrupted components removed - see proper implementations below
 
 // File Upload Component
-                        <EventScoresTab event={event} teams={teams} isAuthorized={isAuthorized} onUpdateEvent={onUpdateEvent} />
-                    )}
-                    {activeTab === 'stats' && (
-                        <EventStatsTab event={event} teams={teams} isAuthorized={isAuthorized} onUpdateEvent={onUpdateEvent} />
-                    )}
-                    {activeTab === 'attendance' && (
-                        <EventAttendanceTab event={event} teams={teams} isAuthorized={isAuthorized} onUpdateEvent={onUpdateEvent} />
-                    )}
                     {activeTab === 'bracket' && event.type === 'tournament' && (
                         <TournamentBracketTab event={event} teams={teams} isAuthorized={isAuthorized} onUpdateEvent={onUpdateEvent} />
                     )}
