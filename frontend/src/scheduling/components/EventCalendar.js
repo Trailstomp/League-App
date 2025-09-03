@@ -1,12 +1,27 @@
 import React, { useState, useMemo } from 'react';
 
-// Simple icon components to replace lucide-react
+// Lacrosse-themed icon system with fallbacks
 const Calendar = () => <span>📅</span>;
 const Clock = () => <span>🕐</span>;
 const MapPin = () => <span>📍</span>;
-const Users = () => <span>👥</span>;
+const Users = () => <span>🥍</span>; // Lacrosse stick for teams!
 const Edit = () => <span>✏️</span>;
 const Trash2 = () => <span>🗑️</span>;
+
+// Lacrosse-themed icons for different contexts
+const LacrosseIcons = {
+    teams: '🥍',      // Lacrosse stick
+    game: '🏆',       // Trophy for games
+    practice: '🏃‍♂️',    // Running for practice
+    tournament: '🎯',  // Target for tournaments
+    event: '📅',      // Calendar for general events
+    field: '🟢',      // Green circle for field
+    stats: '📊',      // Chart for statistics
+    score: '⚽',      // Ball for scoring (closest to lacrosse ball)
+    time: '⏰',       // Alarm clock
+    location: '🏟️',   // Stadium
+    player: '👤',     // Player icon
+};
 
 /**
  * Event Calendar Display - Clean, visual calendar with all events
