@@ -1402,8 +1402,8 @@ const getLogoStyle = (websiteStyle) => {
 };
 
 // === EVENT DETAIL MODAL COMPONENT ===
-const EventDetailModal = ({ event, onClose, activeTab, setActiveTab, teams, currentUser, onUpdateEvent, onDeleteEvent }) => {
-    if (!event) return null;
+const EventDetailModal = ({ event, isOpen, onClose, activeTab, setActiveTab, teams, currentUser, users, leagueInfo, onUpdateRSVP, onUpdateEvent, onDeleteEvent }) => {
+    if (!event || !isOpen) return null;
     
     const isAuthorized = currentUser && (
         hasPermission(currentUser, 'system.admin_access') ||
