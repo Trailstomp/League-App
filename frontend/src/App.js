@@ -3443,6 +3443,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
                     itemType: 'game'
                 });
             } else if (event.type === 'tournament') {
+                // Add tournament for grouping processing (will be consolidated later)
                 allTickerItems.push({
                     id: event.id,
                     tournamentName: event.title, // Use event title as tournament name
