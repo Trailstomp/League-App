@@ -18877,7 +18877,7 @@ function App() {
                         >
                             <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 flex items-center justify-between">
                                 <div className="flex items-center">
-                                    <Globe size={12} className="mr-1" /> Non-League Teams
+                                    <LacrosseIcon name="away" className="mr-1" style={{fontSize: '12px'}} /> Non-League Teams
                                 </div>
                                 <div className={`transform transition-transform ${sidebarSections.nonLeagueTeams ? 'rotate-180' : ''}`}>
                                     <ArrowDown size={12} />
