@@ -5754,7 +5754,7 @@ const HomePage = ({teams, onTeamClick, leagueInfo, websiteStyle}) => {
     );
 };
 
-const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteStyle, onUpdateRSVP, users, onSendNotification, onEventClick, onEditEvent, onDeleteEvent, leagueInfo, gameStatistics, tournamentData, onUpdateGameStats, onUpdateTournament}) => {
+const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteStyle, onUpdateRSVP, users, onSendNotification, onEventClick, onEditEvent, onDeleteEvent, leagueInfo, gameStatistics, tournamentData, onUpdateGameStats, onUpdateTournament, setLeagueSchedule, leagueLocations}) => {
     
     // Handle event card click - delegate to parent component's handler
     const handleEventCardClick = (event) => {
