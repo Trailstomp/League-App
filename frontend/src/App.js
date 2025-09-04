@@ -3029,7 +3029,14 @@ const initialLeagueSchedule = [
         time: '9:00 AM',
         location: 'Tournament Complex',
         description: 'Annual winter tournament featuring all league teams',
-        imageUrl: 'https://picsum.photos/800/400?random=2'
+        imageUrl: 'https://picsum.photos/800/400?random=2',
+        teamIds: ['oh10-lacrosse', 'american-dads', 'fire-squad', 'thunder-hawks'],
+        allTeams: [
+            { id: 'oh10-lacrosse', name: 'OH10 Lacrosse' },
+            { id: 'american-dads', name: 'American Dads' },
+            { id: 'fire-squad', name: 'Fire Squad' },
+            { id: 'thunder-hawks', name: 'Thunder Hawks' }
+        ]
     },
     {
         id: 'practice-1',
