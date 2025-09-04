@@ -399,23 +399,75 @@ const TournamentBracketsTab = ({
                     )}
                 </div>
 
-                {/* Team Count Info */}
+                {/* Team Selection */}
+                <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <div className="flex justify-between items-center mb-3">
+                        <h5 className="font-medium text-gray-800">Select Teams for Tournament</h5>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setSelectedTeams(availableTeams.slice())}
+                                className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200"
+                            >
+                                Select All
+                            </button>
+                            <button
+                                onClick={() => setSelectedTeams([])}
+                                className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200"
+                            >
+                                Clear All
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-h-60 overflow-y-auto">
+                        {availableTeams.map(team => (
+                            <label key={team.id} className="flex items-center p-2 border rounded cursor-pointer hover:bg-gray-50">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedTeams.some(t => t.id === team.id)}
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            setSelectedTeams([...selectedTeams, team]);
+                                        } else {
+                                            setSelectedTeams(selectedTeams.filter(t => t.id !== team.id));
+                                        }
+                                    }}
+                                    className="mr-2"
+                                />
+                                <div className="flex-1">
+                                    <div className="font-medium text-sm">{team.name}</div>
+                                    {team.wins !== undefined && (
+                                        <div className="text-xs text-gray-500">
+                                            {team.wins}W-{team.losses}L
+                                        </div>
+                                    )}
+                                </div>
+                            </label>
+                        ))}
+                    </div>
+                    
+                    {selectedTeams.length === 0 && (
+                        <p className="text-sm text-red-600 mt-2">⚠️ Please select at least 2 teams</p>
+                    )}
+                </div>
+
+                {/* Tournament Summary */}
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <div className="flex justify-between items-center">
                         <div>
                             <div className="font-medium text-blue-800">
-                                {availableTeams.length} Teams Available
+                                {selectedTeams.length} Teams Selected
                             </div>
                             <div className="text-sm text-blue-600">
-                                Bracket size: {Math.pow(2, Math.ceil(Math.log2(availableTeams.length)))}
-                                {Math.pow(2, Math.ceil(Math.log2(availableTeams.length))) - availableTeams.length > 0 && 
-                                    ` (${Math.pow(2, Math.ceil(Math.log2(availableTeams.length))) - availableTeams.length} byes needed)`
+                                Bracket size: {selectedTeams.length > 0 ? Math.pow(2, Math.ceil(Math.log2(selectedTeams.length))) : 0}
+                                {selectedTeams.length > 0 && Math.pow(2, Math.ceil(Math.log2(selectedTeams.length))) - selectedTeams.length > 0 && 
+                                    ` (${Math.pow(2, Math.ceil(Math.log2(selectedTeams.length))) - selectedTeams.length} byes needed)`
                                 }
                             </div>
                         </div>
                         <button
                             onClick={handleCreateTournament}
-                            disabled={availableTeams.length < 2}
+                            disabled={selectedTeams.length < 2}
                             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Create Tournament
