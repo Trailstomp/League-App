@@ -3608,7 +3608,9 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
                         </div>
                     </div>
                 ) : (
-                    [...allItems, ...allItems].map((item, index) => {
+                    // Only duplicate items for scrolling if there are multiple items
+                    // For single items, just show once to avoid confusion
+                    (allItems.length > 1 ? [...allItems, ...allItems] : allItems).map((item, index) => {
                     if (item.itemType === 'game') {
                         const home = getTeam(item.homeTeam);
                         const away = getTeam(item.awayTeam);
