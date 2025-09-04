@@ -17846,6 +17846,7 @@ function App() {
         
         // Close modal if it's showing this event
         if (selectedEventDetail && selectedEventDetail.id === eventId) {
+            setShowEventDetailModal(false);
             setSelectedEventDetail(null);
         }
     };
