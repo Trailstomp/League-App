@@ -202,6 +202,15 @@ const TournamentBracketsTab = ({
     });
     const [selectedTeams, setSelectedTeams] = useState([]);
 
+    // Update component state when tournamentData prop changes
+    useEffect(() => {
+        if (tournamentData && tournamentData !== tournament) {
+            setTournament(tournamentData);
+            setSetupMode(false);
+            console.log('🏆 Loaded existing tournament data:', tournamentData);
+        }
+    }, [tournamentData]);
+
     // Get available teams for tournament - filter to event's teams if available
     const availableTeams = React.useMemo(() => {
         // If event has teamIds, only show those teams in brackets
