@@ -5768,15 +5768,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
             />
         </div>
     );
-        // Check admin role
-        currentUser.role === 'admin' || 
-        currentUser.roles?.includes('admin') ||
-        // Check coach role  
-        currentUser.role === 'coach' ||
-        currentUser.roles?.includes('coach') ||
-        // Check specific permission
-        hasPermission(currentUser, 'events.create')
-    );
+};
 
     // Check if user can edit a specific event
     const canEditEvent = (event) => {
