@@ -1146,7 +1146,7 @@ const EventDashboard = ({ teams, currentUser, onSendNotification, websiteStyle }
                             <p className="text-green-600 text-sm font-medium">Events w/ Responses</p>
                             <p className="text-3xl font-bold text-green-900">{overallStats.eventsWithResponses}</p>
                         </div>
-                        <UserCheck className="h-8 w-8 text-green-500" />
+                        <LacrosseIcon name="players" style={{fontSize: '32px'}} className="text-green-500" />
                     </div>
                 </div>
                 <div className="bg-yellow-50 rounded-lg p-6 border border-yellow-200">
