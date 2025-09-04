@@ -3514,6 +3514,9 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
         // Get list of tournament names already processed from leagueSchedule to avoid duplicates
         const existingTournamentNames = new Set(tournamentItems.map(t => t.tournamentName));
         
+        // Also track tournament IDs to prevent duplicates from different sources
+        const processedTournamentIds = new Set(allTickerItems.filter(item => item.itemType === 'tournament').map(item => item.id));
+        
         const upcomingEvents = teams.flatMap(team => 
             (team.calendar || [])
                 .filter(event => {
