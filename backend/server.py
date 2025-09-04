@@ -164,6 +164,233 @@ async def update_specific_data(data_type: str, data: List[Any] | Dict[str, Any])
         logger.error(f"Error updating {data_type}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# CRITICAL INFRASTRUCTURE: Teams and Players Database Persistence
+# Dedicated collections and CRUD endpoints to prevent data loss
+
+# Pydantic models for Teams and Players
+class Team(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    division: Optional[str] = "Field"
+    coach: Optional[str] = ""
+    homeField: Optional[str] = ""
+    logo: Optional[str] = ""
+    contactEmail: Optional[str] = ""
+    active: bool = True
+    wins: int = 0
+    losses: int = 0
+    ties: int = 0
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)
+
+class Player(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    teamId: str
+    position: Optional[str] = ""
+    jerseyNumber: Optional[int] = None
+    email: Optional[str] = ""
+    phone: Optional[str] = ""
+    active: bool = True
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)
+
+# Teams CRUD Endpoints
+@api_router.get("/teams", response_model=List[Team])
+async def get_teams():
+    """Get all teams from dedicated teams collection"""
+    try:
+        teams = await db.teams.find().to_list(length=None)
+        return [Team(**team) for team in teams] if teams else []
+    except Exception as e:
+        logger.error(f"Error fetching teams: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/teams", response_model=Team)
+async def create_team(team: Team):
+    """Create a new team in dedicated teams collection"""
+    try:
+        # Create backup before operation
+        await create_teams_backup()
+        
+        team_dict = team.dict()
+        team_dict["createdAt"] = datetime.utcnow()
+        team_dict["updatedAt"] = datetime.utcnow()
+        
+        result = await db.teams.insert_one(team_dict)
+        if result.inserted_id:
+            created_team = await db.teams.find_one({"_id": result.inserted_id})
+            return Team(**created_team)
+        else:
+            raise HTTPException(status_code=500, detail="Failed to create team")
+    except Exception as e:
+        logger.error(f"Error creating team: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/teams/{team_id}", response_model=Team)
+async def update_team(team_id: str, team: Team):
+    """Update an existing team"""
+    try:
+        # Create backup before operation
+        await create_teams_backup()
+        
+        team_dict = team.dict()
+        team_dict["updatedAt"] = datetime.utcnow()
+        
+        result = await db.teams.update_one(
+            {"id": team_id},
+            {"$set": team_dict}
+        )
+        
+        if result.modified_count:
+            updated_team = await db.teams.find_one({"id": team_id})
+            return Team(**updated_team)
+        else:
+            raise HTTPException(status_code=404, detail="Team not found")
+    except Exception as e:
+        logger.error(f"Error updating team: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/teams/{team_id}")
+async def delete_team(team_id: str):
+    """Delete a team (with backup)"""
+    try:
+        # Create backup before operation
+        await create_teams_backup()
+        
+        result = await db.teams.delete_one({"id": team_id})
+        if result.deleted_count:
+            # Also remove associated players
+            await db.players.delete_many({"teamId": team_id})
+            return {"message": "Team deleted successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Team not found")
+    except Exception as e:
+        logger.error(f"Error deleting team: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Players CRUD Endpoints
+@api_router.get("/players", response_model=List[Player])
+async def get_players():
+    """Get all players from dedicated players collection"""
+    try:
+        players = await db.players.find().to_list(length=None)
+        return [Player(**player) for player in players] if players else []
+    except Exception as e:
+        logger.error(f"Error fetching players: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/players", response_model=Player)
+async def create_player(player: Player):
+    """Create a new player"""
+    try:
+        # Create backup before operation
+        await create_players_backup()
+        
+        player_dict = player.dict()
+        player_dict["createdAt"] = datetime.utcnow()
+        player_dict["updatedAt"] = datetime.utcnow()
+        
+        result = await db.players.insert_one(player_dict)
+        if result.inserted_id:
+            created_player = await db.players.find_one({"_id": result.inserted_id})
+            return Player(**created_player)
+        else:
+            raise HTTPException(status_code=500, detail="Failed to create player")
+    except Exception as e:
+        logger.error(f"Error creating player: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/players/{player_id}", response_model=Player)
+async def update_player(player_id: str, player: Player):
+    """Update an existing player"""
+    try:
+        # Create backup before operation
+        await create_players_backup()
+        
+        player_dict = player.dict()
+        player_dict["updatedAt"] = datetime.utcnow()
+        
+        result = await db.players.update_one(
+            {"id": player_id},
+            {"$set": player_dict}
+        )
+        
+        if result.modified_count:
+            updated_player = await db.players.find_one({"id": player_id})
+            return Player(**updated_player)
+        else:
+            raise HTTPException(status_code=404, detail="Player not found")
+    except Exception as e:
+        logger.error(f"Error updating player: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/players/{player_id}")
+async def delete_player(player_id: str):
+    """Delete a player (with backup)"""
+    try:
+        # Create backup before operation
+        await create_players_backup()
+        
+        result = await db.players.delete_one({"id": player_id})
+        if result.deleted_count:
+            return {"message": "Player deleted successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Player not found")
+    except Exception as e:
+        logger.error(f"Error deleting player: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Backup and Safety Functions
+async def create_teams_backup():
+    """Create automatic backup of teams before destructive operations"""
+    try:
+        teams = await db.teams.find().to_list(length=None)
+        backup_doc = {
+            "type": "teams_backup",
+            "timestamp": datetime.utcnow(),
+            "data": teams
+        }
+        await db.backups.insert_one(backup_doc)
+        logger.info(f"Teams backup created: {backup_doc['timestamp']}")
+    except Exception as e:
+        logger.error(f"Error creating teams backup: {e}")
+
+async def create_players_backup():
+    """Create automatic backup of players before destructive operations"""
+    try:
+        players = await db.players.find().to_list(length=None)
+        backup_doc = {
+            "type": "players_backup", 
+            "timestamp": datetime.utcnow(),
+            "data": players
+        }
+        await db.backups.insert_one(backup_doc)
+        logger.info(f"Players backup created: {backup_doc['timestamp']}")
+    except Exception as e:
+        logger.error(f"Error creating players backup: {e}")
+
+# Backup and Restore Endpoints
+@api_router.get("/backup/teams")
+async def backup_teams():
+    """Manual backup of teams data"""
+    try:
+        await create_teams_backup()
+        return {"message": "Teams backup created successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/backup/players")
+async def backup_players():
+    """Manual backup of players data"""
+    try:
+        await create_players_backup()
+        return {"message": "Players backup created successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# END CRITICAL INFRASTRUCTURE
+
 # Include the router in the main app
 app.include_router(api_router)
 
