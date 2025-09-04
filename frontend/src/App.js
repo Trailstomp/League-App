@@ -5763,11 +5763,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
         }
     };
 
-    // Close modal
-    const closeEventModal = () => {
-        setShowEventModal(false);
-        setSelectedEvent(null);
-    };
+    // Modal handling moved to parent component
 
     const [selectedTeamSchedule, setSelectedTeamSchedule] = useState('all');
     const [eventTypeFilters, setEventTypeFilters] = useState({
