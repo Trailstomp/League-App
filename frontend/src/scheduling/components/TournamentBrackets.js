@@ -199,9 +199,18 @@ const TournamentBracketsTab = ({
         allowBye: true,
         seedingMethod: 'record'
     });
+    const [selectedTeams, setSelectedTeams] = useState([]);
 
     // Get available teams for tournament
     const availableTeams = teams.filter(team => team.active);
+    
+    // Initialize selected teams when availableTeams changes
+    useEffect(() => {
+        if (availableTeams.length > 0 && selectedTeams.length === 0) {
+            // Start with all teams selected by default, but allow user to deselect
+            setSelectedTeams(availableTeams.slice());
+        }
+    }, [availableTeams.length]);
 
     const handleCreateTournament = () => {
         if (availableTeams.length < 2) {
