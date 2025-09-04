@@ -16373,7 +16373,7 @@ const SponsorsManager = ({ sponsors, setSponsors }) => {
     );
 };
 
-const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameTickerData, setGameTickerData, currentUser, users, setUsers, websiteStyle, setWebsiteStyle, leagueInfo, setLeagueInfo, seasons, setSeasons, currentSeason, setCurrentSeason, setLeagueSchedule, friends, setFriends, sponsors, setSponsors, leagueLocations, setLeagueLocations }) => {
+const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameTickerData, setGameTickerData, currentUser, users, setUsers, websiteStyle, setWebsiteStyle, leagueInfo, setLeagueInfo, seasons, setSeasons, currentSeason, setCurrentSeason, setLeagueSchedule, friends, setFriends, sponsors, setSponsors, leagueLocations, setLeagueLocations, exportData }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [usersSecurityTab, setUsersSecurityTab] = useState('users'); // New state for sub-tabs
     const [settingsTab, setSettingsTab] = useState('website'); // New state for settings sub-tabs
