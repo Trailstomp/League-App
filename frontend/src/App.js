@@ -5758,10 +5758,11 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showEventModal, setShowEventModal] = useState(false);
     
-    // Handle event card click - open detail modal instead of edit
+    // Handle event card click - delegate to parent component's handler
     const handleEventCardClick = (event) => {
-        setSelectedEvent(event);
-        setShowEventModal(true);
+        if (onEventClick) {
+            onEventClick(event);
+        }
     };
 
     // Close modal
