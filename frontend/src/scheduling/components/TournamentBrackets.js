@@ -253,6 +253,38 @@ const TournamentBracketsTab = ({
         }
     };
 
+    const handleTeamChange = (matchId, teamPosition, teamId) => {
+        if (!tournament || !editMode || !userCanEdit) return;
+
+        const team = availableTeams.find(t => t.id === teamId);
+        const updatedTournament = { ...tournament };
+        
+        // Find and update the match
+        updatedTournament.rounds.forEach(round => {
+            const match = round.matches.find(m => m.id === matchId);
+            if (match) {
+                if (teamPosition === 'homeTeam') {
+                    match.homeTeam = team || null;
+                } else if (teamPosition === 'awayTeam') {
+                    match.awayTeam = team || null;
+                }
+                
+                // Reset match if teams change
+                if (team) {
+                    match.status = match.homeTeam && match.awayTeam ? 'scheduled' : 'pending';
+                    match.score = { home: 0, away: 0 };
+                    match.winner = null;
+                }
+            }
+        });
+
+        setTournament(updatedTournament);
+        
+        if (onUpdateTournament) {
+            onUpdateTournament(event.id, updatedTournament);
+        }
+    };
+
     const handleMatchResult = (matchId, homeScore, awayScore) => {
         if (!tournament || !editMode || !userCanEdit) return;
 
