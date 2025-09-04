@@ -5903,7 +5903,8 @@ const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
         </div>
     );
 };
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Filter by Team</label>
+
+const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, setPlayers, setTeams, websiteStyle, playMusic, stopAllMusic, musicState, getTeamNewsItems, addTeamNewsItem, updateTeamNewsItem, deleteTeamNewsItem, setSelectedNewsItem, friends, sponsors, setFriends, setSponsors, onEventClick, onEditEvent, onDeleteEvent, isMenuOpen, leagueLocations = [] }) => {
                     <select 
                         onChange={(e) => setSelectedTeamSchedule(e.target.value)} 
                         value={selectedTeamSchedule} 
