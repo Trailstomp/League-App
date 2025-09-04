@@ -645,6 +645,21 @@ frontend:
         agent: "main"
         comment: "🎉 TEAM MANAGEMENT BUGS FIXED: 1) Removed duplicate modal code that was causing form state conflicts during logo uploads 2) Added missing handleDelete function with confirmation dialog for safe team deletion 3) Fixed form state management to properly handle logo addition without data loss 4) Eliminated duplicate team creation issue - edits now properly UPDATE existing teams 5) Backend verification shows 100% test success rate for all team operations 6) Team editing with logo addition now preserves all form fields correctly 7) Delete functionality works with proper user confirmation. Critical team management issues completely resolved!"
 
+  - task: "Test team selection functionality in event creation form"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "user"
+        comment: "User reported that they couldn't see any teams to pick from when creating a new event, but main agent has now fixed the data loading to use the proper initialTeams array."
+      - working: true
+        agent: "testing"
+        comment: "🎉 COMPREHENSIVE TEAM SELECTION TESTING COMPLETED: Successfully verified team selection functionality in event creation form. TESTING RESULTS: ✅ Navigation to Events & Schedule page works perfectly ✅ Coach Chandler login successful with proper permissions ✅ Event Form accessible via 'Event Form' tab in Scheduling Dashboard ✅ ALL 7 EXPECTED TEAMS VISIBLE: OH10 Lacrosse, American Dads, Indiana Lacers, Cincinnati Trash Pandas, Columbus Ball Hawgs, Indy Sabers, Dayton Eagles ✅ Teams properly organized by division (Field/Box) with correct IDs ✅ Team selection interface working correctly with checkboxes ✅ Event form includes all necessary fields: title, date, time, location, event type, image upload, description ✅ Team counter shows '0 teams selected' and updates appropriately ✅ Form accepts team selections and other event data. CONCLUSION: Team selection functionality is working correctly after the initialTeams array fix. Users can now see all available teams when creating events and successfully select multiple teams for tournaments or multi-team events. The fix has resolved the original issue where teams were not visible in the event creation form."
+
   - task: "Fix image distortion - images showing up distorted when adding, need native aspect ratio"
     implemented: true
     working: true
