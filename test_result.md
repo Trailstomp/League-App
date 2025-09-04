@@ -1286,12 +1286,22 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Test Tournament Bracket Persistence and Team Filtering Fixes"
-  stuck_tasks: []
+    - "Implement dedicated MongoDB collections for teams data"
+    - "Implement dedicated MongoDB collections for players data"
+    - "Create CRUD API endpoints for teams management"
+    - "Create CRUD API endpoints for players management"
+    - "Implement data migration from league-data to dedicated collections"
+    - "Implement backup and restore functionality for teams/players"
+    - "Add data validation and error handling for teams/players operations"
+  stuck_tasks:
+    - "Implement dedicated MongoDB collections for teams data"
+    - "Implement dedicated MongoDB collections for players data"
+    - "Create CRUD API endpoints for teams management"
+    - "Create CRUD API endpoints for players management"
   test_all: false
-  test_priority: "high_first"
-  backend_testing_complete: true
-  backend_notes: "Backend testing completed successfully. All 12 tests passed with 100% success rate. Ready for event management feature implementation."
+  test_priority: "critical_first"
+  backend_testing_complete: false
+  backend_notes: "CRITICAL INFRASTRUCTURE MISSING: Teams and players database persistence not implemented. Current system uses legacy league-data structure which does NOT meet review requirements for dedicated collections and CRUD endpoints."
 
 agent_communication:
   - agent: "main"
