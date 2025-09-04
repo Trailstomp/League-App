@@ -18985,47 +18985,6 @@ function App() {
                     
 
                     
-                    {/* Admin Navigation Tabs - only show when on admin page */}
-                    {page === 'admin' && currentUser && currentUser.role === 'admin' && (
-                        <div className="bg-white border-t border-slate-200 px-4 md:px-8 py-2 flex flex-wrap gap-2">
-                            <button 
-                                onClick={() => navigate('admin', null, 'dashboard')}
-                                className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
-                            >
-                                Dashboard
-                            </button>
-                            <button 
-                                onClick={() => navigate('admin', null, 'teams')}
-                                className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
-                            >
-                                Teams
-                            </button>
-                            <button 
-                                onClick={() => navigate('admin', null, 'users')}
-                                className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
-                            >
-                                Users & Security
-                            </button>
-                            <button 
-                                onClick={() => navigate('admin', null, 'website')}
-                                className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
-                            >
-                                Website Style
-                            </button>
-                            <button 
-                                onClick={() => navigate('admin', null, 'events')}
-                                className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
-                            >
-                                Events
-                            </button>
-                            <button 
-                                onClick={() => navigate('admin', null, 'settings')}
-                                className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
-                            >
-                                Settings
-                            </button>
-                        </div>
-                    )}
                 </header>
                 <main className="flex-1 overflow-y-auto relative" style={backgroundStyle}>
                     {renderPage()}
