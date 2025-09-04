@@ -549,6 +549,111 @@ const TournamentBracketsTab = ({
                 </div>
             </div>
 
+            {/* Edit Teams Mode */}
+            {editTeamsMode && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <div className="flex justify-between items-center mb-4">
+                        <h5 className="font-medium text-yellow-800">✏️ Edit Tournament Teams</h5>
+                        <button
+                            onClick={() => {
+                                setEditTeamsMode(false);
+                                setSelectedTeams([]);
+                            }}
+                            className="text-yellow-600 hover:text-yellow-800"
+                        >
+                            ✕ Cancel
+                        </button>
+                    </div>
+                    
+                    <div className="mb-4">
+                        <div className="flex justify-between items-center mb-3">
+                            <p className="text-sm text-yellow-700">Select teams for this tournament:</p>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setSelectedTeams(availableTeams.slice())}
+                                    className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200"
+                                >
+                                    Select All
+                                </button>
+                                <button
+                                    onClick={() => setSelectedTeams([])}
+                                    className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200"
+                                >
+                                    Clear All
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-h-48 overflow-y-auto">
+                            {availableTeams.map(team => (
+                                <label key={team.id} className="flex items-center p-2 border rounded cursor-pointer hover:bg-gray-50">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedTeams.some(t => t.id === team.id)}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setSelectedTeams([...selectedTeams, team]);
+                                            } else {
+                                                setSelectedTeams(selectedTeams.filter(t => t.id !== team.id));
+                                            }
+                                        }}
+                                        className="mr-2"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-medium text-sm">{team.name}</div>
+                                        {team.wins !== undefined && (
+                                            <div className="text-xs text-gray-500">
+                                                {team.wins}W-{team.losses}L
+                                            </div>
+                                        )}
+                                    </div>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                        <div className="text-sm text-yellow-700">
+                            {selectedTeams.length} teams selected
+                            {selectedTeams.length > 0 && (
+                                <span className="ml-2">
+                                    (Bracket size: {Math.pow(2, Math.ceil(Math.log2(selectedTeams.length)))})
+                                </span>
+                            )}
+                        </div>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => {
+                                    setEditTeamsMode(false);
+                                    setSelectedTeams([]);
+                                }}
+                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleUpdateTeams}
+                                disabled={selectedTeams.length < 2}
+                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Update Tournament
+                            </button>
+                        </div>
+                    </div>
+                    
+                    {selectedTeams.length > 0 && selectedTeams.length < 2 && (
+                        <p className="text-sm text-red-600 mt-2">⚠️ Need at least 2 teams for tournament</p>
+                    )}
+                    
+                    <div className="mt-3 p-3 bg-white rounded border">
+                        <p className="text-xs text-gray-600">
+                            <strong>Note:</strong> Changing teams will recreate the bracket and reset all match results. 
+                            Only do this if you need to make schedule changes before matches are played.
+                        </p>
+                    </div>
+                </div>
+            )}
+
             {/* Tournament Rounds */}
             <div className="space-y-4">
                 {tournament.rounds.map(round => (
