@@ -12,7 +12,10 @@ const SchedulingDashboard = ({
     leagueSchedule = [], 
     setLeagueSchedule, 
     currentUser,
-    leagueLocations = []
+    leagueLocations = [],
+    onEditEvent,
+    onDeleteEvent,
+    onEventClick
 }) => {
     const [activeTab, setActiveTab] = useState('calendar');
     const [editingEvent, setEditingEvent] = useState(null);
