@@ -12647,6 +12647,12 @@ const PlayerManager = ({ players, setPlayers, teams, currentUser }) => {
         }
         setEditingPlayer(null);
     };
+
+    const handleDeletePlayer = (playerId, playerName) => {
+        if (window.confirm(`Are you sure you want to delete ${playerName}? This action cannot be undone.`)) {
+            setPlayers(prev => prev.filter(p => p.id !== playerId));
+        }
+    };
     const teamRoster = managedTeamId === 'all' 
         ? players 
         : players.filter(p => p.teams.includes(managedTeamId));
