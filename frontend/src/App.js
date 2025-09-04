@@ -17871,6 +17871,53 @@ function App() {
     const [editingPlayerStats, setEditingPlayerStats] = useState(false);
     const [manageScheduleExpanded, setManageScheduleExpanded] = useState(false);
 
+    // Emergency data recovery functions (global access)
+    useEffect(() => {
+        // Make recovery functions available globally for emergency use
+        window.listTeamsBackups = () => {
+            const keys = Object.keys(localStorage).filter(key => key.includes('teams_backup'));
+            console.log('🔍 Available teams backups:', keys);
+            keys.forEach(key => {
+                const data = JSON.parse(localStorage.getItem(key));
+                console.log(`📂 ${key}: ${data.length} teams`);
+            });
+            return keys;
+        };
+
+        window.restoreTeamsFromBackup = (backupKey) => {
+            try {
+                const data = JSON.parse(localStorage.getItem(backupKey));
+                if (data && Array.isArray(data)) {
+                    setTeams(data);
+                    console.log(`✅ Restored ${data.length} teams from ${backupKey}`);
+                    return true;
+                } else {
+                    console.error('❌ Invalid backup data');
+                    return false;
+                }
+            } catch (error) {
+                console.error('❌ Restore failed:', error);
+                return false;
+            }
+        };
+
+        window.emergencyTeamsRestore = () => {
+            console.log('🚨 EMERGENCY TEAMS RESTORE INITIATED');
+            const backups = window.listTeamsBackups();
+            if (backups.length > 0) {
+                // Use most recent backup
+                const latestBackup = backups[backups.length - 1];
+                return window.restoreTeamsFromBackup(latestBackup);
+            } else {
+                console.warn('⚠️ No backups available for emergency restore');
+                return false;
+            }
+        };
+        
+        console.log('🛡️ Emergency recovery functions loaded');
+        console.log('🛡️ Available: window.listTeamsBackups(), window.restoreTeamsFromBackup(), window.emergencyTeamsRestore()');
+    }, []);
+
     // Load data from API on component mount
     useEffect(() => {
         const loadInitialData = async () => {
