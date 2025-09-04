@@ -18495,7 +18495,6 @@ function App() {
                             const hasRoles = (u.roles && u.roles.length > 0) || u.role; // roles array or role string
                             return hasActiveStatus && hasRoles;
                         }).length > 0 && (
-                        )}
                         
                         {/* Registration Option */}
                         <div className="border-t pt-4">
