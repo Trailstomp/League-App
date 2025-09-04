@@ -216,12 +216,24 @@ const TournamentBracketsTab = ({
     }, [editTeamsMode, tournament]);
 
     const handleCreateTournament = () => {
-        if (selectedTeams.length < 2) {
-            alert('Need at least 2 teams to create a tournament');
+        // Use event's teams if available, otherwise fall back to selectedTeams
+        let teamsToUse = selectedTeams;
+        
+        if (event.teamIds && event.teamIds.length >= 2) {
+            // Get team objects from event's teamIds
+            teamsToUse = availableTeams.filter(team => event.teamIds.includes(team.id));
+            console.log('🏆 Using teams from event:', teamsToUse.map(t => t.name));
+        } else if (selectedTeams.length >= 2) {
+            teamsToUse = selectedTeams;
+            console.log('🏆 Using manually selected teams:', teamsToUse.map(t => t.name));
+        }
+        
+        if (teamsToUse.length < 2) {
+            alert('Need at least 2 teams to create a tournament. Please assign teams to this event first.');
             return;
         }
 
-        const newTournament = createBracketStructure(selectedTeams, config);
+        const newTournament = createBracketStructure(teamsToUse, config);
         setTournament(newTournament);
         setSetupMode(false);
         
