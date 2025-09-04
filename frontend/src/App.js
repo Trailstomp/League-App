@@ -17485,6 +17485,34 @@ function App() {
         getTeamSeasonStats,
         getTeamRankings
     } = useStatistics();
+
+    // Data backup/export function
+    const exportData = () => {
+        const dataBackup = {
+            teams,
+            players,
+            users,
+            leagueSchedule,
+            leagueInfo,
+            websiteStyle,
+            leagueLocations,
+            exportDate: new Date().toISOString(),
+            exportType: 'full_backup'
+        };
+        
+        const dataStr = JSON.stringify(dataBackup, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `league_backup_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        console.log('✅ Data backup exported successfully');
+    };
     
     // Core application state
     const [page, setPage] = useState('home');
