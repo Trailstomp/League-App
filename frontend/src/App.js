@@ -5783,128 +5783,170 @@ const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
 );
 
 const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
-    // League teams (exclude external teams from standings)
-    const fieldTeams = teams.filter(t => t.active && t.division === 'Field' && !t.isExternal).sort((a, b) => {
-        const scoreA = a.wins * 2 + a.ties;
-        const scoreB = b.wins * 2 + b.ties;
-        if (scoreA !== scoreB) return scoreB - scoreA;
-        return (b.pf - b.pa) - (a.pf - a.pa);
+    const isAdmin = userHasRole(currentUser, 'admin');
+    
+    // Get all events from leagueSchedule - handle both formats: [{date, games: []}] and direct events
+
+    const allEvents = (leagueSchedule || []).flatMap(item => {
+        // Check if this is the old format (day with games) or new format (direct event)
+        if (item.games && Array.isArray(item.games)) {
+            // Old format: {date, games: []}
+            return item.games.map(game => {
+                if (!game) return null;
+                const homeTeam = (teams || []).find(t => t.id === game.home);
+                const awayTeam = (teams || []).find(t => t.id === game.away);
+                
+                return {
+                    id: game.id,
+                    title: `${homeTeam?.name || 'Home Team'} vs ${awayTeam?.name || 'Away Team'}`,
+                    type: 'game',
+                    date: item.date,
+                    time: game.time,
+                    location: game.location,
+                    homeTeam: game.home,
+                    awayTeam: game.away,
+                    homeScore: game.homeScore || 0,
+                    awayScore: game.awayScore || 0,
+                    status: game.status || 'scheduled',
+                    teamName: homeTeam?.name || 'Unknown Team',
+                    teamLogo: homeTeam?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team',
+                    teamId: game.home,
+                    allTeams: [
+                        {
+                            id: game.home,
+                            name: homeTeam?.name || 'Home Team',
+                            logo: homeTeam?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
+                        },
+                        {
+                            id: game.away,
+                            name: awayTeam?.name || 'Away Team', 
+                            logo: awayTeam?.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
+                        }
+                    ].filter(team => team && team.name).sort((a, b) => a.name.localeCompare(b.name))
+                };
+            });
+        } else {
+            // New format: direct event object {id, type, title, date, time, ...}
+            if (!item || !item.id) return null;
+            
+            // For events that already have complete data, use them directly
+            return {
+                id: item.id,
+                title: item.title,
+                type: item.type || 'event',
+                date: item.date,
+                time: item.time,
+                location: item.location,
+                description: item.description,
+                teamId: item.teamId,
+                teamName: item.teamName || 'League Event',
+                teamLogo: item.teamLogo || 'https://placehold.co/200x200/cccccc/666666?text=Event',
+                imageUrl: item.imageUrl,  // Include imageUrl property
+                allTeams: item.allTeams || []
+            };
+        }
+    }).filter(event => event !== null).sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+
+
+    // Filter events by team and type
+    const filteredEvents = allEvents
+        .filter(event => selectedTeamSchedule === 'all' || event.teamId === selectedTeamSchedule)
+        .filter(event => eventTypeFilters[event.type || 'other']);
+    
+    // Group tournament events by title, date, and location
+    const groupedEvents = filteredEvents.reduce((groups, event) => {
+        if (event.type && event.type.toLowerCase() === 'tournament') {
+            const key = `${event.title}-${event.date}-${event.location || 'no-location'}`;
+            if (!groups[key]) {
+                groups[key] = {
+                    ...event,
+                    allTeams: [],
+                    participants: 0
+                };
+            }
+            // Add unique teams to the tournament - ensure allTeams is always an array
+            if (!groups[key].allTeams) {
+                groups[key].allTeams = [];
+            }
+            if (event.teamId && !groups[key].allTeams.find(t => t.id === event.teamId)) {
+                groups[key].allTeams.push({
+                    id: event.teamId,
+                    name: event.teamName,
+                    logo: event.teamLogo
+                });
+            }
+            groups[key].participants = groups[key].allTeams.length;
+        }
+        return groups;
+    }, {});
+
+    // Create display events list combining individual and grouped events
+    const displayEvents = [];
+    const processedTournamentKeys = new Set();
+    
+    filteredEvents.forEach(event => {
+        if (event.type && event.type.toLowerCase() === 'tournament') {
+            const key = `${event.title}-${event.date}-${event.location || 'no-location'}`;
+            if (!processedTournamentKeys.has(key)) {
+                const groupedEvent = {
+                    ...groupedEvents[key],
+                    allTeams: (groupedEvents[key].allTeams || []).sort((a, b) => a.name.localeCompare(b.name))
+                };
+                displayEvents.push(groupedEvent);
+                processedTournamentKeys.add(key);
+            }
+        } else {
+            displayEvents.push(event);
+        }
     });
     
-    const boxTeams = teams.filter(t => t.active && t.division === 'Box' && !t.isExternal).sort((a, b) => {
-        const scoreA = a.wins * 2 + a.ties;
-        const scoreB = b.wins * 2 + b.ties;
-        if (scoreA !== scoreB) return scoreB - scoreA;
-        return (b.pf - b.pa) - (a.pf - a.pa);
-    });
+    // Memoized handler for event type filter changes
+    const handleEventTypeToggle = useCallback((eventType) => {
+        setEventTypeFilters(prev => ({
+            ...prev,
+            [eventType]: !prev[eventType]
+        }));
+    }, []);
     
-    // External teams (for reference but don't count in league standings)
-    const externalTeams = teams.filter(t => t.active && t.isExternal);
+    // Get unique event types from all events
+    const availableEventTypes = useMemo(() => {
+        const types = new Set(allEvents.map(event => event.type || 'other'));
+        return Array.from(types).sort();
+    }, [allEvents]);
 
-    const renderStandingsTable = (divisionTeams, divisionName) => (
-        <div className="mb-8">
-            <h2 className="text-2xl font-bold text-slate-700 mb-4 flex items-center">
-                {divisionName === 'Field' ? <Trophy className="mr-2" size={24} /> : <Shield className="mr-2" size={24} />}
-                {divisionName} Lacrosse Standings
-            </h2>
-            <div className="bg-white rounded-lg shadow-md overflow-x-auto">
-                <table className="w-full table-auto">
-                    <thead className="bg-slate-100 text-slate-600 uppercase text-sm leading-normal">
-                        <tr>
-                            <th className="py-3 px-6 text-left">Team</th>
-                            <th className="py-3 px-6 text-center">W</th><th className="py-3 px-6 text-center">L</th><th className="py-3 px-6 text-center">T</th>
-                            <th className="py-3 px-6 text-center">PF</th><th className="py-3 px-6 text-center">PA</th><th className="py-3 px-6 text-center">DIFF</th>
-                            <th className="py-3 px-6 text-center">Score</th>
-                        </tr>
-                    </thead>
-                    <tbody className="text-slate-700 text-sm font-light">
-                        {divisionTeams.map((team, index) => {
-                            const differential = team.pf - team.pa;
-                            const score = team.wins * 2 + team.ties;
-                            return (
-                                <tr key={team.id} className={`border-b border-slate-200 hover:bg-slate-50 ${index === 0 ? 'bg-yellow-50' : ''}`}>
-                                    <td className="py-3 px-6 text-left whitespace-nowrap">
-                                        <button onClick={() => onTeamClick(team.id)} className="flex items-center hover:opacity-80">
-                                            {index === 0 && <Crown size={16} className="text-yellow-600 mr-1" />}
-                                            <img src={team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'} alt={team.name} className="w-8 h-8 mr-3 rounded-full bg-white p-1 object-contain" />
-                                            <span className="font-medium">{team.name}</span>
-                                        </button>
-                                    </td>
-                                    <td className="py-3 px-6 text-center">{team.wins}</td><td className="py-3 px-6 text-center">{team.losses}</td><td className="py-3 px-6 text-center">{team.ties}</td>
-                                    <td className="py-3 px-6 text-center text-green-600 font-semibold">{team.pf}</td><td className="py-3 px-6 text-center text-red-600 font-semibold">{team.pa}</td>
-                                    <td className={`py-3 px-6 text-center font-semibold ${differential > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                        {differential > 0 ? '+' : ''}{differential}
-                                    </td>
-                                    <td className="py-3 px-6 text-center font-bold text-blue-600">{score}</td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
-
+    // Filter schedule - leagueSchedule is an array of days with games
+    const filteredSchedule = (leagueSchedule || []).map(day => {
+        if (!day || !day.games) return null;
+        if (selectedTeamSchedule === 'all') return day;
+        const games = day.games.filter(g => g && (g.home === selectedTeamSchedule || g.away === selectedTeamSchedule));
+        return { ...day, games };
+    }).filter(day => day && day.games && day.games.length > 0);
+    
     return (
         <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
-            <div className="text-center mb-8">
-                <img src={websiteStyle.logoUrl} alt="MLBL Logo" className="h-40 mx-auto mb-4" />
-                <h1 className="text-4xl font-bold text-slate-800 tracking-tight">League Standings</h1>
-            </div>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-4xl font-bold text-slate-800 tracking-tight">League Events & Schedule</h1>
+                
 
-            {/* Field Division */}
-            {fieldTeams.length > 0 && renderStandingsTable(fieldTeams, 'Field')}
-            
-            {/* Box Division */}
-            {boxTeams.length > 0 && renderStandingsTable(boxTeams, 'Box')}
-            
-            {/* External Teams Reference */}
-            {externalTeams.length > 0 && (
-                <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-slate-700 mb-4 flex items-center">
-                        <Globe className="mr-2" size={24} />
-                        External Teams (Reference Only)
-                    </h2>
-                    <div className="bg-slate-50 rounded-lg p-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {externalTeams.map(team => (
-                                <button 
-                                    key={team.id} 
-                                    onClick={() => onTeamClick(team.id)}
-                                    className="flex items-center p-3 bg-white rounded-lg hover:bg-slate-100 transition-colors"
-                                >
-                                    <img src={team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'} alt={team.name} className="w-10 h-10 mr-3 rounded-full bg-white p-1 object-contain" />
-                                    <span className="font-medium text-slate-700">{team.name}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
+                <div className="flex space-x-2">
+                    {(isAdmin || hasPermission(currentUser, 'events.view')) && (
+                        <button 
+                            onClick={() => window.location.hash = 'event-dashboard'}
+                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center text-sm"
+                            title="View event management dashboard"
+                        >
+                            <BarChart2 className="mr-2 h-4 w-4"/> Event Dashboard
+                        </button>
+                    )}
 
-            {/* Legend */}
-            <div className="bg-slate-50 rounded-lg p-6 mt-8">
-                <h3 className="text-lg font-semibold text-slate-700 mb-4">Standings Legend</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600">
-                    <div>
-                        <p><strong>W/L/T:</strong> Wins, Losses, Ties</p>
-                        <p><strong>PF/PA:</strong> Points For/Against</p>
-                    </div>
-                    <div>
-                        <p><strong>DIFF:</strong> Point Differential (PF - PA)</p>
-                        <p><strong>Score:</strong> League Points (Wins × 2 + Ties)</p>
-                    </div>
-                </div>
-                <div className="mt-4 flex items-center text-sm text-slate-600">
-                    <Crown size={16} className="text-yellow-600 mr-2" />
-                    <span>Division Leader</span>
                 </div>
             </div>
-        </div>
-    );
-};
-
-const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, setPlayers, setTeams, websiteStyle, playMusic, stopAllMusic, musicState, getTeamNewsItems, addTeamNewsItem, updateTeamNewsItem, deleteTeamNewsItem, setSelectedNewsItem, friends, sponsors, setFriends, setSponsors, onEventClick, onEditEvent, onDeleteEvent, isMenuOpen, leagueLocations = [] }) => {
+            
+            <div className="mb-6 space-y-4">
+                {/* Team Filter */}
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Filter by Team</label>
                     <select 
                         onChange={(e) => setSelectedTeamSchedule(e.target.value)} 
                         value={selectedTeamSchedule} 
@@ -6264,6 +6306,18 @@ const TeamDetailPage = ({ teamId, teams, players, leagueSchedule, currentUser, s
         </div>
     );
 };
+
+const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
+    <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
+        <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-8">
+                <img src={websiteStyle.logoUrl} alt="MLBL Logo" className="h-40 mx-auto mb-4" />
+                <h1 className="text-4xl font-bold text-slate-800 tracking-tight">{leagueInfo.name}</h1>
+            </div>
+            <ContactCard entity={leagueInfo} />
+        </div>
+    </div>
+);
 
 const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
     // League teams (exclude external teams from standings)
