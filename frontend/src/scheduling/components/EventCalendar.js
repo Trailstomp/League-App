@@ -32,6 +32,7 @@ const EventCalendar = ({
     teams = [], 
     onEditEvent, 
     onDeleteEvent,
+    onEventClick,
     currentUser 
 }) => {
     const [viewMode, setViewMode] = useState('grid'); // 'list' or 'grid'
