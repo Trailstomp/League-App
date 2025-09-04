@@ -17732,11 +17732,19 @@ function App() {
     const handleEditEvent = (event) => {
         // Debug: Log the event data being passed to edit form
         console.log('🔍 EDIT EVENT DEBUG - Event data being loaded:', event);
-        console.log('🔍 imageUrl in event:', event.imageUrl);
-        console.log('🔍 teamIds in event:', event.teamIds);
-        console.log('🔍 Full event keys:', Object.keys(event));
+        console.log('🔍 Event type:', event.type);
         
-        // Open the event in edit mode
+        // For tournament events, open the EventDetailModal with Brackets tab
+        if (event.type === 'tournament') {
+            console.log('🏆 Opening tournament in bracket management mode');
+            setSelectedEventDetail(event);
+            setShowEventDetailModal(true);
+            // Note: EventDetailModal will automatically show Brackets tab for tournaments
+            return;
+        }
+        
+        // For non-tournament events, use the standard event form
+        console.log('📝 Opening standard event form for:', event.type);
         setEditingEvent({
             ...event,
             // Ensure these fields exist even if they're missing from the saved event
