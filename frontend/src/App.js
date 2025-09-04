@@ -5770,8 +5770,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
     );
 };
 
-    // Check if user can edit a specific event
-    const canEditEvent = (event) => {
+const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
         if (!currentUser) return false;
         
         // Admins can edit any event
