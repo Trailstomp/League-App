@@ -5756,28 +5756,18 @@ const HomePage = ({teams, onTeamClick, leagueInfo, websiteStyle}) => {
 };
 
 const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteStyle, onUpdateRSVP, users, onSendNotification, onEventClick, onEditEvent, onDeleteEvent, leagueInfo, gameStatistics, tournamentData, onUpdateGameStats, onUpdateTournament, setLeagueSchedule, leagueLocations}) => {
-    
-    // Handle event card click - delegate to parent component's handler
-    const handleEventCardClick = (event) => {
-        if (onEventClick) {
-            onEventClick(event);
-        }
-    };
-
-    // Modal handling moved to parent component
-
-    const [selectedTeamSchedule, setSelectedTeamSchedule] = useState('all');
-    const [eventTypeFilters, setEventTypeFilters] = useState({
-        game: true,
-        practice: true,
-        tournament: true,
-        meeting: true,
-        social: true,
-        other: true
-    });
-    
-    // Move authorization checks inside component to make them reactive
-    const isAuthorizedToManage = currentUser && (
+    // Use the modern SchedulingDashboard interface instead of old EventsPage
+    return (
+        <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
+            <SchedulingDashboard
+                teams={teams}
+                leagueSchedule={leagueSchedule}
+                setLeagueSchedule={setLeagueSchedule}
+                currentUser={currentUser}
+                leagueLocations={leagueLocations}
+            />
+        </div>
+    );
         // Check admin role
         currentUser.role === 'admin' || 
         currentUser.roles?.includes('admin') ||
