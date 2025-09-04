@@ -1329,16 +1329,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Implement dedicated MongoDB collections for teams data"
-    - "Implement dedicated MongoDB collections for players data"
-    - "Create CRUD API endpoints for teams management"
-    - "Create CRUD API endpoints for players management"
-    - "Implement data migration from league-data to dedicated collections"
-    - "Implement backup and restore functionality for teams/players"
-    - "Add data validation and error handling for teams/players operations"
-  stuck_tasks:
-    - "Implement dedicated MongoDB collections for teams data"
-    - "Implement dedicated MongoDB collections for players data"
+    - "Teams and Players CRUD Infrastructure Testing Completed"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
     - "Create CRUD API endpoints for teams management"
     - "Create CRUD API endpoints for players management"
   test_all: false
