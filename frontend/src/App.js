@@ -19212,11 +19212,14 @@ function App() {
             )}
             
             {/* Event Detail Modal */}
-            {selectedEventDetail && (
+            {showEventDetailModal && selectedEventDetail && (
                 <EventDetailModal 
                     event={selectedEventDetail}
-                    isOpen={true}
-                    onClose={() => setSelectedEventDetail(null)}
+                    isOpen={showEventDetailModal}
+                    onClose={() => {
+                        setShowEventDetailModal(false);
+                        setSelectedEventDetail(null);
+                    }}
                     teams={teams}
                     currentUser={currentUser}
                     users={users}
