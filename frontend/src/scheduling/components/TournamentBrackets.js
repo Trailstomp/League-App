@@ -511,6 +511,14 @@ const TournamentBracketsTab = ({
                         </div>
                     </div>
                     
+                    {event.teamIds && event.teamIds.length > 0 && (
+                        <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded">
+                            <div className="text-sm text-blue-800">
+                                💡 Teams from event details: {availableTeams.map(t => t.name).join(', ')}
+                            </div>
+                        </div>
+                    )}
+                    
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-h-60 overflow-y-auto">
                         {availableTeams.map(team => (
                             <label key={team.id} className="flex items-center p-2 border rounded cursor-pointer hover:bg-gray-50">
