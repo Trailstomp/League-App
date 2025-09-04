@@ -5783,21 +5783,126 @@ const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
 );
 
 const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
-                        <button 
-                            onClick={() => window.location.hash = 'event-dashboard'}
-                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center text-sm"
-                            title="View event management dashboard"
-                        >
-                            <BarChart2 className="mr-2 h-4 w-4"/> Event Dashboard
-                        </button>
-                    )}
+    // League teams (exclude external teams from standings)
+    const fieldTeams = teams.filter(t => t.active && t.division === 'Field' && !t.isExternal).sort((a, b) => {
+        const scoreA = a.wins * 2 + a.ties;
+        const scoreB = b.wins * 2 + b.ties;
+        if (scoreA !== scoreB) return scoreB - scoreA;
+        return (b.pf - b.pa) - (a.pf - a.pa);
+    });
+    
+    const boxTeams = teams.filter(t => t.active && t.division === 'Box' && !t.isExternal).sort((a, b) => {
+        const scoreA = a.wins * 2 + a.ties;
+        const scoreB = b.wins * 2 + b.ties;
+        if (scoreA !== scoreB) return scoreB - scoreA;
+        return (b.pf - b.pa) - (a.pf - a.pa);
+    });
+    
+    // External teams (for reference but don't count in league standings)
+    const externalTeams = teams.filter(t => t.active && t.isExternal);
 
+    const renderStandingsTable = (divisionTeams, divisionName) => (
+        <div className="mb-8">
+            <h2 className="text-2xl font-bold text-slate-700 mb-4 flex items-center">
+                {divisionName === 'Field' ? <Trophy className="mr-2" size={24} /> : <Shield className="mr-2" size={24} />}
+                {divisionName} Lacrosse Standings
+            </h2>
+            <div className="bg-white rounded-lg shadow-md overflow-x-auto">
+                <table className="w-full table-auto">
+                    <thead className="bg-slate-100 text-slate-600 uppercase text-sm leading-normal">
+                        <tr>
+                            <th className="py-3 px-6 text-left">Team</th>
+                            <th className="py-3 px-6 text-center">W</th><th className="py-3 px-6 text-center">L</th><th className="py-3 px-6 text-center">T</th>
+                            <th className="py-3 px-6 text-center">PF</th><th className="py-3 px-6 text-center">PA</th><th className="py-3 px-6 text-center">DIFF</th>
+                            <th className="py-3 px-6 text-center">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody className="text-slate-700 text-sm font-light">
+                        {divisionTeams.map((team, index) => {
+                            const differential = team.pf - team.pa;
+                            const score = team.wins * 2 + team.ties;
+                            return (
+                                <tr key={team.id} className={`border-b border-slate-200 hover:bg-slate-50 ${index === 0 ? 'bg-yellow-50' : ''}`}>
+                                    <td className="py-3 px-6 text-left whitespace-nowrap">
+                                        <button onClick={() => onTeamClick(team.id)} className="flex items-center hover:opacity-80">
+                                            {index === 0 && <Crown size={16} className="text-yellow-600 mr-1" />}
+                                            <img src={team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'} alt={team.name} className="w-8 h-8 mr-3 rounded-full bg-white p-1 object-contain" />
+                                            <span className="font-medium">{team.name}</span>
+                                        </button>
+                                    </td>
+                                    <td className="py-3 px-6 text-center">{team.wins}</td><td className="py-3 px-6 text-center">{team.losses}</td><td className="py-3 px-6 text-center">{team.ties}</td>
+                                    <td className="py-3 px-6 text-center text-green-600 font-semibold">{team.pf}</td><td className="py-3 px-6 text-center text-red-600 font-semibold">{team.pa}</td>
+                                    <td className={`py-3 px-6 text-center font-semibold ${differential > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                        {differential > 0 ? '+' : ''}{differential}
+                                    </td>
+                                    <td className="py-3 px-6 text-center font-bold text-blue-600">{score}</td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+
+    return (
+        <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
+            <div className="text-center mb-8">
+                <img src={websiteStyle.logoUrl} alt="MLBL Logo" className="h-40 mx-auto mb-4" />
+                <h1 className="text-4xl font-bold text-slate-800 tracking-tight">League Standings</h1>
+            </div>
+
+            {/* Field Division */}
+            {fieldTeams.length > 0 && renderStandingsTable(fieldTeams, 'Field')}
+            
+            {/* Box Division */}
+            {boxTeams.length > 0 && renderStandingsTable(boxTeams, 'Box')}
+            
+            {/* External Teams Reference */}
+            {externalTeams.length > 0 && (
+                <div className="mb-8">
+                    <h2 className="text-2xl font-bold text-slate-700 mb-4 flex items-center">
+                        <Globe className="mr-2" size={24} />
+                        External Teams (Reference Only)
+                    </h2>
+                    <div className="bg-slate-50 rounded-lg p-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {externalTeams.map(team => (
+                                <button 
+                                    key={team.id} 
+                                    onClick={() => onTeamClick(team.id)}
+                                    className="flex items-center p-3 bg-white rounded-lg hover:bg-slate-100 transition-colors"
+                                >
+                                    <img src={team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'} alt={team.name} className="w-10 h-10 mr-3 rounded-full bg-white p-1 object-contain" />
+                                    <span className="font-medium text-slate-700">{team.name}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Legend */}
+            <div className="bg-slate-50 rounded-lg p-6 mt-8">
+                <h3 className="text-lg font-semibold text-slate-700 mb-4">Standings Legend</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-600">
+                    <div>
+                        <p><strong>W/L/T:</strong> Wins, Losses, Ties</p>
+                        <p><strong>PF/PA:</strong> Points For/Against</p>
+                    </div>
+                    <div>
+                        <p><strong>DIFF:</strong> Point Differential (PF - PA)</p>
+                        <p><strong>Score:</strong> League Points (Wins × 2 + Ties)</p>
+                    </div>
+                </div>
+                <div className="mt-4 flex items-center text-sm text-slate-600">
+                    <Crown size={16} className="text-yellow-600 mr-2" />
+                    <span>Division Leader</span>
                 </div>
             </div>
-            
-            <div className="mb-6 space-y-4">
-                {/* Team Filter */}
-                <div>
+        </div>
+    );
+};
                     <label className="block text-sm font-medium text-slate-700 mb-2">Filter by Team</label>
                     <select 
                         onChange={(e) => setSelectedTeamSchedule(e.target.value)} 
