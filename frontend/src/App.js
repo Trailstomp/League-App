@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { SchedulingModule } from './scheduling';
+import SchedulingDashboard from './scheduling/components/SchedulingDashboard';
 import LeagueLocationsManager from './scheduling/components/LeagueLocationsManager';
 import EventDetailModal from './scheduling/components/EventDetailModal';
 import useStatistics from './scheduling/hooks/useStatistics';
