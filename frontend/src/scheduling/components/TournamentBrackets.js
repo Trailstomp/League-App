@@ -202,11 +202,24 @@ const TournamentBracketsTab = ({
     });
     const [selectedTeams, setSelectedTeams] = useState([]);
 
-    // Get available teams for tournament
-    const availableTeams = teams.filter(team => team.active);
+    // Get available teams for tournament - filter to event's teams if available
+    const availableTeams = React.useMemo(() => {
+        // If event has teamIds, only show those teams in brackets
+        if (event.teamIds && event.teamIds.length > 0) {
+            return teams.filter(team => team.active && event.teamIds.includes(team.id));
+        }
+        // Otherwise show all active teams
+        return teams.filter(team => team.active);
+    }, [teams, event.teamIds]);
     
-    // Initialize selected teams as empty - user must explicitly select teams
-    // (No useEffect needed - selectedTeams starts as empty array)
+    // Initialize selected teams from event's teamIds when component loads
+    useEffect(() => {
+        if (event.teamIds && event.teamIds.length >= 2 && selectedTeams.length === 0) {
+            const eventTeams = teams.filter(team => team.active && event.teamIds.includes(team.id));
+            setSelectedTeams(eventTeams);
+            console.log('🏆 Pre-selecting teams from event:', eventTeams.map(t => t.name));
+        }
+    }, [event.teamIds, teams, selectedTeams.length]);
     
     // Initialize selectedTeams when editing existing tournament
     useEffect(() => {
