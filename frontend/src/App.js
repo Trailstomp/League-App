@@ -19114,6 +19114,10 @@ function App() {
                     users={users}
                     leagueInfo={leagueInfo}
                     onUpdateEvent={handleUpdateEvent}
+                    tournamentData={tournamentData[selectedEventDetail.id]}
+                    onUpdateTournament={updateTournament}
+                    gameStats={gameStatistics[selectedEventDetail.id]}
+                    onUpdateGameStats={updateGameStats}
                 />
             )}
             
