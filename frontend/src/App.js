@@ -3490,15 +3490,16 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
         
 
         
-        // Group tournament games by tournament name
+        // Group tournament games by tournament ID (not name) to prevent duplicates
         const regularGames = [];
         const tournaments = new Map();
         
         gamesWithDates.forEach(game => {
-            if (game.itemType === 'tournament' && game.tournamentName) {
+            if (game.itemType === 'tournament' && game.id) {
                 if (tickerFilters.tournaments) {
-                    if (!tournaments.has(game.tournamentName)) {
-                        tournaments.set(game.tournamentName, {
+                    if (!tournaments.has(game.id)) {
+                        tournaments.set(game.id, {
+                            id: game.id,
                             tournamentName: game.tournamentName,
                             location: game.location,
                             gameDate: game.gameDate,
@@ -3506,7 +3507,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
                             itemType: 'tournament'
                         });
                     }
-                    tournaments.get(game.tournamentName).games.push(game);
+                    tournaments.get(game.id).games.push(game);
                 }
             } else {
                 // All non-tournament games are regular games (includes 'League Game', 'game', etc.)
