@@ -337,32 +337,7 @@ const EventCalendar = ({
                                                     )}
 
                                                     {/* Teams - Enhanced Display with Logos */}
-                                                    {(() => {
-                                                        // Handle multiple team property formats
-                                                        let eventTeamIds = [];
-                                                        
-                                                        if (event.teamIds && event.teamIds.length > 0) {
-                                                            eventTeamIds = event.teamIds;
-                                                        } else {
-                                                            // Convert legacy format (homeTeam, awayTeam, teamId) to teamIds array
-                                                            if (event.homeTeam) eventTeamIds.push(event.homeTeam);
-                                                            if (event.awayTeam && event.awayTeam !== event.homeTeam) eventTeamIds.push(event.awayTeam);
-                                                            if (event.teamId && !eventTeamIds.includes(event.teamId)) eventTeamIds.push(event.teamId);
-                                                        }
-                                                        
-                                                        return eventTeamIds.length > 0;
-                                                    })() && (() => {
-                                                        // Get team IDs using the same logic
-                                                        let eventTeamIds = [];
-                                                        if (event.teamIds && event.teamIds.length > 0) {
-                                                            eventTeamIds = event.teamIds;
-                                                        } else {
-                                                            if (event.homeTeam) eventTeamIds.push(event.homeTeam);
-                                                            if (event.awayTeam && event.awayTeam !== event.homeTeam) eventTeamIds.push(event.awayTeam);
-                                                            if (event.teamId && !eventTeamIds.includes(event.teamId)) eventTeamIds.push(event.teamId);
-                                                        }
-                                                        return eventTeamIds;
-                                                    })().length > 0 && (
+                                                    {getEventTeamIds(event).length > 0 && (
                                                         <div className="flex items-start">
                                                             <span className="mr-1 mt-0.5">{LacrosseIcons.teams}</span>
                                                             <div className="flex-1 min-w-0">
