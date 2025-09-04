@@ -30,15 +30,27 @@ const SchedulingDashboard = ({
 
     const handleEditEvent = (event) => {
         console.log('✏️ Editing event:', event);
-        setEditingEvent(event);
-        setShowEventForm(true);
-        setActiveTab('form');
+        // Use the main app's edit handler if provided, otherwise fall back to local handler
+        if (onEditEvent) {
+            onEditEvent(event);
+        } else {
+            // Fallback to local form-based editing
+            setEditingEvent(event);
+            setShowEventForm(true);
+            setActiveTab('form');
+        }
     };
 
     const handleDeleteEvent = (eventId) => {
-        if (window.confirm('Are you sure you want to delete this event?')) {
-            console.log('🗑️ Deleting event:', eventId);
-            setLeagueSchedule(prev => prev.filter(e => e.id !== eventId));
+        // Use the main app's delete handler if provided, otherwise fall back to local handler
+        if (onDeleteEvent) {
+            onDeleteEvent(eventId);
+        } else {
+            // Fallback to local deletion
+            if (window.confirm('Are you sure you want to delete this event?')) {
+                console.log('🗑️ Deleting event:', eventId);
+                setLeagueSchedule(prev => prev.filter(e => e.id !== eventId));
+            }
         }
     };
 
