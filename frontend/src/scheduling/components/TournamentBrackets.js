@@ -230,6 +230,29 @@ const TournamentBracketsTab = ({
         }
     };
 
+    const handleUpdateTeams = () => {
+        if (selectedTeams.length < 2) {
+            alert('Need at least 2 teams for tournament');
+            return;
+        }
+
+        // Create new tournament with updated teams but preserve config
+        const updatedConfig = {
+            type: tournament.type,
+            setupType: tournament.setupType || config.setupType,
+            allowBye: tournament.allowBye !== undefined ? tournament.allowBye : config.allowBye,
+            seedingMethod: tournament.seedingMethod || config.seedingMethod
+        };
+
+        const updatedTournament = createBracketStructure(selectedTeams, updatedConfig);
+        setTournament(updatedTournament);
+        setEditTeamsMode(false);
+        
+        if (onUpdateTournament) {
+            onUpdateTournament(event.id, updatedTournament);
+        }
+    };
+
     const handleMatchResult = (matchId, homeScore, awayScore) => {
         if (!tournament || !editMode || !userCanEdit) return;
 
