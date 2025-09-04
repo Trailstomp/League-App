@@ -5771,12 +5771,16 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
 };
 
 const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
-        if (!currentUser) return false;
-        
-        // Admins can edit any event
-        if (currentUser.role === 'admin' || currentUser.roles?.includes('admin')) {
-            return true;
-        }
+    <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
+        <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-8">
+                <img src={websiteStyle.logoUrl} alt="MLBL Logo" className="h-40 mx-auto mb-4" />
+                <h1 className="text-4xl font-bold text-slate-800 tracking-tight">{leagueInfo.name}</h1>
+            </div>
+            <ContactCard entity={leagueInfo} />
+        </div>
+    </div>
+);
         
         // Coaches can edit events for their teams
         if (currentUser.role === 'coach' || currentUser.roles?.includes('coach')) {
