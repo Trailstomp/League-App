@@ -906,6 +906,90 @@ backend:
         agent: "testing"
         comment: "🏆 TOURNAMENT BRACKET PERSISTENCE & TEAM FILTERING TESTING COMPLETED: Executed comprehensive testing of tournament bracket functionality as requested in review. COMPREHENSIVE TESTING RESULTS: All core tournament features verified working correctly. VERIFIED AREAS PER REVIEW REQUEST: ✅ 1) Tournament Modal Access: Tournament events open successfully in modal with proper tab navigation (Details, RSVP, Scores, Brackets tabs all accessible) ✅ 2) Brackets Tab Functionality: Brackets tab loads complete tournament setup interface including Tournament Format options (Single/Double Elimination), Bracket Setup options (Ranked/Manual Brackets), Tournament Options (#1 Team Gets Bye checkbox), and Seeding Method dropdown with 3 options ✅ 3) Team Data Integration: Team information properly integrated into brackets interface - found 97 elements mentioning team names, indicating team data is successfully passed from event details to bracket setup ✅ 4) Tournament Setup Interface: Complete tournament configuration interface present with all necessary options for bracket generation ✅ 5) Modal Navigation Persistence: Tournament modal and tabs persist correctly during navigation - can open tournament, access brackets tab, navigate away to Home, return to Events, and reopen tournament with brackets tab still functional. CRITICAL ASSESSMENT: Tournament bracket system is fully functional and ready for production use. The main agent's fixes for tournament data persistence and team filtering have been successfully implemented. Tournament setup interface provides comprehensive bracket configuration options. Team data integration working correctly between event details and bracket setup. CONCLUSION: Tournament bracket persistence and team filtering fixes are working correctly. All review requirements have been verified and the tournament system is production-ready."
 
+  - task: "Implement dedicated MongoDB collections for teams data"
+    implemented: false
+    working: false
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL INFRASTRUCTURE MISSING: Dedicated teams collection NOT implemented. Current implementation stores teams within single league_data collection, which does NOT meet review requirements. Required: Dedicated MongoDB 'teams' collection with proper schema, indexes, and CRUD API endpoints (GET/POST/PUT/DELETE /api/teams)."
+
+  - task: "Implement dedicated MongoDB collections for players data"
+    implemented: false
+    working: false
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL INFRASTRUCTURE MISSING: Dedicated players collection NOT implemented. Current implementation stores players within single league_data collection, which does NOT meet review requirements. Required: Dedicated MongoDB 'players' collection with proper schema, indexes, and CRUD API endpoints (GET/POST/PUT/DELETE /api/players)."
+
+  - task: "Create CRUD API endpoints for teams management"
+    implemented: false
+    working: false
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ TEAMS CRUD ENDPOINTS MISSING: Required API endpoints not implemented: GET /api/teams (list all teams), POST /api/teams (create team), PUT /api/teams/:id (update team), DELETE /api/teams/:id (delete team). Current system only supports teams via legacy league-data structure."
+
+  - task: "Create CRUD API endpoints for players management"
+    implemented: false
+    working: false
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ PLAYERS CRUD ENDPOINTS MISSING: Required API endpoints not implemented: GET /api/players (list all players), POST /api/players (create player), PUT /api/players/:id (update player), DELETE /api/players/:id (delete player). Current system only supports players via legacy league-data structure."
+
+  - task: "Implement data migration from league-data to dedicated collections"
+    implemented: false
+    working: false
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ DATA MIGRATION NOT IMPLEMENTED: No migration system exists to move teams/players data from legacy league-data collection to dedicated collections. Required: Migration scripts with data integrity validation and rollback capabilities."
+
+  - task: "Implement backup and restore functionality for teams/players"
+    implemented: false
+    working: false
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ BACKUP/RESTORE MISSING: Safety features not implemented. Required: Backup endpoints (/api/backup/teams, /api/backup/players), restore functionality, and automated backup before destructive operations to prevent data loss."
+
+  - task: "Add data validation and error handling for teams/players operations"
+    implemented: false
+    working: false
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ DATA VALIDATION MISSING: Proper validation and error handling not implemented for teams/players operations. Required: Schema validation, duplicate prevention, referential integrity checks, and proper HTTP error responses."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
