@@ -317,7 +317,7 @@ class TournamentBackendTester:
                                     "team2": "team4",
                                     "score1": 0,
                                     "score2": 0,
-                                    "winner": null
+                                    "winner": None
                                 }
                             ]
                         }
