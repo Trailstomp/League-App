@@ -363,29 +363,9 @@ const EventCalendar = ({
                                                                             </div>
                                                                         );
                                                                     })}
-                                                                    {(() => {
-                                                                        let eventTeamIds = [];
-                                                                        if (event.teamIds && event.teamIds.length > 0) {
-                                                                            eventTeamIds = event.teamIds;
-                                                                        } else {
-                                                                            if (event.homeTeam) eventTeamIds.push(event.homeTeam);
-                                                                            if (event.awayTeam && event.awayTeam !== event.homeTeam) eventTeamIds.push(event.awayTeam);
-                                                                            if (event.teamId && !eventTeamIds.includes(event.teamId)) eventTeamIds.push(event.teamId);
-                                                                        }
-                                                                        return eventTeamIds.length > 3;
-                                                                    })() && (
+                                                                    {getEventTeamIds(event).length > 3 && (
                                                                         <div className="text-xs text-gray-500 bg-gray-100 rounded px-2 py-1 text-center">
-                                                                            +{(() => {
-                                                                                let eventTeamIds = [];
-                                                                                if (event.teamIds && event.teamIds.length > 0) {
-                                                                                    eventTeamIds = event.teamIds;
-                                                                                } else {
-                                                                                    if (event.homeTeam) eventTeamIds.push(event.homeTeam);
-                                                                                    if (event.awayTeam && event.awayTeam !== event.homeTeam) eventTeamIds.push(event.awayTeam);
-                                                                                    if (event.teamId && !eventTeamIds.includes(event.teamId)) eventTeamIds.push(event.teamId);
-                                                                                }
-                                                                                return eventTeamIds.length - 3;
-                                                                            })()} more teams
+                                                                            +{getEventTeamIds(event).length - 3} more teams
                                                                         </div>
                                                                     )}
                                                                 </div>
