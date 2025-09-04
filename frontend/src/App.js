@@ -16967,13 +16967,6 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                     </div>
                 )}
 
-                {activeTab === 'game_ticker' && hasPermission(currentUser, 'events.edit') && (
-                    <div className="p-6">
-                        <h2 className="text-2xl font-bold mb-4">Game Ticker Management</h2>
-                        <ScoreManager leagueSchedule={leagueSchedule} gameTickerData={gameTickerData} setGameTickerData={setGameTickerData} teams={teams} />
-                    </div>
-                )}
-
                 {activeTab === 'users' && (hasPermission(currentUser, 'users.view') || hasPermission(currentUser, 'system.roles')) && (
                     <div className="p-6">
                         <div className="mb-6">
