@@ -104,7 +104,7 @@ class TournamentDataPersistenceTester:
                                             "team2": "team_dads", 
                                             "score1": 0,
                                             "score2": 0,
-                                            "winner": null,
+                                            "winner": None,
                                             "status": "scheduled"
                                         },
                                         {
@@ -113,7 +113,7 @@ class TournamentDataPersistenceTester:
                                             "team2": "team_bolts",
                                             "score1": 0,
                                             "score2": 0,
-                                            "winner": null,
+                                            "winner": None,
                                             "status": "scheduled"
                                         },
                                         {
@@ -122,7 +122,7 @@ class TournamentDataPersistenceTester:
                                             "team2": "team_wolves",
                                             "score1": 0,
                                             "score2": 0,
-                                            "winner": null,
+                                            "winner": None,
                                             "status": "scheduled"
                                         }
                                     ]
@@ -133,11 +133,11 @@ class TournamentDataPersistenceTester:
                                     "matches": [
                                         {
                                             "matchId": "sf1",
-                                            "team1": null,
-                                            "team2": null,
+                                            "team1": None,
+                                            "team2": None,
                                             "score1": 0,
                                             "score2": 0,
-                                            "winner": null,
+                                            "winner": None,
                                             "status": "pending"
                                         }
                                     ]
@@ -148,11 +148,11 @@ class TournamentDataPersistenceTester:
                                     "matches": [
                                         {
                                             "matchId": "final",
-                                            "team1": null,
-                                            "team2": null,
+                                            "team1": None,
+                                            "team2": None,
                                             "score1": 0,
                                             "score2": 0,
-                                            "winner": null,
+                                            "winner": None,
                                             "status": "pending"
                                         }
                                     ]
