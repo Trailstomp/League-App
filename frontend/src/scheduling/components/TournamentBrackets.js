@@ -207,6 +207,13 @@ const TournamentBracketsTab = ({
     
     // Initialize selected teams as empty - user must explicitly select teams
     // (No useEffect needed - selectedTeams starts as empty array)
+    
+    // Initialize selectedTeams when editing existing tournament
+    useEffect(() => {
+        if (editTeamsMode && tournament && tournament.teams) {
+            setSelectedTeams(tournament.teams.slice());
+        }
+    }, [editTeamsMode, tournament]);
 
     const handleCreateTournament = () => {
         if (selectedTeams.length < 2) {
