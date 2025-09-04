@@ -52,6 +52,23 @@ const EventCalendar = ({
         return team || { id: teamId, name: `Unknown Team (${teamId})`, style: {} };
     };
 
+    // Helper function to get event team IDs (handles multiple formats)
+    const getEventTeamIds = (event) => {
+        let eventTeamIds = [];
+        
+        if (event.teamIds && event.teamIds.length > 0) {
+            // New format: teamIds array
+            eventTeamIds = event.teamIds;
+        } else {
+            // Legacy format: homeTeam, awayTeam, teamId
+            if (event.homeTeam) eventTeamIds.push(event.homeTeam);
+            if (event.awayTeam && event.awayTeam !== event.homeTeam) eventTeamIds.push(event.awayTeam);
+            if (event.teamId && !eventTeamIds.includes(event.teamId)) eventTeamIds.push(event.teamId);
+        }
+        
+        return eventTeamIds;
+    };
+
     // Handle event type filter changes
     const handleEventTypeToggle = (eventType) => {
         setSelectedEventTypes(prev => 
