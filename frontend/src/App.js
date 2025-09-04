@@ -6337,23 +6337,7 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                 </div>
             </div>
             
-            {/* Event Detail Modal */}
-            {showEventModal && (
-                <EventDetailModal
-                    event={selectedEvent}
-                    isOpen={showEventModal}
-                    onClose={closeEventModal}
-                    currentUser={currentUser}
-                    teams={teams}
-                    users={users}
-                    leagueInfo={leagueInfo}
-                    onUpdateRSVP={onUpdateRSVP}
-                    gameStats={selectedEvent ? gameStatistics[selectedEvent.id] : null}
-                    tournamentData={selectedEvent ? tournamentData[selectedEvent.id] : null}
-                    onUpdateGameStats={onUpdateGameStats}
-                    onUpdateTournament={onUpdateTournament}
-                />
-            )}
+            {/* EventDetailModal handled by parent component */}
         </div>
     );
 };
