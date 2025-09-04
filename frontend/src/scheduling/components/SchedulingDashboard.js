@@ -134,6 +134,7 @@ const SchedulingDashboard = ({
                             teams={teams}
                             onEditEvent={handleEditEvent}
                             onDeleteEvent={handleDeleteEvent}
+                            onEventClick={onEventClick}
                             currentUser={currentUser}
                         />
                     </div>
