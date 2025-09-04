@@ -5781,23 +5781,6 @@ const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
         </div>
     </div>
 );
-            displayEvents.push(event);
-        }
-    });
-    
-    // Memoized handler for event type filter changes
-    const handleEventTypeToggle = useCallback((eventType) => {
-        setEventTypeFilters(prev => ({
-            ...prev,
-            [eventType]: !prev[eventType]
-        }));
-    }, []);
-    
-    // Get unique event types from all events
-    const availableEventTypes = useMemo(() => {
-        const types = new Set(allEvents.map(event => event.type || 'other'));
-        return Array.from(types).sort();
-    }, [allEvents]);
 
     // Filter schedule - leagueSchedule is an array of days with games
     const filteredSchedule = (leagueSchedule || []).map(day => {
