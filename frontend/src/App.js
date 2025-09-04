@@ -5781,7 +5781,8 @@ const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
         </div>
     </div>
 );
-    const filteredEvents = allEvents
+
+const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
         .filter(event => selectedTeamSchedule === 'all' || event.teamId === selectedTeamSchedule)
         .filter(event => eventTypeFilters[event.type || 'other']);
     
