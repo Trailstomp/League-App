@@ -5781,23 +5781,6 @@ const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
         </div>
     </div>
 );
-        
-        // Coaches can edit events for their teams
-        if (currentUser.role === 'coach' || currentUser.roles?.includes('coach')) {
-            const userTeamId = currentUser.teamId;
-            if (userTeamId && (
-                event.teamIds?.includes(userTeamId) || 
-                event.teamId === userTeamId ||
-                event.homeTeam === userTeamId ||
-                event.awayTeam === userTeamId
-            )) {
-                return true;
-            }
-        }
-        
-        // Check general events.edit permission
-        return hasPermission(currentUser, 'events.edit');
-    };
 
     const getTeam = (id) => (teams || []).find(t => t.id === id);
     const isAdmin = userHasRole(currentUser, 'admin');
