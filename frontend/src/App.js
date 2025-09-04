@@ -3551,7 +3551,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
                 .filter(event => {
                     // Prevent duplicate tournaments from team calendars
                     if (event.type === 'tournament') {
-                        return !processedTournamentIds.has(event.id) && !existingTournamentNames.has(event.title);
+                        return !processedTournamentIds.has(event.id) && !existingTournamentIds.has(event.id);
                     }
                     return true;
                 })
