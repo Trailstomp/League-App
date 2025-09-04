@@ -570,12 +570,9 @@ const TournamentBracketsTab = ({
                             <div className="font-medium capitalize">{tournament.status.replace('_', ' ')}</div>
                         </div>
                         {userCanEdit && (
-                            <button
-                                onClick={() => setEditTeamsMode(true)}
-                                className="bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded text-sm transition-colors"
-                            >
-                                ✏️ Edit Teams
-                            </button>
+                            <div className="text-sm opacity-90">
+                                {editMode ? '✏️ Edit Mode: Click teams in brackets to change' : '👁️ View Mode'}
+                            </div>
                         )}
                     </div>
                 </div>
