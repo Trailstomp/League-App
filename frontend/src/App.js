@@ -5781,23 +5781,6 @@ const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
         </div>
     </div>
 );
-
-    // Create display events list combining individual and grouped events
-    const displayEvents = [];
-    const processedTournamentKeys = new Set();
-    
-    filteredEvents.forEach(event => {
-        if (event.type && event.type.toLowerCase() === 'tournament') {
-            const key = `${event.title}-${event.date}-${event.location || 'no-location'}`;
-            if (!processedTournamentKeys.has(key)) {
-                const groupedEvent = {
-                    ...groupedEvents[key],
-                    allTeams: (groupedEvents[key].allTeams || []).sort((a, b) => a.name.localeCompare(b.name))
-                };
-                displayEvents.push(groupedEvent);
-                processedTournamentKeys.add(key);
-            }
-        } else {
             displayEvents.push(event);
         }
     });
