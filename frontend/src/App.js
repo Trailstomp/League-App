@@ -5782,7 +5782,7 @@ const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
     </div>
 );
 
-    const getTeam = (id) => (teams || []).find(t => t.id === id);
+const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
     const isAdmin = userHasRole(currentUser, 'admin');
     
     // Get all events from leagueSchedule - handle both formats: [{date, games: []}] and direct events
