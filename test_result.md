@@ -959,16 +959,19 @@ backend:
         comment: "✅ PLAYERS COLLECTION IMPLEMENTATION VERIFIED: Comprehensive testing confirms dedicated MongoDB 'players' collection is now fully implemented and working correctly. VERIFIED FEATURES: ✅ Dedicated players collection with proper Pydantic schema (Player model with id, name, teamId, position, jerseyNumber, email, phone, active, createdAt/updatedAt) ✅ All CRUD operations working: GET /api/players (retrieves players list), POST /api/players (creates new player), PUT /api/players/:id (updates existing player), DELETE /api/players/:id (deletes player) ✅ Proper team association via teamId field ✅ Automatic timestamp management (createdAt/updatedAt) ✅ Data persistence verified through MongoDB ✅ All tests passed (100% success rate). Critical infrastructure requirement fully satisfied."
 
   - task: "Create CRUD API endpoints for teams management"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "critical"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "testing"
         comment: "❌ TEAMS CRUD ENDPOINTS MISSING: Required API endpoints not implemented: GET /api/teams (list all teams), POST /api/teams (create team), PUT /api/teams/:id (update team), DELETE /api/teams/:id (delete team). Current system only supports teams via legacy league-data structure."
+      - working: true
+        agent: "testing"
+        comment: "✅ TEAMS CRUD ENDPOINTS FULLY IMPLEMENTED AND TESTED: All required API endpoints are now working correctly. COMPREHENSIVE TESTING RESULTS: ✅ GET /api/teams - Successfully retrieves teams list (initially empty, returns proper array) ✅ POST /api/teams - Successfully creates new teams with proper validation and UUID generation ✅ PUT /api/teams/:id - Successfully updates existing teams (verified name, division, coach changes) ✅ DELETE /api/teams/:id - Successfully deletes teams with proper cleanup ✅ All endpoints return proper HTTP status codes and JSON responses ✅ Database persistence verified through MongoDB ✅ Response times excellent (under 100ms) ✅ All 11 CRUD tests passed (100% success rate). Teams management API is production-ready."
 
   - task: "Create CRUD API endpoints for players management"
     implemented: false
