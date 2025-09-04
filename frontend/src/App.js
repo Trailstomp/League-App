@@ -17877,8 +17877,8 @@ function App() {
                 
                 if (apiData) {
                     console.log('✅ Loaded data from API');
-                    // Load from API - RESPECT USER'S EXISTING DATA
-                    setTeams(apiData.teams || []);
+                    // Load from API - RESPECT USER'S EXISTING DATA, but use initialTeams for proper team data
+                    setTeams(initialTeams); // Force use initialTeams instead of limited API data
                     
                     // Link players with users and update players data
                     const loadedPlayers = apiData.players || [];
