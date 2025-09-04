@@ -1045,7 +1045,7 @@ const EventDashboard = ({ teams, currentUser, onSendNotification, websiteStyle }
                 ...event,
                 teamName: team.name,
                 teamId: team.id,
-                teamLogo: team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
+                teamLogo: team.logo || team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team'
             }))
     );
     
