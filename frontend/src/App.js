@@ -5782,22 +5782,7 @@ const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
     </div>
 );
 
-const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
-        .filter(event => selectedTeamSchedule === 'all' || event.teamId === selectedTeamSchedule)
-        .filter(event => eventTypeFilters[event.type || 'other']);
-    
-    // Group tournament events by title, date, and location
-    const groupedEvents = filteredEvents.reduce((groups, event) => {
-        if (event.type && event.type.toLowerCase() === 'tournament') {
-            const key = `${event.title}-${event.date}-${event.location || 'no-location'}`;
-            if (!groups[key]) {
-                groups[key] = {
-                    ...event,
-                    allTeams: [],
-                    participants: 0
-                };
-            }
-            // Add unique teams to the tournament - ensure allTeams is always an array
+
             if (!groups[key].allTeams) {
                 groups[key].allTeams = [];
             }
