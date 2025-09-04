@@ -18488,14 +18488,7 @@ function App() {
                             </div>
                         )}
                         
-                        {/* Old conditional logic - keeping for reference but always show above now */}
-                        {false && users.filter(u => {
-                            // Support both new format (status/roles arrays) and old format (role string)
-                            const hasActiveStatus = u.status === 'active' || !u.status; // Default to active if no status
-                            const hasRoles = (u.roles && u.roles.length > 0) || u.role; // roles array or role string
-                            return hasActiveStatus && hasRoles;
-                        }).length > 0 && (
-                        )}
+
                         
                         {/* Registration Option */}
                         <div className="border-t pt-4">
