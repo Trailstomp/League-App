@@ -12681,7 +12681,7 @@ const PlayerManager = ({ players, setPlayers, teams, currentUser }) => {
                         <span className="flex-grow">{p.firstName} {p.lastName} (#{p.number}) - {Array.isArray(p.positions) ? p.positions.join(', ') : p.positions}</span>
                         <div className="flex-shrink-0 ml-4">
                             <button onClick={() => setEditingPlayer(p)} className="text-slate-500 hover:text-slate-700 mr-2 p-1"><Edit size={18}/></button>
-                            <button className="text-red-500 hover:text-red-700 p-1"><Trash2 size={18}/></button>
+                            <button onClick={() => handleDeletePlayer(p.id, `${p.firstName} ${p.lastName}`)} className="text-red-500 hover:text-red-700 p-1"><Trash2 size={18}/></button>
                         </div>
                     </li>
                 ))}
