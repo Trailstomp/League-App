@@ -5782,22 +5782,7 @@ const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
     </div>
 );
 
-    // Filter schedule - leagueSchedule is an array of days with games
-    const filteredSchedule = (leagueSchedule || []).map(day => {
-        if (!day || !day.games) return null;
-        if (selectedTeamSchedule === 'all') return day;
-        const games = day.games.filter(g => g && (g.home === selectedTeamSchedule || g.away === selectedTeamSchedule));
-        return { ...day, games };
-    }).filter(day => day && day.games && day.games.length > 0);
-    
-    return (
-        <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-4xl font-bold text-slate-800 tracking-tight">League Events & Schedule</h1>
-                
-
-                <div className="flex space-x-2">
-                    {(isAdmin || hasPermission(currentUser, 'events.view')) && (
+const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
                         <button 
                             onClick={() => window.location.hash = 'event-dashboard'}
                             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center text-sm"
