@@ -342,17 +342,7 @@ const EventCalendar = ({
                                                             <span className="mr-1 mt-0.5">{LacrosseIcons.teams}</span>
                                                             <div className="flex-1 min-w-0">
                                                                 <div className="space-y-1">
-                                                                    {(() => {
-                                                                        let eventTeamIds = [];
-                                                                        if (event.teamIds && event.teamIds.length > 0) {
-                                                                            eventTeamIds = event.teamIds;
-                                                                        } else {
-                                                                            if (event.homeTeam) eventTeamIds.push(event.homeTeam);
-                                                                            if (event.awayTeam && event.awayTeam !== event.homeTeam) eventTeamIds.push(event.awayTeam);
-                                                                            if (event.teamId && !eventTeamIds.includes(event.teamId)) eventTeamIds.push(event.teamId);
-                                                                        }
-                                                                        return eventTeamIds;
-                                                                    })().slice(0, 3).map(teamId => {
+                                                                    {getEventTeamIds(event).slice(0, 3).map(teamId => {
                                                                         const team = getTeamInfo(teamId);
                                                                         return (
                                                                             <div key={teamId} className="flex items-center bg-gradient-to-r from-blue-50 to-purple-50 rounded-md px-2 py-1 border border-blue-100">
