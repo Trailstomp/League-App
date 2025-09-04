@@ -3520,8 +3520,8 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
         // Convert tournament Map to array
         const tournamentItems = Array.from(tournaments.values());
         
-        // Get list of tournament names already processed from leagueSchedule to avoid duplicates
-        const existingTournamentNames = new Set(tournamentItems.map(t => t.tournamentName));
+        // Get list of tournament IDs already processed from leagueSchedule to avoid duplicates
+        const existingTournamentIds = new Set(tournamentItems.map(t => t.id));
         
         // Also track tournament IDs to prevent duplicates from different sources
         const processedTournamentIds = new Set(allTickerItems.filter(item => item.itemType === 'tournament').map(item => item.id));
