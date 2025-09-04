@@ -18805,7 +18805,7 @@ function App() {
                         >
                             <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1 flex items-center justify-between">
                                 <div className="flex items-center">
-                                    <Trophy size={12} className="mr-1" /> Field Lacrosse
+                                    <LacrosseIcon name="stick" className="mr-1" style={{fontSize: '12px'}} /> Field Lacrosse
                                 </div>
                                 <div className={`transform transition-transform ${sidebarSections.fieldLacrosse ? 'rotate-180' : ''}`}>
                                     <ArrowDown size={12} />
