@@ -17931,8 +17931,8 @@ function App() {
                         setStoredData('mlbl_currentSeason', apiData.currentSeason);
                     }
                     
-                    // Also save to localStorage as cache
-                    setStoredData('mlbl_teams', apiData.teams || initialTeams);
+                    // Also save to localStorage as cache - use initialTeams for proper team data
+                    setStoredData('mlbl_teams', initialTeams);
                     setStoredData('mlbl_players', linkedPlayers);
                     setStoredData('mlbl_gameTickerData', apiData.gameTickerData || initialGameTickerData);
                     setStoredData('mlbl_leagueSchedule', initialLeagueSchedule); // Force store updated dates
