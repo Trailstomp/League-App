@@ -17798,24 +17798,18 @@ function App() {
                 
                 if (apiData) {
                     console.log('✅ Loaded data from API');
-                    // Load from API
-                    // FORCE USE PROPER TEAMS: Use initialTeams to restore all team data
-                    setTeams(initialTeams);
+                    // Load from API - RESPECT USER'S EXISTING DATA
+                    setTeams(apiData.teams || []);
                     
                     // Link players with users and update players data
-                    const loadedPlayers = apiData.players || initialPlayersList;
-                    const loadedUsers = apiData.users || initialMockUsers;
+                    const loadedPlayers = apiData.players || [];
+                    const loadedUsers = apiData.users || [];
                     const linkedPlayers = linkPlayersWithUsers(loadedPlayers, loadedUsers);
                     
                     setPlayers(linkedPlayers);
-                    setGameTickerData(apiData.gameTickerData || initialGameTickerData);
-                    // FORCE USE UPDATED INITIAL DATA: Ignore API data and use updated dates
-                    console.log('🔧 DEBUG: API loading - forcing use of updated initialLeagueSchedule instead of API data');
-                    console.log('🔧 DEBUG: API leagueSchedule would be:', apiData.leagueSchedule?.map(e => ({id: e.id, date: e.date})));
-                    console.log('🔧 DEBUG: Using initialLeagueSchedule instead:', initialLeagueSchedule.map(e => ({id: e.id, date: e.date})));
-                    setLeagueSchedule(initialLeagueSchedule);
-                    // FORCE USE PROPER ADMIN USERS: Use initialMockUsers to restore Admin Ali and Coach accounts
-                    setUsers(initialMockUsers);
+                    setGameTickerData(apiData.gameTickerData || []);
+                    setLeagueSchedule(apiData.leagueSchedule || []);
+                    setUsers(loadedUsers);
                     console.log('🔧 DEBUG: Loading league locations from API:', apiData.leagueLocations);
                     setLeagueLocations(apiData.leagueLocations || []);
                     console.log('🔧 DEBUG: League locations set to:', apiData.leagueLocations || []);
