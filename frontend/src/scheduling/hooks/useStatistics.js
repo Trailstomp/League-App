@@ -13,27 +13,53 @@ const useStatistics = () => {
         players: {}
     });
 
-    // Load statistics from localStorage on mount
+    // Load statistics from localStorage and backend on mount
     useEffect(() => {
-        try {
-            const savedGameStats = localStorage.getItem('mlbl_game_statistics');
-            const savedTournaments = localStorage.getItem('mlbl_tournament_data');
-            const savedSeasonStats = localStorage.getItem('mlbl_season_statistics');
-            
-            if (savedGameStats) {
-                setGameStatistics(JSON.parse(savedGameStats));
+        const loadStatistics = async () => {
+            try {
+                // Load from localStorage first (immediate UI)
+                const savedGameStats = localStorage.getItem('mlbl_game_statistics');
+                const savedTournaments = localStorage.getItem('mlbl_tournament_data');
+                const savedSeasonStats = localStorage.getItem('mlbl_season_statistics');
+                
+                if (savedGameStats) {
+                    setGameStatistics(JSON.parse(savedGameStats));
+                }
+                
+                if (savedTournaments) {
+                    setTournamentData(JSON.parse(savedTournaments));
+                }
+                
+                if (savedSeasonStats) {
+                    setSeasonStats(JSON.parse(savedSeasonStats));
+                }
+                
+                // Then load from backend to sync any server updates
+                const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+                const response = await fetch(`${BACKEND_URL}/api/league-data`);
+                
+                if (response.ok) {
+                    const apiData = await response.json();
+                    console.log('🏆 Loaded tournament data from backend:', apiData.tournamentData);
+                    
+                    if (apiData.tournamentData) {
+                        setTournamentData(apiData.tournamentData);
+                    }
+                    if (apiData.gameStatistics) {
+                        setGameStatistics(apiData.gameStatistics);
+                    }
+                    if (apiData.seasonStats) {
+                        setSeasonStats(apiData.seasonStats);
+                    }
+                } else {
+                    console.warn('Could not load statistics from backend, using localStorage only');
+                }
+            } catch (error) {
+                console.warn('Error loading statistics:', error);
             }
-            
-            if (savedTournaments) {
-                setTournamentData(JSON.parse(savedTournaments));
-            }
-            
-            if (savedSeasonStats) {
-                setSeasonStats(JSON.parse(savedSeasonStats));
-            }
-        } catch (error) {
-            console.warn('Error loading statistics from localStorage:', error);
-        }
+        };
+        
+        loadStatistics();
     }, []);
 
     // Save statistics to localStorage when they change
