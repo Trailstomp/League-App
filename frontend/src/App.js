@@ -1288,6 +1288,7 @@ const Sun = (props) => <Icon name="Sun" {...props} />;
 const Moon = (props) => <Icon name="Moon" {...props} />;
 const ArrowUp = (props) => <Icon name="ArrowUp" {...props} />;
 const ArrowDown = (props) => <Icon name="ArrowDown" {...props} />;
+const Download = (props) => <Icon name="Download" {...props} />;
 const Trophy = (props) => <Icon name="Trophy" {...props} />;
 const Swords = (props) => <Icon name="Swords" {...props} />;
 const MessageSquare = (props) => <Icon name="MessageSquare" {...props} />;
