@@ -74,10 +74,42 @@ const useStatistics = () => {
 
     // Update tournament data
     const updateTournament = (eventId, tournamentData) => {
+        console.log('🏆 Updating tournament data for event:', eventId, tournamentData);
+        
+        // Update local state
         setTournamentData(prev => ({
             ...prev,
             [eventId]: tournamentData
         }));
+        
+        // Save to backend API
+        const saveToBackend = async () => {
+            try {
+                const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+                const response = await fetch(`${BACKEND_URL}/api/league-data`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: 'tournamentData',
+                        data: {
+                            [eventId]: tournamentData
+                        }
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Tournament data saved to backend successfully');
+                } else {
+                    console.error('❌ Failed to save tournament data to backend:', response.statusText);
+                }
+            } catch (error) {
+                console.error('❌ Error saving tournament data to backend:', error);
+            }
+        };
+        
+        saveToBackend();
     };
 
     // Update season statistics from game results
