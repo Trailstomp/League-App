@@ -17943,8 +17943,15 @@ function App() {
                         setStoredData('mlbl_currentSeason', apiData.currentSeason);
                     }
                     
-                    // Also save to localStorage as cache
-                    setStoredData('mlbl_teams', apiData.teams || []);
+                    // Also save to localStorage as cache - preserve production data
+                    const teamsToCache = loadedTeams.length > 0 ? loadedTeams : initialTeams;
+                    setStoredData('mlbl_teams', teamsToCache);
+                    
+                    // Create emergency backup
+                    if (loadedTeams.length > 0) {
+                        setStoredData('mlbl_teams_backup_' + Date.now(), loadedTeams);
+                        console.log('💾 Created emergency backup of production teams data');
+                    }
                     setStoredData('mlbl_players', linkedPlayers);
                     setStoredData('mlbl_gameTickerData', apiData.gameTickerData || initialGameTickerData);
                     setStoredData('mlbl_leagueSchedule', initialLeagueSchedule); // Force store updated dates
