@@ -1137,7 +1137,7 @@ const EventDashboard = ({ teams, currentUser, onSendNotification, websiteStyle }
                             <p className="text-blue-600 text-sm font-medium">Total Events</p>
                             <p className="text-3xl font-bold text-blue-900">{overallStats.totalEvents}</p>
                         </div>
-                        <Calendar className="h-8 w-8 text-blue-500" />
+                        <LacrosseIcon name="calendar" style={{fontSize: '32px'}} className="text-blue-500" />
                     </div>
                 </div>
                 <div className="bg-green-50 rounded-lg p-6 border border-green-200">
