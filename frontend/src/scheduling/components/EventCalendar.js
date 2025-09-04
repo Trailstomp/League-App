@@ -249,6 +249,7 @@ const EventCalendar = ({
                                         <div
                                             key={event.id}
                                             className="event-card bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200 cursor-pointer"
+                                            onClick={() => onEventClick && onEventClick(event)}
                                         >
                                             {/* Event Image */}
                                             {event.imageUrl && (
