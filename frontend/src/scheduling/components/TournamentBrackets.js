@@ -532,9 +532,19 @@ const TournamentBracketsTab = ({
                             {tournament.type.replace('_', ' ').toUpperCase()} • {tournament.teams.length} Teams
                         </div>
                     </div>
-                    <div className="text-right">
-                        <div className="text-sm opacity-90">Status</div>
-                        <div className="font-medium capitalize">{tournament.status.replace('_', ' ')}</div>
+                    <div className="flex items-center gap-3">
+                        <div className="text-right">
+                            <div className="text-sm opacity-90">Status</div>
+                            <div className="font-medium capitalize">{tournament.status.replace('_', ' ')}</div>
+                        </div>
+                        {userCanEdit && (
+                            <button
+                                onClick={() => setEditTeamsMode(true)}
+                                className="bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded text-sm transition-colors"
+                            >
+                                ✏️ Edit Teams
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
