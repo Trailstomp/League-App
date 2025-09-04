@@ -17879,17 +17879,29 @@ function App() {
                 
                 if (apiData) {
                     console.log('✅ Loaded data from API');
-                    // Load from API - RESPECT USER'S EXISTING DATA
+                    
+                    // CRITICAL DATA SAFETY: NEVER overwrite existing production data
                     const loadedTeams = apiData.teams || [];
                     
-                    // CRITICAL: Only use initialTeams as fallback if NO teams exist in API
-                    // This prevents overwriting production data while ensuring teams are available
+                    // Safety check: Log data counts for monitoring
+                    console.log(`📊 Data Safety Check - Teams in API: ${loadedTeams.length}`);
+                    
+                    // Create automatic backup before any data operations
+                    if (loadedTeams.length > 0) {
+                        const backupKey = `mlbl_teams_backup_${Date.now()}`;
+                        setStoredData(backupKey, loadedTeams);
+                        console.log(`💾 Automatic backup created: ${backupKey}`);
+                    }
+                    
+                    // ALWAYS respect existing data - NEVER force initialTeams
+                    setTeams(loadedTeams);
+                    
+                    // Warning if no teams exist (might indicate data loss)
                     if (loadedTeams.length === 0) {
-                        console.log('⚠️ No teams found in API, using initialTeams as fallback');
-                        setTeams(initialTeams);
-                    } else {
-                        console.log(`✅ Using ${loadedTeams.length} teams from API (production data preserved)`);
-                        setTeams(loadedTeams);
+                        console.warn('⚠️ WARNING: No teams found in API data');
+                        console.warn('⚠️ This might indicate data loss - check backups');
+                        console.warn('⚠️ Use Admin interface to add teams manually');
+                        // DO NOT automatically use initialTeams - let user decide
                     }
                     
                     // Link players with users and update players data
