@@ -3535,7 +3535,7 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
                     
                     // Skip tournaments that are already in the main schedule to prevent duplicates
                     const eventType = event.type?.toLowerCase() || 'other';
-                    if (eventType.includes('tournament') && event.tournamentName && existingTournamentNames.has(event.tournamentName)) {
+                    if (eventType.includes('tournament') && event.id && existingTournamentIds.has(event.id)) {
                         return false;
                     }
                     
