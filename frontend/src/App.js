@@ -6307,18 +6307,6 @@ const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
     );
 };
 
-const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
-    <div className="p-4 md:p-8 min-h-screen" style={getBackgroundStyle(websiteStyle)}>
-        <div className="max-w-2xl mx-auto">
-            <div className="text-center mb-8">
-                <img src={websiteStyle.logoUrl} alt="MLBL Logo" className="h-40 mx-auto mb-4" />
-                <h1 className="text-4xl font-bold text-slate-800 tracking-tight">{leagueInfo.name}</h1>
-            </div>
-            <ContactCard entity={leagueInfo} />
-        </div>
-    </div>
-);
-
 const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
     // League teams (exclude external teams from standings)
     const fieldTeams = teams.filter(t => t.active && t.division === 'Field' && !t.isExternal).sort((a, b) => {
