@@ -5782,22 +5782,6 @@ const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
     </div>
 );
 
-
-            if (!groups[key].allTeams) {
-                groups[key].allTeams = [];
-            }
-            if (event.teamId && !groups[key].allTeams.find(t => t.id === event.teamId)) {
-                groups[key].allTeams.push({
-                    id: event.teamId,
-                    name: event.teamName,
-                    logo: event.teamLogo
-                });
-            }
-            groups[key].participants = groups[key].allTeams.length;
-        }
-        return groups;
-    }, {});
-
     // Create display events list combining individual and grouped events
     const displayEvents = [];
     const processedTournamentKeys = new Set();
