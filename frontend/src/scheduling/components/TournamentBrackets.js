@@ -213,12 +213,12 @@ const TournamentBracketsTab = ({
     }, [availableTeams.length]);
 
     const handleCreateTournament = () => {
-        if (availableTeams.length < 2) {
+        if (selectedTeams.length < 2) {
             alert('Need at least 2 teams to create a tournament');
             return;
         }
 
-        const newTournament = createBracketStructure(availableTeams, config);
+        const newTournament = createBracketStructure(selectedTeams, config);
         setTournament(newTournament);
         setSetupMode(false);
         
