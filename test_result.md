@@ -748,6 +748,18 @@ backend:
       - working: true
         agent: "backend_testing"
         comment: "All backend endpoints working correctly with 100% test success rate. API connectivity, database persistence, and response times all excellent."
+
+  - task: "Delete malformed event 'event_1757005972864' causing ticker display issues"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "🎯 MALFORMED EVENT DELETION COMPLETED: Successfully identified and removed the problematic tournament event with ID 'event_1757005972864', title 'ggg', location 'ggggg', and empty teamIds array that was causing 'Teams: Unknown' display in frontend ticker. Event completely removed from leagueSchedule array (1→0 events). All backend API endpoints verified working correctly after deletion with 100% test success rate. Data integrity maintained with no corruption to other league data structures."
       - working: true
         agent: "testing"
         comment: "Comprehensive backend testing completed successfully. All 9 tests passed (100% success rate). Verified: 1) Health check endpoint (/api/) responding correctly 2) GET /api/status endpoint retrieving status checks 3) POST /api/status endpoint creating new status checks with proper UUID generation 4) Database persistence working correctly with MongoDB 5) API response times under 60ms 6) All services running properly via supervisor. Backend is fully functional and ready for production use."
