@@ -4,6 +4,7 @@ import SchedulingDashboard from './scheduling/components/SchedulingDashboard';
 import LeagueLocationsManager from './scheduling/components/LeagueLocationsManager';
 import EventDetailModal from './scheduling/components/EventDetailModal';
 import useStatistics from './scheduling/hooks/useStatistics';
+import LacrosseIcons, { LacrosseIcon, GameIcon, TeamIcon, CalendarIcon, StatsIcon } from './components/LacrosseIcons';
 import "./App.css";
 
 // Custom Icon Library - SVG-based icons to replace lucide-react
