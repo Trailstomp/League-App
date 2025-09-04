@@ -5781,23 +5781,6 @@ const LeagueContactPage = ({ websiteStyle, leagueInfo }) => (
         </div>
     </div>
 );
-                type: item.type || 'event',
-                date: item.date,
-                time: item.time,
-                location: item.location,
-                description: item.description,
-                teamId: item.teamId,
-                teamName: item.teamName || 'League Event',
-                teamLogo: item.teamLogo || 'https://placehold.co/200x200/cccccc/666666?text=Event',
-                imageUrl: item.imageUrl,  // Include imageUrl property
-                allTeams: item.allTeams || []
-            };
-        }
-    }).filter(event => event !== null).sort((a, b) => new Date(a.date) - new Date(b.date));
-    
-
-
-    // Filter events by team and type
     const filteredEvents = allEvents
         .filter(event => selectedTeamSchedule === 'all' || event.teamId === selectedTeamSchedule)
         .filter(event => eventTypeFilters[event.type || 'other']);
