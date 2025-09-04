@@ -929,16 +929,19 @@ backend:
         comment: "🏆 TOURNAMENT BRACKET PERSISTENCE & TEAM FILTERING TESTING COMPLETED: Executed comprehensive testing of tournament bracket functionality as requested in review. COMPREHENSIVE TESTING RESULTS: All core tournament features verified working correctly. VERIFIED AREAS PER REVIEW REQUEST: ✅ 1) Tournament Modal Access: Tournament events open successfully in modal with proper tab navigation (Details, RSVP, Scores, Brackets tabs all accessible) ✅ 2) Brackets Tab Functionality: Brackets tab loads complete tournament setup interface including Tournament Format options (Single/Double Elimination), Bracket Setup options (Ranked/Manual Brackets), Tournament Options (#1 Team Gets Bye checkbox), and Seeding Method dropdown with 3 options ✅ 3) Team Data Integration: Team information properly integrated into brackets interface - found 97 elements mentioning team names, indicating team data is successfully passed from event details to bracket setup ✅ 4) Tournament Setup Interface: Complete tournament configuration interface present with all necessary options for bracket generation ✅ 5) Modal Navigation Persistence: Tournament modal and tabs persist correctly during navigation - can open tournament, access brackets tab, navigate away to Home, return to Events, and reopen tournament with brackets tab still functional. CRITICAL ASSESSMENT: Tournament bracket system is fully functional and ready for production use. The main agent's fixes for tournament data persistence and team filtering have been successfully implemented. Tournament setup interface provides comprehensive bracket configuration options. Team data integration working correctly between event details and bracket setup. CONCLUSION: Tournament bracket persistence and team filtering fixes are working correctly. All review requirements have been verified and the tournament system is production-ready."
 
   - task: "Implement dedicated MongoDB collections for teams data"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "critical"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "testing"
         comment: "❌ CRITICAL INFRASTRUCTURE MISSING: Dedicated teams collection NOT implemented. Current implementation stores teams within single league_data collection, which does NOT meet review requirements. Required: Dedicated MongoDB 'teams' collection with proper schema, indexes, and CRUD API endpoints (GET/POST/PUT/DELETE /api/teams)."
+      - working: true
+        agent: "testing"
+        comment: "✅ TEAMS COLLECTION IMPLEMENTATION VERIFIED: Comprehensive testing confirms dedicated MongoDB 'teams' collection is now fully implemented and working correctly. VERIFIED FEATURES: ✅ Dedicated teams collection with proper Pydantic schema (Team model with id, name, division, coach, homeField, logo, contactEmail, active, wins/losses/ties, createdAt/updatedAt) ✅ All CRUD operations working: GET /api/teams (retrieves teams list), POST /api/teams (creates new team), PUT /api/teams/:id (updates existing team), DELETE /api/teams/:id (deletes team) ✅ Proper UUID generation for team IDs ✅ Automatic timestamp management (createdAt/updatedAt) ✅ Data persistence verified through MongoDB ✅ All tests passed (100% success rate). Critical infrastructure requirement fully satisfied."
 
   - task: "Implement dedicated MongoDB collections for players data"
     implemented: false
