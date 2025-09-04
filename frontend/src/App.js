@@ -5783,6 +5783,9 @@ const EventsPage = ({teams, leagueSchedule, onTeamClick, currentUser, websiteSty
                 setLeagueSchedule={setLeagueSchedule}
                 currentUser={currentUser}
                 leagueLocations={leagueLocations}
+                onEditEvent={onEditEvent}
+                onDeleteEvent={onDeleteEvent}
+                onEventClick={onEventClick}
             />
         </div>
     );
