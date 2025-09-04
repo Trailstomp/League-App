@@ -3539,12 +3539,19 @@ const GameTicker = ({teams, leagueSchedule, onTeamClick, websiteStyle, onNavigat
                     return true;
                 })
                 .slice(0, 3) // Limit per team
+                .filter(event => {
+                    // Prevent duplicate tournaments from team calendars
+                    if (event.type === 'tournament') {
+                        return !processedTournamentIds.has(event.id) && !existingTournamentNames.has(event.title);
+                    }
+                    return true;
+                })
                 .map(event => ({
                     ...event,
                     teamName: team.name,
                     teamLogo: team.logo || team.style?.logoUrl || 'https://placehold.co/200x200/cccccc/666666?text=Team',
                     teamId: team.id,
-                    itemType: 'event',
+                    itemType: event.type === 'tournament' ? 'tournament' : 'event',
                     status: 'Scheduled' // Add scheduled status for upcoming events
                 }))
         ).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5); // Show next 5 events
