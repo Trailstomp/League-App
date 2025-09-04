@@ -18786,13 +18786,13 @@ function App() {
                     <img src={websiteStyle.sidebarLogo || websiteStyle.logoUrl || 'https://placehold.co/200x200/4A5568/FFFFFF?text=LOGO'} alt="Logo" className="h-32 max-w-full object-contain" />
                 </div>
                 <nav className="flex-grow">
-                    <NavItem icon={<Home size={20} />} label="Home" pageName="home" />
-                    <NavItem icon={<Calendar size={20} />} label="Events & Schedule" pageName="events" />
-                    <NavItem icon={<Swords size={20} />} label="Standings" pageName="standings" />
-                    <NavItem icon={<Mail size={20} />} label="League Contact" pageName="league_contact" />
-                    {currentUser && <NavItem icon={<MessageSquare size={20} />} label="Chat" pageName="chat" />}
+                    <NavItem icon={<LacrosseIcon name="venue" />} label="Home" pageName="home" />
+                    <NavItem icon={<LacrosseIcon name="calendar" />} label="Events & Schedule" pageName="events" />
+                    <NavItem icon={<LacrosseIcon name="trophy" />} label="Standings" pageName="standings" />
+                    <NavItem icon={<LacrosseIcon name="email" />} label="League Contact" pageName="league_contact" />
+                    {currentUser && <NavItem icon={<LacrosseIcon name="social" />} label="Chat" pageName="chat" />}
                     {currentUser && (
-                        <NavItem icon={<Calendar size={20} />} label="🚀 New Scheduling" pageName="new-scheduling" />
+                        <NavItem icon={<LacrosseIcon name="schedule" />} label="🥍 New Scheduling" pageName="new-scheduling" />
                     )}
                     <div className="pt-4 mt-4 border-t border-slate-700">
                       <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-2">Teams</h2>
