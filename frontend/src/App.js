@@ -16554,20 +16554,6 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
             description: 'Manage players and roster'
         },
         { 
-            id: 'schedule', 
-            label: 'Schedule & Events', 
-            icon: <Calendar size={16} />, 
-            permissions: ['events.view'],
-            description: 'Manage league schedule and events'
-        },
-        { 
-            id: 'game_ticker', 
-            label: 'Game Ticker', 
-            icon: <BarChart2 size={16} />, 
-            permissions: ['events.edit'],
-            description: 'Manage live scores and game ticker'
-        },
-        { 
             id: 'media', 
             label: 'Media Gallery', 
             icon: <ImageIcon size={16} />, 
