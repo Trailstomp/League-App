@@ -204,13 +204,8 @@ const TournamentBracketsTab = ({
     // Get available teams for tournament
     const availableTeams = teams.filter(team => team.active);
     
-    // Initialize selected teams when availableTeams changes
-    useEffect(() => {
-        if (availableTeams.length > 0 && selectedTeams.length === 0) {
-            // Start with all teams selected by default, but allow user to deselect
-            setSelectedTeams(availableTeams.slice());
-        }
-    }, [availableTeams.length]);
+    // Initialize selected teams as empty - user must explicitly select teams
+    // (No useEffect needed - selectedTeams starts as empty array)
 
     const handleCreateTournament = () => {
         if (selectedTeams.length < 2) {
