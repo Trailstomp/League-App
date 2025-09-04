@@ -21,10 +21,15 @@ const EventDetailModal = ({
     onUpdateTournament,
     isOpen = false 
 }) => {
-    const [activeTab, setActiveTab] = useState(
-        event?.type === 'tournament' ? 'brackets' : 'details'
-    );
+    const [activeTab, setActiveTab] = useState('details');
     const [editMode, setEditMode] = useState(false);
+
+    // Set default tab based on event type when modal opens
+    React.useEffect(() => {
+        if (isOpen && event) {
+            setActiveTab(event.type === 'tournament' ? 'brackets' : 'details');
+        }
+    }, [isOpen, event?.type, event?.id]);
 
     if (!isOpen || !event) return null;
 
