@@ -17880,7 +17880,17 @@ function App() {
                 if (apiData) {
                     console.log('✅ Loaded data from API');
                     // Load from API - RESPECT USER'S EXISTING DATA
-                    setTeams(apiData.teams || []);
+                    const loadedTeams = apiData.teams || [];
+                    
+                    // CRITICAL: Only use initialTeams as fallback if NO teams exist in API
+                    // This prevents overwriting production data while ensuring teams are available
+                    if (loadedTeams.length === 0) {
+                        console.log('⚠️ No teams found in API, using initialTeams as fallback');
+                        setTeams(initialTeams);
+                    } else {
+                        console.log(`✅ Using ${loadedTeams.length} teams from API (production data preserved)`);
+                        setTeams(loadedTeams);
+                    }
                     
                     // Link players with users and update players data
                     const loadedPlayers = apiData.players || [];
