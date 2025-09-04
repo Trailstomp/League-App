@@ -16698,6 +16698,15 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
                                     <Shield className="mb-2" size={20} />
                                     <div className="text-sm font-semibold">Manage Users</div>
                                 </button>
+
+                                <button 
+                                    onClick={exportData}
+                                    className="p-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                                >
+                                    <Download className="mb-2" size={20} />
+                                    <div className="text-sm font-semibold">Backup Data</div>
+                                    <div className="text-xs opacity-90 mt-1">Export all league data</div>
+                                </button>
                             </div>
                         </div>
                     </div>
