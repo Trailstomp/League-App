@@ -21,7 +21,9 @@ const EventDetailModal = ({
     onUpdateTournament,
     isOpen = false 
 }) => {
-    const [activeTab, setActiveTab] = useState('details');
+    const [activeTab, setActiveTab] = useState(
+        event?.type === 'tournament' ? 'brackets' : 'details'
+    );
     const [editMode, setEditMode] = useState(false);
 
     if (!isOpen || !event) return null;
