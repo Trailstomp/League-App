@@ -724,8 +724,21 @@ const TournamentBracketsTab = ({
                                         
                                         {/* Away Team */}
                                         <div className="flex items-center justify-between">
-                                            <div className="flex items-center space-x-2">
-                                                {match.awayTeam ? (
+                                            <div className="flex items-center space-x-2 flex-1">
+                                                {editMode && userCanEdit ? (
+                                                    <select
+                                                        value={match.awayTeam?.id || ''}
+                                                        onChange={(e) => handleTeamChange(match.id, 'awayTeam', e.target.value)}
+                                                        className="flex-1 text-sm border rounded px-2 py-1 bg-white"
+                                                    >
+                                                        <option value="">Select Team...</option>
+                                                        {availableTeams.map(team => (
+                                                            <option key={team.id} value={team.id}>
+                                                                {team.name}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                ) : match.awayTeam ? (
                                                     <>
                                                         <img 
                                                             src={match.awayTeam.logo || `https://ui-avatars.com/api/?name=${match.awayTeam.name}&background=random`}
