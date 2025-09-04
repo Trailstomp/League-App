@@ -193,6 +193,7 @@ const TournamentBracketsTab = ({
 }) => {
     const [tournament, setTournament] = useState(tournamentData);
     const [setupMode, setSetupMode] = useState(!tournamentData);
+    const [editTeamsMode, setEditTeamsMode] = useState(false);
     const [config, setConfig] = useState({
         type: TOURNAMENT_TYPES.SINGLE_ELIMINATION,
         setupType: BRACKET_SETUP_TYPES.RANKED,
