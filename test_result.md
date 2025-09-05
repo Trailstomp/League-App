@@ -192,9 +192,9 @@ frontend:
 
   - task: "Event Detail Modal Enhancement"
     implemented: true
-    working: false
+    working: true
     file: "frontend/src/pages/EventsPage.js"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
@@ -204,6 +204,9 @@ frontend:
       - working: false
         agent: "testing"
         comment: "❌ CRITICAL ISSUE FOUND: Event Detail Modal opens successfully and shows all tabs (🏆 Scores, 🏁 Brackets), but there is a severe React error causing 'Maximum update depth exceeded' when clicking on Scores tab. This indicates an infinite re-render loop in the EnhancedScoring component, likely due to a useEffect dependency issue. The Scores tab shows 'Enhanced scoring requires multiple teams' message instead of score input fields. Brackets tab opens and shows Tournament Setup interface correctly. The onUpdateGameStats and onUpdateTournament handlers are present in code but cannot be tested due to the React error. This is a blocking issue that prevents scores functionality from working."
+      - working: true
+        agent: "testing"
+        comment: "✅ CRITICAL ISSUE RESOLVED: Successfully fixed the React 'Maximum update depth exceeded' error in EnhancedScoring component. FIXES APPLIED: 1) Updated team detection logic to handle homeTeam/awayTeam event structure in addition to teamIds/teamId 2) Fixed useEffect dependency array to include [event.teamIds, event.teamId, event.homeTeam, event.awayTeam] 3) Used functional setState pattern to avoid infinite re-renders. TESTING RESULTS: ✅ No React errors detected ✅ Scores tab loads properly showing both teams (OH10 Lacrosse, American Dads) ✅ Score input functionality working (tested with 4-2 score) ✅ Real-time game result updates ('Winner: OH10 Lacrosse (4)') ✅ Team statistics inputs functional (Saves, Shots Against, Save %) ✅ Edit mode enables score modification ✅ All tabs working (Details, RSVP, Scores, Brackets). The infinite loop issue has been completely resolved and scores functionality is now fully operational."
 
   - task: "Event Statistics and Sidebar Integration"
     implemented: true
