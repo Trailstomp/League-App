@@ -78,6 +78,14 @@ const EnhancedScoresTab = ({
         }
     });
 
+    // Sync local state with gameStats prop when it changes (for tab switching)
+    useEffect(() => {
+        if (gameStats && gameStats !== localGameStats) {
+            console.log('📊 EnhancedScoring: Syncing with gameStats prop:', gameStats);
+            setLocalGameStats(gameStats);
+        }
+    }, [gameStats]);
+
     // Handle different event team data structures
     const eventTeams = event.teamIds || 
                       (event.teamId ? [event.teamId] : 
