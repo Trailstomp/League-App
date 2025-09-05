@@ -14135,24 +14135,31 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
             } : t
         );
         
-        // CRITICAL: Save to database, not just React state!
         setTeams(updatedTeams);
         
         try {
-            // Save to database via API
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/league-data`, {
+            // CRITICAL FIX: Get complete league data first, then update teams within it
+            const getResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/league-data`);
+            
+            if (!getResponse.ok) {
+                throw new Error('Failed to get current league data');
+            }
+            
+            const completeData = await getResponse.json();
+            
+            // Update just the teams within the complete data structure
+            completeData.teams = updatedTeams;
+            
+            // Save complete data back to prevent data loss
+            const saveResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/league-data`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    teams: updatedTeams,
-                    // Include other data that might be needed
-                    websiteStyle: websiteStyle,
-                }),
+                body: JSON.stringify(completeData),
             });
             
-            if (response.ok) {
+            if (saveResponse.ok) {
                 console.log('✅ Team styles saved to database successfully');
                 setSaved(true);
                 setTimeout(() => setSaved(false), 2000);
