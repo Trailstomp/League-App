@@ -18006,8 +18006,9 @@ function App() {
                     const storedUsers = getStoredData('mlbl_users', initialMockUsers);
                     const linkedPlayers = linkPlayersWithUsers(storedPlayers, storedUsers);
                     
-                    // FORCE USE PROPER TEAMS: Use initialTeams to restore all team data
-                    setTeams(initialTeams);
+                    // CRITICAL: Preserve user customizations - never force hardcoded defaults
+                    const storedTeams = getStoredData('mlbl_teams', []);
+                    setTeams(storedTeams.length > 0 ? storedTeams : initialTeams);
                     setPlayers(linkedPlayers);
                     // FORCE RESET: Clear game ticker data too
                     console.log('🔧 DEBUG: Forcing game ticker data reset');
