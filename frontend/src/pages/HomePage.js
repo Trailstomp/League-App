@@ -165,6 +165,43 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents }) => {
                     </div>
                 )}
             </div>
+
+            {/* Event Detail Modal */}
+            {showEventModal && selectedEvent && (
+                <EventDetailModal
+                    event={selectedEvent}
+                    teams={teams}
+                    currentUser={currentUser}
+                    users={[]}
+                    leagueInfo={{}}
+                    isOpen={showEventModal}
+                    onClose={() => {
+                        setShowEventModal(false);
+                        setSelectedEvent(null);
+                    }}
+                    onUpdateEvent={handleUpdateEvent}
+                    onUpdateRSVP={handleUpdateRSVP}
+                    onUpdateGameStats={handleUpdateGameStats}
+                    onUpdateTournament={handleUpdateTournament}
+                    gameStats={selectedEvent?.gameStats}
+                    tournamentData={selectedEvent?.tournamentData}
+                />
+            )}
+
+            {/* Team Detail Modal */}
+            {showTeamModal && selectedTeam && (
+                <TeamDetailModal
+                    team={selectedTeam}
+                    teams={teams}
+                    events={events}
+                    currentUser={currentUser}
+                    isOpen={showTeamModal}
+                    onClose={() => {
+                        setShowTeamModal(false);
+                        setSelectedTeam(null);
+                    }}
+                />
+            )}
         </div>
     );
 };
