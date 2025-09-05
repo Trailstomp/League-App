@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from './components/Layout';
-import { HomePage, AdminPage } from './pages';
+import { HomePage, AdminPage, EventsPage } from './pages';
 import "./App.css";
 
 function App() {
@@ -9,6 +9,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [teams, setTeams] = useState([]);
   const [players, setPlayers] = useState([]);
+  const [events, setEvents] = useState([]);
 
   // Simple navigation handler
   const handleNavigate = (page) => {
@@ -103,6 +104,44 @@ function App() {
       },
     ]);
 
+    // Mock events  
+    setEvents([
+      {
+        id: 'event_1',
+        title: 'OH10 vs American Dads',
+        type: 'game',
+        date: '2025-01-15',
+        time: '19:00',
+        location: 'Smith Field',
+        homeTeam: '1',
+        awayTeam: '2',
+        status: 'scheduled',
+        description: 'Regular season matchup between division leaders'
+      },
+      {
+        id: 'event_2',
+        title: 'Spring Championship Tournament',
+        type: 'tournament',
+        date: '2025-01-22',
+        time: '09:00',
+        location: 'Columbus Stadium',
+        teamIds: ['1', '2', '3', '4'],
+        status: 'scheduled',
+        description: 'Annual spring tournament featuring all league teams'
+      },
+      {
+        id: 'event_3',
+        title: 'Team Practice Session',
+        type: 'practice',
+        date: '2025-01-10',
+        time: '18:00',
+        location: 'Johnson Park',
+        teamId: '2',
+        status: 'scheduled',
+        description: 'Weekly practice session focusing on offensive plays'
+      },
+    ]);
+
     // Mock user - will add proper auth later
     setCurrentUser({ name: 'Admin User', role: 'admin' });
   }, []);
@@ -124,10 +163,12 @@ function App() {
         );
       case 'events':
         return (
-          <div className="text-center py-16">
-            <h2 className="text-2xl font-bold text-slate-800 mb-4">Events & Schedule</h2>
-            <p className="text-slate-600">Coming soon in Phase 3...</p>
-          </div>
+          <EventsPage
+            teams={teams}
+            currentUser={currentUser}
+            events={events}
+            setEvents={setEvents}
+          />
         );
       case 'standings':
         return (
