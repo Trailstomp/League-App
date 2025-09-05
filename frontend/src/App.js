@@ -25,6 +25,18 @@ function App() {
     console.log('🧭 Current page set to:', page);
   };
 
+  // Team navigation handler
+  const handleTeamNavigate = (teamId) => {
+    console.log('🏆 Team navigation to:', teamId);
+    // For now, just log - can be expanded to show team detail page
+    const team = teams.find(t => t.id === teamId);
+    if (team) {
+      console.log('🏆 Found team:', team.name);
+      // Future: Navigate to dedicated team page
+      alert(`Team page for ${team.name} coming soon!`);
+    }
+  };
+
   // Authentication handlers
   const handleLogin = (user) => {
     console.log('🔐 User logged in:', user);
