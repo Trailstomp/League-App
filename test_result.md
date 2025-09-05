@@ -192,9 +192,9 @@ frontend:
 
   - task: "Event Detail Modal Enhancement"
     implemented: true
-    working: true
+    working: false
     file: "frontend/src/pages/EventsPage.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -207,6 +207,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ CRITICAL ISSUE RESOLVED: Successfully fixed the React 'Maximum update depth exceeded' error in EnhancedScoring component. FIXES APPLIED: 1) Updated team detection logic to handle homeTeam/awayTeam event structure in addition to teamIds/teamId 2) Fixed useEffect dependency array to include [event.teamIds, event.teamId, event.homeTeam, event.awayTeam] 3) Used functional setState pattern to avoid infinite re-renders. TESTING RESULTS: ✅ No React errors detected ✅ Scores tab loads properly showing both teams (OH10 Lacrosse, American Dads) ✅ Score input functionality working (tested with 4-2 score) ✅ Real-time game result updates ('Winner: OH10 Lacrosse (4)') ✅ Team statistics inputs functional (Saves, Shots Against, Save %) ✅ Edit mode enables score modification ✅ All tabs working (Details, RSVP, Scores, Brackets). The infinite loop issue has been completely resolved and scores functionality is now fully operational."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL SCORES PERSISTENCE BUG CONFIRMED: Comprehensive testing of the specific fix for scores persistence during tab switching reveals the issue is NOT resolved. DETAILED TESTING RESULTS: ✅ Successfully navigated to Events & Schedule page and opened 'OH10 vs American Dads' event modal ✅ Successfully enabled edit mode and accessed Scores tab ✅ Successfully entered scores: OH10 Lacrosse = 5, American Dads = 3 ✅ Console logs confirm onUpdateGameStats handler is working correctly ('🏆 onUpdateGameStats called', '🏆 Game stats updated for event: event_1') ❌ CRITICAL FAILURE: When switching from Scores tab → Details tab → Scores tab, scores reset to 0-0 ❌ Multiple tab switches (Scores → RSVP → Scores, Scores → Brackets → Scores) all result in score reset to 0-0 ❌ The expected console message '📊 EnhancedScoring: Syncing with gameStats prop:' was NOT observed, indicating the useEffect sync is not triggering. ROOT CAUSE: The EnhancedScoring component's useEffect for syncing localGameStats with gameStats prop is not working properly. The gameStats prop is being updated correctly (confirmed by console logs), but the component is not reloading this data when remounting during tab navigation. The fix mentioned in the review request is not functioning as intended."
 
   - task: "Event Statistics and Sidebar Integration"
     implemented: true
