@@ -267,13 +267,13 @@ metadata:
 
 test_plan:
   current_focus:
+    - "GameTicker Interactive Functionality with Clickable Events and Teams"
     - "Platform Accessibility Resolution"
     - "Frontend Service Routing Fix"
-    - "Authentication System UI Testing"
   stuck_tasks:
     - "Comprehensive Authentication System Integration from App.full.js"
   test_all: false
-  test_priority: "stuck_first"
+  test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
