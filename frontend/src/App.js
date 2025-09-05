@@ -150,6 +150,7 @@ function App() {
 
   // Simple page renderer
   const renderPage = () => {
+    console.log('🔄 Rendering page:', currentPage);
     switch (currentPage) {
       case 'home':
         return <HomePage teams={teams} currentUser={currentUser} />;
@@ -164,6 +165,7 @@ function App() {
           />
         );
       case 'events':
+        console.log('🎯 Rendering EventsPage with', events.length, 'events');
         return (
           <EventsPage
             teams={teams}
@@ -180,6 +182,7 @@ function App() {
           </div>
         );
       default:
+        console.log('🔄 Rendering default (HomePage)');
         return <HomePage teams={teams} currentUser={currentUser} />;
     }
   };
