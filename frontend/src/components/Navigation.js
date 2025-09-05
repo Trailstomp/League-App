@@ -41,7 +41,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
             </div>
 
             {/* Navigation */}
-            <nav className="p-4">
+            <nav className="p-4 border-b">
                 <NavItem icon={<LacrosseIcon name="venue" />} label="Home" pageName="home" />
                 <NavItem icon={<LacrosseIcon name="calendar" />} label="Events & Schedule" pageName="events" />
                 <NavItem icon={<LacrosseIcon name="trophy" />} label="Standings" pageName="standings" />
@@ -52,7 +52,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 )}
             </nav>
 
-            {/* Teams Section - Right under league section */}
+            {/* Teams Section - Right under main navigation */}
             <div className="px-4 pb-4 border-b flex-grow">
                 <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
                     <LacrosseIcon name="stick" className="mr-1" style={{fontSize: '12px'}} /> Teams
