@@ -6344,10 +6344,7 @@ const StandingsPage = ({teams, onTeamClick, websiteStyle}) => {
 
 // Duplicate StandingsPage removed - see definition above
 
-// TEMPORARILY DISABLED FOR DEPLOYMENT - Large managers causing build issues
-// const LeagueCalendarManager = () => <div>Calendar Manager temporarily disabled for deployment</div>;
-// const TeamCalendarManager = () => <div>Team Calendar Manager temporarily disabled for deployment</div>;
-// const SocialMediaManager = () => <div>Social Media Manager temporarily disabled for deployment</div>;
+const LeagueCalendarManager = ({ teams, setTeams, websiteStyle, leagueLocations = [], currentUser }) => {
     const [selectedTeamId, setSelectedTeamId] = useState('all');
     const [editingEvent, setEditingEvent] = useState(null);
 
