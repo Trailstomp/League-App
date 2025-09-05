@@ -152,15 +152,16 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
             
             // Only scroll if there are items and not hovering
             if (!isHovering && allItems.length > 0) {
+                const oldScrollLeft = tickerElement.scrollLeft;
                 tickerElement.scrollLeft += 1; // Scroll right to left
                 
-                // Reset scroll position when we've scrolled halfway through the duplicated content
-                if (allItems.length > 1 && tickerElement.scrollLeft >= tickerElement.scrollWidth / 2) {
-                    tickerElement.scrollLeft = 0;
+                // Debug logging (can be removed later)
+                if (oldScrollLeft === 0 && tickerElement.scrollLeft === 1) {
+                    console.log('🎬 Ticker started scrolling, container width:', tickerElement.scrollWidth, 'client width:', tickerElement.clientWidth);
                 }
                 
-                // For single items, reset when we reach the end
-                if (allItems.length === 1 && tickerElement.scrollLeft >= tickerElement.scrollWidth - tickerElement.clientWidth) {
+                // Reset scroll position when we've scrolled through one set of items
+                if (tickerElement.scrollLeft >= tickerElement.scrollWidth / 3) {
                     tickerElement.scrollLeft = 0;
                 }
             }
