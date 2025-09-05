@@ -25,6 +25,29 @@ function App() {
     console.log('🧭 Current page set to:', page);
   };
 
+  // Authentication handlers
+  const handleLogin = (user) => {
+    console.log('🔐 User logged in:', user);
+    setCurrentUser(user);
+    setShowLogin(false);
+  };
+
+  const handleLogout = () => {
+    console.log('🔐 User logged out');
+    setCurrentUser(null);
+    setCurrentPage('home'); // Redirect to home after logout
+  };
+
+  const handleRegister = (newUser) => {
+    console.log('📝 New user registered:', newUser);
+    setUsers(prevUsers => [...prevUsers, newUser]);
+    // Don't auto-login - user needs admin approval first
+  };
+
+  const handleShowLogin = () => {
+    setShowLogin(true);
+  };
+
   // Load basic data on mount
   useEffect(() => {
     // Mock data for now - will connect to API later
