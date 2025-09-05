@@ -78,7 +78,10 @@ const EnhancedScoresTab = ({
         }
     });
 
-    const eventTeams = event.teamIds || (event.teamId ? [event.teamId] : []);
+    // Handle different event team data structures
+    const eventTeams = event.teamIds || 
+                      (event.teamId ? [event.teamId] : []) ||
+                      (event.homeTeam && event.awayTeam ? [event.homeTeam, event.awayTeam] : []);
     const getTeamInfo = (teamId) => teams.find(team => team.id === teamId);
 
     // Initialize team stats if not present - only run when event teams change
