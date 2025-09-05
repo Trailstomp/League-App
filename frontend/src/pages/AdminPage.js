@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
+import UserManager from '../components/managers/UserManager';
+import RoleManager from '../components/managers/RoleManager';
 
 const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, currentUser }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
