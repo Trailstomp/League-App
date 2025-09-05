@@ -1,30 +1,73 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import Layout from './components/Layout';
+import { HomePage } from './pages';
 import "./App.css";
 
-// EMERGENCY MINIMAL APP FOR DEPLOYMENT
-// Full app with 19,423 lines backed up as App.full.js
 function App() {
-  return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">
-            🥍 Lacrosse League Management
-          </h1>
-          <p className="text-lg text-gray-600 mb-6">
-            App temporarily simplified for deployment.
-          </p>
-          <p className="text-sm text-gray-500">
-            Full features will be restored after successful deployment.
-            Original app backed up as App.full.js (19,423 lines → 25 lines)
-          </p>
-          <div className="mt-8 p-4 bg-green-50 border border-green-200 rounded">
-            <p className="text-green-700 font-medium">✅ Deployment-Ready</p>
-            <p className="text-green-600 text-sm">File size reduced by 99.87% for successful build</p>
+  // Basic state management
+  const [currentPage, setCurrentPage] = useState('home');
+  const [currentUser, setCurrentUser] = useState(null);
+  const [teams, setTeams] = useState([]);
+
+  // Simple navigation handler
+  const handleNavigate = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Load basic data on mount
+  useEffect(() => {
+    // Mock data for now - will connect to API later
+    setTeams([
+      { id: '1', name: 'OH10 Lacrosse', division: 'Field', wins: 8, losses: 2, ties: 0 },
+      { id: '2', name: 'American Dads', division: 'Field', wins: 6, losses: 4, ties: 1 },
+      { id: '3', name: 'Cincinnati Trash Pandas', division: 'Box', wins: 7, losses: 3, ties: 0 },
+      { id: '4', name: 'Columbus Ball Hawgs', division: 'Field', wins: 5, losses: 5, ties: 0 },
+    ]);
+
+    // Mock user - will add proper auth later
+    setCurrentUser({ name: 'Admin User', role: 'admin' });
+  }, []);
+
+  // Simple page renderer
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'home':
+        return <HomePage teams={teams} currentUser={currentUser} />;
+      case 'events':
+        return (
+          <div className="text-center py-16">
+            <h2 className="text-2xl font-bold text-slate-800 mb-4">Events & Schedule</h2>
+            <p className="text-slate-600">Coming soon in Phase 3...</p>
           </div>
-        </div>
-      </div>
-    </div>
+        );
+      case 'standings':
+        return (
+          <div className="text-center py-16">
+            <h2 className="text-2xl font-bold text-slate-800 mb-4">Team Standings</h2>
+            <p className="text-slate-600">Coming soon...</p>
+          </div>
+        );
+      case 'admin':
+        return (
+          <div className="text-center py-16">
+            <h2 className="text-2xl font-bold text-slate-800 mb-4">Admin Portal</h2>
+            <p className="text-slate-600">Coming soon in Phase 2...</p>
+          </div>
+        );
+      default:
+        return <HomePage teams={teams} currentUser={currentUser} />;
+    }
+  };
+
+  return (
+    <Layout 
+      currentPage={currentPage}
+      onNavigate={handleNavigate}
+      currentUser={currentUser}
+      teams={teams}
+    >
+      {renderPage()}
+    </Layout>
   );
 }
 
