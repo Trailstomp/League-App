@@ -146,6 +146,14 @@ const EventsPage = ({ teams, currentUser, events, setEvents }) => {
                             event.id === eventId ? { ...event, gameStats: gameStats } : event
                         );
                         setEvents(updatedEvents);
+                        
+                        // Update selectedEvent with new gameStats
+                        if (selectedEvent && selectedEvent.id === eventId) {
+                            const updatedSelectedEvent = { ...selectedEvent, gameStats: gameStats };
+                            setSelectedEvent(updatedSelectedEvent);
+                            console.log('🏆 Updated selectedEvent with gameStats:', updatedSelectedEvent);
+                        }
+                        
                         console.log('🏆 Game stats updated for event:', eventId, gameStats);
                         console.log('🏆 Updated events array:', updatedEvents);
                     }}
@@ -156,6 +164,14 @@ const EventsPage = ({ teams, currentUser, events, setEvents }) => {
                             event.id === eventId ? { ...event, tournamentData: tournamentData } : event
                         );
                         setEvents(updatedEvents);
+                        
+                        // Update selectedEvent with new tournamentData
+                        if (selectedEvent && selectedEvent.id === eventId) {
+                            const updatedSelectedEvent = { ...selectedEvent, tournamentData: tournamentData };
+                            setSelectedEvent(updatedSelectedEvent);
+                            console.log('🏁 Updated selectedEvent with tournamentData:', updatedSelectedEvent);
+                        }
+                        
                         console.log('🏁 Tournament data updated for event:', eventId, tournamentData);
                         console.log('🏁 Updated events array:', updatedEvents);
                     }}
