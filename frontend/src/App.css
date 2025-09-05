@@ -123,3 +123,13 @@
 .gallery-auto-scroll:hover {
     animation-play-state: paused;
 }
+
+/* Ticker scroll styles */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
