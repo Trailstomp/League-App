@@ -5,16 +5,25 @@ const Layout = ({
     children, 
     currentPage, 
     onNavigate, 
+    onTeamNavigate,
     currentUser, 
     onLogin,
     onLogout,
     teams = [] 
 }) => {
+    const handleNavigate = (page, teamId = null) => {
+        if (page === 'team' && teamId && onTeamNavigate) {
+            onTeamNavigate(teamId);
+        } else if (onNavigate) {
+            onNavigate(page);
+        }
+    };
+
     return (
         <div className="flex min-h-screen bg-slate-50">
             <Navigation 
                 currentPage={currentPage}
-                onNavigate={onNavigate}
+                onNavigate={handleNavigate}
                 currentUser={currentUser}
                 onLogin={onLogin}
                 onLogout={onLogout}
