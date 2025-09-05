@@ -29,7 +29,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
             case 'dashboard':
                 return <AdminDashboard teams={teams} players={players} users={users} />;
             case 'teams':
-                return <TeamsManager teams={teams} setTeams={setTeams} />;
+                return <TeamManager teams={teams} setTeams={setTeams} websiteStyle={{}} seasons={[]} currentSeason={null} />;
             case 'players':
                 return <PlayersManager teams={teams} players={players} setPlayers={setPlayers} />;
             case 'users':
