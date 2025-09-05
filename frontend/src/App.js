@@ -9,6 +9,11 @@ function App() {
   // Basic state management
   const [currentPage, setCurrentPage] = useState('home'); // Back to home as default
   const [currentUser, setCurrentUser] = useState(null);
+  
+  // Authentication state
+  const [showLogin, setShowLogin] = useState(false);
+  const [users, setUsers] = useState(initialMockUsers);
+  
   const [teams, setTeams] = useState([]);
   const [players, setPlayers] = useState([]);
   const [events, setEvents] = useState([]);
