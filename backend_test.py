@@ -692,6 +692,17 @@ class BackendTester:
             print("❌ CRITICAL: Health check failed. Backend may not be running.")
             return False
         
+        # Test MongoDB connection
+        if not self.test_mongodb_connection():
+            print("❌ CRITICAL: MongoDB connection failed.")
+            return False
+        
+        # Test event management infrastructure (as requested in review)
+        print("\n🎯 TESTING EVENT MANAGEMENT INFRASTRUCTURE:")
+        self.test_get_teams_api()
+        self.test_get_players_api()
+        self.test_basic_event_storage()
+        
         # Test individual endpoints
         self.test_get_status_checks()
         self.test_create_status_check()
@@ -728,9 +739,16 @@ class BackendTester:
         success_rate = (passed_tests / total_tests) * 100 if total_tests > 0 else 0
         print(f"\nSuccess Rate: {success_rate:.1f}%")
         
-        # Return True if all critical tests pass
+        # Check for critical failures specific to event management infrastructure
+        event_management_failures = [t for t in self.failed_tests if any(keyword in t for keyword in ['Teams API', 'Players API', 'Event Storage', 'MongoDB Connection'])]
         critical_failures = [t for t in self.failed_tests if 'Health Check' in t or 'Database Persistence' in t]
-        return len(critical_failures) == 0
+        
+        if event_management_failures:
+            print(f"\n⚠️  Event Management Infrastructure Issues:")
+            for test in event_management_failures:
+                print(f"  - {test}")
+        
+        return len(critical_failures) == 0 and len(event_management_failures) == 0
 
 if __name__ == "__main__":
     try:
