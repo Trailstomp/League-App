@@ -21,9 +21,16 @@ const EventsPage = ({ teams, currentUser, events, setEvents }) => {
     };
 
     const handleEditEvent = (eventId, eventData) => {
-        setEvents(events.map(event => 
+        const updatedEvents = events.map(event => 
             event.id === eventId ? { ...event, ...eventData } : event
-        ));
+        );
+        setEvents(updatedEvents);
+        
+        // Update selectedEvent if it's the event being updated
+        if (selectedEvent && selectedEvent.id === eventId) {
+            setSelectedEvent({ ...selectedEvent, ...eventData });
+        }
+        
         setShowEventModal(false);
         setSelectedEvent(null);
     };
