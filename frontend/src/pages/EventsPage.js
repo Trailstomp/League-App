@@ -132,6 +132,24 @@ const EventsPage = ({ teams, currentUser, events, setEvents }) => {
                         );
                         setEvents(updatedEvents);
                     }}
+                    onUpdateGameStats={(eventId, gameStats) => {
+                        // Handle game statistics/scores updates
+                        const updatedEvents = events.map(event =>
+                            event.id === eventId ? { ...event, gameStats: gameStats } : event
+                        );
+                        setEvents(updatedEvents);
+                        console.log('🏆 Game stats updated for event:', eventId, gameStats);
+                    }}
+                    onUpdateTournament={(eventId, tournamentData) => {
+                        // Handle tournament bracket updates
+                        const updatedEvents = events.map(event =>
+                            event.id === eventId ? { ...event, tournamentData: tournamentData } : event
+                        );
+                        setEvents(updatedEvents);
+                        console.log('🏁 Tournament data updated for event:', eventId, tournamentData);
+                    }}
+                    gameStats={selectedEvent?.gameStats}
+                    tournamentData={selectedEvent?.tournamentData}
                 />
             )}
         </div>
