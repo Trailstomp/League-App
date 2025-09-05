@@ -573,26 +573,43 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
 
             {/* Banner Image */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Banner Image URL (Optional)</label>
-                <input 
-                    type="url" 
-                    value={teamStyle.bannerUrl || ''} 
-                    onChange={e => handleStyleChange('bannerUrl', e.target.value)} 
-                    placeholder="https://example.com/banner.jpg" 
-                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                />
-                {teamStyle.bannerUrl && (
-                    <div className="mt-2">
-                        <img 
-                            src={teamStyle.bannerUrl} 
-                            alt="Banner preview" 
-                            className="w-full h-32 object-cover rounded-lg border-2 border-slate-300"
-                            onError={(e) => {
-                                e.target.style.display = 'none';
-                            }}
-                        />
-                    </div>
-                )}
+                <label className="block text-sm font-medium text-gray-700 mb-2">Banner Image</label>
+                <div className="space-y-3">
+                    <input 
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                                // Create object URL for preview
+                                const objectUrl = URL.createObjectURL(file);
+                                handleStyleChange('bannerUrl', objectUrl);
+                                handleStyleChange('bannerFile', file);
+                            }
+                        }}
+                        className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100" 
+                    />
+                    <p className="text-xs text-slate-500">Upload banner image for team header. Recommended size: 1200x400px</p>
+                    {teamStyle.bannerUrl && (
+                        <div className="space-y-2">
+                            <img 
+                                src={teamStyle.bannerUrl} 
+                                alt="Banner preview" 
+                                className="w-full h-32 object-cover rounded-lg border-2 border-slate-300"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    handleStyleChange('bannerUrl', '');
+                                    handleStyleChange('bannerFile', null);
+                                }}
+                                className="text-red-600 hover:text-red-800 text-sm"
+                            >
+                                Remove Banner
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Style Preview */}
