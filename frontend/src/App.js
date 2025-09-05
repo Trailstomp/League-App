@@ -136,46 +136,42 @@ function App() {
       },
     ]);
 
-    // Mock events  
+    // Mock events
     setEvents([
       {
         id: 'event_1',
-        title: 'OH10 vs American Dads',
-        type: 'game',
-        date: '2025-01-15',
-        time: '19:00',
-        location: 'Smith Field',
-        homeTeam: '1',
-        awayTeam: '2',
-        status: 'scheduled',
-        description: 'Regular season matchup between division leaders'
-      },
-      {
-        id: 'event_2',
-        title: 'Spring Championship Tournament',
-        type: 'tournament',
-        date: '2025-01-22',
-        time: '09:00',
-        location: 'Columbus Stadium',
-        teamIds: ['1', '2', '3', '4'],
-        status: 'scheduled',
-        description: 'Annual spring tournament featuring all league teams'
-      },
-      {
-        id: 'event_3',
         title: 'Team Practice Session',
         type: 'practice',
         date: '2025-01-10',
         time: '18:00',
-        location: 'Johnson Park',
-        teamId: '2',
-        status: 'scheduled',
-        description: 'Weekly practice session focusing on offensive plays'
+        location: 'Smith Field',
+        description: 'Weekly team practice session',
+        teamId: '1'
       },
+      {
+        id: 'event_2', 
+        title: 'OH10 vs American Dads',
+        type: 'game',
+        date: '2025-01-15',
+        time: '19:30',
+        location: 'Central Stadium',
+        description: 'League championship game',
+        homeTeam: '1',
+        awayTeam: '2'
+      },
+      {
+        id: 'event_3',
+        title: 'Spring Championship Tournament',
+        type: 'tournament', 
+        date: '2025-01-22',
+        time: '10:00',
+        location: 'Tournament Center',
+        description: 'Annual spring tournament with all teams',
+        teamIds: ['1', '2', '3', '4']
+      }
     ]);
 
-    // Mock user - will add proper auth later
-    setCurrentUser({ name: 'Admin User', role: 'admin' });
+    // Don't auto-login a mock user anymore - require proper authentication
   }, []);
 
   // Simple page renderer
