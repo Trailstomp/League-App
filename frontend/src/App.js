@@ -18048,9 +18048,10 @@ function App() {
                 }
             } catch (error) {
                 console.error('Error loading data:', error);
-                // Load default values with linking
+                // Load default values with linking - preserve user customizations
                 const linkedPlayers = linkPlayersWithUsers(initialPlayersList, initialMockUsers);
-                setTeams(initialTeams);
+                const storedTeams = getStoredData('mlbl_teams', []);
+                setTeams(storedTeams.length > 0 ? storedTeams : initialTeams);
                 setPlayers(linkedPlayers);
                 setGameTickerData(initialGameTickerData);
                 setLeagueSchedule(initialLeagueSchedule);
