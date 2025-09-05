@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
 import GameTicker from '../components/GameTicker';
+import EventDetailModal from '../scheduling/components/EventDetailModal';
 
-const HomePage = ({ teams = [], currentUser, events = [] }) => {
+const HomePage = ({ teams = [], currentUser, events = [], setEvents }) => {
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [showEventModal, setShowEventModal] = useState(false);
+    const [selectedTeam, setSelectedTeam] = useState(null);
+    const [showTeamModal, setShowTeamModal] = useState(false);
     const stats = {
         totalTeams: teams.length,
         activeEvents: 0, // Will be connected later
