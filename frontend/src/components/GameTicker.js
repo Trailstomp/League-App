@@ -185,7 +185,7 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
         >
-            <div ref={tickerRef} className="flex space-x-6 overflow-x-auto no-scrollbar">
+            <div ref={tickerRef} className="flex space-x-6 no-scrollbar" style={{ overflowX: 'hidden', whiteSpace: 'nowrap' }}>
                 {allItems.length === 0 ? (
                     // Show placeholder when no items
                     <div className="flex-shrink-0 w-72 rounded-lg p-2 border opacity-50" style={{ 
