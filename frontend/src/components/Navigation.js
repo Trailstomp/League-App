@@ -47,9 +47,26 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 <NavItem icon={<LacrosseIcon name="trophy" />} label="Standings" pageName="standings" />
                 <NavItem icon={<LacrosseIcon name="email" />} label="League Contact" pageName="league_contact" />
                 {currentUser && <NavItem icon={<LacrosseIcon name="social" />} label="Chat" pageName="chat" />}
-                {currentUser && currentUser.role === 'admin' && (
+                {currentUser && isAdmin(currentUser) && (
                     <NavItem icon={<LacrosseIcon name="admin" />} label="Admin Portal" pageName="admin" />
                 )}
+                
+                {/* Authentication Actions */}
+                <div className="mt-6 pt-4 border-t">
+                    {currentUser ? (
+                        <NavItem 
+                            icon={<LacrosseIcon name="logout" />} 
+                            label="Logout" 
+                            onClick={onLogout}
+                        />
+                    ) : (
+                        <NavItem 
+                            icon={<LacrosseIcon name="login" />} 
+                            label="Login" 
+                            onClick={onLogin}
+                        />
+                    )}
+                </div>
             </nav>
 
             {/* Teams Section */}
