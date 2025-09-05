@@ -6,6 +6,8 @@ const Layout = ({
     currentPage, 
     onNavigate, 
     currentUser, 
+    onLogin,
+    onLogout,
     teams = [] 
 }) => {
     return (
@@ -14,6 +16,8 @@ const Layout = ({
                 currentPage={currentPage}
                 onNavigate={onNavigate}
                 currentUser={currentUser}
+                onLogin={onLogin}
+                onLogout={onLogout}
                 teams={teams}
             />
             
