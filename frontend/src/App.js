@@ -14114,31 +14114,8 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
     ];
 
     const handleSave = async () => {
-        // Update React state
-        const updatedTeams = teams.map(t => 
-            t.id === team.id ? { 
-                ...t, 
-                description: teamStyle.description,
-                customIntro: teamStyle.customIntro,
-                style: {
-                    ...t.style,
-                    // Only save non-empty values to avoid overwriting existing data
-                    ...Object.fromEntries(
-                        Object.entries(teamStyle).filter(([key, value]) => {
-                            // Skip description and customIntro as they're handled separately
-                            if (key === 'description' || key === 'customIntro') return false;
-                            // Only include values that are not empty strings, null, or undefined
-                            return value !== '' && value !== null && value !== undefined;
-                        })
-                    )
-                }
-            } : t
-        );
-        
-        setTeams(updatedTeams);
-        
         try {
-            // CRITICAL FIX: Get complete league data first, then update teams within it
+            // CRITICAL FIX: Get complete league data first to get all teams
             const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
             console.log('🔧 Saving to backend:', backendUrl);
             
@@ -14149,8 +14126,33 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
             }
             
             const completeData = await getResponse.json();
+            const currentTeams = completeData.teams || [];
             
-            // Update just the teams within the complete data structure
+            // Update the specific team within the teams array
+            const updatedTeams = currentTeams.map(t => 
+                t.id === team.id ? { 
+                    ...t, 
+                    description: teamStyle.description,
+                    customIntro: teamStyle.customIntro,
+                    style: {
+                        ...t.style,
+                        // Only save non-empty values to avoid overwriting existing data
+                        ...Object.fromEntries(
+                            Object.entries(teamStyle).filter(([key, value]) => {
+                                // Skip description and customIntro as they're handled separately
+                                if (key === 'description' || key === 'customIntro') return false;
+                                // Only include values that are not empty strings, null, or undefined
+                                return value !== '' && value !== null && value !== undefined;
+                            })
+                        )
+                    }
+                } : t
+            );
+            
+            // Update React state
+            setTeams(updatedTeams);
+            
+            // Update complete data with new teams
             completeData.teams = updatedTeams;
             
             // Save complete data back to prevent data loss
