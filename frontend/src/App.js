@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Layout from './components/Layout';
 import { HomePage, AdminPage, EventsPage } from './pages';
+import AuthModal, { initialMockUsers } from './components/AuthSystem';
+import { isAdmin, canEditEvent, canEditTeam } from './components/PermissionsSystem';
 import "./App.css";
 
 function App() {
