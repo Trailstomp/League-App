@@ -194,32 +194,6 @@ function App() {
       currentUser={currentUser}
       teams={teams}
     >
-      {/* Debug Navigation */}
-      <div className="mb-4 p-2 bg-yellow-100 border border-yellow-300 rounded">
-        <p className="text-sm font-medium text-yellow-800">
-          Current Page: {currentPage} | Debug Navigation:
-        </p>
-        <div className="mt-1 space-x-2">
-          <button 
-            onClick={() => handleNavigate('home')} 
-            className="px-2 py-1 bg-blue-500 text-white text-xs rounded"
-          >
-            Home
-          </button>
-          <button 
-            onClick={() => handleNavigate('events')} 
-            className="px-2 py-1 bg-green-500 text-white text-xs rounded"
-          >
-            Events
-          </button>
-          <button 
-            onClick={() => handleNavigate('admin')} 
-            className="px-2 py-1 bg-purple-500 text-white text-xs rounded"
-          >
-            Admin
-          </button>
-        </div>
-      </div>
       {renderPage()}
     </Layout>
   );
