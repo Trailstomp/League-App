@@ -15567,71 +15567,13 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
     }, [websiteStyle]);
 
     const handleSave = async () => {
-        // Update React state
+        // Update React state - this will trigger the existing auto-save mechanism
         setWebsiteStyle(style);
         
-        try {
-            // BETTER APPROACH: Update only websiteStyle, not complete data
-            const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
-            console.log('🔧 Saving website style to backend:', backendUrl);
-            
-            // Direct websiteStyle update to avoid document size issues
-            const saveResponse = await fetch(`${backendUrl}/api/league-data/website-style`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ websiteStyle: style }),
-            });
-            
-            if (saveResponse.ok) {
-                console.log('✅ Website style saved to database successfully');
-                setSaved(true);
-                setTimeout(() => setSaved(false), 2000);
-            } else {
-                const errorText = await saveResponse.text();
-                console.error('❌ Failed to save website style to database:', saveResponse.status, errorText);
-                
-                // Fallback: Try the old method with smaller data
-                console.log('🔄 Trying fallback method...');
-                await saveFallback();
-            }
-        } catch (error) {
-            console.error('❌ Error saving website style:', error);
-            // Try fallback method
-            await saveFallback();
-        }
-    };
-    
-    const saveFallback = async () => {
-        try {
-            // Fallback: Use existing auto-save mechanism
-            const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
-            
-            // Try to update just the websiteStyle field using a patch approach
-            const patchResponse = await fetch(`${backendUrl}/api/league-data`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    operation: 'updateWebsiteStyle',
-                    data: style
-                }),
-            });
-            
-            if (patchResponse.ok) {
-                console.log('✅ Website style saved via fallback method');
-                setSaved(true);
-                setTimeout(() => setSaved(false), 2000);
-            } else {
-                console.error('❌ Fallback method also failed');
-                alert('Unable to save website style - document may be too large. Try saving smaller images.');
-            }
-        } catch (fallbackError) {
-            console.error('❌ Fallback save failed:', fallbackError);
-            alert('Error saving website style: ' + fallbackError.message);
-        }
+        // Show immediate success feedback since auto-save will handle persistence
+        console.log('✅ Website style updated - auto-save will persist changes');
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
     };
 
     const subtasks = [
