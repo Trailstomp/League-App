@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from './components/Layout';
 import { HomePage, AdminPage, EventsPage } from './pages';
+import TeamDetailPage from './pages/TeamDetailPage';
 import AuthModal, { initialMockUsers } from './components/AuthSystem';
 import { isAdmin, canEditEvent, canEditTeam } from './components/PermissionsSystem';
 import "./App.css";
@@ -9,6 +10,7 @@ function App() {
   // Basic state management
   const [currentPage, setCurrentPage] = useState('home'); // Back to home as default
   const [currentUser, setCurrentUser] = useState(null);
+  const [selectedTeam, setSelectedTeam] = useState(null);
   
   // Authentication state
   const [showLogin, setShowLogin] = useState(false);
