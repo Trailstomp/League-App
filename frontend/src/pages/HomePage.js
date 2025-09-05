@@ -1,7 +1,8 @@
 import React from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
+import GameTicker from '../components/GameTicker';
 
-const HomePage = ({ teams = [], currentUser }) => {
+const HomePage = ({ teams = [], currentUser, events = [] }) => {
     const stats = {
         totalTeams: teams.length,
         activeEvents: 0, // Will be connected later
