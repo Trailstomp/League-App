@@ -14115,56 +14115,44 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
 
     const handleSave = async () => {
         try {
-            // CRITICAL FIX: Get complete league data first to get all teams
+            // BETTER APPROACH: Avoid document size issues
             const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
-            console.log('🔧 Saving to backend:', backendUrl);
+            console.log('🔧 Saving team style to backend:', backendUrl);
             
-            const getResponse = await fetch(`${backendUrl}/api/league-data`);
+            // Prepare the team update data  
+            const teamUpdate = {
+                id: team.id,
+                description: teamStyle.description,
+                customIntro: teamStyle.customIntro,
+                style: {
+                    ...team.style,
+                    // Only save non-empty values to avoid overwriting existing data
+                    ...Object.fromEntries(
+                        Object.entries(teamStyle).filter(([key, value]) => {
+                            // Skip description and customIntro as they're handled separately
+                            if (key === 'description' || key === 'customIntro') return false;
+                            // Only include values that are not empty strings, null, or undefined
+                            return value !== '' && value !== null && value !== undefined;
+                        })
+                    )
+                }
+            };
             
-            if (!getResponse.ok) {
-                throw new Error(`Failed to get current league data: ${getResponse.status} ${getResponse.statusText}`);
-            }
-            
-            const completeData = await getResponse.json();
-            const currentTeams = completeData.teams || [];
-            
-            // Update the specific team within the teams array
-            const updatedTeams = currentTeams.map(t => 
-                t.id === team.id ? { 
-                    ...t, 
-                    description: teamStyle.description,
-                    customIntro: teamStyle.customIntro,
-                    style: {
-                        ...t.style,
-                        // Only save non-empty values to avoid overwriting existing data
-                        ...Object.fromEntries(
-                            Object.entries(teamStyle).filter(([key, value]) => {
-                                // Skip description and customIntro as they're handled separately
-                                if (key === 'description' || key === 'customIntro') return false;
-                                // Only include values that are not empty strings, null, or undefined
-                                return value !== '' && value !== null && value !== undefined;
-                            })
-                        )
-                    }
-                } : t
-            );
-            
-            // Update React state
-            setTeams(updatedTeams);
-            
-            // Update complete data with new teams
-            completeData.teams = updatedTeams;
-            
-            // Save complete data back to prevent data loss
-            const saveResponse = await fetch(`${backendUrl}/api/league-data`, {
-                method: 'POST',
+            // Try targeted team update to avoid document size issues
+            const saveResponse = await fetch(`${backendUrl}/api/teams/${team.id}`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(completeData),
+                body: JSON.stringify(teamUpdate),
             });
             
             if (saveResponse.ok) {
+                // Update React state only after successful database save
+                setTeams(prevTeams => prevTeams.map(t => 
+                    t.id === team.id ? { ...t, ...teamUpdate } : t
+                ));
+                
                 console.log('✅ Team styles saved to database successfully');
                 setSaved(true);
                 setTimeout(() => setSaved(false), 2000);
