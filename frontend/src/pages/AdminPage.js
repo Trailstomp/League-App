@@ -123,20 +123,20 @@ const AdminDashboard = ({ teams, players, users = [] }) => {
 
                 <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
                     <div className="flex items-center">
-                        <LacrosseIcon name="active" className="text-purple-600 mr-3" style={{fontSize: '24px'}} />
+                        <LacrosseIcon name="admin" className="text-purple-600 mr-3" style={{fontSize: '24px'}} />
                         <div>
-                            <div className="text-2xl font-bold text-purple-900">{stats.activeTeams}</div>
-                            <div className="text-sm text-purple-700">Active Teams</div>
+                            <div className="text-2xl font-bold text-purple-900">{stats.activeUsers}</div>
+                            <div className="text-sm text-purple-700">Active Users</div>
                         </div>
                     </div>
                 </div>
 
                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                     <div className="flex items-center">
-                        <LacrosseIcon name="active" className="text-orange-600 mr-3" style={{fontSize: '24px'}} />
+                        <LacrosseIcon name="time" className="text-orange-600 mr-3" style={{fontSize: '24px'}} />
                         <div>
-                            <div className="text-2xl font-bold text-orange-900">{stats.activePlayers}</div>
-                            <div className="text-sm text-orange-700">Active Players</div>
+                            <div className="text-2xl font-bold text-orange-900">{stats.pendingUsers}</div>
+                            <div className="text-sm text-orange-700">Pending Users</div>
                         </div>
                     </div>
                 </div>
