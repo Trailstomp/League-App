@@ -167,6 +167,15 @@ async def update_specific_data(data_type: str, data: List[Any] | Dict[str, Any])
 # CRITICAL INFRASTRUCTURE: Teams and Players Database Persistence
 # Dedicated collections and CRUD endpoints to prevent data loss
 
+# Style model for team styling
+class TeamStyle(BaseModel):
+    primaryColor: Optional[str] = "#dc2626"
+    backgroundColor: Optional[str] = "#fef2f2"
+    accentColor: Optional[str] = "#7c2d12"
+    logoUrl: Optional[str] = ""
+    logoOpacity: Optional[float] = 1.0
+    bannerUrl: Optional[str] = ""
+
 # Pydantic models for Teams and Players
 class Team(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -180,6 +189,7 @@ class Team(BaseModel):
     wins: int = 0
     losses: int = 0
     ties: int = 0
+    style: Optional[TeamStyle] = Field(default_factory=TeamStyle)
     createdAt: datetime = Field(default_factory=datetime.utcnow)
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
