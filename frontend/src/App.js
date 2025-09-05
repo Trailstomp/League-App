@@ -278,6 +278,16 @@ function App() {
             <p className="text-slate-600">Coming soon...</p>
           </div>
         );
+      case 'team':
+        return (
+          <TeamDetailPage 
+            team={selectedTeam} 
+            teams={teams}
+            events={events}
+            players={players}
+            onNavigate={handleNavigate}
+          />
+        );
       default:
         console.log('🔄 Rendering default (HomePage)');
         return <HomePage teams={teams} currentUser={currentUser} />;
