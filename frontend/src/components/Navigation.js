@@ -162,6 +162,5 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
         </div>
     );
 };
-};
 
 export default Navigation;
