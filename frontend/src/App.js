@@ -191,7 +191,7 @@ function App() {
     console.log('🔄 Rendering page:', currentPage);
     switch (currentPage) {
       case 'home':
-        return <HomePage teams={teams} currentUser={currentUser} events={events} />;
+        return <HomePage teams={teams} currentUser={currentUser} events={events} setEvents={setEvents} />;
       case 'admin':
         // Check if user has admin permissions
         if (!currentUser || !isAdmin(currentUser)) {
