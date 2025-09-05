@@ -246,7 +246,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Fix EnhancedScoring component useEffect sync issue for scores persistence"
+    - "Event Detail Modal Enhancement - Fix gameStats prop passing for scores persistence"
     - "Test Add Event functionality with SimpleEventForm"
     - "Test event filtering and view toggles"
     - "Verify backend API integration for event CRUD"
