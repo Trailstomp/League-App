@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import LacrosseIcons, { LacrosseIcon } from './LacrosseIcons';
 import { isAdmin } from './PermissionsSystem';
 
 const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, teams = [] }) => {
+    const [isCollapsed, setIsCollapsed] = useState(false);
+
     const NavItem = ({ icon, label, pageName, onClick }) => (
         <button
             onClick={() => onClick ? onClick() : onNavigate(pageName)}
@@ -11,20 +13,40 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                     ? 'bg-blue-100 text-blue-700'
                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
             }`}
+            title={isCollapsed ? label : ''}
         >
-            <span className="mr-3 flex-shrink-0">{icon}</span>
-            {label}
+            <span className="flex-shrink-0">{icon}</span>
+            {!isCollapsed && <span className="ml-3">{label}</span>}
         </button>
     );
 
     return (
-        <div className="w-64 bg-white shadow-sm border-r min-h-screen flex flex-col">
-            {/* Header */}
+        <div className={`${isCollapsed ? 'w-16' : 'w-64'} bg-white shadow-sm border-r min-h-screen flex flex-col transition-all duration-300`}>
+            {/* Header with Toggle */}
             <div className="p-4 border-b">
-                <h1 className="text-xl font-bold text-slate-800">
-                    🥍 Lacrosse League
-                </h1>
-                {currentUser ? (
+                <div className="flex items-center justify-between">
+                    {!isCollapsed && (
+                        <h1 className="text-xl font-bold text-slate-800">
+                            🥍 Lacrosse League
+                        </h1>
+                    )}
+                    <button
+                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+                        title={isCollapsed ? "Expand navigation" : "Collapse navigation"}
+                    >
+                        <svg 
+                            className={`w-4 h-4 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                </div>
+                
+                {!isCollapsed && currentUser ? (
                     <div className="mt-2">
                         <p className="text-sm text-slate-600">
                             Welcome, {currentUser.name}
@@ -33,11 +55,11 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                             {(currentUser.roles || [currentUser.role]).filter(Boolean).join(', ')}
                         </p>
                     </div>
-                ) : (
+                ) : !isCollapsed ? (
                     <p className="text-sm text-slate-500 mt-1">
                         Browsing as guest
                     </p>
-                )}
+                ) : null}
             </div>
 
             {/* Navigation */}
@@ -52,23 +74,25 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 )}
             </nav>
 
-            {/* Teams Section - Right under main navigation */}
+            {/* Teams Section */}
             <div className="px-4 pb-4 border-b flex-grow">
-                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-                    <LacrosseIcon name="stick" className="mr-1" style={{fontSize: '12px'}} /> Teams
+                <h3 className={`text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 ${isCollapsed ? 'text-center' : ''}`}>
+                    <LacrosseIcon name="stick" className={isCollapsed ? "" : "mr-1"} style={{fontSize: '12px'}} />
+                    {!isCollapsed && " Teams"}
                 </h3>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                     {teams.slice(0, 8).map(team => (
                         <button
                             key={team.id} 
-                            className="w-full flex items-center px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-lg transition-colors text-left border border-transparent hover:border-slate-200"
+                            className={`w-full flex items-center px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-lg transition-colors text-left border border-transparent hover:border-slate-200 ${isCollapsed ? 'justify-center' : ''}`}
                             onClick={() => {
                                 console.log('🏆 Team clicked:', team.name, team.id);
                                 onNavigate && onNavigate('team', team.id);
                             }}
+                            title={isCollapsed ? `${team.name} (${team.wins || 0}-${team.losses || 0})` : ''}
                         >
                             {/* Team Logo or Colored Circle */}
-                            <div className="w-6 h-6 rounded-full mr-3 flex-shrink-0 overflow-hidden border border-slate-200">
+                            <div className="w-6 h-6 rounded-full flex-shrink-0 overflow-hidden border border-slate-200">
                                 {team.style?.logoUrl ? (
                                     <img 
                                         src={team.style.logoUrl} 
@@ -76,9 +100,8 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                         className="w-full h-full object-cover"
                                         style={{ opacity: team.style.logoOpacity || 1 }}
                                         onError={(e) => {
-                                            // Fallback to colored circle if logo fails to load
                                             e.target.style.display = 'none';
-                                            e.target.nextSibling.style.display = 'block';
+                                            e.target.nextSibling.style.display = 'flex';
                                         }}
                                     />
                                 ) : null}
@@ -92,22 +115,26 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                     <LacrosseIcon name="stick" style={{fontSize: '12px', color: 'white'}} />
                                 </div>
                             </div>
-                            <div className="flex-1 min-w-0">
-                                <div className="font-medium truncate">{team.name}</div>
-                                <div className="text-xs text-slate-500 truncate">{team.division || 'Field'}</div>
-                            </div>
-                            {/* Team record indicator */}
-                            <div className="text-xs text-slate-400 ml-2">
-                                {team.wins || 0}-{team.losses || 0}
-                            </div>
+                            
+                            {!isCollapsed && (
+                                <>
+                                    <div className="flex-1 min-w-0 ml-3">
+                                        <div className="font-medium truncate">{team.name}</div>
+                                        <div className="text-xs text-slate-500 truncate">{team.division || 'Field'}</div>
+                                    </div>
+                                    <div className="text-xs text-slate-400 ml-2">
+                                        {team.wins || 0}-{team.losses || 0}
+                                    </div>
+                                </>
+                            )}
                         </button>
                     ))}
-                    {teams.length > 8 && (
+                    {!isCollapsed && teams.length > 8 && (
                         <div className="text-xs text-slate-500 px-3 py-2 text-center bg-slate-50 rounded">
                             +{teams.length - 8} more teams
                         </div>
                     )}
-                    {teams.length === 0 && (
+                    {!isCollapsed && teams.length === 0 && (
                         <div className="text-xs text-slate-500 px-3 py-4 text-center bg-slate-50 rounded">
                             <LacrosseIcon name="teams" className="mx-auto mb-2" style={{fontSize: '24px'}} />
                             <div>No teams yet</div>
@@ -116,8 +143,8 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 </div>
             </div>
 
-            {/* Authentication Actions - Bottom */}
-            <div className="p-4 border-t">
+            {/* Authentication Actions - Moved up under teams */}
+            <div className="p-4 border-b">
                 {currentUser ? (
                     <NavItem 
                         icon={<LacrosseIcon name="logout" />} 
@@ -134,6 +161,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
             </div>
         </div>
     );
+};
 };
 
 export default Navigation;
