@@ -265,9 +265,9 @@ metadata:
 test_plan:
   current_focus:
     - "Comprehensive Authentication System Integration from App.full.js"
-    - "Test Add Event functionality with SimpleEventForm"
-    - "Test event filtering and view toggles"
-    - "Verify backend API integration for event CRUD"
+    - "Frontend Service Restoration"
+    - "UserManager and RoleManager Components Integration"
+    - "Admin Portal Access and Navigation"
   stuck_tasks:
     - "Comprehensive Authentication System Integration from App.full.js"
   test_all: false
