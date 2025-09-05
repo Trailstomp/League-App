@@ -491,26 +491,43 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
 
             {/* Logo Section */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Team Logo URL</label>
-                <input 
-                    type="url" 
-                    value={teamStyle.logoUrl || ''} 
-                    onChange={e => handleStyleChange('logoUrl', e.target.value)} 
-                    placeholder="https://example.com/logo.png" 
-                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                />
-                {teamStyle.logoUrl && (
-                    <div className="mt-2">
-                        <img 
-                            src={teamStyle.logoUrl} 
-                            alt="Team logo preview" 
-                            className="w-16 h-16 rounded-full object-cover border-2 border-slate-300"
-                            onError={(e) => {
-                                e.target.style.display = 'none';
-                            }}
-                        />
-                    </div>
-                )}
+                <label className="block text-sm font-medium text-gray-700 mb-2">Team Logo</label>
+                <div className="space-y-3">
+                    <input 
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                                // Create object URL for preview
+                                const objectUrl = URL.createObjectURL(file);
+                                handleStyleChange('logoUrl', objectUrl);
+                                handleStyleChange('logoFile', file);
+                            }
+                        }}
+                        className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
+                    />
+                    <p className="text-xs text-slate-500">Upload PNG, JPG, or GIF. Recommended size: 200x200px</p>
+                    {teamStyle.logoUrl && (
+                        <div className="flex items-center space-x-3">
+                            <img 
+                                src={teamStyle.logoUrl} 
+                                alt="Team logo preview" 
+                                className="w-16 h-16 rounded-full object-cover border-2 border-slate-300"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    handleStyleChange('logoUrl', '');
+                                    handleStyleChange('logoFile', null);
+                                }}
+                                className="text-red-600 hover:text-red-800 text-sm"
+                            >
+                                Remove Logo
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Logo Opacity */}
