@@ -25,11 +25,15 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
     const renderTabContent = () => {
         switch (activeTab) {
             case 'dashboard':
-                return <AdminDashboard teams={teams} players={players} />;
+                return <AdminDashboard teams={teams} players={players} users={users} />;
             case 'teams':
                 return <TeamsManager teams={teams} setTeams={setTeams} />;
             case 'players':
                 return <PlayersManager teams={teams} players={players} setPlayers={setPlayers} />;
+            case 'users':
+                return <UserManager users={users} setUsers={setUsers} teams={teams} />;
+            case 'roles':
+                return <RoleManager users={users} setUsers={setUsers} />;
             default:
                 return (
                     <div className="text-center py-16">
