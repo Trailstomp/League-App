@@ -259,6 +259,7 @@ function App() {
       <Layout 
         currentPage={currentPage}
         onNavigate={handleNavigate}
+        onTeamNavigate={handleTeamNavigate}
         currentUser={currentUser}
         onLogin={handleShowLogin}
         onLogout={handleLogout}
