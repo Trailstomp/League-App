@@ -5,7 +5,7 @@ import "./App.css";
 
 function App() {
   // Basic state management
-  const [currentPage, setCurrentPage] = useState('home');
+  const [currentPage, setCurrentPage] = useState('events'); // Start with events page for testing
   const [currentUser, setCurrentUser] = useState(null);
   const [teams, setTeams] = useState([]);
   const [players, setPlayers] = useState([]);
