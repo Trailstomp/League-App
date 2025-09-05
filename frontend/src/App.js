@@ -146,7 +146,9 @@ function App() {
         time: '18:00',
         location: 'Smith Field',
         description: 'Weekly team practice session',
-        teamId: '1'
+        teamId: '1',
+        teamName: 'OH10 Lacrosse',
+        status: 'scheduled'
       },
       {
         id: 'event_2', 
@@ -157,7 +159,10 @@ function App() {
         location: 'Central Stadium',
         description: 'League championship game',
         homeTeam: '1',
-        awayTeam: '2'
+        awayTeam: '2',
+        homeScore: 0,
+        awayScore: 0,
+        status: 'scheduled'
       },
       {
         id: 'event_3',
@@ -167,7 +172,14 @@ function App() {
         time: '10:00',
         location: 'Tournament Center',
         description: 'Annual spring tournament with all teams',
-        teamIds: ['1', '2', '3', '4']
+        teamIds: ['1', '2', '3', '4'],
+        allTeams: [
+          { id: '1', name: 'OH10 Lacrosse' },
+          { id: '2', name: 'American Dads' },
+          { id: '3', name: 'Cincinnati Trash Pandas' },
+          { id: '4', name: 'Columbus Ball Hawgs' }
+        ],
+        status: 'scheduled'
       }
     ]);
 
