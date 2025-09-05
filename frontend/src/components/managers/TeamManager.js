@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { LacrosseIcon } from '../LacrosseIcons';
 import AdvancedColorPicker from '../AdvancedColorPicker';
+import ColorExtractor from '../ColorExtractor';
 
 // Icons
 const Edit = ({ size = 16, color = "currentColor", ...props }) => (
