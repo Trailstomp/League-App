@@ -243,13 +243,14 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Fix EnhancedScoring component useEffect sync issue for scores persistence"
     - "Test Add Event functionality with SimpleEventForm"
-    - "Test Event Detail Modal tabs and functionality" 
     - "Test event filtering and view toggles"
     - "Verify backend API integration for event CRUD"
-  stuck_tasks: []
+  stuck_tasks: 
+    - "Event Detail Modal Enhancement - Scores persistence during tab switching"
   test_all: false
-  test_priority: "high_first"
+  test_priority: "stuck_first"
 
 agent_communication:
   - agent: "main"
