@@ -50,23 +50,6 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 {currentUser && isAdmin(currentUser) && (
                     <NavItem icon={<LacrosseIcon name="admin" />} label="Admin Portal" pageName="admin" />
                 )}
-                
-                {/* Authentication Actions */}
-                <div className="mt-6 pt-4 border-t">
-                    {currentUser ? (
-                        <NavItem 
-                            icon={<LacrosseIcon name="logout" />} 
-                            label="Logout" 
-                            onClick={onLogout}
-                        />
-                    ) : (
-                        <NavItem 
-                            icon={<LacrosseIcon name="login" />} 
-                            label="Login" 
-                            onClick={onLogin}
-                        />
-                    )}
-                </div>
             </nav>
 
             {/* Teams Section */}
