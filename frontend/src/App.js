@@ -17812,47 +17812,39 @@ function App() {
     }, [recoverWebsiteStyleFromBackup]);
 
     const [websiteStyle, setWebsiteStyle] = useState({
-        logoUrl: MlblLogo,
-        primaryColor: '#1e293b', // slate-800
-        accentColor: '#991b1b', // red-800
+        // Initialize with minimal defaults - let API/localStorage override everything
+        logoUrl: '',
+        primaryColor: '#1e293b', 
+        accentColor: '#991b1b', 
         logoStyle: 'contain',
-        // Page & Text Colors
-        pageBackgroundColor: '#f1f5f9', // slate-100
-        textColor: '#1e293b', // slate-800
-        headingColor: '#0f172a', // slate-900
-        linkColor: '#2563eb', // blue-600
-        // Form styling
-        formBackgroundColor: '#f8fafc', // slate-50
-        // Background image settings
+        pageBackgroundColor: '#f1f5f9',
+        textColor: '#1e293b',
+        headingColor: '#0f172a',
+        linkColor: '#2563eb',
+        formBackgroundColor: '#f8fafc',
         backgroundImage: '',
-        backgroundMode: 'cover', // cover, contain, tile
-        backgroundOpacity: 0.1, // 0-1 for overlay opacity
-        // Top Banner/Header settings  
-        bannerText: 'MLBL',
-        bannerColor: '#1e293b', // default to primaryColor
+        backgroundMode: 'cover',
+        backgroundOpacity: 0.1,
+        bannerText: '',
+        bannerColor: '#1e293b',
         bannerImage: '',
-        bannerMode: 'cover', // cover, contain, repeat
+        bannerMode: 'cover',
         bannerOpacity: 0.3,
         bannerLogo: '',
-        bannerLogoSize: 'medium', // small, medium, large
-        bannerLogoPosition: 'left', // left, center, right
-        // Music settings
+        bannerLogoSize: 'medium',
+        bannerLogoPosition: 'left',
         globalMusicUrl: '',
-        // Sidebar settings
         sidebarImage: '',
         sidebarOpacity: 0.2,
-        sidebarMode: 'cover', // cover, contain, repeat
-        // Game Ticker settings (moved from LeagueInfoManager)
+        sidebarMode: 'cover',
         tickerColor: '#1e293b',
         tickerItemColor: '#334155',
         tickerBorderColor: '#475569',
         tickerTextColor: '#94a3b8',
-        // Top Bar/News Ticker Text Customization
         newsLabel: 'NEWS',
-        // Logo Overlay Settings
         overlayLogo: '',
-        overlayLogoAlignment: 'center', // left, center, right
-        overlayLogoSize: 'medium' // small, medium, large
+        overlayLogoAlignment: 'center',
+        overlayLogoSize: 'medium'
     });
 
     // Image popup state for galleries
