@@ -14113,8 +14113,9 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
         { id: 'forms', name: 'Forms Zone', icon: Briefcase }
     ];
 
-    const handleSave = () => {
-        setTeams(prevTeams => prevTeams.map(t => 
+    const handleSave = async () => {
+        // Update React state
+        const updatedTeams = teams.map(t => 
             t.id === team.id ? { 
                 ...t, 
                 description: teamStyle.description,
@@ -14132,9 +14133,37 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
                     )
                 }
             } : t
-        ));
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+        );
+        
+        // CRITICAL: Save to database, not just React state!
+        setTeams(updatedTeams);
+        
+        try {
+            // Save to database via API
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/league-data`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    teams: updatedTeams,
+                    // Include other data that might be needed
+                    websiteStyle: websiteStyle,
+                }),
+            });
+            
+            if (response.ok) {
+                console.log('✅ Team styles saved to database successfully');
+                setSaved(true);
+                setTimeout(() => setSaved(false), 2000);
+            } else {
+                console.error('❌ Failed to save team styles to database');
+                alert('Failed to save team styles to database');
+            }
+        } catch (error) {
+            console.error('❌ Error saving team styles:', error);
+            alert('Error saving team styles: ' + error.message);
+        }
     };
 
     // Create remaining zone managers
