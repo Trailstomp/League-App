@@ -172,7 +172,7 @@ class TeamWebstylesWorkflowTest:
                     "backgroundImage": "",
                     "teamWebstyles": {}  # This is where team-specific styles should go
                 },
-                "lastUpdated": datetime.utcnow()
+                "lastUpdated": datetime.utcnow().isoformat()
             }
             
             response = requests.post(
