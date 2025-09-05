@@ -16533,11 +16533,11 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
             description: 'Manage teams and divisions'
         },
         { 
-            id: 'friends', 
-            label: 'Friends & Sponsors', 
-            icon: <Users size={16} />, 
-            permissions: ['system.admin_access'],
-            description: 'Manage league friends, partners and sponsors'
+            id: 'players', 
+            label: 'Players', 
+            icon: <UserCheck size={16} />, 
+            permissions: ['players.view'],
+            description: 'Manage players and roster'
         },
         { 
             id: 'locations', 
@@ -16547,11 +16547,18 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
             description: 'Manage league-wide event locations'
         },
         { 
-            id: 'players', 
-            label: 'Players', 
-            icon: <UserCheck size={16} />, 
-            permissions: ['players.view'],
-            description: 'Manage players and roster'
+            id: 'users', 
+            label: 'Users & Security', 
+            icon: <Shield size={16} />, 
+            permissions: ['users.view'],
+            description: 'Manage user accounts, roles and permissions'
+        },
+        { 
+            id: 'communications', 
+            label: 'Communications', 
+            icon: <Mail size={16} />, 
+            permissions: ['system.admin_access'],
+            description: 'Email and SMS messaging center'
         },
         { 
             id: 'media', 
@@ -16568,11 +16575,11 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, leagueSchedule, gameT
             description: 'Manage social media integration'
         },
         { 
-            id: 'communications', 
-            label: 'Communications', 
-            icon: <Mail size={16} />, 
+            id: 'friends', 
+            label: 'Friends & Sponsors', 
+            icon: <Users size={16} />, 
             permissions: ['system.admin_access'],
-            description: 'Email and SMS messaging center'
+            description: 'Manage league friends, partners and sponsors'
         },
         { 
             id: 'website', 
