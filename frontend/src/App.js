@@ -14180,6 +14180,26 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
             alert('Error saving team styles: ' + error.message);
         }
     };
+    
+    const saveTeamFallback = async (teamUpdate) => {
+        try {
+            console.log('🔄 Using fallback save method for team styles...');
+            const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+            
+            // Fallback: Just update React state and rely on auto-save
+            setTeams(prevTeams => prevTeams.map(t => 
+                t.id === team.id ? { ...t, ...teamUpdate } : t
+            ));
+            
+            console.log('✅ Team styles updated locally (auto-save will persist)');
+            setSaved(true);
+            setTimeout(() => setSaved(false), 2000);
+            
+        } catch (fallbackError) {
+            console.error('❌ Fallback save failed:', fallbackError);
+            alert('Error saving team styles: ' + fallbackError.message);
+        }
+    };
 
     // Create remaining zone managers
 
