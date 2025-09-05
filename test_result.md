@@ -309,9 +309,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Enhanced Team Management System with Advanced Color Picker Integration"
     - "Platform Accessibility Resolution"
-    - "Frontend Service Routing Fix"
+    - "Coach Permissions Fix - Admin Portal Access for Coaches"
+    - "File Upload Implementation - Replace URL Inputs with File Inputs"
+    - "Navigation Teams Links - Clickable Team Navigation"
+    - "Navigation Layout Reorganization - Teams Section Positioning"
   stuck_tasks:
     - "Platform Accessibility Resolution"
   test_all: false
