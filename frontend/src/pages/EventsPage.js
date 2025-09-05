@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
+import EventCalendar from '../scheduling/components/EventCalendar';
+import EventDetailModal from '../scheduling/components/EventDetailModal';
+import SimpleEventForm from '../scheduling/components/SimpleEventForm';
 
 const EventsPage = ({ teams, currentUser, events, setEvents }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
