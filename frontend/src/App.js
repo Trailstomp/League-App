@@ -17811,8 +17811,8 @@ function App() {
         return () => delete window.recoverWebsiteStyle;
     }, [recoverWebsiteStyleFromBackup]);
 
-    const [websiteStyle, setWebsiteStyle] = useState({
-        // Initialize with minimal defaults - let API/localStorage override everything
+    // Website style defaults - used as fallback when no stored data exists
+    const websiteStyleDefaults = {
         logoUrl: '',
         primaryColor: '#1e293b', 
         accentColor: '#991b1b', 
@@ -17845,7 +17845,9 @@ function App() {
         overlayLogo: '',
         overlayLogoAlignment: 'center',
         overlayLogoSize: 'medium'
-    });
+    };
+
+    const [websiteStyle, setWebsiteStyle] = useState(websiteStyleDefaults);
 
     // Image popup state for galleries
     const [selectedImagePopup, setSelectedImagePopup] = useState(null);
