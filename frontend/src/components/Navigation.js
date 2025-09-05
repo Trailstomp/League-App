@@ -71,6 +71,23 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                     )}
                 </div>
             </div>
+
+            {/* Authentication Actions - Bottom */}
+            <div className="p-4 border-t">
+                {currentUser ? (
+                    <NavItem 
+                        icon={<LacrosseIcon name="logout" />} 
+                        label="Logout" 
+                        onClick={onLogout}
+                    />
+                ) : (
+                    <NavItem 
+                        icon={<LacrosseIcon name="login" />} 
+                        label="Login" 
+                        onClick={onLogin}
+                    />
+                )}
+            </div>
         </div>
     );
 };
