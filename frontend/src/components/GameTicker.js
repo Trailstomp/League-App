@@ -145,12 +145,22 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
         
         const animateScroll = () => {
             const tickerElement = tickerRef.current;
-            if (!tickerElement) return;
+            if (!tickerElement) {
+                animationFrameId = requestAnimationFrame(animateScroll);
+                return;
+            }
             
-            if (!isHovering && allItems.length > 1) {
-                // Only scroll if there are multiple items and not hovering
+            // Only scroll if there are items and not hovering
+            if (!isHovering && allItems.length > 0) {
                 tickerElement.scrollLeft += 1; // Scroll right to left
-                if (tickerElement.scrollLeft >= tickerElement.scrollWidth / 2) {
+                
+                // Reset scroll position when we've scrolled halfway through the duplicated content
+                if (allItems.length > 1 && tickerElement.scrollLeft >= tickerElement.scrollWidth / 2) {
+                    tickerElement.scrollLeft = 0;
+                }
+                
+                // For single items, reset when we reach the end
+                if (allItems.length === 1 && tickerElement.scrollLeft >= tickerElement.scrollWidth - tickerElement.clientWidth) {
                     tickerElement.scrollLeft = 0;
                 }
             }
@@ -158,9 +168,14 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
             animationFrameId = requestAnimationFrame(animateScroll);
         };
         
+        // Start the animation
         animationFrameId = requestAnimationFrame(animateScroll);
         
-        return () => cancelAnimationFrame(animationFrameId);
+        return () => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+        };
     }, [isHovering, allItems.length]);
     
     return (
