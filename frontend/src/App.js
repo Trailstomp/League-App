@@ -15544,10 +15544,49 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
         setStyle(websiteStyle);
     }, [websiteStyle]);
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        // Update React state
         setWebsiteStyle(style);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+        
+        try {
+            // CRITICAL FIX: Save to database, not just React state!
+            const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+            console.log('🔧 Saving website style to backend:', backendUrl);
+            
+            // Get complete league data first
+            const getResponse = await fetch(`${backendUrl}/api/league-data`);
+            
+            if (!getResponse.ok) {
+                throw new Error(`Failed to get current league data: ${getResponse.status} ${getResponse.statusText}`);
+            }
+            
+            const completeData = await getResponse.json();
+            
+            // Update websiteStyle within complete data
+            completeData.websiteStyle = style;
+            
+            // Save complete data back to prevent data loss
+            const saveResponse = await fetch(`${backendUrl}/api/league-data`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(completeData),
+            });
+            
+            if (saveResponse.ok) {
+                console.log('✅ Website style saved to database successfully');
+                setSaved(true);
+                setTimeout(() => setSaved(false), 2000);
+            } else {
+                const errorText = await saveResponse.text();
+                console.error('❌ Failed to save website style to database:', saveResponse.status, errorText);
+                alert(`Failed to save website style: ${saveResponse.status} ${errorText}`);
+            }
+        } catch (error) {
+            console.error('❌ Error saving website style:', error);
+            alert('Error saving website style: ' + error.message);
+        }
     };
 
     const subtasks = [
