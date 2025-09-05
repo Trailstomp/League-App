@@ -185,13 +185,30 @@ function App() {
       case 'home':
         return <HomePage teams={teams} currentUser={currentUser} />;
       case 'admin':
+        // Check if user has admin permissions
+        if (!currentUser || !isAdmin(currentUser)) {
+          return (
+            <div className="text-center py-16">
+              <h2 className="text-2xl font-bold text-slate-800 mb-4">Access Denied</h2>
+              <p className="text-slate-600 mb-4">You must be logged in as an administrator to view this page.</p>
+              <button 
+                onClick={handleShowLogin}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Login
+              </button>
+            </div>
+          );
+        }
         return (
           <AdminPage 
             teams={teams} 
             setTeams={setTeams}
             players={players}
             setPlayers={setPlayers}
-            currentUser={currentUser} 
+            currentUser={currentUser}
+            users={users}
+            setUsers={setUsers}
           />
         );
       case 'events':
