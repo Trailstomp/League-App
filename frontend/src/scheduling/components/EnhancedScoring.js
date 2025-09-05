@@ -101,7 +101,7 @@ const EnhancedScoresTab = ({
         });
         
         setLocalGameStats(updatedStats);
-    }, [eventTeams]);
+    }, [event.teamIds, event.teamId]); // Use stable dependencies instead of calculated array
 
     const handleScoreChange = (teamId, newScore) => {
         const updatedStats = {
