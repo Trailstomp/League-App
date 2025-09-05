@@ -139,44 +139,29 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
         return combinedItems;
     }, [leagueSchedule, teams, websiteStyle?.tickerFilters]);
 
-    // Auto-scroll animation
+    // Auto-scroll animation - simplified approach
     useEffect(() => {
-        let animationFrameId;
+        const tickerElement = tickerRef.current;
+        if (!tickerElement || allItems.length === 0) return;
+
+        let scrollPosition = 0;
+        const scrollSpeed = 1;
         
-        const animateScroll = () => {
-            const tickerElement = tickerRef.current;
-            if (!tickerElement) {
-                animationFrameId = requestAnimationFrame(animateScroll);
-                return;
-            }
-            
-            // Only scroll if there are items and not hovering
-            if (!isHovering && allItems.length > 0) {
-                const oldScrollLeft = tickerElement.scrollLeft;
-                tickerElement.scrollLeft += 1; // Scroll right to left
+        const scroll = () => {
+            if (!isHovering) {
+                scrollPosition += scrollSpeed;
+                tickerElement.scrollLeft = scrollPosition;
                 
-                // Debug logging (can be removed later)
-                if (oldScrollLeft === 0 && tickerElement.scrollLeft === 1) {
-                    console.log('🎬 Ticker started scrolling, container width:', tickerElement.scrollWidth, 'client width:', tickerElement.clientWidth);
-                }
-                
-                // Reset scroll position when we've scrolled through one set of items
-                if (tickerElement.scrollLeft >= tickerElement.scrollWidth / 3) {
-                    tickerElement.scrollLeft = 0;
+                // Reset when we've scrolled through one set of items
+                if (scrollPosition >= tickerElement.scrollWidth / 3) {
+                    scrollPosition = 0;
                 }
             }
-            
-            animationFrameId = requestAnimationFrame(animateScroll);
         };
+
+        const intervalId = setInterval(scroll, 16); // ~60fps
         
-        // Start the animation
-        animationFrameId = requestAnimationFrame(animateScroll);
-        
-        return () => {
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-            }
-        };
+        return () => clearInterval(intervalId);
     }, [isHovering, allItems.length]);
     
     return (
