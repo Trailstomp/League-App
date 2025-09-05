@@ -84,26 +84,6 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 </div>
             </div>
 
-            {/* Teams Section */}
-            <div className="p-4 border-t">
-                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                    <LacrosseIcon name="stick" className="mr-1" style={{fontSize: '12px'}} /> Teams
-                </h3>
-                <div className="space-y-1 max-h-48 overflow-y-auto">
-                    {teams.slice(0, 8).map(team => (
-                        <div key={team.id} className="flex items-center px-2 py-1 text-sm text-slate-600">
-                            <div className="w-4 h-4 bg-slate-200 rounded mr-2 flex-shrink-0"></div>
-                            <span className="truncate">{team.name}</span>
-                        </div>
-                    ))}
-                    {teams.length > 8 && (
-                        <div className="text-xs text-slate-500 px-2">
-                            +{teams.length - 8} more teams
-                        </div>
-                    )}
-                </div>
-            </div>
-
             {/* Authentication Actions - Bottom */}
             <div className="p-4 border-t">
                 {currentUser ? (
