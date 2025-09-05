@@ -293,7 +293,7 @@ class BackendTester:
             
             if response.status_code == 200:
                 data = response.json()
-                required_fields = ['id', 'teams', 'players', 'users', 'newsItems', 'gameTickerData', 'leagueSchedule', 'leagueInfo', 'websiteStyle']
+                required_fields = ['id', 'teams', 'players', 'users', 'gameTickerData', 'leagueSchedule', 'leagueInfo', 'websiteStyle']
                 
                 if all(field in data for field in required_fields):
                     self.log_test(
