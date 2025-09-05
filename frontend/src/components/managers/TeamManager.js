@@ -476,9 +476,26 @@ const BasicInfoTab = ({ editingTeam, handleInputChange, seasons, currentSeason }
     </div>
 );
 
-// Team Style Tab with Advanced Color Picker
+// Team Style Tab with Advanced Color Picker and Smart Color Extraction
 const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
     const teamStyle = editingTeam?.style || {};
+    const [extractedColors, setExtractedColors] = useState([]);
+
+    // Handle colors extracted from logo
+    const handleColorsExtracted = (colors) => {
+        setExtractedColors(colors);
+        
+        // Auto-assign extracted colors to team style
+        colors.forEach(colorAssignment => {
+            if (colorAssignment.key === 'primaryColor') {
+                handleStyleChange('primaryColor', colorAssignment.hex);
+            } else if (colorAssignment.key === 'backgroundColor') {
+                handleStyleChange('backgroundColor', colorAssignment.hex);
+            } else if (colorAssignment.key === 'accentColor') {
+                handleStyleChange('accentColor', colorAssignment.hex);
+            }
+        });
+    };
 
     return (
         <div className="space-y-6">
@@ -531,6 +548,13 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                 </div>
             </div>
 
+            {/* Smart Color Extraction */}
+            <ColorExtractor 
+                imageUrl={teamStyle.logoUrl}
+                onColorsExtracted={handleColorsExtracted}
+                isVisible={!!teamStyle.logoUrl}
+            />
+
             {/* Logo Opacity */}
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -547,29 +571,38 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                 />
             </div>
 
-            {/* Color Pickers */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <AdvancedColorPicker
-                    label="Primary Color"
-                    value={teamStyle.primaryColor || '#dc2626'}
-                    onChange={color => handleStyleChange('primaryColor', color)}
-                    showEyedropper={true}
-                    presetColors={[
-                        '#dc2626', '#ea580c', '#ca8a04', '#16a34a', '#0891b2', '#2563eb',
-                        '#7c3aed', '#be185d', '#991b1b', '#92400e', '#166534', '#0e7490'
-                    ]}
-                />
+            {/* Manual Color Pickers */}
+            <div>
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                    🎛️ Manual Color Controls
+                    <span className="text-xs font-normal text-gray-500 ml-2">(Override extracted colors)</span>
+                </h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <AdvancedColorPicker
+                        label="Primary Color"
+                        value={teamStyle.primaryColor || '#dc2626'}
+                        onChange={color => handleStyleChange('primaryColor', color)}
+                        showEyedropper={true}
+                        presetColors={extractedColors.map(c => c.originalHex || c.hex).filter(Boolean)}
+                    />
 
-                <AdvancedColorPicker
-                    label="Background Color"
-                    value={teamStyle.backgroundColor || '#fef2f2'}
-                    onChange={color => handleStyleChange('backgroundColor', color)}
-                    showEyedropper={true}
-                    presetColors={[
-                        '#fef2f2', '#fff7ed', '#fefce8', '#f0fdf4', '#ecfeff', '#eff6ff',
-                        '#faf5ff', '#fdf2f8', '#ffffff', '#f8fafc', '#f1f5f9', '#e2e8f0'
-                    ]}
-                />
+                    <AdvancedColorPicker
+                        label="Background Color"
+                        value={teamStyle.backgroundColor || '#fef2f2'}
+                        onChange={color => handleStyleChange('backgroundColor', color)}
+                        showEyedropper={true}
+                        presetColors={extractedColors.map(c => c.originalHex || c.hex).filter(Boolean)}
+                    />
+
+                    <AdvancedColorPicker
+                        label="Accent Color"
+                        value={teamStyle.accentColor || '#7c2d12'}
+                        onChange={color => handleStyleChange('accentColor', color)}
+                        showEyedropper={true}
+                        presetColors={extractedColors.map(c => c.originalHex || c.hex).filter(Boolean)}
+                    />
+                </div>
             </div>
 
             {/* Banner Image */}
@@ -613,7 +646,7 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                 </div>
             </div>
 
-            {/* Style Preview */}
+            {/* Enhanced Style Preview */}
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Style Preview</label>
                 <div 
@@ -624,14 +657,37 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                     }}
                 >
                     <div 
-                        className="p-3 rounded text-white text-center font-bold"
+                        className="p-3 rounded text-white text-center font-bold relative overflow-hidden"
                         style={{ backgroundColor: teamStyle.primaryColor || '#64748b' }}
                     >
-                        {editingTeam?.name || 'Team Name'} Preview
+                        {teamStyle.logoUrl && (
+                            <img 
+                                src={teamStyle.logoUrl} 
+                                alt="Logo" 
+                                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-8 h-8 rounded-full object-cover"
+                                style={{ opacity: teamStyle.logoOpacity || 1 }}
+                            />
+                        )}
+                        <div className="pl-12">
+                            {editingTeam?.name || 'Team Name'} Preview
+                        </div>
+                        {teamStyle.accentColor && (
+                            <div 
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full"
+                                style={{ backgroundColor: teamStyle.accentColor }}
+                            />
+                        )}
                     </div>
                     <div className="text-center mt-2 text-sm text-slate-600">
                         This is how your team will appear in cards and displays
                     </div>
+                    {extractedColors.length > 0 && (
+                        <div className="mt-3 flex justify-center space-x-2">
+                            <span className="text-xs text-green-600 font-medium">
+                                ✨ Colors extracted from logo and auto-applied
+                            </span>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
