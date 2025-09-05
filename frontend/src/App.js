@@ -74,7 +74,14 @@ function App() {
         coach: 'Coach Smith',
         homeField: 'Smith Field',
         contactEmail: 'coach@oh10lacrosse.com',
-        active: true
+        active: true,
+        style: {
+          primaryColor: '#dc2626',
+          backgroundColor: '#fef2f2',
+          accentColor: '#7c2d12',
+          logoUrl: '',
+          logoOpacity: 1
+        }
       },
       { 
         id: '2', 
@@ -86,7 +93,14 @@ function App() {
         coach: 'Coach Johnson',
         homeField: 'Johnson Park',
         contactEmail: 'coach@americandads.com',
-        active: true
+        active: true,
+        style: {
+          primaryColor: '#2563eb',
+          backgroundColor: '#eff6ff',
+          accentColor: '#1d4ed8',
+          logoUrl: '',
+          logoOpacity: 1
+        }
       },
       { 
         id: '3', 
@@ -98,7 +112,14 @@ function App() {
         coach: 'Coach Williams',
         homeField: 'Cincinnati Arena',
         contactEmail: 'coach@trashpandas.com',
-        active: true
+        active: true,
+        style: {
+          primaryColor: '#059669',
+          backgroundColor: '#ecfdf5',
+          accentColor: '#047857',
+          logoUrl: '',
+          logoOpacity: 1
+        }
       },
       { 
         id: '4', 
@@ -110,7 +131,14 @@ function App() {
         coach: 'Coach Davis',
         homeField: 'Columbus Stadium',
         contactEmail: 'coach@ballhawgs.com',
-        active: true
+        active: true,
+        style: {
+          primaryColor: '#7c3aed',
+          backgroundColor: '#f3e8ff',
+          accentColor: '#6d28d9',
+          logoUrl: '',
+          logoOpacity: 1
+        }
       },
     ]);
 
