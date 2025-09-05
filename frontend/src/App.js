@@ -17956,8 +17956,8 @@ function App() {
                     const storedWebsiteStyleBackup = getStoredData('mlbl_websiteStyle', null);
                     const hasStoredBackup = storedWebsiteStyleBackup && Object.keys(storedWebsiteStyleBackup).length > 0;
                     
-                    // Priority: API data > localStorage backup > defaults
-                    let finalWebsiteStyle = websiteStyle; // Start with defaults
+                    // Priority: API data > localStorage backup > minimal defaults
+                    let finalWebsiteStyle = {}; // Start with empty object, no hardcoded defaults!
                     
                     if (hasStoredBackup) {
                         finalWebsiteStyle = { ...finalWebsiteStyle, ...storedWebsiteStyleBackup };
