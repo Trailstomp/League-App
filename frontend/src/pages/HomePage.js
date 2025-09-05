@@ -83,14 +83,8 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents }) => {
             <GameTicker 
                 teams={teams}
                 leagueSchedule={events}
-                onTeamClick={(teamId) => {
-                    console.log('🏆 Team clicked:', teamId);
-                    // Future: Navigate to team page
-                }}
-                onEventClick={(event) => {
-                    console.log('📅 Event clicked:', event);
-                    // Future: Open event detail modal
-                }}
+                onTeamClick={handleTeamClick}
+                onEventClick={handleEventClick}
                 websiteStyle={{
                     tickerColor: '#1e293b',
                     tickerItemColor: '#334155',
