@@ -13,7 +13,9 @@ function App() {
 
   // Simple navigation handler
   const handleNavigate = (page) => {
+    console.log('🧭 Navigation requested to:', page);
     setCurrentPage(page);
+    console.log('🧭 Current page set to:', page);
   };
 
   // Load basic data on mount
