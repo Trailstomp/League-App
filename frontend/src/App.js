@@ -18033,7 +18033,7 @@ function App() {
                     // Fix localStorage fallback for websiteStyle persistence
                     const storedWebsiteStyle = getStoredData('mlbl_websiteStyle', null);
                     const hasStoredWebsiteStyleData = storedWebsiteStyle && Object.keys(storedWebsiteStyle).length > 0;
-                    setWebsiteStyle(hasStoredWebsiteStyleData ? storedWebsiteStyle : {});
+                    setWebsiteStyle(hasStoredWebsiteStyleData ? storedWebsiteStyle : websiteStyleDefaults);
                     
                     // Load seasons from localStorage
                     const storedSeasons = getStoredData('mlbl_seasons', []);
