@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
 import GameTicker from '../components/GameTicker';
 import EventDetailModal from '../scheduling/components/EventDetailModal';
+import TeamDetailModal from '../teams/components/TeamDetailModal';
 
 const HomePage = ({ teams = [], currentUser, events = [], setEvents }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
