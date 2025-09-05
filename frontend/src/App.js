@@ -14139,10 +14139,13 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
         
         try {
             // CRITICAL FIX: Get complete league data first, then update teams within it
-            const getResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/league-data`);
+            const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+            console.log('🔧 Saving to backend:', backendUrl);
+            
+            const getResponse = await fetch(`${backendUrl}/api/league-data`);
             
             if (!getResponse.ok) {
-                throw new Error('Failed to get current league data');
+                throw new Error(`Failed to get current league data: ${getResponse.status} ${getResponse.statusText}`);
             }
             
             const completeData = await getResponse.json();
@@ -14151,7 +14154,7 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
             completeData.teams = updatedTeams;
             
             // Save complete data back to prevent data loss
-            const saveResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/league-data`, {
+            const saveResponse = await fetch(`${backendUrl}/api/league-data`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -14164,8 +14167,9 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
                 setSaved(true);
                 setTimeout(() => setSaved(false), 2000);
             } else {
-                console.error('❌ Failed to save team styles to database');
-                alert('Failed to save team styles to database');
+                const errorText = await saveResponse.text();
+                console.error('❌ Failed to save team styles to database:', saveResponse.status, errorText);
+                alert(`Failed to save team styles: ${saveResponse.status} ${errorText}`);
             }
         } catch (error) {
             console.error('❌ Error saving team styles:', error);
