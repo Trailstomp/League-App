@@ -1,7 +1,8 @@
 import React from 'react';
 import LacrosseIcons, { LacrosseIcon } from './LacrosseIcons';
+import { isAdmin } from './PermissionsSystem';
 
-const Navigation = ({ currentPage, onNavigate, currentUser, teams = [] }) => {
+const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, teams = [] }) => {
     const NavItem = ({ icon, label, pageName, onClick }) => (
         <button
             onClick={() => onClick ? onClick() : onNavigate(pageName)}
