@@ -14115,13 +14115,23 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
 
     const handleSave = async () => {
         try {
-            // BETTER APPROACH: Avoid document size issues
+            // BETTER APPROACH: Include required team fields
             const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
             console.log('🔧 Saving team style to backend:', backendUrl);
             
-            // Prepare the team update data  
+            // Prepare complete team update data with all required fields
             const teamUpdate = {
                 id: team.id,
+                name: team.name, // REQUIRED FIELD
+                division: team.division || 'Field',
+                coach: team.coach || '',
+                homeField: team.homeField || '',
+                logo: team.logo || '',
+                contactEmail: team.contactEmail || '',
+                active: team.active !== false, // Default to true
+                wins: team.wins || 0,
+                losses: team.losses || 0,
+                ties: team.ties || 0,
                 description: teamStyle.description,
                 customIntro: teamStyle.customIntro,
                 style: {
@@ -14138,7 +14148,7 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
                 }
             };
             
-            // Try targeted team update to avoid document size issues
+            // Try targeted team update
             const saveResponse = await fetch(`${backendUrl}/api/teams/${team.id}`, {
                 method: 'PUT',
                 headers: {
@@ -14158,8 +14168,12 @@ const TeamStyleManager = ({ team, setTeams, websiteStyle }) => {
                 setTimeout(() => setSaved(false), 2000);
             } else {
                 const errorText = await saveResponse.text();
-                console.error('❌ Failed to save team styles to database:', saveResponse.status, errorText);
-                alert(`Failed to save team styles: ${saveResponse.status} ${errorText}`);
+                const errorData = JSON.parse(errorText);
+                console.error('❌ Team update failed, trying fallback approach');
+                
+                // FALLBACK: If the dedicated teams endpoint doesn't work, 
+                // try using a minimal league-data update approach
+                await saveTeamFallback(teamUpdate);
             }
         } catch (error) {
             console.error('❌ Error saving team styles:', error);
