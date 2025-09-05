@@ -429,6 +429,258 @@ class BackendTester:
             )
             return False, None
 
+    def test_get_teams_api(self):
+        """Test GET /api/teams endpoint for event management system"""
+        try:
+            response = requests.get(f"{self.api_base}/teams", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if isinstance(data, list):
+                    self.log_test(
+                        "GET Teams API", 
+                        True, 
+                        f"Retrieved {len(data)} teams for event team selection", 
+                        f"Teams available: {len(data)}"
+                    )
+                    return True, data
+                else:
+                    self.log_test(
+                        "GET Teams API", 
+                        False, 
+                        f"Expected list, got: {type(data)}"
+                    )
+                    return False, None
+            else:
+                self.log_test(
+                    "GET Teams API", 
+                    False, 
+                    f"HTTP {response.status_code}: {response.text}"
+                )
+                return False, None
+                
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "GET Teams API", 
+                False, 
+                f"Connection error: {str(e)}"
+            )
+            return False, None
+
+    def test_get_players_api(self):
+        """Test GET /api/players endpoint for RSVP functionality"""
+        try:
+            response = requests.get(f"{self.api_base}/players", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if isinstance(data, list):
+                    self.log_test(
+                        "GET Players API", 
+                        True, 
+                        f"Retrieved {len(data)} players for RSVP functionality", 
+                        f"Players available: {len(data)}"
+                    )
+                    return True, data
+                else:
+                    self.log_test(
+                        "GET Players API", 
+                        False, 
+                        f"Expected list, got: {type(data)}"
+                    )
+                    return False, None
+            else:
+                self.log_test(
+                    "GET Players API", 
+                    False, 
+                    f"HTTP {response.status_code}: {response.text}"
+                )
+                return False, None
+                
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "GET Players API", 
+                False, 
+                f"Connection error: {str(e)}"
+            )
+            return False, None
+
+    def test_basic_event_storage(self):
+        """Test basic event data storage capability using league-data endpoint"""
+        try:
+            # Create sample event data
+            sample_event = {
+                "id": "test_event_001",
+                "title": "Test Practice Session",
+                "date": "2024-01-15",
+                "time": "18:00",
+                "location": "Main Field",
+                "type": "practice",
+                "teamIds": ["team1"],
+                "description": "Test event for backend verification"
+            }
+            
+            # Get current league data
+            success, current_data = self.test_get_league_data()
+            if not success:
+                self.log_test(
+                    "Basic Event Storage", 
+                    False, 
+                    "Could not retrieve current league data"
+                )
+                return False
+            
+            # Add event to leagueSchedule
+            if 'leagueSchedule' not in current_data:
+                current_data['leagueSchedule'] = []
+            
+            current_data['leagueSchedule'].append(sample_event)
+            
+            # Save updated data
+            response = requests.post(
+                f"{self.api_base}/league-data", 
+                json=current_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                # Verify the event was stored
+                time.sleep(1)  # Wait for database write
+                success, updated_data = self.test_get_league_data()
+                
+                if success and updated_data:
+                    stored_events = updated_data.get('leagueSchedule', [])
+                    test_event_found = any(
+                        event.get('id') == sample_event['id'] 
+                        for event in stored_events
+                    )
+                    
+                    if test_event_found:
+                        self.log_test(
+                            "Basic Event Storage", 
+                            True, 
+                            f"Event stored successfully in leagueSchedule", 
+                            f"Event ID: {sample_event['id']}"
+                        )
+                        return True
+                    else:
+                        self.log_test(
+                            "Basic Event Storage", 
+                            False, 
+                            "Event not found after storage attempt"
+                        )
+                        return False
+                else:
+                    self.log_test(
+                        "Basic Event Storage", 
+                        False, 
+                        "Could not verify event storage"
+                    )
+                    return False
+            else:
+                self.log_test(
+                    "Basic Event Storage", 
+                    False, 
+                    f"HTTP {response.status_code}: {response.text}"
+                )
+                return False
+                
+        except requests.exceptions.RequestException as e:
+            self.log_test(
+                "Basic Event Storage", 
+                False, 
+                f"Connection error: {str(e)}"
+            )
+            return False
+        except Exception as e:
+            self.log_test(
+                "Basic Event Storage", 
+                False, 
+                f"Unexpected error: {str(e)}"
+            )
+            return False
+
+    def test_mongodb_connection(self):
+        """Test MongoDB connection by performing database operations"""
+        try:
+            # Test database connectivity through API operations
+            print("Testing MongoDB Connection...")
+            
+            # Test 1: Read operation
+            success, _ = self.test_get_league_data()
+            if not success:
+                self.log_test(
+                    "MongoDB Connection (Read)", 
+                    False, 
+                    "Could not perform read operation"
+                )
+                return False
+            
+            # Test 2: Write operation
+            test_data = {
+                "teams": [],
+                "players": [],
+                "users": [],
+                "newsItems": [],
+                "gameTickerData": [],
+                "leagueSchedule": [],
+                "leagueInfo": {"test": "mongodb_connection_test"},
+                "websiteStyle": {}
+            }
+            
+            response = requests.post(
+                f"{self.api_base}/league-data", 
+                json=test_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                # Test 3: Verify write persisted
+                time.sleep(1)
+                success, updated_data = self.test_get_league_data()
+                
+                if success and updated_data:
+                    test_value = updated_data.get('leagueInfo', {}).get('test')
+                    if test_value == "mongodb_connection_test":
+                        self.log_test(
+                            "MongoDB Connection", 
+                            True, 
+                            "Database read/write operations successful", 
+                            "Connection verified"
+                        )
+                        return True
+                    else:
+                        self.log_test(
+                            "MongoDB Connection", 
+                            False, 
+                            "Write operation did not persist correctly"
+                        )
+                        return False
+                else:
+                    self.log_test(
+                        "MongoDB Connection", 
+                        False, 
+                        "Could not verify write operation"
+                    )
+                    return False
+            else:
+                self.log_test(
+                    "MongoDB Connection", 
+                    False, 
+                    f"Write operation failed: HTTP {response.status_code}"
+                )
+                return False
+                
+        except Exception as e:
+            self.log_test(
+                "MongoDB Connection", 
+                False, 
+                f"Database connection error: {str(e)}"
+            )
+            return False
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("Starting Backend API Tests...")
