@@ -106,7 +106,7 @@ const EnhancedScoresTab = ({
             
             return updatedStats;
         });
-    }, [event.teamIds, event.teamId]); // Only depend on actual event team data
+    }, [event.teamIds, event.teamId, event.homeTeam, event.awayTeam]); // Depend on all possible team data sources
 
     const handleScoreChange = (teamId, newScore) => {
         const updatedStats = {
