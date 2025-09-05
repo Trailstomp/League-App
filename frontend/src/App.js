@@ -235,14 +235,28 @@ function App() {
   };
 
   return (
-    <Layout 
-      currentPage={currentPage}
-      onNavigate={handleNavigate}
-      currentUser={currentUser}
-      teams={teams}
-    >
-      {renderPage()}
-    </Layout>
+    <>
+      <Layout 
+        currentPage={currentPage}
+        onNavigate={handleNavigate}
+        currentUser={currentUser}
+        onLogin={handleShowLogin}
+        onLogout={handleLogout}
+        teams={teams}
+      >
+        {renderPage()}
+      </Layout>
+      
+      {/* Authentication Modal */}
+      <AuthModal
+        isOpen={showLogin}
+        onClose={() => setShowLogin(false)}
+        users={users}
+        teams={teams}
+        onLogin={handleLogin}
+        onRegister={handleRegister}
+      />
+    </>
   );
 }
 
