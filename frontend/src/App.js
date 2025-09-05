@@ -15549,29 +15549,17 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
         setWebsiteStyle(style);
         
         try {
-            // CRITICAL FIX: Save to database, not just React state!
+            // BETTER APPROACH: Update only websiteStyle, not complete data
             const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
             console.log('🔧 Saving website style to backend:', backendUrl);
             
-            // Get complete league data first
-            const getResponse = await fetch(`${backendUrl}/api/league-data`);
-            
-            if (!getResponse.ok) {
-                throw new Error(`Failed to get current league data: ${getResponse.status} ${getResponse.statusText}`);
-            }
-            
-            const completeData = await getResponse.json();
-            
-            // Update websiteStyle within complete data
-            completeData.websiteStyle = style;
-            
-            // Save complete data back to prevent data loss
-            const saveResponse = await fetch(`${backendUrl}/api/league-data`, {
+            // Direct websiteStyle update to avoid document size issues
+            const saveResponse = await fetch(`${backendUrl}/api/league-data/website-style`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(completeData),
+                body: JSON.stringify({ websiteStyle: style }),
             });
             
             if (saveResponse.ok) {
@@ -15581,11 +15569,46 @@ const WebsiteStyleManager = ({ websiteStyle, setWebsiteStyle }) => {
             } else {
                 const errorText = await saveResponse.text();
                 console.error('❌ Failed to save website style to database:', saveResponse.status, errorText);
-                alert(`Failed to save website style: ${saveResponse.status} ${errorText}`);
+                
+                // Fallback: Try the old method with smaller data
+                console.log('🔄 Trying fallback method...');
+                await saveFallback();
             }
         } catch (error) {
             console.error('❌ Error saving website style:', error);
-            alert('Error saving website style: ' + error.message);
+            // Try fallback method
+            await saveFallback();
+        }
+    };
+    
+    const saveFallback = async () => {
+        try {
+            // Fallback: Use existing auto-save mechanism
+            const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+            
+            // Try to update just the websiteStyle field using a patch approach
+            const patchResponse = await fetch(`${backendUrl}/api/league-data`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    operation: 'updateWebsiteStyle',
+                    data: style
+                }),
+            });
+            
+            if (patchResponse.ok) {
+                console.log('✅ Website style saved via fallback method');
+                setSaved(true);
+                setTimeout(() => setSaved(false), 2000);
+            } else {
+                console.error('❌ Fallback method also failed');
+                alert('Unable to save website style - document may be too large. Try saving smaller images.');
+            }
+        } catch (fallbackError) {
+            console.error('❌ Fallback save failed:', fallbackError);
+            alert('Error saving website style: ' + fallbackError.message);
         }
     };
 
