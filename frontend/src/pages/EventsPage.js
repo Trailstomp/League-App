@@ -59,13 +59,16 @@ const EventsPage = ({ teams, currentUser, events, setEvents }) => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Events Calendar/List */}
+                {/* Advanced Events Calendar */}
                 <div className="lg:col-span-2">
-                    <EventCalendar 
-                        events={events}
+                    <AdvancedEventCalendar 
+                        leagueSchedule={events}
                         teams={teams}
                         onEventClick={handleEventClick}
-                        onEditEvent={handleEditEvent}
+                        onEditEvent={(event) => {
+                            setSelectedEvent(event);
+                            setShowAddForm(true);
+                        }}
                         onDeleteEvent={handleDeleteEvent}
                         currentUser={currentUser}
                     />
@@ -78,28 +81,57 @@ const EventsPage = ({ teams, currentUser, events, setEvents }) => {
                 </div>
             </div>
 
-            {/* Add Event Modal */}
+            {/* Advanced Event Form Modal */}
             {showAddForm && (
-                <EventModal
-                    teams={teams}
-                    onSave={handleAddEvent}
-                    onCancel={() => setShowAddForm(false)}
-                    currentUser={currentUser}
-                />
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+                        <SimpleEventForm
+                            initialEvent={selectedEvent}
+                            teams={teams}
+                            leagueSchedule={events}
+                            setLeagueSchedule={setEvents}
+                            leagueLocations={[]}
+                            onSave={(event) => {
+                                if (selectedEvent) {
+                                    handleEditEvent(selectedEvent.id, event);
+                                } else {
+                                    handleAddEvent(event);
+                                }
+                                setShowAddForm(false);
+                                setSelectedEvent(null);
+                            }}
+                            onCancel={() => {
+                                setShowAddForm(false);
+                                setSelectedEvent(null);
+                            }}
+                        />
+                    </div>
+                </div>
             )}
 
-            {/* Event Detail Modal */}
+            {/* Advanced Event Detail Modal */}
             {showEventModal && selectedEvent && (
                 <EventDetailModal
                     event={selectedEvent}
                     teams={teams}
                     currentUser={currentUser}
+                    users={[]}
+                    leagueInfo={{}}
+                    isOpen={showEventModal}
                     onClose={() => {
                         setShowEventModal(false);
                         setSelectedEvent(null);
                     }}
-                    onEdit={handleEditEvent}
-                    onDelete={handleDeleteEvent}
+                    onUpdateEvent={(updatedEvent) => {
+                        handleEditEvent(selectedEvent.id, updatedEvent);
+                    }}
+                    onUpdateRSVP={(eventId, rsvpData) => {
+                        // Handle RSVP updates
+                        const updatedEvents = events.map(event =>
+                            event.id === eventId ? { ...event, rsvps: rsvpData } : event
+                        );
+                        setEvents(updatedEvents);
+                    }}
                 />
             )}
         </div>
