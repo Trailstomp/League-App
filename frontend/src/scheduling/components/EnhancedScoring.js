@@ -81,27 +81,29 @@ const EnhancedScoresTab = ({
     const eventTeams = event.teamIds || (event.teamId ? [event.teamId] : []);
     const getTeamInfo = (teamId) => teams.find(team => team.id === teamId);
 
-    // Initialize team stats if not present
+    // Initialize team stats if not present - only run when event teams change
     useEffect(() => {
-        const updatedStats = { ...localGameStats };
-        
-        eventTeams.forEach(teamId => {
-            if (!updatedStats.teamStats[teamId]) {
-                const team = getTeamInfo(teamId);
-                updatedStats.teamStats[teamId] = {
-                    score: 0,
-                    goals: [],
-                    saves: 0,
-                    shotsAgainst: 0,
-                    penalties: 0,
-                    faceOffWins: 0,
-                    faceOffAttempts: 0
-                };
-            }
+        setLocalGameStats(prevStats => {
+            const updatedStats = { ...prevStats };
+            
+            eventTeams.forEach(teamId => {
+                if (!updatedStats.teamStats[teamId]) {
+                    const team = getTeamInfo(teamId);
+                    updatedStats.teamStats[teamId] = {
+                        score: 0,
+                        goals: [],
+                        saves: 0,
+                        shotsAgainst: 0,
+                        penalties: 0,
+                        faceOffWins: 0,
+                        faceOffAttempts: 0
+                    };
+                }
+            });
+            
+            return updatedStats;
         });
-        
-        setLocalGameStats(updatedStats);
-    }, [event.teamIds, event.teamId]); // Use stable dependencies instead of calculated array
+    }, [event.teamIds, event.teamId]); // Only depend on actual event team data
 
     const handleScoreChange = (teamId, newScore) => {
         const updatedStats = {
