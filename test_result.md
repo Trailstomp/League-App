@@ -172,11 +172,26 @@ frontend:
     file: "frontend/src/components/managers/TeamManager.js"
     stuck_count: 0
     priority: "critical"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "testing"
         comment: "🚨 CRITICAL PLATFORM ACCESSIBILITY ISSUE: Cannot test Enhanced Team Management system due to platform routing problem. External URL returns 404 'Preview Unavailable' while frontend service runs correctly on localhost:3000. COMPREHENSIVE CODE ANALYSIS COMPLETED: ✅ All requested features are fully implemented: AdminPage with Teams tab, TeamManager with enhanced team cards (color-coded borders, logos, records, status indicators), Edit/Style/pause/delete buttons, two-tab form system (Basic Info/Team Style), AdvancedColorPicker with eyedropper (🎨), preset colors, custom hex input, 'Done' button, AuthSystem with Admin Ali quick login, real-time style preview, team creation with styling, professional branding system. CONCLUSION: All Enhanced Team Management features are comprehensively implemented and code-ready. Issue is platform accessibility, not missing functionality. CRITICAL RECOMMENDATION: Main agent must resolve platform routing to enable UI testing."
+      - working: "NA"
+        agent: "main"
+        comment: "🎨 SMART COLOR EXTRACTION FEATURE COMPLETED: Successfully implemented automatic color extraction from team logos with top 3 color detection and auto-assignment to team features. ✅ FEATURES IMPLEMENTED: 1) ColorExtractor component extracts dominant colors from uploaded logos using HTML5 Canvas API, 2) Auto-assigns colors to primaryColor, backgroundColor, and accentColor based on brightness analysis, 3) User override options with color selection dropdown, 4) Integration with TeamStyleTab for seamless team branding, 5) Updated team data structure in App.js to include accentColor field with default values. ✅ TECHNICAL IMPLEMENTATION: Canvas-based pixel analysis, color frequency mapping, brightness-based assignment, lightened background colors for readability, comprehensive preview system. NEEDS TESTING: UI functionality, file uploads, color extraction accuracy, and auto-assignment logic."
+
+  - task: "Smart Color Extraction from Team Logos - Auto Assignment Feature"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/components/ColorExtractor.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ SMART COLOR EXTRACTION FULLY IMPLEMENTED: Created comprehensive ColorExtractor component with automatic color detection and assignment. FEATURES: 1) Canvas-based image analysis extracting top 3 dominant colors, 2) Intelligent brightness-based assignment (darkest→primary, lightened→background, accent), 3) User override system with extracted color options, 4) Auto-assignment to primaryColor, backgroundColor, accentColor fields, 5) Real-time preview integration, 6) Skip transparent/very light/very dark pixels for better results. INTEGRATION: Fully integrated into TeamStyleTab with onColorsExtracted callback, displays when logo is uploaded, provides manual override options. READY FOR TESTING: Color extraction accuracy, auto-assignment logic, user override functionality."
 
   - task: "Coach Permissions Fix - Admin Portal Access for Coaches"
     implemented: true
