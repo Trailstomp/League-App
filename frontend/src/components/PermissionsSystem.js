@@ -64,13 +64,15 @@ export const SYSTEM_ROLES = {
     'team_coach': {
         id: 'team_coach',
         name: 'Team Coach',
-        description: 'Coach with team management responsibilities',
+        description: 'Coach with team management and administrative responsibilities',
         isSystemRole: true,
         permissions: [
-            'teams.view', 'teams.manage_own',
-            'players.view', 'players.add', 'players.edit',
-            'events.view', 'events.create', 'events.edit',
-            'media.view', 'media.upload', 'media.edit'
+            'users.view', 'users.edit', // Added user permissions for coaches
+            'teams.view', 'teams.create', 'teams.edit', 'teams.manage_own',
+            'players.view', 'players.add', 'players.edit', 'players.remove',
+            'events.view', 'events.create', 'events.edit', 'events.delete',
+            'media.view', 'media.upload', 'media.edit', 'media.delete',
+            'system.admin_access' // Added admin access for coaches
         ]
     },
     'player': {
