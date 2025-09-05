@@ -26,6 +26,36 @@ const HomePage = ({ teams = [], currentUser, events = [] }) => {
                 </div>
             </div>
 
+            {/* Game Ticker */}
+            <GameTicker 
+                teams={teams}
+                leagueSchedule={events}
+                onTeamClick={(teamId) => {
+                    console.log('🏆 Team clicked:', teamId);
+                    // Future: Navigate to team page
+                }}
+                onEventClick={(event) => {
+                    console.log('📅 Event clicked:', event);
+                    // Future: Open event detail modal
+                }}
+                websiteStyle={{
+                    tickerColor: '#1e293b',
+                    tickerItemColor: '#334155',
+                    tickerBorderColor: '#475569',
+                    tickerTextColor: '#94a3b8',
+                    tickerFilters: {
+                        games: true,
+                        tournaments: true,
+                        practices: true,
+                        meetings: true,
+                        social: true,
+                        other: true
+                    },
+                    tickerLookBack: 7,
+                    tickerLookForward: 120
+                }}
+            />
+
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white rounded-lg shadow-sm border p-6">
