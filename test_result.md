@@ -192,15 +192,18 @@ frontend:
 
   - task: "Event Detail Modal Enhancement"
     implemented: true
-    working: true
+    working: false
     file: "frontend/src/pages/EventsPage.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "✅ EVENT DETAIL MODAL ENHANCED: Successfully integrated advanced EventDetailModal with full tab interface including Details, RSVP, Scores, and Brackets tabs. Modal supports comprehensive event viewing with team information, location maps, RSVP management, and tournament bracket functionality. Connected with proper event update handlers and RSVP data management."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE FOUND: Event Detail Modal opens successfully and shows all tabs (🏆 Scores, 🏁 Brackets), but there is a severe React error causing 'Maximum update depth exceeded' when clicking on Scores tab. This indicates an infinite re-render loop in the EnhancedScoring component, likely due to a useEffect dependency issue. The Scores tab shows 'Enhanced scoring requires multiple teams' message instead of score input fields. Brackets tab opens and shows Tournament Setup interface correctly. The onUpdateGameStats and onUpdateTournament handlers are present in code but cannot be tested due to the React error. This is a blocking issue that prevents scores functionality from working."
 
   - task: "Event Statistics and Sidebar Integration"
     implemented: true
