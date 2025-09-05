@@ -127,6 +127,7 @@ const TeamManager = ({ teams, setTeams, websiteStyle = {}, seasons = [], current
                                 style: {
                                     primaryColor: '#dc2626',
                                     backgroundColor: '#fef2f2',
+                                    accentColor: '#7c2d12',
                                     logoUrl: '',
                                     logoOpacity: 1
                                 }
