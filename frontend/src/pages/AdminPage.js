@@ -85,12 +85,15 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
 };
 
 // Admin Dashboard Component
-const AdminDashboard = ({ teams, players }) => {
+const AdminDashboard = ({ teams, players, users = [] }) => {
     const stats = {
         totalTeams: teams.length,
         totalPlayers: players.length,
+        totalUsers: users.length,
         activeTeams: teams.filter(t => t.active !== false).length,
         activePlayers: players.filter(p => p.active !== false).length,
+        activeUsers: users.filter(u => u.status === 'active').length,
+        pendingUsers: users.filter(u => u.status === 'pending').length,
     };
 
     return (
