@@ -184,6 +184,25 @@ const EventDetailModal = ({
                         />
                     )}
                 </div>
+
+                {/* Save/Cancel Buttons for Edit Mode */}
+                {editMode && userCanEdit && (
+                    <div className="border-t border-gray-200 px-6 py-4 bg-gray-50">
+                        <div className="flex justify-between items-center">
+                            <div className="text-sm text-gray-600">
+                                💡 Changes are saved automatically as you make them
+                            </div>
+                            <div className="flex space-x-3">
+                                <button
+                                    onClick={() => setEditMode(false)}
+                                    className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                                >
+                                    Done Editing
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
