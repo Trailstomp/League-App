@@ -79,7 +79,7 @@ function App() {
           primaryColor: '#dc2626',
           backgroundColor: '#fef2f2',
           accentColor: '#7c2d12',
-          logoUrl: '',
+          logoUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzIiIGZpbGw9IiNkYzI2MjYiLz4KPHN2ZyB4PSIxNiIgeT0iMTYiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+CjxwYXRoIGQ9Im0xMiAyIDQuMjQgNi4yMUwyMyA5bC0xLjY4IDQuMjEgNC4yNCAyLjc5aC01LjI0TDEyIDIyIDMuNjggMTZIMi4zNmw0LjI0LTIuNzlMMCAxMmw0LjI0LTIuNzlMMi4zNiA1aDE1LjI4TDEyIDJ6Ii8+Cjwvc3ZnPgo8L3N2Zz4K',
           logoOpacity: 1
         }
       },
@@ -98,7 +98,7 @@ function App() {
           primaryColor: '#2563eb',
           backgroundColor: '#eff6ff',
           accentColor: '#1d4ed8',
-          logoUrl: '',
+          logoUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzIiIGZpbGw9IiMyNTYzZWIiLz4KPHN2ZyB4PSIxNiIgeT0iMTYiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+CjxwYXRoIGQ9Ik0yMSA5SDNsMy4wNSA1LjE5IDEuNDctMS44OCAzLjA1IDUuMTlMMTIgMTNsMS40OCAzLjUgMy4wNS01LjE5IDEuNDcgMS44OEwyMSA5eiIvPgo8L3N2Zz4KPC9zdmc+Cg==',
           logoOpacity: 1
         }
       },
