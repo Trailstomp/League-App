@@ -24,9 +24,18 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 <h1 className="text-xl font-bold text-slate-800">
                     🥍 Lacrosse League
                 </h1>
-                {currentUser && (
-                    <p className="text-sm text-slate-600 mt-1">
-                        Welcome, {currentUser.name}
+                {currentUser ? (
+                    <div className="mt-2">
+                        <p className="text-sm text-slate-600">
+                            Welcome, {currentUser.name}
+                        </p>
+                        <p className="text-xs text-blue-600">
+                            {(currentUser.roles || [currentUser.role]).filter(Boolean).join(', ')}
+                        </p>
+                    </div>
+                ) : (
+                    <p className="text-sm text-slate-500 mt-1">
+                        Browsing as guest
                     </p>
                 )}
             </div>
