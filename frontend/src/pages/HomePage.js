@@ -14,6 +14,54 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents }) => {
         totalPlayers: 0, // Will be connected later
     };
 
+    // Handle event click from ticker
+    const handleEventClick = (event) => {
+        console.log('📅 Event clicked from ticker:', event);
+        
+        // Find the full event data from our events array
+        const fullEvent = events.find(e => e.id === event.id);
+        if (fullEvent) {
+            setSelectedEvent(fullEvent);
+            setShowEventModal(true);
+        }
+    };
+
+    // Handle team click from ticker
+    const handleTeamClick = (teamId) => {
+        console.log('🏆 Team clicked from ticker:', teamId);
+        
+        const team = teams.find(t => t.id === teamId);
+        if (team) {
+            setSelectedTeam(team);
+            setShowTeamModal(true);
+        }
+    };
+
+    // Handle event updates from modal
+    const handleUpdateEvent = (updatedEvent) => {
+        setEvents(events.map(event => 
+            event.id === updatedEvent.id ? { ...event, ...updatedEvent } : event
+        ));
+    };
+
+    const handleUpdateRSVP = (eventId, rsvpData) => {
+        setEvents(events.map(event =>
+            event.id === eventId ? { ...event, rsvps: rsvpData } : event
+        ));
+    };
+
+    const handleUpdateGameStats = (eventId, gameStats) => {
+        setEvents(events.map(event =>
+            event.id === eventId ? { ...event, gameStats: gameStats } : event
+        ));
+    };
+
+    const handleUpdateTournament = (eventId, tournamentData) => {
+        setEvents(events.map(event =>
+            event.id === eventId ? { ...event, tournamentData: tournamentData } : event
+        ));
+    };
+
     return (
         <div className="space-y-6">
             {/* Welcome Banner */}
