@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
-import EventCalendar from '../scheduling/components/EventCalendar';
+import AdvancedEventCalendar from '../scheduling/components/EventCalendar';
 import EventDetailModal from '../scheduling/components/EventDetailModal';
 import SimpleEventForm from '../scheduling/components/SimpleEventForm';
 
