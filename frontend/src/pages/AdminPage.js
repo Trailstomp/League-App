@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
 
-const AdminPage = ({ teams, setTeams, players, setPlayers, currentUser }) => {
+const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, currentUser }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
 
     // Admin tabs configuration
