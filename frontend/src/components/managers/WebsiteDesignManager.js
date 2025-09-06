@@ -2259,11 +2259,23 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                 <div className="p-6">
                     {activeSection === 'navigation' && renderNavigationSection()}
                     {activeSection === 'banner' && renderBannerSection()}
-                    {activeSection === 'content' && renderBackgroundsSection()}
+                    {activeSection === 'content' && renderContentSection()}
                     {activeSection === 'menus' && renderMenusSection()}
                     {activeSection === 'preview' && renderPreviewSection()}
                 </div>
             </div>
+
+            {/* Color Extractor Modal */}
+            {showColorExtractor && (
+                <ColorExtractor
+                    imageUrl={extractImageUrl}
+                    onColorsExtracted={handleColorsExtracted}
+                    onCancel={() => {
+                        setShowColorExtractor(false);
+                        setExtractImageUrl('');
+                    }}
+                />
+            )}
 
             {/* Image Crop Tool */}
             {showCropTool && (
