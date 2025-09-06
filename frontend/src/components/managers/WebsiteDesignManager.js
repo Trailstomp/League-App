@@ -1746,8 +1746,88 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     );
 
     const renderPreviewSection = () => (
+        <div className="space-y-6">
             <div>
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Menu Background</h4>
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Live Website Preview</h3>
+                <div className="border rounded-lg overflow-hidden bg-white">
+                    {/* Header Preview */}
+                    <div className="bg-slate-100 border-b p-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                {editingStyle.logoUrl ? (
+                                    <img src={editingStyle.logoUrl} alt="Logo" className="w-8 h-8 object-contain" />
+                                ) : (
+                                    <div className="w-8 h-8 bg-slate-300 rounded flex items-center justify-center">
+                                        <LacrosseIcon name="image" style={{fontSize: '16px'}} className="text-slate-500" />
+                                    </div>
+                                )}
+                                <span className="font-medium text-slate-800">
+                                    {editingStyle.leagueName || 'Your League Name'}
+                                </span>
+                            </div>
+                            <nav className="flex space-x-4 text-sm text-slate-600">
+                                <span>Home</span>
+                                <span>Teams</span>
+                                <span>Schedule</span>
+                                <span>Standings</span>
+                            </nav>
+                        </div>
+                    </div>
+                    
+                    {/* Banner Preview */}
+                    <div 
+                        className="h-32 flex items-center justify-center relative"
+                        style={{
+                            backgroundColor: editingStyle.bannerBackgroundType === 'image' ? 'transparent' : (editingStyle.bannerBackgroundColor || '#1e40af'),
+                            backgroundImage: editingStyle.bannerBackgroundType === 'image' && editingStyle.bannerBackgroundImage 
+                                ? `url(${editingStyle.bannerBackgroundImage})` 
+                                : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}
+                    >
+                        <div className="text-center z-10">
+                            <h1 className="text-2xl font-bold text-white mb-1">
+                                {editingStyle.bannerTitle || 'Welcome to Our League'}
+                            </h1>
+                            <p className="text-white">
+                                {editingStyle.bannerSubtitle || 'Professional Competition'}
+                            </p>
+                        </div>
+                        {editingStyle.bannerBackgroundType === 'image' && editingStyle.bannerBackgroundImage && (
+                            <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+                        )}
+                    </div>
+                    
+                    {/* Content Preview */}
+                    <div 
+                        className="p-6"
+                        style={{
+                            backgroundColor: editingStyle.mainBackgroundType === 'image' ? 'rgba(255,255,255,0.9)' : (editingStyle.mainBackgroundColor || '#f8fafc'),
+                            backgroundImage: editingStyle.mainBackgroundType === 'image' && editingStyle.mainBackgroundImage 
+                                ? `url(${editingStyle.mainBackgroundImage})` 
+                                : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}
+                    >
+                        <h2 className="text-xl font-bold mb-3" style={{ color: editingStyle.primaryColor }}>
+                            Sample Page Content
+                        </h2>
+                        <p className="text-slate-600 mb-4">
+                            This preview shows how all your design choices work together. The navigation, banner, and content areas all reflect your customizations.
+                        </p>
+                        <button 
+                            className="px-4 py-2 rounded-lg text-white"
+                            style={{ backgroundColor: editingStyle.accentColor || '#3b82f6' }}
+                        >
+                            Sample Button
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
                 <div className="flex space-x-4 mb-4">
                     <button
                         onClick={() => toggleBackgroundType('menu', 'color')}
