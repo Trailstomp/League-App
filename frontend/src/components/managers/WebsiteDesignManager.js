@@ -286,49 +286,64 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
 
 const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     const [activeSection, setActiveSection] = useState('navigation');
-    const [editingStyle, setEditingStyle] = useState({
-        // Navigation Zone
-        navBackgroundType: 'color',
-        navBackgroundColor: '#ffffff',
-        navBackgroundImage: '',
-        navTextColor: '#374151',
-        navFont: 'Inter, sans-serif',
-        navFontSize: '16px',
-        navLeagueName: 'Your League Name',
-        navLogoUrl: '',
+    
+    // Properly initialize editingStyle with websiteStyle data
+    const [editingStyle, setEditingStyle] = useState(() => ({
+        // Navigation Zone - with websiteStyle fallbacks
+        navBackgroundType: websiteStyle.navBackgroundType || 'color',
+        navBackgroundColor: websiteStyle.navBackgroundColor || '#ffffff',
+        navBackgroundImage: websiteStyle.navBackgroundImage || '',
+        navTextColor: websiteStyle.navTextColor || '#374151',
+        navFont: websiteStyle.navFont || 'Inter, sans-serif',
+        navFontSize: websiteStyle.navFontSize || '16px',
+        navLeagueName: websiteStyle.navLeagueName || websiteStyle.leagueName || 'Your League Name',
+        navLogoUrl: websiteStyle.navLogoUrl || websiteStyle.logoUrl || '',
         
-        // Banner Zone  
-        bannerBackgroundType: 'color',
-        bannerBackgroundColor: '#1e40af',
-        bannerBackgroundImage: '',
-        bannerTextColor: '#ffffff',
-        bannerFont: 'Inter, sans-serif',
-        bannerFontSize: '32px',
-        bannerTitle: 'Welcome to Our League',
-        bannerSubtitle: 'Professional Competition',
+        // Banner Zone - with websiteStyle fallbacks
+        bannerBackgroundType: websiteStyle.bannerBackgroundType || 'color',
+        bannerBackgroundColor: websiteStyle.bannerBackgroundColor || '#1e40af',
+        bannerBackgroundImage: websiteStyle.bannerBackgroundImage || '',
+        bannerTextColor: websiteStyle.bannerTextColor || '#ffffff',
+        bannerFont: websiteStyle.bannerFont || 'Inter, sans-serif',
+        bannerFontSize: websiteStyle.bannerFontSize || '32px',
+        bannerTitle: websiteStyle.bannerTitle || 'Welcome to Our League',
+        bannerSubtitle: websiteStyle.bannerSubtitle || 'Professional Competition',
         
-        // Main Content Zone
-        mainBackgroundType: 'color',
-        mainBackgroundColor: '#f8fafc',
-        mainBackgroundImage: '',
-        mainTextColor: '#374151',
-        mainFont: 'Inter, sans-serif',
-        mainFontSize: '16px',
+        // Main Content Zone - with websiteStyle fallbacks
+        mainBackgroundType: websiteStyle.mainBackgroundType || 'color',
+        mainBackgroundColor: websiteStyle.mainBackgroundColor || websiteStyle.backgroundColor || '#f8fafc',
+        mainBackgroundImage: websiteStyle.mainBackgroundImage || '',
+        mainTextColor: websiteStyle.mainTextColor || '#374151',
+        mainFont: websiteStyle.mainFont || 'Inter, sans-serif',
+        mainFontSize: websiteStyle.mainFontSize || '16px',
         
-        // Menu Zone
-        menuBackgroundType: 'color',
-        menuBackgroundColor: '#ffffff',
-        menuBackgroundImage: '',
-        menuTextColor: '#374151',
-        menuFont: 'Inter, sans-serif',
-        menuFontSize: '16px',
+        // Menu Zone - with websiteStyle fallbacks
+        menuBackgroundType: websiteStyle.menuBackgroundType || 'color',
+        menuBackgroundColor: websiteStyle.menuBackgroundColor || '#ffffff',
+        menuBackgroundImage: websiteStyle.menuBackgroundImage || '',
+        menuTextColor: websiteStyle.menuTextColor || '#374151',
+        menuFont: websiteStyle.menuFont || 'Inter, sans-serif',
+        menuFontSize: websiteStyle.menuFontSize || '16px',
         
-        // Theme colors
-        primaryColor: '#1e40af',
-        accentColor: '#3b82f6',
+        // Theme colors - with websiteStyle fallbacks
+        primaryColor: websiteStyle.primaryColor || '#1e40af',
+        accentColor: websiteStyle.accentColor || '#3b82f6',
         
+        // Include all existing websiteStyle properties
         ...websiteStyle
-    });
+    }));
+
+    // Update editingStyle when websiteStyle prop changes
+    useEffect(() => {
+        setEditingStyle(prev => ({
+            ...prev,
+            ...websiteStyle,
+            // Ensure banner fields are preserved
+            bannerTitle: websiteStyle.bannerTitle || prev.bannerTitle,
+            bannerSubtitle: websiteStyle.bannerSubtitle || prev.bannerSubtitle,
+            navLeagueName: websiteStyle.navLeagueName || websiteStyle.leagueName || prev.navLeagueName
+        }));
+    }, [websiteStyle]);
     
     const [showCropTool, setShowCropTool] = useState(false);
     const [cropImageUrl, setCropImageUrl] = useState('');
