@@ -277,6 +277,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     const [showCropTool, setShowCropTool] = useState(false);
     const [cropImageUrl, setCropImageUrl] = useState('');
     const [cropTarget, setCropTarget] = useState('banner');
+    const [isEditing, setIsEditing] = useState(false);
 
     const designSections = [
         { id: 'theme', label: 'Theme & Colors', icon: 'view' },
