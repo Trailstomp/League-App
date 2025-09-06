@@ -324,6 +324,11 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         console.log('Website style saved:', editingStyle);
     };
 
+    const handleCancel = () => {
+        setEditingStyle(websiteStyle);
+        setIsEditing(false);
+    };
+
     const handleImageUpload = (file, target) => {
         if (file) {
             const reader = new FileReader();
