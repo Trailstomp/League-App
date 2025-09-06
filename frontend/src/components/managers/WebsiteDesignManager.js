@@ -849,7 +849,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">Banner Styling</h3>
                 <div className="flex space-x-4 mb-4">
                     <button
-                        onClick={() => toggleBannerType('color')}
+                        onClick={() => toggleBackgroundType('banner', 'color')}
                         className={`px-4 py-2 rounded-lg transition-colors ${
                             (editingStyle.bannerType !== 'image') 
                                 ? 'bg-blue-600 text-white' 
