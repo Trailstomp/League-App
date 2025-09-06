@@ -764,7 +764,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">Page Background</h3>
                 <div className="flex space-x-4 mb-4">
                     <button
-                        onClick={() => toggleBackgroundType('color')}
+                        onClick={() => toggleBackgroundType('main', 'color')}
                         className={`px-4 py-2 rounded-lg transition-colors ${
                             (editingStyle.backgroundType !== 'image') 
                                 ? 'bg-blue-600 text-white' 
