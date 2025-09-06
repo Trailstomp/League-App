@@ -34,10 +34,10 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
     const teamStyle = team.style || {};
 
     return (
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-full mx-auto px-2 sm:px-4 lg:px-6">
             {/* Team Header */}
             <div 
-                className="relative bg-gradient-to-r from-slate-800 to-slate-600 text-white rounded-lg overflow-hidden mb-6"
+                className="relative bg-gradient-to-r from-slate-800 to-slate-600 text-white rounded-lg overflow-hidden mb-4 sm:mb-6"
                 style={{
                     backgroundColor: teamStyle.primaryColor || '#64748b',
                     backgroundImage: teamStyle.bannerUrl ? `url(${teamStyle.bannerUrl})` : 'none',
@@ -46,10 +46,10 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
                 }}
             >
                 {teamStyle.bannerUrl && <div className="absolute inset-0 bg-black bg-opacity-40"></div>}
-                <div className="relative z-10 p-8">
-                    <div className="flex items-center space-x-6">
+                <div className="relative z-10 p-4 sm:p-6 lg:p-8">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
                         {/* Team Logo */}
-                        <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-lg">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-4 border-white shadow-lg flex-shrink-0">
                             {teamStyle.logoUrl ? (
                                 <img 
                                     src={teamStyle.logoUrl} 
@@ -62,18 +62,18 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
                                     className="w-full h-full flex items-center justify-center"
                                     style={{ backgroundColor: teamStyle.accentColor || '#dc2626' }}
                                 >
-                                    <LacrosseIcon name="stick" style={{fontSize: '32px', color: 'white'}} />
+                                    <LacrosseIcon name="stick" style={{fontSize: '24px', color: 'white'}} />
                                 </div>
                             )}
                         </div>
                         
                         {/* Team Info */}
-                        <div className="flex-1">
-                            <h1 className="text-4xl font-bold mb-2">{team.name}</h1>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div className="flex-1 min-w-0">
+                            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 break-words">{team.name}</h1>
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm">
                                 <div>
                                     <span className="text-blue-200">Division:</span>
-                                    <div className="font-semibold">{team.division || 'Field'}</div>
+                                    <div className="font-semibold truncate">{team.division || 'Field'}</div>
                                 </div>
                                 <div>
                                     <span className="text-blue-200">Record:</span>
@@ -81,11 +81,11 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
                                 </div>
                                 <div>
                                     <span className="text-blue-200">Coach:</span>
-                                    <div className="font-semibold">{team.coach || 'TBD'}</div>
+                                    <div className="font-semibold truncate">{team.coach || 'TBD'}</div>
                                 </div>
                                 <div>
                                     <span className="text-blue-200">Home Field:</span>
-                                    <div className="font-semibold">{team.homeField || 'TBD'}</div>
+                                    <div className="font-semibold truncate">{team.homeField || 'TBD'}</div>
                                 </div>
                             </div>
                         </div>
@@ -93,7 +93,7 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
                         {/* Back Button */}
                         <button 
                             onClick={() => onNavigate('home')}
-                            className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg transition-colors"
+                            className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-3 py-2 sm:px-4 rounded-lg transition-colors text-sm flex-shrink-0"
                         >
                             ← Back
                         </button>
@@ -102,27 +102,28 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
             </div>
 
             {/* Tab Navigation */}
-            <div className="bg-white rounded-lg shadow-sm border overflow-hidden mb-6">
+            <div className="bg-white rounded-lg shadow-sm border overflow-hidden mb-4 sm:mb-6">
                 <div className="flex overflow-x-auto">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                            className={`flex items-center px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                                 activeTab === tab.id
                                     ? 'border-blue-500 text-blue-600 bg-blue-50'
                                     : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                             }`}
                         >
-                            <LacrosseIcon name={tab.icon} className="mr-2" style={{fontSize: '16px'}} />
-                            {tab.label}
+                            <LacrosseIcon name={tab.icon} className="mr-1 sm:mr-2" style={{fontSize: '14px'}} />
+                            <span className="hidden sm:inline">{tab.label}</span>
+                            <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
                         </button>
                     ))}
                 </div>
             </div>
 
             {/* Tab Content */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="bg-white rounded-lg shadow-sm border p-3 sm:p-6 overflow-x-hidden">
                 {activeTab === 'home' && <TeamHomeTab team={team} />}
                 {activeTab === 'schedule' && <TeamScheduleTab team={team} events={events} />}
                 {activeTab === 'roster' && <TeamRosterTab team={team} players={players} />}
