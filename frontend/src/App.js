@@ -19,6 +19,19 @@ function App() {
   const [teams, setTeams] = useState([]);
   const [players, setPlayers] = useState([]);
   const [events, setEvents] = useState([]);
+  const [websiteStyle, setWebsiteStyle] = useState({
+    theme: 'professional',
+    primaryColor: '#1e40af',
+    accentColor: '#3b82f6',
+    backgroundColor: '#f8fafc',
+    leagueName: 'Midwest Lacrosse League',
+    tagline: 'Professional Competition',
+    logoUrl: '',
+    bannerUrl: '',
+    headerStyle: 'gradient',
+    sidebarPosition: 'left',
+    contentLayout: 'wide'
+  });
 
   // Simple navigation handler
   const handleNavigate = (page) => {
