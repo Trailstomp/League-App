@@ -64,6 +64,13 @@ function App() {
     }
   };
 
+  // Simple navigation handler
+  const handleNavigate = (page) => {
+    console.log('🧭 Navigation requested to:', page);
+    setCurrentPage(page);
+    console.log('🧭 Current page set to:', page);
+  };
+
   // Team navigation handler
   const handleTeamNavigate = (teamId) => {
     console.log('🏆 Team navigation to:', teamId);
