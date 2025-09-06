@@ -115,22 +115,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                 leagueSchedule={events}
                 onTeamClick={handleTeamClick}
                 onEventClick={handleEventClick}
-                websiteStyle={{
-                    tickerColor: '#1e293b',
-                    tickerItemColor: '#334155',
-                    tickerBorderColor: '#475569',
-                    tickerTextColor: '#94a3b8',
-                    tickerFilters: {
-                        games: true,
-                        tournaments: true,
-                        practices: true,
-                        meetings: true,
-                        social: true,
-                        other: true
-                    },
-                    tickerLookBack: 7,
-                    tickerLookForward: 120
-                }}
+                websiteStyle={websiteStyle}
             />
 
             {/* Quick Stats */}
