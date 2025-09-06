@@ -287,19 +287,63 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
 };
 
 const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
-    const [activeSection, setActiveSection] = useState('theme');
-    const [editingStyle, setEditingStyle] = useState(websiteStyle);
+    const [activeSection, setActiveSection] = useState('navigation');
+    const [editingStyle, setEditingStyle] = useState({
+        // Navigation Zone
+        navBackgroundType: 'color',
+        navBackgroundColor: '#ffffff',
+        navBackgroundImage: '',
+        navTextColor: '#374151',
+        navFont: 'Inter, sans-serif',
+        navFontSize: '16px',
+        navLeagueName: 'Your League Name',
+        navLogoUrl: '',
+        
+        // Banner Zone  
+        bannerBackgroundType: 'color',
+        bannerBackgroundColor: '#1e40af',
+        bannerBackgroundImage: '',
+        bannerTextColor: '#ffffff',
+        bannerFont: 'Inter, sans-serif',
+        bannerFontSize: '32px',
+        bannerTitle: 'Welcome to Our League',
+        bannerSubtitle: 'Professional Competition',
+        
+        // Main Content Zone
+        mainBackgroundType: 'color',
+        mainBackgroundColor: '#f8fafc',
+        mainBackgroundImage: '',
+        mainTextColor: '#374151',
+        mainFont: 'Inter, sans-serif',
+        mainFontSize: '16px',
+        
+        // Menu Zone
+        menuBackgroundType: 'color',
+        menuBackgroundColor: '#ffffff',
+        menuBackgroundImage: '',
+        menuTextColor: '#374151',
+        menuFont: 'Inter, sans-serif',
+        menuFontSize: '16px',
+        
+        // Theme colors
+        primaryColor: '#1e40af',
+        accentColor: '#3b82f6',
+        
+        ...websiteStyle
+    });
+    
     const [showCropTool, setShowCropTool] = useState(false);
     const [cropImageUrl, setCropImageUrl] = useState('');
     const [cropTarget, setCropTarget] = useState('banner');
-    const [isEditing, setIsEditing] = useState(false);
+    const [showColorExtractor, setShowColorExtractor] = useState(false);
+    const [extractImageUrl, setExtractImageUrl] = useState('');
 
     const designSections = [
-        { id: 'theme', label: 'Theme & Colors', icon: 'view' },
-        { id: 'branding', label: 'Branding & Logos', icon: 'image' },
-        { id: 'backgrounds', label: 'Backgrounds & Banners', icon: 'image' },
-        { id: 'typography', label: 'Typography & Text', icon: 'text' },
-        { id: 'preview', label: 'Live Preview', icon: 'customize' }
+        { id: 'navigation', label: 'Navigation Bar', icon: 'players', description: 'Header navigation and logo area' },
+        { id: 'banner', label: 'Top Banner', icon: 'image', description: 'Main banner/hero section' },
+        { id: 'content', label: 'Main Content', icon: 'text', description: 'Page background and content text' },
+        { id: 'menus', label: 'Menus & Sidebar', icon: 'settings', description: 'Menu styling and sidebar' },
+        { id: 'preview', label: 'Live Preview', icon: 'customize', description: 'See all changes applied' }
     ];
 
     const themes = [
