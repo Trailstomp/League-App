@@ -8,6 +8,37 @@ import WebsiteDesignManager from '../components/managers/WebsiteDesignManager';
 const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, currentUser, websiteStyle, setWebsiteStyle }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
 
+    // Protected teams update function that saves to API
+    const handleTeamsChange = async (newTeams) => {
+        try {
+            console.log('🏆 AdminPage: Saving teams changes:', newTeams.length, 'teams');
+            console.log('🏆 Team names:', newTeams.map(t => t.name));
+            
+            // Update local state immediately
+            setTeams(newTeams);
+            
+            // Save to backend API to prevent overwrites
+            const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+            
+            // Save to both individual teams endpoint and league-data
+            const response = await fetch(`${backendUrl}/api/league-data/teams`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newTeams)
+            });
+            
+            if (response.ok) {
+                console.log('✅ Teams saved to API successfully');
+            } else {
+                console.error('❌ Failed to save teams to API:', response.statusText);
+            }
+        } catch (error) {
+            console.error('❌ Error saving teams:', error);
+        }
+    };
+
     // Admin tabs configuration
     const adminTabs = [
         { id: 'dashboard', label: 'Dashboard', icon: 'venue' },
