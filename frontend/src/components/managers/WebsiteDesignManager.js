@@ -377,22 +377,49 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         { value: '48px', label: 'Banner (48px)' }
     ];
 
-    const handleSave = () => {
-        setWebsiteStyle(editingStyle);
-        // Auto-save - no need for edit mode toggle
-        console.log('Website style saved:', editingStyle);
+    // Enhanced save functionality with API integration
+    const handleSave = async () => {
+        try {
+            console.log('🎨 Saving website style...', editingStyle);
+            
+            // Update parent state
+            setWebsiteStyle(editingStyle);
+            
+            // Save to backend API
+            const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+            const response = await fetch(`${backendUrl}/api/league-data/websiteStyle`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(editingStyle)
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log('✅ Website style saved successfully:', result);
+                
+                // Show temporary success message
+                const originalSaveText = 'Save Changes';
+                document.querySelector('[data-save-button]').textContent = 'Saved!';
+                setTimeout(() => {
+                    const saveButton = document.querySelector('[data-save-button]');
+                    if (saveButton) saveButton.textContent = originalSaveText;
+                }, 2000);
+            } else {
+                console.error('❌ Failed to save website style:', response.statusText);
+            }
+        } catch (error) {
+            console.error('❌ Error saving website style:', error);
+        }
     };
 
-    const handleCancel = () => {
-        setEditingStyle(websiteStyle);
-    };
-
-    const handleImageUpload = (file, target) => {
+    const handleImageUpload = (file, target, zone) => {
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 setCropImageUrl(e.target.result);
-                setCropTarget(target);
+                setCropTarget(`${zone}_${target}`);
                 setShowCropTool(true);
             };
             reader.readAsDataURL(file);
@@ -400,44 +427,60 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     };
 
     const handleCropComplete = (croppedImageUrl) => {
+        const [zone, type] = cropTarget.split('_');
+        
         setEditingStyle(prev => ({
             ...prev,
-            [`${cropTarget}Url`]: croppedImageUrl
+            [`${zone}${type.charAt(0).toUpperCase() + type.slice(1)}Url`]: croppedImageUrl
         }));
+        
         setShowCropTool(false);
         setCropImageUrl('');
+        
         // Auto-save after crop
         setTimeout(() => handleSave(), 100);
     };
 
-    const toggleBackgroundType = (type) => {
-        if (type === 'color') {
-            setEditingStyle(prev => ({
-                ...prev,
-                backgroundType: 'color',
-                backgroundImageUrl: ''
-            }));
-        } else {
-            setEditingStyle(prev => ({
-                ...prev,
-                backgroundType: 'image'
-            }));
+    const handleColorExtraction = (imageFile, zone) => {
+        if (imageFile) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setExtractImageUrl(e.target.result);
+                setShowColorExtractor(true);
+            };
+            reader.readAsDataURL(imageFile);
         }
     };
 
-    const toggleBannerType = (type) => {
-        if (type === 'color') {
+    const handleColorsExtracted = (colors) => {
+        if (colors && colors.length >= 3) {
             setEditingStyle(prev => ({
                 ...prev,
-                bannerType: 'color',
-                bannerImageUrl: ''
+                primaryColor: colors[0],
+                accentColor: colors[1],
+                backgroundColor: colors[2]
             }));
-        } else {
-            setEditingStyle(prev => ({
-                ...prev,
-                bannerType: 'image'
-            }));
+            
+            setShowColorExtractor(false);
+            setExtractImageUrl('');
+            
+            // Auto-save after color extraction
+            setTimeout(() => handleSave(), 100);
         }
+    };
+
+    const toggleBackgroundType = (zone, type) => {
+        setEditingStyle(prev => ({
+            ...prev,
+            [`${zone}BackgroundType`]: type,
+            [`${zone}BackgroundImage`]: type === 'color' ? '' : prev[`${zone}BackgroundImage`]
+        }));
+        setTimeout(() => handleSave(), 500);
+    };
+
+    const updateStyle = (updates) => {
+        setEditingStyle(prev => ({ ...prev, ...updates }));
+        setTimeout(() => handleSave(), 500);
     };
 
     const handleThemeSelect = (theme) => {
