@@ -1114,32 +1114,13 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-slate-800">Website Design</h2>
-                <div className="space-x-3">
-                    {isEditing ? (
-                        <>
-                            <button
-                                onClick={handleCancel}
-                                className="px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleSave}
-                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                            >
-                                Save Changes
-                            </button>
-                        </>
-                    ) : (
-                        <button
-                            onClick={() => setIsEditing(true)}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        >
-                            <LacrosseIcon name="edit" className="mr-2" style={{fontSize: '16px'}} />
-                            Edit Design
-                        </button>
-                    )}
-                </div>
+                <button
+                    onClick={handleSave}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                    <LacrosseIcon name="save" className="mr-2" style={{fontSize: '16px'}} />
+                    Save Changes
+                </button>
             </div>
 
             <div className="bg-white rounded-lg shadow-sm border">
@@ -1165,22 +1146,27 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
 
                 {/* Section Content */}
                 <div className="p-6">
-                    {!isEditing ? (
-                        <div className="text-center py-8 text-slate-500">
-                            <LacrosseIcon name="customize" style={{fontSize: '48px'}} className="mx-auto mb-4 opacity-50" />
-                            <p>Click "Edit Design" to customize your website appearance</p>
-                        </div>
-                    ) : (
-                        <>
-                            {activeSection === 'theme' && renderThemeSection()}
-                            {activeSection === 'branding' && renderBrandingSection()}
-                            {activeSection === 'backgrounds' && renderBackgroundsSection()}
-                            {activeSection === 'typography' && renderTypographySection()}
-                            {activeSection === 'preview' && renderPreviewSection()}
-                        </>
-                    )}
+                    {activeSection === 'theme' && renderThemeSection()}
+                    {activeSection === 'branding' && renderBrandingSection()}
+                    {activeSection === 'backgrounds' && renderBackgroundsSection()}
+                    {activeSection === 'typography' && renderTypographySection()}
+                    {activeSection === 'preview' && renderPreviewSection()}
                 </div>
             </div>
+
+            {/* Image Crop Tool */}
+            {showCropTool && (
+                <ImageCropTool
+                    imageUrl={cropImageUrl}
+                    onCrop={handleCropComplete}
+                    onCancel={() => {
+                        setShowCropTool(false);
+                        setCropImageUrl('');
+                    }}
+                    aspectRatio="free"
+                    targetArea={cropTarget}
+                />
+            )}
         </div>
     );
 };
