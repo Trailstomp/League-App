@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { LacrosseIcon } from '../LacrosseIcons';
 import EnhancedColorPicker from '../EnhancedColorPicker';
+import ColorExtractor from '../ColorExtractor';
 
 // Image Crop Tool Component
 const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectRatio = 'free', targetArea = 'banner' }) => {
