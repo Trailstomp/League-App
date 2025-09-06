@@ -261,6 +261,7 @@ function App() {
         onLogin={handleShowLogin}
         onLogout={handleLogout}
         teams={teams}
+        websiteStyle={websiteStyle}
       >
         {renderPage()}
       </Layout>
