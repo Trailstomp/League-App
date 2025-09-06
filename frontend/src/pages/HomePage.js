@@ -65,15 +65,44 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
 
     return (
         <div className="space-y-6">
-            {/* Welcome Banner */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-                <div className="flex items-center justify-between">
+            {/* Dynamic Welcome Banner */}
+            <div 
+                className="rounded-lg shadow-sm border p-6"
+                style={{
+                    backgroundColor: websiteStyle.bannerBackgroundType === 'image' ? 'transparent' : (websiteStyle.bannerBackgroundColor || '#ffffff'),
+                    backgroundImage: websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage 
+                        ? `url(${websiteStyle.bannerBackgroundImage})` 
+                        : 'none',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    position: 'relative'
+                }}
+            >
+                {/* Overlay for image banners */}
+                {websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage && (
+                    <div className="absolute inset-0 bg-black bg-opacity-30 rounded-lg"></div>
+                )}
+                
+                <div className="flex items-center justify-between relative z-10">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-800">
-                            Welcome to the Lacrosse League
+                        <h1 
+                            className="text-3xl font-bold mb-2"
+                            style={{
+                                fontFamily: websiteStyle.bannerFont || 'Inter, sans-serif',
+                                fontSize: websiteStyle.bannerFontSize || '32px',
+                                color: websiteStyle.bannerTextColor || '#1f2937'
+                            }}
+                        >
+                            {websiteStyle.bannerTitle || 'Welcome to the Lacrosse League'}
                         </h1>
-                        <p className="text-slate-600 mt-2">
-                            Manage your league with style and efficiency
+                        <p 
+                            className="mt-2"
+                            style={{
+                                fontFamily: websiteStyle.bannerFont || 'Inter, sans-serif',
+                                color: websiteStyle.bannerTextColor || '#6b7280'
+                            }}
+                        >
+                            {websiteStyle.bannerSubtitle || 'Manage your league with style and efficiency'}
                         </p>
                     </div>
                     <div className="text-6xl">🥍</div>
