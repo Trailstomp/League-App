@@ -763,7 +763,4 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     );
 };
 
-export default WebsiteDesignManager;</content>
-    </file>
-  </files_and_snippets>
-</document>
+export default WebsiteDesignManager;
