@@ -510,14 +510,68 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
 
     const updateStyle = (updates) => {
         console.log('🔧 updateStyle called with:', updates);
-        const newStyle = { ...editingStyle, ...updates };
-        console.log('🔧 Setting editingStyle to:', newStyle);
-        setEditingStyle(newStyle);
         
+        setEditingStyle(prevState => {
+            const newState = {
+                ...prevState,
+                ...updates
+            };
+            console.log('🔧 Previous editingStyle state:', prevState);
+            console.log('🔧 New editingStyle state after update:', newState);
+            console.log('🔧 Banner fields in new state:', {
+                bannerTitle: newState.bannerTitle,
+                bannerSubtitle: newState.bannerSubtitle,
+                bannerBackgroundColor: newState.bannerBackgroundColor,
+                bannerTextColor: newState.bannerTextColor
+            });
+            
+            return newState;
+        });
+        
+        // Use a ref to capture the latest state for save
         setTimeout(() => {
-            console.log('🔧 Auto-save triggered, current editingStyle:', newStyle);
-            handleSave();
+            setEditingStyle(currentState => {
+                console.log('🔧 Auto-save triggered with current state:', currentState);
+                handleSaveWithState(currentState);
+                return currentState; // Return unchanged state
+            });
         }, 500);
+    };
+
+    // New save function that accepts state parameter
+    const handleSaveWithState = async (stateToSave) => {
+        try {
+            console.log('🎨 handleSaveWithState called with:', stateToSave);
+            console.log('🎨 Banner fields being saved:', {
+                bannerTitle: stateToSave.bannerTitle,
+                bannerSubtitle: stateToSave.bannerSubtitle,
+                bannerBackgroundColor: stateToSave.bannerBackgroundColor,
+                bannerTextColor: stateToSave.bannerTextColor
+            });
+            
+            // Call the parent's save function
+            const result = await setWebsiteStyle(stateToSave);
+            
+            if (result && result.success) {
+                console.log('✅ Save successful:', result.message);
+                
+                // Show success feedback
+                const saveButtons = document.querySelectorAll('[data-save-button]');
+                saveButtons.forEach(button => {
+                    const originalText = button.textContent;
+                    button.textContent = result.message || 'Saved!';
+                    button.style.backgroundColor = '#10b981'; // Green color
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.backgroundColor = ''; // Reset color
+                    }, 3000);
+                });
+            } else {
+                console.error('❌ Save failed:', result?.message || 'Unknown error');
+            }
+        } catch (error) {
+            console.error('❌ Error saving website style:', error);
+        }
     };
 
     // Zone-based render methods
