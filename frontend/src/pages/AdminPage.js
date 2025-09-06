@@ -309,6 +309,9 @@ const PlayerForm = ({ teams, player, onSave, onCancel }) => {
         jerseyNumber: player?.jerseyNumber || '',
         email: player?.email || '',
         phone: player?.phone || '',
+        handedness: player?.handedness || '',
+        details: player?.details || '',
+        photoUrl: player?.photoUrl || '',
     });
 
     const handleSubmit = (e) => {
@@ -320,13 +323,84 @@ const PlayerForm = ({ teams, player, onSave, onCancel }) => {
         onSave(formData);
     };
 
+    const handleFileUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                alert('File size must be less than 5MB');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setFormData({...formData, photoUrl: e.target.result});
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     return (
         <div className="bg-white border rounded-lg p-6">
             <h3 className="text-lg font-semibold text-slate-800 mb-4">
                 {player ? 'Edit Player' : 'Add New Player'}
             </h3>
             
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Player Photo Upload */}
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Player Photo
+                    </label>
+                    <div className="flex items-start space-x-4">
+                        {/* Photo Preview */}
+                        <div className="w-32 h-40 border-2 border-dashed border-slate-300 rounded-lg overflow-hidden bg-slate-50">
+                            {formData.photoUrl ? (
+                                <img 
+                                    src={formData.photoUrl} 
+                                    alt="Player preview"
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                    <svg className="w-12 h-12 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                    </svg>
+                                </div>
+                            )}
+                        </div>
+                        
+                        {/* Upload Controls */}
+                        <div className="flex-1">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileUpload}
+                                className="hidden"
+                                id="player-photo-upload"
+                            />
+                            <label 
+                                htmlFor="player-photo-upload"
+                                className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                            >
+                                Choose Photo
+                            </label>
+                            {formData.photoUrl && (
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData({...formData, photoUrl: ''})}
+                                    className="ml-2 text-red-600 hover:text-red-800 text-sm"
+                                >
+                                    Remove Photo
+                                </button>
+                            )}
+                            <p className="text-xs text-slate-500 mt-2">
+                                Upload a player photo (max 5MB). Recommended size: 300x400px
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Basic Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
@@ -390,6 +464,22 @@ const PlayerForm = ({ teams, player, onSave, onCancel }) => {
                     
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
+                            Handedness
+                        </label>
+                        <select
+                            value={formData.handedness}
+                            onChange={(e) => setFormData({...formData, handedness: e.target.value})}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            <option value="">Select Handedness</option>
+                            <option value="Right">Right Handed</option>
+                            <option value="Left">Left Handed</option>
+                            <option value="Ambidextrous">Ambidextrous</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">
                             Email
                         </label>
                         <input
@@ -411,6 +501,20 @@ const PlayerForm = ({ teams, player, onSave, onCancel }) => {
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
                     </div>
+                </div>
+
+                {/* Player Details */}
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Player Details
+                    </label>
+                    <textarea
+                        value={formData.details}
+                        onChange={(e) => setFormData({...formData, details: e.target.value})}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        rows="3"
+                        placeholder="Enter additional player information, achievements, playing style, etc."
+                    />
                 </div>
                 
                 <div className="flex justify-end space-x-3 pt-4">
