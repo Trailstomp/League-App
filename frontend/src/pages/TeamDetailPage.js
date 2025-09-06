@@ -236,37 +236,40 @@ const TeamRosterTab = ({ team, players = [] }) => {
     const teamPlayers = players.filter(player => player.teamId === team.id);
 
     return (
-        <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-slate-800">Roster</h2>
+        <div className="space-y-4 sm:space-y-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-800">Roster</h2>
             
             {teamPlayers.length > 0 ? (
                 <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
+                    <table className="w-full border-collapse min-w-full">
                         <thead>
                             <tr className="bg-slate-50">
-                                <th className="border border-slate-200 px-4 py-2 text-left">#</th>
-                                <th className="border border-slate-200 px-4 py-2 text-left">Name</th>
-                                <th className="border border-slate-200 px-4 py-2 text-left">Position</th>
-                                <th className="border border-slate-200 px-4 py-2 text-left">Contact</th>
+                                <th className="border border-slate-200 px-2 sm:px-4 py-2 text-left text-xs sm:text-sm">#</th>
+                                <th className="border border-slate-200 px-2 sm:px-4 py-2 text-left text-xs sm:text-sm">Name</th>
+                                <th className="border border-slate-200 px-2 sm:px-4 py-2 text-left text-xs sm:text-sm hidden sm:table-cell">Position</th>
+                                <th className="border border-slate-200 px-2 sm:px-4 py-2 text-left text-xs sm:text-sm hidden md:table-cell">Contact</th>
                             </tr>
                         </thead>
                         <tbody>
                             {teamPlayers.map(player => (
                                 <tr key={player.id} className="hover:bg-slate-50">
-                                    <td className="border border-slate-200 px-4 py-2 font-mono">{player.jerseyNumber || '--'}</td>
-                                    <td className="border border-slate-200 px-4 py-2 font-semibold">{player.name}</td>
-                                    <td className="border border-slate-200 px-4 py-2">{player.position || 'Not specified'}</td>
-                                    <td className="border border-slate-200 px-4 py-2 text-sm text-slate-600">{player.email || player.phone || 'Not provided'}</td>
+                                    <td className="border border-slate-200 px-2 sm:px-4 py-2 font-mono text-xs sm:text-sm">{player.jerseyNumber || '--'}</td>
+                                    <td className="border border-slate-200 px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm">
+                                        <div className="break-words">{player.name}</div>
+                                        <div className="sm:hidden text-xs text-slate-500">{player.position || 'Not specified'}</div>
+                                    </td>
+                                    <td className="border border-slate-200 px-2 sm:px-4 py-2 text-xs sm:text-sm hidden sm:table-cell">{player.position || 'Not specified'}</td>
+                                    <td className="border border-slate-200 px-2 sm:px-4 py-2 text-xs text-slate-600 hidden md:table-cell break-words">{player.email || player.phone || 'Not provided'}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
             ) : (
-                <div className="bg-slate-50 p-8 rounded-lg text-center text-slate-500">
+                <div className="bg-slate-50 p-6 sm:p-8 rounded-lg text-center text-slate-500">
                     <LacrosseIcon name="teams" style={{fontSize: '48px'}} className="mx-auto mb-4" />
-                    <h3 className="text-lg font-medium mb-2">No players registered</h3>
-                    <p>Players will appear here once they're added to the roster</p>
+                    <h3 className="text-base sm:text-lg font-medium mb-2">No players registered</h3>
+                    <p className="text-sm">Players will appear here once they're added to the roster</p>
                 </div>
             )}
         </div>
