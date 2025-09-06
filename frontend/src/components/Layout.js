@@ -28,16 +28,29 @@ const Layout = ({
             {/* Mobile Navigation Overlay */}
             {isMobileMenuOpen && (
                 <div 
-                    className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+                    className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
                     onClick={() => setIsMobileMenuOpen(false)}
                 />
             )}
             
-            {/* Navigation - Responsive */}
+            {/* Navigation - Hidden on mobile, shown on md+ */}
+            <div className="hidden md:block">
+                <Navigation 
+                    currentPage={currentPage}
+                    onNavigate={handleNavigate}
+                    currentUser={currentUser}
+                    onLogin={onLogin}
+                    onLogout={onLogout}
+                    teams={teams}
+                    onMobileClose={() => setIsMobileMenuOpen(false)}
+                />
+            </div>
+            
+            {/* Mobile Navigation - Slide in from left */}
             <div className={`
                 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
-                lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 lg:z-auto
-                transition-transform duration-300 ease-in-out lg:transition-none
+                fixed inset-y-0 left-0 z-50 md:hidden
+                transition-transform duration-300 ease-in-out
             `}>
                 <Navigation 
                     currentPage={currentPage}
@@ -51,9 +64,9 @@ const Layout = ({
             </div>
             
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col lg:ml-0">
-                {/* Mobile Header */}
-                <div className="lg:hidden bg-white border-b px-4 py-3 flex items-center justify-between">
+            <div className="flex-1 flex flex-col w-full min-w-0">
+                {/* Mobile Header - Only shown on mobile */}
+                <div className="md:hidden bg-white border-b px-4 py-3 flex items-center justify-between flex-shrink-0">
                     <button
                         onClick={() => setIsMobileMenuOpen(true)}
                         className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
@@ -69,13 +82,16 @@ const Layout = ({
 
                 {/* Main Content */}
                 <main className="flex-1 p-3 sm:p-6 overflow-x-hidden">
-                    <div className="max-w-full">
+                    <div className="w-full max-w-none">
                         {children}
                     </div>
                 </main>
             </div>
         </div>
     );
+};
+
+export default Layout;
 };
 
 export default Layout;
