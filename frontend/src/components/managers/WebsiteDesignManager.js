@@ -1174,19 +1174,9 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                         <>
                             {activeSection === 'theme' && renderThemeSection()}
                             {activeSection === 'branding' && renderBrandingSection()}
-                            {activeSection === 'layout' && renderLayoutSection()}
-                            {activeSection === 'typography' && (
-                                <div className="text-center py-8 text-slate-500">
-                                    <LacrosseIcon name="text" style={{fontSize: '48px'}} className="mx-auto mb-4 opacity-50" />
-                                    <p>Typography customization coming soon...</p>
-                                </div>
-                            )}
-                            {activeSection === 'components' && (
-                                <div className="text-center py-8 text-slate-500">
-                                    <LacrosseIcon name="customize" style={{fontSize: '48px'}} className="mx-auto mb-4 opacity-50" />
-                                    <p>Component styling options coming soon...</p>
-                                </div>
-                            )}
+                            {activeSection === 'backgrounds' && renderBackgroundsSection()}
+                            {activeSection === 'typography' && renderTypographySection()}
+                            {activeSection === 'preview' && renderPreviewSection()}
                         </>
                     )}
                 </div>
