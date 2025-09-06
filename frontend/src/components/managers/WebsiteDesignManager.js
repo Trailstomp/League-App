@@ -1737,6 +1737,20 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     );
 
     const renderTypographySection = () => (
+        <div className="space-y-6">
+            <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
+                <h3 className="text-lg font-semibold text-indigo-800 mb-2">Typography Settings</h3>
+                <p className="text-indigo-600 text-sm">Customize fonts and text styling across your website</p>
+            </div>
+        </div>
+    );
+
+    const renderMenusSection = () => (
+        <div className="space-y-6">
+            <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                <h3 className="text-lg font-semibold text-orange-800 mb-2">Menus & Sidebar Zone</h3>
+                <p className="text-orange-600 text-sm">Customize your sidebar navigation, menus, and secondary elements</p>
+            </div>
 
             {/* Menu Background */}
             <div>
