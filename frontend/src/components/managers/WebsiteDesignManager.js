@@ -502,8 +502,15 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     };
 
     const updateStyle = (updates) => {
-        setEditingStyle(prev => ({ ...prev, ...updates }));
-        setTimeout(() => handleSave(), 500);
+        console.log('🔧 updateStyle called with:', updates);
+        const newStyle = { ...editingStyle, ...updates };
+        console.log('🔧 Setting editingStyle to:', newStyle);
+        setEditingStyle(newStyle);
+        
+        setTimeout(() => {
+            console.log('🔧 Auto-save triggered, current editingStyle:', newStyle);
+            handleSave();
+        }, 500);
     };
 
     // Zone-based render methods
