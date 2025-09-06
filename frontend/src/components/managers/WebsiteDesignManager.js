@@ -485,7 +485,10 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                         <input
                             type="text"
                             value={editingStyle.leagueName || ''}
-                            onChange={(e) => setEditingStyle({...editingStyle, leagueName: e.target.value})}
+                            onChange={(e) => {
+                                setEditingStyle({...editingStyle, leagueName: e.target.value});
+                                setTimeout(() => handleSave(), 500);
+                            }}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                             placeholder="Midwest Lacrosse League"
                         />
@@ -495,7 +498,10 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                         <input
                             type="text"
                             value={editingStyle.tagline || ''}
-                            onChange={(e) => setEditingStyle({...editingStyle, tagline: e.target.value})}
+                            onChange={(e) => {
+                                setEditingStyle({...editingStyle, tagline: e.target.value});
+                                setTimeout(() => handleSave(), 500);
+                            }}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                             placeholder="Professional Competition"
                         />
@@ -506,18 +512,34 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
             <div>
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">Logo & Images</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* League Logo */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">League Logo</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                            League Logo
+                            <span className="text-xs text-slate-500 ml-2">(appears in header and navigation)</span>
+                        </label>
                         <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
                             {editingStyle.logoUrl ? (
                                 <div>
                                     <img src={editingStyle.logoUrl} alt="League Logo" className="w-20 h-20 mx-auto mb-3 object-contain" />
-                                    <button 
-                                        onClick={() => setEditingStyle({...editingStyle, logoUrl: ''})}
-                                        className="text-red-600 hover:text-red-800 text-sm"
-                                    >
-                                        Remove Logo
-                                    </button>
+                                    <div className="flex justify-center space-x-2">
+                                        <button 
+                                            onClick={() => setEditingStyle({...editingStyle, logoUrl: ''})}
+                                            className="text-red-600 hover:text-red-800 text-sm"
+                                        >
+                                            Remove Logo
+                                        </button>
+                                        <span className="text-slate-400">|</span>
+                                        <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
+                                            Replace Logo
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => handleImageUpload(e.target.files[0], 'logo')}
+                                                className="hidden"
+                                            />
+                                        </label>
+                                    </div>
                                 </div>
                             ) : (
                                 <div>
@@ -526,14 +548,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                                     <input
                                         type="file"
                                         accept="image/*"
-                                        onChange={(e) => {
-                                            const file = e.target.files[0];
-                                            if (file) {
-                                                const reader = new FileReader();
-                                                reader.onload = (e) => setEditingStyle({...editingStyle, logoUrl: e.target.result});
-                                                reader.readAsDataURL(file);
-                                            }
-                                        }}
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'logo')}
                                         className="hidden"
                                         id="logo-upload"
                                     />
@@ -541,25 +556,41 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                                         htmlFor="logo-upload"
                                         className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
                                     >
-                                        Choose File
+                                        Choose File & Crop
                                     </label>
                                 </div>
                             )}
                         </div>
                     </div>
 
+                    {/* Banner Image */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Banner Image</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                            Banner Image
+                            <span className="text-xs text-slate-500 ml-2">(appears in page headers)</span>
+                        </label>
                         <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
                             {editingStyle.bannerUrl ? (
                                 <div>
                                     <img src={editingStyle.bannerUrl} alt="Banner" className="w-full h-20 mx-auto mb-3 object-cover rounded" />
-                                    <button 
-                                        onClick={() => setEditingStyle({...editingStyle, bannerUrl: ''})}
-                                        className="text-red-600 hover:text-red-800 text-sm"
-                                    >
-                                        Remove Banner
-                                    </button>
+                                    <div className="flex justify-center space-x-2">
+                                        <button 
+                                            onClick={() => setEditingStyle({...editingStyle, bannerUrl: ''})}
+                                            className="text-red-600 hover:text-red-800 text-sm"
+                                        >
+                                            Remove Banner
+                                        </button>
+                                        <span className="text-slate-400">|</span>
+                                        <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
+                                            Replace Banner
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => handleImageUpload(e.target.files[0], 'banner')}
+                                                className="hidden"
+                                            />
+                                        </label>
+                                    </div>
                                 </div>
                             ) : (
                                 <div>
@@ -568,14 +599,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                                     <input
                                         type="file"
                                         accept="image/*"
-                                        onChange={(e) => {
-                                            const file = e.target.files[0];
-                                            if (file) {
-                                                const reader = new FileReader();
-                                                reader.onload = (e) => setEditingStyle({...editingStyle, bannerUrl: e.target.result});
-                                                reader.readAsDataURL(file);
-                                            }
-                                        }}
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'banner')}
                                         className="hidden"
                                         id="banner-upload"
                                     />
@@ -583,11 +607,43 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                                         htmlFor="banner-upload"
                                         className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
                                     >
-                                        Choose File
+                                        Choose File & Crop
                                     </label>
                                 </div>
                             )}
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Live Preview of Logo/Banner Placement */}
+            <div>
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Logo & Banner Preview</h3>
+                <div className="border rounded-lg overflow-hidden">
+                    <div className="bg-slate-100 p-4 border-b">
+                        <div className="flex items-center space-x-4">
+                            <div className="w-10 h-10 bg-white rounded border flex items-center justify-center">
+                                {editingStyle.logoUrl ? (
+                                    <img src={editingStyle.logoUrl} alt="Logo" className="w-8 h-8 object-contain" />
+                                ) : (
+                                    <LacrosseIcon name="image" className="text-slate-400" style={{fontSize: '16px'}} />
+                                )}
+                            </div>
+                            <span className="font-medium text-slate-700">
+                                {editingStyle.leagueName || 'Your League Name'} • Header Logo
+                            </span>
+                        </div>
+                    </div>
+                    <div className="relative h-32 bg-gradient-to-r from-slate-600 to-slate-800 flex items-center justify-center">
+                        {editingStyle.bannerUrl ? (
+                            <img src={editingStyle.bannerUrl} alt="Banner" className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="text-center text-white">
+                                <h2 className="text-2xl font-bold mb-1">{editingStyle.leagueName || 'Your League Name'}</h2>
+                                <p className="text-slate-200">{editingStyle.tagline || 'Your tagline here'}</p>
+                            </div>
+                        )}
+                        <div className="absolute inset-0 bg-black bg-opacity-20"></div>
                     </div>
                 </div>
             </div>
