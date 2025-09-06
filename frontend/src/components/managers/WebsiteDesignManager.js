@@ -1,11 +1,282 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { LacrosseIcon } from '../LacrosseIcons';
 import EnhancedColorPicker from '../EnhancedColorPicker';
 
+// Image Crop Tool Component
+const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectRatio = 'free', targetArea = 'banner' }) => {
+    const canvasRef = useRef(null);
+    const imageRef = useRef(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [cropArea, setCropArea] = useState({ x: 50, y: 50, width: 200, height: 200 });
+    const [isDragging, setIsDragging] = useState(false);
+    const [isResizing, setIsResizing] = useState(false);
+    const [resizeHandle, setResizeHandle] = useState('');
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0, cropX: 0, cropY: 0 });
+    const [currentAspectRatio, setCurrentAspectRatio] = useState(initialAspectRatio || 'free');
+    const [canvasSize, setCanvasSize] = useState({ width: 600, height: 400 });
+    const [imageScale, setImageScale] = useState(1);
+    const [imagePan, setImagePan] = useState({ x: 0, y: 0 });
+
+    // Target-specific aspect ratios
+    const getAspectRatiosForTarget = (target) => {
+        const common = {
+            'free': { ratio: null, label: 'Free Form' },
+            '1:1': { ratio: 1, label: '1:1 Square' },
+            '16:9': { ratio: 16/9, label: '16:9 Wide' },
+            '4:3': { ratio: 4/3, label: '4:3 Standard' }
+        };
+
+        switch(target) {
+            case 'banner':
+                return {
+                    ...common,
+                    '5:1': { ratio: 5/1, label: '5:1 Header Banner' },
+                    '3:1': { ratio: 3/1, label: '3:1 Wide Banner' },
+                    '2:1': { ratio: 2/1, label: '2:1 Banner' }
+                };
+            case 'logo':
+                return {
+                    ...common,
+                    '2:1': { ratio: 2/1, label: '2:1 Wide Logo' }
+                };
+            case 'background':
+                return {
+                    ...common,
+                    '21:9': { ratio: 21/9, label: '21:9 Ultra Wide' }
+                };
+            default:
+                return common;
+        }
+    };
+
+    const aspectRatios = getAspectRatiosForTarget(targetArea);
+
+    // Initialize and draw canvas functionality
+    const drawCanvas = () => {
+        const canvas = canvasRef.current;
+        const image = imageRef.current;
+        if (!canvas || !image) return;
+
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvasSize.width;
+        canvas.height = canvasSize.height;
+
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Apply image transformations
+        ctx.save();
+        ctx.translate(canvasSize.width / 2, canvasSize.height / 2);
+        ctx.scale(imageScale, imageScale);
+        ctx.translate(-canvasSize.width / 2 + imagePan.x, -canvasSize.height / 2 + imagePan.y);
+
+        // Draw image
+        ctx.drawImage(image, 0, 0, canvasSize.width, canvasSize.height);
+        ctx.restore();
+
+        // Draw crop overlay
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Clear crop area
+        ctx.clearRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
+
+        // Draw crop border
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
+
+        // Draw resize handles
+        const handleSize = 8;
+        const handles = [
+            { x: cropArea.x - handleSize/2, y: cropArea.y - handleSize/2 },
+            { x: cropArea.x + cropArea.width - handleSize/2, y: cropArea.y - handleSize/2 },
+            { x: cropArea.x - handleSize/2, y: cropArea.y + cropArea.height - handleSize/2 },
+            { x: cropArea.x + cropArea.width - handleSize/2, y: cropArea.y + cropArea.height - handleSize/2 }
+        ];
+
+        ctx.fillStyle = '#3b82f6';
+        handles.forEach(handle => {
+            ctx.fillRect(handle.x, handle.y, handleSize, handleSize);
+        });
+    };
+
+    // Initialize image
+    useEffect(() => {
+        if (imageUrl) {
+            setIsLoading(true);
+            const img = new Image();
+            img.onload = () => {
+                imageRef.current = img;
+                const canvas = canvasRef.current;
+                if (canvas) {
+                    const container = canvas.parentElement;
+                    const maxWidth = Math.min(container.clientWidth - 32, 800);
+                    const maxHeight = Math.min(container.clientHeight - 32, 600);
+                    
+                    const imageAspect = img.width / img.height;
+                    let displayWidth, displayHeight;
+                    
+                    if (imageAspect > maxWidth / maxHeight) {
+                        displayWidth = maxWidth;
+                        displayHeight = maxWidth / imageAspect;
+                    } else {
+                        displayHeight = maxHeight;
+                        displayWidth = maxHeight * imageAspect;
+                    }
+                    
+                    setImageScale(1);
+                    setImagePan({ x: 0, y: 0 });
+                    
+                    const cropSize = Math.min(displayWidth, displayHeight) * 0.6;
+                    let cropWidth = cropSize;
+                    let cropHeight = cropSize;
+                    
+                    const ratioConfig = aspectRatios[currentAspectRatio];
+                    if (ratioConfig && ratioConfig.ratio) {
+                        cropHeight = cropWidth / ratioConfig.ratio;
+                    }
+                    
+                    const newCropArea = {
+                        x: (displayWidth - cropWidth) / 2,
+                        y: (displayHeight - cropHeight) / 2,
+                        width: cropWidth,
+                        height: cropHeight
+                    };
+                    
+                    setCanvasSize({ width: displayWidth, height: displayHeight });
+                    setCropArea(newCropArea);
+                    setIsLoading(false);
+                }
+            };
+            img.src = imageUrl;
+        }
+    }, [imageUrl]);
+
+    useEffect(() => {
+        drawCanvas();
+    }, [cropArea, canvasSize, imageScale, imagePan]);
+
+    const handleCrop = () => {
+        const canvas = canvasRef.current;
+        const image = imageRef.current;
+        if (!canvas || !image) return;
+
+        // Create output canvas
+        const outputCanvas = document.createElement('canvas');
+        outputCanvas.width = cropArea.width;
+        outputCanvas.height = cropArea.height;
+        const ctx = outputCanvas.getContext('2d');
+
+        // Calculate source coordinates
+        const scaleX = image.width / canvasSize.width;
+        const scaleY = image.height / canvasSize.height;
+        
+        const sourceX = (cropArea.x - imagePan.x) * scaleX / imageScale;
+        const sourceY = (cropArea.y - imagePan.y) * scaleY / imageScale;
+        const sourceWidth = cropArea.width * scaleX / imageScale;
+        const sourceHeight = cropArea.height * scaleY / imageScale;
+
+        // Draw cropped image
+        ctx.drawImage(
+            image,
+            sourceX, sourceY, sourceWidth, sourceHeight,
+            0, 0, cropArea.width, cropArea.height
+        );
+
+        outputCanvas.toBlob((blob) => {
+            if (blob) {
+                const croppedUrl = URL.createObjectURL(blob);
+                onCrop(croppedUrl);
+            }
+        }, 'image/jpeg', 0.9);
+    };
+
+    if (isLoading) {
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
+                <div className="bg-white rounded-lg p-8">
+                    <div className="text-center">Loading image...</div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
+            <div className="bg-white rounded-lg max-w-6xl max-h-[90vh] overflow-auto">
+                <div className="p-6">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold">Crop Image for {targetArea}</h3>
+                        <div className="flex space-x-2">
+                            <select
+                                value={currentAspectRatio}
+                                onChange={(e) => setCurrentAspectRatio(e.target.value)}
+                                className="px-3 py-1 border rounded"
+                            >
+                                {Object.entries(aspectRatios).map(([key, config]) => (
+                                    <option key={key} value={key}>{config.label}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div className="mb-4" style={{ width: canvasSize.width, height: canvasSize.height }}>
+                        <canvas
+                            ref={canvasRef}
+                            className="border cursor-crosshair"
+                            style={{ width: '100%', height: '100%' }}
+                        />
+                    </div>
+
+                    <div className="flex justify-between">
+                        <div className="flex space-x-2">
+                            <button
+                                onClick={() => setImageScale(Math.max(0.5, imageScale - 0.1))}
+                                className="px-3 py-1 bg-gray-200 rounded"
+                            >
+                                Zoom Out
+                            </button>
+                            <button
+                                onClick={() => setImageScale(Math.min(3, imageScale + 0.1))}
+                                className="px-3 py-1 bg-gray-200 rounded"
+                            >
+                                Zoom In
+                            </button>
+                            <button
+                                onClick={() => { setImageScale(1); setImagePan({ x: 0, y: 0 }); }}
+                                className="px-3 py-1 bg-gray-200 rounded"
+                            >
+                                Reset
+                            </button>
+                        </div>
+                        <div className="flex space-x-2">
+                            <button
+                                onClick={onCancel}
+                                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleCrop}
+                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                            >
+                                Apply Crop
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     const [activeSection, setActiveSection] = useState('theme');
-    const [isEditing, setIsEditing] = useState(false);
     const [editingStyle, setEditingStyle] = useState(websiteStyle);
+    const [showCropTool, setShowCropTool] = useState(false);
+    const [cropImageUrl, setCropImageUrl] = useState('');
+    const [cropTarget, setCropTarget] = useState('banner');
 
     const designSections = [
         { id: 'theme', label: 'Theme & Colors', icon: 'view' },
