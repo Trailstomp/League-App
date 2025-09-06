@@ -395,7 +395,6 @@ const TeamRosterTab = ({ team, players = [] }) => {
         </div>
     );
 };
-};
 
 // Team Stats Tab
 const TeamStatsTab = ({ team, events = [] }) => {
