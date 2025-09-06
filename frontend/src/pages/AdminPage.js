@@ -37,6 +37,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <UserManager users={users} setUsers={setUsers} teams={teams} />;
             case 'roles':
                 return <RoleManager users={users} setUsers={setUsers} />;
+            case 'website':
+                return <WebsiteDesignManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />;
             default:
                 return (
                     <div className="text-center py-16">
