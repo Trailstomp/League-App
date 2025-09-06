@@ -142,6 +142,120 @@ function App() {
           logoOpacity: 1
         }
       },
+      { 
+        id: '5', 
+        name: 'Indiana Lacrosse Club', 
+        division: 'Field', 
+        wins: 4, 
+        losses: 6, 
+        ties: 0,
+        coach: 'Coach Miller',
+        homeField: 'Indiana Field',
+        contactEmail: 'coach@indianalax.com',
+        active: true,
+        style: {
+          primaryColor: '#ea580c',
+          backgroundColor: '#fff7ed',
+          accentColor: '#c2410c',
+          logoUrl: '',
+          logoOpacity: 1
+        }
+      },
+      { 
+        id: '6', 
+        name: 'Dayton Eagles', 
+        division: 'Box', 
+        wins: 9, 
+        losses: 1, 
+        ties: 0,
+        coach: 'Coach Brown',
+        homeField: 'Eagle Stadium',
+        contactEmail: 'coach@daytonlax.com',
+        active: true,
+        style: {
+          primaryColor: '#0891b2',
+          backgroundColor: '#f0f9ff',
+          accentColor: '#0e7490',
+          logoUrl: '',
+          logoOpacity: 1
+        }
+      },
+      { 
+        id: '7', 
+        name: 'Toledo Thunder', 
+        division: 'Field', 
+        wins: 3, 
+        losses: 7, 
+        ties: 0,
+        coach: 'Coach Wilson',
+        homeField: 'Thunder Park',
+        contactEmail: 'coach@toledothunder.com',
+        active: true,
+        style: {
+          primaryColor: '#be123c',
+          backgroundColor: '#fdf2f8',
+          accentColor: '#9f1239',
+          logoUrl: '',
+          logoOpacity: 1
+        }
+      },
+      { 
+        id: '8', 
+        name: 'Cleveland Storm', 
+        division: 'Box', 
+        wins: 6, 
+        losses: 4, 
+        ties: 0,
+        coach: 'Coach Taylor',
+        homeField: 'Storm Arena',
+        contactEmail: 'coach@clevelandstorm.com',
+        active: true,
+        style: {
+          primaryColor: '#7c2d12',
+          backgroundColor: '#fef7f0',
+          accentColor: '#92400e',
+          logoUrl: '',
+          logoOpacity: 1
+        }
+      },
+      { 
+        id: '9', 
+        name: 'Akron Wolves', 
+        division: 'Field', 
+        wins: 2, 
+        losses: 8, 
+        ties: 0,
+        coach: 'Coach Anderson',
+        homeField: 'Wolves Den',
+        contactEmail: 'coach@akronwolves.com',
+        active: true,
+        style: {
+          primaryColor: '#4338ca',
+          backgroundColor: '#eef2ff',
+          accentColor: '#3730a3',
+          logoUrl: '',
+          logoOpacity: 1
+        }
+      },
+      { 
+        id: '10', 
+        name: 'Youngstown Steelers', 
+        division: 'Box', 
+        wins: 7, 
+        losses: 3, 
+        ties: 0,
+        coach: 'Coach Thomas',
+        homeField: 'Steel Field',
+        contactEmail: 'coach@youngstownsteelers.com',
+        active: true,
+        style: {
+          primaryColor: '#374151',
+          backgroundColor: '#f9fafb',
+          accentColor: '#1f2937',
+          logoUrl: '',
+          logoOpacity: 1
+        }
+      }
     ]);
 
     // Mock players
