@@ -367,42 +367,57 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         { value: '48px', label: 'Banner (48px)' }
     ];
 
-    // Enhanced save functionality with API integration
+    // Enhanced save functionality with proper feedback
     const handleSave = async () => {
         try {
-            console.log('🎨 Saving website style...', editingStyle);
+            console.log('🎨 WebsiteDesignManager saving:', editingStyle);
             
-            // Update parent state
-            setWebsiteStyle(editingStyle);
+            // Call the parent's save function
+            const result = await setWebsiteStyle(editingStyle);
             
-            // Save to backend API
-            const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-            const response = await fetch(`${backendUrl}/api/league-data/websiteStyle`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(editingStyle)
-            });
-            
-            if (response.ok) {
-                const result = await response.json();
-                console.log('✅ Website style saved successfully:', result);
+            if (result && result.success) {
+                console.log('✅ Save successful:', result.message);
                 
-                // Show temporary success message
+                // Show success feedback
                 const saveButtons = document.querySelectorAll('[data-save-button]');
                 saveButtons.forEach(button => {
                     const originalText = button.textContent;
-                    button.textContent = 'Saved!';
+                    button.textContent = result.message || 'Saved!';
+                    button.style.backgroundColor = '#10b981'; // Green color
                     setTimeout(() => {
                         button.textContent = originalText;
-                    }, 2000);
+                        button.style.backgroundColor = ''; // Reset color
+                    }, 3000);
                 });
             } else {
-                console.error('❌ Failed to save website style:', response.statusText);
+                console.error('❌ Save failed:', result?.message || 'Unknown error');
+                
+                // Show error feedback
+                const saveButtons = document.querySelectorAll('[data-save-button]');
+                saveButtons.forEach(button => {
+                    const originalText = button.textContent;
+                    button.textContent = result?.message || 'Save Failed!';
+                    button.style.backgroundColor = '#ef4444'; // Red color
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.backgroundColor = ''; // Reset color
+                    }, 3000);
+                });
             }
         } catch (error) {
-            console.error('❌ Error saving website style:', error);
+            console.error('❌ Error in WebsiteDesignManager save:', error);
+            
+            // Show error feedback
+            const saveButtons = document.querySelectorAll('[data-save-button]');
+            saveButtons.forEach(button => {
+                const originalText = button.textContent;
+                button.textContent = 'Network Error!';
+                button.style.backgroundColor = '#ef4444'; // Red color
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.backgroundColor = ''; // Reset color
+                }, 3000);
+            });
         }
     };
 
