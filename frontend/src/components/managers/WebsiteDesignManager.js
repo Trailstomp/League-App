@@ -1745,14 +1745,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         </div>
     );
 
-    const renderMenusSection = () => (
-        <div className="space-y-6">
-            <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-                <h3 className="text-lg font-semibold text-orange-800 mb-2">Menus & Sidebar Zone</h3>
-                <p className="text-orange-600 text-sm">Customize your sidebar navigation, menus, and secondary elements</p>
-            </div>
-
-            {/* Menu Background */}
+    const renderPreviewSection = () => (
             <div>
                 <h4 className="text-md font-semibold text-slate-800 mb-4">Menu Background</h4>
                 <div className="flex space-x-4 mb-4">
