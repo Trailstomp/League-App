@@ -86,6 +86,18 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         { value: '48px', label: 'Banner (48px)' }
     ];
 
+    // Update editingStyle when websiteStyle prop changes
+    useEffect(() => {
+        setEditingStyle(prev => ({
+            ...prev,
+            ...websiteStyle,
+            // Ensure banner fields are preserved
+            bannerTitle: websiteStyle.bannerTitle || prev.bannerTitle,
+            bannerSubtitle: websiteStyle.bannerSubtitle || prev.bannerSubtitle,
+            navLeagueName: websiteStyle.navLeagueName || websiteStyle.leagueName || prev.navLeagueName
+        }));
+    }, [websiteStyle]);
+
     // Enhanced save functionality with proper feedback
     const handleSave = async () => {
         setEditingStyle(currentState => {
