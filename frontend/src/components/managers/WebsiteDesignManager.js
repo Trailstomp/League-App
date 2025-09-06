@@ -1364,6 +1364,195 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         </div>
     );
 
+    const renderMenusSection = () => (
+        <div className="space-y-6">
+            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                <h3 className="text-lg font-semibold text-purple-800 mb-2">Menus & Sidebar Zone</h3>
+                <p className="text-purple-600 text-sm">Customize menu styling, sidebar appearance, and navigation elements</p>
+            </div>
+
+            {/* Menu Background */}
+            <div>
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Menu Background</h4>
+                <div className="flex space-x-4 mb-4">
+                    <button
+                        onClick={() => toggleBackgroundType('menu', 'color')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (editingStyle.menuBackgroundType !== 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Color Background
+                    </button>
+                    <button
+                        onClick={() => toggleBackgroundType('menu', 'image')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (editingStyle.menuBackgroundType === 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Image Background
+                    </button>
+                </div>
+
+                {editingStyle.menuBackgroundType === 'image' ? (
+                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                        {editingStyle.menuBackgroundImage ? (
+                            <div>
+                                <img src={editingStyle.menuBackgroundImage} alt="Menu Background" className="w-full h-32 mx-auto mb-3 object-cover rounded" />
+                                <div className="flex justify-center space-x-2">
+                                    <button 
+                                        onClick={() => updateStyle({ menuBackgroundImage: '' })}
+                                        className="text-red-600 hover:text-red-800 text-sm"
+                                    >
+                                        Remove
+                                    </button>
+                                    <span className="text-slate-400">|</span>
+                                    <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
+                                        Replace
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'menu')}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+                        ) : (
+                            <div>
+                                <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
+                                <p className="text-slate-600 mb-3">Upload menu background image</p>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'menu')}
+                                    className="hidden"
+                                    id="menu-bg-upload"
+                                />
+                                <label 
+                                    htmlFor="menu-bg-upload"
+                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                                >
+                                    Choose File & Crop
+                                </label>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
+                        <EnhancedColorPicker
+                            color={editingStyle.menuBackgroundColor || '#ffffff'}
+                            onChange={(color) => updateStyle({ menuBackgroundColor: color })}
+                            label="Menu Background"
+                        />
+                    </div>
+                )}
+            </div>
+
+            {/* Menu Typography */}
+            <div className="border-t pt-6">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Menu Typography</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Font</label>
+                        <select
+                            value={editingStyle.menuFont || 'Inter, sans-serif'}
+                            onChange={(e) => updateStyle({ menuFont: e.target.value })}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                            {fontFamilies.map(font => (
+                                <option key={font.value} value={font.value}>{font.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Size</label>
+                        <select
+                            value={editingStyle.menuFontSize || '16px'}
+                            onChange={(e) => updateStyle({ menuFontSize: e.target.value })}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                            {fontSizes.map(size => (
+                                <option key={size.value} value={size.value}>{size.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
+                        <EnhancedColorPicker
+                            color={editingStyle.menuTextColor || '#374151'}
+                            onChange={(color) => updateStyle({ menuTextColor: color })}
+                            label="Menu Text"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Menu Preview */}
+            <div className="border-t pt-6">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Menu Preview</h4>
+                <div 
+                    className="border rounded-lg p-4"
+                    style={{
+                        backgroundColor: editingStyle.menuBackgroundType === 'image' ? 'transparent' : (editingStyle.menuBackgroundColor || '#ffffff'),
+                        backgroundImage: editingStyle.menuBackgroundType === 'image' && editingStyle.menuBackgroundImage 
+                            ? `url(${editingStyle.menuBackgroundImage})` 
+                            : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                    }}
+                >
+                    <div className="space-y-2">
+                        <div 
+                            className="p-2 rounded hover:bg-slate-100 cursor-pointer"
+                            style={{ 
+                                fontFamily: editingStyle.menuFont || 'Inter, sans-serif',
+                                fontSize: editingStyle.menuFontSize || '16px',
+                                color: editingStyle.menuTextColor || '#374151'
+                            }}
+                        >
+                            📊 Dashboard
+                        </div>
+                        <div 
+                            className="p-2 rounded hover:bg-slate-100 cursor-pointer"
+                            style={{ 
+                                fontFamily: editingStyle.menuFont || 'Inter, sans-serif',
+                                fontSize: editingStyle.menuFontSize || '16px',
+                                color: editingStyle.menuTextColor || '#374151'
+                            }}
+                        >
+                            👥 Teams
+                        </div>
+                        <div 
+                            className="p-2 rounded hover:bg-slate-100 cursor-pointer"
+                            style={{ 
+                                fontFamily: editingStyle.menuFont || 'Inter, sans-serif',
+                                fontSize: editingStyle.menuFontSize || '16px',
+                                color: editingStyle.menuTextColor || '#374151'
+                            }}
+                        >
+                            📅 Schedule
+                        </div>
+                        <div 
+                            className="p-2 rounded hover:bg-slate-100 cursor-pointer"
+                            style={{ 
+                                fontFamily: editingStyle.menuFont || 'Inter, sans-serif',
+                                fontSize: editingStyle.menuFontSize || '16px',
+                                color: editingStyle.menuTextColor || '#374151'
+                            }}
+                        >
+                            🏆 Standings
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
     const renderTypographySection = () => (
         <div className="space-y-6">
             {/* Banner Text Styling */}
