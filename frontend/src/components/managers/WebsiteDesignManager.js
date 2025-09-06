@@ -1055,6 +1055,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     );
 
     const renderContentSection = () => (
+        <div className="space-y-6">
             <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
                 <h3 className="text-lg font-semibold text-purple-800 mb-2">Main Content Zone</h3>
                 <p className="text-purple-600 text-sm">Customize the main page background and content text styling</p>
