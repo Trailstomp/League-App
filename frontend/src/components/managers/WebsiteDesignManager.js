@@ -1217,6 +1217,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                 <h2 className="text-2xl font-bold text-slate-800">Website Design</h2>
                 <button
                     onClick={handleSave}
+                    data-save-button
                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                 >
                     <LacrosseIcon name="save" className="mr-2" style={{fontSize: '16px'}} />
