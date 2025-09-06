@@ -233,42 +233,142 @@ const TeamScheduleTab = ({ team, events = [] }) => {
 
 // Team Roster Tab
 const TeamRosterTab = ({ team, players = [] }) => {
+    const [selectedPlayer, setSelectedPlayer] = useState(null);
     const teamPlayers = players.filter(player => player.teamId === team.id);
 
     const getPositionColor = (position) => {
         switch (position?.toLowerCase()) {
             case 'attack':
-                return 'bg-red-100 text-red-800 border-red-200';
+                return 'text-red-600';
             case 'midfield':
             case 'midfielder':
-                return 'bg-blue-100 text-blue-800 border-blue-200';
+                return 'text-blue-600';
             case 'defense':
             case 'defender':
-                return 'bg-green-100 text-green-800 border-green-200';
+                return 'text-green-600';
             case 'goalie':
             case 'goalkeeper':
-                return 'bg-purple-100 text-purple-800 border-purple-200';
+                return 'text-purple-600';
             default:
-                return 'bg-gray-100 text-gray-800 border-gray-200';
+                return 'text-gray-600';
         }
     };
 
-    const getPositionIcon = (position) => {
-        switch (position?.toLowerCase()) {
-            case 'attack':
-                return '⚔️';
-            case 'midfield':
-            case 'midfielder':
-                return '🏃';
-            case 'defense':
-            case 'defender':
-                return '🛡️';
-            case 'goalie':
-            case 'goalkeeper':
-                return '🥅';
-            default:
-                return '🥍';
-        }
+    const PlayerDetailModal = ({ player, team, onClose }) => {
+        if (!player) return null;
+
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+                    {/* Large Player Card */}
+                    <div className="p-6">
+                        <div className="relative bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg overflow-hidden mb-4">
+                            {/* Player Photo */}
+                            <div className="aspect-[3/4] relative">
+                                {player.photoUrl ? (
+                                    <img 
+                                        src={player.photoUrl} 
+                                        alt={player.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center">
+                                        <svg className="w-20 h-20 text-slate-500" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                    </div>
+                                )}
+                                
+                                {/* Team Logo Overlay */}
+                                <div className="absolute top-3 left-3">
+                                    <div className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden border-2 border-white">
+                                        {team.style?.logoUrl ? (
+                                            <img 
+                                                src={team.style.logoUrl} 
+                                                alt={team.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <div 
+                                                className="w-full h-full rounded-full flex items-center justify-center"
+                                                style={{ backgroundColor: team.style?.primaryColor || '#2563eb' }}
+                                            >
+                                                <span className="text-white font-bold text-xs">
+                                                    {team.name.charAt(0)}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Jersey Number */}
+                                <div className="absolute bottom-3 right-3">
+                                    <div 
+                                        className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg"
+                                        style={{ backgroundColor: team.style?.primaryColor || '#2563eb' }}
+                                    >
+                                        {player.jerseyNumber || '?'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Player Info */}
+                        <div className="text-center mb-4">
+                            <h2 className="text-2xl font-bold text-slate-800 mb-1">{player.name}</h2>
+                            <div className="flex items-center justify-center space-x-4 text-sm text-slate-600">
+                                <span className={`font-medium ${getPositionColor(player.position)}`}>
+                                    {player.position || 'Unassigned'}
+                                </span>
+                                {player.handedness && (
+                                    <span className="bg-slate-100 px-2 py-1 rounded">
+                                        {player.handedness} Handed
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Details */}
+                        {player.details && (
+                            <div className="mb-4">
+                                <h3 className="font-semibold text-slate-800 mb-2">Details</h3>
+                                <p className="text-slate-600 text-sm leading-relaxed">{player.details}</p>
+                            </div>
+                        )}
+
+                        {/* Contact & Additional Info */}
+                        <div className="space-y-3 text-sm">
+                            {player.email && (
+                                <div className="flex items-center">
+                                    <svg className="w-4 h-4 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                    <span className="text-slate-700">{player.email}</span>
+                                </div>
+                            )}
+                            {player.phone && (
+                                <div className="flex items-center">
+                                    <svg className="w-4 h-4 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                    <span className="text-slate-700">{player.phone}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Close Button */}
+                        <div className="flex justify-end mt-6">
+                            <button
+                                onClick={onClose}
+                                className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     return (
@@ -281,102 +381,79 @@ const TeamRosterTab = ({ team, players = [] }) => {
             </div>
             
             {teamPlayers.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {teamPlayers.map(player => (
                         <div 
                             key={player.id} 
-                            className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200 hover:border-slate-300"
+                            className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer hover:scale-105"
+                            onClick={() => setSelectedPlayer(player)}
                         >
-                            {/* Player Header */}
-                            <div className="flex items-start justify-between mb-3">
-                                <div className="flex items-center space-x-3">
-                                    {/* Jersey Number */}
-                                    <div 
-                                        className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm"
-                                        style={{ 
-                                            backgroundColor: team.style?.primaryColor || '#2563eb'
-                                        }}
-                                    >
-                                        {player.jerseyNumber || '?'}
-                                    </div>
-                                    {/* Player Name */}
-                                    <div>
-                                        <h3 className="font-semibold text-slate-800 text-lg leading-tight">
-                                            {player.name}
-                                        </h3>
-                                        <div className="text-xs text-slate-500 mt-1">
-                                            Player ID: {player.id}
+                            {/* Player Photo Container */}
+                            <div className="relative bg-gradient-to-br from-slate-100 to-slate-200">
+                                {/* Player Photo */}
+                                <div className="aspect-[3/4] relative">
+                                    {player.photoUrl ? (
+                                        <img 
+                                            src={player.photoUrl} 
+                                            alt={player.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center">
+                                            <svg className="w-12 h-12 text-slate-500" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                            </svg>
+                                        </div>
+                                    )}
+                                    
+                                    {/* Team Logo Overlay */}
+                                    <div className="absolute top-2 left-2">
+                                        <div className="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center overflow-hidden border border-white">
+                                            {team.style?.logoUrl ? (
+                                                <img 
+                                                    src={team.style.logoUrl} 
+                                                    alt={team.name}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <div 
+                                                    className="w-full h-full rounded-full flex items-center justify-center"
+                                                    style={{ backgroundColor: team.style?.primaryColor || '#2563eb' }}
+                                                >
+                                                    <span className="text-white font-bold text-xs">
+                                                        {team.name.charAt(0)}
+                                                    </span>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                </div>
-                                
-                                {/* Position Badge */}
-                                <div className={`px-2 py-1 rounded-full text-xs font-medium border ${getPositionColor(player.position)}`}>
-                                    <span className="mr-1">{getPositionIcon(player.position)}</span>
-                                    {player.position || 'Unassigned'}
+
+                                    {/* Jersey Number */}
+                                    <div className="absolute bottom-2 right-2">
+                                        <div 
+                                            className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md"
+                                            style={{ backgroundColor: team.style?.primaryColor || '#2563eb' }}
+                                        >
+                                            {player.jerseyNumber || '?'}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Player Details */}
-                            <div className="space-y-2">
-                                {/* Contact Information */}
-                                {(player.email || player.phone) && (
-                                    <div className="bg-slate-50 rounded-lg p-3">
-                                        <h4 className="text-xs font-medium text-slate-600 mb-2 uppercase tracking-wide">
-                                            Contact Information
-                                        </h4>
-                                        <div className="space-y-1">
-                                            {player.email && (
-                                                <div className="flex items-center text-sm">
-                                                    <svg className="w-4 h-4 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                                    </svg>
-                                                    <span className="text-slate-700 break-words">{player.email}</span>
-                                                </div>
-                                            )}
-                                            {player.phone && (
-                                                <div className="flex items-center text-sm">
-                                                    <svg className="w-4 h-4 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                                    </svg>
-                                                    <span className="text-slate-700">{player.phone}</span>
-                                                </div>
-                                            )}
-                                            {!player.email && !player.phone && (
-                                                <div className="text-sm text-slate-500 italic">No contact info</div>
-                                            )}
+                            {/* Player Info */}
+                            <div className="p-3">
+                                <h3 className="font-semibold text-slate-800 text-sm mb-1 truncate">
+                                    {player.name}
+                                </h3>
+                                <div className="space-y-1">
+                                    <div className={`text-xs font-medium ${getPositionColor(player.position)}`}>
+                                        {player.position || 'Unassigned'}
+                                    </div>
+                                    {player.handedness && (
+                                        <div className="text-xs text-slate-500">
+                                            {player.handedness} Handed
                                         </div>
-                                    </div>
-                                )}
-
-                                {/* Player Status */}
-                                <div className="flex justify-between items-center pt-2">
-                                    <div className="flex items-center">
-                                        <div className={`w-2 h-2 rounded-full mr-2 ${player.active !== false ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                                        <span className={`text-xs font-medium ${player.active !== false ? 'text-green-700' : 'text-red-700'}`}>
-                                            {player.active !== false ? 'Active' : 'Inactive'}
-                                        </span>
-                                    </div>
-                                    
-                                    {/* Action Buttons */}
-                                    <div className="flex space-x-1">
-                                        <button 
-                                            className="p-1 text-slate-400 hover:text-slate-600 transition-colors"
-                                            title="Edit Player"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                        </button>
-                                        <button 
-                                            className="p-1 text-slate-400 hover:text-blue-600 transition-colors"
-                                            title="View Player Stats"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012-2m0 0V9a2 2 0 012-2h2a2 2 0 012 2v10" />
-                                            </svg>
-                                        </button>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -392,8 +469,18 @@ const TeamRosterTab = ({ team, players = [] }) => {
                     </button>
                 </div>
             )}
+
+            {/* Player Detail Modal */}
+            {selectedPlayer && (
+                <PlayerDetailModal 
+                    player={selectedPlayer} 
+                    team={team}
+                    onClose={() => setSelectedPlayer(null)} 
+                />
+            )}
         </div>
     );
+};
 };
 
 // Team Stats Tab
