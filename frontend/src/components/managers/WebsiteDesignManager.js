@@ -384,63 +384,11 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
 
     // Enhanced save functionality with proper feedback
     const handleSave = async () => {
-        try {
-            console.log('🎨 WebsiteDesignManager handleSave called');
-            console.log('🎨 Current editingStyle state:', editingStyle);
-            console.log('🎨 Banner fields in editingStyle:', {
-                bannerTitle: editingStyle.bannerTitle,
-                bannerSubtitle: editingStyle.bannerSubtitle,
-                bannerBackgroundColor: editingStyle.bannerBackgroundColor,
-                bannerTextColor: editingStyle.bannerTextColor
-            });
-            
-            // Call the parent's save function
-            const result = await setWebsiteStyle(editingStyle);
-            
-            if (result && result.success) {
-                console.log('✅ Save successful:', result.message);
-                
-                // Show success feedback
-                const saveButtons = document.querySelectorAll('[data-save-button]');
-                saveButtons.forEach(button => {
-                    const originalText = button.textContent;
-                    button.textContent = result.message || 'Saved!';
-                    button.style.backgroundColor = '#10b981'; // Green color
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.style.backgroundColor = ''; // Reset color
-                    }, 3000);
-                });
-            } else {
-                console.error('❌ Save failed:', result?.message || 'Unknown error');
-                
-                // Show error feedback
-                const saveButtons = document.querySelectorAll('[data-save-button]');
-                saveButtons.forEach(button => {
-                    const originalText = button.textContent;
-                    button.textContent = result?.message || 'Save Failed!';
-                    button.style.backgroundColor = '#ef4444'; // Red color
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.style.backgroundColor = ''; // Reset color
-                    }, 3000);
-                });
-            }
-        } catch (error) {
-            console.error('❌ Error in WebsiteDesignManager save:', error);
-            
-            // Show error feedback
-            const saveButtons = document.querySelectorAll('[data-save-button]');
-            saveButtons.forEach(button => {
-                const originalText = button.textContent;
-                button.textContent = 'Network Error!';
-                button.style.backgroundColor = '#ef4444'; // Red color
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.backgroundColor = ''; // Reset color
-                }, 3000);
-            });
-        }
+        setEditingStyle(currentState => {
+            console.log('🎨 handleSave called with current state:', currentState);
+            handleSaveWithState(currentState);
+            return currentState; // Return unchanged state
+        });
     };
 
     const handleImageUpload = (file, target, zone) => {
