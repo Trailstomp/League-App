@@ -28,12 +28,12 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
     return (
         <div className={`
             ${isCollapsed ? 'w-16' : 'w-64'} 
-            bg-white shadow-sm border-r min-h-screen flex flex-col 
+            bg-white shadow-sm border-r h-screen flex flex-col 
             transition-all duration-300
-            max-w-full
+            max-w-full overflow-hidden
         `}>
             {/* Header with Toggle */}
-            <div className="p-4 border-b">
+            <div className="p-4 border-b flex-shrink-0">
                 <div className="flex items-center justify-between">
                     {!isCollapsed && (
                         <h1 className="text-lg sm:text-xl font-bold text-slate-800 truncate">
@@ -72,92 +72,90 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 ) : null}
             </div>
 
-            {/* Navigation */}
-            <nav className="p-4 border-b">
-                <div className="space-y-1">
-                    <NavItem icon={<LacrosseIcon name="venue" />} label="Home" pageName="home" />
-                    <NavItem icon={<LacrosseIcon name="calendar" />} label="Events & Schedule" pageName="events" />
-                    <NavItem icon={<LacrosseIcon name="trophy" />} label="Standings" pageName="standings" />
-                    <NavItem icon={<LacrosseIcon name="email" />} label="League Contact" pageName="league_contact" />
-                    {currentUser && <NavItem icon={<LacrosseIcon name="social" />} label="Chat" pageName="chat" />}
-                    {currentUser && isAdmin(currentUser) && (
-                        <NavItem icon={<LacrosseIcon name="admin" />} label="Admin Portal" pageName="admin" />
-                    )}
-                </div>
-            </nav>
+            {/* Scrollable Content Area */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden">
+                {/* Navigation */}
+                <nav className="p-4 border-b flex-shrink-0">
+                    <div className="space-y-1">
+                        <NavItem icon={<LacrosseIcon name="venue" />} label="Home" pageName="home" />
+                        <NavItem icon={<LacrosseIcon name="calendar" />} label="Events & Schedule" pageName="events" />
+                        <NavItem icon={<LacrosseIcon name="trophy" />} label="Standings" pageName="standings" />
+                        <NavItem icon={<LacrosseIcon name="email" />} label="League Contact" pageName="league_contact" />
+                        {currentUser && <NavItem icon={<LacrosseIcon name="social" />} label="Chat" pageName="chat" />}
+                        {currentUser && isAdmin(currentUser) && (
+                            <NavItem icon={<LacrosseIcon name="admin" />} label="Admin Portal" pageName="admin" />
+                        )}
+                    </div>
+                </nav>
 
-            {/* Teams Section */}
-            <div className="px-4 pb-4 border-b flex-grow overflow-hidden">
-                <h3 className={`text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 ${isCollapsed ? 'text-center' : ''}`}>
-                    <LacrosseIcon name="stick" className={isCollapsed ? "" : "mr-1"} style={{fontSize: '12px'}} />
-                    {!isCollapsed && " Teams"}
-                </h3>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {teams.slice(0, 8).map(team => (
-                        <button
-                            key={team.id} 
-                            className={`w-full flex items-center px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-lg transition-colors text-left border border-transparent hover:border-slate-200 ${isCollapsed ? 'justify-center' : ''}`}
-                            onClick={() => {
-                                console.log('🏆 Team clicked:', team.name, team.id);
-                                onNavigate && onNavigate('team', team.id);
-                                if (onMobileClose) onMobileClose();
-                            }}
-                            title={isCollapsed ? `${team.name} (${team.wins || 0}-${team.losses || 0})` : ''}
-                        >
-                            {/* Team Logo or Colored Circle */}
-                            <div className="w-6 h-6 rounded-full flex-shrink-0 overflow-hidden border border-slate-200">
-                                {team.style?.logoUrl ? (
-                                    <img 
-                                        src={team.style.logoUrl} 
-                                        alt={`${team.name} logo`}
-                                        className="w-full h-full object-cover"
-                                        style={{ opacity: team.style.logoOpacity || 1 }}
-                                        onError={(e) => {
-                                            e.target.style.display = 'none';
-                                            e.target.nextSibling.style.display = 'flex';
+                {/* Teams Section */}
+                <div className="px-4 pb-4 border-b">
+                    <h3 className={`text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 ${isCollapsed ? 'text-center' : ''}`}>
+                        <LacrosseIcon name="stick" className={isCollapsed ? "" : "mr-1"} style={{fontSize: '12px'}} />
+                        {!isCollapsed && " Teams"}
+                    </h3>
+                    <div className="space-y-2">
+                        {teams.map(team => (
+                            <button
+                                key={team.id} 
+                                className={`w-full flex items-center px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-lg transition-colors text-left border border-transparent hover:border-slate-200 ${isCollapsed ? 'justify-center' : ''}`}
+                                onClick={() => {
+                                    console.log('🏆 Team clicked:', team.name, team.id);
+                                    onNavigate && onNavigate('team', team.id);
+                                    if (onMobileClose) onMobileClose();
+                                }}
+                                title={isCollapsed ? `${team.name} (${team.wins || 0}-${team.losses || 0})` : ''}
+                            >
+                                {/* Team Logo or Colored Circle */}
+                                <div className="w-6 h-6 rounded-full flex-shrink-0 overflow-hidden border border-slate-200">
+                                    {team.style?.logoUrl ? (
+                                        <img 
+                                            src={team.style.logoUrl} 
+                                            alt={`${team.name} logo`}
+                                            className="w-full h-full object-cover"
+                                            style={{ opacity: team.style.logoOpacity || 1 }}
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                                e.target.nextSibling.style.display = 'flex';
+                                            }}
+                                        />
+                                    ) : null}
+                                    <div 
+                                        className="w-full h-full rounded-full flex items-center justify-center"
+                                        style={{ 
+                                            backgroundColor: team.style?.primaryColor || '#dc2626',
+                                            display: team.style?.logoUrl ? 'none' : 'flex'
                                         }}
-                                    />
-                                ) : null}
-                                <div 
-                                    className="w-full h-full rounded-full flex items-center justify-center"
-                                    style={{ 
-                                        backgroundColor: team.style?.primaryColor || '#dc2626',
-                                        display: team.style?.logoUrl ? 'none' : 'flex'
-                                    }}
-                                >
-                                    <LacrosseIcon name="stick" style={{fontSize: '12px', color: 'white'}} />
+                                    >
+                                        <LacrosseIcon name="stick" style={{fontSize: '12px', color: 'white'}} />
+                                    </div>
                                 </div>
+                                
+                                {!isCollapsed && (
+                                    <>
+                                        <div className="flex-1 min-w-0 ml-3">
+                                            <div className="font-medium truncate">{team.name}</div>
+                                            <div className="text-xs text-slate-500 truncate">{team.division || 'Field'}</div>
+                                        </div>
+                                        <div className="text-xs text-slate-400 ml-2 flex-shrink-0">
+                                            {team.wins || 0}-{team.losses || 0}
+                                        </div>
+                                    </>
+                                )}
+                            </button>
+                        ))}
+                        {!isCollapsed && teams.length === 0 && (
+                            <div className="text-xs text-slate-500 px-3 py-4 text-center bg-slate-50 rounded">
+                                <LacrosseIcon name="teams" className="mx-auto mb-2" style={{fontSize: '24px'}} />
+                                <div>No teams yet</div>
                             </div>
-                            
-                            {!isCollapsed && (
-                                <>
-                                    <div className="flex-1 min-w-0 ml-3">
-                                        <div className="font-medium truncate">{team.name}</div>
-                                        <div className="text-xs text-slate-500 truncate">{team.division || 'Field'}</div>
-                                    </div>
-                                    <div className="text-xs text-slate-400 ml-2 flex-shrink-0">
-                                        {team.wins || 0}-{team.losses || 0}
-                                    </div>
-                                </>
-                            )}
-                        </button>
-                    ))}
-                    {!isCollapsed && teams.length > 8 && (
-                        <div className="text-xs text-slate-500 px-3 py-2 text-center bg-slate-50 rounded">
-                            +{teams.length - 8} more teams
-                        </div>
-                    )}
-                    {!isCollapsed && teams.length === 0 && (
-                        <div className="text-xs text-slate-500 px-3 py-4 text-center bg-slate-50 rounded">
-                            <LacrosseIcon name="teams" className="mx-auto mb-2" style={{fontSize: '24px'}} />
-                            <div>No teams yet</div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
 
-            {/* Authentication Actions - Moved up under teams */}
-            <div className="p-4 border-b">
+            {/* Authentication Actions - Fixed at bottom */}
+            <div className="p-4 border-t flex-shrink-0">
                 {currentUser ? (
                     <NavItem 
                         icon={<LacrosseIcon name="logout" />} 
