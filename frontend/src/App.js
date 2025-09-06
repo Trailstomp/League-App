@@ -213,7 +213,7 @@ function App() {
             users={users}
             setUsers={setUsers}
             websiteStyle={websiteStyle}
-            setWebsiteStyle={setWebsiteStyle}
+            setWebsiteStyle={handleWebsiteStyleChange}
           />
         );
       case 'events':
