@@ -805,6 +805,305 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         </div>
     );
 
+    const renderTypographySection = () => (
+        <div className="space-y-6">
+            {/* Banner Text Styling */}
+            <div>
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Banner Text</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Font Family</label>
+                        <select
+                            value={editingStyle.bannerFont || 'Inter, sans-serif'}
+                            onChange={(e) => {
+                                setEditingStyle({...editingStyle, bannerFont: e.target.value});
+                                setTimeout(() => handleSave(), 500);
+                            }}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        >
+                            {fontFamilies.map(font => (
+                                <option key={font.value} value={font.value}>{font.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Font Size</label>
+                        <select
+                            value={editingStyle.bannerFontSize || '32px'}
+                            onChange={(e) => {
+                                setEditingStyle({...editingStyle, bannerFontSize: e.target.value});
+                                setTimeout(() => handleSave(), 500);
+                            }}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        >
+                            {fontSizes.map(size => (
+                                <option key={size.value} value={size.value}>{size.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
+                        <EnhancedColorPicker
+                            color={editingStyle.bannerTextColor || '#ffffff'}
+                            onChange={(color) => {
+                                setEditingStyle({...editingStyle, bannerTextColor: color});
+                                setTimeout(() => handleSave(), 500);
+                            }}
+                            label="Banner Text"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Content Text Styling */}
+            <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Content Text</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Font Family</label>
+                        <select
+                            value={editingStyle.contentFont || 'Inter, sans-serif'}
+                            onChange={(e) => {
+                                setEditingStyle({...editingStyle, contentFont: e.target.value});
+                                setTimeout(() => handleSave(), 500);
+                            }}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        >
+                            {fontFamilies.map(font => (
+                                <option key={font.value} value={font.value}>{font.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Font Size</label>
+                        <select
+                            value={editingStyle.contentFontSize || '16px'}
+                            onChange={(e) => {
+                                setEditingStyle({...editingStyle, contentFontSize: e.target.value});
+                                setTimeout(() => handleSave(), 500);
+                            }}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        >
+                            {fontSizes.map(size => (
+                                <option key={size.value} value={size.value}>{size.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
+                        <EnhancedColorPicker
+                            color={editingStyle.contentTextColor || '#374151'}
+                            onChange={(color) => {
+                                setEditingStyle({...editingStyle, contentTextColor: color});
+                                setTimeout(() => handleSave(), 500);
+                            }}
+                            label="Content Text"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Heading Text Styling */}
+            <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Heading Text</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Font Family</label>
+                        <select
+                            value={editingStyle.headingFont || 'Inter, sans-serif'}
+                            onChange={(e) => {
+                                setEditingStyle({...editingStyle, headingFont: e.target.value});
+                                setTimeout(() => handleSave(), 500);
+                            }}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        >
+                            {fontFamilies.map(font => (
+                                <option key={font.value} value={font.value}>{font.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Font Size</label>
+                        <select
+                            value={editingStyle.headingFontSize || '24px'}
+                            onChange={(e) => {
+                                setEditingStyle({...editingStyle, headingFontSize: e.target.value});
+                                setTimeout(() => handleSave(), 500);
+                            }}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        >
+                            {fontSizes.map(size => (
+                                <option key={size.value} value={size.value}>{size.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
+                        <EnhancedColorPicker
+                            color={editingStyle.headingTextColor || '#1f2937'}
+                            onChange={(color) => {
+                                setEditingStyle({...editingStyle, headingTextColor: color});
+                                setTimeout(() => handleSave(), 500);
+                            }}
+                            label="Heading Text"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Typography Preview */}
+            <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Typography Preview</h3>
+                <div className="border rounded-lg p-6 space-y-4">
+                    {/* Banner Text Sample */}
+                    <div 
+                        className="p-4 rounded-lg text-center"
+                        style={{ 
+                            backgroundColor: editingStyle.bannerColor || '#1e40af',
+                            fontFamily: editingStyle.bannerFont || 'Inter, sans-serif',
+                            fontSize: editingStyle.bannerFontSize || '32px',
+                            color: editingStyle.bannerTextColor || '#ffffff'
+                        }}
+                    >
+                        {editingStyle.leagueName || 'Your League Name'}
+                    </div>
+                    
+                    {/* Heading Sample */}
+                    <h2 
+                        style={{ 
+                            fontFamily: editingStyle.headingFont || 'Inter, sans-serif',
+                            fontSize: editingStyle.headingFontSize || '24px',
+                            color: editingStyle.headingTextColor || '#1f2937'
+                        }}
+                    >
+                        Sample Heading Text
+                    </h2>
+                    
+                    {/* Content Sample */}
+                    <p 
+                        style={{ 
+                            fontFamily: editingStyle.contentFont || 'Inter, sans-serif',
+                            fontSize: editingStyle.contentFontSize || '16px',
+                            color: editingStyle.contentTextColor || '#374151'
+                        }}
+                    >
+                        This is how your content text will appear throughout the website. You can customize the font family, size, and color to match your league's branding.
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderPreviewSection = () => (
+        <div className="space-y-6">
+            <div>
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Live Website Preview</h3>
+                <div className="border rounded-lg overflow-hidden bg-white">
+                    {/* Header Preview */}
+                    <div className="bg-slate-100 border-b p-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                {editingStyle.logoUrl ? (
+                                    <img src={editingStyle.logoUrl} alt="Logo" className="w-8 h-8 object-contain" />
+                                ) : (
+                                    <div className="w-8 h-8 bg-slate-300 rounded flex items-center justify-center">
+                                        <LacrosseIcon name="image" style={{fontSize: '16px'}} className="text-slate-500" />
+                                    </div>
+                                )}
+                                <span className="font-semibold" style={{ fontFamily: editingStyle.contentFont }}>
+                                    {editingStyle.leagueName || 'Your League Name'}
+                                </span>
+                            </div>
+                            <nav className="flex space-x-4 text-sm">
+                                <span>Home</span>
+                                <span>Teams</span>
+                                <span>Schedule</span>
+                                <span>Standings</span>
+                            </nav>
+                        </div>
+                    </div>
+
+                    {/* Banner Preview */}
+                    <div 
+                        className="relative h-48 flex items-center justify-center"
+                        style={{
+                            backgroundColor: editingStyle.bannerType === 'image' ? 'transparent' : (editingStyle.bannerColor || '#1e40af'),
+                            backgroundImage: editingStyle.bannerType === 'image' && editingStyle.bannerUrl 
+                                ? `url(${editingStyle.bannerUrl})` 
+                                : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}
+                    >
+                        <div className="text-center">
+                            <h1 
+                                className="text-4xl font-bold mb-2"
+                                style={{ 
+                                    fontFamily: editingStyle.bannerFont || 'Inter, sans-serif',
+                                    fontSize: editingStyle.bannerFontSize || '32px',
+                                    color: editingStyle.bannerTextColor || '#ffffff'
+                                }}
+                            >
+                                {editingStyle.leagueName || 'Your League Name'}
+                            </h1>
+                            <p 
+                                className="text-lg"
+                                style={{ 
+                                    fontFamily: editingStyle.contentFont || 'Inter, sans-serif',
+                                    color: editingStyle.bannerTextColor || '#ffffff'
+                                }}
+                            >
+                                {editingStyle.tagline || 'Your tagline here'}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Content Preview */}
+                    <div 
+                        className="p-6"
+                        style={{
+                            backgroundColor: editingStyle.backgroundType === 'image' ? 'rgba(255,255,255,0.9)' : (editingStyle.backgroundColor || '#f8fafc'),
+                            backgroundImage: editingStyle.backgroundType === 'image' && editingStyle.backgroundImageUrl 
+                                ? `url(${editingStyle.backgroundImageUrl})` 
+                                : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}
+                    >
+                        <h2 
+                            className="text-2xl font-bold mb-4"
+                            style={{ 
+                                fontFamily: editingStyle.headingFont || 'Inter, sans-serif',
+                                fontSize: editingStyle.headingFontSize || '24px',
+                                color: editingStyle.headingTextColor || '#1f2937'
+                            }}
+                        >
+                            Welcome to Our League
+                        </h2>
+                        <p 
+                            style={{ 
+                                fontFamily: editingStyle.contentFont || 'Inter, sans-serif',
+                                fontSize: editingStyle.contentFontSize || '16px',
+                                color: editingStyle.contentTextColor || '#374151'
+                            }}
+                        >
+                            This is a preview of how your website will look with the current design settings. Your league's branding, colors, and typography choices are displayed throughout the site.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="text-center">
+                <button
+                    onClick={handleSave}
+                    className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                >
+                    Save All Changes
+                </button>
+            </div>
+        </div>
+    );
+
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
