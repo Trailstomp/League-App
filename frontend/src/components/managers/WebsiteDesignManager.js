@@ -1701,10 +1701,10 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
 
                 {/* Section Content */}
                 <div className="p-6">
-                    {activeSection === 'theme' && renderThemeSection()}
-                    {activeSection === 'branding' && renderBrandingSection()}
-                    {activeSection === 'backgrounds' && renderBackgroundsSection()}
-                    {activeSection === 'typography' && renderTypographySection()}
+                    {activeSection === 'navigation' && renderNavigationSection()}
+                    {activeSection === 'banner' && renderBannerSection()}
+                    {activeSection === 'content' && renderBackgroundsSection()}
+                    {activeSection === 'menus' && renderTypographySection()}
                     {activeSection === 'preview' && renderPreviewSection()}
                 </div>
             </div>
