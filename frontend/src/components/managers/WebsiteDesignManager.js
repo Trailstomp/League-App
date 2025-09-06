@@ -319,12 +319,61 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
 
     const handleSave = () => {
         setWebsiteStyle(editingStyle);
-        setIsEditing(false);
+        // Auto-save - no need for edit mode toggle
+        console.log('Website style saved:', editingStyle);
     };
 
-    const handleCancel = () => {
-        setEditingStyle(websiteStyle);
-        setIsEditing(false);
+    const handleImageUpload = (file, target) => {
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setCropImageUrl(e.target.result);
+                setCropTarget(target);
+                setShowCropTool(true);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleCropComplete = (croppedImageUrl) => {
+        setEditingStyle(prev => ({
+            ...prev,
+            [`${cropTarget}Url`]: croppedImageUrl
+        }));
+        setShowCropTool(false);
+        setCropImageUrl('');
+        // Auto-save after crop
+        setTimeout(() => handleSave(), 100);
+    };
+
+    const toggleBackgroundType = (type) => {
+        if (type === 'color') {
+            setEditingStyle(prev => ({
+                ...prev,
+                backgroundType: 'color',
+                backgroundImageUrl: ''
+            }));
+        } else {
+            setEditingStyle(prev => ({
+                ...prev,
+                backgroundType: 'image'
+            }));
+        }
+    };
+
+    const toggleBannerType = (type) => {
+        if (type === 'color') {
+            setEditingStyle(prev => ({
+                ...prev,
+                bannerType: 'color',
+                bannerImageUrl: ''
+            }));
+        } else {
+            setEditingStyle(prev => ({
+                ...prev,
+                bannerType: 'image'
+            }));
+        }
     };
 
     const handleThemeSelect = (theme) => {
