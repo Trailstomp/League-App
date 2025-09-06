@@ -180,9 +180,9 @@ backend:
 frontend:
   - task: "Website Design Save Functionality - Banner Text Persistence Fix"
     implemented: true
-    working: true
+    working: false
     file: "frontend/src/components/managers/WebsiteDesignManager.js"
-    stuck_count: 3
+    stuck_count: 4
     priority: "critical"
     needs_retesting: false
     status_history:
@@ -201,6 +201,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "🎉 CRITICAL STATE CLOSURE FIX SUCCESSFULLY VERIFIED: Executed comprehensive testing of the state closure fix for banner persistence as requested in review. BREAKTHROUGH RESULTS: ✅ SUCCESSFUL TEST EXECUTION: Successfully logged in as Admin Ali, navigated to Admin Portal → Website Design → Top Banner section, and changed banner title to 'CLOSURE FIX VERIFIED' ✅ HANDLEAVEWITHSTATE FUNCTION WORKING: Console logs confirm the new handleSaveWithState function is correctly capturing current state with banner fields: '🎨 Banner fields being saved: {bannerTitle: CLOSURE FIX VERIFIED, bannerSubtitle: Midwest Lacrosse Battle League, bannerBackgroundColor: #1e40af, bannerTextColor: #ffffff}' ✅ FUNCTIONAL SETSTATE PATTERN WORKING: The functional setState pattern in both handleSave() and updateStyle() functions is successfully capturing current state instead of stale state ✅ BANNER PERSISTENCE CONFIRMED: After page refresh and re-navigation to Website Design → Top Banner, the banner title field shows 'CLOSURE FIX VERIFIED', proving the data persisted correctly ✅ API INTEGRATION WORKING: Multiple successful API saves confirmed with '✅ WebsiteStyle saved to API successfully' messages and proper timestamps ⚠️ MINOR ISSUES DETECTED: React warning 'Cannot update a component while rendering a different component' still appears, and there are multiple rapid save calls, but these don't affect core functionality. CRITICAL ASSESSMENT: The state closure fix is working correctly - banner text changes now persist through page refreshes. The handleSaveWithState function with functional setState pattern has resolved the original stale state closure issue. The banner persistence bug is fixed!"
+      - working: false
+        agent: "testing"
+        comment: "🚨 COMPREHENSIVE WEBSITE DESIGN FUNCTIONALITY VERIFICATION COMPLETED - CRITICAL ISSUES IDENTIFIED: Executed complete testing suite as requested in review to verify all website design functionality fixes. DETAILED TESTING RESULTS: ✅ NAVIGATION STYLING: Successfully tested league name changes - 'STYLING TEST LEAGUE' persists correctly and is visible on live website after page refresh ✅ LAYOUT.JS INTEGRATION: CSS variables are properly applied to document root (--primary-color: #1e40af, --main-bg-color: #f8fafc) confirming Layout.js integration is working ✅ IMAGE CROP TOOL: Found and verified image upload functionality is available when switching to 'Image Background' mode in banner section - crop tool implementation is present ✅ ADMIN ACCESS: Successfully logged in as Admin Ali and accessed all Website Design sections (Navigation Bar, Top Banner, Main Content, Menus & Sidebar) ❌ CRITICAL BANNER TEXT PERSISTENCE FAILURE: Banner title changes do NOT persist on live website - changed 'CROP TEST BANNER' to 'DETAILED BANNER TEST' but banner still shows 'Welcome to the Lacrosse League' on home page ❌ BANNER DISPLAY INTEGRATION MISSING: Banner text changes are saved in admin interface but NOT displayed on actual website - Layout.js is not rendering banner content from websiteStyle ❌ HOMEPAGE BANNER DISCONNECT: The homepage shows static 'Welcome to the Lacrosse League' text instead of dynamic websiteStyle.bannerTitle content. ROOT CAUSE IDENTIFIED: While the WebsiteDesignManager state closure fix works for admin interface persistence, the Layout.js component is not properly integrating banner text changes into the live website display. The banner styling (colors, fonts) may be applied via CSS variables, but the actual banner TEXT content is not being rendered from websiteStyle props. CRITICAL RECOMMENDATION: Main agent must implement banner text rendering in Layout.js or HomePage components to display websiteStyle.bannerTitle and bannerSubtitle on the live website, not just in admin previews."
 
   - task: "Enhanced Team Management System with Advanced Color Picker Integration"
     implemented: true
