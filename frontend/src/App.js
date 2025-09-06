@@ -386,6 +386,8 @@ function App() {
             currentUser={currentUser}
             users={users}
             setUsers={setUsers}
+            websiteStyle={websiteStyle}
+            setWebsiteStyle={setWebsiteStyle}
           />
         );
       case 'events':
