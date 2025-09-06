@@ -201,6 +201,9 @@ class Player(BaseModel):
     jerseyNumber: Optional[int] = None
     email: Optional[str] = ""
     phone: Optional[str] = ""
+    handedness: Optional[str] = ""  # Left, Right, or Ambidextrous
+    details: Optional[str] = ""  # Additional player information
+    photoUrl: Optional[str] = ""  # Player photo
     active: bool = True
     createdAt: datetime = Field(default_factory=datetime.utcnow)
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
