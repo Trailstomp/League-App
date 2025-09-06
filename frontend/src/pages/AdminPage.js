@@ -178,26 +178,79 @@ const PlayersManager = ({ teams, players, setPlayers }) => {
     const [editingPlayer, setEditingPlayer] = useState(null);
     const [showAddForm, setShowAddForm] = useState(false);
 
-    const handleAddPlayer = (playerData) => {
-        const newPlayer = {
-            id: Date.now().toString(),
-            ...playerData,
-            active: true,
-        };
-        setPlayers([...players, newPlayer]);
-        setShowAddForm(false);
+    const handleAddPlayer = async (playerData) => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/players`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ...playerData,
+                    active: true,
+                }),
+            });
+            
+            if (response.ok) {
+                const newPlayer = await response.json();
+                setPlayers([...players, newPlayer]);
+                setShowAddForm(false);
+                console.log('✅ Player added successfully');
+            } else {
+                console.error('❌ Failed to add player');
+                alert('Failed to add player. Please try again.');
+            }
+        } catch (error) {
+            console.error('❌ Error adding player:', error);
+            alert('Error adding player. Please try again.');
+        }
     };
 
-    const handleEditPlayer = (playerId, playerData) => {
-        setPlayers(players.map(player => 
-            player.id === playerId ? { ...player, ...playerData } : player
-        ));
-        setEditingPlayer(null);
+    const handleEditPlayer = async (playerId, playerData) => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/players/${playerId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(playerData),
+            });
+            
+            if (response.ok) {
+                const updatedPlayer = await response.json();
+                setPlayers(players.map(player => 
+                    player.id === playerId ? updatedPlayer : player
+                ));
+                setEditingPlayer(null);
+                console.log('✅ Player updated successfully');
+            } else {
+                console.error('❌ Failed to update player');
+                alert('Failed to update player. Please try again.');
+            }
+        } catch (error) {
+            console.error('❌ Error updating player:', error);
+            alert('Error updating player. Please try again.');
+        }
     };
 
-    const handleDeletePlayer = (playerId) => {
+    const handleDeletePlayer = async (playerId) => {
         if (window.confirm('Are you sure you want to delete this player?')) {
-            setPlayers(players.filter(player => player.id !== playerId));
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/players/${playerId}`, {
+                    method: 'DELETE',
+                });
+                
+                if (response.ok) {
+                    setPlayers(players.filter(player => player.id !== playerId));
+                    console.log('✅ Player deleted successfully');
+                } else {
+                    console.error('❌ Failed to delete player');
+                    alert('Failed to delete player. Please try again.');
+                }
+            } catch (error) {
+                console.error('❌ Error deleting player:', error);
+                alert('Error deleting player. Please try again.');
+            }
         }
     };
 
