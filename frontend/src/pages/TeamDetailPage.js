@@ -235,45 +235,166 @@ const TeamScheduleTab = ({ team, events = [] }) => {
 const TeamRosterTab = ({ team, players = [] }) => {
     const teamPlayers = players.filter(player => player.teamId === team.id);
 
+    const getPositionColor = (position) => {
+        switch (position?.toLowerCase()) {
+            case 'attack':
+                return 'bg-red-100 text-red-800 border-red-200';
+            case 'midfield':
+            case 'midfielder':
+                return 'bg-blue-100 text-blue-800 border-blue-200';
+            case 'defense':
+            case 'defender':
+                return 'bg-green-100 text-green-800 border-green-200';
+            case 'goalie':
+            case 'goalkeeper':
+                return 'bg-purple-100 text-purple-800 border-purple-200';
+            default:
+                return 'bg-gray-100 text-gray-800 border-gray-200';
+        }
+    };
+
+    const getPositionIcon = (position) => {
+        switch (position?.toLowerCase()) {
+            case 'attack':
+                return '⚔️';
+            case 'midfield':
+            case 'midfielder':
+                return '🏃';
+            case 'defense':
+            case 'defender':
+                return '🛡️';
+            case 'goalie':
+            case 'goalkeeper':
+                return '🥅';
+            default:
+                return '🥍';
+        }
+    };
+
     return (
         <div className="space-y-4 sm:space-y-6">
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-800">Roster</h2>
+            <div className="flex justify-between items-center">
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-800">Team Roster</h2>
+                <div className="text-sm text-slate-500">
+                    {teamPlayers.length} player{teamPlayers.length !== 1 ? 's' : ''}
+                </div>
+            </div>
             
             {teamPlayers.length > 0 ? (
-                <div className="overflow-x-auto">
-                    <table className="w-full border-collapse min-w-full">
-                        <thead>
-                            <tr className="bg-slate-50">
-                                <th className="border border-slate-200 px-2 sm:px-4 py-2 text-left text-xs sm:text-sm">#</th>
-                                <th className="border border-slate-200 px-2 sm:px-4 py-2 text-left text-xs sm:text-sm">Name</th>
-                                <th className="border border-slate-200 px-2 sm:px-4 py-2 text-left text-xs sm:text-sm hidden sm:table-cell">Position</th>
-                                <th className="border border-slate-200 px-2 sm:px-4 py-2 text-left text-xs sm:text-sm hidden md:table-cell">Contact</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {teamPlayers.map(player => (
-                                <tr key={player.id} className="hover:bg-slate-50">
-                                    <td className="border border-slate-200 px-2 sm:px-4 py-2 font-mono text-xs sm:text-sm">{player.jerseyNumber || '--'}</td>
-                                    <td className="border border-slate-200 px-2 sm:px-4 py-2 font-semibold text-xs sm:text-sm">
-                                        <div className="break-words">{player.name}</div>
-                                        <div className="sm:hidden text-xs text-slate-500">{player.position || 'Not specified'}</div>
-                                    </td>
-                                    <td className="border border-slate-200 px-2 sm:px-4 py-2 text-xs sm:text-sm hidden sm:table-cell">{player.position || 'Not specified'}</td>
-                                    <td className="border border-slate-200 px-2 sm:px-4 py-2 text-xs text-slate-600 hidden md:table-cell break-words">{player.email || player.phone || 'Not provided'}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {teamPlayers.map(player => (
+                        <div 
+                            key={player.id} 
+                            className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200 hover:border-slate-300"
+                        >
+                            {/* Player Header */}
+                            <div className="flex items-start justify-between mb-3">
+                                <div className="flex items-center space-x-3">
+                                    {/* Jersey Number */}
+                                    <div 
+                                        className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm"
+                                        style={{ 
+                                            backgroundColor: team.style?.primaryColor || '#2563eb'
+                                        }}
+                                    >
+                                        {player.jerseyNumber || '?'}
+                                    </div>
+                                    {/* Player Name */}
+                                    <div>
+                                        <h3 className="font-semibold text-slate-800 text-lg leading-tight">
+                                            {player.name}
+                                        </h3>
+                                        <div className="text-xs text-slate-500 mt-1">
+                                            Player ID: {player.id}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* Position Badge */}
+                                <div className={`px-2 py-1 rounded-full text-xs font-medium border ${getPositionColor(player.position)}`}>
+                                    <span className="mr-1">{getPositionIcon(player.position)}</span>
+                                    {player.position || 'Unassigned'}
+                                </div>
+                            </div>
+
+                            {/* Player Details */}
+                            <div className="space-y-2">
+                                {/* Contact Information */}
+                                {(player.email || player.phone) && (
+                                    <div className="bg-slate-50 rounded-lg p-3">
+                                        <h4 className="text-xs font-medium text-slate-600 mb-2 uppercase tracking-wide">
+                                            Contact Information
+                                        </h4>
+                                        <div className="space-y-1">
+                                            {player.email && (
+                                                <div className="flex items-center text-sm">
+                                                    <svg className="w-4 h-4 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                    </svg>
+                                                    <span className="text-slate-700 break-words">{player.email}</span>
+                                                </div>
+                                            )}
+                                            {player.phone && (
+                                                <div className="flex items-center text-sm">
+                                                    <svg className="w-4 h-4 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                    </svg>
+                                                    <span className="text-slate-700">{player.phone}</span>
+                                                </div>
+                                            )}
+                                            {!player.email && !player.phone && (
+                                                <div className="text-sm text-slate-500 italic">No contact info</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Player Status */}
+                                <div className="flex justify-between items-center pt-2">
+                                    <div className="flex items-center">
+                                        <div className={`w-2 h-2 rounded-full mr-2 ${player.active !== false ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                                        <span className={`text-xs font-medium ${player.active !== false ? 'text-green-700' : 'text-red-700'}`}>
+                                            {player.active !== false ? 'Active' : 'Inactive'}
+                                        </span>
+                                    </div>
+                                    
+                                    {/* Action Buttons */}
+                                    <div className="flex space-x-1">
+                                        <button 
+                                            className="p-1 text-slate-400 hover:text-slate-600 transition-colors"
+                                            title="Edit Player"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        </button>
+                                        <button 
+                                            className="p-1 text-slate-400 hover:text-blue-600 transition-colors"
+                                            title="View Player Stats"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012-2m0 0V9a2 2 0 012-2h2a2 2 0 012 2v10" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             ) : (
                 <div className="bg-slate-50 p-6 sm:p-8 rounded-lg text-center text-slate-500">
                     <LacrosseIcon name="teams" style={{fontSize: '48px'}} className="mx-auto mb-4" />
                     <h3 className="text-base sm:text-lg font-medium mb-2">No players registered</h3>
-                    <p className="text-sm">Players will appear here once they're added to the roster</p>
+                    <p className="text-sm mb-4">Start building your team by adding players to the roster</p>
+                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                        Add First Player
+                    </button>
                 </div>
             )}
         </div>
     );
+};
 };
 
 // Team Stats Tab
