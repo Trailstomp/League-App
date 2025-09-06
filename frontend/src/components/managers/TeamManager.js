@@ -606,44 +606,118 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                 </div>
             </div>
 
-            {/* Banner Image */}
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Banner Image</label>
-                <div className="space-y-3">
-                    <input 
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                                // Create object URL for preview
-                                const objectUrl = URL.createObjectURL(file);
-                                handleStyleChange('bannerUrl', objectUrl);
-                                handleStyleChange('bannerFile', file);
-                            }
-                        }}
-                        className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100" 
-                    />
-                    <p className="text-xs text-slate-500">Upload banner image for team header. Recommended size: 1200x400px</p>
-                    {teamStyle.bannerUrl && (
-                        <div className="space-y-2">
-                            <img 
-                                src={teamStyle.bannerUrl} 
-                                alt="Banner preview" 
-                                className="w-full h-32 object-cover rounded-lg border-2 border-slate-300"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    handleStyleChange('bannerUrl', '');
-                                    handleStyleChange('bannerFile', null);
-                                }}
-                                className="text-red-600 hover:text-red-800 text-sm"
-                            >
-                                Remove Banner
-                            </button>
-                        </div>
-                    )}
+            {/* Team Background Controls */}
+            <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Team Page Background</h3>
+                <div className="flex space-x-4 mb-4">
+                    <button
+                        type="button"
+                        onClick={() => handleStyleChange('backgroundType', 'color')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (teamStyle.backgroundType !== 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Color Background
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => handleStyleChange('backgroundType', 'image')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (teamStyle.backgroundType === 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Image Background
+                    </button>
+                </div>
+
+                {teamStyle.backgroundType === 'image' ? (
+                    <div>
+                        <input 
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                                const file = e.target.files[0];
+                                if (file) {
+                                    const objectUrl = URL.createObjectURL(file);
+                                    handleStyleChange('backgroundImageUrl', objectUrl);
+                                    handleStyleChange('backgroundImageFile', file);
+                                }
+                            }}
+                            className="w-full p-3 border border-slate-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        />
+                        {teamStyle.backgroundImageUrl && (
+                            <div className="mt-3">
+                                <img src={teamStyle.backgroundImageUrl} alt="Background preview" className="w-full h-32 object-cover rounded-lg border" />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        handleStyleChange('backgroundImageUrl', '');
+                                        handleStyleChange('backgroundImageFile', null);
+                                    }}
+                                    className="text-red-600 hover:text-red-800 text-sm mt-2"
+                                >
+                                    Remove Background Image
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Background Color</label>
+                        <EnhancedColorPicker
+                            label="Team Background"
+                            value={teamStyle.teamBackgroundColor || '#ffffff'}
+                            onChange={color => handleStyleChange('teamBackgroundColor', color)}
+                            showEyedropper={true}
+                        />
+                    </div>
+                )}
+            </div>
+
+            {/* Form & Button Controls */}
+            <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Forms & Buttons</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Form Background Color</label>
+                        <EnhancedColorPicker
+                            label="Form Background"
+                            value={teamStyle.formBackgroundColor || '#ffffff'}
+                            onChange={color => handleStyleChange('formBackgroundColor', color)}
+                            showEyedropper={true}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Button Color</label>
+                        <EnhancedColorPicker
+                            label="Button Color"
+                            value={teamStyle.buttonColor || teamStyle.primaryColor || '#1e40af'}
+                            onChange={color => handleStyleChange('buttonColor', color)}
+                            showEyedropper={true}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Form Text Color</label>
+                        <EnhancedColorPicker
+                            label="Form Text"
+                            value={teamStyle.formTextColor || '#374151'}
+                            onChange={color => handleStyleChange('formTextColor', color)}
+                            showEyedropper={true}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Button Text Color</label>
+                        <EnhancedColorPicker
+                            label="Button Text"
+                            value={teamStyle.buttonTextColor || '#ffffff'}
+                            onChange={color => handleStyleChange('buttonTextColor', color)}
+                            showEyedropper={true}
+                        />
+                    </div>
                 </div>
             </div>
 
