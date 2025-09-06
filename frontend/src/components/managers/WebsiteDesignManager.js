@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LacrosseIcon } from '../LacrosseIcons';
 import EnhancedColorPicker from '../EnhancedColorPicker';
 import ColorExtractor from '../ColorExtractor';
@@ -63,7 +63,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         { id: 'preview', label: 'Live Preview', icon: 'customize', description: 'See all changes applied' }
     ];
 
-    // Font options for typography
+    // Font options
     const fontFamilies = [
         { value: 'Inter, sans-serif', label: 'Inter (Modern Sans)' },
         { value: 'Roboto, sans-serif', label: 'Roboto (Clean Sans)' },
@@ -91,50 +91,77 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         setEditingStyle(prev => ({
             ...prev,
             ...websiteStyle,
-            // Ensure banner fields are preserved
             bannerTitle: websiteStyle.bannerTitle || prev.bannerTitle,
             bannerSubtitle: websiteStyle.bannerSubtitle || prev.bannerSubtitle,
             navLeagueName: websiteStyle.navLeagueName || websiteStyle.leagueName || prev.navLeagueName
         }));
     }, [websiteStyle]);
 
-    // Enhanced save functionality with proper feedback
+    // Fixed save with production error checking
     const handleSave = async () => {
-        setEditingStyle(currentState => {
-            console.log('🎨 handleSave called with current state:', currentState);
-            handleSaveWithState(currentState);
-            return currentState; // Return unchanged state
-        });
+        try {
+            console.log('🎨 Saving website style...');
+            
+            if (!process.env.REACT_APP_BACKEND_URL) {
+                console.error('❌ REACT_APP_BACKEND_URL not configured');
+                alert('Error: Backend URL not configured. Cannot save website style.');
+                return;
+            }
+            
+            const result = await setWebsiteStyle(editingStyle);
+            
+            if (result && result.success) {
+                console.log('✅ Save successful:', result.message);
+                
+                const saveButtons = document.querySelectorAll('[data-save-button]');
+                saveButtons.forEach(button => {
+                    const originalText = button.textContent;
+                    button.textContent = 'Saved!';
+                    button.style.backgroundColor = '#10b981';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.backgroundColor = '';
+                    }, 3000);
+                });
+            } else {
+                console.error('❌ Save failed:', result?.message || 'Unknown error');
+                alert(`Save failed: ${result?.message || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('❌ Error saving website style:', error);
+            alert(`Error saving: ${error.message}`);
+        }
     };
 
+    // Simplified direct image upload - NO CROP TOOL
     const handleImageUpload = (file, target, zone) => {
         if (file) {
+            console.log('📸 Processing image upload:', file.name, file.size);
+            
             const reader = new FileReader();
             reader.onload = (e) => {
-                setCropImageUrl(e.target.result);
-                setCropTarget(`${zone}_${target}`);
-                setShowCropTool(true);
+                const imageData = e.target.result;
+                console.log('✅ Image converted to data URL');
+                
+                setEditingStyle(prev => ({
+                    ...prev,
+                    [`${zone}${target.charAt(0).toUpperCase() + target.slice(1)}Url`]: imageData
+                }));
+                
+                // Auto-save after image upload
+                setTimeout(() => handleSave(), 500);
             };
+            
+            reader.onerror = (e) => {
+                console.error('❌ Failed to read image file:', e);
+                alert('Failed to read image file. Please try again.');
+            };
+            
             reader.readAsDataURL(file);
         }
     };
 
-    const handleCropComplete = (croppedImageUrl) => {
-        const [zone, type] = cropTarget.split('_');
-        
-        setEditingStyle(prev => ({
-            ...prev,
-            [`${zone}${type.charAt(0).toUpperCase() + type.slice(1)}Url`]: croppedImageUrl
-        }));
-        
-        setShowCropTool(false);
-        setCropImageUrl('');
-        
-        // Auto-save after crop
-        setTimeout(() => handleSave(), 100);
-    };
-
-    const handleColorExtraction = (imageFile, zone) => {
+    const handleColorExtraction = (imageFile) => {
         if (imageFile) {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -158,7 +185,6 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
             setShowColorExtractor(false);
             setExtractImageUrl('');
             
-            // Auto-save after color extraction
             setTimeout(() => handleSave(), 100);
         }
     };
@@ -173,72 +199,14 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     };
 
     const updateStyle = (updates) => {
-        console.log('🔧 updateStyle called with:', updates);
-        
-        setEditingStyle(prevState => {
-            const newState = {
-                ...prevState,
-                ...updates
-            };
-            console.log('🔧 Previous editingStyle state:', prevState);
-            console.log('🔧 New editingStyle state after update:', newState);
-            console.log('🔧 Banner fields in new state:', {
-                bannerTitle: newState.bannerTitle,
-                bannerSubtitle: newState.bannerSubtitle,
-                bannerBackgroundColor: newState.bannerBackgroundColor,
-                bannerTextColor: newState.bannerTextColor
-            });
-            
-            return newState;
-        });
-        
-        // Use a ref to capture the latest state for save
-        setTimeout(() => {
-            setEditingStyle(currentState => {
-                console.log('🔧 Auto-save triggered with current state:', currentState);
-                handleSaveWithState(currentState);
-                return currentState; // Return unchanged state
-            });
-        }, 500);
+        setEditingStyle(prev => ({
+            ...prev,
+            ...updates
+        }));
+        setTimeout(() => handleSave(), 500);
     };
 
-    // New save function that accepts state parameter
-    const handleSaveWithState = async (stateToSave) => {
-        try {
-            console.log('🎨 handleSaveWithState called with:', stateToSave);
-            console.log('🎨 Banner fields being saved:', {
-                bannerTitle: stateToSave.bannerTitle,
-                bannerSubtitle: stateToSave.bannerSubtitle,
-                bannerBackgroundColor: stateToSave.bannerBackgroundColor,
-                bannerTextColor: stateToSave.bannerTextColor
-            });
-            
-            // Call the parent's save function
-            const result = await setWebsiteStyle(stateToSave);
-            
-            if (result && result.success) {
-                console.log('✅ Save successful:', result.message);
-                
-                // Show success feedback
-                const saveButtons = document.querySelectorAll('[data-save-button]');
-                saveButtons.forEach(button => {
-                    const originalText = button.textContent;
-                    button.textContent = result.message || 'Saved!';
-                    button.style.backgroundColor = '#10b981'; // Green color
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.style.backgroundColor = ''; // Reset color
-                    }, 3000);
-                });
-            } else {
-                console.error('❌ Save failed:', result?.message || 'Unknown error');
-            }
-        } catch (error) {
-            console.error('❌ Error saving website style:', error);
-        }
-    };
-
-    // Zone-based render methods
+    // Navigation Section
     const renderNavigationSection = () => (
         <div className="space-y-6">
             <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
@@ -246,93 +214,10 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                 <p className="text-blue-600 text-sm">Customize your site header, navigation, and logo area</p>
             </div>
 
-            {/* Navigation Background */}
-            <div>
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Background</h4>
-                <div className="flex space-x-4 mb-4">
-                    <button
-                        onClick={() => toggleBackgroundType('nav', 'color')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            (editingStyle.navBackgroundType !== 'image') 
-                                ? 'bg-blue-600 text-white' 
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                        }`}
-                    >
-                        Color Background
-                    </button>
-                    <button
-                        onClick={() => toggleBackgroundType('nav', 'image')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            (editingStyle.navBackgroundType === 'image') 
-                                ? 'bg-blue-600 text-white' 
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                        }`}
-                    >
-                        Image Background
-                    </button>
-                </div>
-
-                {editingStyle.navBackgroundType === 'image' ? (
-                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
-                        {editingStyle.navBackgroundImage ? (
-                            <div>
-                                <img src={editingStyle.navBackgroundImage} alt="Nav Background" className="w-full h-20 mx-auto mb-3 object-cover rounded" />
-                                <div className="flex justify-center space-x-2">
-                                    <button 
-                                        onClick={() => updateStyle({ navBackgroundImage: '' })}
-                                        className="text-red-600 hover:text-red-800 text-sm"
-                                    >
-                                        Remove
-                                    </button>
-                                    <span className="text-slate-400">|</span>
-                                    <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
-                                        Replace
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'nav')}
-                                            className="hidden"
-                                        />
-                                    </label>
-                                </div>
-                            </div>
-                        ) : (
-                            <div>
-                                <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
-                                <p className="text-slate-600 mb-3">Upload navigation background</p>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'nav')}
-                                    className="hidden"
-                                    id="nav-bg-upload"
-                                />
-                                <label 
-                                    htmlFor="nav-bg-upload"
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                                >
-                                    Choose File & Crop
-                                </label>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.navBackgroundColor || '#ffffff'}
-                            onChange={(color) => updateStyle({ navBackgroundColor: color })}
-                            label="Navigation Background"
-                        />
-                    </div>
-                )}
-            </div>
-
             {/* Navigation Text & Logo */}
-            <div className="border-t pt-6">
+            <div>
                 <h4 className="text-md font-semibold text-slate-800 mb-4">Text & Logo</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* League Name */}
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-2">League Name</label>
                         <input
@@ -344,7 +229,6 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                         />
                     </div>
 
-                    {/* Logo Upload */}
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-2">Navigation Logo</label>
                         <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center">
@@ -374,7 +258,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                                             <input
                                                 type="file"
                                                 accept="image/*"
-                                                onChange={(e) => handleColorExtraction(e.target.files[0], 'nav')}
+                                                onChange={(e) => handleColorExtraction(e.target.files[0])}
                                                 className="hidden"
                                             />
                                         </label>
@@ -394,7 +278,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                                         htmlFor="nav-logo-upload"
                                         className="bg-blue-600 text-white px-3 py-2 text-xs rounded hover:bg-blue-700 transition-colors cursor-pointer"
                                     >
-                                        Upload & Crop
+                                        Upload Logo
                                     </label>
                                 </div>
                             )}
@@ -403,36 +287,20 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                 </div>
             </div>
 
-            {/* Typography */}
+            {/* Navigation Colors */}
             <div className="border-t pt-6">
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Typography</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Colors & Typography</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Font</label>
-                        <select
-                            value={editingStyle.navFont || 'Inter, sans-serif'}
-                            onChange={(e) => updateStyle({ navFont: e.target.value })}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                        >
-                            {fontFamilies.map(font => (
-                                <option key={font.value} value={font.value}>{font.label}</option>
-                            ))}
-                        </select>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
+                        <EnhancedColorPicker
+                            color={editingStyle.navBackgroundColor || '#ffffff'}
+                            onChange={(color) => updateStyle({ navBackgroundColor: color })}
+                            label="Nav Background"
+                        />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Size</label>
-                        <select
-                            value={editingStyle.navFontSize || '16px'}
-                            onChange={(e) => updateStyle({ navFontSize: e.target.value })}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                        >
-                            {fontSizes.map(size => (
-                                <option key={size.value} value={size.value}>{size.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Color</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
                         <EnhancedColorPicker
                             color={editingStyle.navTextColor || '#374151'}
                             onChange={(color) => updateStyle({ navTextColor: color })}
@@ -442,18 +310,13 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                 </div>
             </div>
 
-            {/* Preview */}
+            {/* Navigation Preview */}
             <div className="border-t pt-6">
                 <h4 className="text-md font-semibold text-slate-800 mb-4">Navigation Preview</h4>
                 <div 
                     className="border rounded-lg p-4 flex items-center justify-between"
                     style={{
-                        backgroundColor: editingStyle.navBackgroundType === 'image' ? 'transparent' : (editingStyle.navBackgroundColor || '#ffffff'),
-                        backgroundImage: editingStyle.navBackgroundType === 'image' && editingStyle.navBackgroundImage 
-                            ? `url(${editingStyle.navBackgroundImage})` 
-                            : 'none',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center'
+                        backgroundColor: editingStyle.navBackgroundColor || '#ffffff'
                     }}
                 >
                     <div className="flex items-center space-x-3">
@@ -475,33 +338,72 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                             {editingStyle.navLeagueName || 'Your League Name'}
                         </span>
                     </div>
-                    <nav 
-                        className="flex space-x-4 text-sm"
-                        style={{ 
-                            fontFamily: editingStyle.navFont || 'Inter, sans-serif',
-                            color: editingStyle.navTextColor || '#374151'
-                        }}
-                    >
-                        <span>Home</span>
-                        <span>Teams</span>
-                        <span>Schedule</span>
-                        <span>Standings</span>
-                    </nav>
                 </div>
             </div>
         </div>
     );
 
+    // Banner Section
     const renderBannerSection = () => (
         <div className="space-y-6">
             <div className="bg-green-50 p-4 rounded-lg border border-green-200">
                 <h3 className="text-lg font-semibold text-green-800 mb-2">Top Banner Zone</h3>
-                <p className="text-green-600 text-sm">Customize your main banner/hero section at the top of pages</p>
+                <p className="text-green-600 text-sm">Customize your main banner/hero section</p>
             </div>
 
-            {/* Banner Background */}
+            {/* Banner Text Content */}
             <div>
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Background</h4>
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Banner Text</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Main Title</label>
+                        <input
+                            type="text"
+                            value={editingStyle.bannerTitle || ''}
+                            onChange={(e) => updateStyle({ bannerTitle: e.target.value })}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                            placeholder="Welcome to Our League"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Subtitle</label>
+                        <input
+                            type="text"
+                            value={editingStyle.bannerSubtitle || ''}
+                            onChange={(e) => updateStyle({ bannerSubtitle: e.target.value })}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                            placeholder="Professional Competition"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Banner Colors */}
+            <div className="border-t pt-6">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Banner Colors</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
+                        <EnhancedColorPicker
+                            color={editingStyle.bannerBackgroundColor || '#1e40af'}
+                            onChange={(color) => updateStyle({ bannerBackgroundColor: color })}
+                            label="Banner Background"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
+                        <EnhancedColorPicker
+                            color={editingStyle.bannerTextColor || '#ffffff'}
+                            onChange={(color) => updateStyle({ bannerTextColor: color })}
+                            label="Banner Text"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Banner Image Upload - NO CROP */}
+            <div className="border-t pt-6">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Banner Background Image</h4>
                 <div className="flex space-x-4 mb-4">
                     <button
                         onClick={() => toggleBackgroundType('banner', 'color')}
@@ -525,34 +427,22 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                     </button>
                 </div>
 
-                {editingStyle.bannerBackgroundType === 'image' ? (
+                {editingStyle.bannerBackgroundType === 'image' && (
                     <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
                         {editingStyle.bannerBackgroundImage ? (
                             <div>
                                 <img src={editingStyle.bannerBackgroundImage} alt="Banner Background" className="w-full h-32 mx-auto mb-3 object-cover rounded" />
-                                <div className="flex justify-center space-x-2">
-                                    <button 
-                                        onClick={() => updateStyle({ bannerBackgroundImage: '' })}
-                                        className="text-red-600 hover:text-red-800 text-sm"
-                                    >
-                                        Remove
-                                    </button>
-                                    <span className="text-slate-400">|</span>
-                                    <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
-                                        Replace
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'banner')}
-                                            className="hidden"
-                                        />
-                                    </label>
-                                </div>
+                                <button 
+                                    onClick={() => updateStyle({ bannerBackgroundImage: '' })}
+                                    className="text-red-600 hover:text-red-800 text-sm"
+                                >
+                                    Remove Background Image
+                                </button>
                             </div>
                         ) : (
                             <div>
                                 <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
-                                <p className="text-slate-600 mb-3">Upload banner background image</p>
+                                <p className="text-slate-600 mb-3">Upload banner background (will be used as-is, no cropping)</p>
                                 <input
                                     type="file"
                                     accept="image/*"
@@ -564,87 +454,12 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                                     htmlFor="banner-bg-upload"
                                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
                                 >
-                                    Choose File & Crop
+                                    Choose Image
                                 </label>
                             </div>
                         )}
                     </div>
-                ) : (
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.bannerBackgroundColor || '#1e40af'}
-                            onChange={(color) => updateStyle({ bannerBackgroundColor: color })}
-                            label="Banner Background"
-                        />
-                    </div>
                 )}
-            </div>
-
-            {/* Banner Text Content */}
-            <div className="border-t pt-6">
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Text Content</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Main Title</label>
-                        <input
-                            type="text"
-                            value={editingStyle.bannerTitle || ''}
-                            onChange={(e) => updateStyle({ bannerTitle: e.target.value })}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            placeholder="Welcome to Our League"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Subtitle/Tagline</label>
-                        <input
-                            type="text"
-                            value={editingStyle.bannerSubtitle || ''}
-                            onChange={(e) => updateStyle({ bannerSubtitle: e.target.value })}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            placeholder="Professional Competition"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* Banner Typography */}
-            <div className="border-t pt-6">
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Typography</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Font</label>
-                        <select
-                            value={editingStyle.bannerFont || 'Inter, sans-serif'}
-                            onChange={(e) => updateStyle({ bannerFont: e.target.value })}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                        >
-                            {fontFamilies.map(font => (
-                                <option key={font.value} value={font.value}>{font.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Size</label>
-                        <select
-                            value={editingStyle.bannerFontSize || '32px'}
-                            onChange={(e) => updateStyle({ bannerFontSize: e.target.value })}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                        >
-                            {fontSizes.map(size => (
-                                <option key={size.value} value={size.value}>{size.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.bannerTextColor || '#ffffff'}
-                            onChange={(color) => updateStyle({ bannerTextColor: color })}
-                            label="Banner Text"
-                        />
-                    </div>
-                </div>
             </div>
 
             {/* Banner Preview */}
@@ -690,6 +505,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         </div>
     );
 
+    // Content Section  
     const renderContentSection = () => (
         <div className="space-y-6">
             <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
@@ -697,7 +513,6 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                 <p className="text-purple-600 text-sm">Customize the main page background and content text styling</p>
             </div>
 
-            {/* Main Background */}
             <div>
                 <h4 className="text-md font-semibold text-slate-800 mb-4">Page Background</h4>
                 <div className="flex space-x-4 mb-4">
@@ -728,24 +543,12 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                         {editingStyle.mainBackgroundImage ? (
                             <div>
                                 <img src={editingStyle.mainBackgroundImage} alt="Main Background" className="w-full h-32 mx-auto mb-3 object-cover rounded" />
-                                <div className="flex justify-center space-x-2">
-                                    <button 
-                                        onClick={() => updateStyle({ mainBackgroundImage: '' })}
-                                        className="text-red-600 hover:text-red-800 text-sm"
-                                    >
-                                        Remove
-                                    </button>
-                                    <span className="text-slate-400">|</span>
-                                    <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
-                                        Replace
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'main')}
-                                            className="hidden"
-                                        />
-                                    </label>
-                                </div>
+                                <button 
+                                    onClick={() => updateStyle({ mainBackgroundImage: '' })}
+                                    className="text-red-600 hover:text-red-800 text-sm"
+                                >
+                                    Remove Background Image
+                                </button>
                             </div>
                         ) : (
                             <div>
@@ -762,7 +565,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                                     htmlFor="main-bg-upload"
                                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
                                 >
-                                    Choose File & Crop
+                                    Choose Image
                                 </label>
                             </div>
                         )}
@@ -778,265 +581,10 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                     </div>
                 )}
             </div>
-
-            {/* Content Typography */}
-            <div className="border-t pt-6">
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Content Typography</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Font</label>
-                        <select
-                            value={editingStyle.mainFont || 'Inter, sans-serif'}
-                            onChange={(e) => updateStyle({ mainFont: e.target.value })}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                        >
-                            {fontFamilies.map(font => (
-                                <option key={font.value} value={font.value}>{font.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Size</label>
-                        <select
-                            value={editingStyle.mainFontSize || '16px'}
-                            onChange={(e) => updateStyle({ mainFontSize: e.target.value })}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                        >
-                            {fontSizes.map(size => (
-                                <option key={size.value} value={size.value}>{size.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.mainTextColor || '#374151'}
-                            onChange={(color) => updateStyle({ mainTextColor: color })}
-                            label="Main Text"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* Content Preview */}
-            <div className="border-t pt-6">
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Content Preview</h4>
-                <div 
-                    className="border rounded-lg p-8"
-                    style={{
-                        backgroundColor: editingStyle.mainBackgroundType === 'image' ? 'rgba(255,255,255,0.9)' : (editingStyle.mainBackgroundColor || '#f8fafc'),
-                        backgroundImage: editingStyle.mainBackgroundType === 'image' && editingStyle.mainBackgroundImage 
-                            ? `url(${editingStyle.mainBackgroundImage})` 
-                            : 'none',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center'
-                    }}
-                >
-                    <h2 
-                        className="text-2xl font-bold mb-4"
-                        style={{ 
-                            fontFamily: editingStyle.mainFont || 'Inter, sans-serif',
-                            color: editingStyle.mainTextColor || '#374151'
-                        }}
-                    >
-                        Sample Page Content
-                    </h2>
-                    <p 
-                        className="mb-4"
-                        style={{ 
-                            fontFamily: editingStyle.mainFont || 'Inter, sans-serif',
-                            fontSize: editingStyle.mainFontSize || '16px',
-                            color: editingStyle.mainTextColor || '#374151'
-                        }}
-                    >
-                        This is how your main content text will appear throughout the website. The background and typography settings you choose here will be applied to all content areas.
-                    </p>
-                    <p 
-                        style={{ 
-                            fontFamily: editingStyle.mainFont || 'Inter, sans-serif',
-                            fontSize: editingStyle.mainFontSize || '16px',
-                            color: editingStyle.mainTextColor || '#374151'
-                        }}
-                    >
-                        You can customize the background color or image, font family, size, and text color to match your league's branding perfectly.
-                    </p>
-                </div>
-            </div>
         </div>
     );
 
-    const renderMenusSection = () => (
-        <div className="space-y-6">
-            <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-                <h3 className="text-lg font-semibold text-orange-800 mb-2">Menus & Sidebar Zone</h3>
-                <p className="text-orange-600 text-sm">Customize your sidebar navigation, menus, and secondary elements</p>
-            </div>
-
-            {/* Menu Background */}
-            <div>
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Menu Background</h4>
-                <div className="flex space-x-4 mb-4">
-                    <button
-                        onClick={() => toggleBackgroundType('menu', 'color')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            (editingStyle.menuBackgroundType !== 'image') 
-                                ? 'bg-blue-600 text-white' 
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                        }`}
-                    >
-                        Color Background
-                    </button>
-                    <button
-                        onClick={() => toggleBackgroundType('menu', 'image')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            (editingStyle.menuBackgroundType === 'image') 
-                                ? 'bg-blue-600 text-white' 
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                        }`}
-                    >
-                        Image Background
-                    </button>
-                </div>
-
-                {editingStyle.menuBackgroundType === 'image' ? (
-                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
-                        {editingStyle.menuBackgroundImage ? (
-                            <div>
-                                <img src={editingStyle.menuBackgroundImage} alt="Menu Background" className="w-full h-32 mx-auto mb-3 object-cover rounded" />
-                                <div className="flex justify-center space-x-2">
-                                    <button 
-                                        onClick={() => updateStyle({ menuBackgroundImage: '' })}
-                                        className="text-red-600 hover:text-red-800 text-sm"
-                                    >
-                                        Remove
-                                    </button>
-                                    <span className="text-slate-400">|</span>
-                                    <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
-                                        Replace
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'menu')}
-                                            className="hidden"
-                                        />
-                                    </label>
-                                </div>
-                            </div>
-                        ) : (
-                            <div>
-                                <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
-                                <p className="text-slate-600 mb-3">Upload menu background image</p>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'menu')}
-                                    className="hidden"
-                                    id="menu-bg-upload"
-                                />
-                                <label 
-                                    htmlFor="menu-bg-upload"
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                                >
-                                    Choose File & Crop
-                                </label>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.menuBackgroundColor || '#ffffff'}
-                            onChange={(color) => updateStyle({ menuBackgroundColor: color })}
-                            label="Menu Background"
-                        />
-                    </div>
-                )}
-            </div>
-
-            {/* Menu Typography */}
-            <div className="border-t pt-6">
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Menu Typography</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Font</label>
-                        <select
-                            value={editingStyle.menuFont || 'Inter, sans-serif'}
-                            onChange={(e) => updateStyle({ menuFont: e.target.value })}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                        >
-                            {fontFamilies.map(font => (
-                                <option key={font.value} value={font.value}>{font.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Size</label>
-                        <select
-                            value={editingStyle.menuFontSize || '16px'}
-                            onChange={(e) => updateStyle({ menuFontSize: e.target.value })}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                        >
-                            {fontSizes.map(size => (
-                                <option key={size.value} value={size.value}>{size.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.menuTextColor || '#374151'}
-                            onChange={(color) => updateStyle({ menuTextColor: color })}
-                            label="Menu Text"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* Menu Preview */}
-            <div className="border-t pt-6">
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Menu Preview</h4>
-                <div 
-                    className="border rounded-lg p-4 w-64"
-                    style={{
-                        backgroundColor: editingStyle.menuBackgroundType === 'image' ? 'transparent' : (editingStyle.menuBackgroundColor || '#ffffff'),
-                        backgroundImage: editingStyle.menuBackgroundType === 'image' && editingStyle.menuBackgroundImage 
-                            ? `url(${editingStyle.menuBackgroundImage})` 
-                            : 'none',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center'
-                    }}
-                >
-                    <div className="space-y-3">
-                        <div 
-                            className="font-semibold border-b pb-2 mb-2"
-                            style={{ 
-                                fontFamily: editingStyle.menuFont || 'Inter, sans-serif',
-                                fontSize: editingStyle.menuFontSize || '16px',
-                                color: editingStyle.menuTextColor || '#374151'
-                            }}
-                        >
-                            MENU SECTION
-                        </div>
-                        {['Home', 'Events & Schedule', 'Standings', 'Teams', 'Admin'].map(item => (
-                            <div 
-                                key={item}
-                                className="py-1 hover:bg-gray-100 rounded px-2 cursor-pointer"
-                                style={{ 
-                                    fontFamily: editingStyle.menuFont || 'Inter, sans-serif',
-                                    fontSize: editingStyle.menuFontSize || '16px',
-                                    color: editingStyle.menuTextColor || '#374151'
-                                }}
-                            >
-                                {item}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-
+    // Live Preview Section
     const renderPreviewSection = () => (
         <div className="space-y-6">
             <div>
@@ -1046,12 +594,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                     <div 
                         className="border-b p-4"
                         style={{
-                            backgroundColor: editingStyle.navBackgroundType === 'image' ? 'transparent' : (editingStyle.navBackgroundColor || '#ffffff'),
-                            backgroundImage: editingStyle.navBackgroundType === 'image' && editingStyle.navBackgroundImage 
-                                ? `url(${editingStyle.navBackgroundImage})` 
-                                : 'none',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
+                            backgroundColor: editingStyle.navBackgroundColor || '#ffffff'
                         }}
                     >
                         <div className="flex items-center justify-between">
@@ -1074,18 +617,6 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                                     {editingStyle.navLeagueName || 'Your League Name'}
                                 </span>
                             </div>
-                            <nav 
-                                className="flex space-x-4 text-sm"
-                                style={{ 
-                                    fontFamily: editingStyle.navFont || 'Inter, sans-serif',
-                                    color: editingStyle.navTextColor || '#374151'
-                                }}
-                            >
-                                <span>Home</span>
-                                <span>Teams</span>
-                                <span>Schedule</span>
-                                <span>Standings</span>
-                            </nav>
                         </div>
                     </div>
                     
@@ -1145,7 +676,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                                 color: editingStyle.primaryColor || '#1e40af'
                             }}
                         >
-                            Sample Page Content
+                            Sample Content
                         </h2>
                         <p 
                             className="mb-4"
@@ -1155,14 +686,8 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                                 color: editingStyle.mainTextColor || '#374151'
                             }}
                         >
-                            This preview shows how all your design choices work together. The navigation, banner, and content areas all reflect your customizations.
+                            This preview shows how your design choices work together.
                         </p>
-                        <button 
-                            className="px-4 py-2 rounded-lg text-white"
-                            style={{ backgroundColor: editingStyle.accentColor || '#3b82f6' }}
-                        >
-                            Sample Button
-                        </button>
                     </div>
                 </div>
             </div>
@@ -1219,7 +744,6 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                     {activeSection === 'navigation' && renderNavigationSection()}
                     {activeSection === 'banner' && renderBannerSection()}
                     {activeSection === 'content' && renderContentSection()}
-                    {activeSection === 'menus' && renderMenusSection()}
                     {activeSection === 'preview' && renderPreviewSection()}
                 </div>
             </div>
@@ -1235,22 +759,11 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                     }}
                 />
             )}
-
-            {/* Image Crop Tool */}
-            {showCropTool && (
-                <ImageCropTool
-                    imageUrl={cropImageUrl}
-                    onCrop={handleCropComplete}
-                    onCancel={() => {
-                        setShowCropTool(false);
-                        setCropImageUrl('');
-                    }}
-                    aspectRatio="free"
-                    targetArea={cropTarget}
-                />
-            )}
         </div>
     );
 };
 
-export default WebsiteDesignManager;
+export default WebsiteDesignManager;</content>
+    </file>
+  </files_and_snippets>
+</document>
