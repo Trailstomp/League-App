@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import LacrosseIcons, { LacrosseIcon } from './LacrosseIcons';
 import { isAdmin } from './PermissionsSystem';
 
-const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, teams = [], onMobileClose }) => {
+const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, teams = [], websiteStyle = {}, onMobileClose }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     const NavItem = ({ icon, label, pageName, onClick }) => (
