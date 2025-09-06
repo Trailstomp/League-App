@@ -859,7 +859,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                         Color Banner
                     </button>
                     <button
-                        onClick={() => toggleBannerType('image')}
+                        onClick={() => toggleBackgroundType('banner', 'image')}
                         className={`px-4 py-2 rounded-lg transition-colors ${
                             (editingStyle.bannerType === 'image') 
                                 ? 'bg-blue-600 text-white' 
