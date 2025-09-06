@@ -137,12 +137,12 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
 
 // Team Home Tab
 const TeamHomeTab = ({ team }) => (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
         <div>
-            <h2 className="text-2xl font-bold text-slate-800 mb-4">Welcome to {team.name}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg">
-                    <h3 className="text-lg font-semibold text-blue-800 mb-3">Season Overview</h3>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4">Welcome to {team.name}</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 sm:p-6 rounded-lg">
+                    <h3 className="text-base sm:text-lg font-semibold text-blue-800 mb-3">Season Overview</h3>
                     <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
                             <span>Games Played:</span>
@@ -163,20 +163,20 @@ const TeamHomeTab = ({ team }) => (
                     </div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg">
-                    <h3 className="text-lg font-semibold text-green-800 mb-3">Team Info</h3>
+                <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 sm:p-6 rounded-lg">
+                    <h3 className="text-base sm:text-lg font-semibold text-green-800 mb-3">Team Info</h3>
                     <div className="space-y-2 text-sm">
                         <div><strong>Division:</strong> {team.division || 'Field'}</div>
-                        <div><strong>Coach:</strong> {team.coach || 'TBD'}</div>
-                        <div><strong>Home Field:</strong> {team.homeField || 'TBD'}</div>
-                        <div><strong>Contact:</strong> {team.contactEmail || 'Not provided'}</div>
+                        <div><strong>Coach:</strong> <span className="break-words">{team.coach || 'TBD'}</span></div>
+                        <div><strong>Home Field:</strong> <span className="break-words">{team.homeField || 'TBD'}</span></div>
+                        <div><strong>Contact:</strong> <span className="break-words">{team.contactEmail || 'Not provided'}</span></div>
                     </div>
                 </div>
             </div>
         </div>
         
         <div>
-            <h3 className="text-lg font-semibold text-slate-800 mb-3">Recent News</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-slate-800 mb-3">Recent News</h3>
             <div className="bg-slate-50 p-4 rounded-lg text-center text-slate-500">
                 <LacrosseIcon name="news" style={{fontSize: '32px'}} className="mx-auto mb-2" />
                 <p>No recent news updates</p>
