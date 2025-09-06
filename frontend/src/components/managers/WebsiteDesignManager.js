@@ -1893,7 +1893,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                     {activeSection === 'navigation' && renderNavigationSection()}
                     {activeSection === 'banner' && renderBannerSection()}
                     {activeSection === 'content' && renderBackgroundsSection()}
-                    {activeSection === 'menus' && renderTypographySection()}
+                    {activeSection === 'menus' && renderMenusSection()}
                     {activeSection === 'preview' && renderPreviewSection()}
                 </div>
             </div>
