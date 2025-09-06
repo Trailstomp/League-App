@@ -774,7 +774,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                         Color Background
                     </button>
                     <button
-                        onClick={() => toggleBackgroundType('image')}
+                        onClick={() => toggleBackgroundType('main', 'image')}
                         className={`px-4 py-2 rounded-lg transition-colors ${
                             (editingStyle.backgroundType === 'image') 
                                 ? 'bg-blue-600 text-white' 
