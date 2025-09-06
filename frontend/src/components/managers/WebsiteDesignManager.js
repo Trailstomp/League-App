@@ -650,61 +650,156 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         </div>
     );
 
-    const renderLayoutSection = () => (
+    const renderBackgroundsSection = () => (
         <div className="space-y-6">
+            {/* Page Background */}
             <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Layout Options</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Header Style</label>
-                        <select
-                            value={editingStyle.headerStyle || 'gradient'}
-                            onChange={(e) => setEditingStyle({...editingStyle, headerStyle: e.target.value})}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="gradient">Gradient</option>
-                            <option value="solid">Solid Color</option>
-                            <option value="image">Background Image</option>
-                            <option value="minimal">Minimal</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Sidebar Position</label>
-                        <select
-                            value={editingStyle.sidebarPosition || 'left'}
-                            onChange={(e) => setEditingStyle({...editingStyle, sidebarPosition: e.target.value})}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="left">Left</option>
-                            <option value="right">Right</option>
-                            <option value="top">Top Navigation</option>
-                        </select>
-                    </div>
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Page Background</h3>
+                <div className="flex space-x-4 mb-4">
+                    <button
+                        onClick={() => toggleBackgroundType('color')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (editingStyle.backgroundType !== 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Color Background
+                    </button>
+                    <button
+                        onClick={() => toggleBackgroundType('image')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (editingStyle.backgroundType === 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Image Background
+                    </button>
                 </div>
+
+                {editingStyle.backgroundType === 'image' ? (
+                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                        {editingStyle.backgroundImageUrl ? (
+                            <div>
+                                <img src={editingStyle.backgroundImageUrl} alt="Background" className="w-full h-32 mx-auto mb-3 object-cover rounded" />
+                                <div className="flex justify-center space-x-2">
+                                    <button 
+                                        onClick={() => setEditingStyle({...editingStyle, backgroundImageUrl: ''})}
+                                        className="text-red-600 hover:text-red-800 text-sm"
+                                    >
+                                        Remove Background
+                                    </button>
+                                    <span className="text-slate-400">|</span>
+                                    <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
+                                        Replace Background
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleImageUpload(e.target.files[0], 'backgroundImage')}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+                        ) : (
+                            <div>
+                                <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
+                                <p className="text-slate-600 mb-3">Upload background image</p>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleImageUpload(e.target.files[0], 'backgroundImage')}
+                                    className="hidden"
+                                    id="background-upload"
+                                />
+                                <label 
+                                    htmlFor="background-upload"
+                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                                >
+                                    Choose File & Crop
+                                </label>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
+                        <EnhancedColorPicker
+                            color={editingStyle.backgroundColor || '#f8fafc'}
+                            onChange={(color) => {
+                                setEditingStyle({...editingStyle, backgroundColor: color});
+                                setTimeout(() => handleSave(), 500);
+                            }}
+                            label="Background"
+                        />
+                    </div>
+                )}
             </div>
 
-            <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Content Layout</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {['boxed', 'wide', 'full-width'].map(layout => (
-                        <button
-                            key={layout}
-                            onClick={() => setEditingStyle({...editingStyle, contentLayout: layout})}
-                            className={`p-4 border-2 rounded-lg text-center transition-colors ${
-                                editingStyle.contentLayout === layout
-                                    ? 'border-blue-500 bg-blue-50'
-                                    : 'border-slate-200 hover:border-slate-300'
-                            }`}
-                        >
-                            <div className="mb-2">
-                                <div className={`mx-auto border bg-slate-100 ${
-                                    layout === 'boxed' ? 'w-12 h-8' :
-                                    layout === 'wide' ? 'w-16 h-8' : 'w-full h-8'
-                                }`}></div>
-                            </div>
-                            <span className="text-sm font-medium capitalize">{layout.replace('-', ' ')}</span>
-                        </button>
-                    ))}
+            {/* Banner Styling */}
+            <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Banner Styling</h3>
+                <div className="flex space-x-4 mb-4">
+                    <button
+                        onClick={() => toggleBannerType('color')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (editingStyle.bannerType !== 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Color Banner
+                    </button>
+                    <button
+                        onClick={() => toggleBannerType('image')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (editingStyle.bannerType === 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Image Banner
+                    </button>
+                </div>
+
+                {editingStyle.bannerType === 'image' ? (
+                    <p className="text-sm text-slate-600 bg-slate-50 p-3 rounded">
+                        Banner image is configured in the Branding section above. Use this section to set banner text styling.
+                    </p>
+                ) : (
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Banner Background Color</label>
+                        <EnhancedColorPicker
+                            color={editingStyle.bannerColor || '#1e40af'}
+                            onChange={(color) => {
+                                setEditingStyle({...editingStyle, bannerColor: color});
+                                setTimeout(() => handleSave(), 500);
+                            }}
+                            label="Banner Background"
+                        />
+                    </div>
+                )}
+            </div>
+
+            {/* Background Preview */}
+            <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Background Preview</h3>
+                <div 
+                    className="border rounded-lg p-6 min-h-40 flex items-center justify-center"
+                    style={{ 
+                        backgroundColor: editingStyle.backgroundType === 'image' ? 'transparent' : (editingStyle.backgroundColor || '#f8fafc'),
+                        backgroundImage: editingStyle.backgroundType === 'image' && editingStyle.backgroundImageUrl 
+                            ? `url(${editingStyle.backgroundImageUrl})` 
+                            : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                    }}
+                >
+                    <div className="text-center p-6 bg-white bg-opacity-90 rounded-lg">
+                        <h4 className="text-xl font-bold mb-2">Sample Content</h4>
+                        <p className="text-slate-600">This shows how your background will look behind content</p>
+                    </div>
                 </div>
             </div>
         </div>
