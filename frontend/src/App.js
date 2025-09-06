@@ -394,6 +394,8 @@ function App() {
           <EventsPage
             teams={teams}
             currentUser={currentUser}
+            websiteStyle={websiteStyle}
+            setWebsiteStyle={setWebsiteStyle}
             events={events}
             setEvents={setEvents}
           />
