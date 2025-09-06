@@ -1404,29 +1404,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
 
 
 
-            <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Preview</h3>
-                <div 
-                    className="border rounded-lg p-6 min-h-32"
-                    style={{ 
-                        backgroundColor: editingStyle.backgroundColor || '#f8fafc',
-                        color: editingStyle.primaryColor || '#1e40af'
-                    }}
-                >
-                    <h4 className="text-xl font-bold mb-2" style={{ color: editingStyle.primaryColor }}>
-                        Sample Header
-                    </h4>
-                    <p className="text-slate-600 mb-3">This is how your website content will look with the selected colors.</p>
-                    <button 
-                        className="px-4 py-2 rounded-lg text-white"
-                        style={{ backgroundColor: editingStyle.accentColor || '#3b82f6' }}
-                    >
-                        Sample Button
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
+
 
     const renderBrandingSection = () => (
         <div className="space-y-6">
