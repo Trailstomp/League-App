@@ -385,7 +385,14 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     // Enhanced save functionality with proper feedback
     const handleSave = async () => {
         try {
-            console.log('🎨 WebsiteDesignManager saving:', editingStyle);
+            console.log('🎨 WebsiteDesignManager handleSave called');
+            console.log('🎨 Current editingStyle state:', editingStyle);
+            console.log('🎨 Banner fields in editingStyle:', {
+                bannerTitle: editingStyle.bannerTitle,
+                bannerSubtitle: editingStyle.bannerSubtitle,
+                bannerBackgroundColor: editingStyle.bannerBackgroundColor,
+                bannerTextColor: editingStyle.bannerTextColor
+            });
             
             // Call the parent's save function
             const result = await setWebsiteStyle(editingStyle);
