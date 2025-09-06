@@ -154,16 +154,19 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
         }
     }, [cropArea, canvasSize, imageScale, imagePan, isLoading]);
 
-    // Fixed crop handler
+    // Fixed crop handler with proper error handling
     const handleCrop = () => {
         const canvas = canvasRef.current;
         const image = imageRef.current;
         if (!canvas || !image) {
-            console.error('Canvas or image not available for cropping');
+            console.error('❌ Canvas or image not available for cropping');
+            alert('Error: Cannot access image for cropping. Please try uploading the image again.');
             return;
         }
 
         try {
+            console.log('🎯 Starting crop process...');
+            
             // Create output canvas
             const outputCanvas = document.createElement('canvas');
             outputCanvas.width = cropArea.width;
@@ -179,6 +182,8 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
             const sourceWidth = Math.min(image.width - sourceX, cropArea.width * scaleX / imageScale);
             const sourceHeight = Math.min(image.height - sourceY, cropArea.height * scaleY / imageScale);
 
+            console.log('🎯 Crop coordinates:', { sourceX, sourceY, sourceWidth, sourceHeight });
+
             // Draw cropped portion
             ctx.drawImage(
                 image,
@@ -186,19 +191,34 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
                 0, 0, cropArea.width, cropArea.height
             );
 
-            // Convert to blob and create URL
+            console.log('✅ Canvas drawing completed, creating blob...');
+
+            // Convert to blob and create data URL instead of blob URL for better compatibility
             outputCanvas.toBlob((blob) => {
                 if (blob) {
-                    const croppedUrl = URL.createObjectURL(blob);
-                    console.log('✅ Image cropped successfully:', croppedUrl);
-                    onCrop(croppedUrl);
+                    console.log('✅ Blob created successfully, size:', blob.size);
+                    
+                    // Convert to base64 data URL for better persistence
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const dataUrl = e.target.result;
+                        console.log('✅ Data URL created:', dataUrl.substring(0, 50) + '...');
+                        onCrop(dataUrl);
+                    };
+                    reader.onerror = (e) => {
+                        console.error('❌ Failed to convert blob to data URL:', e);
+                        alert('Error converting image. Please try again.');
+                    };
+                    reader.readAsDataURL(blob);
                 } else {
-                    console.error('Failed to create blob from cropped canvas');
+                    console.error('❌ Failed to create blob from cropped canvas');
+                    alert('Error creating cropped image. Please try a different image or crop area.');
                 }
-            }, 'image/jpeg', 0.9);
+            }, 'image/jpeg', 0.8);
             
         } catch (error) {
-            console.error('Error during image cropping:', error);
+            console.error('❌ Error during image cropping:', error);
+            alert(`Cropping failed: ${error.message}. Please try again with a different image.`);
         }
     };
 
