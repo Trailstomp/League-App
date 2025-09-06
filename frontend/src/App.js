@@ -33,11 +33,35 @@ function App() {
     contentLayout: 'wide'
   });
 
-  // Simple navigation handler
-  const handleNavigate = (page) => {
-    console.log('🧭 Navigation requested to:', page);
-    setCurrentPage(page);
-    console.log('🧭 Current page set to:', page);
+  // Enhanced websiteStyle handler with API persistence
+  const handleWebsiteStyleChange = async (newStyle) => {
+    try {
+      console.log('🎨 Saving websiteStyle changes:', newStyle);
+      
+      // Update local state immediately
+      setWebsiteStyle(newStyle);
+      
+      // Save to API
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/league-data/websiteStyle`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newStyle)
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ WebsiteStyle saved to API successfully:', result);
+        return { success: true, message: 'Saved successfully!' };
+      } else {
+        console.error('❌ Failed to save websiteStyle to API:', response.statusText);
+        return { success: false, message: 'Failed to save to server' };
+      }
+    } catch (error) {
+      console.error('❌ Error saving websiteStyle:', error);
+      return { success: false, message: 'Network error occurred' };
+    }
   };
 
   // Team navigation handler
