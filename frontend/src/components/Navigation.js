@@ -26,24 +26,51 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
     );
 
     return (
-        <div className={`
-            ${isCollapsed ? 'w-16' : 'w-64'} 
-            bg-white shadow-sm border-r h-screen flex flex-col 
-            transition-all duration-300
-            max-w-full overflow-hidden
-        `}>
+        <div 
+            className={`
+                ${isCollapsed ? 'w-16' : 'w-64'} 
+                shadow-sm border-r h-screen flex flex-col 
+                transition-all duration-300
+                max-w-full overflow-hidden
+            `}
+            style={{
+                backgroundColor: websiteStyle.navBackgroundColor || '#ffffff',
+                backgroundImage: websiteStyle.navBackgroundType === 'image' && websiteStyle.navBackgroundImage 
+                    ? `url(${websiteStyle.navBackgroundImage})` 
+                    : 'none',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+            }}
+        >
             {/* Header with Toggle */}
             <div className="p-4 border-b flex-shrink-0">
                 <div className="flex items-center justify-between">
                     {!isCollapsed && (
-                        <h1 className="text-lg sm:text-xl font-bold text-slate-800 truncate">
-                            🥍 Lacrosse League
+                        <h1 
+                            className="text-lg sm:text-xl font-bold truncate"
+                            style={{
+                                fontFamily: websiteStyle.navFont || 'Inter, sans-serif',
+                                fontSize: websiteStyle.navFontSize || '18px',
+                                color: websiteStyle.navTextColor || '#1f2937'
+                            }}
+                        >
+                            {websiteStyle.navLogoUrl ? (
+                                <div className="flex items-center space-x-2">
+                                    <img src={websiteStyle.navLogoUrl} alt="Logo" className="w-6 h-6 object-contain" />
+                                    <span>{websiteStyle.navLeagueName || 'Lacrosse League'}</span>
+                                </div>
+                            ) : (
+                                <>🥍 {websiteStyle.navLeagueName || 'Lacrosse League'}</>
+                            )}
                         </h1>
                     )}
                     <button
                         onClick={() => setIsCollapsed(!isCollapsed)}
                         className="p-2 rounded-lg hover:bg-slate-100 transition-colors flex-shrink-0"
                         title={isCollapsed ? "Expand navigation" : "Collapse navigation"}
+                        style={{
+                            color: websiteStyle.navTextColor || '#374151'
+                        }}
                     >
                         <svg 
                             className={`w-4 h-4 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} 
