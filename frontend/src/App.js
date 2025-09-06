@@ -106,70 +106,77 @@ function App() {
     setShowLogin(true);
   };
 
-  // Load data from API on mount
+  // Load data from API on mount - DEFENSIVE LOADING TO PREVENT OVERWRITES
   useEffect(() => {
     const loadData = async () => {
       try {
-        console.log('🔄 Loading league data from API...');
+        console.log('🔄 Starting fresh data load from API...');
         
-        // Load complete league data including websiteStyle
+        // Load complete league data
         const leagueResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/league-data`);
         if (leagueResponse.ok) {
           const leagueData = await leagueResponse.json();
-          console.log('📊 Loaded complete league data:', leagueData);
+          console.log('📊 Raw league data received:', leagueData);
           
-          // CRITICAL: Only update teams if we get valid data from API
-          if (leagueData.teams && leagueData.teams.length > 0) {
-            console.log('✅ Setting teams from league-data:', leagueData.teams.length, 'teams');
-            console.log('📊 Teams being set:', leagueData.teams.map(t => `${t.name} (${t.division})`));
-            setTeams(leagueData.teams);
-          } else {
-            console.warn('⚠️ No teams in league-data, keeping current teams or loading from teams endpoint');
-            
-            // Fallback: Load teams from individual endpoint only if no current teams
-            if (teams.length === 0) {
-              const teamsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/teams`);
-              if (teamsResponse.ok) {
-                const teamsData = await teamsResponse.json();
-                if (teamsData && teamsData.length > 0) {
-                  console.log('📊 Fallback: Setting teams from teams endpoint:', teamsData.length, 'teams');
-                  setTeams(teamsData);
-                }
-              }
+          // CRITICAL: DEFENSIVE TEAM LOADING - Only load if data exists and is valid
+          if (leagueData.teams && Array.isArray(leagueData.teams)) {
+            console.log('🏆 Teams in league data:', leagueData.teams.length);
+            if (leagueData.teams.length > 0) {
+              console.log('✅ Setting teams from league-data:', leagueData.teams.map(t => t.name));
+              setTeams(leagueData.teams);
+            } else {
+              console.log('📝 No teams in league-data, starting with empty array');
+              setTeams([]);
             }
+          } else {
+            console.log('📝 No teams array in league-data, starting with empty array');
+            setTeams([]);
           }
           
           // Load players safely
-          if (leagueData.players && leagueData.players.length > 0) {
+          if (leagueData.players && Array.isArray(leagueData.players) && leagueData.players.length > 0) {
             setPlayers(leagueData.players);
             console.log('✅ Loaded players:', leagueData.players.length, 'players');
+          } else {
+            setPlayers([]);
           }
           
           // Load events safely  
-          if (leagueData.leagueSchedule && leagueData.leagueSchedule.length > 0) {
+          if (leagueData.leagueSchedule && Array.isArray(leagueData.leagueSchedule) && leagueData.leagueSchedule.length > 0) {
             setEvents(leagueData.leagueSchedule);
             console.log('✅ Loaded events:', leagueData.leagueSchedule.length, 'events');
+          } else {
+            setEvents([]);
           }
           
-          // Load websiteStyle - this is the critical fix!
-          if (leagueData.websiteStyle) {
-            console.log('🎨 Loading saved websiteStyle:', Object.keys(leagueData.websiteStyle));
+          // Load websiteStyle safely
+          if (leagueData.websiteStyle && typeof leagueData.websiteStyle === 'object') {
+            console.log('🎨 Loading saved websiteStyle with keys:', Object.keys(leagueData.websiteStyle));
             setWebsiteStyle(prev => ({
               ...prev,
               ...leagueData.websiteStyle
             }));
             console.log('✅ WebsiteStyle loaded and applied');
           } else {
-            console.log('📝 No saved websiteStyle found, using defaults');
+            console.log('📝 No saved websiteStyle found, keeping current defaults');
           }
           
         } else {
-          console.warn('⚠️ Failed to load league data, status:', leagueResponse.status);
+          console.error('❌ Failed to load league data, status:', leagueResponse.status);
+          // Do NOT fall back to anything - keep empty arrays to start fresh
+          console.log('📝 Keeping empty arrays for fresh start');
+          setTeams([]);
+          setPlayers([]);
+          setEvents([]);
         }
 
       } catch (error) {
         console.error('❌ Error loading data from API:', error);
-        console.log('📝 Using current state due to API error');
+        console.log('📝 Keeping empty arrays due to error - fresh start');
+        // Keep empty arrays for fresh start
+        setTeams([]);
+        setPlayers([]);
+        setEvents([]);
       }
     };
 
