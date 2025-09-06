@@ -17,8 +17,14 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
             // Update local state immediately
             setTeams(newTeams);
             
-            // Save to backend API to prevent overwrites
-            const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+            // Save to backend API to prevent overwrites  
+            if (!process.env.REACT_APP_BACKEND_URL) {
+                console.error('❌ REACT_APP_BACKEND_URL not configured - cannot save teams');
+                alert('Error: Backend URL not configured. Teams cannot be saved.');
+                return;
+            }
+            
+            const backendUrl = process.env.REACT_APP_BACKEND_URL;
             
             // Save to both individual teams endpoint and league-data
             const response = await fetch(`${backendUrl}/api/league-data/teams`, {
