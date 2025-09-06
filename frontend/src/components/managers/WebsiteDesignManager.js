@@ -493,7 +493,259 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         });
     };
 
-    const renderThemeSection = () => (
+    // Zone-based render methods
+    const renderNavigationSection = () => (
+        <div className="space-y-6">
+            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <h3 className="text-lg font-semibold text-blue-800 mb-2">Navigation Bar Zone</h3>
+                <p className="text-blue-600 text-sm">Customize your site header, navigation, and logo area</p>
+            </div>
+
+            {/* Navigation Background */}
+            <div>
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Background</h4>
+                <div className="flex space-x-4 mb-4">
+                    <button
+                        onClick={() => toggleBackgroundType('nav', 'color')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (editingStyle.navBackgroundType !== 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Color Background
+                    </button>
+                    <button
+                        onClick={() => toggleBackgroundType('nav', 'image')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (editingStyle.navBackgroundType === 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Image Background
+                    </button>
+                </div>
+
+                {editingStyle.navBackgroundType === 'image' ? (
+                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                        {editingStyle.navBackgroundImage ? (
+                            <div>
+                                <img src={editingStyle.navBackgroundImage} alt="Nav Background" className="w-full h-20 mx-auto mb-3 object-cover rounded" />
+                                <div className="flex justify-center space-x-2">
+                                    <button 
+                                        onClick={() => updateStyle({ navBackgroundImage: '' })}
+                                        className="text-red-600 hover:text-red-800 text-sm"
+                                    >
+                                        Remove
+                                    </button>
+                                    <span className="text-slate-400">|</span>
+                                    <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
+                                        Replace
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'nav')}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+                        ) : (
+                            <div>
+                                <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
+                                <p className="text-slate-600 mb-3">Upload navigation background</p>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'nav')}
+                                    className="hidden"
+                                    id="nav-bg-upload"
+                                />
+                                <label 
+                                    htmlFor="nav-bg-upload"
+                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                                >
+                                    Choose File & Crop
+                                </label>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
+                        <EnhancedColorPicker
+                            color={editingStyle.navBackgroundColor || '#ffffff'}
+                            onChange={(color) => updateStyle({ navBackgroundColor: color })}
+                            label="Navigation Background"
+                        />
+                    </div>
+                )}
+            </div>
+
+            {/* Navigation Text & Logo */}
+            <div className="border-t pt-6">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Text & Logo</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* League Name */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">League Name</label>
+                        <input
+                            type="text"
+                            value={editingStyle.navLeagueName || ''}
+                            onChange={(e) => updateStyle({ navLeagueName: e.target.value })}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                            placeholder="Your League Name"
+                        />
+                    </div>
+
+                    {/* Logo Upload */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Navigation Logo</label>
+                        <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center">
+                            {editingStyle.navLogoUrl ? (
+                                <div>
+                                    <img src={editingStyle.navLogoUrl} alt="Nav Logo" className="w-16 h-16 mx-auto mb-2 object-contain" />
+                                    <div className="flex justify-center space-x-2">
+                                        <button 
+                                            onClick={() => updateStyle({ navLogoUrl: '' })}
+                                            className="text-red-600 hover:text-red-800 text-xs"
+                                        >
+                                            Remove
+                                        </button>
+                                        <span className="text-slate-400">|</span>
+                                        <label className="text-blue-600 hover:text-blue-800 text-xs cursor-pointer">
+                                            Replace
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => handleImageUpload(e.target.files[0], 'logo', 'nav')}
+                                                className="hidden"
+                                            />
+                                        </label>
+                                        <span className="text-slate-400">|</span>
+                                        <label className="text-green-600 hover:text-green-800 text-xs cursor-pointer">
+                                            Extract Colors
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => handleColorExtraction(e.target.files[0], 'nav')}
+                                                className="hidden"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div>
+                                    <LacrosseIcon name="image" className="mx-auto mb-2 text-slate-400" style={{fontSize: '32px'}} />
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'logo', 'nav')}
+                                        className="hidden"
+                                        id="nav-logo-upload"
+                                    />
+                                    <label 
+                                        htmlFor="nav-logo-upload"
+                                        className="bg-blue-600 text-white px-3 py-2 text-xs rounded hover:bg-blue-700 transition-colors cursor-pointer"
+                                    >
+                                        Upload & Crop
+                                    </label>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Typography */}
+            <div className="border-t pt-6">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Typography</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Font</label>
+                        <select
+                            value={editingStyle.navFont || 'Inter, sans-serif'}
+                            onChange={(e) => updateStyle({ navFont: e.target.value })}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                            {fontFamilies.map(font => (
+                                <option key={font.value} value={font.value}>{font.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Size</label>
+                        <select
+                            value={editingStyle.navFontSize || '16px'}
+                            onChange={(e) => updateStyle({ navFontSize: e.target.value })}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                            {fontSizes.map(size => (
+                                <option key={size.value} value={size.value}>{size.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Color</label>
+                        <EnhancedColorPicker
+                            color={editingStyle.navTextColor || '#374151'}
+                            onChange={(color) => updateStyle({ navTextColor: color })}
+                            label="Nav Text"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Preview */}
+            <div className="border-t pt-6">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Navigation Preview</h4>
+                <div 
+                    className="border rounded-lg p-4 flex items-center justify-between"
+                    style={{
+                        backgroundColor: editingStyle.navBackgroundType === 'image' ? 'transparent' : (editingStyle.navBackgroundColor || '#ffffff'),
+                        backgroundImage: editingStyle.navBackgroundType === 'image' && editingStyle.navBackgroundImage 
+                            ? `url(${editingStyle.navBackgroundImage})` 
+                            : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                    }}
+                >
+                    <div className="flex items-center space-x-3">
+                        {editingStyle.navLogoUrl ? (
+                            <img src={editingStyle.navLogoUrl} alt="Logo" className="w-8 h-8 object-contain" />
+                        ) : (
+                            <div className="w-8 h-8 bg-slate-300 rounded flex items-center justify-center">
+                                <LacrosseIcon name="image" style={{fontSize: '16px'}} className="text-slate-500" />
+                            </div>
+                        )}
+                        <span 
+                            className="font-medium"
+                            style={{ 
+                                fontFamily: editingStyle.navFont || 'Inter, sans-serif',
+                                fontSize: editingStyle.navFontSize || '16px',
+                                color: editingStyle.navTextColor || '#374151'
+                            }}
+                        >
+                            {editingStyle.navLeagueName || 'Your League Name'}
+                        </span>
+                    </div>
+                    <nav 
+                        className="flex space-x-4 text-sm"
+                        style={{ 
+                            fontFamily: editingStyle.navFont || 'Inter, sans-serif',
+                            color: editingStyle.navTextColor || '#374151'
+                        }}
+                    >
+                        <span>Home</span>
+                        <span>Teams</span>
+                        <span>Schedule</span>
+                        <span>Standings</span>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    );
         <div className="space-y-6">
             <div>
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">Pre-built Themes</h3>
