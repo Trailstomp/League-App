@@ -385,7 +385,6 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
 
     const handleCancel = () => {
         setEditingStyle(websiteStyle);
-        setIsEditing(false);
     };
 
     const handleImageUpload = (file, target) => {
