@@ -363,11 +363,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Website Design Save Functionality - Banner Text Persistence Fix"
-  stuck_tasks:
-    - "Website Design Save Functionality - Banner Text Persistence Fix"
+    - "Enhanced Team Management System with Advanced Color Picker Integration"
+    - "Smart Color Extraction from Team Logos - Auto Assignment Feature"
+  stuck_tasks: []
   test_all: false
-  test_priority: "critical_first"
+  test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
