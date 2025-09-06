@@ -281,9 +281,9 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     const designSections = [
         { id: 'theme', label: 'Theme & Colors', icon: 'view' },
         { id: 'branding', label: 'Branding & Logos', icon: 'image' },
-        { id: 'layout', label: 'Layout Settings', icon: 'settings' },
-        { id: 'typography', label: 'Typography', icon: 'text' },
-        { id: 'components', label: 'Component Styles', icon: 'customize' }
+        { id: 'backgrounds', label: 'Backgrounds & Banners', icon: 'image' },
+        { id: 'typography', label: 'Typography & Text', icon: 'text' },
+        { id: 'preview', label: 'Live Preview', icon: 'customize' }
     ];
 
     const themes = [
@@ -292,6 +292,29 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         { id: 'modern', name: 'Modern Clean', colors: { primary: '#059669', accent: '#10b981', background: '#ecfdf5' } },
         { id: 'classic', name: 'Classic Blue', colors: { primary: '#2563eb', accent: '#3b82f6', background: '#eff6ff' } },
         { id: 'dark', name: 'Dark Mode', colors: { primary: '#6366f1', accent: '#8b5cf6', background: '#1e293b' } }
+    ];
+
+    // Font options for typography
+    const fontFamilies = [
+        { value: 'Inter, sans-serif', label: 'Inter (Modern Sans)' },
+        { value: 'Roboto, sans-serif', label: 'Roboto (Clean Sans)' },
+        { value: 'Georgia, serif', label: 'Georgia (Classic Serif)' },
+        { value: 'Times New Roman, serif', label: 'Times New Roman (Traditional)' },
+        { value: 'Arial, sans-serif', label: 'Arial (Standard Sans)' },
+        { value: 'Helvetica, sans-serif', label: 'Helvetica (Professional)' },
+        { value: 'Playfair Display, serif', label: 'Playfair (Elegant Serif)' },
+        { value: 'Open Sans, sans-serif', label: 'Open Sans (Friendly)' }
+    ];
+
+    const fontSizes = [
+        { value: '12px', label: 'Small (12px)' },
+        { value: '14px', label: 'Regular (14px)' },
+        { value: '16px', label: 'Medium (16px)' },
+        { value: '18px', label: 'Large (18px)' },
+        { value: '20px', label: 'X-Large (20px)' },
+        { value: '24px', label: 'XX-Large (24px)' },
+        { value: '32px', label: 'Huge (32px)' },
+        { value: '48px', label: 'Banner (48px)' }
     ];
 
     const handleSave = () => {
