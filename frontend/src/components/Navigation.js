@@ -2,12 +2,17 @@ import React, { useState } from 'react';
 import LacrosseIcons, { LacrosseIcon } from './LacrosseIcons';
 import { isAdmin } from './PermissionsSystem';
 
-const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, teams = [] }) => {
+const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, teams = [], onMobileClose }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     const NavItem = ({ icon, label, pageName, onClick }) => (
         <button
-            onClick={() => onClick ? onClick() : onNavigate(pageName)}
+            onClick={() => {
+                if (onClick) onClick();
+                else onNavigate(pageName);
+                // Close mobile menu when item is clicked
+                if (onMobileClose) onMobileClose();
+            }}
             className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                 currentPage === pageName
                     ? 'bg-blue-100 text-blue-700'
@@ -21,18 +26,23 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
     );
 
     return (
-        <div className={`${isCollapsed ? 'w-16' : 'w-64'} bg-white shadow-sm border-r min-h-screen flex flex-col transition-all duration-300`}>
+        <div className={`
+            ${isCollapsed ? 'w-16' : 'w-64'} 
+            bg-white shadow-sm border-r min-h-screen flex flex-col 
+            transition-all duration-300
+            max-w-full
+        `}>
             {/* Header with Toggle */}
             <div className="p-4 border-b">
                 <div className="flex items-center justify-between">
                     {!isCollapsed && (
-                        <h1 className="text-xl font-bold text-slate-800">
+                        <h1 className="text-lg sm:text-xl font-bold text-slate-800 truncate">
                             🥍 Lacrosse League
                         </h1>
                     )}
                     <button
                         onClick={() => setIsCollapsed(!isCollapsed)}
-                        className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+                        className="p-2 rounded-lg hover:bg-slate-100 transition-colors flex-shrink-0"
                         title={isCollapsed ? "Expand navigation" : "Collapse navigation"}
                     >
                         <svg 
@@ -48,15 +58,15 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 
                 {!isCollapsed && currentUser ? (
                     <div className="mt-2">
-                        <p className="text-sm text-slate-600">
+                        <p className="text-sm text-slate-600 truncate">
                             Welcome, {currentUser.name}
                         </p>
-                        <p className="text-xs text-blue-600">
+                        <p className="text-xs text-blue-600 truncate">
                             {(currentUser.roles || [currentUser.role]).filter(Boolean).join(', ')}
                         </p>
                     </div>
                 ) : !isCollapsed ? (
-                    <p className="text-sm text-slate-500 mt-1">
+                    <p className="text-sm text-slate-500 mt-1 truncate">
                         Browsing as guest
                     </p>
                 ) : null}
@@ -64,18 +74,20 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
 
             {/* Navigation */}
             <nav className="p-4 border-b">
-                <NavItem icon={<LacrosseIcon name="venue" />} label="Home" pageName="home" />
-                <NavItem icon={<LacrosseIcon name="calendar" />} label="Events & Schedule" pageName="events" />
-                <NavItem icon={<LacrosseIcon name="trophy" />} label="Standings" pageName="standings" />
-                <NavItem icon={<LacrosseIcon name="email" />} label="League Contact" pageName="league_contact" />
-                {currentUser && <NavItem icon={<LacrosseIcon name="social" />} label="Chat" pageName="chat" />}
-                {currentUser && isAdmin(currentUser) && (
-                    <NavItem icon={<LacrosseIcon name="admin" />} label="Admin Portal" pageName="admin" />
-                )}
+                <div className="space-y-1">
+                    <NavItem icon={<LacrosseIcon name="venue" />} label="Home" pageName="home" />
+                    <NavItem icon={<LacrosseIcon name="calendar" />} label="Events & Schedule" pageName="events" />
+                    <NavItem icon={<LacrosseIcon name="trophy" />} label="Standings" pageName="standings" />
+                    <NavItem icon={<LacrosseIcon name="email" />} label="League Contact" pageName="league_contact" />
+                    {currentUser && <NavItem icon={<LacrosseIcon name="social" />} label="Chat" pageName="chat" />}
+                    {currentUser && isAdmin(currentUser) && (
+                        <NavItem icon={<LacrosseIcon name="admin" />} label="Admin Portal" pageName="admin" />
+                    )}
+                </div>
             </nav>
 
             {/* Teams Section */}
-            <div className="px-4 pb-4 border-b flex-grow">
+            <div className="px-4 pb-4 border-b flex-grow overflow-hidden">
                 <h3 className={`text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 ${isCollapsed ? 'text-center' : ''}`}>
                     <LacrosseIcon name="stick" className={isCollapsed ? "" : "mr-1"} style={{fontSize: '12px'}} />
                     {!isCollapsed && " Teams"}
@@ -88,6 +100,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                             onClick={() => {
                                 console.log('🏆 Team clicked:', team.name, team.id);
                                 onNavigate && onNavigate('team', team.id);
+                                if (onMobileClose) onMobileClose();
                             }}
                             title={isCollapsed ? `${team.name} (${team.wins || 0}-${team.losses || 0})` : ''}
                         >
@@ -122,7 +135,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                         <div className="font-medium truncate">{team.name}</div>
                                         <div className="text-xs text-slate-500 truncate">{team.division || 'Field'}</div>
                                     </div>
-                                    <div className="text-xs text-slate-400 ml-2">
+                                    <div className="text-xs text-slate-400 ml-2 flex-shrink-0">
                                         {team.wins || 0}-{team.losses || 0}
                                     </div>
                                 </>
