@@ -1402,33 +1402,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     );
 
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Primary Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.primaryColor || '#1e40af'}
-                            onChange={(color) => setEditingStyle({...editingStyle, primaryColor: color})}
-                            label="Primary"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Accent Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.accentColor || '#3b82f6'}
-                            onChange={(color) => setEditingStyle({...editingStyle, accentColor: color})}
-                            label="Accent"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.backgroundColor || '#f8fafc'}
-                            onChange={(color) => setEditingStyle({...editingStyle, backgroundColor: color})}
-                            label="Background"
-                        />
-                    </div>
-                </div>
-            </div>
+
 
             <div className="border-t pt-6">
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">Preview</h3>
