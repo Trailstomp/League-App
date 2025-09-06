@@ -79,45 +79,71 @@ function App() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Load teams from API
-        const teamsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/teams`);
-        if (teamsResponse.ok) {
-          const teamsData = await teamsResponse.json();
-          console.log('📊 Loaded teams from API:', teamsData.length, 'teams');
-          setTeams(teamsData);
+        console.log('🔄 Loading league data from API...');
+        
+        // Load complete league data including websiteStyle
+        const leagueResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/league-data`);
+        if (leagueResponse.ok) {
+          const leagueData = await leagueResponse.json();
+          console.log('📊 Loaded complete league data:', leagueData);
+          
+          // Set all data from league-data endpoint
+          if (leagueData.teams && leagueData.teams.length > 0) {
+            setTeams(leagueData.teams);
+            console.log('✅ Loaded teams:', leagueData.teams.length, 'teams');
+          }
+          
+          if (leagueData.players && leagueData.players.length > 0) {
+            setPlayers(leagueData.players);
+            console.log('✅ Loaded players:', leagueData.players.length, 'players');
+          }
+          
+          if (leagueData.leagueSchedule && leagueData.leagueSchedule.length > 0) {
+            setEvents(leagueData.leagueSchedule);
+            console.log('✅ Loaded events:', leagueData.leagueSchedule.length, 'events');
+          }
+          
+          // Load websiteStyle - this is the critical fix!
+          if (leagueData.websiteStyle) {
+            console.log('🎨 Loading saved websiteStyle:', leagueData.websiteStyle);
+            setWebsiteStyle(prev => ({
+              ...prev,
+              ...leagueData.websiteStyle
+            }));
+            console.log('✅ WebsiteStyle loaded and applied');
+          } else {
+            console.log('📝 No saved websiteStyle found, using defaults');
+          }
+          
         } else {
-          console.warn('⚠️ Failed to load teams from API, using empty array');
-          setTeams([]);
-        }
+          console.warn('⚠️ Failed to load league data, falling back to individual endpoints');
+          
+          // Fallback: Load from individual endpoints if league-data fails
+          const teamsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/teams`);
+          if (teamsResponse.ok) {
+            const teamsData = await teamsResponse.json();
+            console.log('📊 Fallback: Loaded teams from API:', teamsData.length, 'teams');
+            setTeams(teamsData);
+          }
 
-        // Load players from API
-        const playersResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/players`);
-        if (playersResponse.ok) {
-          const playersData = await playersResponse.json();
-          console.log('📊 Loaded players from API:', playersData.length, 'players');
-          setPlayers(playersData);
-        } else {
-          console.warn('⚠️ Failed to load players from API, using empty array');
-          setPlayers([]);
-        }
+          const playersResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/players`);
+          if (playersResponse.ok) {
+            const playersData = await playersResponse.json();
+            console.log('📊 Fallback: Loaded players from API:', playersData.length, 'players');
+            setPlayers(playersData);
+          }
 
-        // Load events from API  
-        const eventsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/events`);
-        if (eventsResponse.ok) {
-          const eventsData = await eventsResponse.json();
-          console.log('📊 Loaded events from API:', eventsData.length, 'events');
-          setEvents(eventsData);
-        } else {
-          console.warn('⚠️ Failed to load events from API, using empty array');
-          setEvents([]);
+          const eventsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/events`);
+          if (eventsResponse.ok) {
+            const eventsData = await eventsResponse.json();
+            console.log('📊 Fallback: Loaded events from API:', eventsData.length, 'events');
+            setEvents(eventsData);
+          }
         }
 
       } catch (error) {
         console.error('❌ Error loading data from API:', error);
-        // Use empty arrays if API fails
-        setTeams([]);
-        setPlayers([]);  
-        setEvents([]);
+        console.log('📝 Using default values due to API error');
       }
     };
 
