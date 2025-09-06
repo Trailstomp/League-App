@@ -946,7 +946,114 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     );
 
     const renderThemeSection = () => (
-    const renderContentSection = () => (
+    const renderThemeSection = () => (
+        <div className="space-y-6">
+            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <h3 className="text-lg font-semibold text-slate-800 mb-2">Quick Theme Selection</h3>
+                <p className="text-slate-600 text-sm">Choose from pre-built themes or extract colors from your images</p>
+            </div>
+
+            <div>
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Pre-built Themes</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[
+                        { id: 'professional', name: 'Professional', colors: { primary: '#1e40af', accent: '#3b82f6', background: '#f8fafc' } },
+                        { id: 'sport', name: 'Sport Dynamic', colors: { primary: '#dc2626', accent: '#ef4444', background: '#fef2f2' } },
+                        { id: 'modern', name: 'Modern Clean', colors: { primary: '#059669', accent: '#10b981', background: '#ecfdf5' } },
+                        { id: 'classic', name: 'Classic Blue', colors: { primary: '#2563eb', accent: '#3b82f6', background: '#eff6ff' } },
+                        { id: 'dark', name: 'Dark Mode', colors: { primary: '#6366f1', accent: '#8b5cf6', background: '#1e293b' } }
+                    ].map(theme => (
+                        <button
+                            key={theme.id}
+                            onClick={() => updateStyle({
+                                primaryColor: theme.colors.primary,
+                                accentColor: theme.colors.accent,
+                                navBackgroundColor: theme.colors.background,
+                                mainBackgroundColor: theme.colors.background,
+                                bannerBackgroundColor: theme.colors.primary
+                            })}
+                            className={`p-4 border-2 rounded-lg text-left transition-colors hover:border-blue-300`}
+                        >
+                            <div className="flex items-center justify-between mb-3">
+                                <h4 className="font-medium text-slate-800">{theme.name}</h4>
+                            </div>
+                            <div className="flex space-x-2">
+                                <div className="w-8 h-8 rounded" style={{ backgroundColor: theme.colors.primary }}></div>
+                                <div className="w-8 h-8 rounded" style={{ backgroundColor: theme.colors.accent }}></div>
+                                <div className="w-8 h-8 rounded border" style={{ backgroundColor: theme.colors.background }}></div>
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Color Extraction */}
+            <div className="border-t pt-6">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Smart Color Extraction</h4>
+                <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                    <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
+                    <p className="text-slate-600 mb-3">Upload an image to extract colors for your theme</p>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleColorExtraction(e.target.files[0], 'theme')}
+                        className="hidden"
+                        id="color-extract-upload"
+                    />
+                    <label 
+                        htmlFor="color-extract-upload"
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors cursor-pointer"
+                    >
+                        Extract Colors from Image
+                    </label>
+                </div>
+            </div>
+
+            {/* Current Colors */}
+            <div className="border-t pt-6">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Current Theme Colors</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Primary Color</label>
+                        <EnhancedColorPicker
+                            color={editingStyle.primaryColor || '#1e40af'}
+                            onChange={(color) => updateStyle({ primaryColor: color })}
+                            label="Primary"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Accent Color</label>
+                        <EnhancedColorPicker
+                            color={editingStyle.accentColor || '#3b82f6'}
+                            onChange={(color) => updateStyle({ accentColor: color })}
+                            label="Accent"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Theme Preview</h3>
+                <div 
+                    className="border rounded-lg p-6 min-h-32"
+                    style={{ 
+                        backgroundColor: editingStyle.mainBackgroundColor || '#f8fafc'
+                    }}
+                >
+                    <h4 className="text-xl font-bold mb-2" style={{ color: editingStyle.primaryColor }}>
+                        Sample Header
+                    </h4>
+                    <p className="text-slate-600 mb-3">This preview shows your current color theme in action.</p>
+                    <button 
+                        className="px-4 py-2 rounded-lg text-white"
+                        style={{ backgroundColor: editingStyle.accentColor || '#3b82f6' }}
+                    >
+                        Sample Button
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
         <div className="space-y-6">
             <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
                 <h3 className="text-lg font-semibold text-purple-800 mb-2">Main Content Zone</h3>
