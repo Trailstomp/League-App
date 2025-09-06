@@ -946,7 +946,6 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     );
 
     const renderThemeSection = () => (
-    const renderThemeSection = () => (
         <div className="space-y-6">
             <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
                 <h3 className="text-lg font-semibold text-slate-800 mb-2">Quick Theme Selection</h3>
