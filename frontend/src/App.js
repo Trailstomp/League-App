@@ -118,17 +118,34 @@ function App() {
           const leagueData = await leagueResponse.json();
           console.log('📊 Loaded complete league data:', leagueData);
           
-          // Set all data from league-data endpoint
+          // CRITICAL: Only update teams if we get valid data from API
           if (leagueData.teams && leagueData.teams.length > 0) {
+            console.log('✅ Setting teams from league-data:', leagueData.teams.length, 'teams');
+            console.log('📊 Teams being set:', leagueData.teams.map(t => `${t.name} (${t.division})`));
             setTeams(leagueData.teams);
-            console.log('✅ Loaded teams:', leagueData.teams.length, 'teams');
+          } else {
+            console.warn('⚠️ No teams in league-data, keeping current teams or loading from teams endpoint');
+            
+            // Fallback: Load teams from individual endpoint only if no current teams
+            if (teams.length === 0) {
+              const teamsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/teams`);
+              if (teamsResponse.ok) {
+                const teamsData = await teamsResponse.json();
+                if (teamsData && teamsData.length > 0) {
+                  console.log('📊 Fallback: Setting teams from teams endpoint:', teamsData.length, 'teams');
+                  setTeams(teamsData);
+                }
+              }
+            }
           }
           
+          // Load players safely
           if (leagueData.players && leagueData.players.length > 0) {
             setPlayers(leagueData.players);
             console.log('✅ Loaded players:', leagueData.players.length, 'players');
           }
           
+          // Load events safely  
           if (leagueData.leagueSchedule && leagueData.leagueSchedule.length > 0) {
             setEvents(leagueData.leagueSchedule);
             console.log('✅ Loaded events:', leagueData.leagueSchedule.length, 'events');
@@ -136,7 +153,7 @@ function App() {
           
           // Load websiteStyle - this is the critical fix!
           if (leagueData.websiteStyle) {
-            console.log('🎨 Loading saved websiteStyle:', leagueData.websiteStyle);
+            console.log('🎨 Loading saved websiteStyle:', Object.keys(leagueData.websiteStyle));
             setWebsiteStyle(prev => ({
               ...prev,
               ...leagueData.websiteStyle
@@ -147,39 +164,17 @@ function App() {
           }
           
         } else {
-          console.warn('⚠️ Failed to load league data, falling back to individual endpoints');
-          
-          // Fallback: Load from individual endpoints if league-data fails
-          const teamsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/teams`);
-          if (teamsResponse.ok) {
-            const teamsData = await teamsResponse.json();
-            console.log('📊 Fallback: Loaded teams from API:', teamsData.length, 'teams');
-            setTeams(teamsData);
-          }
-
-          const playersResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/players`);
-          if (playersResponse.ok) {
-            const playersData = await playersResponse.json();
-            console.log('📊 Fallback: Loaded players from API:', playersData.length, 'players');
-            setPlayers(playersData);
-          }
-
-          const eventsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/events`);
-          if (eventsResponse.ok) {
-            const eventsData = await eventsResponse.json();
-            console.log('📊 Fallback: Loaded events from API:', eventsData.length, 'events');
-            setEvents(eventsData);
-          }
+          console.warn('⚠️ Failed to load league data, status:', leagueResponse.status);
         }
 
       } catch (error) {
         console.error('❌ Error loading data from API:', error);
-        console.log('📝 Using default values due to API error');
+        console.log('📝 Using current state due to API error');
       }
     };
 
     loadData();
-  }, []);
+  }, []); // Empty dependency array to run only once on mount
 
   // Simple page renderer
   const renderPage = () => {
