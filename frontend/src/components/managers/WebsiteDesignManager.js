@@ -1203,6 +1203,7 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
             <div className="text-center">
                 <button
                     onClick={handleSave}
+                    data-save-button
                     className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
                 >
                     Save All Changes
