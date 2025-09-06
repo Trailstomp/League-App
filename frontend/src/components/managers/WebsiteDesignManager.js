@@ -9,8 +9,6 @@ const ImageCropTool = ({ imageUrl, onCrop, onCancel, aspectRatio: initialAspectR
     const imageRef = useRef(null);
     const [isLoading, setIsLoading] = useState(true);
     const [cropArea, setCropArea] = useState({ x: 50, y: 50, width: 200, height: 200 });
-    const [isDragging, setIsDragging] = useState(false);
-    const [dragStart, setDragStart] = useState({ x: 0, y: 0, cropX: 0, cropY: 0 });
     const [currentAspectRatio, setCurrentAspectRatio] = useState(initialAspectRatio || 'free');
     const [canvasSize, setCanvasSize] = useState({ width: 600, height: 400 });
     const [imageScale, setImageScale] = useState(1);
@@ -346,14 +344,6 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         { id: 'preview', label: 'Live Preview', icon: 'customize', description: 'See all changes applied' }
     ];
 
-    const themes = [
-        { id: 'professional', name: 'Professional', colors: { primary: '#1e40af', accent: '#3b82f6', background: '#f8fafc' } },
-        { id: 'sport', name: 'Sport Dynamic', colors: { primary: '#dc2626', accent: '#ef4444', background: '#fef2f2' } },
-        { id: 'modern', name: 'Modern Clean', colors: { primary: '#059669', accent: '#10b981', background: '#ecfdf5' } },
-        { id: 'classic', name: 'Classic Blue', colors: { primary: '#2563eb', accent: '#3b82f6', background: '#eff6ff' } },
-        { id: 'dark', name: 'Dark Mode', colors: { primary: '#6366f1', accent: '#8b5cf6', background: '#1e293b' } }
-    ];
-
     // Font options for typography
     const fontFamilies = [
         { value: 'Inter, sans-serif', label: 'Inter (Modern Sans)' },
@@ -400,12 +390,14 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                 console.log('✅ Website style saved successfully:', result);
                 
                 // Show temporary success message
-                const originalSaveText = 'Save Changes';
-                document.querySelector('[data-save-button]').textContent = 'Saved!';
-                setTimeout(() => {
-                    const saveButton = document.querySelector('[data-save-button]');
-                    if (saveButton) saveButton.textContent = originalSaveText;
-                }, 2000);
+                const saveButtons = document.querySelectorAll('[data-save-button]');
+                saveButtons.forEach(button => {
+                    const originalText = button.textContent;
+                    button.textContent = 'Saved!';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                    }, 2000);
+                });
             } else {
                 console.error('❌ Failed to save website style:', response.statusText);
             }
@@ -458,7 +450,8 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                 ...prev,
                 primaryColor: colors[0],
                 accentColor: colors[1],
-                backgroundColor: colors[2]
+                navBackgroundColor: colors[2],
+                mainBackgroundColor: colors[2]
             }));
             
             setShowColorExtractor(false);
@@ -481,16 +474,6 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     const updateStyle = (updates) => {
         setEditingStyle(prev => ({ ...prev, ...updates }));
         setTimeout(() => handleSave(), 500);
-    };
-
-    const handleThemeSelect = (theme) => {
-        setEditingStyle({
-            ...editingStyle,
-            theme: theme.id,
-            primaryColor: theme.colors.primary,
-            accentColor: theme.colors.accent,
-            backgroundColor: theme.colors.background
-        });
     };
 
     // Zone-based render methods
@@ -945,115 +928,6 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         </div>
     );
 
-    const renderThemeSection = () => (
-        <div className="space-y-6">
-            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-800 mb-2">Quick Theme Selection</h3>
-                <p className="text-slate-600 text-sm">Choose from pre-built themes or extract colors from your images</p>
-            </div>
-
-            <div>
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Pre-built Themes</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {[
-                        { id: 'professional', name: 'Professional', colors: { primary: '#1e40af', accent: '#3b82f6', background: '#f8fafc' } },
-                        { id: 'sport', name: 'Sport Dynamic', colors: { primary: '#dc2626', accent: '#ef4444', background: '#fef2f2' } },
-                        { id: 'modern', name: 'Modern Clean', colors: { primary: '#059669', accent: '#10b981', background: '#ecfdf5' } },
-                        { id: 'classic', name: 'Classic Blue', colors: { primary: '#2563eb', accent: '#3b82f6', background: '#eff6ff' } },
-                        { id: 'dark', name: 'Dark Mode', colors: { primary: '#6366f1', accent: '#8b5cf6', background: '#1e293b' } }
-                    ].map(theme => (
-                        <button
-                            key={theme.id}
-                            onClick={() => updateStyle({
-                                primaryColor: theme.colors.primary,
-                                accentColor: theme.colors.accent,
-                                navBackgroundColor: theme.colors.background,
-                                mainBackgroundColor: theme.colors.background,
-                                bannerBackgroundColor: theme.colors.primary
-                            })}
-                            className={`p-4 border-2 rounded-lg text-left transition-colors hover:border-blue-300`}
-                        >
-                            <div className="flex items-center justify-between mb-3">
-                                <h4 className="font-medium text-slate-800">{theme.name}</h4>
-                            </div>
-                            <div className="flex space-x-2">
-                                <div className="w-8 h-8 rounded" style={{ backgroundColor: theme.colors.primary }}></div>
-                                <div className="w-8 h-8 rounded" style={{ backgroundColor: theme.colors.accent }}></div>
-                                <div className="w-8 h-8 rounded border" style={{ backgroundColor: theme.colors.background }}></div>
-                            </div>
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* Color Extraction */}
-            <div className="border-t pt-6">
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Smart Color Extraction</h4>
-                <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
-                    <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
-                    <p className="text-slate-600 mb-3">Upload an image to extract colors for your theme</p>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleColorExtraction(e.target.files[0], 'theme')}
-                        className="hidden"
-                        id="color-extract-upload"
-                    />
-                    <label 
-                        htmlFor="color-extract-upload"
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors cursor-pointer"
-                    >
-                        Extract Colors from Image
-                    </label>
-                </div>
-            </div>
-
-            {/* Current Colors */}
-            <div className="border-t pt-6">
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Current Theme Colors</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Primary Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.primaryColor || '#1e40af'}
-                            onChange={(color) => updateStyle({ primaryColor: color })}
-                            label="Primary"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Accent Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.accentColor || '#3b82f6'}
-                            onChange={(color) => updateStyle({ accentColor: color })}
-                            label="Accent"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Theme Preview</h3>
-                <div 
-                    className="border rounded-lg p-6 min-h-32"
-                    style={{ 
-                        backgroundColor: editingStyle.mainBackgroundColor || '#f8fafc'
-                    }}
-                >
-                    <h4 className="text-xl font-bold mb-2" style={{ color: editingStyle.primaryColor }}>
-                        Sample Header
-                    </h4>
-                    <p className="text-slate-600 mb-3">This preview shows your current color theme in action.</p>
-                    <button 
-                        className="px-4 py-2 rounded-lg text-white"
-                        style={{ backgroundColor: editingStyle.accentColor || '#3b82f6' }}
-                    >
-                        Sample Button
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-
     const renderContentSection = () => (
         <div className="space-y-6">
             <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
@@ -1401,371 +1275,50 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         </div>
     );
 
-
-
-
-
-
-    const renderBrandingSection = () => (
-        <div className="space-y-6">
-            <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">League Branding</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">League Name</label>
-                        <input
-                            type="text"
-                            value={editingStyle.leagueName || ''}
-                            onChange={(e) => {
-                                setEditingStyle({...editingStyle, leagueName: e.target.value});
-                                setTimeout(() => handleSave(), 500);
-                            }}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            placeholder="Midwest Lacrosse League"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Tagline</label>
-                        <input
-                            type="text"
-                            value={editingStyle.tagline || ''}
-                            onChange={(e) => {
-                                setEditingStyle({...editingStyle, tagline: e.target.value});
-                                setTimeout(() => handleSave(), 500);
-                            }}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            placeholder="Professional Competition"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Logo & Images</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* League Logo */}
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                            League Logo
-                            <span className="text-xs text-slate-500 ml-2">(appears in header and navigation)</span>
-                        </label>
-                        <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
-                            {editingStyle.logoUrl ? (
-                                <div>
-                                    <img src={editingStyle.logoUrl} alt="League Logo" className="w-20 h-20 mx-auto mb-3 object-contain" />
-                                    <div className="flex justify-center space-x-2">
-                                        <button 
-                                            onClick={() => setEditingStyle({...editingStyle, logoUrl: ''})}
-                                            className="text-red-600 hover:text-red-800 text-sm"
-                                        >
-                                            Remove Logo
-                                        </button>
-                                        <span className="text-slate-400">|</span>
-                                        <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
-                                            Replace Logo
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) => handleImageUpload(e.target.files[0], 'logo')}
-                                                className="hidden"
-                                            />
-                                        </label>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div>
-                                    <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
-                                    <p className="text-slate-600 mb-3">Upload league logo</p>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => handleImageUpload(e.target.files[0], 'logo')}
-                                        className="hidden"
-                                        id="logo-upload"
-                                    />
-                                    <label 
-                                        htmlFor="logo-upload"
-                                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                                    >
-                                        Choose File & Crop
-                                    </label>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Banner Image */}
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Banner Image
-                            <span className="text-xs text-slate-500 ml-2">(appears in page headers)</span>
-                        </label>
-                        <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
-                            {editingStyle.bannerUrl ? (
-                                <div>
-                                    <img src={editingStyle.bannerUrl} alt="Banner" className="w-full h-20 mx-auto mb-3 object-cover rounded" />
-                                    <div className="flex justify-center space-x-2">
-                                        <button 
-                                            onClick={() => setEditingStyle({...editingStyle, bannerUrl: ''})}
-                                            className="text-red-600 hover:text-red-800 text-sm"
-                                        >
-                                            Remove Banner
-                                        </button>
-                                        <span className="text-slate-400">|</span>
-                                        <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
-                                            Replace Banner
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) => handleImageUpload(e.target.files[0], 'banner')}
-                                                className="hidden"
-                                            />
-                                        </label>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div>
-                                    <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
-                                    <p className="text-slate-600 mb-3">Upload banner image</p>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => handleImageUpload(e.target.files[0], 'banner')}
-                                        className="hidden"
-                                        id="banner-upload"
-                                    />
-                                    <label 
-                                        htmlFor="banner-upload"
-                                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                                    >
-                                        Choose File & Crop
-                                    </label>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Live Preview of Logo/Banner Placement */}
-            <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Logo & Banner Preview</h3>
-                <div className="border rounded-lg overflow-hidden">
-                    <div className="bg-slate-100 p-4 border-b">
-                        <div className="flex items-center space-x-4">
-                            <div className="w-10 h-10 bg-white rounded border flex items-center justify-center">
-                                {editingStyle.logoUrl ? (
-                                    <img src={editingStyle.logoUrl} alt="Logo" className="w-8 h-8 object-contain" />
-                                ) : (
-                                    <LacrosseIcon name="image" className="text-slate-400" style={{fontSize: '16px'}} />
-                                )}
-                            </div>
-                            <span className="font-medium text-slate-700">
-                                {editingStyle.leagueName || 'Your League Name'} • Header Logo
-                            </span>
-                        </div>
-                    </div>
-                    <div className="relative h-32 bg-gradient-to-r from-slate-600 to-slate-800 flex items-center justify-center">
-                        {editingStyle.bannerUrl ? (
-                            <img src={editingStyle.bannerUrl} alt="Banner" className="w-full h-full object-cover" />
-                        ) : (
-                            <div className="text-center text-white">
-                                <h2 className="text-2xl font-bold mb-1">{editingStyle.leagueName || 'Your League Name'}</h2>
-                                <p className="text-slate-200">{editingStyle.tagline || 'Your tagline here'}</p>
-                            </div>
-                        )}
-                        <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-
-    const renderBackgroundsSection = () => (
-        <div className="space-y-6">
-            {/* Page Background */}
-            <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Page Background</h3>
-                <div className="flex space-x-4 mb-4">
-                    <button
-                        onClick={() => toggleBackgroundType('main', 'color')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            (editingStyle.backgroundType !== 'image') 
-                                ? 'bg-blue-600 text-white' 
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                        }`}
-                    >
-                        Color Background
-                    </button>
-                    <button
-                        onClick={() => toggleBackgroundType('main', 'image')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            (editingStyle.backgroundType === 'image') 
-                                ? 'bg-blue-600 text-white' 
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                        }`}
-                    >
-                        Image Background
-                    </button>
-                </div>
-
-                {editingStyle.backgroundType === 'image' ? (
-                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
-                        {editingStyle.backgroundImageUrl ? (
-                            <div>
-                                <img src={editingStyle.backgroundImageUrl} alt="Background" className="w-full h-32 mx-auto mb-3 object-cover rounded" />
-                                <div className="flex justify-center space-x-2">
-                                    <button 
-                                        onClick={() => setEditingStyle({...editingStyle, backgroundImageUrl: ''})}
-                                        className="text-red-600 hover:text-red-800 text-sm"
-                                    >
-                                        Remove Background
-                                    </button>
-                                    <span className="text-slate-400">|</span>
-                                    <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
-                                        Replace Background
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleImageUpload(e.target.files[0], 'backgroundImage')}
-                                            className="hidden"
-                                        />
-                                    </label>
-                                </div>
-                            </div>
-                        ) : (
-                            <div>
-                                <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
-                                <p className="text-slate-600 mb-3">Upload background image</p>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => handleImageUpload(e.target.files[0], 'backgroundImage')}
-                                    className="hidden"
-                                    id="background-upload"
-                                />
-                                <label 
-                                    htmlFor="background-upload"
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                                >
-                                    Choose File & Crop
-                                </label>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.backgroundColor || '#f8fafc'}
-                            onChange={(color) => {
-                                setEditingStyle({...editingStyle, backgroundColor: color});
-                                setTimeout(() => handleSave(), 500);
-                            }}
-                            label="Background"
-                        />
-                    </div>
-                )}
-            </div>
-
-            {/* Banner Styling */}
-            <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Banner Styling</h3>
-                <div className="flex space-x-4 mb-4">
-                    <button
-                        onClick={() => toggleBackgroundType('banner', 'color')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            (editingStyle.bannerType !== 'image') 
-                                ? 'bg-blue-600 text-white' 
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                        }`}
-                    >
-                        Color Banner
-                    </button>
-                    <button
-                        onClick={() => toggleBackgroundType('banner', 'image')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            (editingStyle.bannerType === 'image') 
-                                ? 'bg-blue-600 text-white' 
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                        }`}
-                    >
-                        Image Banner
-                    </button>
-                </div>
-
-                {editingStyle.bannerType === 'image' ? (
-                    <p className="text-sm text-slate-600 bg-slate-50 p-3 rounded">
-                        Banner image is configured in the Branding section above. Use this section to set banner text styling.
-                    </p>
-                ) : (
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Banner Background Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.bannerColor || '#1e40af'}
-                            onChange={(color) => {
-                                setEditingStyle({...editingStyle, bannerColor: color});
-                                setTimeout(() => handleSave(), 500);
-                            }}
-                            label="Banner Background"
-                        />
-                    </div>
-                )}
-            </div>
-
-            {/* Background Preview */}
-            <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Background Preview</h3>
-                <div 
-                    className="border rounded-lg p-6 min-h-40 flex items-center justify-center"
-                    style={{ 
-                        backgroundColor: editingStyle.backgroundType === 'image' ? 'transparent' : (editingStyle.backgroundColor || '#f8fafc'),
-                        backgroundImage: editingStyle.backgroundType === 'image' && editingStyle.backgroundImageUrl 
-                            ? `url(${editingStyle.backgroundImageUrl})` 
-                            : 'none',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center'
-                    }}
-                >
-                    <div className="text-center p-6 bg-white bg-opacity-90 rounded-lg">
-                        <h4 className="text-xl font-bold mb-2">Sample Content</h4>
-                        <p className="text-slate-600">This shows how your background will look behind content</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-
-    const renderTypographySection = () => (
-        <div className="space-y-6">
-            <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
-                <h3 className="text-lg font-semibold text-indigo-800 mb-2">Typography Settings</h3>
-                <p className="text-indigo-600 text-sm">Customize fonts and text styling across your website</p>
-            </div>
-        </div>
-    );
-
     const renderPreviewSection = () => (
         <div className="space-y-6">
             <div>
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">Live Website Preview</h3>
                 <div className="border rounded-lg overflow-hidden bg-white">
                     {/* Header Preview */}
-                    <div className="bg-slate-100 border-b p-4">
+                    <div 
+                        className="border-b p-4"
+                        style={{
+                            backgroundColor: editingStyle.navBackgroundType === 'image' ? 'transparent' : (editingStyle.navBackgroundColor || '#ffffff'),
+                            backgroundImage: editingStyle.navBackgroundType === 'image' && editingStyle.navBackgroundImage 
+                                ? `url(${editingStyle.navBackgroundImage})` 
+                                : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}
+                    >
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
-                                {editingStyle.logoUrl ? (
-                                    <img src={editingStyle.logoUrl} alt="Logo" className="w-8 h-8 object-contain" />
+                                {editingStyle.navLogoUrl ? (
+                                    <img src={editingStyle.navLogoUrl} alt="Logo" className="w-8 h-8 object-contain" />
                                 ) : (
                                     <div className="w-8 h-8 bg-slate-300 rounded flex items-center justify-center">
                                         <LacrosseIcon name="image" style={{fontSize: '16px'}} className="text-slate-500" />
                                     </div>
                                 )}
-                                <span className="font-medium text-slate-800">
-                                    {editingStyle.leagueName || 'Your League Name'}
+                                <span 
+                                    className="font-medium"
+                                    style={{ 
+                                        fontFamily: editingStyle.navFont || 'Inter, sans-serif',
+                                        fontSize: editingStyle.navFontSize || '16px',
+                                        color: editingStyle.navTextColor || '#374151'
+                                    }}
+                                >
+                                    {editingStyle.navLeagueName || 'Your League Name'}
                                 </span>
                             </div>
-                            <nav className="flex space-x-4 text-sm text-slate-600">
+                            <nav 
+                                className="flex space-x-4 text-sm"
+                                style={{ 
+                                    fontFamily: editingStyle.navFont || 'Inter, sans-serif',
+                                    color: editingStyle.navTextColor || '#374151'
+                                }}
+                            >
                                 <span>Home</span>
                                 <span>Teams</span>
                                 <span>Schedule</span>
@@ -1787,10 +1340,22 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                         }}
                     >
                         <div className="text-center z-10">
-                            <h1 className="text-2xl font-bold text-white mb-1">
+                            <h1 
+                                className="text-2xl font-bold mb-1"
+                                style={{ 
+                                    fontFamily: editingStyle.bannerFont || 'Inter, sans-serif',
+                                    fontSize: editingStyle.bannerFontSize || '32px',
+                                    color: editingStyle.bannerTextColor || '#ffffff'
+                                }}
+                            >
                                 {editingStyle.bannerTitle || 'Welcome to Our League'}
                             </h1>
-                            <p className="text-white">
+                            <p 
+                                style={{ 
+                                    fontFamily: editingStyle.bannerFont || 'Inter, sans-serif',
+                                    color: editingStyle.bannerTextColor || '#ffffff'
+                                }}
+                            >
                                 {editingStyle.bannerSubtitle || 'Professional Competition'}
                             </p>
                         </div>
@@ -1811,10 +1376,23 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                             backgroundPosition: 'center'
                         }}
                     >
-                        <h2 className="text-xl font-bold mb-3" style={{ color: editingStyle.primaryColor }}>
+                        <h2 
+                            className="text-xl font-bold mb-3" 
+                            style={{ 
+                                fontFamily: editingStyle.mainFont || 'Inter, sans-serif',
+                                color: editingStyle.primaryColor || '#1e40af'
+                            }}
+                        >
                             Sample Page Content
                         </h2>
-                        <p className="text-slate-600 mb-4">
+                        <p 
+                            className="mb-4"
+                            style={{ 
+                                fontFamily: editingStyle.mainFont || 'Inter, sans-serif',
+                                fontSize: editingStyle.mainFontSize || '16px',
+                                color: editingStyle.mainTextColor || '#374151'
+                            }}
+                        >
                             This preview shows how all your design choices work together. The navigation, banner, and content areas all reflect your customizations.
                         </p>
                         <button 
@@ -1823,474 +1401,6 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                         >
                             Sample Button
                         </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-                <div className="flex space-x-4 mb-4">
-                    <button
-                        onClick={() => toggleBackgroundType('menu', 'color')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            (editingStyle.menuBackgroundType !== 'image') 
-                                ? 'bg-blue-600 text-white' 
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                        }`}
-                    >
-                        Color Background
-                    </button>
-                    <button
-                        onClick={() => toggleBackgroundType('menu', 'image')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            (editingStyle.menuBackgroundType === 'image') 
-                                ? 'bg-blue-600 text-white' 
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                        }`}
-                    >
-                        Image Background
-                    </button>
-                </div>
-
-                {editingStyle.menuBackgroundType === 'image' ? (
-                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
-                        {editingStyle.menuBackgroundImage ? (
-                            <div>
-                                <img src={editingStyle.menuBackgroundImage} alt="Menu Background" className="w-full h-32 mx-auto mb-3 object-cover rounded" />
-                                <div className="flex justify-center space-x-2">
-                                    <button 
-                                        onClick={() => updateStyle({ menuBackgroundImage: '' })}
-                                        className="text-red-600 hover:text-red-800 text-sm"
-                                    >
-                                        Remove
-                                    </button>
-                                    <span className="text-slate-400">|</span>
-                                    <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
-                                        Replace
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'menu')}
-                                            className="hidden"
-                                        />
-                                    </label>
-                                </div>
-                            </div>
-                        ) : (
-                            <div>
-                                <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
-                                <p className="text-slate-600 mb-3">Upload menu background image</p>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'menu')}
-                                    className="hidden"
-                                    id="menu-bg-upload"
-                                />
-                                <label 
-                                    htmlFor="menu-bg-upload"
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                                >
-                                    Choose File & Crop
-                                </label>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.menuBackgroundColor || '#ffffff'}
-                            onChange={(color) => updateStyle({ menuBackgroundColor: color })}
-                            label="Menu Background"
-                        />
-                    </div>
-                )}
-            </div>
-
-            {/* Menu Typography */}
-            <div className="border-t pt-6">
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Menu Typography</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Font</label>
-                        <select
-                            value={editingStyle.menuFont || 'Inter, sans-serif'}
-                            onChange={(e) => updateStyle({ menuFont: e.target.value })}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                        >
-                            {fontFamilies.map(font => (
-                                <option key={font.value} value={font.value}>{font.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Size</label>
-                        <select
-                            value={editingStyle.menuFontSize || '16px'}
-                            onChange={(e) => updateStyle({ menuFontSize: e.target.value })}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                        >
-                            {fontSizes.map(size => (
-                                <option key={size.value} value={size.value}>{size.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.menuTextColor || '#374151'}
-                            onChange={(color) => updateStyle({ menuTextColor: color })}
-                            label="Menu Text"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* Menu Preview */}
-            <div className="border-t pt-6">
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Menu Preview</h4>
-                <div 
-                    className="border rounded-lg p-4"
-                    style={{
-                        backgroundColor: editingStyle.menuBackgroundType === 'image' ? 'transparent' : (editingStyle.menuBackgroundColor || '#ffffff'),
-                        backgroundImage: editingStyle.menuBackgroundType === 'image' && editingStyle.menuBackgroundImage 
-                            ? `url(${editingStyle.menuBackgroundImage})` 
-                            : 'none',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center'
-                    }}
-                >
-                    <div className="space-y-2">
-                        <div 
-                            className="p-2 rounded hover:bg-slate-100 cursor-pointer"
-                            style={{ 
-                                fontFamily: editingStyle.menuFont || 'Inter, sans-serif',
-                                fontSize: editingStyle.menuFontSize || '16px',
-                                color: editingStyle.menuTextColor || '#374151'
-                            }}
-                        >
-                            📊 Dashboard
-                        </div>
-                        <div 
-                            className="p-2 rounded hover:bg-slate-100 cursor-pointer"
-                            style={{ 
-                                fontFamily: editingStyle.menuFont || 'Inter, sans-serif',
-                                fontSize: editingStyle.menuFontSize || '16px',
-                                color: editingStyle.menuTextColor || '#374151'
-                            }}
-                        >
-                            👥 Teams
-                        </div>
-                        <div 
-                            className="p-2 rounded hover:bg-slate-100 cursor-pointer"
-                            style={{ 
-                                fontFamily: editingStyle.menuFont || 'Inter, sans-serif',
-                                fontSize: editingStyle.menuFontSize || '16px',
-                                color: editingStyle.menuTextColor || '#374151'
-                            }}
-                        >
-                            📅 Schedule
-                        </div>
-                        <div 
-                            className="p-2 rounded hover:bg-slate-100 cursor-pointer"
-                            style={{ 
-                                fontFamily: editingStyle.menuFont || 'Inter, sans-serif',
-                                fontSize: editingStyle.menuFontSize || '16px',
-                                color: editingStyle.menuTextColor || '#374151'
-                            }}
-                        >
-                            🏆 Standings
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-
-    const renderTypographySection = () => (
-        <div className="space-y-6">
-            {/* Banner Text Styling */}
-            <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Banner Text</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Font Family</label>
-                        <select
-                            value={editingStyle.bannerFont || 'Inter, sans-serif'}
-                            onChange={(e) => {
-                                setEditingStyle({...editingStyle, bannerFont: e.target.value});
-                                setTimeout(() => handleSave(), 500);
-                            }}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        >
-                            {fontFamilies.map(font => (
-                                <option key={font.value} value={font.value}>{font.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Font Size</label>
-                        <select
-                            value={editingStyle.bannerFontSize || '32px'}
-                            onChange={(e) => {
-                                setEditingStyle({...editingStyle, bannerFontSize: e.target.value});
-                                setTimeout(() => handleSave(), 500);
-                            }}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        >
-                            {fontSizes.map(size => (
-                                <option key={size.value} value={size.value}>{size.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.bannerTextColor || '#ffffff'}
-                            onChange={(color) => {
-                                setEditingStyle({...editingStyle, bannerTextColor: color});
-                                setTimeout(() => handleSave(), 500);
-                            }}
-                            label="Banner Text"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* Content Text Styling */}
-            <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Content Text</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Font Family</label>
-                        <select
-                            value={editingStyle.contentFont || 'Inter, sans-serif'}
-                            onChange={(e) => {
-                                setEditingStyle({...editingStyle, contentFont: e.target.value});
-                                setTimeout(() => handleSave(), 500);
-                            }}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        >
-                            {fontFamilies.map(font => (
-                                <option key={font.value} value={font.value}>{font.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Font Size</label>
-                        <select
-                            value={editingStyle.contentFontSize || '16px'}
-                            onChange={(e) => {
-                                setEditingStyle({...editingStyle, contentFontSize: e.target.value});
-                                setTimeout(() => handleSave(), 500);
-                            }}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        >
-                            {fontSizes.map(size => (
-                                <option key={size.value} value={size.value}>{size.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.contentTextColor || '#374151'}
-                            onChange={(color) => {
-                                setEditingStyle({...editingStyle, contentTextColor: color});
-                                setTimeout(() => handleSave(), 500);
-                            }}
-                            label="Content Text"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* Heading Text Styling */}
-            <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Heading Text</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Font Family</label>
-                        <select
-                            value={editingStyle.headingFont || 'Inter, sans-serif'}
-                            onChange={(e) => {
-                                setEditingStyle({...editingStyle, headingFont: e.target.value});
-                                setTimeout(() => handleSave(), 500);
-                            }}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        >
-                            {fontFamilies.map(font => (
-                                <option key={font.value} value={font.value}>{font.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Font Size</label>
-                        <select
-                            value={editingStyle.headingFontSize || '24px'}
-                            onChange={(e) => {
-                                setEditingStyle({...editingStyle, headingFontSize: e.target.value});
-                                setTimeout(() => handleSave(), 500);
-                            }}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        >
-                            {fontSizes.map(size => (
-                                <option key={size.value} value={size.value}>{size.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.headingTextColor || '#1f2937'}
-                            onChange={(color) => {
-                                setEditingStyle({...editingStyle, headingTextColor: color});
-                                setTimeout(() => handleSave(), 500);
-                            }}
-                            label="Heading Text"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* Typography Preview */}
-            <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Typography Preview</h3>
-                <div className="border rounded-lg p-6 space-y-4">
-                    {/* Banner Text Sample */}
-                    <div 
-                        className="p-4 rounded-lg text-center"
-                        style={{ 
-                            backgroundColor: editingStyle.bannerColor || '#1e40af',
-                            fontFamily: editingStyle.bannerFont || 'Inter, sans-serif',
-                            fontSize: editingStyle.bannerFontSize || '32px',
-                            color: editingStyle.bannerTextColor || '#ffffff'
-                        }}
-                    >
-                        {editingStyle.leagueName || 'Your League Name'}
-                    </div>
-                    
-                    {/* Heading Sample */}
-                    <h2 
-                        style={{ 
-                            fontFamily: editingStyle.headingFont || 'Inter, sans-serif',
-                            fontSize: editingStyle.headingFontSize || '24px',
-                            color: editingStyle.headingTextColor || '#1f2937'
-                        }}
-                    >
-                        Sample Heading Text
-                    </h2>
-                    
-                    {/* Content Sample */}
-                    <p 
-                        style={{ 
-                            fontFamily: editingStyle.contentFont || 'Inter, sans-serif',
-                            fontSize: editingStyle.contentFontSize || '16px',
-                            color: editingStyle.contentTextColor || '#374151'
-                        }}
-                    >
-                        This is how your content text will appear throughout the website. You can customize the font family, size, and color to match your league's branding.
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
-
-    const renderPreviewSection = () => (
-        <div className="space-y-6">
-            <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Live Website Preview</h3>
-                <div className="border rounded-lg overflow-hidden bg-white">
-                    {/* Header Preview */}
-                    <div className="bg-slate-100 border-b p-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                                {editingStyle.logoUrl ? (
-                                    <img src={editingStyle.logoUrl} alt="Logo" className="w-8 h-8 object-contain" />
-                                ) : (
-                                    <div className="w-8 h-8 bg-slate-300 rounded flex items-center justify-center">
-                                        <LacrosseIcon name="image" style={{fontSize: '16px'}} className="text-slate-500" />
-                                    </div>
-                                )}
-                                <span className="font-semibold" style={{ fontFamily: editingStyle.contentFont }}>
-                                    {editingStyle.leagueName || 'Your League Name'}
-                                </span>
-                            </div>
-                            <nav className="flex space-x-4 text-sm">
-                                <span>Home</span>
-                                <span>Teams</span>
-                                <span>Schedule</span>
-                                <span>Standings</span>
-                            </nav>
-                        </div>
-                    </div>
-
-                    {/* Banner Preview */}
-                    <div 
-                        className="relative h-48 flex items-center justify-center"
-                        style={{
-                            backgroundColor: editingStyle.bannerType === 'image' ? 'transparent' : (editingStyle.bannerColor || '#1e40af'),
-                            backgroundImage: editingStyle.bannerType === 'image' && editingStyle.bannerUrl 
-                                ? `url(${editingStyle.bannerUrl})` 
-                                : 'none',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                        }}
-                    >
-                        <div className="text-center">
-                            <h1 
-                                className="text-4xl font-bold mb-2"
-                                style={{ 
-                                    fontFamily: editingStyle.bannerFont || 'Inter, sans-serif',
-                                    fontSize: editingStyle.bannerFontSize || '32px',
-                                    color: editingStyle.bannerTextColor || '#ffffff'
-                                }}
-                            >
-                                {editingStyle.leagueName || 'Your League Name'}
-                            </h1>
-                            <p 
-                                className="text-lg"
-                                style={{ 
-                                    fontFamily: editingStyle.contentFont || 'Inter, sans-serif',
-                                    color: editingStyle.bannerTextColor || '#ffffff'
-                                }}
-                            >
-                                {editingStyle.tagline || 'Your tagline here'}
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Content Preview */}
-                    <div 
-                        className="p-6"
-                        style={{
-                            backgroundColor: editingStyle.backgroundType === 'image' ? 'rgba(255,255,255,0.9)' : (editingStyle.backgroundColor || '#f8fafc'),
-                            backgroundImage: editingStyle.backgroundType === 'image' && editingStyle.backgroundImageUrl 
-                                ? `url(${editingStyle.backgroundImageUrl})` 
-                                : 'none',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
-                        }}
-                    >
-                        <h2 
-                            className="text-2xl font-bold mb-4"
-                            style={{ 
-                                fontFamily: editingStyle.headingFont || 'Inter, sans-serif',
-                                fontSize: editingStyle.headingFontSize || '24px',
-                                color: editingStyle.headingTextColor || '#1f2937'
-                            }}
-                        >
-                            Welcome to Our League
-                        </h2>
-                        <p 
-                            style={{ 
-                                fontFamily: editingStyle.contentFont || 'Inter, sans-serif',
-                                fontSize: editingStyle.contentFontSize || '16px',
-                                color: editingStyle.contentTextColor || '#374151'
-                            }}
-                        >
-                            This is a preview of how your website will look with the current design settings. Your league's branding, colors, and typography choices are displayed throughout the site.
-                        </p>
                     </div>
                 </div>
             </div>
@@ -2306,9 +1416,18 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
             </div>
         </div>
     );
-};
 
-export default WebsiteDesignManager;
+    return (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-slate-800">Website Design</h2>
+                <button
+                    onClick={handleSave}
+                    data-save-button
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                    <LacrosseIcon name="save" className="mr-2" style={{fontSize: '16px'}} />
+                    Save Changes
                 </button>
             </div>
 
