@@ -838,12 +838,44 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                         {editingStyle.bannerBackgroundImage ? (
                             <div>
                                 <img src={editingStyle.bannerBackgroundImage} alt="Banner Background" className="w-full h-32 mx-auto mb-3 object-cover rounded" />
-                                <button 
-                                    onClick={() => updateStyle({ bannerBackgroundImage: '' })}
-                                    className="text-red-600 hover:text-red-800 text-sm"
-                                >
-                                    Remove Background Image
-                                </button>
+                                <div className="flex justify-center space-x-2">
+                                    <button 
+                                        onClick={() => updateStyle({ bannerBackgroundImage: '' })}
+                                        className="text-red-600 hover:text-red-800 text-sm"
+                                    >
+                                        Remove
+                                    </button>
+                                    <span className="text-slate-400">|</span>
+                                    <button
+                                        onClick={() => {
+                                            console.log('🎯 Opening crop tool for existing banner background');
+                                            setCropImageUrl(editingStyle.bannerBackgroundImage);
+                                            setCropTarget('banner_background');
+                                            setCropTargetType('wide_banner');
+                                            setShowCropTool(true);
+                                        }}
+                                        className="text-green-600 hover:text-green-800 text-sm"
+                                    >
+                                        📐 Edit/Crop
+                                    </button>
+                                    <span className="text-slate-400">|</span>
+                                    <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
+                                        Replace
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'banner', false)}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                    <span className="text-slate-400">|</span>
+                                    <button
+                                        onClick={() => handleColorExtraction(editingStyle.bannerBackgroundImage)}
+                                        className="text-purple-600 hover:text-purple-800 text-xs"
+                                    >
+                                        Extract Colors
+                                    </button>
+                                </div>
                             </div>
                         ) : (
                             <div>
