@@ -13,14 +13,19 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 // Close mobile menu when item is clicked
                 if (onMobileClose) onMobileClose();
             }}
-            className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+            className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${
                 currentPage === pageName
                     ? 'bg-blue-100 text-blue-700'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                    : 'hover:bg-slate-100'
             }`}
+            style={{
+                color: currentPage === pageName ? '#1d4ed8' : (websiteStyle.menuTextColor || '#64748b'),
+                backgroundColor: currentPage === pageName ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                opacity: websiteStyle.buttonTransparency || 0.9
+            }}
             title={isCollapsed ? label : ''}
         >
-            <span className="flex-shrink-0">{icon}</span>
+            <span className="flex-shrink-0" style={{fontSize: '18px'}}>{icon}</span>
             {!isCollapsed && <span className="ml-3">{label}</span>}
         </button>
     );
