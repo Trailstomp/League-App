@@ -896,6 +896,6 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
             )}
         </div>
     );
-};
+});
 
 export default WebsiteDesignManager;
