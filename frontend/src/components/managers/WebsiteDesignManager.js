@@ -206,14 +206,15 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
         reader.readAsDataURL(file);
     };
 
-    const handleColorExtraction = (imageFile) => {
-        if (imageFile) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setExtractImageUrl(e.target.result);
-                setShowColorExtractor(true);
-            };
-            reader.readAsDataURL(imageFile);
+    // Fixed color extraction - use existing image data
+    const handleColorExtraction = (imageDataUrl) => {
+        if (imageDataUrl) {
+            console.log('🎨 Extracting colors from existing image');
+            setExtractImageUrl(imageDataUrl);
+            setShowColorExtractor(true);
+        } else {
+            console.log('❌ No image data available for color extraction');
+            alert('Please upload an image first before extracting colors');
         }
     };
 
