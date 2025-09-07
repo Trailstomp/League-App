@@ -133,32 +133,72 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
         }
     };
 
-    // Simplified direct image upload - NO CROP TOOL
+    // Fixed image upload with better error handling
     const handleImageUpload = (file, target, zone) => {
-        if (file) {
-            console.log('📸 Processing image upload:', file.name, file.size);
-            
-            const reader = new FileReader();
-            reader.onload = (e) => {
+        if (!file) {
+            console.log('❌ No file selected for upload');
+            return;
+        }
+        
+        console.log('📸 Starting image upload:', {
+            fileName: file.name,
+            fileSize: file.size,
+            fileType: file.type,
+            target: target,
+            zone: zone
+        });
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Please select a valid image file');
+            return;
+        }
+        
+        // Validate file size (5MB limit)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image file is too large. Please choose an image under 5MB.');
+            return;
+        }
+        
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            try {
                 const imageData = e.target.result;
-                console.log('✅ Image converted to data URL');
+                const fieldName = `${zone}${target.charAt(0).toUpperCase() + target.slice(1)}Url`;
                 
+                console.log('✅ Image converted to data URL:', {
+                    fieldName: fieldName,
+                    dataLength: imageData.length,
+                    dataPreview: imageData.substring(0, 50) + '...'
+                });
+                
+                // Update the correct field
                 setEditingStyle(prev => ({
                     ...prev,
-                    [`${zone}${target.charAt(0).toUpperCase() + target.slice(1)}Url`]: imageData
+                    [fieldName]: imageData
                 }));
                 
-                // Auto-save after image upload
-                setTimeout(() => handleSave(), 500);
-            };
-            
-            reader.onerror = (e) => {
-                console.error('❌ Failed to read image file:', e);
-                alert('Failed to read image file. Please try again.');
-            };
-            
-            reader.readAsDataURL(file);
-        }
+                console.log('🎨 Image field updated:', fieldName);
+                
+                // Auto-save after successful image upload
+                setTimeout(() => {
+                    console.log('💾 Auto-saving after image upload');
+                    handleSave();
+                }, 1000);
+                
+            } catch (error) {
+                console.error('❌ Error processing image data:', error);
+                alert('Error processing image. Please try again.');
+            }
+        };
+        
+        reader.onerror = (e) => {
+            console.error('❌ Failed to read image file:', e);
+            alert('Failed to read image file. Please try a different image.');
+        };
+        
+        reader.readAsDataURL(file);
     };
 
     const handleColorExtraction = (imageFile) => {
