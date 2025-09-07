@@ -1153,45 +1153,73 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                                         Remove
                                     </button>
                                     <span className="text-slate-400">|</span>
+                                    <button
+                                        onClick={() => {
+                                            console.log('🎯 Opening crop tool for existing menu background');
+                                            setCropImageUrl(editingStyle.menuBackgroundImage);
+                                            setCropTarget('menu_background');
+                                            setCropTargetType('background');
+                                            setShowCropTool(true);
+                                        }}
+                                        className="text-green-600 hover:text-green-800 text-sm"
+                                    >
+                                        📐 Edit/Crop
+                                    </button>
+                                    <span className="text-slate-400">|</span>
                                     <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
                                         Replace
                                         <input
                                             type="file"
                                             accept="image/*"
-                                            onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'menu')}
+                                            onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'menu', false)}
                                             className="hidden"
                                         />
                                     </label>
-                                    {editingStyle.menuBackgroundImage && (
-                                        <>
-                                            <span className="text-slate-400">|</span>
-                                            <button
-                                                onClick={() => handleColorExtraction(editingStyle.menuBackgroundImage)}
-                                                className="text-green-600 hover:text-green-800 text-xs"
-                                            >
-                                                Extract Colors from this Image
-                                            </button>
-                                        </>
-                                    )}
+                                    <span className="text-slate-400">|</span>
+                                    <button
+                                        onClick={() => handleColorExtraction(editingStyle.menuBackgroundImage)}
+                                        className="text-purple-600 hover:text-purple-800 text-xs"
+                                    >
+                                        Extract Colors
+                                    </button>
                                 </div>
                             </div>
                         ) : (
                             <div>
                                 <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
                                 <p className="text-slate-600 mb-3">Upload menu background image</p>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'menu')}
-                                    className="hidden"
-                                    id="menu-bg-upload"
-                                />
-                                <label 
-                                    htmlFor="menu-bg-upload"
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                                >
-                                    Choose Background Image
-                                </label>
+                                <div className="flex justify-center space-x-3">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'menu', false)}
+                                        className="hidden"
+                                        id="menu-bg-upload-direct"
+                                    />
+                                    <label 
+                                        htmlFor="menu-bg-upload-direct"
+                                        className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition-colors cursor-pointer text-sm"
+                                    >
+                                        Upload Direct
+                                    </label>
+                                    
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'menu', true)}
+                                        className="hidden"
+                                        id="menu-bg-upload-crop"
+                                    />
+                                    <label 
+                                        htmlFor="menu-bg-upload-crop"
+                                        className="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 transition-colors cursor-pointer text-sm"
+                                    >
+                                        📐 Crop & Upload
+                                    </label>
+                                </div>
+                                <p className="text-xs text-slate-500 mt-2">
+                                    💡 Use "Crop & Upload" to choose which part of the image to display
+                                </p>
                             </div>
                         )}
                     </div>
