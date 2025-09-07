@@ -89,8 +89,11 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Clear crop area
-        ctx.clearRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
+        // Clear crop area - MAKE TRANSPARENT instead of white
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.fillRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
+        ctx.restore();
 
         // Draw crop border
         ctx.strokeStyle = '#3b82f6';
