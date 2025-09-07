@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { LacrosseIcon } from '../LacrosseIcons';
-import EnhancedColorPicker from '../EnhancedColorPicker';
 import ColorExtractor from '../ColorExtractor';
 
-const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
+const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle }) => {
     const [activeSection, setActiveSection] = useState('navigation');
     
     // Properly initialize editingStyle with websiteStyle data
