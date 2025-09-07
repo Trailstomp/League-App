@@ -86,14 +86,16 @@ const TeamManager = ({ teams, setTeams, websiteStyle = {}, seasons = [], current
     }, [editingTeam, setTeams, teams]);
 
     const toggleActive = useCallback((team) => {
-        setTeams(currentTeams => currentTeams.map(t => t.id === team.id ? {...t, active: !t.active} : t));
-    }, [setTeams]);
+        const updatedTeams = teams.map(t => t.id === team.id ? {...t, active: !t.active} : t);
+        setTeams(updatedTeams); // This calls the protected save function
+    }, [setTeams, teams]);
 
     const handleDelete = useCallback((team) => {
         if (window.confirm(`Are you sure you want to delete ${team.name}? This action cannot be undone.`)) {
-            setTeams(currentTeams => currentTeams.filter(t => t.id !== team.id));
+            const updatedTeams = teams.filter(t => t.id !== team.id);
+            setTeams(updatedTeams); // This calls the protected save function
         }
-    }, [setTeams]);
+    }, [setTeams, teams]);
 
     const TeamsTabContent = () => {
         return (
