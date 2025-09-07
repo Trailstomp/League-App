@@ -424,6 +424,90 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                 </div>
             </div>
 
+            {/* Navigation Background Image */}
+            <div className="border-t pt-6">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Background Image</h4>
+                <div className="flex space-x-4 mb-4">
+                    <button
+                        onClick={() => toggleBackgroundType('nav', 'color')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (editingStyle.navBackgroundType !== 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Color Background
+                    </button>
+                    <button
+                        onClick={() => toggleBackgroundType('nav', 'image')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (editingStyle.navBackgroundType === 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Image Background
+                    </button>
+                </div>
+
+                {editingStyle.navBackgroundType === 'image' && (
+                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                        {editingStyle.navBackgroundImage ? (
+                            <div>
+                                <img src={editingStyle.navBackgroundImage} alt="Nav Background" className="w-full h-20 mx-auto mb-3 object-cover rounded" />
+                                <div className="flex justify-center space-x-2">
+                                    <button 
+                                        onClick={() => updateStyle({ navBackgroundImage: '' })}
+                                        className="text-red-600 hover:text-red-800 text-sm"
+                                    >
+                                        Remove Background
+                                    </button>
+                                    <span className="text-slate-400">|</span>
+                                    <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
+                                        Replace Background
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'nav')}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                    {editingStyle.navBackgroundImage && (
+                                        <>
+                                            <span className="text-slate-400">|</span>
+                                            <button
+                                                onClick={() => handleColorExtraction(editingStyle.navBackgroundImage)}
+                                                className="text-green-600 hover:text-green-800 text-xs"
+                                            >
+                                                Extract Colors from this Image
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            <div>
+                                <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
+                                <p className="text-slate-600 mb-3">Upload navigation background image</p>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'nav')}
+                                    className="hidden"
+                                    id="nav-bg-upload"
+                                />
+                                <label 
+                                    htmlFor="nav-bg-upload"
+                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+                                >
+                                    Choose Background Image
+                                </label>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+
             {/* Navigation Preview */}
             <div className="border-t pt-6">
                 <h4 className="text-md font-semibold text-slate-800 mb-4">Navigation Preview</h4>
