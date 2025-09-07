@@ -85,14 +85,20 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
         { value: '48px', label: 'Banner (48px)' }
     ];
 
-    // Update editingStyle when websiteStyle prop changes
+    // Update editingStyle when websiteStyle prop changes - PRESERVE IMAGE FIELDS
     useEffect(() => {
         setEditingStyle(prev => ({
             ...prev,
             ...websiteStyle,
+            // Preserve text fields
             bannerTitle: websiteStyle.bannerTitle || prev.bannerTitle,
             bannerSubtitle: websiteStyle.bannerSubtitle || prev.bannerSubtitle,
-            navLeagueName: websiteStyle.navLeagueName || websiteStyle.leagueName || prev.navLeagueName
+            navLeagueName: websiteStyle.navLeagueName || websiteStyle.leagueName || prev.navLeagueName,
+            // CRITICAL: Preserve image fields that might not be in websiteStyle yet
+            navLogoUrl: websiteStyle.navLogoUrl || prev.navLogoUrl,
+            bannerBackgroundImage: websiteStyle.bannerBackgroundImage || prev.bannerBackgroundImage,
+            mainBackgroundImage: websiteStyle.mainBackgroundImage || prev.mainBackgroundImage,
+            menuBackgroundImage: websiteStyle.menuBackgroundImage || prev.menuBackgroundImage
         }));
     }, [websiteStyle]);
 
