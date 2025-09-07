@@ -185,6 +185,14 @@ frontend:
     stuck_count: 4
     priority: "critical"
     needs_retesting: false
+    
+  - task: "Nav Logo Upload and Banner Background Image Toggle Issues"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/components/managers/WebsiteDesignManager.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
     status_history:
       - working: false
         agent: "testing"
