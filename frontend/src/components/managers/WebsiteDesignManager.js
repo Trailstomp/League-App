@@ -319,11 +319,29 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
-                        <EnhancedColorPicker
-                            color={editingStyle.navTextColor || '#374151'}
-                            onChange={(color) => updateStyle({ navTextColor: color })}
-                            label="Nav Text"
-                        />
+                        <div className="flex items-center space-x-3">
+                            <input
+                                type="color"
+                                value={editingStyle.navTextColor || '#374151'}
+                                onChange={(e) => {
+                                    console.log('🎨 Navigation text color changed to:', e.target.value);
+                                    updateStyle({ navTextColor: e.target.value });
+                                }}
+                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={editingStyle.navTextColor || '#374151'}
+                                onChange={(e) => {
+                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                        console.log('🎨 Navigation text color (text) changed to:', e.target.value);
+                                        updateStyle({ navTextColor: e.target.value });
+                                    }
+                                }}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                placeholder="#374151"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
