@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { LacrosseIcon } from '../LacrosseIcons';
 import ColorExtractor from '../ColorExtractor';
 
 const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle }) => {
     const [activeSection, setActiveSection] = useState('navigation');
+    const saveTimeoutRef = useRef(null); // Component-level timeout ref
     
     // Properly initialize editingStyle with websiteStyle data
     const [editingStyle, setEditingStyle] = useState(() => ({
