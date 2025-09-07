@@ -141,13 +141,16 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                 title={isCollapsed ? `${team.name} (${team.wins || 0}-${team.losses || 0})` : ''}
                             >
                                 {/* Team Logo or Colored Circle - MADE TALLER */}
-                                <div className="w-8 h-8 rounded-full flex-shrink-0 overflow-hidden border border-slate-200">
+                                <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden border border-slate-200">
                                     {team.style?.logoUrl ? (
                                         <img 
                                             src={team.style.logoUrl} 
                                             alt={`${team.name} logo`}
-                                            className="w-full h-full object-cover"
-                                            style={{ opacity: team.style.logoOpacity || 1 }}
+                                            className="w-full h-full object-contain"
+                                            style={{ 
+                                                opacity: team.style.logoOpacity || 1,
+                                                backgroundColor: 'rgba(255,255,255,0.1)'
+                                            }}
                                             onError={(e) => {
                                                 e.target.style.display = 'none';
                                                 e.target.nextSibling.style.display = 'flex';
@@ -158,20 +161,34 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                         className="w-full h-full rounded-full flex items-center justify-center"
                                         style={{ 
                                             backgroundColor: team.style?.primaryColor || '#dc2626',
+                                            opacity: websiteStyle.buttonTransparency || 0.9,
                                             display: team.style?.logoUrl ? 'none' : 'flex'
                                         }}
                                     >
-                                        <LacrosseIcon name="stick" style={{fontSize: '12px', color: 'white'}} />
+                                        <LacrosseIcon name="stick" style={{fontSize: '16px', color: 'white'}} />
                                     </div>
                                 </div>
                                 
                                 {!isCollapsed && (
                                     <>
                                         <div className="flex-1 min-w-0 ml-3">
-                                            <div className="font-medium truncate">{team.name}</div>
-                                            <div className="text-xs text-slate-500 truncate">{team.division || 'Field'}</div>
+                                            <div 
+                                                className="font-medium truncate text-sm"
+                                                style={{ color: websiteStyle.menuTextColor || '#374151' }}
+                                            >
+                                                {team.name}
+                                            </div>
+                                            <div 
+                                                className="text-xs truncate"
+                                                style={{ color: websiteStyle.menuTextColor || '#6b7280' }}
+                                            >
+                                                {team.division || 'Field'}
+                                            </div>
                                         </div>
-                                        <div className="text-xs text-slate-400 ml-2 flex-shrink-0">
+                                        <div 
+                                            className="text-xs ml-2 flex-shrink-0"
+                                            style={{ color: websiteStyle.menuTextColor || '#9ca3af' }}
+                                        >
                                             {team.wins || 0}-{team.losses || 0}
                                         </div>
                                     </>
