@@ -261,7 +261,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
         });
     }, []);
 
-    // Optimized update function
+    // Optimized update function - prevent multiple rapid saves
     const updateStyle = useCallback((updates) => {
         console.log('🎨 UpdateStyle called with:', updates);
         
@@ -271,8 +271,17 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
             return newState;
         });
         
-        // Debounced auto-save
-        setTimeout(() => handleSave(), 1500);
+        // Clear any existing timeout to prevent multiple saves
+        if (window.websiteStyleSaveTimeout) {
+            clearTimeout(window.websiteStyleSaveTimeout);
+        }
+        
+        // Debounced single save
+        window.websiteStyleSaveTimeout = setTimeout(() => {
+            console.log('🎨 Debounced save triggered');
+            handleSave();
+            delete window.websiteStyleSaveTimeout;
+        }, 2000);
     }, []);
 
     // Navigation Section
