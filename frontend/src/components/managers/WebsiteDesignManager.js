@@ -815,20 +815,39 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                         ) : (
                             <div>
                                 <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
-                                <p className="text-slate-600 mb-3">Upload banner background (will be used as-is, no cropping)</p>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'banner')}
-                                    className="hidden"
-                                    id="banner-bg-upload"
-                                />
-                                <label 
-                                    htmlFor="banner-bg-upload"
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                                >
-                                    Choose Image
-                                </label>
+                                <p className="text-slate-600 mb-3">Upload banner background image</p>
+                                <div className="flex justify-center space-x-3">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'banner', false)}
+                                        className="hidden"
+                                        id="banner-bg-upload-direct"
+                                    />
+                                    <label 
+                                        htmlFor="banner-bg-upload-direct"
+                                        className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition-colors cursor-pointer text-sm"
+                                    >
+                                        Upload Direct
+                                    </label>
+                                    
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'banner', true)}
+                                        className="hidden"
+                                        id="banner-bg-upload-crop"
+                                    />
+                                    <label 
+                                        htmlFor="banner-bg-upload-crop"
+                                        className="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 transition-colors cursor-pointer text-sm"
+                                    >
+                                        📐 Crop & Upload
+                                    </label>
+                                </div>
+                                <p className="text-xs text-slate-500 mt-2">
+                                    💡 Use "Crop & Upload" to select which part of the image to display
+                                </p>
                             </div>
                         )}
                     </div>
