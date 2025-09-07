@@ -1107,8 +1107,8 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
 
             {/* Menu Typography */}
             <div className="border-t pt-6">
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Menu Typography</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Menu Typography & Buttons</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-2">Font</label>
                         <select
@@ -1141,6 +1141,23 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                                 className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
                                 placeholder="#374151"
                             />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Button Transparency</label>
+                        <div className="flex items-center space-x-3">
+                            <input
+                                type="range"
+                                min="0.1"
+                                max="1"
+                                step="0.1"
+                                value={editingStyle.buttonTransparency || 0.9}
+                                onChange={(e) => updateStyle({ buttonTransparency: parseFloat(e.target.value) })}
+                                className="flex-1"
+                            />
+                            <span className="text-sm text-slate-600 w-12">
+                                {Math.round((editingStyle.buttonTransparency || 0.9) * 100)}%
+                            </span>
                         </div>
                     </div>
                 </div>
