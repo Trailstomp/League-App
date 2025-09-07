@@ -228,25 +228,46 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
         }
     };
 
-    const toggleBackgroundType = (zone, type) => {
+    // Optimized toggle to prevent screen flashing
+    const toggleBackgroundType = useCallback((zone, type) => {
         console.log('🔄 Toggling background type for', zone, 'to', type);
-        setEditingStyle(prev => ({
-            ...prev,
-            [`${zone}BackgroundType`]: type,
-            [`${zone}BackgroundImage`]: type === 'color' ? '' : prev[`${zone}BackgroundImage`]
-        }));
-        // Don't auto-save on toggle - save only when user uploads image or changes color
-    };
+        
+        setEditingStyle(prev => {
+            // Only update if actually changing to prevent unnecessary re-renders
+            if (prev[`${zone}BackgroundType`] === type) {
+                console.log('🔄 Background type already set, no change needed');
+                return prev; // Return same object to prevent re-render
+            }
+            
+            const newState = {
+                ...prev,
+                [`${zone}BackgroundType`]: type,
+                [`${zone}BackgroundImage`]: type === 'color' ? '' : prev[`${zone}BackgroundImage`]
+            };
+            
+            console.log('🔄 Background type changed:', {
+                zone,
+                oldType: prev[`${zone}BackgroundType`],
+                newType: type
+            });
+            
+            return newState;
+        });
+    }, []);
 
-    const updateStyle = (updates) => {
+    // Optimized update function
+    const updateStyle = useCallback((updates) => {
         console.log('🎨 UpdateStyle called with:', updates);
-        setEditingStyle(prev => ({
-            ...prev,
-            ...updates
-        }));
-        // Only auto-save for actual content changes
-        setTimeout(() => handleSave(), 1000);
-    };
+        
+        setEditingStyle(prev => {
+            const newState = { ...prev, ...updates };
+            console.log('🎨 Style updated for fields:', Object.keys(updates));
+            return newState;
+        });
+        
+        // Debounced auto-save
+        setTimeout(() => handleSave(), 1500);
+    }, []);
 
     // Navigation Section
     const renderNavigationSection = () => (
