@@ -1000,30 +1000,81 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                         {editingStyle.mainBackgroundImage ? (
                             <div>
                                 <img src={editingStyle.mainBackgroundImage} alt="Main Background" className="w-full h-32 mx-auto mb-3 object-cover rounded" />
-                                <button 
-                                    onClick={() => updateStyle({ mainBackgroundImage: '' })}
-                                    className="text-red-600 hover:text-red-800 text-sm"
-                                >
-                                    Remove Background Image
-                                </button>
+                                <div className="flex justify-center space-x-2">
+                                    <button 
+                                        onClick={() => updateStyle({ mainBackgroundImage: '' })}
+                                        className="text-red-600 hover:text-red-800 text-sm"
+                                    >
+                                        Remove
+                                    </button>
+                                    <span className="text-slate-400">|</span>
+                                    <button
+                                        onClick={() => {
+                                            console.log('🎯 Opening crop tool for existing main background');
+                                            setCropImageUrl(editingStyle.mainBackgroundImage);
+                                            setCropTarget('main_background');
+                                            setCropTargetType('background');
+                                            setShowCropTool(true);
+                                        }}
+                                        className="text-green-600 hover:text-green-800 text-sm"
+                                    >
+                                        📐 Edit/Crop
+                                    </button>
+                                    <span className="text-slate-400">|</span>
+                                    <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
+                                        Replace
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'main', false)}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                    <span className="text-slate-400">|</span>
+                                    <button
+                                        onClick={() => handleColorExtraction(editingStyle.mainBackgroundImage)}
+                                        className="text-purple-600 hover:text-purple-800 text-xs"
+                                    >
+                                        Extract Colors
+                                    </button>
+                                </div>
                             </div>
                         ) : (
                             <div>
                                 <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
                                 <p className="text-slate-600 mb-3">Upload page background image</p>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'main')}
-                                    className="hidden"
-                                    id="main-bg-upload"
-                                />
-                                <label 
-                                    htmlFor="main-bg-upload"
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                                >
-                                    Choose Image
-                                </label>
+                                <div className="flex justify-center space-x-3">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'main', false)}
+                                        className="hidden"
+                                        id="main-bg-upload-direct"
+                                    />
+                                    <label 
+                                        htmlFor="main-bg-upload-direct"
+                                        className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition-colors cursor-pointer text-sm"
+                                    >
+                                        Upload Direct
+                                    </label>
+                                    
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'main', true)}
+                                        className="hidden"
+                                        id="main-bg-upload-crop"
+                                    />
+                                    <label 
+                                        htmlFor="main-bg-upload-crop"
+                                        className="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 transition-colors cursor-pointer text-sm"
+                                    >
+                                        📐 Crop & Upload
+                                    </label>
+                                </div>
+                                <p className="text-xs text-slate-500 mt-2">
+                                    💡 Use "Crop & Upload" to select which part of the background image to display
+                                </p>
                             </div>
                         )}
                     </div>
