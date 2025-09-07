@@ -13,20 +13,26 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 // Close mobile menu when item is clicked
                 if (onMobileClose) onMobileClose();
             }}
-            className={`w-full flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors ${
+            className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-full transition-all duration-200 ${
                 currentPage === pageName
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'hover:bg-slate-100'
+                    ? 'shadow-md transform scale-105'
+                    : 'hover:shadow-sm hover:transform hover:scale-102'
             }`}
             style={{
-                color: currentPage === pageName ? '#1d4ed8' : (websiteStyle.menuTextColor || '#64748b'),
-                backgroundColor: currentPage === pageName ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-                opacity: websiteStyle.buttonTransparency || 0.9
+                color: currentPage === pageName 
+                    ? '#ffffff' 
+                    : (websiteStyle.menuTextColor || '#64748b'),
+                backgroundColor: currentPage === pageName 
+                    ? `${websiteStyle.primaryColor || '#3b82f6'}${Math.round((websiteStyle.buttonTransparency || 0.9) * 255).toString(16).padStart(2, '0')}` 
+                    : `${websiteStyle.menuBackgroundColor || 'transparent'}${Math.round((websiteStyle.buttonTransparency || 0.7) * 255).toString(16).padStart(2, '0')}`,
+                border: currentPage === pageName 
+                    ? `2px solid ${websiteStyle.primaryColor || '#3b82f6'}` 
+                    : `1px solid ${websiteStyle.menuTextColor || '#e2e8f0'}40`
             }}
             title={isCollapsed ? label : ''}
         >
-            <span className="flex-shrink-0" style={{fontSize: '18px'}}>{icon}</span>
-            {!isCollapsed && <span className="ml-3">{label}</span>}
+            <span className="flex-shrink-0" style={{fontSize: '20px'}}>{icon}</span>
+            {!isCollapsed && <span className="ml-3 font-medium">{label}</span>}
         </button>
     );
 
