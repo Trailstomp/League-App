@@ -117,15 +117,22 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
 
                 {/* Teams Section */}
                 <div className="px-4 pb-4 border-b">
-                    <h3 className={`text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 ${isCollapsed ? 'text-center' : ''}`}>
-                        <LacrosseIcon name="stick" className={isCollapsed ? "" : "mr-1"} style={{fontSize: '12px'}} />
+                    <h3 
+                        className={`text-xs font-semibold uppercase tracking-wider mb-3 ${isCollapsed ? 'text-center' : ''}`}
+                        style={{ color: websiteStyle.menuTextColor || '#6b7280' }}
+                    >
+                        <LacrosseIcon name="stick" className={isCollapsed ? "" : "mr-1"} style={{fontSize: '14px'}} />
                         {!isCollapsed && " Teams"}
                     </h3>
                     <div className="space-y-2">
                         {teams.map(team => (
                             <button
                                 key={team.id} 
-                                className={`w-full flex items-center px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-lg transition-colors text-left border border-transparent hover:border-slate-200 ${isCollapsed ? 'justify-center' : ''}`}
+                                className={`w-full flex items-center px-3 py-2 text-sm hover:bg-slate-100 rounded-lg transition-colors text-left border border-transparent hover:border-slate-200 ${isCollapsed ? 'justify-center' : ''}`}
+                                style={{ 
+                                    color: websiteStyle.menuTextColor || '#374151',
+                                    backgroundColor: `${websiteStyle.menuBackgroundColor || '#ffffff'}${Math.round((websiteStyle.buttonTransparency || 0.9) * 255).toString(16).padStart(2, '0')}`
+                                }}
                                 onClick={() => {
                                     console.log('🏆 Team clicked:', team.name, team.id);
                                     onNavigate && onNavigate('team', team.id);
@@ -133,8 +140,8 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                 }}
                                 title={isCollapsed ? `${team.name} (${team.wins || 0}-${team.losses || 0})` : ''}
                             >
-                                {/* Team Logo or Colored Circle */}
-                                <div className="w-6 h-6 rounded-full flex-shrink-0 overflow-hidden border border-slate-200">
+                                {/* Team Logo or Colored Circle - MADE TALLER */}
+                                <div className="w-8 h-8 rounded-full flex-shrink-0 overflow-hidden border border-slate-200">
                                     {team.style?.logoUrl ? (
                                         <img 
                                             src={team.style.logoUrl} 
