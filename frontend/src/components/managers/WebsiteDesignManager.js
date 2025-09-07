@@ -190,20 +190,23 @@ const WebsiteDesignManager = ({ websiteStyle = {}, setWebsiteStyle }) => {
     };
 
     const toggleBackgroundType = (zone, type) => {
+        console.log('🔄 Toggling background type for', zone, 'to', type);
         setEditingStyle(prev => ({
             ...prev,
             [`${zone}BackgroundType`]: type,
             [`${zone}BackgroundImage`]: type === 'color' ? '' : prev[`${zone}BackgroundImage`]
         }));
-        setTimeout(() => handleSave(), 500);
+        // Don't auto-save on toggle - save only when user uploads image or changes color
     };
 
     const updateStyle = (updates) => {
+        console.log('🎨 UpdateStyle called with:', updates);
         setEditingStyle(prev => ({
             ...prev,
             ...updates
         }));
-        setTimeout(() => handleSave(), 500);
+        // Only auto-save for actual content changes
+        setTimeout(() => handleSave(), 1000);
     };
 
     // Navigation Section
