@@ -54,7 +54,9 @@ const TeamManager = ({ teams, setTeams, websiteStyle = {}, seasons = [], current
     const handleSave = useCallback((e) => {
         e.preventDefault();
         if (editingTeam?.id) {
-            setTeams(currentTeams => currentTeams.map(t => t.id === editingTeam.id ? editingTeam : t));
+            // Update existing team
+            const updatedTeams = teams.map(t => t.id === editingTeam.id ? editingTeam : t);
+            setTeams(updatedTeams); // This calls the protected save function
         } else {
             if (!editingTeam?.name || editingTeam.name.trim() === '') {
                 alert('Please enter a team name');
@@ -76,10 +78,12 @@ const TeamManager = ({ teams, setTeams, websiteStyle = {}, seasons = [], current
                     ...editingTeam.style
                 }
             };
-            setTeams(currentTeams => [...currentTeams, newTeam]);
+            // Add new team
+            const updatedTeams = [...teams, newTeam];
+            setTeams(updatedTeams); // This calls the protected save function
         }
         setEditingTeam(null);
-    }, [editingTeam, setTeams]);
+    }, [editingTeam, setTeams, teams]);
 
     const toggleActive = useCallback((team) => {
         setTeams(currentTeams => currentTeams.map(t => t.id === team.id ? {...t, active: !t.active} : t));
