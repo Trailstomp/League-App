@@ -1364,6 +1364,19 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                     }}
                 />
             )}
+
+            {/* Simple Crop Tool Modal */}
+            {showCropTool && (
+                <SimpleCropTool
+                    imageUrl={cropImageUrl}
+                    onCrop={handleCropComplete}
+                    onCancel={() => {
+                        setShowCropTool(false);
+                        setCropImageUrl('');
+                    }}
+                    targetType={cropTargetType}
+                />
+            )}
         </div>
     );
 });
