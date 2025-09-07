@@ -602,12 +602,26 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                                         Remove Background
                                     </button>
                                     <span className="text-slate-400">|</span>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'nav', true)}
+                                        className="hidden"
+                                        id="nav-bg-edit-crop"
+                                    />
+                                    <label 
+                                        htmlFor="nav-bg-edit-crop"
+                                        className="text-green-600 hover:text-green-800 text-sm cursor-pointer"
+                                    >
+                                        📐 Edit/Crop
+                                    </label>
+                                    <span className="text-slate-400">|</span>
                                     <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
-                                        Replace Background
+                                        Replace
                                         <input
                                             type="file"
                                             accept="image/*"
-                                            onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'nav')}
+                                            onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'nav', false)}
                                             className="hidden"
                                         />
                                     </label>
@@ -628,19 +642,38 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                             <div>
                                 <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
                                 <p className="text-slate-600 mb-3">Upload navigation background image</p>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'nav')}
-                                    className="hidden"
-                                    id="nav-bg-upload"
-                                />
-                                <label 
-                                    htmlFor="nav-bg-upload"
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-                                >
-                                    Choose Background Image
-                                </label>
+                                <div className="flex justify-center space-x-3">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'nav', false)}
+                                        className="hidden"
+                                        id="nav-bg-upload-direct"
+                                    />
+                                    <label 
+                                        htmlFor="nav-bg-upload-direct"
+                                        className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition-colors cursor-pointer text-sm"
+                                    >
+                                        Upload Direct
+                                    </label>
+                                    
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'nav', true)}
+                                        className="hidden"
+                                        id="nav-bg-upload-crop"
+                                    />
+                                    <label 
+                                        htmlFor="nav-bg-upload-crop"
+                                        className="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 transition-colors cursor-pointer text-sm"
+                                    >
+                                        📐 Crop & Upload
+                                    </label>
+                                </div>
+                                <p className="text-xs text-slate-500 mt-2">
+                                    💡 Use "Crop & Upload" to select which part of the image to display
+                                </p>
                             </div>
                         )}
                     </div>
