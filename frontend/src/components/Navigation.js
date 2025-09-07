@@ -139,10 +139,11 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                         {teams.map(team => (
                             <button
                                 key={team.id} 
-                                className={`w-full flex items-center px-3 py-2 text-sm hover:bg-slate-100 rounded-lg transition-colors text-left border border-transparent hover:border-slate-200 ${isCollapsed ? 'justify-center' : ''}`}
+                                className={`w-full flex items-center px-4 py-3 text-sm rounded-full transition-all duration-200 text-left border hover:shadow-sm hover:transform hover:scale-102 ${isCollapsed ? 'justify-center' : ''}`}
                                 style={{ 
                                     color: websiteStyle.menuTextColor || '#374151',
-                                    backgroundColor: `${websiteStyle.menuBackgroundColor || '#ffffff'}${Math.round((websiteStyle.buttonTransparency || 0.9) * 255).toString(16).padStart(2, '0')}`
+                                    backgroundColor: `${websiteStyle.menuBackgroundColor || '#f8fafc'}${Math.round((websiteStyle.buttonTransparency || 0.8) * 255).toString(16).padStart(2, '0')}`,
+                                    border: `1px solid ${websiteStyle.menuTextColor || '#e2e8f0'}40`
                                 }}
                                 onClick={() => {
                                     console.log('🏆 Team clicked:', team.name, team.id);
