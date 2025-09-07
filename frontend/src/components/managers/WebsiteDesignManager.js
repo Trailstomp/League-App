@@ -226,20 +226,42 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
         }
     };
 
+    // Enhanced color extraction that applies to all zones
     const handleColorsExtracted = (colors) => {
         if (colors && colors.length >= 3) {
+            console.log('🎨 Extracted colors:', colors);
+            
+            // Apply colors to ALL zones for comprehensive theming
             setEditingStyle(prev => ({
                 ...prev,
+                // Global theme colors
                 primaryColor: colors[0],
                 accentColor: colors[1],
+                
+                // Navigation zone
                 navBackgroundColor: colors[2],
-                mainBackgroundColor: colors[2]
+                navTextColor: colors[0],
+                
+                // Banner zone  
+                bannerBackgroundColor: colors[0],
+                bannerTextColor: '#ffffff',
+                
+                // Main content zone
+                mainBackgroundColor: colors[2],
+                mainTextColor: colors[0],
+                
+                // Menu zone
+                menuBackgroundColor: colors[2],
+                menuTextColor: colors[0]
             }));
             
             setShowColorExtractor(false);
             setExtractImageUrl('');
             
-            setTimeout(() => handleSave(), 100);
+            console.log('🎨 Colors applied to ALL zones - comprehensive theming complete');
+            
+            // Save immediately after color extraction
+            handleSave();
         }
     };
 
