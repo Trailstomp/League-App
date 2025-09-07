@@ -413,8 +413,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Enhanced Team Management System with Advanced Color Picker Integration"
-    - "Smart Color Extraction from Team Logos - Auto Assignment Feature"
+    - "Website Design Save Functionality - Banner Text Persistence Fix"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
