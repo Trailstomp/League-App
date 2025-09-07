@@ -333,13 +333,13 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                                         </label>
                                         <span className="text-slate-400">|</span>
                                         <label className="text-green-600 hover:text-green-800 text-xs cursor-pointer">
-                                            Extract Colors
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) => handleColorExtraction(e.target.files[0])}
-                                                className="hidden"
-                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => handleColorExtraction(editingStyle.navLogoUrl)}
+                                                className="text-green-600 hover:text-green-800 text-xs bg-transparent border-none cursor-pointer"
+                                            >
+                                                Extract Colors from Logo
+                                            </button>
                                         </label>
                                     </div>
                                 </div>
