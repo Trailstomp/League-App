@@ -164,7 +164,8 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
     }, [setWebsiteStyle]);
 
     // Fixed image upload with correct field naming
-    const handleImageUpload = (file, target, zone) => {
+    // Enhanced image upload with crop tool option
+    const handleImageUpload = (file, target, zone, useCrop = false) => {
         if (!file) {
             console.log('❌ No file selected for upload');
             return;
@@ -175,7 +176,8 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
             fileSize: file.size,
             fileType: file.type,
             target: target,
-            zone: zone
+            zone: zone,
+            useCrop: useCrop
         });
         
         // Validate file type
@@ -196,33 +198,48 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
             try {
                 const imageData = e.target.result;
                 
-                // CRITICAL FIX: Correct field name construction
-                const fieldName = target === 'background' 
-                    ? `${zone}BackgroundImage`  // For background images: navBackgroundImage, bannerBackgroundImage
-                    : `${zone}${target.charAt(0).toUpperCase() + target.slice(1)}Url`; // For logos: navLogoUrl
-                
-                console.log('✅ Image converted to data URL:', {
-                    fieldName: fieldName,
-                    dataLength: imageData.length,
-                    dataPreview: imageData.substring(0, 50) + '...'
-                });
-                
-                // Update the correct field
-                setEditingStyle(prev => {
-                    const newState = {
-                        ...prev,
-                        [fieldName]: imageData
-                    };
+                if (useCrop) {
+                    // Open crop tool
+                    console.log('🎯 Opening crop tool for', target, zone);
+                    setCropImageUrl(imageData);
+                    setCropTarget(`${zone}_${target}`);
                     
-                    console.log('🎨 Image field updated:', fieldName);
-                    console.log('🎨 New state includes field:', fieldName in newState);
+                    // Determine crop type based on target
+                    let cropType = 'banner';
+                    if (target === 'logo') cropType = 'logo';
+                    else if (target === 'background' && zone === 'banner') cropType = 'wide_banner';
+                    else if (target === 'background') cropType = 'background';
                     
-                    return newState;
-                });
-                
-                // IMMEDIATE save after image upload - no timeout
-                console.log('💾 Immediate save triggered for image upload');
-                setTimeout(() => handleSave(), 100);
+                    setCropTargetType(cropType);
+                    setShowCropTool(true);
+                } else {
+                    // Direct upload without crop
+                    const fieldName = target === 'background' 
+                        ? `${zone}BackgroundImage`
+                        : `${zone}${target.charAt(0).toUpperCase() + target.slice(1)}Url`;
+                    
+                    console.log('✅ Direct upload - Image converted to data URL:', {
+                        fieldName: fieldName,
+                        dataLength: imageData.length,
+                        correctFieldName: fieldName
+                    });
+                    
+                    // Update the correct field
+                    setEditingStyle(prev => {
+                        const newState = {
+                            ...prev,
+                            [fieldName]: imageData
+                        };
+                        
+                        console.log('🎨 Image field updated to correct field:', fieldName);
+                        
+                        return newState;
+                    });
+                    
+                    // IMMEDIATE save after image upload
+                    console.log('💾 Immediate save triggered for direct image upload');
+                    handleSave();
+                }
                 
             } catch (error) {
                 console.error('❌ Error processing image data:', error);
@@ -236,6 +253,28 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
         };
         
         reader.readAsDataURL(file);
+    };
+
+    // Handle crop completion
+    const handleCropComplete = (croppedImageData) => {
+        const [zone, target] = cropTarget.split('_');
+        
+        const fieldName = target === 'background' 
+            ? `${zone}BackgroundImage`
+            : `${zone}${target.charAt(0).toUpperCase() + target.slice(1)}Url`;
+        
+        console.log('✅ Crop completed, updating field:', fieldName);
+        
+        setEditingStyle(prev => ({
+            ...prev,
+            [fieldName]: croppedImageData
+        }));
+        
+        setShowCropTool(false);
+        setCropImageUrl('');
+        
+        // Save immediately after crop
+        handleSave();
     };
 
     // Fixed color extraction - use existing image data
