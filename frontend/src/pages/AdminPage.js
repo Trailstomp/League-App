@@ -11,11 +11,22 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
     // Protected teams update function that saves to API
     const handleTeamsChange = async (newTeams) => {
         try {
-            console.log('🏆 AdminPage: Saving teams changes:', newTeams.length, 'teams');
-            console.log('🏆 Team names:', newTeams.map(t => t.name));
+            // CRITICAL FIX: Ensure newTeams is always an array
+            const teamsArray = Array.isArray(newTeams) ? newTeams : [newTeams];
+            
+            console.log('🏆 AdminPage: Saving teams changes:', teamsArray.length, 'teams');
+            console.log('🏆 Team data type check:', {
+                'isArray': Array.isArray(newTeams),
+                'originalData': typeof newTeams,
+                'processedArray': Array.isArray(teamsArray)
+            });
+            
+            if (teamsArray.length > 0) {
+                console.log('🏆 Team names:', teamsArray.map(t => t.name || 'Unnamed'));
+            }
             
             // Update local state immediately
-            setTeams(newTeams);
+            setTeams(teamsArray);
             
             // Save to backend API to prevent overwrites  
             if (!process.env.REACT_APP_BACKEND_URL) {
@@ -26,22 +37,25 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
             
             const backendUrl = process.env.REACT_APP_BACKEND_URL;
             
-            // Save to both individual teams endpoint and league-data
+            // Save to league-data endpoint
             const response = await fetch(`${backendUrl}/api/league-data/teams`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(newTeams)
+                body: JSON.stringify(teamsArray)
             });
             
             if (response.ok) {
                 console.log('✅ Teams saved to API successfully');
             } else {
-                console.error('❌ Failed to save teams to API:', response.statusText);
+                const errorText = await response.text();
+                console.error('❌ Failed to save teams to API:', response.status, errorText);
+                alert(`Failed to save teams: ${response.status} - ${errorText}`);
             }
         } catch (error) {
             console.error('❌ Error saving teams:', error);
+            alert(`Error saving teams: ${error.message}`);
         }
     };
 
