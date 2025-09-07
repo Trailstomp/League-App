@@ -138,7 +138,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
         }
     };
 
-    // Fixed image upload with better error handling
+    // Fixed image upload with correct field naming
     const handleImageUpload = (file, target, zone) => {
         if (!file) {
             console.log('❌ No file selected for upload');
@@ -170,7 +170,11 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
         reader.onload = (e) => {
             try {
                 const imageData = e.target.result;
-                const fieldName = `${zone}${target.charAt(0).toUpperCase() + target.slice(1)}Url`;
+                
+                // CRITICAL FIX: Correct field name construction
+                const fieldName = target === 'background' 
+                    ? `${zone}BackgroundImage`  // For background images: navBackgroundImage, bannerBackgroundImage
+                    : `${zone}${target.charAt(0).toUpperCase() + target.slice(1)}Url`; // For logos: navLogoUrl
                 
                 console.log('✅ Image converted to data URL:', {
                     fieldName: fieldName,
@@ -179,18 +183,21 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                 });
                 
                 // Update the correct field
-                setEditingStyle(prev => ({
-                    ...prev,
-                    [fieldName]: imageData
-                }));
+                setEditingStyle(prev => {
+                    const newState = {
+                        ...prev,
+                        [fieldName]: imageData
+                    };
+                    
+                    console.log('🎨 Image field updated:', fieldName);
+                    console.log('🎨 New state includes field:', fieldName in newState);
+                    
+                    return newState;
+                });
                 
-                console.log('🎨 Image field updated:', fieldName);
-                
-                // Auto-save after successful image upload
-                setTimeout(() => {
-                    console.log('💾 Auto-saving after image upload');
-                    handleSave();
-                }, 1000);
+                // IMMEDIATE save after image upload - no timeout
+                console.log('💾 Immediate save triggered for image upload');
+                setTimeout(() => handleSave(), 100);
                 
             } catch (error) {
                 console.error('❌ Error processing image data:', error);
