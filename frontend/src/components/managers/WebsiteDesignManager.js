@@ -270,7 +270,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
         });
     }, []);
 
-    // Optimized update function - prevent multiple rapid saves
+    // Fixed debounced update - no global timeout interference
     const updateStyle = useCallback((updates) => {
         console.log('🎨 UpdateStyle called with:', updates);
         
@@ -280,17 +280,18 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
             return newState;
         });
         
-        // Clear any existing timeout to prevent multiple saves
-        if (window.websiteStyleSaveTimeout) {
-            clearTimeout(window.websiteStyleSaveTimeout);
+        // Clear any existing component timeout
+        if (saveTimeoutRef.current) {
+            clearTimeout(saveTimeoutRef.current);
+            console.log('🔧 Cleared previous save timeout');
         }
         
-        // Debounced single save
-        window.websiteStyleSaveTimeout = setTimeout(() => {
-            console.log('🎨 Debounced save triggered');
+        // Component-level debounced save  
+        saveTimeoutRef.current = setTimeout(() => {
+            console.log('🎨 Component-level debounced save triggered');
             handleSave();
-            delete window.websiteStyleSaveTimeout;
-        }, 2000);
+            saveTimeoutRef.current = null;
+        }, 1500);
     }, []);
 
     // Navigation Section
