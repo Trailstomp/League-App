@@ -103,10 +103,27 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
         }));
     }, [websiteStyle]);
 
-    // Fixed save with production error checking
-    const handleSave = async () => {
+    // Fixed save with proper state capture
+    const handleSave = useCallback(async () => {
         try {
-            console.log('🎨 Saving website style...');
+            console.log('🎨 handleSave called - capturing current state...');
+            
+            // Use functional setState to capture current state
+            let currentState = null;
+            await new Promise((resolve) => {
+                setEditingStyle(state => {
+                    currentState = state;
+                    console.log('🎨 Current complete state captured:', {
+                        navLogoUrl: state.navLogoUrl ? 'HAS_IMAGE' : 'EMPTY',
+                        navBackgroundImage: state.navBackgroundImage ? 'HAS_IMAGE' : 'EMPTY',
+                        bannerBackgroundImage: state.bannerBackgroundImage ? 'HAS_IMAGE' : 'EMPTY',
+                        navBackgroundColor: state.navBackgroundColor,
+                        bannerBackgroundColor: state.bannerBackgroundColor
+                    });
+                    resolve();
+                    return state; // Return unchanged
+                });
+            });
             
             if (!process.env.REACT_APP_BACKEND_URL) {
                 console.error('❌ REACT_APP_BACKEND_URL not configured');
@@ -114,10 +131,12 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                 return;
             }
             
-            const result = await setWebsiteStyle(editingStyle);
+            console.log('🎨 Saving complete state to API:', Object.keys(currentState).length, 'fields');
+            
+            const result = await setWebsiteStyle(currentState);
             
             if (result && result.success) {
-                console.log('✅ Save successful:', result.message);
+                console.log('✅ Save successful with complete state:', result.message);
                 
                 const saveButtons = document.querySelectorAll('[data-save-button]');
                 saveButtons.forEach(button => {
@@ -137,7 +156,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
             console.error('❌ Error saving website style:', error);
             alert(`Error saving: ${error.message}`);
         }
-    };
+    }, [setWebsiteStyle]);
 
     // Fixed image upload with correct field naming
     const handleImageUpload = (file, target, zone) => {
