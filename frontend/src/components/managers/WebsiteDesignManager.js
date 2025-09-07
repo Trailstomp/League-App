@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { LacrosseIcon } from '../LacrosseIcons';
 import ColorExtractor from '../ColorExtractor';
+import SimpleCropTool from '../SimpleCropTool';
 
 const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle }) => {
     const [activeSection, setActiveSection] = useState('navigation');
@@ -54,6 +55,10 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
 
     const [showColorExtractor, setShowColorExtractor] = useState(false);
     const [extractImageUrl, setExtractImageUrl] = useState('');
+    const [showCropTool, setShowCropTool] = useState(false);
+    const [cropImageUrl, setCropImageUrl] = useState('');
+    const [cropTarget, setCropTarget] = useState('banner');
+    const [cropTargetType, setCropTargetType] = useState('banner');
 
     const designSections = [
         { id: 'navigation', label: 'Navigation Bar', icon: 'players', description: 'Header navigation and logo area' },
