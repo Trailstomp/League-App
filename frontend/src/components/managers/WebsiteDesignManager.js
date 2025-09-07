@@ -467,19 +467,36 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                             ) : (
                                 <div>
                                     <LacrosseIcon name="image" className="mx-auto mb-2 text-slate-400" style={{fontSize: '32px'}} />
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => handleImageUpload(e.target.files[0], 'logo', 'nav')}
-                                        className="hidden"
-                                        id="nav-logo-upload"
-                                    />
-                                    <label 
-                                        htmlFor="nav-logo-upload"
-                                        className="bg-blue-600 text-white px-3 py-2 text-xs rounded hover:bg-blue-700 transition-colors cursor-pointer"
-                                    >
-                                        Upload Logo
-                                    </label>
+                                    <p className="text-sm text-slate-600 mb-3">Upload navigation logo</p>
+                                    <div className="flex justify-center space-x-2">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleImageUpload(e.target.files[0], 'logo', 'nav', false)}
+                                            className="hidden"
+                                            id="nav-logo-upload-direct"
+                                        />
+                                        <label 
+                                            htmlFor="nav-logo-upload-direct"
+                                            className="bg-blue-600 text-white px-3 py-2 text-xs rounded hover:bg-blue-700 transition-colors cursor-pointer"
+                                        >
+                                            Upload Direct
+                                        </label>
+                                        
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleImageUpload(e.target.files[0], 'logo', 'nav', true)}
+                                            className="hidden"
+                                            id="nav-logo-upload-crop"
+                                        />
+                                        <label 
+                                            htmlFor="nav-logo-upload-crop"
+                                            className="bg-green-600 text-white px-3 py-2 text-xs rounded hover:bg-green-700 transition-colors cursor-pointer"
+                                        >
+                                            Upload & Crop
+                                        </label>
+                                    </div>
                                 </div>
                             )}
                         </div>
