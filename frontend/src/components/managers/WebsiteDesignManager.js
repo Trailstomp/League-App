@@ -245,42 +245,69 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
         }
     };
 
-    // Enhanced color extraction that applies to all zones
+    // Enhanced color extraction that applies to all zones with proper hex strings
     const handleColorsExtracted = (colors) => {
         if (colors && colors.length >= 3) {
-            console.log('🎨 Extracted colors:', colors);
+            console.log('🎨 Raw extracted colors:', colors);
+            
+            // Ensure colors are hex strings, not objects
+            const hexColors = colors.map(color => {
+                if (typeof color === 'string' && color.startsWith('#')) {
+                    return color;
+                } else if (color && color.hex) {
+                    return color.hex;
+                } else if (color && color.color) {
+                    return color.color;
+                } else {
+                    console.warn('⚠️ Invalid color format:', color);
+                    return '#1e40af'; // fallback
+                }
+            });
+            
+            console.log('🎨 Processed hex colors:', hexColors);
             
             // Apply colors to ALL zones for comprehensive theming
-            setEditingStyle(prev => ({
-                ...prev,
-                // Global theme colors
-                primaryColor: colors[0],
-                accentColor: colors[1],
+            setEditingStyle(prev => {
+                const newState = {
+                    ...prev,
+                    // Global theme colors
+                    primaryColor: hexColors[0] || '#1e40af',
+                    accentColor: hexColors[1] || '#3b82f6',
+                    
+                    // Navigation zone
+                    navBackgroundColor: hexColors[2] || '#ffffff',
+                    navTextColor: hexColors[0] || '#374151',
+                    
+                    // Banner zone  
+                    bannerBackgroundColor: hexColors[0] || '#1e40af',
+                    bannerTextColor: '#ffffff',
+                    
+                    // Main content zone
+                    mainBackgroundColor: hexColors[2] || '#f8fafc',
+                    mainTextColor: hexColors[0] || '#374151',
+                    
+                    // Menu zone
+                    menuBackgroundColor: hexColors[2] || '#ffffff',
+                    menuTextColor: hexColors[0] || '#374151'
+                };
                 
-                // Navigation zone
-                navBackgroundColor: colors[2],
-                navTextColor: colors[0],
+                console.log('🎨 Colors applied to ALL zones with hex values:', {
+                    primary: newState.primaryColor,
+                    accent: newState.accentColor,
+                    navBackground: newState.navBackgroundColor,
+                    bannerBackground: newState.bannerBackgroundColor
+                });
                 
-                // Banner zone  
-                bannerBackgroundColor: colors[0],
-                bannerTextColor: '#ffffff',
-                
-                // Main content zone
-                mainBackgroundColor: colors[2],
-                mainTextColor: colors[0],
-                
-                // Menu zone
-                menuBackgroundColor: colors[2],
-                menuTextColor: colors[0]
-            }));
+                return newState;
+            });
             
             setShowColorExtractor(false);
             setExtractImageUrl('');
             
-            console.log('🎨 Colors applied to ALL zones - comprehensive theming complete');
+            console.log('🎨 Color extraction complete - triggering save');
             
             // Save immediately after color extraction
-            handleSave();
+            setTimeout(() => handleSave(), 500);
         }
     };
 
