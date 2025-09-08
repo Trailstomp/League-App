@@ -675,13 +675,19 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                             const file = e.target.files[0];
                             if (file) {
                                 console.log('📸 Team banner upload:', file.name, file.size);
+                                
+                                // CRITICAL FIX: Use data URL instead of blob URL for persistence
                                 const reader = new FileReader();
                                 reader.onload = (e) => {
-                                    const bannerData = e.target.result;
+                                    const bannerData = e.target.result; // This is a persistent data URL
+                                    console.log('✅ Team banner converted to persistent data URL, length:', bannerData.length);
                                     handleStyleChange('bannerUrl', bannerData);
-                                    console.log('✅ Team banner converted to data URL');
                                 };
-                                reader.readAsDataURL(file);
+                                reader.onerror = (e) => {
+                                    console.error('❌ Failed to read banner file:', e);
+                                    alert('Failed to process banner image. Please try again.');
+                                };
+                                reader.readAsDataURL(file); // Convert to persistent base64 data URL
                             }
                         }}
                         className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100" 
