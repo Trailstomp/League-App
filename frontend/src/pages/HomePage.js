@@ -166,7 +166,8 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                 }}
                                 onClick={() => {
                                     console.log('🏆 Team card clicked:', team.name);
-                                    // Navigate to team detail page if you have that functionality
+                                    setSelectedTeam(team);
+                                    setShowTeamModal(true);
                                 }}
                             >
                                 {/* Card Header with Team Colors */}
