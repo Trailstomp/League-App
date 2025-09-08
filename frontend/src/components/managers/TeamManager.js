@@ -208,19 +208,6 @@ const TeamManager = ({ teams, setTeams, websiteStyle = {}, seasons = [], current
             )}
             
             <TeamsTabContent />
-
-            {/* Simple Crop Tool Modal for Teams */}
-            {showCropTool && (
-                <SimpleCropTool
-                    imageUrl={cropImageUrl}
-                    onCrop={handleCropComplete}
-                    onCancel={() => {
-                        setShowCropTool(false);
-                        setCropImageUrl('');
-                    }}
-                    targetType="logo"
-                />
-            )}
         </div>
     );
 };
