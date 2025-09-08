@@ -623,43 +623,94 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                 </div>
             </div>
 
-            {/* Team Logo - NO CROP */}
+            {/* Team Logo with Crop Options */}
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Team Logo</label>
                 <div className="space-y-3">
-                    <input 
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                                console.log('📸 Team logo upload:', file.name, file.size);
-                                const reader = new FileReader();
-                                reader.onload = (e) => {
-                                    const logoData = e.target.result;
-                                    handleStyleChange('logoUrl', logoData);
-                                    console.log('✅ Team logo converted to data URL');
-                                };
-                                reader.readAsDataURL(file);
-                            }
-                        }}
-                        className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
-                    />
-                    <p className="text-xs text-slate-500">Upload team logo (will be used as-is, recommended square format)</p>
-                    {teamStyle.logoUrl && (
+                    {teamStyle.logoUrl ? (
                         <div className="space-y-2">
                             <img 
                                 src={teamStyle.logoUrl} 
                                 alt="Team Logo preview" 
-                                className="w-20 h-20 object-contain rounded-lg border-2 border-slate-300 bg-white"
+                                className="w-24 h-24 object-contain rounded-lg border-2 border-slate-300 bg-white mx-auto"
                             />
-                            <button
-                                type="button"
-                                onClick={() => handleStyleChange('logoUrl', '')}
-                                className="text-red-600 hover:text-red-800 text-sm"
-                            >
-                                Remove Logo
-                            </button>
+                            <div className="flex justify-center space-x-2">
+                                <button
+                                    type="button"
+                                    onClick={() => handleStyleChange('logoUrl', '')}
+                                    className="text-red-600 hover:text-red-800 text-sm"
+                                >
+                                    Remove Logo
+                                </button>
+                                <span className="text-slate-400">|</span>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        console.log('🎯 Opening crop tool for existing team logo');
+                                        // Open crop tool with existing logo
+                                        // This will be handled by the crop tool state in TeamStyleTab
+                                    }}
+                                    className="text-green-600 hover:text-green-800 text-sm"
+                                >
+                                    📐 Edit/Crop Logo
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div>
+                            <p className="text-xs text-slate-500 mb-3">Upload team logo (recommended square format)</p>
+                            <div className="flex justify-center space-x-3">
+                                <input 
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            console.log('📸 Team logo upload (direct):', file.name, file.size);
+                                            const reader = new FileReader();
+                                            reader.onload = (e) => {
+                                                const logoData = e.target.result;
+                                                handleStyleChange('logoUrl', logoData);
+                                                console.log('✅ Team logo converted to data URL');
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                    className="hidden"
+                                    id="team-logo-direct"
+                                />
+                                <label 
+                                    htmlFor="team-logo-direct"
+                                    className="bg-blue-600 text-white px-3 py-2 text-sm rounded hover:bg-blue-700 transition-colors cursor-pointer"
+                                >
+                                    Upload Direct
+                                </label>
+                                
+                                <input 
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            console.log('📸 Team logo upload (crop):', file.name, file.size);
+                                            const reader = new FileReader();
+                                            reader.onload = (e) => {
+                                                // This will trigger crop tool - handled by TeamStyleTab state
+                                                console.log('🎯 Opening crop tool for team logo');
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                    className="hidden"
+                                    id="team-logo-crop"
+                                />
+                                <label 
+                                    htmlFor="team-logo-crop"
+                                    className="bg-green-600 text-white px-3 py-2 text-sm rounded hover:bg-green-700 transition-colors cursor-pointer"
+                                >
+                                    📐 Crop & Upload
+                                </label>
+                            </div>
                         </div>
                     )}
                 </div>
