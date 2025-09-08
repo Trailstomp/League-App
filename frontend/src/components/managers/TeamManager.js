@@ -100,6 +100,14 @@ const TeamManager = ({ teams, setTeams, websiteStyle = {}, seasons = [], current
         }
     }, [setTeams, teams]);
 
+    const handleCropComplete = useCallback((croppedImageData) => {
+        console.log('✅ Team crop completed');
+        // This function will be called when crop is completed
+        // The actual handling is done in the TeamStyleTab component
+        setShowCropTool(false);
+        setCropImageUrl('');
+    }, []);
+
     const TeamsTabContent = () => {
         return (
             <div>
