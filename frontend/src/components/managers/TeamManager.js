@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { LacrosseIcon } from '../LacrosseIcons';
 import AdvancedColorPicker from '../AdvancedColorPicker';
 import ColorExtractor from '../ColorExtractor';
+import SimpleCropTool from '../SimpleCropTool';
 
 // Icons
 const Edit = ({ size = 16, color = "currentColor", ...props }) => (
