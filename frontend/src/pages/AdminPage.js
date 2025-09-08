@@ -63,6 +63,45 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         }
     };
 
+    // Protected players update function that saves to API 
+    const handlePlayersChange = async (newPlayers) => {
+        try {
+            console.log('👥 AdminPage: Saving players changes:', newPlayers.length, 'players');
+            
+            // Update local state immediately
+            setPlayers(newPlayers);
+            
+            // Save to backend API - sync with both individual and league-data endpoints
+            if (!process.env.REACT_APP_BACKEND_URL) {
+                console.error('❌ REACT_APP_BACKEND_URL not configured - cannot save players');
+                alert('Error: Backend URL not configured. Players cannot be saved.');
+                return;
+            }
+            
+            const backendUrl = process.env.REACT_APP_BACKEND_URL;
+            
+            // Save to league-data endpoint to prevent data loss
+            const response = await fetch(`${backendUrl}/api/league-data/players`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newPlayers)
+            });
+            
+            if (response.ok) {
+                console.log('✅ Players saved to API successfully');
+            } else {
+                const errorText = await response.text();
+                console.error('❌ Failed to save players to API:', response.status, errorText);
+                alert(`Failed to save players: ${response.status} - ${errorText}`);
+            }
+        } catch (error) {
+            console.error('❌ Error saving players:', error);
+            alert(`Error saving players: ${error.message}`);
+        }
+    };
+
     // Admin tabs configuration
     const adminTabs = [
         { id: 'dashboard', label: 'Dashboard', icon: 'venue' },
