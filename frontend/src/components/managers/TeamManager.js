@@ -492,6 +492,14 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
     const [cropImageUrl, setCropImageUrl] = useState('');
     const [cropTargetField, setCropTargetField] = useState('');
 
+    // Handle crop completion for teams
+    const handleCropComplete = (croppedImageData) => {
+        console.log('✅ Team crop completed for field:', cropTargetField);
+        handleStyleChange(cropTargetField, croppedImageData);
+        setShowCropTool(false);
+        setCropImageUrl('');
+    };
+
     // Handle colors extracted from logo
     const handleColorsExtracted = (colors) => {
         setExtractedColors(colors);
