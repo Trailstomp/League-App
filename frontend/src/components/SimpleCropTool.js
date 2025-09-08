@@ -15,7 +15,9 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
         logo: { ratio: 1, label: 'Square Logo' },
         banner: { ratio: 3, label: 'Banner (3:1)' },
         background: { ratio: 16/9, label: 'Background (16:9)' },
-        wide_banner: { ratio: 5, label: 'Wide Banner (5:1)' }
+        wide_banner: { ratio: 5, label: 'Wide Banner (5:1)' },
+        sidebar: { ratio: 9/16, label: 'Sidebar (9:16 Vertical)' },
+        navigation: { ratio: 4, label: 'Navigation (4:1)' }
     };
 
     const targetAspect = aspectRatios[targetType] || aspectRatios.banner;
