@@ -265,7 +265,7 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
                             Crop Image for {targetAspect.label}
                         </h3>
                         <div className="text-sm text-slate-600">
-                            Drag the crop area to select the portion you want
+                            Drag to position • Use controls below to resize crop area
                         </div>
                     </div>
                     
