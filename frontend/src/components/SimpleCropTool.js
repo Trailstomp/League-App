@@ -10,6 +10,8 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [cropScale, setCropScale] = useState(1); // Scale the crop area size, not the image
+    const [zoom, setZoom] = useState(1);
+    const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 });
 
     // Target-specific aspect ratios
     const aspectRatios = {
