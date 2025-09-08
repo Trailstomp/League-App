@@ -549,64 +549,6 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                 </p>
             </div>
 
-            {/* Logo Section */}
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Team Logo</label>
-                <div className="space-y-3">
-                    <input 
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                                console.log('📸 Team logo upload:', file.name, file.size);
-                                
-                                // CRITICAL FIX: Use data URL instead of blob URL for persistence
-                                const reader = new FileReader();
-                                reader.onload = (e) => {
-                                    const logoData = e.target.result; // This is a persistent data URL
-                                    console.log('✅ Team logo converted to persistent data URL, length:', logoData.length);
-                                    handleStyleChange('logoUrl', logoData);
-                                };
-                                reader.onerror = (e) => {
-                                    console.error('❌ Failed to read logo file:', e);
-                                    alert('Failed to process logo image. Please try again.');
-                                };
-                                reader.readAsDataURL(file); // Convert to persistent base64 data URL
-                            }
-                        }}
-                        className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
-                    />
-                    <p className="text-xs text-slate-500">Upload PNG, JPG, or GIF. Recommended size: 200x200px</p>
-                    {teamStyle.logoUrl && (
-                        <div className="flex items-center space-x-3">
-                            <img 
-                                src={teamStyle.logoUrl} 
-                                alt="Team logo preview" 
-                                className="w-16 h-16 rounded-full object-cover border-2 border-slate-300"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    handleStyleChange('logoUrl', '');
-                                    handleStyleChange('logoFile', null);
-                                }}
-                                className="text-red-600 hover:text-red-800 text-sm"
-                            >
-                                Remove Logo
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Smart Color Extraction */}
-            <ColorExtractor 
-                imageUrl={teamStyle.logoUrl}
-                onColorsExtracted={handleColorsExtracted}
-                isVisible={!!teamStyle.logoUrl}
-            />
-
             {/* Logo Opacity */}
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
