@@ -198,20 +198,20 @@ const TeamManager = ({ teams, setTeams, websiteStyle = {}, seasons = [], current
             )}
             
             <TeamsTabContent />
-        </div>
 
-        {/* Simple Crop Tool Modal for Teams */}
-        {showCropTool && (
-            <SimpleCropTool
-                imageUrl={cropImageUrl}
-                onCrop={handleCropComplete}
-                onCancel={() => {
-                    setShowCropTool(false);
-                    setCropImageUrl('');
-                }}
-                targetType="logo"
-            />
-        )}
+            {/* Simple Crop Tool Modal for Teams */}
+            {showCropTool && (
+                <SimpleCropTool
+                    imageUrl={cropImageUrl}
+                    onCrop={handleCropComplete}
+                    onCancel={() => {
+                        setShowCropTool(false);
+                        setCropImageUrl('');
+                    }}
+                    targetType="logo"
+                />
+            )}
+        </div>
     );
 };
 
