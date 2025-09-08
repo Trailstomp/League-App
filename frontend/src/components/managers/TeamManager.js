@@ -624,6 +624,19 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                                 >
                                     📐 Edit/Crop Logo
                                 </button>
+                                <span className="text-slate-400">|</span>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        // Trigger color extraction from existing logo
+                                        setExtractedColors([]);
+                                        console.log('🎨 Triggering color extraction from logo');
+                                        // This would trigger the ColorExtractor component
+                                    }}
+                                    className="text-purple-600 hover:text-purple-800 text-sm"
+                                >
+                                    🎨 Extract Colors
+                                </button>
                             </div>
                         </div>
                     ) : (
