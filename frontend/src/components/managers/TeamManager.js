@@ -701,49 +701,97 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                 </div>
             </div>
 
-            {/* Team Banner - NO CROP */}
+            {/* Team Banner with Crop Options */}
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Team Banner</label>
                 <div className="space-y-3">
-                    <input 
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                                console.log('📸 Team banner upload:', file.name, file.size);
-                                
-                                // CRITICAL FIX: Use data URL instead of blob URL for persistence
-                                const reader = new FileReader();
-                                reader.onload = (e) => {
-                                    const bannerData = e.target.result; // This is a persistent data URL
-                                    console.log('✅ Team banner converted to persistent data URL, length:', bannerData.length);
-                                    handleStyleChange('bannerUrl', bannerData);
-                                };
-                                reader.onerror = (e) => {
-                                    console.error('❌ Failed to read banner file:', e);
-                                    alert('Failed to process banner image. Please try again.');
-                                };
-                                reader.readAsDataURL(file); // Convert to persistent base64 data URL
-                            }
-                        }}
-                        className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100" 
-                    />
-                    <p className="text-xs text-slate-500">Upload team banner (will be used as-is, recommended wide format 1200x400)</p>
-                    {teamStyle.bannerUrl && (
+                    {teamStyle.bannerUrl ? (
                         <div className="space-y-2">
                             <img 
                                 src={teamStyle.bannerUrl} 
                                 alt="Team Banner preview" 
                                 className="w-full h-32 object-cover rounded-lg border-2 border-slate-300"
                             />
-                            <button
-                                type="button"
-                                onClick={() => handleStyleChange('bannerUrl', '')}
-                                className="text-red-600 hover:text-red-800 text-sm"
-                            >
-                                Remove Banner
-                            </button>
+                            <div className="flex justify-center space-x-2">
+                                <button
+                                    type="button"
+                                    onClick={() => handleStyleChange('bannerUrl', '')}
+                                    className="text-red-600 hover:text-red-800 text-sm"
+                                >
+                                    Remove Banner
+                                </button>
+                                <span className="text-slate-400">|</span>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        console.log('🎯 Opening crop tool for existing team banner');
+                                        setCropImageUrl(teamStyle.bannerUrl);
+                                        setCropTargetField('bannerUrl');
+                                        setShowCropTool(true);
+                                    }}
+                                    className="text-green-600 hover:text-green-800 text-sm"
+                                >
+                                    📐 Edit/Crop Banner
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div>
+                            <p className="text-xs text-slate-500 mb-3">Upload team banner (recommended wide format 1200x400)</p>
+                            <div className="flex justify-center space-x-3">
+                                <input 
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            console.log('📸 Team banner upload (direct):', file.name, file.size);
+                                            const reader = new FileReader();
+                                            reader.onload = (e) => {
+                                                const bannerData = e.target.result;
+                                                handleStyleChange('bannerUrl', bannerData);
+                                                console.log('✅ Team banner converted to data URL');
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                    className="hidden"
+                                    id="team-banner-direct"
+                                />
+                                <label 
+                                    htmlFor="team-banner-direct"
+                                    className="bg-blue-600 text-white px-3 py-2 text-sm rounded hover:bg-blue-700 transition-colors cursor-pointer"
+                                >
+                                    Upload Direct
+                                </label>
+                                
+                                <input 
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            console.log('📸 Team banner upload (crop):', file.name, file.size);
+                                            const reader = new FileReader();
+                                            reader.onload = (e) => {
+                                                console.log('🎯 Opening crop tool for new team banner');
+                                                setCropImageUrl(e.target.result);
+                                                setCropTargetField('bannerUrl');
+                                                setShowCropTool(true);
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                    className="hidden"
+                                    id="team-banner-crop"
+                                />
+                                <label 
+                                    htmlFor="team-banner-crop"
+                                    className="bg-green-600 text-white px-3 py-2 text-sm rounded hover:bg-green-700 transition-colors cursor-pointer"
+                                >
+                                    📐 Crop & Upload
+                                </label>
+                            </div>
                         </div>
                     )}
                 </div>
