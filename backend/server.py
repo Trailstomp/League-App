@@ -175,6 +175,11 @@ class TeamStyle(BaseModel):
     logoUrl: Optional[str] = ""
     logoOpacity: Optional[float] = 1.0
     bannerUrl: Optional[str] = ""
+    # Team form background controls
+    formBackgroundColor: Optional[str] = "#ffffff"
+    formBackgroundImage: Optional[str] = ""
+    formBackgroundType: Optional[str] = "color"
+    formTextColor: Optional[str] = "#374151"
 
 # Pydantic models for Teams and Players
 class Team(BaseModel):
