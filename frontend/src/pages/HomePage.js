@@ -155,20 +155,87 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
             <div className="bg-white rounded-lg shadow-sm border p-6">
                 <h2 className="text-xl font-semibold text-slate-800 mb-4">League Teams</h2>
                 {teams.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {teams.slice(0, 6).map(team => (
-                            <div key={team.id} className="border rounded-lg p-4 hover:shadow-sm transition-shadow">
-                                <div className="flex items-center mb-2">
-                                    <div className="w-8 h-8 bg-slate-200 rounded mr-3 flex-shrink-0 flex items-center justify-center">
-                                        🏆
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {teams.slice(0, 8).map(team => (
+                            <div 
+                                key={team.id} 
+                                className="relative bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 border-2"
+                                style={{ 
+                                    borderColor: team.style?.primaryColor || '#2563eb',
+                                    background: `linear-gradient(135deg, ${team.style?.backgroundColor || '#f8fafc'} 0%, rgba(255,255,255,0.9) 100%)`
+                                }}
+                                onClick={() => {
+                                    console.log('🏆 Team card clicked:', team.name);
+                                    // Navigate to team detail page if you have that functionality
+                                }}
+                            >
+                                {/* Card Header with Team Colors */}
+                                <div 
+                                    className="h-3 w-full"
+                                    style={{ backgroundColor: team.style?.primaryColor || '#2563eb' }}
+                                ></div>
+                                
+                                {/* Team Logo Section */}
+                                <div className="flex justify-center py-4">
+                                    <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white">
+                                        {team.style?.logoUrl ? (
+                                            <img 
+                                                src={team.style.logoUrl} 
+                                                alt={team.name}
+                                                className="w-full h-full object-contain"
+                                            />
+                                        ) : (
+                                            <div 
+                                                className="w-full h-full rounded-full flex items-center justify-center"
+                                                style={{ backgroundColor: team.style?.primaryColor || '#2563eb' }}
+                                            >
+                                                <span className="text-white font-bold text-xl">
+                                                    {team.name.charAt(0)}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
-                                    <h3 className="font-medium text-slate-800 truncate">{team.name}</h3>
                                 </div>
-                                <div className="text-sm text-slate-600">
-                                    Division: {team.division || 'Field'}
+                                
+                                {/* Team Info */}
+                                <div className="px-4 pb-4 text-center">
+                                    <h3 
+                                        className="text-lg font-bold mb-2 truncate"
+                                        style={{ color: team.style?.primaryColor || '#2563eb' }}
+                                    >
+                                        {team.name}
+                                    </h3>
+                                    <div className="space-y-1">
+                                        <div className="text-sm text-slate-600 font-medium">
+                                            {team.division || 'Field'} Division
+                                        </div>
+                                        <div 
+                                            className="text-lg font-bold"
+                                            style={{ color: team.style?.primaryColor || '#2563eb' }}
+                                        >
+                                            {team.wins || 0}-{team.losses || 0}
+                                            {team.ties > 0 && `-${team.ties}`}
+                                        </div>
+                                        {team.coach && (
+                                            <div className="text-xs text-slate-500">
+                                                Coach: {team.coach}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="text-sm text-slate-600">
-                                    Record: {team.wins || 0}-{team.losses || 0}-{team.ties || 0}
+                                
+                                {/* Card Footer */}
+                                <div 
+                                    className="h-2 w-full"
+                                    style={{ backgroundColor: team.style?.accentColor || team.style?.primaryColor || '#2563eb' }}
+                                ></div>
+                                
+                                {/* Playing Card Corner Elements */}
+                                <div className="absolute top-1 left-1 text-xs font-bold opacity-60" style={{ color: team.style?.primaryColor || '#2563eb' }}>
+                                    {team.division?.charAt(0) || 'F'}
+                                </div>
+                                <div className="absolute bottom-1 right-1 text-xs font-bold opacity-60 transform rotate-180" style={{ color: team.style?.primaryColor || '#2563eb' }}>
+                                    {team.division?.charAt(0) || 'F'}
                                 </div>
                             </div>
                         ))}
