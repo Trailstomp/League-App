@@ -293,49 +293,138 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
                         />
                     </div>
 
-                    {/* Zoom Controls */}
+                    {/* Crop Scale Controls */}
                     <div className="mb-4">
                         <div className="flex justify-center items-center space-x-4">
                             <button
-                                onClick={() => setZoom(Math.max(0.5, zoom - 0.2))}
+                                onClick={() => {
+                                    const newScale = Math.max(0.3, cropScale - 0.1);
+                                    setCropScale(newScale);
+                                    
+                                    // Update crop area size
+                                    const baseCropSize = Math.min(imageDisplaySize.width, imageDisplaySize.height) * 0.6;
+                                    let newWidth = baseCropSize * newScale;
+                                    let newHeight = baseCropSize * newScale;
+                                    
+                                    if (targetAspect.ratio) {
+                                        if (targetAspect.ratio > 1) {
+                                            newHeight = newWidth / targetAspect.ratio;
+                                        } else {
+                                            newWidth = newHeight * targetAspect.ratio;
+                                        }
+                                    }
+                                    
+                                    setCropArea(prev => ({
+                                        x: Math.max(0, Math.min(prev.x, imageDisplaySize.width - newWidth)),
+                                        y: Math.max(0, Math.min(prev.y, imageDisplaySize.height - newHeight)),
+                                        width: newWidth,
+                                        height: newHeight
+                                    }));
+                                }}
                                 className="px-3 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors font-medium"
-                                disabled={zoom <= 0.5}
+                                disabled={cropScale <= 0.3}
                             >
-                                🔍- Zoom Out
+                                📐- Smaller Crop
                             </button>
                             
                             <div className="flex items-center space-x-2">
-                                <span className="text-sm text-slate-600 w-16 text-center">
-                                    {Math.round(zoom * 100)}%
+                                <span className="text-sm text-slate-600 w-20 text-center">
+                                    {Math.round(cropScale * 100)}% size
                                 </span>
                                 <input
                                     type="range"
-                                    min="0.5"
-                                    max="3"
+                                    min="0.3"
+                                    max="1.5"
                                     step="0.1"
-                                    value={zoom}
-                                    onChange={(e) => setZoom(parseFloat(e.target.value))}
+                                    value={cropScale}
+                                    onChange={(e) => {
+                                        const newScale = parseFloat(e.target.value);
+                                        setCropScale(newScale);
+                                        
+                                        // Update crop area size immediately
+                                        const baseCropSize = Math.min(imageDisplaySize.width, imageDisplaySize.height) * 0.6;
+                                        let newWidth = baseCropSize * newScale;
+                                        let newHeight = baseCropSize * newScale;
+                                        
+                                        if (targetAspect.ratio) {
+                                            if (targetAspect.ratio > 1) {
+                                                newHeight = newWidth / targetAspect.ratio;
+                                            } else {
+                                                newWidth = newHeight * targetAspect.ratio;
+                                            }
+                                        }
+                                        
+                                        setCropArea(prev => ({
+                                            x: Math.max(0, Math.min(prev.x, imageDisplaySize.width - newWidth)),
+                                            y: Math.max(0, Math.min(prev.y, imageDisplaySize.height - newHeight)),
+                                            width: newWidth,
+                                            height: newHeight
+                                        }));
+                                    }}
                                     className="w-32"
                                 />
                             </div>
                             
                             <button
-                                onClick={() => setZoom(Math.min(3, zoom + 0.2))}
+                                onClick={() => {
+                                    const newScale = Math.min(1.5, cropScale + 0.1);
+                                    setCropScale(newScale);
+                                    
+                                    // Update crop area size
+                                    const baseCropSize = Math.min(imageDisplaySize.width, imageDisplaySize.height) * 0.6;
+                                    let newWidth = baseCropSize * newScale;
+                                    let newHeight = baseCropSize * newScale;
+                                    
+                                    if (targetAspect.ratio) {
+                                        if (targetAspect.ratio > 1) {
+                                            newHeight = newWidth / targetAspect.ratio;
+                                        } else {
+                                            newWidth = newHeight * targetAspect.ratio;
+                                        }
+                                    }
+                                    
+                                    setCropArea(prev => ({
+                                        x: Math.max(0, Math.min(prev.x, imageDisplaySize.width - newWidth)),
+                                        y: Math.max(0, Math.min(prev.y, imageDisplaySize.height - newWidth)),
+                                        width: newWidth,
+                                        height: newHeight
+                                    }));
+                                }}
                                 className="px-3 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors font-medium"
-                                disabled={zoom >= 3}
+                                disabled={cropScale >= 1.5}
                             >
-                                🔍+ Zoom In
+                                📐+ Larger Crop
                             </button>
                             
                             <button
                                 onClick={() => {
-                                    setZoom(1);
-                                    setImageOffset({ x: 0, y: 0 });
-                                    console.log('🎯 Reset zoom and pan');
+                                    setCropScale(1);
+                                    
+                                    // Reset to default crop area
+                                    const baseCropSize = Math.min(imageDisplaySize.width, imageDisplaySize.height) * 0.6;
+                                    let cropWidth = baseCropSize;
+                                    let cropHeight = baseCropSize;
+                                    
+                                    if (targetAspect.ratio) {
+                                        if (targetAspect.ratio > 1) {
+                                            cropHeight = cropWidth / targetAspect.ratio;
+                                        } else {
+                                            cropWidth = cropHeight * targetAspect.ratio;
+                                        }
+                                    }
+                                    
+                                    setCropArea({
+                                        x: (imageDisplaySize.width - cropWidth) / 2,
+                                        y: (imageDisplaySize.height - cropHeight) / 2,
+                                        width: cropWidth,
+                                        height: cropHeight
+                                    });
+                                    
+                                    console.log('🎯 Reset crop area');
                                 }}
                                 className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors font-medium"
                             >
-                                Reset View
+                                Reset Size
                             </button>
                         </div>
                     </div>
