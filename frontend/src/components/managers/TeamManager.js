@@ -496,11 +496,17 @@ const BasicInfoTab = ({ editingTeam, handleInputChange, seasons, currentSeason }
 
 // Team Style Tab with Advanced Color Picker and Smart Color Extraction
 const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
-    const teamStyle = editingTeam?.style || {};
+    // CRITICAL FIX: Add null check for editingTeam
+    const teamStyle = (editingTeam && editingTeam.style) ? editingTeam.style : {};
     const [extractedColors, setExtractedColors] = useState([]);
     const [showCropTool, setShowCropTool] = useState(false);
     const [cropImageUrl, setCropImageUrl] = useState('');
     const [cropTargetField, setCropTargetField] = useState('');
+
+    // Early return if no editing team
+    if (!editingTeam) {
+        return <div className="text-center py-8 text-slate-500">No team selected for editing</div>;
+    }
 
     // Handle crop completion for teams
     const handleCropComplete = (croppedImageData) => {
