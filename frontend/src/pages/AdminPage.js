@@ -126,7 +126,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
             case 'teams':
                 return <TeamManager teams={teams} setTeams={handleTeamsChange} websiteStyle={{}} seasons={[]} currentSeason={null} />;
             case 'players':
-                return <PlayersManager teams={teams} players={players} setPlayers={setPlayers} />;
+                return <PlayersManager teams={teams} players={players} setPlayers={handlePlayersChange} />;
             case 'users':
                 return <UserManager users={users} setUsers={setUsers} teams={teams} />;
             case 'roles':
