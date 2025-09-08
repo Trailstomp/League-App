@@ -22,7 +22,11 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
             });
             
             if (teamsArray.length > 0) {
-                console.log('🏆 Team names:', teamsArray.map(t => t.name || 'Unnamed'));
+                console.log('🏆 Team names and logos:', teamsArray.map(t => ({
+                    name: t.name || 'Unnamed',
+                    hasLogo: !!(t.style?.logoUrl),
+                    logoLength: t.style?.logoUrl?.length || 0
+                })));
             }
             
             // Update local state immediately
@@ -47,7 +51,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
             });
             
             if (response.ok) {
-                console.log('✅ Teams saved to API successfully');
+                console.log('✅ Teams with logos saved to API successfully');
             } else {
                 const errorText = await response.text();
                 console.error('❌ Failed to save teams to API:', response.status, errorText);
