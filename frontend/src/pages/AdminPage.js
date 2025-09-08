@@ -274,26 +274,24 @@ const PlayersManager = ({ teams, players, setPlayers }) => {
 
     const handleAddPlayer = async (playerData) => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/players`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ...playerData,
-                    active: true,
-                }),
-            });
+            console.log('👥 Adding new player:', playerData);
             
-            if (response.ok) {
-                const newPlayer = await response.json();
-                setPlayers([...players, newPlayer]);
-                setShowAddForm(false);
-                console.log('✅ Player added successfully');
-            } else {
-                console.error('❌ Failed to add player');
-                alert('Failed to add player. Please try again.');
-            }
+            // Create new player with proper ID
+            const newPlayer = {
+                id: `player_${Date.now()}`,
+                ...playerData,
+                active: true,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            // Use protected save function instead of individual API call
+            const updatedPlayers = [...players, newPlayer];
+            await setPlayers(updatedPlayers);
+            
+            setShowAddForm(false);
+            console.log('✅ Player added via protected save');
+            
         } catch (error) {
             console.error('❌ Error adding player:', error);
             alert('Error adding player. Please try again.');
