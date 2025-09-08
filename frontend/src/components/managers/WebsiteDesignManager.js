@@ -291,7 +291,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
         }
     };
 
-    // Enhanced color extraction that applies to all zones with proper hex strings
+    // Enhanced color extraction that applies to all zones with nav logo propagation
     const handleColorsExtracted = (colors) => {
         if (colors && colors.length >= 3) {
             console.log('🎨 Raw extracted colors:', colors);
@@ -320,9 +320,13 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                     primaryColor: hexColors[0] || '#1e40af',
                     accentColor: hexColors[1] || '#3b82f6',
                     
-                    // Navigation zone
+                    // Navigation zone - ENHANCED: propagate to sidebar  
                     navBackgroundColor: hexColors[2] || '#ffffff',
                     navTextColor: hexColors[0] || '#374151',
+                    
+                    // Menu/Sidebar zone - AUTO-PROPAGATE from nav logo
+                    menuBackgroundColor: hexColors[2] || '#ffffff',
+                    menuTextColor: hexColors[0] || '#374151',
                     
                     // Banner zone  
                     bannerBackgroundColor: hexColors[0] || '#1e40af',
@@ -330,18 +334,14 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                     
                     // Main content zone
                     mainBackgroundColor: hexColors[2] || '#f8fafc',
-                    mainTextColor: hexColors[0] || '#374151',
-                    
-                    // Menu zone
-                    menuBackgroundColor: hexColors[2] || '#ffffff',
-                    menuTextColor: hexColors[0] || '#374151'
+                    mainTextColor: hexColors[0] || '#374151'
                 };
                 
-                console.log('🎨 Colors applied to ALL zones with hex values:', {
+                console.log('🎨 Colors applied to ALL zones with nav logo propagation:', {
                     primary: newState.primaryColor,
-                    accent: newState.accentColor,
                     navBackground: newState.navBackgroundColor,
-                    bannerBackground: newState.bannerBackgroundColor
+                    menuBackground: newState.menuBackgroundColor,
+                    menuText: newState.menuTextColor
                 });
                 
                 return newState;
@@ -350,7 +350,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
             setShowColorExtractor(false);
             setExtractImageUrl('');
             
-            console.log('🎨 Color extraction complete - triggering save');
+            console.log('🎨 Color extraction complete - nav logo colors propagated to sidebar');
             
             // Save immediately after color extraction
             setTimeout(() => handleSave(), 500);
