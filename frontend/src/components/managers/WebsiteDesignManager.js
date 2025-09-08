@@ -1348,6 +1348,121 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                     </div>
                 </div>
             </div>
+
+            {/* Form Background Controls */}
+            <div className="border-t pt-6">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Form Background</h4>
+                <div className="flex space-x-4 mb-4">
+                    <button
+                        onClick={() => toggleBackgroundType('form', 'color')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (editingStyle.formBackgroundType !== 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Color Forms
+                    </button>
+                    <button
+                        onClick={() => toggleBackgroundType('form', 'image')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (editingStyle.formBackgroundType === 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Image Forms
+                    </button>
+                </div>
+
+                {editingStyle.formBackgroundType === 'image' ? (
+                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
+                        {editingStyle.formBackgroundImage ? (
+                            <div>
+                                <img src={editingStyle.formBackgroundImage} alt="Form Background" className="w-full h-32 mx-auto mb-3 object-cover rounded" />
+                                <div className="flex justify-center space-x-2">
+                                    <button 
+                                        onClick={() => updateStyle({ formBackgroundImage: '' })}
+                                        className="text-red-600 hover:text-red-800 text-sm"
+                                    >
+                                        Remove
+                                    </button>
+                                    <span className="text-slate-400">|</span>
+                                    <button
+                                        onClick={() => {
+                                            console.log('🎯 Opening crop tool for existing form background');
+                                            setCropImageUrl(editingStyle.formBackgroundImage);
+                                            setCropTarget('form_background');
+                                            setCropTargetType('background');
+                                            setShowCropTool(true);
+                                        }}
+                                        className="text-green-600 hover:text-green-800 text-sm"
+                                    >
+                                        📐 Edit/Crop
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div>
+                                <LacrosseIcon name="image" className="mx-auto mb-3 text-slate-400" style={{fontSize: '48px'}} />
+                                <p className="text-slate-600 mb-3">Upload form background image</p>
+                                <div className="flex justify-center space-x-3">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'form', false)}
+                                        className="hidden"
+                                        id="form-bg-upload-direct"
+                                    />
+                                    <label 
+                                        htmlFor="form-bg-upload-direct"
+                                        className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 transition-colors cursor-pointer text-sm"
+                                    >
+                                        Upload Direct
+                                    </label>
+                                    
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'form', true)}
+                                        className="hidden"
+                                        id="form-bg-upload-crop"
+                                    />
+                                    <label 
+                                        htmlFor="form-bg-upload-crop"
+                                        className="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 transition-colors cursor-pointer text-sm"
+                                    >
+                                        📐 Crop & Upload
+                                    </label>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Form Background Color</label>
+                        <div className="flex items-center space-x-3">
+                            <input
+                                type="color"
+                                value={editingStyle.formBackgroundColor || '#ffffff'}
+                                onChange={(e) => updateStyle({ formBackgroundColor: e.target.value })}
+                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={editingStyle.formBackgroundColor || '#ffffff'}
+                                onChange={(e) => {
+                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                        updateStyle({ formBackgroundColor: e.target.value });
+                                    }
+                                }}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                placeholder="#ffffff"
+                            />
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 
