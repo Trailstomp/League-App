@@ -604,19 +604,18 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                                         Remove Background
                                     </button>
                                     <span className="text-slate-400">|</span>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'nav', true)}
-                                        className="hidden"
-                                        id="nav-bg-edit-crop"
-                                    />
-                                    <label 
-                                        htmlFor="nav-bg-edit-crop"
-                                        className="text-green-600 hover:text-green-800 text-sm cursor-pointer"
+                                    <button
+                                        onClick={() => {
+                                            console.log('🎯 Opening crop tool for existing nav background');
+                                            setCropImageUrl(editingStyle.navBackgroundImage);
+                                            setCropTarget('nav_background');
+                                            setCropTargetType('navigation');
+                                            setShowCropTool(true);
+                                        }}
+                                        className="text-green-600 hover:text-green-800 text-sm"
                                     >
                                         📐 Edit/Crop
-                                    </label>
+                                    </button>
                                     <span className="text-slate-400">|</span>
                                     <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
                                         Replace
