@@ -186,14 +186,29 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
             outputCanvas.height = cropArea.height;
             const ctx = outputCanvas.getContext('2d');
 
-            // Calculate source coordinates on original image
+            // Calculate source coordinates on original image with zoom and pan
             const scaleX = originalImage.width / imageDisplaySize.width;
             const scaleY = originalImage.height / imageDisplaySize.height;
             
-            const sourceX = cropArea.x * scaleX;
-            const sourceY = cropArea.y * scaleY;
-            const sourceWidth = cropArea.width * scaleX;
-            const sourceHeight = cropArea.height * scaleY;
+            // Account for zoom and pan transformations
+            const adjustedCropX = (cropArea.x - imageOffset.x - imageDisplaySize.width * (zoom - 1) / 2) / zoom;
+            const adjustedCropY = (cropArea.y - imageOffset.y - imageDisplaySize.height * (zoom - 1) / 2) / zoom;
+            const adjustedCropWidth = cropArea.width / zoom;
+            const adjustedCropHeight = cropArea.height / zoom;
+            
+            const sourceX = Math.max(0, adjustedCropX * scaleX);
+            const sourceY = Math.max(0, adjustedCropY * scaleY);
+            const sourceWidth = Math.min(originalImage.width - sourceX, adjustedCropWidth * scaleX);
+            const sourceHeight = Math.min(originalImage.height - sourceY, adjustedCropHeight * scaleY);
+            
+            console.log('🎯 Crop coordinates with zoom:', {
+                zoom: zoom,
+                imageOffset: imageOffset,
+                sourceX: sourceX,
+                sourceY: sourceY,
+                sourceWidth: sourceWidth,
+                sourceHeight: sourceHeight
+            });
 
             // Draw cropped portion
             ctx.drawImage(
