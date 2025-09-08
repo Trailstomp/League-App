@@ -143,17 +143,36 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
 
     }, [cropArea, imageDisplaySize, isLoading, cropScale]);
 
-    // Handle mouse events for dragging crop area
+    // Handle mouse events for dragging crop area AND resizing with handles
     const handleMouseDown = (e) => {
         const canvas = canvasRef.current;
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         
-        // Check if click is inside crop area
+        // Check if click is on resize handles (corners)
+        const handleSize = 12;
+        const handles = [
+            { x: cropArea.x - handleSize/2, y: cropArea.y - handleSize/2, type: 'nw' },
+            { x: cropArea.x + cropArea.width - handleSize/2, y: cropArea.y - handleSize/2, type: 'ne' },
+            { x: cropArea.x - handleSize/2, y: cropArea.y + cropArea.height - handleSize/2, type: 'sw' },
+            { x: cropArea.x + cropArea.width - handleSize/2, y: cropArea.y + cropArea.height - handleSize/2, type: 'se' }
+        ];
+        
+        // Check if clicking on a handle
+        for (const handle of handles) {
+            if (x >= handle.x && x <= handle.x + handleSize &&
+                y >= handle.y && y <= handle.y + handleSize) {
+                setIsDragging(handle.type);
+                setDragStart({ x, y });
+                return;
+            }
+        }
+        
+        // Check if click is inside crop area for dragging
         if (x >= cropArea.x && x <= cropArea.x + cropArea.width &&
             y >= cropArea.y && y <= cropArea.y + cropArea.height) {
-            setIsDragging(true);
+            setIsDragging('move');
             setDragStart({ 
                 x: x - cropArea.x, 
                 y: y - cropArea.y 
@@ -169,14 +188,59 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         
-        const newX = Math.max(0, Math.min(x - dragStart.x, imageDisplaySize.width - cropArea.width));
-        const newY = Math.max(0, Math.min(y - dragStart.y, imageDisplaySize.height - cropArea.height));
-        
-        setCropArea(prev => ({
-            ...prev,
-            x: newX,
-            y: newY
-        }));
+        if (isDragging === 'move') {
+            // Move the crop area
+            const newX = Math.max(0, Math.min(x - dragStart.x, imageDisplaySize.width - cropArea.width));
+            const newY = Math.max(0, Math.min(y - dragStart.y, imageDisplaySize.height - cropArea.height));
+            
+            setCropArea(prev => ({
+                ...prev,
+                x: newX,
+                y: newY
+            }));
+        } else {
+            // Resize the crop area with handles
+            const deltaX = x - dragStart.x;
+            const deltaY = y - dragStart.y;
+            
+            setCropArea(prev => {
+                let newArea = { ...prev };
+                
+                if (isDragging.includes('e')) {
+                    newArea.width = Math.max(50, prev.width + deltaX);
+                }
+                if (isDragging.includes('w')) {
+                    const newWidth = Math.max(50, prev.width - deltaX);
+                    newArea.x = prev.x + prev.width - newWidth;
+                    newArea.width = newWidth;
+                }
+                if (isDragging.includes('s')) {
+                    newArea.height = Math.max(30, prev.height + deltaY);
+                }
+                if (isDragging.includes('n')) {
+                    const newHeight = Math.max(30, prev.height - deltaY);
+                    newArea.y = prev.y + prev.height - newHeight;
+                    newArea.height = newHeight;
+                }
+                
+                // Maintain aspect ratio if specified
+                if (targetAspect.ratio) {
+                    if (newArea.width !== prev.width) {
+                        newArea.height = newArea.width / targetAspect.ratio;
+                    } else if (newArea.height !== prev.height) {
+                        newArea.width = newArea.height * targetAspect.ratio;
+                    }
+                }
+                
+                // Keep within bounds
+                newArea.x = Math.max(0, Math.min(newArea.x, imageDisplaySize.width - newArea.width));
+                newArea.y = Math.max(0, Math.min(newArea.y, imageDisplaySize.height - newArea.height));
+                
+                return newArea;
+            });
+            
+            setDragStart({ x, y });
+        }
     };
 
     const handleMouseUp = () => {
