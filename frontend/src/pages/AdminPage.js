@@ -302,25 +302,19 @@ const PlayersManager = ({ teams, players, setPlayers }) => {
 
     const handleEditPlayer = async (playerId, playerData) => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/players/${playerId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(playerData),
-            });
+            console.log('👥 Editing player:', playerId, playerData);
             
-            if (response.ok) {
-                const updatedPlayer = await response.json();
-                setPlayers(players.map(player => 
-                    player.id === playerId ? updatedPlayer : player
-                ));
-                setEditingPlayer(null);
-                console.log('✅ Player updated successfully');
-            } else {
-                console.error('❌ Failed to update player');
-                alert('Failed to update player. Please try again.');
-            }
+            // Use protected save function instead of individual API call
+            const updatedPlayers = players.map(player => 
+                player.id === playerId ? { ...player, ...playerData } : player
+            );
+            
+            // Call the protected save function
+            await handlePlayersChange(updatedPlayers);
+            
+            setEditingPlayer(null);
+            console.log('✅ Player updated via protected save');
+            
         } catch (error) {
             console.error('❌ Error updating player:', error);
             alert('Error updating player. Please try again.');
@@ -328,23 +322,22 @@ const PlayersManager = ({ teams, players, setPlayers }) => {
     };
 
     const handleDeletePlayer = async (playerId) => {
-        if (window.confirm('Are you sure you want to delete this player?')) {
-            try {
-                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/players/${playerId}`, {
-                    method: 'DELETE',
-                });
-                
-                if (response.ok) {
-                    setPlayers(players.filter(player => player.id !== playerId));
-                    console.log('✅ Player deleted successfully');
-                } else {
-                    console.error('❌ Failed to delete player');
-                    alert('Failed to delete player. Please try again.');
-                }
-            } catch (error) {
-                console.error('❌ Error deleting player:', error);
-                alert('Error deleting player. Please try again.');
-            }
+        try {
+            if (!window.confirm('Are you sure you want to delete this player?')) return;
+            
+            console.log('👥 Deleting player:', playerId);
+            
+            // Use protected save function instead of individual API call  
+            const updatedPlayers = players.filter(player => player.id !== playerId);
+            
+            // Call the protected save function
+            await handlePlayersChange(updatedPlayers);
+            
+            console.log('✅ Player deleted via protected save');
+            
+        } catch (error) {
+            console.error('❌ Error deleting player:', error);
+            alert('Error deleting player. Please try again.');
         }
     };
 
