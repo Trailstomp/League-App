@@ -265,10 +265,60 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
                         />
                     </div>
 
+                    {/* Zoom Controls */}
+                    <div className="mb-4">
+                        <div className="flex justify-center items-center space-x-4">
+                            <button
+                                onClick={() => setZoom(Math.max(0.5, zoom - 0.2))}
+                                className="px-3 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors font-medium"
+                                disabled={zoom <= 0.5}
+                            >
+                                🔍- Zoom Out
+                            </button>
+                            
+                            <div className="flex items-center space-x-2">
+                                <span className="text-sm text-slate-600 w-16 text-center">
+                                    {Math.round(zoom * 100)}%
+                                </span>
+                                <input
+                                    type="range"
+                                    min="0.5"
+                                    max="3"
+                                    step="0.1"
+                                    value={zoom}
+                                    onChange={(e) => setZoom(parseFloat(e.target.value))}
+                                    className="w-32"
+                                />
+                            </div>
+                            
+                            <button
+                                onClick={() => setZoom(Math.min(3, zoom + 0.2))}
+                                className="px-3 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors font-medium"
+                                disabled={zoom >= 3}
+                            >
+                                🔍+ Zoom In
+                            </button>
+                            
+                            <button
+                                onClick={() => {
+                                    setZoom(1);
+                                    setImageOffset({ x: 0, y: 0 });
+                                    console.log('🎯 Reset zoom and pan');
+                                }}
+                                className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors font-medium"
+                            >
+                                Reset View
+                            </button>
+                        </div>
+                    </div>
+
                     <div className="text-center mb-4">
                         <p className="text-sm text-slate-600">
                             Crop area: {cropArea.width} × {cropArea.height} pixels 
-                            (aspect ratio: {targetAspect.ratio.toFixed(1)}:1)
+                            (aspect ratio: {targetAspect.ratio ? targetAspect.ratio.toFixed(1) : 'free'}:1)
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                            💡 Use zoom controls to get closer to the area you want, then drag to position
                         </p>
                     </div>
 
