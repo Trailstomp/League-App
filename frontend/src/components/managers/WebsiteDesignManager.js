@@ -204,10 +204,12 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                     setCropImageUrl(imageData);
                     setCropTarget(`${zone}_${target}`);
                     
-                    // Determine crop type based on target
+                    // Determine crop type based on target and zone
                     let cropType = 'banner';
                     if (target === 'logo') cropType = 'logo';
                     else if (target === 'background' && zone === 'banner') cropType = 'wide_banner';
+                    else if (target === 'background' && zone === 'nav') cropType = 'navigation';
+                    else if (target === 'background' && zone === 'menu') cropType = 'sidebar';
                     else if (target === 'background') cropType = 'background';
                     
                     setCropTargetType(cropType);
