@@ -310,7 +310,7 @@ const PlayersManager = ({ teams, players, setPlayers }) => {
             );
             
             // Call the protected save function
-            await handlePlayersChange(updatedPlayers);
+            await setPlayers(updatedPlayers);
             
             setEditingPlayer(null);
             console.log('✅ Player updated via protected save');
@@ -331,7 +331,7 @@ const PlayersManager = ({ teams, players, setPlayers }) => {
             const updatedPlayers = players.filter(player => player.id !== playerId);
             
             // Call the protected save function
-            await handlePlayersChange(updatedPlayers);
+            await setPlayers(updatedPlayers);
             
             console.log('✅ Player deleted via protected save');
             
