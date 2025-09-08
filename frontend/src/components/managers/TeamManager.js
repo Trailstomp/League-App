@@ -34,6 +34,8 @@ const TeamManager = ({ teams, setTeams, websiteStyle = {}, seasons = [], current
     const [editingTeam, setEditingTeam] = useState(null);
     const [showExternalTeams, setShowExternalTeams] = useState(false);
     const [activeTab, setActiveTab] = useState('basic'); // 'basic' or 'style'
+    const [showCropTool, setShowCropTool] = useState(false);
+    const [cropImageUrl, setCropImageUrl] = useState('');
 
     // Get form background color from website style or default
     const formBackgroundColor = websiteStyle?.formBackgroundColor || '#f8fafc';
