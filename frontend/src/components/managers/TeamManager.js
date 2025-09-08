@@ -524,10 +524,20 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                         onChange={(e) => {
                             const file = e.target.files[0];
                             if (file) {
-                                // Create object URL for preview
-                                const objectUrl = URL.createObjectURL(file);
-                                handleStyleChange('logoUrl', objectUrl);
-                                handleStyleChange('logoFile', file);
+                                console.log('📸 Team logo upload:', file.name, file.size);
+                                
+                                // CRITICAL FIX: Use data URL instead of blob URL for persistence
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                    const logoData = e.target.result; // This is a persistent data URL
+                                    console.log('✅ Team logo converted to persistent data URL, length:', logoData.length);
+                                    handleStyleChange('logoUrl', logoData);
+                                };
+                                reader.onerror = (e) => {
+                                    console.error('❌ Failed to read logo file:', e);
+                                    alert('Failed to process logo image. Please try again.');
+                                };
+                                reader.readAsDataURL(file); // Convert to persistent base64 data URL
                             }
                         }}
                         className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
