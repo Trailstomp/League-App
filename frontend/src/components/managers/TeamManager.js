@@ -764,6 +764,31 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                 </div>
             </div>
 
+            {/* Team Form Background Controls */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Team Form Background</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Form Background Color</label>
+                        <AdvancedColorPicker
+                            label="Form Background"
+                            value={teamStyle.formBackgroundColor || '#ffffff'}
+                            onChange={color => handleStyleChange('formBackgroundColor', color)}
+                            showEyedropper={true}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Form Text Color</label>
+                        <AdvancedColorPicker
+                            label="Form Text"
+                            value={teamStyle.formTextColor || '#374151'}
+                            onChange={color => handleStyleChange('formTextColor', color)}
+                            showEyedropper={true}
+                        />
+                    </div>
+                </div>
+            </div>
+
             {/* Enhanced Style Preview */}
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Style Preview</label>
@@ -771,7 +796,7 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                     className="p-4 rounded-lg border-2 shadow-sm"
                     style={{ 
                         borderColor: teamStyle.primaryColor || '#e2e8f0',
-                        backgroundColor: teamStyle.backgroundColor || '#ffffff'
+                        backgroundColor: teamStyle.formBackgroundColor || teamStyle.backgroundColor || '#ffffff'
                     }}
                 >
                     <div 
