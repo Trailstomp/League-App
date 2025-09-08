@@ -658,8 +658,9 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                                     type="button"
                                     onClick={() => {
                                         console.log('🎯 Opening crop tool for existing team logo');
-                                        // Open crop tool with existing logo
-                                        // This will be handled by the crop tool state in TeamStyleTab
+                                        setCropImageUrl(teamStyle.logoUrl);
+                                        setCropTargetField('logoUrl');
+                                        setShowCropTool(true);
                                     }}
                                     className="text-green-600 hover:text-green-800 text-sm"
                                 >
