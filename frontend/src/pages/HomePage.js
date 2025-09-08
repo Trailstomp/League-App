@@ -4,7 +4,7 @@ import GameTicker from '../components/GameTicker';
 import EventDetailModal from '../scheduling/components/EventDetailModal';
 import TeamDetailModal from '../teams/components/TeamDetailModal';
 
-const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyle = {} }) => {
+const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyle = {}, onNavigate }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showEventModal, setShowEventModal] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState(null);
