@@ -74,7 +74,7 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
         img.src = imageUrl;
     }, [imageUrl, targetType]);
 
-    // Draw canvas
+    // Draw canvas with zoom support
     useEffect(() => {
         if (isLoading || !imageRef.current) return;
         
@@ -85,15 +85,28 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
         canvas.width = imageDisplaySize.width;
         canvas.height = imageDisplaySize.height;
 
-        // Clear and draw image
+        // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Save context for zoom and pan transformations
+        ctx.save();
+        
+        // Apply zoom and pan
+        ctx.translate(canvas.width / 2 + imageOffset.x, canvas.height / 2 + imageOffset.y);
+        ctx.scale(zoom, zoom);
+        ctx.translate(-canvas.width / 2, -canvas.height / 2);
+        
+        // Draw image with transformations
         ctx.drawImage(imageRef.current, 0, 0, imageDisplaySize.width, imageDisplaySize.height);
+        
+        // Restore context
+        ctx.restore();
 
-        // Draw overlay
+        // Draw overlay with transparent crop area
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Clear crop area - MAKE TRANSPARENT instead of white
+        // Make crop area transparent
         ctx.save();
         ctx.globalCompositeOperation = 'destination-out';
         ctx.fillRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
@@ -116,7 +129,7 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
         ctx.lineTo(centerX, centerY + 10);
         ctx.stroke();
 
-    }, [cropArea, imageDisplaySize, isLoading]);
+    }, [cropArea, imageDisplaySize, isLoading, zoom, imageOffset]);
 
     // Handle mouse events for dragging crop area
     const handleMouseDown = (e) => {
