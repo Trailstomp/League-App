@@ -87,7 +87,7 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
         img.src = imageUrl;
     }, [imageUrl, targetType]);
 
-    // Draw canvas with zoom support
+    // Draw canvas with crop space scaling
     useEffect(() => {
         if (isLoading || !imageRef.current) return;
         
@@ -98,22 +98,9 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
         canvas.width = imageDisplaySize.width;
         canvas.height = imageDisplaySize.height;
 
-        // Clear canvas
+        // Clear canvas and draw image at normal size
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Save context for zoom and pan transformations
-        ctx.save();
-        
-        // Apply zoom and pan
-        ctx.translate(canvas.width / 2 + imageOffset.x, canvas.height / 2 + imageOffset.y);
-        ctx.scale(zoom, zoom);
-        ctx.translate(-canvas.width / 2, -canvas.height / 2);
-        
-        // Draw image with transformations
         ctx.drawImage(imageRef.current, 0, 0, imageDisplaySize.width, imageDisplaySize.height);
-        
-        // Restore context
-        ctx.restore();
 
         // Draw overlay with transparent crop area
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
@@ -127,22 +114,34 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
 
         // Draw crop border
         ctx.strokeStyle = '#3b82f6';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 3;
         ctx.strokeRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
 
+        // Draw corner handles
+        const handleSize = 12;
+        ctx.fillStyle = '#3b82f6';
+        [
+            [cropArea.x - handleSize/2, cropArea.y - handleSize/2],
+            [cropArea.x + cropArea.width - handleSize/2, cropArea.y - handleSize/2],
+            [cropArea.x - handleSize/2, cropArea.y + cropArea.height - handleSize/2],
+            [cropArea.x + cropArea.width - handleSize/2, cropArea.y + cropArea.height - handleSize/2]
+        ].forEach(([x, y]) => {
+            ctx.fillRect(x, y, handleSize, handleSize);
+        });
+
         // Draw center crosshair
-        ctx.strokeStyle = '#3b82f6';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
         const centerX = cropArea.x + cropArea.width / 2;
         const centerY = cropArea.y + cropArea.height / 2;
         ctx.beginPath();
-        ctx.moveTo(centerX - 10, centerY);
-        ctx.lineTo(centerX + 10, centerY);
-        ctx.moveTo(centerX, centerY - 10);
-        ctx.lineTo(centerX, centerY + 10);
+        ctx.moveTo(centerX - 15, centerY);
+        ctx.lineTo(centerX + 15, centerY);
+        ctx.moveTo(centerX, centerY - 15);
+        ctx.lineTo(centerX, centerY + 15);
         ctx.stroke();
 
-    }, [cropArea, imageDisplaySize, isLoading, zoom, imageOffset]);
+    }, [cropArea, imageDisplaySize, isLoading, cropScale]);
 
     // Handle mouse events for dragging crop area
     const handleMouseDown = (e) => {
