@@ -488,6 +488,9 @@ const BasicInfoTab = ({ editingTeam, handleInputChange, seasons, currentSeason }
 const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
     const teamStyle = editingTeam?.style || {};
     const [extractedColors, setExtractedColors] = useState([]);
+    const [showCropTool, setShowCropTool] = useState(false);
+    const [cropImageUrl, setCropImageUrl] = useState('');
+    const [cropTargetField, setCropTargetField] = useState('');
 
     // Handle colors extracted from logo
     const handleColorsExtracted = (colors) => {
