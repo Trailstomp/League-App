@@ -209,7 +209,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                     if (target === 'logo') cropType = 'logo';
                     else if (target === 'background' && zone === 'banner') cropType = 'wide_banner';
                     else if (target === 'background' && zone === 'nav') cropType = 'navigation';
-                    else if (target === 'background' && zone === 'menu') cropType = 'sidebar';
+                    else if (target === 'background' && zone === 'menu') cropType = 'background'; // Fixed: menu should use standard background ratio
                     else if (target === 'background') cropType = 'background';
                     
                     setCropTargetType(cropType);
