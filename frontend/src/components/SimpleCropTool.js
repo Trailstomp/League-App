@@ -50,9 +50,21 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
             
             setImageDisplaySize({ width: displayWidth, height: displayHeight });
             
-            // Set initial crop area based on target type
-            const cropHeight = 150;
-            const cropWidth = cropHeight * targetAspect.ratio;
+            // Set initial crop area based on target type with proper scaling
+            const baseCropSize = Math.min(displayWidth, displayHeight) * 0.6;
+            let cropWidth = baseCropSize * cropScale;
+            let cropHeight = baseCropSize * cropScale;
+            
+            // Apply aspect ratio to crop area
+            if (targetAspect.ratio) {
+                if (targetAspect.ratio > 1) {
+                    // Wide format (banner, navigation)
+                    cropHeight = cropWidth / targetAspect.ratio;
+                } else {
+                    // Tall format (sidebar) 
+                    cropWidth = cropHeight * targetAspect.ratio;
+                }
+            }
             
             setCropArea({
                 x: (displayWidth - cropWidth) / 2,
