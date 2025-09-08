@@ -45,13 +45,20 @@ const TeamManager = ({ teams, setTeams, websiteStyle = {}, seasons = [], current
     }, []);
 
     const handleStyleChange = useCallback((field, value) => {
-        setEditingTeam(prev => ({
-            ...prev, 
-            style: { 
-                ...(prev.style || {}), 
-                [field]: value 
+        console.log('🎨 Style change:', field, value);
+        setEditingTeam(prev => {
+            if (!prev) {
+                console.error('❌ No editing team to update');
+                return prev;
             }
-        }));
+            return {
+                ...prev, 
+                style: { 
+                    ...(prev.style || {}), 
+                    [field]: value 
+                }
+            };
+        });
     }, []);
 
     const handleSave = useCallback((e) => {
