@@ -812,6 +812,19 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                     )}
                 </div>
             </div>
+
+            {/* SimpleCropTool for Team Logo/Banner */}
+            {showCropTool && (
+                <SimpleCropTool
+                    imageUrl={cropImageUrl}
+                    onCrop={handleCropComplete}
+                    onCancel={() => {
+                        setShowCropTool(false);
+                        setCropImageUrl('');
+                    }}
+                    targetType="logo"
+                />
+            )}
         </div>
     );
 };
