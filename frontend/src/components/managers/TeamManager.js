@@ -707,8 +707,10 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                                             console.log('📸 Team logo upload (crop):', file.name, file.size);
                                             const reader = new FileReader();
                                             reader.onload = (e) => {
-                                                // This will trigger crop tool - handled by TeamStyleTab state
-                                                console.log('🎯 Opening crop tool for team logo');
+                                                console.log('🎯 Opening crop tool for new team logo');
+                                                setCropImageUrl(e.target.result);
+                                                setCropTargetField('logoUrl');
+                                                setShowCropTool(true);
                                             };
                                             reader.readAsDataURL(file);
                                         }
