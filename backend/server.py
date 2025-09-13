@@ -209,6 +209,11 @@ class Player(BaseModel):
     handedness: Optional[str] = ""  # Left, Right, or Ambidextrous
     details: Optional[str] = ""  # Additional player information
     photoUrl: Optional[str] = ""  # Player photo
+    # Multiple teams and positions support
+    additionalTeams: Optional[List[str]] = Field(default_factory=list)  # Additional team IDs
+    additionalPositions: Optional[List[str]] = Field(default_factory=list)  # Additional positions
+    # Social media links
+    social: Optional[Dict[str, str]] = Field(default_factory=dict)  # Instagram, Twitter, Facebook, LinkedIn
     active: bool = True
     createdAt: datetime = Field(default_factory=datetime.utcnow)
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
