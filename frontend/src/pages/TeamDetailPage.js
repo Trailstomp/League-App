@@ -258,8 +258,17 @@ const TeamRosterTab = ({ team, players = [] }) => {
         if (!player) return null;
 
         return (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div 
+                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                onClick={(e) => {
+                    // Click-away to close - only if clicking the backdrop, not the modal
+                    if (e.target === e.currentTarget) {
+                        console.log('🎯 Player popup closed by click-away');
+                        onClose();
+                    }
+                }}
+            >
+                <div className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border">
                     {/* Large Player Card */}
                     <div className="p-6">
                         <div className="relative bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg overflow-hidden mb-4">
