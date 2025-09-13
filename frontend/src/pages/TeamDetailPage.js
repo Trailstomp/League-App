@@ -337,15 +337,6 @@ const TeamRosterTab = ({ team, players = [] }) => {
                             </div>
                         </div>
 
-                        {/* Details */}
-                        {player.details && (
-                            <div className="mb-4">
-                                <h3 className="font-semibold text-slate-800 mb-2">Details</h3>
-                                <p className="text-slate-600 text-sm leading-relaxed">{player.details}</p>
-                            </div>
-                        )}
-
-                        {/* Contact & Additional Info */}
                         {/* Player Details & Social Links */}
                         <div className="space-y-4">
                             {player.details && (
