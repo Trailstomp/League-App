@@ -385,17 +385,48 @@ const TeamRosterTab = ({ team, players = [] }) => {
                     {teamPlayers.map(player => (
                         <div 
                             key={player.id} 
-                            className="relative bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 border-3"
+                            className="relative bg-white rounded-xl overflow-hidden transition-all duration-300 cursor-pointer group"
                             style={{ 
                                 borderColor: team.style?.primaryColor || '#2563eb',
-                                background: `linear-gradient(135deg, rgba(255,255,255,1) 0%, ${team.style?.backgroundColor || '#f8fafc'} 100%)`
+                                background: `linear-gradient(135deg, rgba(255,255,255,1) 0%, ${team.style?.backgroundColor || '#f8fafc'} 100%)`,
+                                // REALISTIC CARD SHADOWS - like sitting on desk
+                                boxShadow: `
+                                    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                                    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+                                    0 0 0 1px ${team.style?.primaryColor || '#2563eb'}40,
+                                    inset 0 1px 0 rgba(255, 255, 255, 0.1)
+                                `,
+                                transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg)',
+                                border: `2px solid ${team.style?.primaryColor || '#2563eb'}`,
+                            }}
+                            onMouseEnter={(e) => {
+                                // 3D card hover effect
+                                e.currentTarget.style.transform = 'perspective(1000px) rotateX(-2deg) rotateY(2deg) translateY(-4px)';
+                                e.currentTarget.style.boxShadow = `
+                                    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                                    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+                                    0 0 0 1px ${team.style?.primaryColor || '#2563eb'}60,
+                                    inset 0 1px 0 rgba(255, 255, 255, 0.2)
+                                `;
+                            }}
+                            onMouseLeave={(e) => {
+                                // Return to flat position
+                                e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+                                e.currentTarget.style.boxShadow = `
+                                    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                                    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+                                    0 0 0 1px ${team.style?.primaryColor || '#2563eb'}40,
+                                    inset 0 1px 0 rgba(255, 255, 255, 0.1)
+                                `;
                             }}
                             onClick={() => setSelectedPlayer(player)}
                         >
-                            {/* Card Header Stripe */}
+                            {/* Card Header Stripe with Gradient */}
                             <div 
-                                className="h-2 w-full"
-                                style={{ backgroundColor: team.style?.primaryColor || '#2563eb' }}
+                                className="h-3 w-full"
+                                style={{ 
+                                    background: `linear-gradient(90deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`
+                                }}
                             ></div>
                             
                             {/* Player Photo Container */}
@@ -412,23 +443,28 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                         <div 
                                             className="w-full h-full flex items-center justify-center"
                                             style={{ 
-                                                background: `linear-gradient(135deg, ${team.style?.backgroundColor || '#f8fafc'} 0%, ${team.style?.primaryColor || '#2563eb'}20 100%)`
+                                                background: `linear-gradient(135deg, ${team.style?.backgroundColor || '#f8fafc'} 0%, ${team.style?.primaryColor || '#2563eb'}15 100%)`
                                             }}
                                         >
-                                            <svg className="w-16 h-16 opacity-40" fill="currentColor" viewBox="0 0 24 24" style={{ color: team.style?.primaryColor || '#2563eb' }}>
+                                            <svg className="w-20 h-20 opacity-30" fill="currentColor" viewBox="0 0 24 24" style={{ color: team.style?.primaryColor || '#2563eb' }}>
                                                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                                             </svg>
                                         </div>
                                     )}
                                     
-                                    {/* Team Logo Overlay - Enhanced */}
+                                    {/* Team Logo Overlay - Enhanced with Card Border */}
                                     <div className="absolute top-3 left-3">
-                                        <div className="w-12 h-12 rounded-full bg-white shadow-xl flex items-center justify-center overflow-hidden border-3 border-white">
+                                        <div 
+                                            className="w-14 h-14 rounded-full bg-white flex items-center justify-center overflow-hidden border-3 border-white"
+                                            style={{ 
+                                                boxShadow: '0 4px 12px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8)'
+                                            }}
+                                        >
                                             {team.style?.logoUrl ? (
                                                 <img 
                                                     src={team.style.logoUrl} 
                                                     alt={team.name}
-                                                    className="w-full h-full object-contain"
+                                                    className="w-full h-full object-contain p-1"
                                                 />
                                             ) : (
                                                 <div 
@@ -443,24 +479,27 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                         </div>
                                     </div>
 
-                                    {/* Jersey Number - Enhanced */}
+                                    {/* Jersey Number - Enhanced with Metallic Effect */}
                                     <div className="absolute bottom-3 right-3">
                                         <div 
-                                            className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-xl border-3 border-white"
+                                            className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl border-3 border-white"
                                             style={{ 
-                                                backgroundColor: team.style?.primaryColor || '#2563eb',
-                                                background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`
+                                                background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 50%, ${team.style?.primaryColor || '#2563eb'} 100%)`,
+                                                boxShadow: '0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.1)'
                                             }}
                                         >
                                             {player.jerseyNumber || '?'}
                                         </div>
                                     </div>
                                     
-                                    {/* Playing Card Corner - Position */}
+                                    {/* Position Badge - Enhanced */}
                                     <div className="absolute top-1 right-1">
                                         <div 
-                                            className="bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md border"
-                                            style={{ borderColor: team.style?.primaryColor || '#2563eb' }}
+                                            className="bg-white rounded-full w-10 h-10 flex items-center justify-center border-2 border-white"
+                                            style={{ 
+                                                borderColor: team.style?.primaryColor || '#2563eb',
+                                                boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+                                            }}
                                         >
                                             <span 
                                                 className="text-xs font-bold"
@@ -473,42 +512,54 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                 </div>
                             </div>
 
-                            {/* Player Info Card */}
-                            <div className="p-4 bg-white">
+                            {/* Player Info Card with Card-like Design */}
+                            <div className="p-4 bg-white relative">
+                                {/* Card Shine Effect */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-40 pointer-events-none"></div>
+                                
                                 <h3 
-                                    className="font-bold text-center text-sm mb-1 truncate"
+                                    className="font-bold text-center text-base mb-2 truncate relative z-10"
                                     style={{ color: team.style?.primaryColor || '#2563eb' }}
                                 >
                                     {player.name}
                                 </h3>
-                                <div className="text-center space-y-1">
+                                <div className="text-center space-y-2 relative z-10">
                                     <div 
-                                        className="text-xs font-semibold px-2 py-1 rounded-full inline-block"
+                                        className="text-sm font-semibold px-3 py-1 rounded-full inline-block"
                                         style={{ 
                                             backgroundColor: team.style?.accentColor || '#3b82f6',
-                                            color: 'white'
+                                            color: 'white',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                                         }}
                                     >
                                         {player.position || 'Player'}
                                     </div>
                                     {player.handedness && (
-                                        <div className="text-xs text-slate-500">
-                                            {player.handedness}
+                                        <div className="text-xs text-slate-600 font-medium">
+                                            {player.handedness} Handed
                                         </div>
                                     )}
                                 </div>
                             </div>
                             
-                            {/* Card Footer Stripe */}
+                            {/* Card Footer Stripe with Gradient */}
                             <div 
-                                className="h-2 w-full"
-                                style={{ backgroundColor: team.style?.accentColor || '#3b82f6' }}
+                                className="h-3 w-full"
+                                style={{ 
+                                    background: `linear-gradient(90deg, ${team.style?.accentColor || '#3b82f6'} 0%, ${team.style?.primaryColor || '#2563eb'} 100%)`
+                                }}
                             ></div>
                             
-                            {/* Playing Card Corner Elements */}
-                            <div className="absolute bottom-1 left-1 text-xs font-bold opacity-40 transform rotate-180" style={{ color: team.style?.primaryColor || '#2563eb' }}>
+                            {/* Playing Card Corner Elements - Enhanced */}
+                            <div 
+                                className="absolute bottom-2 left-2 text-xs font-bold opacity-50 transform rotate-180"
+                                style={{ color: team.style?.primaryColor || '#2563eb' }}
+                            >
                                 #{player.jerseyNumber || '?'}
                             </div>
+                            
+                            {/* Card Bevel Effect */}
+                            <div className="absolute inset-0 rounded-xl border border-white/20 pointer-events-none"></div>
                         </div>
                     ))}
                 </div>
