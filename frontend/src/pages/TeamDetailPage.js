@@ -346,23 +346,76 @@ const TeamRosterTab = ({ team, players = [] }) => {
                         )}
 
                         {/* Contact & Additional Info */}
-                        <div className="space-y-3 text-sm">
-                            {player.email && (
-                                <div className="flex items-center">
-                                    <svg className="w-4 h-4 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                    </svg>
-                                    <span className="text-slate-700">{player.email}</span>
+                        {/* Player Details & Social Links */}
+                        <div className="space-y-4">
+                            {player.details && (
+                                <div>
+                                    <h4 className="font-semibold text-slate-700 mb-2">About {player.name.split(' ')[0]}</h4>
+                                    <p className="text-sm text-slate-600 leading-relaxed">{player.details}</p>
                                 </div>
                             )}
-                            {player.phone && (
-                                <div className="flex items-center">
-                                    <svg className="w-4 h-4 text-slate-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                    </svg>
-                                    <span className="text-slate-700">{player.phone}</span>
+                            
+                            {/* Social Links */}
+                            <div>
+                                <h4 className="font-semibold text-slate-700 mb-3">Connect</h4>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {player.social?.instagram && (
+                                        <a 
+                                            href={player.social.instagram} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="flex items-center justify-center px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all text-sm font-medium"
+                                        >
+                                            📷 Instagram
+                                        </a>
+                                    )}
+                                    {player.social?.twitter && (
+                                        <a 
+                                            href={player.social.twitter} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="flex items-center justify-center px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all text-sm font-medium"
+                                        >
+                                            🐦 Twitter
+                                        </a>
+                                    )}
+                                    {player.social?.facebook && (
+                                        <a 
+                                            href={player.social.facebook} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-sm font-medium"
+                                        >
+                                            📘 Facebook
+                                        </a>
+                                    )}
+                                    {player.social?.linkedin && (
+                                        <a 
+                                            href={player.social.linkedin} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="flex items-center justify-center px-3 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-all text-sm font-medium"
+                                        >
+                                            💼 LinkedIn
+                                        </a>
+                                    )}
                                 </div>
-                            )}
+                                
+                                {/* Contact Info - Minimized */}
+                                {(player.email || player.phone) && (
+                                    <div className="mt-4 pt-3 border-t">
+                                        <h5 className="text-xs font-semibold text-slate-500 mb-2">CONTACT</h5>
+                                        <div className="space-y-1">
+                                            {player.email && (
+                                                <div className="text-xs text-slate-600">📧 {player.email}</div>
+                                            )}
+                                            {player.phone && (
+                                                <div className="text-xs text-slate-600">📱 {player.phone}</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {/* Close Button */}
