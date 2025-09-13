@@ -450,6 +450,17 @@ const PlayerForm = ({ teams, player, onSave, onCancel }) => {
         handedness: player?.handedness || '',
         details: player?.details || '',
         photoUrl: player?.photoUrl || '',
+        // Multiple teams and positions
+        additionalTeams: player?.additionalTeams || [],
+        additionalPositions: player?.additionalPositions || [],
+        // Social media links
+        social: {
+            instagram: player?.social?.instagram || '',
+            twitter: player?.social?.twitter || '',
+            facebook: player?.social?.facebook || '',
+            linkedin: player?.social?.linkedin || '',
+            ...player?.social
+        }
     });
 
     const handleSubmit = (e) => {
