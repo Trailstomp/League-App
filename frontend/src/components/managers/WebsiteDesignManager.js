@@ -1696,7 +1696,6 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                     {activeSection === 'navigation' && renderNavigationSection()}
                     {activeSection === 'banner' && renderBannerSection()}
                     {activeSection === 'content' && renderContentSection()}
-                    {activeSection === 'menus' && renderMenusSection()}
                     {activeSection === 'preview' && renderPreviewSection()}
                 </div>
             </div>
