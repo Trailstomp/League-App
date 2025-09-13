@@ -710,6 +710,78 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
                     </div>
                 </div>
             </div>
+
+            {/* Sidebar/Menu Controls - MOVED from separate tab */}
+            <div className="border-t pt-6">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Sidebar & Menu Styling</h4>
+                
+                {/* Menu Colors */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Menu Background Color</label>
+                        <div className="flex items-center space-x-3">
+                            <input
+                                type="color"
+                                value={editingStyle.menuBackgroundColor || '#ffffff'}
+                                onChange={(e) => updateStyle({ menuBackgroundColor: e.target.value })}
+                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={editingStyle.menuBackgroundColor || '#ffffff'}
+                                onChange={(e) => {
+                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                        updateStyle({ menuBackgroundColor: e.target.value });
+                                    }
+                                }}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                placeholder="#ffffff"
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Menu Text Color</label>
+                        <div className="flex items-center space-x-3">
+                            <input
+                                type="color"
+                                value={editingStyle.menuTextColor || '#374151'}
+                                onChange={(e) => updateStyle({ menuTextColor: e.target.value })}
+                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={editingStyle.menuTextColor || '#374151'}
+                                onChange={(e) => {
+                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                        updateStyle({ menuTextColor: e.target.value });
+                                    }
+                                }}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
+                                placeholder="#374151"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Button Transparency */}
+                <div className="mb-6">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Button Transparency</label>
+                    <div className="flex items-center space-x-3">
+                        <input
+                            type="range"
+                            min="0.1"
+                            max="1"
+                            step="0.1"
+                            value={editingStyle.buttonTransparency || 0.9}
+                            onChange={(e) => updateStyle({ buttonTransparency: parseFloat(e.target.value) })}
+                            className="flex-1"
+                        />
+                        <span className="text-sm text-slate-600 w-12">
+                            {Math.round((editingStyle.buttonTransparency || 0.9) * 100)}%
+                        </span>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 
