@@ -61,10 +61,9 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
     const [cropTargetType, setCropTargetType] = useState('banner');
 
     const designSections = [
-        { id: 'navigation', label: 'Navigation Bar', icon: 'players', description: 'Header navigation and logo area' },
+        { id: 'navigation', label: 'Navigation & Sidebar', icon: 'players', description: 'Header navigation, sidebar, and menu styling' },
         { id: 'banner', label: 'Top Banner', icon: 'image', description: 'Main banner/hero section' },
         { id: 'content', label: 'Main Content', icon: 'text', description: 'Page background and content text' },
-        { id: 'menus', label: 'Menus & Sidebar', icon: 'settings', description: 'Menu styling and sidebar' },
         { id: 'preview', label: 'Live Preview', icon: 'customize', description: 'See all changes applied' }
     ];
 
