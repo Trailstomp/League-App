@@ -179,20 +179,20 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                 ></div>
                                 
                                 {/* Team Logo Section */}
-                                <div className="flex justify-center py-4">
-                                    <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white">
+                                <div className="flex justify-center py-6">
+                                    <div className="w-32 h-32 rounded-xl overflow-hidden border-4 border-white shadow-xl bg-white">
                                         {team.style?.logoUrl ? (
                                             <img 
                                                 src={team.style.logoUrl} 
                                                 alt={team.name}
-                                                className="w-full h-full object-contain"
+                                                className="w-full h-full object-contain p-2"
                                             />
                                         ) : (
                                             <div 
-                                                className="w-full h-full rounded-full flex items-center justify-center"
+                                                className="w-full h-full rounded-xl flex items-center justify-center"
                                                 style={{ backgroundColor: team.style?.primaryColor || '#2563eb' }}
                                             >
-                                                <span className="text-white font-bold text-xl">
+                                                <span className="text-white font-bold text-4xl">
                                                     {team.name.charAt(0)}
                                                 </span>
                                             </div>
