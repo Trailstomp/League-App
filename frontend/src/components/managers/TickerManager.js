@@ -327,38 +327,58 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
             {/* Preview Section */}
             <div className="bg-white rounded-lg shadow-sm border p-6">
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">
-                    Preview
+                    Live Preview
                 </h3>
                 <div 
-                    className="rounded-lg p-4 border-2"
+                    className="rounded-lg p-3"
                     style={{
                         backgroundColor: tickerConfig.tickerColor,
-                        borderColor: tickerConfig.tickerBorderColor
+                        minHeight: '60px'
                     }}
                 >
                     <div className="flex items-center space-x-4 overflow-hidden">
-                        <div 
-                            className="px-4 py-2 rounded-lg whitespace-nowrap"
-                            style={{
-                                backgroundColor: tickerConfig.tickerItemColor,
-                                color: tickerConfig.tickerTextColor
-                            }}
-                        >
-                            ⚡ Sample Event: Eagles vs Test Team 2 - Tomorrow 3:00 PM
+                        {/* Sample Game Event */}
+                        <div className="flex-shrink-0 bg-slate-700 rounded-lg px-4 py-2 border border-slate-600">
+                            <div className="flex items-center space-x-3">
+                                <span className="px-2 py-1 rounded text-xs font-bold text-white bg-green-600">
+                                    GAME
+                                </span>
+                                <div className="text-white">
+                                    <div className="font-medium text-sm">Eagles vs Bears</div>
+                                    <div className="text-xs text-slate-300">Sep 20 • 3:00 PM • Main Field</div>
+                                </div>
+                            </div>
                         </div>
-                        <div 
-                            className="px-4 py-2 rounded-lg whitespace-nowrap"
-                            style={{
-                                backgroundColor: tickerConfig.tickerItemColor,
-                                color: tickerConfig.tickerTextColor
-                            }}
-                        >
-                            🏆 Tournament: Spring Championship - This Weekend
+                        
+                        {/* Sample Tournament Event */}
+                        <div className="flex-shrink-0 bg-slate-700 rounded-lg px-4 py-2 border border-slate-600">
+                            <div className="flex items-center space-x-3">
+                                <span className="px-2 py-1 rounded text-xs font-bold text-white bg-purple-600">
+                                    TOURNAMENT
+                                </span>
+                                <div className="text-white">
+                                    <div className="font-medium text-sm">Spring Championship</div>
+                                    <div className="text-xs text-slate-300">Sep 25 • 10:00 AM • Championship Arena</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Sample Practice Event */}
+                        <div className="flex-shrink-0 bg-slate-700 rounded-lg px-4 py-2 border border-slate-600">
+                            <div className="flex items-center space-x-3">
+                                <span className="px-2 py-1 rounded text-xs font-bold text-white bg-blue-600">
+                                    PRACTICE
+                                </span>
+                                <div className="text-white">
+                                    <div className="font-medium text-sm">Team Practice</div>
+                                    <div className="text-xs text-slate-300">Sep 18 • 6:00 PM • Practice Field</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <p className="text-xs text-slate-500 mt-2">
-                    This is how your ticker will look with the current settings. Events will scroll from right to left.
+                    Live preview of your ticker design. Events display with color-coded badges and scroll horizontally when there are many events.
                 </p>
             </div>
         </div>
