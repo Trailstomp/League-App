@@ -424,7 +424,7 @@ class Location(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     address: str
-    type: str  # 'practice_field', 'game_field', 'social_venue', 'training_facility'
+    types: List[str] = Field(default_factory=list)  # Multiple types: ['practice_field', 'game_field', 'social_venue', 'training_facility']
     indoor: bool = False
     surface: Optional[str] = "grass"  # 'turf', 'grass', 'concrete', 'indoor_court'
     description: Optional[str] = ""
