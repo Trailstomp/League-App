@@ -135,31 +135,45 @@ const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) =>
                 )}
             </div>
 
-            {/* Image Popup Modal */}
+            {/* Enhanced Image Popup Modal */}
             {selectedImagePopup && (
-                <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-                    <div className="relative max-w-4xl max-h-full p-4">
+                <div 
+                    className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 cursor-pointer"
+                    onClick={() => setSelectedImagePopup(null)}
+                >
+                    <div className="relative max-w-[90vw] max-h-[90vh] p-4">
                         <button
-                            onClick={() => setSelectedImagePopup(null)}
-                            className="absolute top-6 right-6 text-white text-2xl z-10 hover:text-gray-300"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedImagePopup(null);
+                            }}
+                            className="absolute top-2 right-2 text-white text-3xl z-10 hover:text-gray-300 bg-black bg-opacity-50 rounded-full w-12 h-12 flex items-center justify-center"
+                            title="Close (or click anywhere)"
                         >
                             ✕
                         </button>
                         
-                        <div className="text-center">
+                        <div 
+                            className="text-center cursor-pointer"
+                            onClick={() => setSelectedImagePopup(null)}
+                        >
                             <img 
                                 src={selectedImagePopup.url} 
                                 alt={selectedImagePopup.caption}
-                                className="max-w-full max-h-screen object-contain rounded-lg"
+                                className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+                                onClick={(e) => e.stopPropagation()}
                             />
-                            {selectedImagePopup.caption && (
-                                <div className="text-white mt-4 bg-black bg-opacity-50 rounded-lg p-3">
+                            {selectedImagePopup.caption && selectedImagePopup.caption !== `Photo from ${selectedImagePopup.galleryName}` && (
+                                <div className="text-white mt-4 bg-black bg-opacity-70 rounded-lg p-3 inline-block">
                                     <p className="font-medium">{selectedImagePopup.caption}</p>
                                     {selectedImagePopup.galleryName && (
                                         <p className="text-sm text-gray-300 mt-1">From: {selectedImagePopup.galleryName}</p>
                                     )}
                                 </div>
                             )}
+                            <div className="text-white mt-2 text-sm opacity-70">
+                                Click anywhere to close
+                            </div>
                         </div>
                     </div>
                 </div>
