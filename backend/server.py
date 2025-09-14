@@ -180,7 +180,7 @@ class TeamStyle(BaseModel):
     cardBackgroundOpacity: Optional[float] = 0.3
     # Team page background
     pageBackgroundType: Optional[str] = "color"
-    pageBackgroundColor: Optional[str] = "#f8fafc"
+    pageBackgroundColor: Optional[str] = ""  # Defaults to backgroundColor if empty
     pageBackgroundImage: Optional[str] = ""
     # Team form background controls
     formBackgroundColor: Optional[str] = "#ffffff"
