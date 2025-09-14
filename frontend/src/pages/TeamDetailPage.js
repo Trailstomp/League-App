@@ -235,30 +235,7 @@ const TeamHomeTab = ({ team, teams, events, onNavigate }) => {
             {/* Team News Ticker */}
             <div>
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">📰 Team News & Updates</h3>
-                <div 
-                    className="rounded-lg border border-slate-200 overflow-hidden"
-                    style={{ backgroundColor: teamStyle.backgroundColor || '#f8fafc' }}
-                >
-                    <GameTicker 
-                        teams={teams} 
-                        leagueSchedule={events || []} 
-                        websiteStyle={{
-                            tickerFilters: {
-                                games: true,
-                                tournaments: true,
-                                practices: true,
-                                meetings: true,
-                                social: true,
-                                other: true
-                            },
-                            tickerLookBack: 14,
-                            tickerLookForward: 60
-                        }}
-                        onEventClick={() => {}} 
-                        onTeamClick={() => {}}
-                        onNavigate={onNavigate || (() => {})}
-                    />
-                </div>
+                {/* Game Ticker moved to Layout component - now shows on all pages */}
             </div>
 
             {/* Team Media Gallery */}
