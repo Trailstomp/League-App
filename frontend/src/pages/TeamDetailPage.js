@@ -233,53 +233,6 @@ const TeamHomeTab = ({ team, teams, events, onNavigate }) => {
     
     return (
         <div className="space-y-4 sm:space-y-6">
-            {/* Team Identity Section - Logo and Season Record only */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Team Logo Showcase */}
-                <div className="text-center">
-                    <div className="w-32 h-32 mx-auto rounded-xl overflow-hidden border-4 border-white shadow-xl bg-white mb-4">
-                        {teamStyle.logoUrl ? (
-                            <img 
-                                src={teamStyle.logoUrl} 
-                                alt={`${team.name} logo`}
-                                className="w-full h-full object-contain p-3"
-                            />
-                        ) : (
-                            <div 
-                                className="w-full h-full flex items-center justify-center rounded-xl"
-                                style={{ backgroundColor: teamStyle.primaryColor || '#dc2626' }}
-                            >
-                                <LacrosseIcon name="stick" style={{fontSize: '48px', color: 'white'}} />
-                            </div>
-                        )}
-                    </div>
-                    <h3 className="text-lg font-bold" style={{ color: teamStyle.primaryColor || '#1f2937' }}>
-                        {team.name}
-                    </h3>
-                    <p className="text-slate-600">{team.division || 'Field'} Division</p>
-                </div>
-
-                {/* Season Record */}
-                <div 
-                    className="p-6 rounded-lg text-center"
-                    style={{ 
-                        backgroundColor: teamStyle.backgroundColor || '#f8fafc',
-                        border: `2px solid ${teamStyle.primaryColor || '#dc2626'}`
-                    }}
-                >
-                    <h3 className="text-lg font-semibold mb-3" style={{ color: teamStyle.primaryColor || '#1f2937' }}>
-                        Season Record
-                    </h3>
-                    <div className="text-4xl font-bold mb-2" style={{ color: teamStyle.primaryColor || '#1f2937' }}>
-                        {team.wins || 0}-{team.losses || 0}
-                        {(team.ties || 0) > 0 && `-${team.ties}`}
-                    </div>
-                    <div className="text-sm text-slate-600">
-                        {((team.wins || 0) + (team.losses || 0) + (team.ties || 0))} games played
-                    </div>
-                </div>
-            </div>
-
             {/* Team News Ticker */}
             <div>
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">📰 Team News & Updates</h3>
