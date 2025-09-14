@@ -183,10 +183,10 @@ class TeamStyle(BaseModel):
     pageBackgroundColor: Optional[str] = ""  # Defaults to backgroundColor if empty
     pageBackgroundImage: Optional[str] = ""
     # Team form background controls
-    formBackgroundColor: Optional[str] = "#ffffff"
+    formBackgroundColor: Optional[str] = ""  # Defaults to backgroundColor if empty
     formBackgroundImage: Optional[str] = ""
     formBackgroundType: Optional[str] = "color"
-    formTextColor: Optional[str] = "#374151"
+    formTextColor: Optional[str] = ""  # Defaults to primaryColor if empty
 
 # Pydantic models for Teams and Players
 class Team(BaseModel):
