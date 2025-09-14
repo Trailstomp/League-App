@@ -115,6 +115,39 @@ const NewsManager = ({ teams = [], currentUser }) => {
         }
     };
 
+    // Check if news item is expired
+    const isExpired = (item) => {
+        if (!item.expirationDate) return false;
+        return new Date(item.expirationDate) < new Date();
+    };
+
+    // Check if news item should be displayed (active and not expired)
+    const isItemActive = (item) => {
+        return item.active && !isExpired(item);
+    };
+
+    // Get filtered active items for display
+    const getActiveNewsItems = () => {
+        return newsItems.filter(isItemActive);
+    };
+
+    // Handle crop tool functionality
+    const handleCropComplete = (croppedImageData) => {
+        if (cropTargetField && (editingItem || showAddForm)) {
+            // Update the appropriate image field
+            if (editingItem) {
+                setEditingItem(prev => ({
+                    ...prev,
+                    [cropTargetField]: croppedImageData
+                }));
+            }
+            // Note: For new items, we'll handle this in the form component
+        }
+        setShowCropTool(false);
+        setCropImageUrl('');
+        setCropTargetField('');
+    };
+
     const getTeamName = (teamId) => {
         if (!teamId || teamId === 'league') return 'League-wide';
         const team = teams.find(t => t.id === teamId);
