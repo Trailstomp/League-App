@@ -627,18 +627,26 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                                 onChange={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    console.log('🎨 Background color changed to:', e.target.value);
+                                    console.log('🎨 Background color changed to:', e.target.value, '(NO SAVE)');
                                     handleStyleChange('backgroundColor', e.target.value);
                                 }}
+                                onFocus={(e) => e.stopPropagation()}
                                 className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
                             />
                             <input
                                 type="text"
                                 value={teamStyle.backgroundColor || '#fef2f2'}
                                 onChange={(e) => {
+                                    e.stopPropagation();
                                     if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                        console.log('🎨 Background color (text) changed to:', e.target.value);
+                                        console.log('🎨 Background color (text) changed to:', e.target.value, '(NO SAVE)');
                                         handleStyleChange('backgroundColor', e.target.value);
+                                    }
+                                }}
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        e.stopPropagation();
                                     }
                                 }}
                                 className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-pink-500"
@@ -656,18 +664,26 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                                 onChange={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    console.log('🎨 Accent color changed to:', e.target.value);
+                                    console.log('🎨 Accent color changed to:', e.target.value, '(NO SAVE)');
                                     handleStyleChange('accentColor', e.target.value);
                                 }}
+                                onFocus={(e) => e.stopPropagation()}
                                 className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
                             />
                             <input
                                 type="text"
                                 value={teamStyle.accentColor || '#7c2d12'}
                                 onChange={(e) => {
+                                    e.stopPropagation();
                                     if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                        console.log('🎨 Accent color (text) changed to:', e.target.value);
+                                        console.log('🎨 Accent color (text) changed to:', e.target.value, '(NO SAVE)');
                                         handleStyleChange('accentColor', e.target.value);
+                                    }
+                                }}
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        e.stopPropagation();
                                     }
                                 }}
                                 className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500"
