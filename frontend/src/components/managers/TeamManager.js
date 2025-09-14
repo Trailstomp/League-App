@@ -931,6 +931,167 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                 </div>
             </div>
 
+            {/* Team Page Background Controls */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">📄 Team Page Background</label>
+                <p className="text-xs text-slate-500 mb-3">Background for the entire team page</p>
+                
+                {/* Background Type Toggle */}
+                <div className="flex space-x-4 mb-4">
+                    <button
+                        type="button"
+                        onClick={() => handleStyleChange('pageBackgroundType', 'color')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (teamStyle.pageBackgroundType !== 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Color Background
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => handleStyleChange('pageBackgroundType', 'image')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (teamStyle.pageBackgroundType === 'image') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Image Background
+                    </button>
+                </div>
+
+                {teamStyle.pageBackgroundType === 'image' ? (
+                    <div className="space-y-3">
+                        {teamStyle.pageBackgroundImage ? (
+                            <div className="space-y-2">
+                                <img 
+                                    src={teamStyle.pageBackgroundImage} 
+                                    alt="Page Background preview" 
+                                    className="w-full h-32 object-cover rounded-lg border-2 border-slate-300"
+                                />
+                                <div className="flex justify-center space-x-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleStyleChange('pageBackgroundImage', '')}
+                                        className="text-red-600 hover:text-red-800 text-sm"
+                                    >
+                                        Remove
+                                    </button>
+                                    <span className="text-slate-400">|</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            console.log('🎯 Opening crop tool for existing page background');
+                                            setCropImageUrl(teamStyle.pageBackgroundImage);
+                                            setCropTargetField('pageBackgroundImage');
+                                            setShowCropTool(true);
+                                        }}
+                                        className="text-green-600 hover:text-green-800 text-sm"
+                                    >
+                                        📐 Edit/Crop
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex justify-center space-x-3">
+                                <input 
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            console.log('📸 Team page background upload (direct):', file.name, file.size);
+                                            const reader = new FileReader();
+                                            reader.onload = (e) => {
+                                                const bgData = e.target.result;
+                                                handleStyleChange('pageBackgroundImage', bgData);
+                                                console.log('✅ Team page background converted to data URL');
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                    className="hidden"
+                                    id="team-page-bg-direct"
+                                />
+                                <label 
+                                    htmlFor="team-page-bg-direct"
+                                    className="bg-blue-600 text-white px-3 py-2 text-sm rounded hover:bg-blue-700 transition-colors cursor-pointer"
+                                >
+                                    Upload Direct
+                                </label>
+                                
+                                <input 
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            console.log('📸 Team page background upload (crop):', file.name, file.size);
+                                            const reader = new FileReader();
+                                            reader.onload = (e) => {
+                                                console.log('🎯 Opening crop tool for new page background');
+                                                setCropImageUrl(e.target.result);
+                                                setCropTargetField('pageBackgroundImage');
+                                                setShowCropTool(true);
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                    className="hidden"
+                                    id="team-page-bg-crop"
+                                />
+                                <label 
+                                    htmlFor="team-page-bg-crop"
+                                    className="bg-green-600 text-white px-3 py-2 text-sm rounded hover:bg-green-700 transition-colors cursor-pointer"
+                                >
+                                    📐 Crop & Upload
+                                </label>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Page Background Color</label>
+                        <div className="flex items-center space-x-3">
+                            <input
+                                type="color"
+                                value={teamStyle.pageBackgroundColor || '#f8fafc'}
+                                onChange={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('🎨 Page background color changed to:', e.target.value, '(NO AUTO-SAVE)');
+                                    handleStyleChange('pageBackgroundColor', e.target.value);
+                                }}
+                                onFocus={(e) => e.stopPropagation()}
+                                className="w-20 h-16 border-2 border-slate-400 rounded-lg cursor-pointer"
+                                style={{ padding: '4px', minWidth: '80px', minHeight: '64px' }}
+                            />
+                            <input
+                                type="text"
+                                value={teamStyle.pageBackgroundColor || '#f8fafc'}
+                                onChange={(e) => {
+                                    e.stopPropagation();
+                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                        console.log('🎨 Page background color (text) changed to:', e.target.value, '(NO AUTO-SAVE)');
+                                        handleStyleChange('pageBackgroundColor', e.target.value);
+                                    }
+                                }}
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                    }
+                                }}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                placeholder="#f8fafc"
+                            />
+                        </div>
+                    </div>
+                )}
+            </div>
+
             {/* Team Card Background Image - NEW FEATURE */}
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">🎨 Team Card Background Image</label>
