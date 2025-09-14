@@ -550,6 +550,25 @@ async def save_api_integrations(data: ApiIntegrations):
 
 # END CRITICAL INFRASTRUCTURE
 
+# Initialize API integrations with user's Google Maps key
+async def initialize_api_integrations():
+    """Initialize API integrations with default Google Maps key"""
+    try:
+        existing = await db.api_integrations.find_one({"id": "main_integrations"})
+        if not existing:
+            default_integrations = {
+                "id": "main_integrations",
+                "googleMapsApiKey": "AIzaSyBOTXGhvmHj82av8eLrYP-FfyVQDk2qxTA",
+                "emailApiKey": "",
+                "smsApiKey": "",
+                "socialMediaApiKeys": {},
+                "lastUpdated": datetime.utcnow()
+            }
+            await db.api_integrations.insert_one(default_integrations)
+            logger.info("🗺️ Initialized API integrations with Google Maps key")
+    except Exception as e:
+        logger.error(f"Error initializing API integrations: {e}")
+
 # Include the router in the main app  
 app.include_router(api_router)
 
