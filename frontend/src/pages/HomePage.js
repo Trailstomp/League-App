@@ -255,49 +255,33 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                         ></div>
                                     )}
                                     
-                                    {/* Logo container - centered on background */}
+                                    {/* Logo container - LARGER and NO WHITE BOX */}
                                     <div className="w-full h-full flex items-center justify-center relative z-10">
-                                        <div 
-                                            className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-white relative"
-                                            style={{ 
-                                                boxShadow: `
-                                                    0 8px 32px rgba(0,0,0,0.2),
-                                                    inset 0 2px 0 rgba(255,255,255,0.8),
-                                                    inset 0 -2px 0 rgba(0,0,0,0.05)
-                                                `,
-                                                backgroundColor: 'rgba(255,255,255,0.1)', // Slight transparency
-                                                backdropFilter: 'blur(8px)' // Glass effect
-                                            }}
-                                        >
-                                            {team.style?.logoUrl ? (
-                                                <>
-                                                    <img 
-                                                        src={team.style.logoUrl} 
-                                                        alt={team.name}
-                                                        className="w-full h-full object-contain p-3"
-                                                        style={{ 
-                                                            filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
-                                                            backgroundColor: 'transparent'
-                                                        }}
-                                                    />
-                                                    {/* Glass shine overlay */}
-                                                    <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-20 pointer-events-none"></div>
-                                                </>
-                                            ) : (
-                                                <div 
-                                                    className="w-full h-full rounded-2xl flex items-center justify-center relative"
-                                                    style={{ 
-                                                        background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`
-                                                    }}
-                                                >
-                                                    <span className="text-white font-bold text-4xl drop-shadow-lg">
-                                                        {team.name.charAt(0)}
-                                                    </span>
-                                                    {/* Gradient shine overlay */}
-                                                    <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-20 pointer-events-none"></div>
-                                                </div>
-                                            )}
-                                        </div>
+                                        {team.style?.logoUrl ? (
+                                            <img 
+                                                src={team.style.logoUrl} 
+                                                alt={team.name}
+                                                className="w-48 h-48 object-contain drop-shadow-2xl"
+                                                style={{ 
+                                                    filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.4)) drop-shadow(0 4px 8px rgba(255,255,255,0.1))',
+                                                    backgroundColor: 'transparent'
+                                                }}
+                                            />
+                                        ) : (
+                                            <div 
+                                                className="w-48 h-48 rounded-2xl flex items-center justify-center relative"
+                                                style={{ 
+                                                    background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
+                                                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+                                                }}
+                                            >
+                                                <span className="text-white font-bold text-8xl drop-shadow-lg">
+                                                    {team.name.charAt(0)}
+                                                </span>
+                                                {/* Gradient shine overlay */}
+                                                <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-20 pointer-events-none rounded-2xl"></div>
+                                            </div>
+                                        )}
                                     </div>
                                     
                                     {/* Team Record Badge - Floating */}
