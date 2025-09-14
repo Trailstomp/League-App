@@ -386,40 +386,64 @@ const TeamFormModal = ({
 
                 {/* Tab Content */}
                 <div className="p-6 overflow-y-auto max-h-[60vh]">
-                    <form onSubmit={handleSave}>
-                        {activeTab === 'basic' && (
+                    {activeTab === 'basic' && (
+                        <form onSubmit={handleSave}>
                             <BasicInfoTab 
                                 editingTeam={editingTeam}
                                 handleInputChange={handleInputChange}
                                 seasons={seasons}
                                 currentSeason={currentSeason}
                             />
-                        )}
+                            
+                            {/* Form Actions for Basic Tab Only */}
+                            <div className="flex space-x-3 pt-6 border-t mt-6">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingTeam(null)}
+                                    className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                >
+                                    {editingTeam?.id ? 'Update Team' : 'Add Team'}
+                                </button>
+                            </div>
+                        </form>
+                    )}
 
-                        {activeTab === 'style' && (
+                    {activeTab === 'style' && (
+                        <div>
                             <TeamStyleTab 
                                 editingTeam={editingTeam}
                                 handleStyleChange={handleStyleChange}
                             />
-                        )}
-
-                        {/* Form Actions */}
-                        <div className="flex space-x-3 pt-6 border-t mt-6">
-                            <button 
-                                type="button"
-                                onClick={() => setEditingTeam(null)}
-                                className="flex-1 bg-slate-500 text-white py-2 px-4 rounded hover:bg-slate-600 transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button 
-                                type="submit"
-                                className="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors"
-                            >
-                                Save Team
-                            </button>
+                            
+                            {/* Manual Save for Style Tab - NO AUTO SAVE */}
+                            <div className="flex space-x-3 pt-6 border-t mt-6">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingTeam(null)}
+                                    className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        console.log('💾 Manual save triggered from style tab');
+                                        handleSave(e);
+                                    }}
+                                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                                >
+                                    💾 Save Team Style
+                                </button>
+                            </div>
                         </div>
-                    </form>
+                    )}
                 </div>
             </div>
         </div>
