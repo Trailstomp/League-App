@@ -4,7 +4,7 @@ import ColorExtractor from '../ColorExtractor';
 import SimpleCropTool from '../SimpleCropTool';
 import TickerManager from './TickerManager';
 
-const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle }) => {
+const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, teams = [], events = [] }) => {
     const [activeSection, setActiveSection] = useState('navigation');
     const saveTimeoutRef = useRef(null); // Component-level timeout ref
     
