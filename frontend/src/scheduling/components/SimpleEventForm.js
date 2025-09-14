@@ -39,6 +39,13 @@ const SimpleEventForm = ({
 
         loadLocations();
     }, []);
+    // Helper function to get team name by ID
+    const getTeamName = (teamId) => {
+        if (!teamId) return 'League-wide';
+        const team = teams.find(t => t.id === teamId);
+        return team ? team.name : 'Unknown Team';
+    };
+
     // Direct state management - no hooks confusion!
     const [eventData, setEventData] = useState(() => {
         console.log('🚀 SimpleEventForm initializing with:', initialEvent);
