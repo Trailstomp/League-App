@@ -588,7 +588,9 @@ const GalleryForm = ({ gallery, teams, isTeamSpecific, teamId, onSave, onCancel 
 const ItemForm = ({ item, gallery, itemType, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
         urls: item?.urls || (item?.url ? [item.url] : []),
-        captions: item?.captions || (item?.caption ? [item.caption] : [])
+        captions: item?.captions || (item?.caption ? [item.caption] : []),
+        expirationDate: item?.expirationDate || '',
+        active: item?.active !== undefined ? item.active : true
     });
 
     const handleMultipleFileUpload = (e) => {
