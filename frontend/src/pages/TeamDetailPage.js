@@ -310,6 +310,82 @@ const TeamHomeTab = ({ team }) => {
                 </div>
             </div>
 
+            {/* Team Locations Section */}
+            {teamLocations.length > 0 && (
+                <div>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-4">🏟️ Team Locations</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {teamLocations.map(location => (
+                            <div 
+                                key={location.id} 
+                                className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                            >
+                                <div className="flex items-start justify-between mb-3">
+                                    <div className="flex-1">
+                                        <div className="flex items-center mb-2">
+                                            <span className="text-xl mr-2">{getLocationTypeIcon(location.type)}</span>
+                                            <h4 className="font-semibold text-slate-800">{location.name}</h4>
+                                        </div>
+                                        
+                                        <div className="space-y-1 text-sm text-slate-600">
+                                            {location.address && (
+                                                <div 
+                                                    className="flex items-center cursor-pointer hover:text-blue-600"
+                                                    onClick={() => openGoogleMaps(location.address)}
+                                                    title="Click to open in Google Maps"
+                                                >
+                                                    📍 {location.address}
+                                                </div>
+                                            )}
+                                            
+                                            <div className="flex items-center space-x-4">
+                                                <span className={`flex items-center ${location.indoor ? 'text-orange-600' : 'text-green-600'}`}>
+                                                    {location.indoor ? '🏢 Indoor' : '🌤️ Outdoor'}
+                                                </span>
+                                                <span className="flex items-center">
+                                                    {getSurfaceIcon(location.surface)} {location.surface?.replace('_', ' ') || 'grass'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        {location.description && (
+                                            <p className="text-sm text-slate-500 mt-2">{location.description}</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Google Maps Preview */}
+                                {getMapImageUrl(location.address) && (
+                                    <div 
+                                        className="mt-3 cursor-pointer rounded-lg overflow-hidden border border-slate-200"
+                                        onClick={() => openGoogleMaps(location.address)}
+                                        title="Click to open in Google Maps"
+                                    >
+                                        <img 
+                                            src={getMapImageUrl(location.address)} 
+                                            alt={`Map of ${location.name}`}
+                                            className="w-full h-20 object-cover hover:opacity-90 transition-opacity"
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {loadingLocations && (
+                <div>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-4">🏟️ Team Locations</h3>
+                    <div className="bg-slate-50 p-4 rounded-lg text-center text-slate-500">
+                        <p>Loading team locations...</p>
+                    </div>
+                </div>
+            )}
+
             <div>
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4">Welcome to {team.name}</h2>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
