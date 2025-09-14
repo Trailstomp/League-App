@@ -133,6 +133,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <PlayersManager teams={teams} players={players} setPlayers={handlePlayersChange} />;
             case 'locations':
                 return <LocationManager teams={teams} currentUser={currentUser} />;
+            case 'news':
+                return <NewsManager teams={teams} currentUser={currentUser} />;
             case 'users':
                 return <UserManager users={users} setUsers={setUsers} teams={teams} />;
             case 'roles':
