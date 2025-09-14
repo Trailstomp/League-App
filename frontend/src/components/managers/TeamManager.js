@@ -817,6 +817,118 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                 </div>
             </div>
 
+            {/* Team Card Background Image - NEW FEATURE */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">🎨 Team Card Background Image</label>
+                <p className="text-xs text-slate-500 mb-3">Add a background image behind the logo on team cards</p>
+                <div className="space-y-3">
+                    {teamStyle.cardBackgroundImage ? (
+                        <div className="space-y-2">
+                            <img 
+                                src={teamStyle.cardBackgroundImage} 
+                                alt="Card Background preview" 
+                                className="w-full h-32 object-cover rounded-lg border-2 border-slate-300"
+                            />
+                            <div className="flex justify-center space-x-2">
+                                <button
+                                    type="button"
+                                    onClick={() => handleStyleChange('cardBackgroundImage', '')}
+                                    className="text-red-600 hover:text-red-800 text-sm"
+                                >
+                                    Remove Background
+                                </button>
+                                <span className="text-slate-400">|</span>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        console.log('🎯 Opening crop tool for existing card background');
+                                        setCropImageUrl(teamStyle.cardBackgroundImage);
+                                        setCropTargetField('cardBackgroundImage');
+                                        setShowCropTool(true);
+                                    }}
+                                    className="text-green-600 hover:text-green-800 text-sm"
+                                >
+                                    📐 Edit/Crop Background
+                                </button>
+                            </div>
+                            
+                            {/* Background Opacity Control */}
+                            <div className="mt-3">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Background Opacity: {Math.round((teamStyle.cardBackgroundOpacity || 0.3) * 100)}%
+                                </label>
+                                <input 
+                                    type="range"
+                                    min="0.1"
+                                    max="1"
+                                    step="0.1"
+                                    value={teamStyle.cardBackgroundOpacity || 0.3}
+                                    onChange={e => handleStyleChange('cardBackgroundOpacity', parseFloat(e.target.value))}
+                                    className="w-full"
+                                />
+                            </div>
+                        </div>
+                    ) : (
+                        <div>
+                            <div className="flex justify-center space-x-3">
+                                <input 
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            console.log('📸 Team card background upload (direct):', file.name, file.size);
+                                            const reader = new FileReader();
+                                            reader.onload = (e) => {
+                                                const bgData = e.target.result;
+                                                handleStyleChange('cardBackgroundImage', bgData);
+                                                console.log('✅ Team card background converted to data URL');
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                    className="hidden"
+                                    id="team-card-bg-direct"
+                                />
+                                <label 
+                                    htmlFor="team-card-bg-direct"
+                                    className="bg-blue-600 text-white px-3 py-2 text-sm rounded hover:bg-blue-700 transition-colors cursor-pointer"
+                                >
+                                    Upload Direct
+                                </label>
+                                
+                                <input 
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            console.log('📸 Team card background upload (crop):', file.name, file.size);
+                                            const reader = new FileReader();
+                                            reader.onload = (e) => {
+                                                console.log('🎯 Opening crop tool for new card background');
+                                                setCropImageUrl(e.target.result);
+                                                setCropTargetField('cardBackgroundImage');
+                                                setShowCropTool(true);
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                    className="hidden"
+                                    id="team-card-bg-crop"
+                                />
+                                <label 
+                                    htmlFor="team-card-bg-crop"
+                                    className="bg-green-600 text-white px-3 py-2 text-sm rounded hover:bg-green-700 transition-colors cursor-pointer"
+                                >
+                                    📐 Crop & Upload
+                                </label>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
             {/* Team Form Background Controls */}
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Team Form Background</label>
