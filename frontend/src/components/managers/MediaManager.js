@@ -72,17 +72,34 @@ const MediaManager = ({ teams = [], setTeams, currentUser, isTeamSpecific = fals
     const videoGalleries = galleries.filter(g => g.type === 'video').sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     const handleSaveGallery = (galleryData) => {
-        const targetTeamId = isTeamSpecific ? teamId : galleryData.teamId || teams[0]?.id;
+        const targetTeamId = isTeamSpecific ? teamId : galleryData.teamId;
         
-        setTeams(currentTeams => currentTeams.map(team => {
-            if (team.id === targetTeamId) {
-                const updatedGalleries = galleryData.id && (team.galleries || []).find(g => g.id === galleryData.id)
-                    ? (team.galleries || []).map(g => g.id === galleryData.id ? galleryData : g)
-                    : [...(team.galleries || []), { ...galleryData, id: galleryData.id || Date.now().toString(), createdAt: new Date().toISOString() }];
-                return { ...team, galleries: updatedGalleries };
+        if (targetTeamId === 'league') {
+            // For league-wide galleries, we'll store them in the first available team
+            // or create a special handling system - for now, use first team
+            const firstTeam = teams[0];
+            if (firstTeam) {
+                setTeams(currentTeams => currentTeams.map(team => {
+                    if (team.id === firstTeam.id) {
+                        const updatedGalleries = galleryData.id && (team.galleries || []).find(g => g.id === galleryData.id)
+                            ? (team.galleries || []).map(g => g.id === galleryData.id ? {...galleryData, teamId: 'league'} : g)
+                            : [...(team.galleries || []), { ...galleryData, teamId: 'league', id: galleryData.id || Date.now().toString(), createdAt: new Date().toISOString() }];
+                        return { ...team, galleries: updatedGalleries };
+                    }
+                    return team;
+                }));
             }
-            return team;
-        }));
+        } else {
+            setTeams(currentTeams => currentTeams.map(team => {
+                if (team.id === targetTeamId) {
+                    const updatedGalleries = galleryData.id && (team.galleries || []).find(g => g.id === galleryData.id)
+                        ? (team.galleries || []).map(g => g.id === galleryData.id ? galleryData : g)
+                        : [...(team.galleries || []), { ...galleryData, id: galleryData.id || Date.now().toString(), createdAt: new Date().toISOString() }];
+                    return { ...team, galleries: updatedGalleries };
+                }
+                return team;
+            }));
+        }
         setEditingGallery(null);
     };
 
