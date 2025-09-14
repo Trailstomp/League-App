@@ -73,16 +73,16 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
             return events.filter(e => e.type === 'game').length;
         } else if (eventType === 'tournaments') {
             return events.filter(e => e.type === 'tournament').length;
-        } else {
-            return events.filter(e => {
-                const type = e.type?.toLowerCase() || 'other';
-                if (eventType === 'practices') return type.includes('practice');
-                if (eventType === 'meetings') return type.includes('meeting');
-                if (eventType === 'social') return type.includes('social');
-                if (eventType === 'other') return !type.includes('practice') && !type.includes('meeting') && !type.includes('social') && type !== 'game' && type !== 'tournament';
-                return false;
-            }).length;
+        } else if (eventType === 'practices') {
+            return events.filter(e => e.type === 'practice').length;
+        } else if (eventType === 'meetings') {
+            return events.filter(e => e.type === 'meeting').length;
+        } else if (eventType === 'social') {
+            return events.filter(e => e.type === 'social').length;
+        } else if (eventType === 'other') {
+            return events.filter(e => !['game', 'tournament', 'practice', 'meeting', 'social'].includes(e.type)).length;
         }
+        return 0;
     };
 
     return (
