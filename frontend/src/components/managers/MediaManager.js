@@ -277,69 +277,82 @@ const MediaManager = ({ teams = [], setTeams, currentUser, isTeamSpecific = fals
                                     </div>
                                 </div>
 
-                                {/* Gallery Items */}
+                                {/* Gallery Items with Compact Horizontal Scroll */}
                                 {(gallery.items || []).length > 0 ? (
-                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                        {(gallery.items || []).map((item, index) => (
-                                            <div key={item.id} className="group relative bg-slate-50 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-shadow">
-                                                <div 
-                                                    onClick={() => openSlideshow(gallery.items, index)}
-                                                    className="aspect-square relative overflow-hidden"
-                                                >
-                                                    {activeTab === 'photos' ? (
-                                                        <img 
-                                                            src={item.url} 
-                                                            alt={item.caption} 
-                                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                                                        />
-                                                    ) : (
-                                                        <div className="w-full h-full bg-slate-800 flex items-center justify-center">
-                                                            {item.url.includes('youtube.com') || item.url.includes('youtu.be') ? (
-                                                                <div className="relative w-full h-full">
-                                                                    <img 
-                                                                        src={`https://img.youtube.com/vi/${item.url.split('v=')[1]?.split('&')[0] || item.url.split('/').pop()}/0.jpg`}
-                                                                        alt={item.caption}
-                                                                        className="w-full h-full object-cover"
-                                                                    />
-                                                                    <div className="absolute inset-0 flex items-center justify-center">
-                                                                        <div className="bg-red-600 rounded-full p-2">
-                                                                            <Video className="text-white" size={24} />
+                                    <div className="overflow-x-auto">
+                                        <div className="flex space-x-3 pb-2" style={{minWidth: 'max-content'}}>
+                                            {(gallery.items || []).filter(item => item.active && !isItemExpired(item)).map((item, index) => (
+                                                <div key={item.id} className="group relative bg-slate-50 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-shadow flex-shrink-0" style={{width: '120px', height: '100px'}}>
+                                                    <div 
+                                                        onClick={() => openSlideshow(gallery.items.filter(item => item.active && !isItemExpired(item)), index)}
+                                                        className="w-full h-full relative overflow-hidden"
+                                                    >
+                                                        {activeTab === 'photos' ? (
+                                                            <img 
+                                                                src={item.url} 
+                                                                alt={item.caption || 'Gallery item'} 
+                                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-full h-full bg-slate-800 flex items-center justify-center">
+                                                                {item.url.includes('youtube.com') || item.url.includes('youtu.be') ? (
+                                                                    <div className="relative w-full h-full">
+                                                                        <img 
+                                                                            src={`https://img.youtube.com/vi/${item.url.split('v=')[1]?.split('&')[0] || item.url.split('/').pop()}/0.jpg`}
+                                                                            alt={item.caption}
+                                                                            className="w-full h-full object-cover"
+                                                                        />
+                                                                        <div className="absolute inset-0 flex items-center justify-center">
+                                                                            <div className="bg-red-600 rounded-full p-1">
+                                                                                <Video className="text-white" size={12} />
+                                                                            </div>
                                                                         </div>
                                                                     </div>
+                                                                ) : (
+                                                                    <Video className="text-slate-400" size={16} />
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity flex items-center justify-center">
+                                                            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <div className="bg-white rounded-full p-1">
+                                                                    <Eye className="text-slate-800" size={12} />
                                                                 </div>
-                                                            ) : (
-                                                                <Video className="text-slate-400" size={32} />
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity flex items-center justify-center">
-                                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <div className="bg-white rounded-full p-2">
-                                                                <Eye className="text-slate-800" size={20} />
                                                             </div>
                                                         </div>
+                                                        
+                                                        {/* Status indicators */}
+                                                        {isItemExpired(item) && (
+                                                            <div className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center" title="Expired">
+                                                                <span className="text-white text-xs">⏰</span>
+                                                            </div>
+                                                        )}
+                                                        {!item.active && (
+                                                            <div className="absolute bottom-1 right-1 w-4 h-4 bg-gray-500 rounded-full flex items-center justify-center" title="Inactive">
+                                                                <span className="text-white text-xs">⏸️</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white px-1 py-0.5">
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-xs truncate flex-1">
+                                                                {new Date(item.addedAt).toLocaleDateString()}
+                                                            </span>
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleDeleteItem(gallery.id, item.id, gallery.teamId);
+                                                                }}
+                                                                className="text-red-400 hover:text-red-300 ml-1"
+                                                                title="Delete item"
+                                                            >
+                                                                <Trash2 size={10}/>
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div className="p-3">
-                                                    <p className="text-sm font-medium text-slate-800 truncate">{item.caption}</p>
-                                                    <div className="flex justify-between items-center mt-2">
-                                                        <span className="text-xs text-slate-500">
-                                                            {new Date(item.addedAt).toLocaleDateString()}
-                                                        </span>
-                                                        <button 
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handleDeleteItem(gallery.id, item.id, gallery.teamId);
-                                                            }}
-                                                            className="text-red-500 hover:text-red-700 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                            title="Delete item"
-                                                        >
-                                                            <Trash2 size={14}/>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
+                                            ))}
+                                        </div>
                                     </div>
                                 ) : (
                                     <div className="text-center py-8 text-slate-500 border-2 border-dashed border-slate-200 rounded-lg">
