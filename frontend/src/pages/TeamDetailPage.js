@@ -309,6 +309,13 @@ const TeamHomeTab = ({ team, teams, events, onNavigate }) => {
                 </div>
             </div>
 
+            {/* Team Media Gallery */}
+            <MediaGallery 
+                teams={teams} 
+                teamId={team.id}
+                title={`${team.name} Media Gallery`} 
+            />
+
             {/* Team Locations Section - Moved below stats */}
             {teamLocations.length > 0 && (
                 <div>
