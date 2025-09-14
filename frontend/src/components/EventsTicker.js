@@ -117,7 +117,11 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
                     return (
                         <div 
                             key={`ticker-${event.id}-${index}`}
-                            className="flex-shrink-0 bg-slate-700 rounded-lg px-4 py-2 cursor-pointer hover:bg-slate-600 transition-colors border border-slate-600"
+                            className="flex-shrink-0 rounded-lg px-4 py-2 cursor-pointer hover:opacity-80 transition-opacity border"
+                            style={{
+                                backgroundColor: websiteStyle?.tickerItemColor || '#334155',
+                                borderColor: websiteStyle?.tickerBorderColor || '#475569'
+                            }}
                             onClick={() => onEventClick && onEventClick(event)}
                         >
                             <div className="flex items-center space-x-3">
