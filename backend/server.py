@@ -585,6 +585,36 @@ async def initialize_api_integrations():
     except Exception as e:
         logger.error(f"Error initializing API integrations: {e}")
 
+# Migrate existing locations from old 'type' field to new 'types' array
+async def migrate_locations():
+    """Migrate existing locations from old 'type' field to new 'types' array"""
+    try:
+        # Find locations with old 'type' field
+        old_locations = await db.locations.find({"type": {"$exists": True}}).to_list(length=None)
+        
+        if old_locations:
+            logger.info(f"🔄 Migrating {len(old_locations)} locations from 'type' to 'types' array")
+            
+            for location in old_locations:
+                # Convert single type to types array
+                if "type" in location and "types" not in location:
+                    types_array = [location["type"]] if location["type"] else []
+                    
+                    await db.locations.update_one(
+                        {"_id": location["_id"]},
+                        {
+                            "$set": {"types": types_array},
+                            "$unset": {"type": ""}  # Remove old field
+                        }
+                    )
+                    
+            logger.info("✅ Location migration completed")
+        else:
+            logger.info("ℹ️ No locations to migrate - all using new format")
+            
+    except Exception as e:
+        logger.error(f"Error migrating locations: {e}")
+
 # Include the router in the main app  
 app.include_router(api_router)
 
