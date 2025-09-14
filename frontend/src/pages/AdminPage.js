@@ -3,6 +3,7 @@ import { LacrosseIcon } from '../components/LacrosseIcons';
 import UserManager from '../components/managers/UserManager';
 import RoleManager from '../components/managers/RoleManager';
 import TeamManager from '../components/managers/TeamManager';
+import LocationManager from '../components/managers/LocationManager';
 import WebsiteDesignManager from '../components/managers/WebsiteDesignManager';
 
 const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, currentUser, websiteStyle, setWebsiteStyle }) => {
