@@ -290,6 +290,8 @@ const NewsManager = ({ teams = [], currentUser }) => {
                             onClick={setSelectedItem}
                             getTeamName={getTeamName}
                             getTypeIcon={getTypeIcon}
+                            isExpired={isExpired}
+                            isItemActive={isItemActive}
                         />
                     ))}
                 </div>
@@ -314,7 +316,30 @@ const NewsManager = ({ teams = [], currentUser }) => {
                         setEditingItem(null);
                     }}
                     saving={saving}
+                    onImageUpload={(imageData, field) => {
+                        setCropImageUrl(imageData);
+                        setCropTargetField(field);
+                        setShowCropTool(true);
+                    }}
                 />
+            )}
+
+            {/* Crop Tool Modal */}
+            {showCropTool && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-4 max-w-4xl max-h-[90vh] overflow-auto">
+                        <SimpleCropTool
+                            imageUrl={cropImageUrl}
+                            onCrop={handleCropComplete}
+                            onCancel={() => {
+                                setShowCropTool(false);
+                                setCropImageUrl('');
+                                setCropTargetField('');
+                            }}
+                            targetType="banner" // 16:9 aspect ratio good for news images
+                        />
+                    </div>
+                </div>
             )}
 
             {/* News Detail Modal */}
