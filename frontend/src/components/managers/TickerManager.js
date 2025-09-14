@@ -114,8 +114,7 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
                 {/* Date Range Settings */}
                 <div className="bg-white rounded-lg shadow-sm border p-6">
                     <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-                        <Clock className="mr-2" size={20} />
-                        Date Range Settings
+                        ⏰ Date Range Settings
                     </h3>
                     <div className="space-y-4">
                         <div>
