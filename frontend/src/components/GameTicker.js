@@ -139,29 +139,44 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
         return combinedItems;
     }, [leagueSchedule, teams, websiteStyle?.tickerFilters]);
 
-    // Auto-scroll animation - simplified approach
+    // Auto-scroll animation - only scroll when content is wider than container
     useEffect(() => {
         const tickerElement = tickerRef.current;
         if (!tickerElement || allItems.length === 0) return;
 
-        let scrollPosition = 0;
-        const scrollSpeed = 1;
-        
-        const scroll = () => {
-            if (!isHovering) {
-                scrollPosition += scrollSpeed;
-                tickerElement.scrollLeft = scrollPosition;
-                
-                // Reset when we've scrolled through one set of items
-                if (scrollPosition >= tickerElement.scrollWidth / 2) {
-                    scrollPosition = 0;
-                }
+        // Add a small delay to ensure content is rendered
+        const checkScrolling = () => {
+            const containerWidth = tickerElement.clientWidth;
+            const contentWidth = tickerElement.scrollWidth;
+            
+            // Only scroll if content is wider than container
+            if (contentWidth <= containerWidth) {
+                console.log('🎫 Ticker content fits in container, no scrolling needed');
+                return;
             }
+
+            let scrollPosition = 0;
+            const scrollSpeed = 1;
+            
+            const scroll = () => {
+                if (!isHovering && tickerElement.scrollWidth > tickerElement.clientWidth) {
+                    scrollPosition += scrollSpeed;
+                    tickerElement.scrollLeft = scrollPosition;
+                    
+                    // Reset when we've scrolled through one set of items
+                    if (scrollPosition >= tickerElement.scrollWidth / 2) {
+                        scrollPosition = 0;
+                    }
+                }
+            };
+
+            const intervalId = setInterval(scroll, 16); // ~60fps
+            
+            return () => clearInterval(intervalId);
         };
 
-        const intervalId = setInterval(scroll, 16); // ~60fps
-        
-        return () => clearInterval(intervalId);
+        const timeoutId = setTimeout(checkScrolling, 100);
+        return () => clearTimeout(timeoutId);
     }, [isHovering, allItems.length]);
     
     return (
