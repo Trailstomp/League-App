@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
-import GameTicker from '../components/GameTicker';
 import MediaGallery from '../components/MediaGallery';
 
 const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
