@@ -67,16 +67,14 @@ const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) =>
         })));
         
         // Debug logging to see what galleries exist
-        console.log('🔍 DEBUG: All galleries found:', allGalleries.map(g => ({
-            name: g.name,
-            teamId: g.teamId,
-            sourceTeam: g.sourceTeamName,
-            isLeagueWide: g.teamId === 'league'
-        })));
+        console.log('🔍 DEBUG: All galleries found:');
+        allGalleries.forEach(g => {
+            console.log(`  - Name: "${g.name}", teamId: "${g.teamId}", sourceTeam: "${g.sourceTeamName}", isLeague: ${g.teamId === 'league'}`);
+        });
         
         // Filter to only show galleries with teamId === 'league'
         const leagueGalleries = allGalleries.filter(gallery => gallery.teamId === 'league');
-        console.log('🔍 DEBUG: League galleries after filtering:', leagueGalleries.length);
+        console.log(`🔍 DEBUG: League galleries after filtering: ${leagueGalleries.length}`);
         
         return leagueGalleries;
     };
