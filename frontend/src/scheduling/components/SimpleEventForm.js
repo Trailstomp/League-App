@@ -294,16 +294,6 @@ const SimpleEventForm = ({
                                 </div>
                             );
                         })()}
-
-                        {/* Helper function for team names */}
-                        {(() => {
-                            window.getTeamName = (teamId) => {
-                                if (!teamId) return 'League-wide';
-                                const team = teams.find(t => t.id === teamId);
-                                return team ? team.name : 'Unknown Team';
-                            };
-                            return null;
-                        })()}
                     </div>
 
                     <div>
