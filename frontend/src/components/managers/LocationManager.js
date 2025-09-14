@@ -346,11 +346,22 @@ const LocationCard = ({
             <div className="flex justify-between items-start mb-3">
                 <div className="flex-1">
                     <div className="flex items-center mb-2">
-                        <span className="text-xl mr-2">{getLocationTypeIcon(location.type)}</span>
+                        <span className="text-xl mr-2">{getLocationTypeIcon(location.types)}</span>
                         <h3 className="font-semibold text-slate-800">{location.name}</h3>
-                        <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${getLocationTypeColor(location.type)}`}>
-                            {location.type.replace('_', ' ')}
-                        </span>
+                    </div>
+                    
+                    {/* Multiple type badges */}
+                    <div className="flex flex-wrap gap-1 mb-2">
+                        {location.types && location.types.map((type, index) => (
+                            <span key={index} className={`px-2 py-1 rounded-full text-xs font-medium ${getLocationTypeColor([type])}`}>
+                                {type.replace('_', ' ')}
+                            </span>
+                        ))}
+                        {(!location.types || location.types.length === 0) && (
+                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                                unspecified
+                            </span>
+                        )}
                     </div>
                     
                     <div className="space-y-1 text-sm text-slate-600">
