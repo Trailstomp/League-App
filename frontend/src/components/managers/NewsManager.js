@@ -624,17 +624,51 @@ const NewsItemForm = ({ item, teams, onSave, onCancel, saving, onImageUpload }) 
                     </div>
                     
                     {formData.type === 'image' && (
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">
-                                Image URL
-                            </label>
-                            <input
-                                type="url"
-                                value={formData.imageUrl}
-                                onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="https://example.com/image.jpg"
-                            />
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                    News Image
+                                </label>
+                                
+                                {/* Current image preview */}
+                                {formData.imageUrl && (
+                                    <div className="mb-4">
+                                        <img 
+                                            src={formData.imageUrl} 
+                                            alt="Current news image"
+                                            className="w-full max-w-md h-40 object-cover rounded-lg border border-slate-200"
+                                        />
+                                    </div>
+                                )}
+                                
+                                {/* Upload options */}
+                                <div className="flex flex-col sm:flex-row gap-2">
+                                    <div className="flex-1">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleFileUpload(e, 'imageUrl')}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        />
+                                    </div>
+                                    {onImageUpload && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const input = document.createElement('input');
+                                                input.type = 'file';
+                                                input.accept = 'image/*';
+                                                input.onchange = (e) => handleFileUpload(e, 'imageUrl');
+                                                input.click();
+                                            }}
+                                            className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm"
+                                        >
+                                            📐 Upload & Crop
+                                        </button>
+                                    )}
+                                </div>
+                                <p className="text-xs text-slate-500 mt-1">Upload an image file or use "Upload & Crop" for custom sizing</p>
+                            </div>
                         </div>
                     )}
                     
