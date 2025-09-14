@@ -774,10 +774,10 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        console.log('🎨 Manual color extraction from logo - FORM SHOULD STAY OPEN');
-                                        // Don't trigger automatic saves - just update local state
+                                        console.log('🎨 Opening color extractor for logo - FORM SHOULD STAY OPEN');
                                         if (teamStyle.logoUrl) {
-                                            console.log('🎨 Logo available for color extraction - NO SAVE TRIGGERED');
+                                            setShowColorExtractor(true);
+                                            console.log('🎨 ColorExtractor opened for logo analysis');
                                         } else {
                                             alert('Please upload a logo first');
                                         }
