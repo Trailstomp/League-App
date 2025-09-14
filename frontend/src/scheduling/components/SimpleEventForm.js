@@ -241,7 +241,8 @@ const SimpleEventForm = ({
                                 teamName: getTeamName(location.teamId),
                                 surface: location.surface,
                                 indoor: location.indoor,
-                                address: location.address
+                                address: location.address,
+                                types: location.types || []
                             }));
 
                             // Get league-wide locations from API
@@ -251,10 +252,12 @@ const SimpleEventForm = ({
                                 type: 'league',
                                 surface: location.surface,
                                 indoor: location.indoor,
-                                address: location.address
+                                address: location.address,
+                                types: location.types || []
                             }));
 
                             const allLocationOptions = [...teamLocations, ...leagueLocationOptions];
+                            const selectedLocation = allLocationOptions.find(loc => loc.value === eventData.location);
 
                             if (loadingLocations) {
                                 return (
@@ -275,6 +278,7 @@ const SimpleEventForm = ({
                                         {allLocationOptions.map((option, index) => (
                                             <option key={index} value={option.value} title={option.address}>
                                                 {option.label} {option.indoor ? '(Indoor)' : '(Outdoor)'} - {option.surface}
+                                                {option.types.length > 0 ? ` [${option.types.join(', ').replace(/_/g, ' ')}]` : ''}
                                             </option>
                                         ))}
                                     </select>
@@ -287,6 +291,11 @@ const SimpleEventForm = ({
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         placeholder="Or type custom location..."
                                     />
+                                    
+                                    {/* Location Preview */}
+                                    {selectedLocation && selectedLocation.address && (
+                                        <LocationPreview location={selectedLocation} />
+                                    )}
                                     
                                     <div className="text-xs text-gray-500">
                                         📍 Available: {teamLocations.length} team locations, {leagueLocationOptions.length} league locations
