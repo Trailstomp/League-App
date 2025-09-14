@@ -416,21 +416,41 @@ const LocationCard = ({
                 </div>
             </div>
 
-            {/* Google Maps Preview */}
+            {/* Google Maps Preview with Satellite */}
             {mapImageUrl && (
-                <div 
-                    className="mt-3 cursor-pointer rounded-lg overflow-hidden border border-slate-200"
-                    onClick={() => openGoogleMaps(location.address)}
-                    title="Click to open in Google Maps"
-                >
-                    <img 
-                        src={mapImageUrl} 
-                        alt={`Map of ${location.name}`}
-                        className="w-full h-24 object-cover hover:opacity-90 transition-opacity"
-                        onError={(e) => {
-                            e.target.style.display = 'none';
-                        }}
-                    />
+                <div className="mt-3">
+                    <div className="flex space-x-2">
+                        <div 
+                            className="flex-1 cursor-pointer rounded-lg overflow-hidden border border-slate-200"
+                            onClick={() => openGoogleMaps(location.address)}
+                            title="Click to open in Google Maps"
+                        >
+                            <div className="text-xs text-slate-500 bg-slate-50 px-2 py-1 border-b">📍 Street View</div>
+                            <img 
+                                src={getMapImageUrl(location.address, false)} 
+                                alt={`Street map of ${location.name}`}
+                                className="w-full h-20 object-cover hover:opacity-90 transition-opacity"
+                                onError={(e) => {
+                                    e.target.style.display = 'none';
+                                }}
+                            />
+                        </div>
+                        <div 
+                            className="flex-1 cursor-pointer rounded-lg overflow-hidden border border-slate-200"
+                            onClick={() => openGoogleMaps(location.address)}
+                            title="Click to open in Google Maps"
+                        >
+                            <div className="text-xs text-slate-500 bg-slate-50 px-2 py-1 border-b">🛰️ Satellite View</div>
+                            <img 
+                                src={getMapImageUrl(location.address, true)} 
+                                alt={`Satellite view of ${location.name}`}
+                                className="w-full h-20 object-cover hover:opacity-90 transition-opacity"
+                                onError={(e) => {
+                                    e.target.style.display = 'none';
+                                }}
+                            />
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
