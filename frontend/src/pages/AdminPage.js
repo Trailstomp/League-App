@@ -8,7 +8,6 @@ import NewsManager from '../components/managers/NewsManager';
 import MediaManager from '../components/managers/MediaManager';
 import APIIntegrationsManager from '../components/managers/APIIntegrationsManager';
 import WebsiteDesignManager from '../components/managers/WebsiteDesignManager';
-import TickerManager from '../components/managers/TickerManager';
 
 const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, currentUser, websiteStyle, setWebsiteStyle, events, setEvents }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
