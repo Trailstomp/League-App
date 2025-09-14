@@ -9,6 +9,9 @@ const NewsManager = ({ teams = [], currentUser }) => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [showCropTool, setShowCropTool] = useState(false);
+    const [cropImageUrl, setCropImageUrl] = useState('');
+    const [cropTargetField, setCropTargetField] = useState('');
 
     // Load news items on mount
     useEffect(() => {
