@@ -146,7 +146,7 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
 
             {/* Tab Content */}
             <div className="bg-white rounded-lg shadow-sm border p-3 sm:p-6 overflow-x-hidden">
-                {activeTab === 'home' && <TeamHomeTab team={team} />}
+                {activeTab === 'home' && <TeamHomeTab team={team} teams={teams} events={events} onNavigate={onNavigate} />}
                 {activeTab === 'schedule' && <TeamScheduleTab team={team} events={events} />}
                 {activeTab === 'roster' && <TeamRosterTab team={team} players={players} />}
                 {activeTab === 'stats' && <TeamStatsTab team={team} events={events} />}
