@@ -10,10 +10,11 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
     const [showEventModal, setShowEventModal] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [showTeamModal, setShowTeamModal] = useState(false);
+    // Calculate real statistics from current data
     const stats = {
         totalTeams: teams.length,
-        activeEvents: 0, // Will be connected later
-        totalPlayers: 0, // Will be connected later
+        activeEvents: events ? events.length : 0,
+        totalPlayers: teams.reduce((total, team) => total + (team.players?.length || 0), 0)
     };
 
     // Handle event click from ticker
