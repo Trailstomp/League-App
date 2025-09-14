@@ -63,7 +63,7 @@ const MediaManager = ({ teams = [], setTeams, currentUser, isTeamSpecific = fals
         return teams.flatMap(team => (team.galleries || []).map(gallery => ({
             ...gallery,
             teamName: team.name,
-            teamId: team.id
+            sourceTeamId: team.id  // Keep source team ID but don't override gallery's teamId
         })));
     };
 
