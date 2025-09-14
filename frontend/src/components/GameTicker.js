@@ -211,7 +211,7 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
 
     return (
         <div 
-            className="text-white py-3 overflow-hidden shadow-lg border-2 border-red-500"
+            className="text-white py-3 overflow-hidden shadow-lg"
             style={{ 
                 backgroundColor: websiteStyle?.tickerColor || '#1e293b',
                 minHeight: '60px',
