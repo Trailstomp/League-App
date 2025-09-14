@@ -31,7 +31,7 @@ def get_backend_url():
                     url = line.split('=', 1)[1].strip()
                     # Handle empty URL (relative path) - this is the critical fix being tested
                     if not url:
-                        return "https://teammanager-lax.preview.emergentagent.com"
+                        return "https://lacrosse-mgr.preview.emergentagent.com"
                     return url
     except Exception as e:
         print(f"Error reading frontend .env: {e}")

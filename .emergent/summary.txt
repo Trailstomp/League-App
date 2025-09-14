@@ -1,59 +1,78 @@
 <analysis>
-The trajectory chronicles the progression of a lacrosse league management system, initially an AI-built MVP. The primary focus has been on extending and refining core functionalities: team and player management, extensive website design customization, and critical data persistence issues. The work involved iterative feature development, significant refactoring, and persistent bug fixing. Key enhancements included a zone-based website design manager with advanced styling, a robust team and player management system featuring trading card-style displays, and, more recently, comprehensive locations management with Google Maps integration, a news ticker with CRUD and content lifecycle controls, and an advanced media gallery supporting multi-image uploads and league-wide content. The AI engineer frequently engaged in debugging complex React state, API calls, and styling, often using  to diagnose persistent issues. The latest work revolves around refining the media gallery, specifically adding expiration and active status to individual media items, and ensuring proper display logic.
+The trajectory details the iterative development and bug-fixing of a lacrosse league management system. Initially, the focus was on refining the media gallery, specifically adding expiration and active statuses for individual media items and galleries, and implementing a three-option visibility system (League-wide, League-only, Team-only). This involved significant frontend work on  and , including addressing data persistence issues and correcting UI display logic related to  and .
+
+Subsequently, the AI engineer shifted to restoring and enhancing the Game Ticker functionality. This involved moving the ticker to the global , rebuilding it as  to align with the current event data structure, and developing a  for administrative controls (filters, date ranges, visual settings like scrolling speed, card background, and border colors). Critical bugs were encountered and resolved, including data persistence failures for events (due to incorrect backend URL in  and missing API calls in ), ticker scrolling issues, event duplication, and UI visibility problems due to incorrect CSS or data processing. The troubleshooting process involved extensive console logging and iterative testing. The latest work involves integrating the  as a sub-tab within the Website Design section of the .
 </analysis>
 
 <product_requirements>
-The application is a comprehensive lacrosse league management system, initially featuring event management (CRUD, scheduling, scoring, tournaments), league locations, Google Maps, coach permissions, UI/UX improvements (sorting, modals, navigation), data protection (MongoDB), and authentication/roles. Subsequent requirements included automatic dominant color extraction, collapsible navigation, comprehensive Team Pages (Home, Schedule, Roster, Stats, Photos & Vids, Contact), resolving data overwrites, responsive design, improved color pickers, trading card-style player cards with photos and details, and player photo uploads. Recent work focused on a shape-aware crop tool with zoom, transparent crop areas, robust team/player card styling, and control over team/league form backgrounds. The user then requested locations management with specific characteristics (indoor/outdoor, surface, clickable addresses, embedded maps, team/league assignment), a news ticker with CRUD, images, and detail views, and a media gallery with carousel, multiple uploads, and expiration features.
+The application is a lacrosse league management system with features including event management (CRUD, scheduling, scoring, tournaments), league locations with Google Maps integration, coach permissions, and UI/UX improvements (responsive design, enhanced color pickers, navigation). Key additions include a robust team and player management system with trading card-style displays, a shape-aware crop tool for image uploads, and customizable team/league form backgrounds. Recent major requirements were:
+1.  **Media Gallery**: Implement a photo/video gallery with carousel, multiple uploads, and expiration features. This evolved into a three-option visibility system: League wide (all teams and league page), League page only, and Team only.
+2.  **News Ticker**: Restore a ticker tape at the top of all pages displaying events. It should handle event deduplication (especially for tournaments), include an admin section for visual attributes (colors, scrolling speed, card styling) and content rules (look back/forward days, event types), and have clickable events, teams, and locations.
+3.  **Introduction Section**: Add a customizable introduction section (header and text area) on league and team home pages for admins.
 </product_requirements>
 
 <key_technical_concepts>
--   **React.js (Frontend)**: Component-based UI, state management, custom hooks, context.
--   **FastAPI (Backend)**: Python API for data operations (CRUD), Pydantic models.
--   **MongoDB (Database)**: NoSQL database for persistence, UUIDs for IDs.
--   **Tailwind CSS**: Utility-first styling, responsive design.
--   **Image Handling**: File uploads, cropping (), base64 data URLs.
--   **Google Maps API**: Integration for locations, static map previews, clickable addresses.
--   **State Management**: Functional  patterns, debouncing.
+-   **React.js (Frontend)**: Component-based UI, state management, custom hooks (, ), context.
+-   **FastAPI (Backend)**: Python API for data operations (CRUD), Pydantic models, MongoDB integration.
+-   **MongoDB (Database)**: NoSQL database for persistence, UUIDs for IDs, ISO string for date/time.
+-   **Tailwind CSS**: Utility-first styling for responsive and customizable design.
+-   **Image/Video Handling**: Cropping (), base64 data, multi-image uploads.
+-   **Google Maps API**: Embedded maps, clickable addresses.
+-   **State Management**: Functional  patterns, global state via .
+-   **Environment Variables**:  for frontend API calls.
 </key_technical_concepts>
 
 <code_architecture>
 
 -   ****:
     -   **Importance**: Core FastAPI backend defining API routes and MongoDB schema.
-    -   **Changes Made**: Enhanced  model to support  (array of strings) instead of a single string, and added  model for storing Google Maps API key. Implemented CRUD for locations and API integrations. Fixed an error in the PUT endpoint for locations to handle Location not found gracefully and prevent 500 errors. Added a data migration function to convert old single  fields to the new  array.
+    -   **Changes Made**: Enhanced  model. Added  model. CRUD for locations and API integrations. Fixed PUT endpoint errors. Added data migration for . Critically, the backend was confirmed to handle the nested gallery structure and event data structures with new fields. The backend testing agent added missing Gallery and MediaItem Pydantic models.
+-   ****:
+    -   **Importance**: Stores environment-specific variables, crucially .
+    -   **Changes Made**: Modified  to be an empty string to correctly resolve to the production backend, fixing critical data persistence issues caused by hardcoding a preview URL.
 -   ****:
     -   **Importance**: Main application state, routing, and overall data loading.
-    -   **Changes Made**: Passed  to  to support the GameTicker.
+    -   **Changes Made**: Passed  to . Updated to pass  and event handlers (, , ) to  to enable global ticker functionality.  loading was updated to include ticker-related settings.
 -   ****:
     -   **Importance**: Central admin interface for league management.
-    -   **Changes Made**: Integrated , , and  into separate tabs.  was moved from  to its own tab.
--   ** (New)**:
-    -   **Importance**: Manages league and team locations, including details like indoor/outdoor, surface, and Google Maps integration.
-    -   **Changes Made**: Created for locations CRUD. Enhanced to support multiple location types (e.g., practice and game field simultaneously) with a checkbox UI. Integrated satellite map previews and improved error handling for save operations. The API Integrations tab functionality was removed and moved to .
--   ** (New)**:
-    -   **Importance**: Dedicated component for managing third-party API keys and integrations.
-    -   **Changes Made**: Created to house the Google Maps API key input field and manage other integration settings, separated from .
+    -   **Changes Made**: Integrated , , . Modified tab structure to separate News and introduce a Ticker Settings tab. The Ticker tab was later moved as a sub-tab under Website Design. Updated to accept  prop for .
+-   ****:
+    -   **Importance**: Provides consistent layout for the entire application, including navigation and global elements.
+    -   **Changes Made**: Imported  (replacing ). Modified to receive , , , and event handlers from . The  component was added to render globally across all pages, placed above the main content area.
+-   ****:
+    -   **Importance**: Manages league and team locations.
+    -   **Changes Made**: Enhanced for multiple location types and satellite map previews. API Integrations tab functionality moved out.
 -   ****:
     -   **Importance**: Displays team-specific information.
-    -   **Changes Made**: TeamHomeTab restructured to remove duplicated Season Overview and Team Info sections. Integrated  (for news), , and  (locations moved below stats). Updated to accept  prop for the . Enhanced location display with satellite map previews on both home and contact tabs. Fixed  import.
+    -   **Changes Made**: Restructured . Integrated .  import and usage were removed since it's now global in .
 -   ****:
-    -   **Importance**: Form for creating and editing events.
-    -   **Changes Made**: Updated to fetch locations from the  API instead of using  or  props. Integrated  for displaying maps. Fixed linting errors by defining helper functions.
+    -   **Importance**: Handles persistence of event data.
+    -   **Changes Made**: Added logic to call the backend API () to save events, fixing a critical bug where events were only stored in local state.
 -   ****:
-    -   **Importance**: Displays scrolling news and event updates.
-    -   **Changes Made**: Reused and integrated into  for dynamic team news.
--   ** (New)**:
-    -   **Importance**: Manages news items for the ticker, including text, images, and videos.
-    -   **Changes Made**: Created from  code. Implemented full CRUD, support for various content types, team association, and a live vertical scrolling preview. Enhanced with file upload via , expiration dates, and manual active/inactive status controls for news items. Updated statistics dashboard.
--   ** (New)**:
-    -   **Importance**: Manages photo and video galleries.
-    -   **Changes Made**: Created from  code. Implemented CRUD for galleries and individual media items. Enhanced to support league-wide galleries, multiple image uploads without captions, and an improved auto-scrolling carousel with pause-on-hover. Began implementing expiration and active status for individual media items.
--   ** (New)**:
-    -   **Importance**: Public-facing component for displaying photo and video galleries.
-    -   **Changes Made**: Created from  code. Integrated into  and . Enhanced carousel features (auto-scroll, pause-on-hover), improved modal experience for image viewing (click-to-close, larger close button), and handles league-wide vs. team-specific content.
+    -   **Importance**: Manages news items for the ticker.
+    -   **Changes Made**: Implemented full CRUD, file upload, expiration dates, and active/inactive status for news items.
+-   ****:
+    -   **Importance**: Manages photo and video galleries in the admin interface.
+    -   **Changes Made**: Implemented CRUD for galleries and items. Enhanced for league-wide galleries, multi-image uploads, and expiration/active status for both galleries and individual media items. Added data migration for legacy  galleries to . Fixed a bug where  was being overwritten. Updated statistics to account for active/expired items. Implemented a preview for admin to see all media with status indicators.
+-   ****:
+    -   **Importance**: Public-facing component for displaying galleries.
+    -   **Changes Made**: Integrated into  and . Enhanced carousel, improved modal for image/video viewing. Critically, updated filtering logic for the three-option visibility system (League-wide, League-only, Team-only). Fixed video opening in new tabs (now in modal) and improved popup closing. Corrected team name display for league-wide galleries.
 -   ****:
     -   **Importance**: Main landing page.
-    -   **Changes Made**: Integrated  below the news ticker, configured to display only league-wide galleries.
+    -   **Changes Made**: Integrated  (displaying league-wide only).  was removed since it's now global. Fixed  calculation from being hardcoded to dynamically calculated from events.
+-   ** (Old, deprecated in favor of )**:
+    -   **Importance**: Previous implementation of the event ticker.
+    -   **Changes Made**: Initially debugged and moved to . Issues with data structure led to its replacement.
+-   ** (New)**:
+    -   **Importance**: New, simplified event ticker component built to work with the current event data structure.
+    -   **Changes Made**: Created from scratch. Implements color-coded event badges, smart filtering for upcoming events, dynamic team name display (Home vs Away), and a scrolling mechanism that activates when content exceeds container width. Uses websiteStyle for scrolling speed and colors.
+-   ** (New)**:
+    -   **Importance**: Admin interface for configuring the event ticker.
+    -   **Changes Made**: Created to manage ticker settings (date ranges, event type filters, visual settings like background color, card background/border colors, scrolling speed). Includes a live preview. Updated to work with 's simplified options.
+-   ****:
+    -   **Importance**: Manages the overall website design.
+    -   **Changes Made**: Modified to integrate  as a sub-tab within its sections, specifically after the Main Content tab.
+
 </code_architecture>
 
 <pending_tasks>
@@ -61,26 +80,18 @@ The application is a comprehensive lacrosse league management system, initially 
 -   Live scoring tab with roster function.
 -   Recurring events functionality.
 -   Email/SMS integration for notifications.
--   Social media integration (beyond basic posting, auto-share, feeds).
--   Team-specific news backend endpoint (implemented in NewsManager but still needs dedicated backend endpoint).
+-   Social media integration.
+-   Team-specific news backend endpoint (already in , needs backend).
 -   User/player relationship clarification.
 -   Mobile responsiveness optimization.
--   Test the applied fixes for team page background and form colors (user will test).
--   Create an archives tab for news/images/galleries (future request).
+-   Create an archives tab for news/images/galleries.
+-   Implement introduction section on league and team home pages with admin controls.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary, the AI engineer was enhancing the media gallery system. The last user request was to introduce expiration dates and an active/inactive checkbox for individual media items (photos and videos), similar to what was implemented for the news ticker.
-
-The AI engineer has:
--   Successfully updated the  to only show league-wide galleries, as requested.
--   Started updating the  to support smaller thumbnails with horizontal scrolling and incorporate expiration/active functionality.
--   Added helper functions (, ) to  to handle the new status logic.
--   Updated the statistics dashboard within  to account for active/expired galleries.
--   Updated the  to include  and  fields for galleries.
--   The current work is precisely within : Now let me update the to include expiration date and active status for individual items:. This means the task of adding expiration and active status to individual media items is in progress.
+Immediately before this summary request, the AI engineer was tasked with and is currently in the process of moving the Event Ticker admin tab to be a sub-tab within the Website Design section of the . This involves modifying  to remove the standalone Event Ticker tab and updating  to include the  as a nested section () after the Main Content tab. The AI engineer is in the final steps of adding the  function within  to display the  content.
 </current_work>
 
 <optional_next_step>
-Continue updating the  component within the  to include expiration date and active status controls for individual media items.
+Complete the integration of the  function within  and remove the standalone Ticker tab from .
 </optional_next_step>
