@@ -311,7 +311,7 @@ const MediaManager = ({ teams = [], setTeams, currentUser, isTeamSpecific = fals
                                 {(gallery.items || []).length > 0 ? (
                                     <div className="overflow-x-auto">
                                         <div className="flex space-x-3 pb-2" style={{minWidth: 'max-content'}}>
-                                            {(gallery.items || []).filter(item => item.active && !isItemExpired(item)).map((item, index) => (
+                                            {(gallery.items || []).map((item, index) => (
                                                 <div key={item.id} className="group relative bg-slate-50 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-shadow flex-shrink-0" style={{width: '120px', height: '100px'}}>
                                                     <div 
                                                         onClick={() => openSlideshow(gallery.items.filter(item => item.active && !isItemExpired(item)), index)}
