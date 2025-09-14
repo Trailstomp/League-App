@@ -580,29 +580,92 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                 </h4>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <AdvancedColorPicker
-                        label="Primary Color"
-                        value={teamStyle.primaryColor || '#dc2626'}
-                        onChange={color => handleStyleChange('primaryColor', color)}
-                        showEyedropper={true}
-                        presetColors={extractedColors.map(c => c.originalHex || c.hex).filter(Boolean)}
-                    />
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Primary Color</label>
+                        <div className="flex items-center space-x-3">
+                            <input
+                                type="color"
+                                value={teamStyle.primaryColor || '#dc2626'}
+                                onChange={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('🎨 Primary color changed to:', e.target.value);
+                                    handleStyleChange('primaryColor', e.target.value);
+                                }}
+                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={teamStyle.primaryColor || '#dc2626'}
+                                onChange={(e) => {
+                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                        console.log('🎨 Primary color (text) changed to:', e.target.value);
+                                        handleStyleChange('primaryColor', e.target.value);
+                                    }
+                                }}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500"
+                                placeholder="#dc2626"
+                            />
+                        </div>
+                    </div>
 
-                    <AdvancedColorPicker
-                        label="Background Color"
-                        value={teamStyle.backgroundColor || '#fef2f2'}
-                        onChange={color => handleStyleChange('backgroundColor', color)}
-                        showEyedropper={true}
-                        presetColors={extractedColors.map(c => c.originalHex || c.hex).filter(Boolean)}
-                    />
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Background Color</label>
+                        <div className="flex items-center space-x-3">
+                            <input
+                                type="color"
+                                value={teamStyle.backgroundColor || '#fef2f2'}
+                                onChange={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('🎨 Background color changed to:', e.target.value);
+                                    handleStyleChange('backgroundColor', e.target.value);
+                                }}
+                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={teamStyle.backgroundColor || '#fef2f2'}
+                                onChange={(e) => {
+                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                        console.log('🎨 Background color (text) changed to:', e.target.value);
+                                        handleStyleChange('backgroundColor', e.target.value);
+                                    }
+                                }}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                                placeholder="#fef2f2"
+                            />
+                        </div>
+                    </div>
 
-                    <AdvancedColorPicker
-                        label="Accent Color"
-                        value={teamStyle.accentColor || '#7c2d12'}
-                        onChange={color => handleStyleChange('accentColor', color)}
-                        showEyedropper={true}
-                        presetColors={extractedColors.map(c => c.originalHex || c.hex).filter(Boolean)}
-                    />
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Accent Color</label>
+                        <div className="flex items-center space-x-3">
+                            <input
+                                type="color"
+                                value={teamStyle.accentColor || '#7c2d12'}
+                                onChange={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('🎨 Accent color changed to:', e.target.value);
+                                    handleStyleChange('accentColor', e.target.value);
+                                }}
+                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={teamStyle.accentColor || '#7c2d12'}
+                                onChange={(e) => {
+                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                        console.log('🎨 Accent color (text) changed to:', e.target.value);
+                                        handleStyleChange('accentColor', e.target.value);
+                                    }
+                                }}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                placeholder="#7c2d12"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
 
