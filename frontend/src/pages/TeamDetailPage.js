@@ -231,8 +231,8 @@ const TeamHomeTab = ({ team }) => {
     
     return (
         <div className="space-y-4 sm:space-y-6">
-            {/* Team Identity Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Team Identity Section - Logo and Season Record only */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Team Logo Showcase */}
                 <div className="text-center">
                     <div className="w-32 h-32 mx-auto rounded-xl overflow-hidden border-4 border-white shadow-xl bg-white mb-4">
@@ -274,40 +274,6 @@ const TeamHomeTab = ({ team }) => {
                     </div>
                     <div className="text-sm text-slate-600">
                         {((team.wins || 0) + (team.losses || 0) + (team.ties || 0))} games played
-                    </div>
-                </div>
-
-                {/* Team Info */}
-                <div 
-                    className="p-6 rounded-lg"
-                    style={{ backgroundColor: teamStyle.backgroundColor || '#f8fafc' }}
-                >
-                    <h3 className="text-lg font-semibold mb-3" style={{ color: teamStyle.primaryColor || '#1f2937' }}>
-                        Team Details
-                    </h3>
-                    <div className="space-y-2 text-sm">
-                        {team.coach && (
-                            <div className="flex justify-between">
-                                <span>Head Coach:</span>
-                                <span className="font-semibold">{team.coach}</span>
-                            </div>
-                        )}
-                        {team.homeField && (
-                            <div className="flex justify-between">
-                                <span>Home Field:</span>
-                                <span className="font-semibold">{team.homeField}</span>
-                            </div>
-                        )}
-                        <div className="flex justify-between">
-                            <span>Division:</span>
-                            <span className="font-semibold">{team.division || 'Field'}</span>
-                        </div>
-                        {team.contactEmail && (
-                            <div className="flex justify-between">
-                                <span>Contact:</span>
-                                <span className="font-semibold text-xs">{team.contactEmail}</span>
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>
