@@ -137,6 +137,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <RoleManager users={users} setUsers={setUsers} />;
             case 'website':
                 return <WebsiteDesignManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />;
+            case 'api':
+                return <APIIntegrationsManager />;
             default:
                 return (
                     <div className="text-center py-16">
