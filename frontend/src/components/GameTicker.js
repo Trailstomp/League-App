@@ -190,6 +190,12 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
     
     // Debug: Add console log to confirm component is rendering
     console.log('🎫 GameTicker render called - allItems count:', allItems.length);
+    console.log('🎫 GameTicker allItems details:', allItems.map(item => ({
+        itemType: item.itemType,
+        title: item.title,
+        homeTeam: item.homeTeam,
+        awayTeam: item.awayTeam
+    })));
 
     return (
         <div 
