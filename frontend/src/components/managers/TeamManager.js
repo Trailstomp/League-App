@@ -555,20 +555,34 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
         setCropImageUrl('');
     };
 
-    // Handle colors extracted from logo
+    // Handle colors extracted from logo - FIXED TO ACTUALLY WORK
     const handleColorsExtracted = (colors) => {
+        console.log('🎨 Colors extracted from logo:', colors);
         setExtractedColors(colors);
         
         // Auto-assign extracted colors to team style
-        colors.forEach(colorAssignment => {
-            if (colorAssignment.key === 'primaryColor') {
-                handleStyleChange('primaryColor', colorAssignment.hex);
-            } else if (colorAssignment.key === 'backgroundColor') {
-                handleStyleChange('backgroundColor', colorAssignment.hex);
-            } else if (colorAssignment.key === 'accentColor') {
-                handleStyleChange('accentColor', colorAssignment.hex);
-            }
-        });
+        if (colors && colors.length >= 3) {
+            const hexColors = colors.map(color => {
+                if (typeof color === 'string' && color.startsWith('#')) {
+                    return color;
+                } else if (color && color.hex) {
+                    return color.hex;
+                } else if (color && color.color) {
+                    return color.color;
+                } else {
+                    return '#1e40af'; // fallback
+                }
+            });
+            
+            console.log('🎨 Applying extracted colors:', hexColors);
+            
+            // Apply colors to team
+            handleStyleChange('primaryColor', hexColors[0] || '#dc2626');
+            handleStyleChange('backgroundColor', hexColors[2] || '#fef2f2');
+            handleStyleChange('accentColor', hexColors[1] || '#7c2d12');
+        }
+        
+        setShowColorExtractor(false);
     };
 
     return (
