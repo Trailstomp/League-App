@@ -609,6 +609,20 @@ const NewsItemForm = ({ item, teams, onSave, onCancel, saving, onImageUpload }) 
                         />
                     </div>
                     
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">
+                            Expiration Date (optional)
+                        </label>
+                        <input
+                            type="date"
+                            value={formData.expirationDate}
+                            onChange={(e) => setFormData({...formData, expirationDate: e.target.value})}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            min={new Date().toISOString().split('T')[0]}
+                        />
+                        <p className="text-xs text-slate-500 mt-1">Leave blank for no expiration. Item will become inactive after this date.</p>
+                    </div>
+                    
                     {formData.type === 'image' && (
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">
