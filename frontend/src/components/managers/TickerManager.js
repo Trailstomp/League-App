@@ -90,7 +90,7 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-bold text-slate-800 flex items-center">
-                        <Settings className="mr-3" size={28} />
+                        <LacrosseIcon name="settings" className="mr-3" size={28} />
                         Event Ticker Configuration
                     </h2>
                     <p className="text-slate-600 mt-2">
