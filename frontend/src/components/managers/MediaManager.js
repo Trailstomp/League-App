@@ -478,7 +478,7 @@ const GalleryForm = ({ gallery, teams, isTeamSpecific, teamId, onSave, onCancel 
         name: gallery?.name || '',
         description: gallery?.description || '',
         type: gallery?.type || 'photo',
-        teamId: gallery?.teamId || teamId || teams[0]?.id || 'league',
+        teamId: gallery?.teamId || teamId || 'league-wide',
         expirationDate: gallery?.expirationDate || '',
         active: gallery?.active !== undefined ? gallery.active : true
     });
