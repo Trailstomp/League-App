@@ -35,6 +35,10 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
         // Process leagueSchedule data to create ticker items
         const allTickerItems = [];
         
+        if (!leagueSchedule || leagueSchedule.length === 0) {
+            console.log('🎫 No events in leagueSchedule, returning empty array');
+        }
+        
         // Process individual events from leagueSchedule
         (leagueSchedule || []).forEach(event => {
             if (event.type === 'game') {
