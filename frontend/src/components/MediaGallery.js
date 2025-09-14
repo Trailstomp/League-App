@@ -181,14 +181,13 @@ const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) =>
                         </button>
                         
                         <div 
-                            className="text-center cursor-pointer"
-                            onClick={() => setSelectedImagePopup(null)}
+                            className="text-center"
                         >
                             <img 
                                 src={selectedImagePopup.url} 
                                 alt={selectedImagePopup.caption}
-                                className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
-                                onClick={(e) => e.stopPropagation()}
+                                className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl cursor-pointer"
+                                onClick={() => setSelectedImagePopup(null)}
                             />
                             {selectedImagePopup.caption && selectedImagePopup.caption !== `Photo from ${selectedImagePopup.galleryName}` && (
                                 <div className="text-white mt-4 bg-black bg-opacity-70 rounded-lg p-3 inline-block">
