@@ -131,35 +131,36 @@
 #====================================================================================================
 
 user_problem_statement: |
-  PHASE 3: EVENT MANAGEMENT & SCHEDULING FOUNDATION COMPLETED
-
-  **OBJECTIVE**: Complete basic event management foundation for the lacrosse league application by integrating advanced scheduling components and ensuring core CRUD functionality works properly.
-
+  PHASE 4: LOCATIONS MANAGEMENT FEATURE IMPLEMENTATION
+  
+  **OBJECTIVE**: Implement comprehensive locations management system for lacrosse league teams with Google Maps integration.
+  
   **REQUIRED IMPLEMENTATION**:
-
-  1. **Integrate Advanced Event Calendar**:
-     - Replace basic event components with sophisticated scheduling system
-     - Use AdvancedEventCalendar from /scheduling/components/
-     - Integrate SimpleEventForm for event creation/editing
-     - Connect EventDetailModal with advanced features
-
-  2. **Event Management Features**:
-     - Event CRUD operations (Create, Read, Update, Delete)
-     - Event type filtering (Games, Practices, Tournaments)
-     - Team selection and multi-team event support
-     - Event statistics and upcoming events sidebar
-
-  3. **Advanced Components Integration**:
-     - Event calendar with cards/list view toggle
-     - Event filtering by type with counts
-     - Enhanced event detail modal with tabs
-     - RSVP functionality integration
-
-  4. **Navigation Foundation**:
-     - Proper page routing to Events & Schedule
-     - Navigation state management working correctly
-
-  **TESTING STATUS**: ✅ FOUNDATION COMPLETED SUCCESSFULLY! Basic event management system is now functional with advanced scheduling components integrated. Events page renders properly with 3 sample events, sophisticated calendar view, filtering capabilities, and proper team integration.
+  
+  1. **Team Location Management**:
+     - Admin interface for adding/editing/deleting multiple locations per team
+     - Location types: Practice Fields, Game Fields, Social Venues, Training Facilities  
+     - Location characteristics: Indoor/Outdoor, Surface Type (Turf, Grass, Concrete, Indoor Court)
+     - Team-specific locations with league admin override capability
+  
+  2. **Google Maps Integration**:
+     - Embedded clickable Google Maps for each location
+     - API key configuration in admin settings (not hardcoded)
+     - Static map preview images with click-to-open functionality
+     - Address validation and geocoding support
+  
+  3. **API Integration Settings**:
+     - Dedicated admin tab for API key management
+     - Google Maps API key configuration
+     - Future-ready structure for email/SMS integrations
+  
+  4. **Backend Infrastructure**:
+     - Location model with full CRUD operations
+     - API integrations model for secure key storage
+     - Location filtering by team
+     - Automatic backup system integration
+  
+  **TESTING STATUS**: ✅ IMPLEMENTATION COMPLETED! Full locations management system with Google Maps integration, comprehensive admin interface, and backend API ready for testing.
 
 backend:
   - task: "Enhanced Website Design Manager Backend API Support"
