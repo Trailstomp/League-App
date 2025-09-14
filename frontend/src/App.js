@@ -78,15 +78,21 @@ function App() {
     }
   };
 
-  // Team navigation handler
+  // Team navigation handler with debugging
   const handleTeamNavigate = (teamId) => {
     console.log('🏆 Team navigation to:', teamId);
+    console.log('🏆 Available teams:', teams.map(t => ({ id: t.id, name: t.name })));
+    
     const team = teams.find(t => t.id === teamId);
     if (team) {
       console.log('🏆 Found team:', team.name);
       // Navigate to team detail page
       setCurrentPage('team');
       setSelectedTeam(team);
+    } else {
+      console.error('❌ Team not found with ID:', teamId);
+      console.error('❌ Available team IDs:', teams.map(t => t.id));
+      alert(`Team not found. ID: ${teamId}\nAvailable: ${teams.map(t => t.id).join(', ')}`);
     }
   };
 
