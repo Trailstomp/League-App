@@ -231,6 +231,14 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
                         if (item.itemType === 'game') {
                             const home = getTeam(item.homeTeam);
                             const away = getTeam(item.awayTeam);
+                            console.log('🎫 Game ticker item debug:', {
+                                itemType: item.itemType,
+                                homeTeam: item.homeTeam,
+                                awayTeam: item.awayTeam,
+                                homeFound: !!home,
+                                awayFound: !!away,
+                                availableTeams: teams.map(t => t.id)
+                            });
                             if (!home || !away) return null;
                             
                             return (
