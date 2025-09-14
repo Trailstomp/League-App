@@ -224,8 +224,7 @@ const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) =>
                         </button>
                         
                         <div 
-                            className="text-center cursor-pointer"
-                            onClick={() => setSelectedVideoPopup(null)}
+                            className="text-center"
                         >
                             {/* YouTube Video Embed */}
                             {(selectedVideoPopup.url.includes('youtube.com') || selectedVideoPopup.url.includes('youtu.be')) ? (
