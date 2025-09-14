@@ -112,6 +112,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         { id: 'teams', label: 'Teams', icon: 'teams' },
         { id: 'players', label: 'Players', icon: 'players' },
         { id: 'locations', label: 'Locations', icon: 'location' },
+        { id: 'news', label: 'News & Ticker', icon: '📰' },
         { id: 'users', label: 'Users & Security', icon: 'admin' },
         { id: 'roles', label: 'Roles & Permissions', icon: 'settings' },
         { id: 'communications', label: 'Communications', icon: 'email' },
