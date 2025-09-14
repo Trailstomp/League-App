@@ -33,6 +33,25 @@ const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) =>
     const [selectedImagePopup, setSelectedImagePopup] = useState(null);
     const [activeTab, setActiveTab] = useState('photos');
 
+    // Helper functions for item status
+    const isItemExpired = (item) => {
+        if (!item.expirationDate) return false;
+        return new Date(item.expirationDate) < new Date();
+    };
+
+    const isItemActive = (item) => {
+        return (item.active !== false) && !isItemExpired(item);
+    };
+
+    const isGalleryExpired = (gallery) => {
+        if (!gallery.expirationDate) return false;
+        return new Date(gallery.expirationDate) < new Date();
+    };
+
+    const isGalleryActive = (gallery) => {
+        return (gallery.isActive !== false) && !isGalleryExpired(gallery);
+    };
+
     // Get galleries based on scope (team-specific or all teams)
     const getGalleries = () => {
         if (teamId) {
