@@ -641,11 +641,17 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                                 <span className="text-slate-400">|</span>
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        // Trigger color extraction from existing logo
-                                        setExtractedColors([]);
-                                        console.log('🎨 Triggering color extraction from logo');
-                                        // This would trigger the ColorExtractor component
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        console.log('🎨 Manual color extraction from logo');
+                                        // Don't trigger automatic saves - just update local state
+                                        if (teamStyle.logoUrl) {
+                                            // This should open color extraction modal, not save
+                                            console.log('🎨 Logo available for color extraction');
+                                        } else {
+                                            alert('Please upload a logo first');
+                                        }
                                     }}
                                     className="text-purple-600 hover:text-purple-800 text-sm"
                                 >
