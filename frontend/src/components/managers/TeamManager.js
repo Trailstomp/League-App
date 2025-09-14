@@ -670,7 +670,8 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                                     handleStyleChange('accentColor', e.target.value);
                                 }}
                                 onFocus={(e) => e.stopPropagation()}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                                className="w-16 h-12 border-2 border-slate-300 rounded cursor-pointer"
+                                style={{ padding: '2px' }}
                             />
                             <input
                                 type="text"
