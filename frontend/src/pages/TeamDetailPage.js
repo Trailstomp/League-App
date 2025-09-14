@@ -45,13 +45,17 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
                 backgroundAttachment: 'fixed'
             }}
         >
-            {/* DEBUG: Log team colors */}
-            {console.log('🎨 Team page background colors:', {
-                pageBackgroundType: teamStyle.pageBackgroundType,
-                pageBackgroundColor: teamStyle.pageBackgroundColor,
-                backgroundColor: teamStyle.backgroundColor,
-                finalColor: teamStyle.pageBackgroundColor || teamStyle.backgroundColor || '#f8fafc'
-            })}
+            {/* DEBUG: Log team colors - DETAILED */}
+            {(() => {
+                console.log('🎨 DETAILED Team page background analysis:');
+                console.log('  - pageBackgroundType:', teamStyle.pageBackgroundType);
+                console.log('  - pageBackgroundColor:', teamStyle.pageBackgroundColor);
+                console.log('  - backgroundColor:', teamStyle.backgroundColor);
+                console.log('  - primaryColor:', teamStyle.primaryColor);
+                console.log('  - Final calculated color:', teamStyle.pageBackgroundColor || teamStyle.backgroundColor || '#f8fafc');
+                console.log('  - Full teamStyle object:', teamStyle);
+                return null;
+            })()}
             {/* Team Header */}
             <div 
                 className="relative bg-gradient-to-r from-slate-800 to-slate-600 text-white rounded-lg overflow-hidden mb-4 sm:mb-6"
