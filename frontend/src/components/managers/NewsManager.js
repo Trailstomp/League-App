@@ -470,7 +470,7 @@ const NewsItemCard = ({ item, teams, onEdit, onDelete, onClick, getTeamName, get
 };
 
 // News Item Form Component
-const NewsItemForm = ({ item, teams, onSave, onCancel, saving }) => {
+const NewsItemForm = ({ item, teams, onSave, onCancel, saving, onImageUpload }) => {
     const [formData, setFormData] = useState({
         type: item?.type || 'text',
         heading: item?.heading || '',
@@ -479,7 +479,9 @@ const NewsItemForm = ({ item, teams, onSave, onCancel, saving }) => {
         teamId: item?.teamId || 'league',
         imageUrl: item?.imageUrl || '',
         videoUrl: item?.videoUrl || '',
-        thumbnailUrl: item?.thumbnailUrl || ''
+        thumbnailUrl: item?.thumbnailUrl || '',
+        expirationDate: item?.expirationDate || '',
+        active: item?.active !== undefined ? item.active : true
     });
 
     const handleSubmit = (e) => {
