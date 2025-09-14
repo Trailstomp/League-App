@@ -484,6 +484,10 @@ const LocationForm = ({ location, teams = [], onSave, onCancel, saving = false }
             alert('Location name is required');
             return;
         }
+        if (formData.types.length === 0) {
+            alert('Please select at least one location type');
+            return;
+        }
         onSave(formData);
     };
 
