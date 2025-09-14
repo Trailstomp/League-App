@@ -60,12 +60,14 @@ const LocationManager = ({ teams, currentUser }) => {
                 setShowAddForm(false);
                 console.log('✅ Location added successfully');
             } else {
-                console.error('❌ Failed to add location:', response.statusText);
-                alert('Failed to add location. Please try again.');
+                const errorData = await response.json().catch(() => ({}));
+                const errorMessage = errorData.detail || `HTTP ${response.status}: ${response.statusText}`;
+                console.error('❌ Failed to add location:', errorMessage);
+                alert(`Failed to add location: ${errorMessage}`);
             }
         } catch (error) {
             console.error('❌ Error adding location:', error);
-            alert('Error adding location. Please try again.');
+            alert(`Error adding location: ${error.message}. Please check your connection and try again.`);
         } finally {
             setSaving(false);
         }
