@@ -196,14 +196,15 @@ const TeamHomeTab = ({ team }) => {
         }
     }, [team.id, team.name]);
 
-    const getLocationTypeIcon = (type) => {
+    const getLocationTypeIcon = (types) => {
+        if (!types || types.length === 0) return '📍';
         const icons = {
             practice_field: '🏃‍♂️',
             game_field: '🏟️',
             social_venue: '🍽️',
             training_facility: '💪'
         };
-        return icons[type] || '📍';
+        return icons[types[0]] || '📍';
     };
 
     const getSurfaceIcon = (surface) => {
@@ -221,10 +222,11 @@ const TeamHomeTab = ({ team }) => {
         window.open(`https://maps.google.com/maps?q=${encodeURIComponent(address)}&t=k`, '_blank');
     };
 
-    const getMapImageUrl = (address) => {
+    const getMapImageUrl = (address, satellite = false) => {
         const apiKey = apiIntegrations?.googleMapsApiKey;
         if (!apiKey || !address) return null;
-        return `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(address)}&zoom=15&size=300x150&markers=color:red%7C${encodeURIComponent(address)}&key=${apiKey}&scale=2`;
+        const mapType = satellite ? 'satellite' : 'roadmap';
+        return `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(address)}&zoom=17&size=400x200&maptype=${mapType}&markers=color:red%7C${encodeURIComponent(address)}&key=${apiKey}&scale=2`;
     };
     
     return (
