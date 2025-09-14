@@ -252,6 +252,18 @@ frontend:
         agent: "main"
         comment: "🔗 LOCATIONS INTEGRATION COMPLETED: Successfully integrated locations API into existing features. EVENTS INTEGRATION: Updated SimpleEventForm to load locations from /api/locations endpoint, enhanced location selection with team-specific and league-wide options, added surface type and indoor/outdoor information display, improved location filtering with better UX. TEAM PAGES INTEGRATION: Enhanced TeamDetailPage home tab to display team-specific locations with Google Maps previews, added locations section to contact tab, implemented Google Maps click-to-open functionality, added location type icons and surface information. Features include: real-time location loading, Google Maps integration with static previews, enhanced location selection UI, team-specific location filtering, and comprehensive location display across all relevant pages."
 
+  - task: "APIIntegrationsManager Component"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/components/managers/APIIntegrationsManager.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "🔧 API INTEGRATIONS SEPARATION COMPLETED: Created dedicated APIIntegrationsManager component and moved it to the main 'API & Integrations' tab in AdminPage as requested. Removed API integrations functionality from LocationManager to keep it focused only on locations. Features include: comprehensive Google Maps API key management with status indicators, future-ready structure for email/SMS integrations, professional UI with service status indicators, proper form validation and saving functionality. Successfully separated concerns - LocationManager now handles only locations, APIIntegrationsManager handles all API configurations."
+
   - task: "LocationManager Component with Google Maps Integration"
     implemented: true
     working: "NA"
