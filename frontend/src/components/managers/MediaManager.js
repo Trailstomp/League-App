@@ -201,24 +201,32 @@ const MediaManager = ({ teams = [], setTeams, currentUser, isTeamSpecific = fals
             </div>
 
             {/* Statistics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                     <div className="text-xl font-bold text-blue-900">{galleries.length}</div>
                     <div className="text-xs text-blue-700">Total Galleries</div>
                 </div>
                 <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <div className="text-xl font-bold text-green-900">{photoGalleries.length}</div>
-                    <div className="text-xs text-green-700">Photo Galleries</div>
+                    <div className="text-xl font-bold text-green-900">{galleries.filter(g => isGalleryActive(g)).length}</div>
+                    <div className="text-xs text-green-700">Active</div>
+                </div>
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <div className="text-xl font-bold text-red-900">{galleries.filter(g => !g.active || isGalleryExpired(g)).length}</div>
+                    <div className="text-xs text-red-700">Inactive/Expired</div>
                 </div>
                 <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
-                    <div className="text-xl font-bold text-purple-900">{videoGalleries.length}</div>
-                    <div className="text-xs text-purple-700">Video Collections</div>
+                    <div className="text-xl font-bold text-purple-900">{photoGalleries.length}</div>
+                    <div className="text-xs text-purple-700">Photo Galleries</div>
                 </div>
                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                    <div className="text-xl font-bold text-orange-900">
-                        {galleries.reduce((total, gallery) => total + (gallery.items?.length || 0), 0)}
+                    <div className="text-xl font-bold text-orange-900">{videoGalleries.length}</div>
+                    <div className="text-xs text-orange-700">Video Collections</div>
+                </div>
+                <div className="bg-teal-50 border border-teal-200 rounded-lg p-3">
+                    <div className="text-xl font-bold text-teal-900">
+                        {galleries.reduce((total, gallery) => total + (gallery.items?.filter(item => isItemActive(item)).length || 0), 0)}
                     </div>
-                    <div className="text-xs text-orange-700">Total Items</div>
+                    <div className="text-xs text-teal-700">Active Items</div>
                 </div>
             </div>
 
