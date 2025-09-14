@@ -4,6 +4,7 @@ import UserManager from '../components/managers/UserManager';
 import RoleManager from '../components/managers/RoleManager';
 import TeamManager from '../components/managers/TeamManager';
 import LocationManager from '../components/managers/LocationManager';
+import NewsManager from '../components/managers/NewsManager';
 import APIIntegrationsManager from '../components/managers/APIIntegrationsManager';
 import WebsiteDesignManager from '../components/managers/WebsiteDesignManager';
 
