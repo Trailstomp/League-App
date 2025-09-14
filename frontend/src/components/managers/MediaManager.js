@@ -492,53 +492,123 @@ const GalleryForm = ({ gallery, teams, isTeamSpecific, teamId, onSave, onCancel 
 // Item Form Component
 const ItemForm = ({ item, gallery, itemType, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
-        url: item?.url || '',
-        caption: item?.caption || ''
+        urls: item?.urls || (item?.url ? [item.url] : []),
+        captions: item?.captions || (item?.caption ? [item.caption] : [])
     });
+
+    const handleMultipleFileUpload = (e) => {
+        const files = Array.from(e.target.files);
+        const newUrls = [];
+        
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                newUrls.push(e.target.result);
+                if (newUrls.length === files.length) {
+                    setFormData(prev => ({
+                        ...prev,
+                        urls: [...prev.urls, ...newUrls],
+                        captions: [...prev.captions, ...new Array(newUrls.length).fill('')]
+                    }));
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    };
+
+    const removeImage = (index) => {
+        setFormData(prev => ({
+            urls: prev.urls.filter((_, i) => i !== index),
+            captions: prev.captions.filter((_, i) => i !== index)
+        }));
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!formData.url.trim()) {
-            alert(`${itemType === 'photo' ? 'Image' : 'Video'} URL is required`);
+        if (formData.urls.length === 0) {
+            alert(`At least one ${itemType === 'photo' ? 'image' : 'video'} is required`);
             return;
         }
-        onSave({ ...formData, id: item?.id });
+        
+        // For backward compatibility, save multiple items as separate entries
+        formData.urls.forEach((url, index) => {
+            onSave({ 
+                url, 
+                caption: formData.captions[index] || '', 
+                id: item?.id && index === 0 ? item.id : undefined 
+            });
+        });
     };
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
+            <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">
-                    {item?.id ? `Edit ${itemType}` : `Add ${itemType}`}
+                    {item?.id ? `Edit ${itemType}` : `Add ${itemType}${itemType === 'photo' ? 's' : 's'}`}
                 </h3>
                 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">
-                            {itemType === 'photo' ? 'Image URL' : 'Video URL'} *
-                        </label>
-                        <input
-                            type="url"
-                            value={formData.url}
-                            onChange={(e) => setFormData({...formData, url: e.target.value})}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder={itemType === 'photo' ? 'https://example.com/image.jpg' : 'https://www.youtube.com/watch?v=...'}
-                            required
-                        />
-                    </div>
-                    
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Caption
-                        </label>
-                        <input
-                            type="text"
-                            value={formData.caption}
-                            onChange={(e) => setFormData({...formData, caption: e.target.value})}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Optional caption..."
-                        />
-                    </div>
+                    {itemType === 'photo' ? (
+                        <>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                    Upload Photos *
+                                </label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={handleMultipleFileUpload}
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                />
+                                <p className="text-xs text-slate-500 mt-1">Select multiple images to upload at once</p>
+                            </div>
+                            
+                            {/* Image Previews */}
+                            {formData.urls.length > 0 && (
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                                        Selected Images ({formData.urls.length})
+                                    </label>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-64 overflow-y-auto">
+                                        {formData.urls.map((url, index) => (
+                                            <div key={index} className="relative group">
+                                                <img 
+                                                    src={url} 
+                                                    alt={`Preview ${index + 1}`}
+                                                    className="w-full h-24 object-cover rounded-lg border border-slate-200"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeImage(index)}
+                                                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Video URL *
+                            </label>
+                            <input
+                                type="url"
+                                value={formData.urls[0] || ''}
+                                onChange={(e) => setFormData({
+                                    urls: [e.target.value],
+                                    captions: [formData.captions[0] || '']
+                                })}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="https://www.youtube.com/watch?v=..."
+                                required
+                            />
+                        </div>
+                    )}
                     
                     <div className="flex justify-end space-x-3 pt-4">
                         <button
@@ -552,7 +622,7 @@ const ItemForm = ({ item, gallery, itemType, onSave, onCancel }) => {
                             type="submit"
                             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                         >
-                            {item?.id ? `Update ${itemType}` : `Add ${itemType}`}
+                            {item?.id ? `Update ${itemType}${itemType === 'photo' ? 's' : 's'}` : `Add ${itemType}${itemType === 'photo' ? 's' : 's'}`}
                         </button>
                     </div>
                 </form>
