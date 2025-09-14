@@ -445,8 +445,23 @@ const NewsItemCard = ({ item, teams, onEdit, onDelete, onClick, getTeamName, get
                             <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded font-medium">
                                 {getTypeIcon(item.type)} {item.type}
                             </span>
+                            {!item.active && (
+                                <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded font-medium">
+                                    Inactive
+                                </span>
+                            )}
+                            {expired && (
+                                <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded font-medium">
+                                    Expired
+                                </span>
+                            )}
                         </div>
-                        <span className="text-xs text-slate-500">{item.date}</span>
+                        <div className="text-right">
+                            <div className="text-xs text-slate-500">{item.date}</div>
+                            {item.expirationDate && (
+                                <div className="text-xs text-slate-400">Expires: {item.expirationDate}</div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
