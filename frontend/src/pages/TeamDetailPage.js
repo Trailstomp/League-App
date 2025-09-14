@@ -1064,14 +1064,15 @@ const TeamContactTab = ({ team }) => {
         }
     }, [team.id]);
 
-    const getLocationTypeIcon = (type) => {
+    const getLocationTypeIcon = (types) => {
+        if (!types || types.length === 0) return '📍';
         const icons = {
             practice_field: '🏃‍♂️',
             game_field: '🏟️', 
             social_venue: '🍽️',
             training_facility: '💪'
         };
-        return icons[type] || '📍';
+        return icons[types[0]] || '📍';
     };
 
     const openGoogleMaps = (address) => {
