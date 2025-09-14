@@ -419,9 +419,138 @@ async def backup_players():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# Location Management Models and Endpoints
+class Location(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    address: str
+    type: str  # 'practice_field', 'game_field', 'social_venue', 'training_facility'
+    indoor: bool = False
+    surface: Optional[str] = "grass"  # 'turf', 'grass', 'concrete', 'indoor_court'
+    description: Optional[str] = ""
+    teamId: Optional[str] = ""  # If empty, it's a league-wide location
+    active: bool = True
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    updatedAt: datetime = Field(default_factory=datetime.utcnow)
+
+# API Integration Settings Model
+class ApiIntegrations(BaseModel):
+    id: str = Field(default="main_integrations")
+    googleMapsApiKey: Optional[str] = ""
+    # Future integrations can be added here
+    emailApiKey: Optional[str] = ""
+    smsApiKey: Optional[str] = ""
+    socialMediaApiKeys: Optional[Dict[str, str]] = Field(default_factory=dict)
+    lastUpdated: datetime = Field(default_factory=datetime.utcnow)
+
+# Locations CRUD Endpoints
+@api_router.get("/locations", response_model=List[Location])
+async def get_locations(team_id: Optional[str] = None):
+    """Get all locations or locations for specific team"""
+    try:
+        if team_id:
+            locations = await db.locations.find({"teamId": team_id}).to_list(length=None)
+        else:
+            locations = await db.locations.find().to_list(length=None)
+        return [Location(**location) for location in locations] if locations else []
+    except Exception as e:
+        logger.error(f"Error fetching locations: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/locations", response_model=Location)
+async def create_location(location: Location):
+    """Create a new location"""
+    try:
+        location_dict = location.dict()
+        location_dict["createdAt"] = datetime.utcnow()
+        location_dict["updatedAt"] = datetime.utcnow()
+        
+        result = await db.locations.insert_one(location_dict)
+        if result.inserted_id:
+            created_location = await db.locations.find_one({"_id": result.inserted_id})
+            return Location(**created_location)
+        else:
+            raise HTTPException(status_code=500, detail="Failed to create location")
+    except Exception as e:
+        logger.error(f"Error creating location: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/locations/{location_id}", response_model=Location)
+async def update_location(location_id: str, location: Location):
+    """Update an existing location"""
+    try:
+        location_dict = location.dict()
+        location_dict["updatedAt"] = datetime.utcnow()
+        
+        result = await db.locations.update_one(
+            {"id": location_id},
+            {"$set": location_dict}
+        )
+        
+        if result.modified_count:
+            updated_location = await db.locations.find_one({"id": location_id})
+            return Location(**updated_location)
+        else:
+            raise HTTPException(status_code=404, detail="Location not found")
+    except Exception as e:
+        logger.error(f"Error updating location: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/locations/{location_id}")
+async def delete_location(location_id: str):
+    """Delete a location"""
+    try:
+        result = await db.locations.delete_one({"id": location_id})
+        if result.deleted_count:
+            return {"message": "Location deleted successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Location not found")
+    except Exception as e:
+        logger.error(f"Error deleting location: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# API Integration Settings Endpoints
+@api_router.get("/api-integrations")
+async def get_api_integrations():
+    """Get API integration settings"""
+    try:
+        data = await db.api_integrations.find_one({"id": "main_integrations"})
+        if data:
+            data.pop('_id', None)
+            return data
+        else:
+            return {
+                "id": "main_integrations",
+                "googleMapsApiKey": "",
+                "emailApiKey": "",
+                "smsApiKey": "",
+                "socialMediaApiKeys": {},
+                "lastUpdated": datetime.utcnow().isoformat()
+            }
+    except Exception as e:
+        logger.error(f"Error fetching API integrations: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/api-integrations")
+async def save_api_integrations(data: ApiIntegrations):
+    """Save API integration settings"""
+    try:
+        data_dict = data.dict()
+        data_dict["lastUpdated"] = datetime.utcnow()
+        
+        await db.api_integrations.replace_one(
+            {"id": "main_integrations"},
+            data_dict,
+            upsert=True
+        )
+        return {"message": "API integrations saved successfully", "timestamp": data_dict["lastUpdated"]}
+    except Exception as e:
+        logger.error(f"Error saving API integrations: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # END CRITICAL INFRASTRUCTURE
 
-# Include the router in the main app
+# Include the router in the main app  
 app.include_router(api_router)
 
 app.add_middleware(
