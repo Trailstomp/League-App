@@ -487,11 +487,27 @@ async def update_location(location_id: str, location: Location):
             {"$set": location_dict}
         )
         
-        if result.modified_count:
-            updated_location = await db.locations.find_one({"id": location_id})
-            return Location(**updated_location)
-        else:
+        if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Location not found")
+            
+        if result.modified_count > 0:
+            updated_location = await db.locations.find_one({"id": location_id})
+            if updated_location:
+                return Location(**updated_location)
+            else:
+                # Fallback if find_one fails after successful update
+                logger.warning(f"Location {location_id} updated but could not retrieve updated data")
+                return location
+        else:
+            # No changes made, return the current location
+            existing_location = await db.locations.find_one({"id": location_id})
+            if existing_location:
+                return Location(**existing_location)
+            else:
+                raise HTTPException(status_code=404, detail="Location not found")
+                
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error updating location: {e}")
         raise HTTPException(status_code=500, detail=str(e))
