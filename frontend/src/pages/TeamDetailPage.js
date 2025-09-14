@@ -1138,11 +1138,22 @@ const TeamContactTab = ({ team }) => {
                     {teamLocations.map(location => (
                         <div key={location.id} className="bg-white border border-slate-200 rounded-lg p-4">
                             <div className="flex items-center mb-2">
-                                <span className="text-lg mr-2">{getLocationTypeIcon(location.type)}</span>
+                                <span className="text-lg mr-2">{getLocationTypeIcon(location.types)}</span>
                                 <h4 className="font-semibold text-slate-800">{location.name}</h4>
-                                <span className="ml-2 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    {location.type.replace('_', ' ')}
-                                </span>
+                            </div>
+                            
+                            {/* Multiple type badges */}
+                            <div className="flex flex-wrap gap-1 mb-2">
+                                {location.types && location.types.map((type, index) => (
+                                    <span key={index} className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        {type.replace('_', ' ')}
+                                    </span>
+                                ))}
+                                {(!location.types || location.types.length === 0) && (
+                                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                                        location
+                                    </span>
+                                )}
                             </div>
                             
                             {location.address && (
