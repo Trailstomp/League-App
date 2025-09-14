@@ -55,11 +55,21 @@ const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) =>
 
     // Get galleries based on scope (team-specific or all teams)
     const getGalleries = () => {
-        const allGalleries = teams.flatMap(team => (team.galleries || []).map(gallery => ({
-            ...gallery,
-            sourceTeamName: team.name,
-            sourceTeamId: team.id
-        })));
+        const allGalleries = teams.flatMap(team => (team.galleries || []).map(gallery => {
+            // Migrate legacy teamId values for backward compatibility
+            let migratedTeamId = gallery.teamId;
+            if (gallery.teamId === 'league') {
+                // Convert old 'league' to new 'league-wide' (shows on all pages)
+                migratedTeamId = 'league-wide';
+            }
+            
+            return {
+                ...gallery,
+                teamId: migratedTeamId,
+                sourceTeamName: team.name,
+                sourceTeamId: team.id
+            };
+        }));
 
         if (teamId) {
             // For team pages, show:
