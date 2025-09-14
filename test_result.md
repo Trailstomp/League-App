@@ -1970,13 +1970,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Team Webstyles Save Functionality - Database Persistence Issue"
+    - "Media Gallery System Integration - Three-Option Visibility System Data Persistence Issue"
   stuck_tasks: 
-    - "Team Webstyles Save Functionality - Database Persistence Issue"
+    - "Media Gallery System Integration - Three-Option Visibility System Data Persistence Issue"
   test_all: false
   test_priority: "critical_first"
   backend_testing_complete: true
-  backend_notes: "Backend API is working correctly for team webstyles. Issue is in frontend save function causing data loss."
+  backend_notes: "Three-option gallery visibility system UI implemented correctly but critical data persistence and legacy data compatibility issues prevent galleries from displaying."
 
 agent_communication:
   - agent: "main"
