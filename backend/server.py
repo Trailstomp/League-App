@@ -188,6 +188,26 @@ class TeamStyle(BaseModel):
     formBackgroundType: Optional[str] = "color"
     formTextColor: Optional[str] = ""  # Defaults to primaryColor if empty
 
+# Media Gallery Models
+class MediaItem(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    url: str
+    caption: Optional[str] = ""
+    expirationDate: Optional[str] = None  # ISO datetime string
+    active: bool = True
+    addedAt: datetime = Field(default_factory=datetime.utcnow)
+
+class Gallery(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    description: Optional[str] = ""
+    type: str  # "photo" or "video"
+    teamId: str
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    expirationDate: Optional[str] = None  # ISO datetime string
+    isActive: bool = True
+    items: List[MediaItem] = Field(default_factory=list)
+
 # Pydantic models for Teams and Players
 class Team(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -202,6 +222,7 @@ class Team(BaseModel):
     losses: int = 0
     ties: int = 0
     style: Optional[TeamStyle] = Field(default_factory=TeamStyle)
+    galleries: List[Gallery] = Field(default_factory=list)  # Enhanced media gallery system
     createdAt: datetime = Field(default_factory=datetime.utcnow)
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
