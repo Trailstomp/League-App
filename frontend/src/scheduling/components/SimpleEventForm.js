@@ -473,4 +473,88 @@ const SimpleEventForm = ({
     );
 };
 
+// Location Preview Component for Events
+const LocationPreview = ({ location }) => {
+    const [apiIntegrations, setApiIntegrations] = useState({});
+
+    useEffect(() => {
+        const loadApiIntegrations = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/api-integrations`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setApiIntegrations(data);
+                }
+            } catch (error) {
+                console.error('Error loading API integrations:', error);
+            }
+        };
+        loadApiIntegrations();
+    }, []);
+
+    const getMapImageUrl = (address, satellite = false) => {
+        const apiKey = apiIntegrations?.googleMapsApiKey;
+        if (!apiKey || !address) return null;
+        const mapType = satellite ? 'satellite' : 'roadmap';
+        return `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(address)}&zoom=16&size=300x150&maptype=${mapType}&markers=color:red%7C${encodeURIComponent(address)}&key=${apiKey}&scale=2`;
+    };
+
+    const openGoogleMaps = (address) => {
+        if (!address) return;
+        window.open(`https://maps.google.com/maps?q=${encodeURIComponent(address)}&t=k`, '_blank');
+    };
+
+    if (!location.address) return null;
+
+    return (
+        <div className="mt-2 p-3 bg-slate-50 border border-slate-200 rounded-lg">
+            <div className="flex items-center mb-2">
+                <span className="text-sm font-medium text-slate-700">📍 {location.value}</span>
+                <div className="ml-2 flex flex-wrap gap-1">
+                    {location.types.map((type, index) => (
+                        <span key={index} className="px-1.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">
+                            {type.replace('_', ' ')}
+                        </span>
+                    ))}
+                </div>
+            </div>
+            
+            <div className="text-xs text-slate-600 mb-2">
+                {location.address} • {location.indoor ? '🏢 Indoor' : '🌤️ Outdoor'} • {location.surface}
+            </div>
+
+            {getMapImageUrl(location.address) && (
+                <div className="grid grid-cols-2 gap-2">
+                    <div 
+                        className="cursor-pointer rounded overflow-hidden border border-slate-200"
+                        onClick={() => openGoogleMaps(location.address)}
+                        title="Click to open in Google Maps"
+                    >
+                        <div className="text-xs text-slate-500 bg-white px-2 py-1 border-b">📍 Street</div>
+                        <img 
+                            src={getMapImageUrl(location.address, false)} 
+                            alt={`Street map of ${location.value}`}
+                            className="w-full h-16 object-cover hover:opacity-90 transition-opacity"
+                            onError={(e) => e.target.style.display = 'none'}
+                        />
+                    </div>
+                    <div 
+                        className="cursor-pointer rounded overflow-hidden border border-slate-200"
+                        onClick={() => openGoogleMaps(location.address)}
+                        title="Click to open in Google Maps"
+                    >
+                        <div className="text-xs text-slate-500 bg-white px-2 py-1 border-b">🛰️ Satellite</div>
+                        <img 
+                            src={getMapImageUrl(location.address, true)} 
+                            alt={`Satellite view of ${location.value}`}
+                            className="w-full h-16 object-cover hover:opacity-90 transition-opacity"
+                            onError={(e) => e.target.style.display = 'none'}
+                        />
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 export default SimpleEventForm;
