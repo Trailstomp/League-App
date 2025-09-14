@@ -146,6 +146,7 @@ const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) =>
                                 gallery={gallery}
                                 showTeamName={!teamId}
                                 isVideo={true}
+                                onVideoClick={setSelectedVideoPopup}
                             />
                         ))}
                         {videoGalleries.length === 0 && (
