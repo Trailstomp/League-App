@@ -540,6 +540,7 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
     const [showCropTool, setShowCropTool] = useState(false);
     const [cropImageUrl, setCropImageUrl] = useState('');
     const [cropTargetField, setCropTargetField] = useState('');
+    const [showColorExtractor, setShowColorExtractor] = useState(false);
 
     // Early return if no editing team
     if (!editingTeam) {
