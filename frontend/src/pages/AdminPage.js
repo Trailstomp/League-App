@@ -122,7 +122,6 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         { id: 'social', label: 'Social Media', icon: 'social' },
         { id: 'friends', label: 'Friends & Sponsors', icon: 'players' },
         { id: 'website', label: 'Website Design', icon: 'view' },
-        { id: 'ticker', label: 'Event Ticker', icon: '🎫' },
         { id: 'api', label: 'API & Integrations', icon: 'settings' },
     ];
 
