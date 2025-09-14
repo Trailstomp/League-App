@@ -175,6 +175,9 @@ class TeamStyle(BaseModel):
     logoUrl: Optional[str] = ""
     logoOpacity: Optional[float] = 1.0
     bannerUrl: Optional[str] = ""
+    # Team card background image
+    cardBackgroundImage: Optional[str] = ""
+    cardBackgroundOpacity: Optional[float] = 0.3
     # Team form background controls
     formBackgroundColor: Optional[str] = "#ffffff"
     formBackgroundImage: Optional[str] = ""
