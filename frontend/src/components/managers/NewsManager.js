@@ -519,7 +519,7 @@ const NewsItemForm = ({ item, teams, onSave, onCancel, saving, onImageUpload }) 
                 </h3>
                 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">
                                 Content Type
@@ -549,6 +549,23 @@ const NewsItemForm = ({ item, teams, onSave, onCancel, saving, onImageUpload }) 
                                     <option key={team.id} value={team.id}>{team.name}</option>
                                 ))}
                             </select>
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Status
+                            </label>
+                            <div className="flex items-center space-x-4 pt-2">
+                                <label className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.active}
+                                        onChange={(e) => setFormData({...formData, active: e.target.checked})}
+                                        className="mr-2"
+                                    />
+                                    <span className="text-sm font-medium text-slate-700">Active</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                     
