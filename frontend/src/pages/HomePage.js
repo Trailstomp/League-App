@@ -276,11 +276,12 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                                         alt={team.name}
                                                         className="w-full h-full object-contain p-3"
                                                         style={{ 
-                                                            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+                                                            filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
+                                                            backgroundColor: 'transparent'
                                                         }}
                                                     />
-                                                    {/* Logo shine overlay */}
-                                                    <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-15 pointer-events-none"></div>
+                                                    {/* Glass shine overlay */}
+                                                    <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-20 pointer-events-none"></div>
                                                 </>
                                             ) : (
                                                 <div 
