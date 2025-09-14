@@ -60,17 +60,25 @@ const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) =>
             return team?.galleries || [];
         }
         // For league-wide HomePage, only show league-wide galleries (not team-specific)
-        return teams.flatMap(team => (team.galleries || [])
-            .filter(gallery => {
-                // Only show galleries specifically marked as league-wide
-                return gallery.teamId === 'league';
-            })
-            .map(gallery => ({
-                ...gallery,
-                teamName: team.name,
-                originalTeamId: team.id  // Keep original team ID for reference
-            }))
-        );
+        const allGalleries = teams.flatMap(team => (team.galleries || []).map(gallery => ({
+            ...gallery,
+            sourceTeamName: team.name,
+            sourceTeamId: team.id
+        })));
+        
+        // Debug logging to see what galleries exist
+        console.log('🔍 DEBUG: All galleries found:', allGalleries.map(g => ({
+            name: g.name,
+            teamId: g.teamId,
+            sourceTeam: g.sourceTeamName,
+            isLeagueWide: g.teamId === 'league'
+        })));
+        
+        // Filter to only show galleries with teamId === 'league'
+        const leagueGalleries = allGalleries.filter(gallery => gallery.teamId === 'league');
+        console.log('🔍 DEBUG: League galleries after filtering:', leagueGalleries.length);
+        
+        return leagueGalleries;
     };
 
     const galleries = getGalleries().filter(gallery => isGalleryActive(gallery));
