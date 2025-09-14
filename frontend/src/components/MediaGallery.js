@@ -278,12 +278,12 @@ const getYouTubeVideoId = (url) => {
 };
 
 // Gallery Section Component with enhanced auto-scrolling carousel
-const GallerySection = ({ gallery, showTeamName, isVideo = false, onImageClick = () => {} }) => {
+const GallerySection = ({ gallery, showTeamName, isVideo = false, onImageClick = () => {}, onVideoClick = () => {} }) => {
     const [isPaused, setIsPaused] = useState(false);
     const [currentTranslate, setCurrentTranslate] = useState(0);
 
     const handleVideoClick = (item) => {
-        setSelectedVideoPopup(item);
+        onVideoClick(item);
     };
 
     // Helper functions for item status (same as parent component)
