@@ -74,16 +74,16 @@ const MediaManager = ({ teams = [], setTeams, currentUser, isTeamSpecific = fals
     const handleSaveGallery = (galleryData) => {
         const targetTeamId = isTeamSpecific ? teamId : galleryData.teamId;
         
-        if (targetTeamId === 'league') {
-            // For league-wide galleries, we'll store them in the first available team
-            // or create a special handling system - for now, use first team
+        if (targetTeamId === 'league-wide' || targetTeamId === 'league-only') {
+            // For league-wide and league-only galleries, store them in the first available team
+            // but maintain the original teamId for filtering logic
             const firstTeam = teams[0];
             if (firstTeam) {
                 setTeams(currentTeams => currentTeams.map(team => {
                     if (team.id === firstTeam.id) {
                         const updatedGalleries = galleryData.id && (team.galleries || []).find(g => g.id === galleryData.id)
-                            ? (team.galleries || []).map(g => g.id === galleryData.id ? {...galleryData, teamId: 'league'} : g)
-                            : [...(team.galleries || []), { ...galleryData, teamId: 'league', id: galleryData.id || Date.now().toString(), createdAt: new Date().toISOString() }];
+                            ? (team.galleries || []).map(g => g.id === galleryData.id ? {...galleryData, teamId: targetTeamId} : g)
+                            : [...(team.galleries || []), { ...galleryData, teamId: targetTeamId, id: galleryData.id || Date.now().toString(), createdAt: new Date().toISOString() }];
                         return { ...team, galleries: updatedGalleries };
                     }
                     return team;
