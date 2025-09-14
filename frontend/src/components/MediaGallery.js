@@ -215,7 +215,18 @@ const GallerySection = ({ gallery, showTeamName, isVideo = false, onImageClick =
         }
     };
 
-    const itemsToShow = gallery.items || [];
+    // Helper functions for item status (same as parent component)
+    const isItemExpired = (item) => {
+        if (!item.expirationDate) return false;
+        return new Date(item.expirationDate) < new Date();
+    };
+
+    const isItemActive = (item) => {
+        return (item.active !== false) && !isItemExpired(item);
+    };
+
+    // Filter items to only show active, non-expired items
+    const itemsToShow = (gallery.items || []).filter(item => isItemActive(item));
     const duplicatedItems = itemsToShow.length > 0 ? [...itemsToShow, ...itemsToShow] : [];
 
     return (
