@@ -55,21 +55,27 @@ const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) =>
 
     // Get galleries based on scope (team-specific or all teams)
     const getGalleries = () => {
-        if (teamId) {
-            const team = teams.find(t => t.id === teamId);
-            return team?.galleries || [];
-        }
-        // For league-wide HomePage, only show league-wide galleries (not team-specific)
         const allGalleries = teams.flatMap(team => (team.galleries || []).map(gallery => ({
             ...gallery,
             sourceTeamName: team.name,
             sourceTeamId: team.id
         })));
-        
-        // Filter to only show galleries with teamId === 'league'
-        const leagueGalleries = allGalleries.filter(gallery => gallery.teamId === 'league');
-        
-        return leagueGalleries;
+
+        if (teamId) {
+            // For team pages, show:
+            // 1. Team-specific galleries (teamId === teamId)
+            // 2. League-wide galleries (teamId === 'league-wide')
+            return allGalleries.filter(gallery => 
+                gallery.teamId === teamId || gallery.teamId === 'league-wide'
+            );
+        } else {
+            // For league homepage, show:
+            // 1. League page only galleries (teamId === 'league-only')  
+            // 2. League-wide galleries (teamId === 'league-wide')
+            return allGalleries.filter(gallery => 
+                gallery.teamId === 'league-only' || gallery.teamId === 'league-wide'
+            );
+        }
     };
 
     const galleries = getGalleries().filter(gallery => isGalleryActive(gallery));
