@@ -826,7 +826,8 @@ const TeamMediaTab = ({ team }) => (
 );
 
 // Team Contact Tab
-const TeamContactTab = ({ team }) => (
+const TeamContactTab = ({ team }) => {
+    return (
     <div className="space-y-6">
         <h2 className="text-2xl font-bold text-slate-800">Contact Information</h2>
         
