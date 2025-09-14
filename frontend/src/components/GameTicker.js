@@ -206,12 +206,13 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
         >
             <div 
                 ref={tickerRef} 
-                className="flex space-x-6 no-scrollbar" 
+                className="flex items-center space-x-6 no-scrollbar" 
                 style={{ 
                     overflowX: 'scroll', 
                     scrollBehavior: 'auto',
                     minWidth: '100%',
-                    width: 'max-content'
+                    width: 'max-content',
+                    minHeight: '50px'
                 }}
             >
                 {allItems.length === 0 ? (
