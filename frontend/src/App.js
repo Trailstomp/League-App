@@ -96,6 +96,19 @@ function App() {
     }
   };
 
+  // Handle event click from ticker (navigate to events page and highlight event)
+  const handleEventClick = (event) => {
+    console.log('📅 Event clicked from ticker:', event);
+    // Navigate to events page - the events page can handle highlighting the specific event
+    setCurrentPage('events');
+  };
+
+  // Handle team click from ticker (navigate to team page)
+  const handleTeamClick = (teamId) => {
+    console.log('🏆 Team clicked from ticker:', teamId);
+    handleTeamNavigate(teamId);
+  };
+
   // Authentication handlers
   const handleLogin = (user) => {
     console.log('🔐 User logged in:', user);
