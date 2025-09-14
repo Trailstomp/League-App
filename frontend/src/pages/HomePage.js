@@ -110,14 +110,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                 </div>
             </div>
 
-            {/* Game Ticker */}
-            <GameTicker 
-                teams={teams}
-                leagueSchedule={events}
-                onTeamClick={handleTeamClick}
-                onEventClick={handleEventClick}
-                websiteStyle={websiteStyle}
-            />
+            {/* Game Ticker moved to Layout component - now shows on all pages */}
 
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
