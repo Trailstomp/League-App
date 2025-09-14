@@ -274,7 +274,7 @@ frontend:
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "🏟️ LOCATIONS FRONTEND IMPLEMENTATION COMPLETED: Created comprehensive LocationManager component with dual-tab interface (Locations & API Integrations). Features include: location CRUD operations with team assignment, Google Maps integration with embedded previews and click-to-open functionality, location type classification (practice fields, game fields, social venues, training facilities), indoor/outdoor and surface type specifications, statistics dashboard with real-time counts, and responsive location cards with map previews. Integrated with existing AdminPage locations tab."
+        comment: "🏟️ LOCATIONS FRONTEND IMPLEMENTATION COMPLETED: Created comprehensive LocationManager component now focused solely on location management. Features include: location CRUD operations with team assignment, Google Maps integration with embedded previews and click-to-open functionality, location type classification (practice fields, game fields, social venues, training facilities), indoor/outdoor and surface type specifications, statistics dashboard with real-time counts, and responsive location cards with map previews. Removed API integrations functionality to keep component focused on locations only."
 
   - task: "AdminPage Locations Tab Integration"
     implemented: true
