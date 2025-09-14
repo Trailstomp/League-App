@@ -361,7 +361,13 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
                 >
                     <div className="flex items-center space-x-4 overflow-hidden">
                         {/* Sample Game Event */}
-                        <div className="flex-shrink-0 bg-slate-700 rounded-lg px-4 py-2 border border-slate-600">
+                        <div 
+                            className="flex-shrink-0 rounded-lg px-4 py-2 border"
+                            style={{
+                                backgroundColor: tickerConfig.tickerItemColor,
+                                borderColor: tickerConfig.tickerBorderColor
+                            }}
+                        >
                             <div className="flex items-center space-x-3">
                                 <span className="px-2 py-1 rounded text-xs font-bold text-white bg-green-600">
                                     GAME
@@ -374,7 +380,13 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
                         </div>
                         
                         {/* Sample Tournament Event */}
-                        <div className="flex-shrink-0 bg-slate-700 rounded-lg px-4 py-2 border border-slate-600">
+                        <div 
+                            className="flex-shrink-0 rounded-lg px-4 py-2 border"
+                            style={{
+                                backgroundColor: tickerConfig.tickerItemColor,
+                                borderColor: tickerConfig.tickerBorderColor
+                            }}
+                        >
                             <div className="flex items-center space-x-3">
                                 <span className="px-2 py-1 rounded text-xs font-bold text-white bg-purple-600">
                                     TOURNAMENT
@@ -387,7 +399,13 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
                         </div>
                         
                         {/* Sample Practice Event */}
-                        <div className="flex-shrink-0 bg-slate-700 rounded-lg px-4 py-2 border border-slate-600">
+                        <div 
+                            className="flex-shrink-0 rounded-lg px-4 py-2 border"
+                            style={{
+                                backgroundColor: tickerConfig.tickerItemColor,
+                                borderColor: tickerConfig.tickerBorderColor
+                            }}
+                        >
                             <div className="flex items-center space-x-3">
                                 <span className="px-2 py-1 rounded text-xs font-bold text-white bg-blue-600">
                                     PRACTICE
