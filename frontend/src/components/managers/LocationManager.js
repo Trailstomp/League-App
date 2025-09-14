@@ -514,19 +514,34 @@ const LocationForm = ({ location, teams = [], onSave, onCancel, saving = false }
                         </div>
                         
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">
-                                Type
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Location Types * (Select all that apply)
                             </label>
-                            <select
-                                value={formData.type}
-                                onChange={(e) => setFormData({...formData, type: e.target.value})}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            >
-                                <option value="practice_field">🏃‍♂️ Practice Field</option>
-                                <option value="game_field">🏟️ Game Field</option>
-                                <option value="social_venue">🍽️ Social Venue</option>
-                                <option value="training_facility">💪 Training Facility</option>
-                            </select>
+                            <div className="grid grid-cols-2 gap-2">
+                                {[
+                                    { value: 'practice_field', label: '🏃‍♂️ Practice Field', color: 'green' },
+                                    { value: 'game_field', label: '🏟️ Game Field', color: 'blue' },
+                                    { value: 'social_venue', label: '🍽️ Social Venue', color: 'purple' },
+                                    { value: 'training_facility', label: '💪 Training Facility', color: 'orange' }
+                                ].map(type => (
+                                    <label key={type.value} className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                                        formData.types.includes(type.value) 
+                                            ? `border-${type.color}-500 bg-${type.color}-50` 
+                                            : 'border-slate-200 hover:border-slate-300'
+                                    }`}>
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.types.includes(type.value)}
+                                            onChange={() => handleTypeToggle(type.value)}
+                                            className="mr-2"
+                                        />
+                                        <span className="text-sm font-medium">{type.label}</span>
+                                    </label>
+                                ))}
+                            </div>
+                            <p className="text-xs text-slate-500 mt-1">
+                                💡 Tip: Select both "Practice Field" and "Game Field" if this location serves both purposes
+                            </p>
                         </div>
                         
                         <div>
