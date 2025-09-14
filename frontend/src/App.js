@@ -64,11 +64,18 @@ function App() {
     }
   };
 
-  // Simple navigation handler
-  const handleNavigate = (page) => {
-    console.log('🧭 Navigation requested to:', page);
-    setCurrentPage(page);
-    console.log('🧭 Current page set to:', page);
+  // Enhanced navigation handler - supports team navigation
+  const handleNavigate = (page, teamId = null) => {
+    console.log('🧭 Navigation requested to:', page, teamId ? `with teamId: ${teamId}` : '');
+    
+    if (page === 'team' && teamId) {
+      // Use team navigation handler for team pages
+      handleTeamNavigate(teamId);
+    } else {
+      // Regular page navigation
+      setCurrentPage(page);
+      console.log('🧭 Current page set to:', page);
+    }
   };
 
   // Team navigation handler
