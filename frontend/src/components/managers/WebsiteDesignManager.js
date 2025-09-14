@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { LacrosseIcon } from '../LacrosseIcons';
 import ColorExtractor from '../ColorExtractor';
 import SimpleCropTool from '../SimpleCropTool';
+import TickerManager from './TickerManager';
 
 const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle }) => {
     const [activeSection, setActiveSection] = useState('navigation');
