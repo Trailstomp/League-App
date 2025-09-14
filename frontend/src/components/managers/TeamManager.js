@@ -1289,6 +1289,18 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                 </div>
             </div>
 
+            {/* ColorExtractor Modal for Logo Color Analysis */}
+            {showColorExtractor && (
+                <ColorExtractor
+                    imageUrl={teamStyle.logoUrl}
+                    onColorsExtracted={handleColorsExtracted}
+                    onCancel={() => {
+                        setShowColorExtractor(false);
+                        console.log('🎨 Color extraction cancelled');
+                    }}
+                />
+            )}
+
             {/* SimpleCropTool for Team Logo/Banner */}
             {showCropTool && (
                 <SimpleCropTool
