@@ -148,6 +148,15 @@ const Layout = ({
                     <div className="w-10"></div> {/* Spacer for centering */}
                 </div>
 
+                {/* Event Ticker - Shows on all pages */}
+                <GameTicker 
+                    teams={teams}
+                    leagueSchedule={events}
+                    onTeamClick={onTeamClick}
+                    onEventClick={onEventClick}
+                    websiteStyle={websiteStyle}
+                />
+
                 {/* Main Content with dynamic styling */}
                 <main 
                     className="flex-1 p-3 sm:p-6 overflow-x-hidden"
