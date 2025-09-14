@@ -225,18 +225,19 @@ const LocationsTab = ({
 }) => {
     const stats = {
         total: locations.length,
-        practiceFields: locations.filter(l => l.type === 'practice_field').length,
-        gameFields: locations.filter(l => l.type === 'game_field').length,
-        socialVenues: locations.filter(l => l.type === 'social_venue').length,
-        trainingFacilities: locations.filter(l => l.type === 'training_facility').length,
+        practiceFields: locations.filter(l => l.types && l.types.includes('practice_field')).length,
+        gameFields: locations.filter(l => l.types && l.types.includes('game_field')).length,
+        socialVenues: locations.filter(l => l.types && l.types.includes('social_venue')).length,
+        trainingFacilities: locations.filter(l => l.types && l.types.includes('training_facility')).length,
         indoor: locations.filter(l => l.indoor).length,
         outdoor: locations.filter(l => !l.indoor).length
     };
 
-    const getMapImageUrl = (address) => {
+    const getMapImageUrl = (address, satellite = false) => {
         const apiKey = apiIntegrations?.googleMapsApiKey;
         if (!apiKey || !address) return null;
-        return `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(address)}&zoom=15&size=300x200&markers=color:red%7C${encodeURIComponent(address)}&key=${apiKey}&scale=2`;
+        const mapType = satellite ? 'satellite' : 'roadmap';
+        return `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(address)}&zoom=17&size=300x200&maptype=${mapType}&markers=color:red%7C${encodeURIComponent(address)}&key=${apiKey}&scale=2`;
     };
 
     return (
