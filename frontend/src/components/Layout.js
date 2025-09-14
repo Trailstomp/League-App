@@ -149,12 +149,12 @@ const Layout = ({
                 </div>
 
                 {/* Event Ticker - Shows on all pages */}
-                <GameTicker 
+                <EventsTicker 
+                    events={events}
                     teams={teams}
-                    leagueSchedule={events}
-                    onTeamClick={onTeamClick}
-                    onEventClick={onEventClick}
                     websiteStyle={websiteStyle}
+                    onEventClick={onEventClick}
+                    onTeamClick={onTeamClick}
                 />
 
                 {/* Main Content with dynamic styling */}
