@@ -10,7 +10,7 @@ import APIIntegrationsManager from '../components/managers/APIIntegrationsManage
 import WebsiteDesignManager from '../components/managers/WebsiteDesignManager';
 import TickerManager from '../components/managers/TickerManager';
 
-const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, currentUser, websiteStyle, setWebsiteStyle }) => {
+const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, currentUser, websiteStyle, setWebsiteStyle, events, setEvents }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
 
     // Protected teams update function that saves to API
