@@ -85,7 +85,7 @@ const NewsManager = ({ teams = [], currentUser }) => {
                     ...itemData,
                     id: Date.now().toString(),
                     date: new Date().toISOString().split('T')[0],
-                    active: true
+                    active: itemData.active !== undefined ? itemData.active : true
                 };
                 setNewsItems(prev => [newItem, ...prev]);
                 setShowAddForm(false);
