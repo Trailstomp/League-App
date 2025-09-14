@@ -1239,7 +1239,7 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                         <label className="block text-sm font-medium text-gray-700 mb-2">Form Background Color</label>
                         <AdvancedColorPicker
                             label="Form Background"
-                            value={teamStyle.formBackgroundColor || '#ffffff'}
+                            value={teamStyle.formBackgroundColor || teamStyle.backgroundColor || '#ffffff'}
                             onChange={color => handleStyleChange('formBackgroundColor', color)}
                             showEyedropper={true}
                         />
@@ -1248,7 +1248,7 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                         <label className="block text-sm font-medium text-gray-700 mb-2">Form Text Color</label>
                         <AdvancedColorPicker
                             label="Form Text"
-                            value={teamStyle.formTextColor || '#374151'}
+                            value={teamStyle.formTextColor || teamStyle.primaryColor || '#374151'}
                             onChange={color => handleStyleChange('formTextColor', color)}
                             showEyedropper={true}
                         />
