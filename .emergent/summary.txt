@@ -1,67 +1,59 @@
 <analysis>
-The trajectory documents the development of a lacrosse league management system, initially built by an AI engineer, now being handed over. The work involved extensive feature development, refactoring, and critical bug fixes in an iterative manner. Key areas of focus included: a comprehensive website design manager (with zone-based customization, advanced color picking, image uploads, and cropping), robust team and player management (including trading card-style display, social links, multi-team support), and critical data persistence issues (hardcoded data overwrites, empty database, incorrect API calls, blob URL issues). Significant effort was dedicated to debugging compilation errors, React state management, and ensuring correct application of styles across components. The crop tool was a recurring source of issues, leading to multiple rewrites and enhancements, including adding zoom and transparent crop areas. The engineer frequently used  and  to diagnose and verify fixes. The last task involved fixing team page background and form color inconsistencies, and debugging display issues by enhancing console logging and updating backend defaults.
+The trajectory chronicles the progression of a lacrosse league management system, initially an AI-built MVP. The primary focus has been on extending and refining core functionalities: team and player management, extensive website design customization, and critical data persistence issues. The work involved iterative feature development, significant refactoring, and persistent bug fixing. Key enhancements included a zone-based website design manager with advanced styling, a robust team and player management system featuring trading card-style displays, and, more recently, comprehensive locations management with Google Maps integration, a news ticker with CRUD and content lifecycle controls, and an advanced media gallery supporting multi-image uploads and league-wide content. The AI engineer frequently engaged in debugging complex React state, API calls, and styling, often using  to diagnose persistent issues. The latest work revolves around refining the media gallery, specifically adding expiration and active status to individual media items, and ensuring proper display logic.
 </analysis>
 
 <product_requirements>
-The application is a comprehensive lacrosse league management system. Initial features included: Event Management (CRUD, scheduling, enhanced scoring/tournament persistence), League Locations, Google Maps integration, Coach Permissions (admin access), UI/UX improvements (sorting, modals, game ticker, navigation), Data Protection (MongoDB, backups), Authentication & Roles (login/registration, RBAC), and Team Customization (styling, color picker, logo/banner uploads).
-
-Subsequent requirements included: automatic dominant color extraction from logos, collapsible navigation, comprehensive Team Pages (Home, Schedule, Roster, Stats, Photos & Vids, Contact), resolving persistent data overwrites, responsive design, fixing navigation scrolling, restoring admin website design, enhancing color picker with canvas/eyedropper, redesigning player cards into a trading card style with photos and details, and adding player photo upload to admin. Recent enhancements also focused on a shape-aware crop tool with zoom, transparent crop areas, and robust team/player card styling. The user also requested control over team and league form backgrounds.
+The application is a comprehensive lacrosse league management system, initially featuring event management (CRUD, scheduling, scoring, tournaments), league locations, Google Maps, coach permissions, UI/UX improvements (sorting, modals, navigation), data protection (MongoDB), and authentication/roles. Subsequent requirements included automatic dominant color extraction, collapsible navigation, comprehensive Team Pages (Home, Schedule, Roster, Stats, Photos & Vids, Contact), resolving data overwrites, responsive design, improved color pickers, trading card-style player cards with photos and details, and player photo uploads. Recent work focused on a shape-aware crop tool with zoom, transparent crop areas, robust team/player card styling, and control over team/league form backgrounds. The user then requested locations management with specific characteristics (indoor/outdoor, surface, clickable addresses, embedded maps, team/league assignment), a news ticker with CRUD, images, and detail views, and a media gallery with carousel, multiple uploads, and expiration features.
 </product_requirements>
 
 <key_technical_concepts>
-- **React.js (Frontend)**: Component-based UI, state management (, ), custom hooks, React Context.
-- **FastAPI (Backend)**: Python API for data operations (CRUD).
-- **MongoDB (Database)**: NoSQL database for persistence, UUIDs for IDs.
-- **Tailwind CSS**: Utility-first styling, responsive design.
-- **Role-Based Access Control**: User roles (, , , ).
-- **Modular Architecture**: Extensive refactoring for maintainability.
-- **Image Handling**: File uploads (logos, banners, player photos), image cropping, base64 data URLs.
-- **State Management**: Functional setState patterns, debouncing for UI updates.
+-   **React.js (Frontend)**: Component-based UI, state management, custom hooks, context.
+-   **FastAPI (Backend)**: Python API for data operations (CRUD), Pydantic models.
+-   **MongoDB (Database)**: NoSQL database for persistence, UUIDs for IDs.
+-   **Tailwind CSS**: Utility-first styling, responsive design.
+-   **Image Handling**: File uploads, cropping (), base64 data URLs.
+-   **Google Maps API**: Integration for locations, static map previews, clickable addresses.
+-   **State Management**: Functional  patterns, debouncing.
 </key_technical_concepts>
 
 <code_architecture>
 
-
 -   ****:
-    -   **Importance**: FastAPI backend for API routes and MongoDB interaction, defining data models.
-    -   **Changes Made**: Updated  model with  properties. Updated  model to include , , , , , . Added , , , , ,  fields to  model. Fixed default values for form colors.
+    -   **Importance**: Core FastAPI backend defining API routes and MongoDB schema.
+    -   **Changes Made**: Enhanced  model to support  (array of strings) instead of a single string, and added  model for storing Google Maps API key. Implemented CRUD for locations and API integrations. Fixed an error in the PUT endpoint for locations to handle Location not found gracefully and prevent 500 errors. Added a data migration function to convert old single  fields to the new  array.
 -   ****:
     -   **Importance**: Main application state, routing, and overall data loading.
-    -   **Changes Made**: Removed hardcoded team data. Integrated  routing. Passed  state to  and . Implemented  to save website style to API. Added logic to load  from API on initialization. Added fallback to load players from  if not in . Corrected  to properly accept  parameter. Added debugging logs for team card clicks.
+    -   **Changes Made**: Passed  to  to support the GameTicker.
 -   ****:
-    -   **Importance**: Sidebar navigation component.
-    -   **Changes Made**: Implemented collapsible functionality. Moved login section. Added team logos and enhanced team display. Fixed scrolling. Updated to use  for dynamic styling (sidebar text, button transparency, larger icons, pill-shaped design).
--   ****:
-    -   **Importance**: Defines main content structure.
-    -   **Changes Made**: Adjusted for responsive design. Fixed syntax errors. Updated to accept and apply  for dynamic background styling.
--   ****:
-    -   **Importance**: Admin interface for league management.
-    -   **Changes Made**: Integrated . Replaced  with .  component (within ) updated for , , , social links, and multiple teams/positions. Implemented  and  as protected save functions. Removed hardcoded localhost URL fallback for API calls. Fixed player update/delete to use protected saves.
--   ****:
-    -   **Importance**: Extracts dominant colors from images. (Created previously).
-    -   **Changes Made**: Updated to ensure proper hex string output (not objects) and integrate with existing images.
--   ****:
-    -   **Importance**: Advanced color selection.
-    -   **Changes Made**: Replaced by simpler HTML color inputs in  and .
--   ****:
-    -   **Importance**: Manages global website themes and styles.
-    -   **Changes Made**: Rewritten multiple times for a robust interface with zone-based design (Navigation & Sidebar, Top Banner, Main Content, Live Preview). Removed Edit Design button for always-edit mode. Integrated smart color extractor. Implemented text editing. Added background (color/image) options per zone with cropping. Removed problematic  then re-implemented . Fixed syntax errors. Debounced save functionality. Corrected field naming bugs for image persistence. Merged Menu & Sidebar tab into Navigation. Added button transparency controls. Fixed  to preserve image fields. Fixed nav background aspect ratio. Fixed color picker size.  moved outside the form to prevent auto-saves.
--   ****:
-    -   **Importance**: Dedicated page for team-specific details.
-    -   **Changes Made**: Created with multiple tabs (Home, Schedule, Roster, Stats, Photos & Vids, Contact). Roster tab redesigned for trading card-style player cards with photos, team logos, jersey numbers. Player cards now have 3D hover effects, realistic shadows, metallic jersey numbers, card shine effects, enhanced borders, and display social links/multiple teams/positions. Implemented click-away close for player popups. Team header enhanced for prominent logo and styling. Uses  for page background. Fixed syntax errors in  function.
--   ****:
-    -   **Importance**: Manages team data and styling in the admin portal.
-    -   **Changes Made**: Enhanced with comprehensive team styling controls (backgrounds, forms, buttons). Fixed logo persistence by using data URLs instead of blob URLs. Integrated  for team logos and banners. Replaced  with simple HTML color inputs. Fixed , ,  to use protected save function. Fixed  null errors with null checks. Removed duplicate logo upload areas. Added UI for  and . Added UI for , , , , . Fixed button  to prevent auto-submits.  moved outside form to prevent auto-saves.
--   ****:
-    -   **Importance**: Main landing page, displaying featured teams and events.
-    -   **Changes Made**: Removed hardcoded banner text. Updated to pass  to . Team cards redesigned to look like professional playing cards with team-colored borders, large logos, and records. Logos on cards made larger (3/4 card) with overlays. Fixed event handlers (, ) on team cards. Updated team cards to display .
+    -   **Importance**: Central admin interface for league management.
+    -   **Changes Made**: Integrated , , and  into separate tabs.  was moved from  to its own tab.
 -   ** (New)**:
-    -   **Importance**: Replaces the problematic , providing a simplified, robust cropping interface.
-    -   **Changes Made**: Created from scratch. Implements shape-aware cropping (square for logos, rectangle for banners, vertical for sidebar, widescreen for general backgrounds). Made crop area transparent. Added zoom controls (buttons, slider, reset view). Implemented grab handles for resizing crop area instead of a slider. Adjusted crop calculation to account for zoom and pan.
+    -   **Importance**: Manages league and team locations, including details like indoor/outdoor, surface, and Google Maps integration.
+    -   **Changes Made**: Created for locations CRUD. Enhanced to support multiple location types (e.g., practice and game field simultaneously) with a checkbox UI. Integrated satellite map previews and improved error handling for save operations. The API Integrations tab functionality was removed and moved to .
+-   ** (New)**:
+    -   **Importance**: Dedicated component for managing third-party API keys and integrations.
+    -   **Changes Made**: Created to house the Google Maps API key input field and manage other integration settings, separated from .
 -   ****:
-    -   **Importance**: Frontend environment variables.
-    -   **Changes Made**: Fixed  to point to the correct production URL.
-
+    -   **Importance**: Displays team-specific information.
+    -   **Changes Made**: TeamHomeTab restructured to remove duplicated Season Overview and Team Info sections. Integrated  (for news), , and  (locations moved below stats). Updated to accept  prop for the . Enhanced location display with satellite map previews on both home and contact tabs. Fixed  import.
+-   ****:
+    -   **Importance**: Form for creating and editing events.
+    -   **Changes Made**: Updated to fetch locations from the  API instead of using  or  props. Integrated  for displaying maps. Fixed linting errors by defining helper functions.
+-   ****:
+    -   **Importance**: Displays scrolling news and event updates.
+    -   **Changes Made**: Reused and integrated into  for dynamic team news.
+-   ** (New)**:
+    -   **Importance**: Manages news items for the ticker, including text, images, and videos.
+    -   **Changes Made**: Created from  code. Implemented full CRUD, support for various content types, team association, and a live vertical scrolling preview. Enhanced with file upload via , expiration dates, and manual active/inactive status controls for news items. Updated statistics dashboard.
+-   ** (New)**:
+    -   **Importance**: Manages photo and video galleries.
+    -   **Changes Made**: Created from  code. Implemented CRUD for galleries and individual media items. Enhanced to support league-wide galleries, multiple image uploads without captions, and an improved auto-scrolling carousel with pause-on-hover. Began implementing expiration and active status for individual media items.
+-   ** (New)**:
+    -   **Importance**: Public-facing component for displaying photo and video galleries.
+    -   **Changes Made**: Created from  code. Integrated into  and . Enhanced carousel features (auto-scroll, pause-on-hover), improved modal experience for image viewing (click-to-close, larger close button), and handles league-wide vs. team-specific content.
+-   ****:
+    -   **Importance**: Main landing page.
+    -   **Changes Made**: Integrated  below the news ticker, configured to display only league-wide galleries.
 </code_architecture>
 
 <pending_tasks>
@@ -70,27 +62,25 @@ Subsequent requirements included: automatic dominant color extraction from logos
 -   Recurring events functionality.
 -   Email/SMS integration for notifications.
 -   Social media integration (beyond basic posting, auto-share, feeds).
--   Team-specific news backend endpoint.
+-   Team-specific news backend endpoint (implemented in NewsManager but still needs dedicated backend endpoint).
 -   User/player relationship clarification.
 -   Mobile responsiveness optimization.
+-   Test the applied fixes for team page background and form colors (user will test).
+-   Create an archives tab for news/images/galleries (future request).
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was addressing several critical issues related to team page backgrounds, form styling, and color consistency.
+Immediately before this summary, the AI engineer was enhancing the media gallery system. The last user request was to introduce expiration dates and an active/inactive checkbox for individual media items (photos and videos), similar to what was implemented for the news ticker.
 
-The current issues being debugged are:
-1.  **Team Page Background Still White**: Despite code changes, the team page background remains white instead of adopting team-specific colors.
-2.  **Form Background Colors Wrong**: The color swatches for form backgrounds are showing a generic blue () instead of the team's assigned colors.
-3.  **Style Preview Doesn't Match**: The style preview in the admin panel shows yellow/red colors, but the actual team page renders white.
-
-The AI engineer has applied the following initial fixes and debugging steps:
--   **Enhanced Debug Logging**: Added detailed console logs in  to show the exact , , , , and the  being applied to the team page. This is to accurately diagnose why the background remains white.
--   **Form Color Defaults Updated (Frontend)**: Modified  to ensure the form background color defaults to the team's  and form text color defaults to the team's , rather than hardcoded blue/white.
--   **Form Color Defaults Updated (Backend)**: Updated the  model in  to use  as default for  and , allowing frontend fallbacks to team colors to take precedence.
-
-The engineer is currently waiting for user feedback on the console output from the enhanced debugging to understand why the team page background is not updating as expected.
+The AI engineer has:
+-   Successfully updated the  to only show league-wide galleries, as requested.
+-   Started updating the  to support smaller thumbnails with horizontal scrolling and incorporate expiration/active functionality.
+-   Added helper functions (, ) to  to handle the new status logic.
+-   Updated the statistics dashboard within  to account for active/expired galleries.
+-   Updated the  to include  and  fields for galleries.
+-   The current work is precisely within : Now let me update the to include expiration date and active status for individual items:. This means the task of adding expiration and active status to individual media items is in progress.
 </current_work>
 
 <optional_next_step>
-Test the applied fixes for team page background and form colors, providing console output for detailed color analysis.
+Continue updating the  component within the  to include expiration date and active status controls for individual media items.
 </optional_next_step>
