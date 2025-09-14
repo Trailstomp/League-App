@@ -626,7 +626,7 @@ const LocationForm = ({ location, teams = [], onSave, onCancel, saving = false }
                         </button>
                         <button
                             type="submit" 
-                            disabled={saving || !formData.name.trim()}
+                            disabled={saving || !formData.name.trim() || formData.types.length === 0}
                             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                         >
                             {saving ? 'Saving...' : (location ? 'Update Location' : 'Add Location')}
