@@ -201,8 +201,79 @@ const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) =>
                     </div>
                 </div>
             )}
+
+            {/* Video Popup Modal */}
+            {selectedVideoPopup && (
+                <div 
+                    className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 cursor-pointer"
+                    onClick={() => setSelectedVideoPopup(null)}
+                >
+                    <div className="relative max-w-[90vw] max-h-[90vh] p-4">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedVideoPopup(null);
+                            }}
+                            className="absolute top-2 right-2 text-white text-3xl z-10 hover:text-gray-300 bg-black bg-opacity-50 rounded-full w-12 h-12 flex items-center justify-center"
+                            title="Close (or click anywhere)"
+                        >
+                            ✕
+                        </button>
+                        
+                        <div 
+                            className="text-center cursor-pointer"
+                            onClick={() => setSelectedVideoPopup(null)}
+                        >
+                            {/* YouTube Video Embed */}
+                            {(selectedVideoPopup.url.includes('youtube.com') || selectedVideoPopup.url.includes('youtu.be')) ? (
+                                <div className="relative">
+                                    <iframe
+                                        width="800"
+                                        height="450"
+                                        src={`https://www.youtube.com/embed/${getYouTubeVideoId(selectedVideoPopup.url)}`}
+                                        title={selectedVideoPopup.caption}
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        className="rounded-lg shadow-2xl"
+                                        onClick={(e) => e.stopPropagation()}
+                                    ></iframe>
+                                </div>
+                            ) : (
+                                <video 
+                                    controls 
+                                    className="max-w-full max-h-[80vh] rounded-lg shadow-2xl"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <source src={selectedVideoPopup.url} type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
+                            )}
+                            
+                            {selectedVideoPopup.caption && selectedVideoPopup.caption !== `Video from ${selectedVideoPopup.galleryName}` && (
+                                <div className="text-white mt-4 bg-black bg-opacity-70 rounded-lg p-3 inline-block">
+                                    <p className="font-medium">{selectedVideoPopup.caption}</p>
+                                    {selectedVideoPopup.galleryName && (
+                                        <p className="text-sm text-gray-300 mt-1">From: {selectedVideoPopup.galleryName}</p>
+                                    )}
+                                </div>
+                            )}
+                            <div className="text-white mt-2 text-sm opacity-70">
+                                Click anywhere to close
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
+};
+
+// Helper function to extract YouTube video ID
+const getYouTubeVideoId = (url) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
 };
 
 // Gallery Section Component with enhanced auto-scrolling carousel
