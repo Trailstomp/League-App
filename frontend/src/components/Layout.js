@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navigation from './Navigation';
-import GameTicker from './GameTicker';
+import EventsTicker from './EventsTicker';
 
 const Layout = ({ 
     children, 
