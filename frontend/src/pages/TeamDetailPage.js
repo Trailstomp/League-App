@@ -34,7 +34,17 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
     const teamStyle = team.style || {};
 
     return (
-        <div className="max-w-full mx-auto px-2 sm:px-4 lg:px-6">
+        <div 
+            className="max-w-full mx-auto px-2 sm:px-4 lg:px-6 min-h-screen"
+            style={{
+                background: teamStyle.pageBackgroundType === 'image' && teamStyle.pageBackgroundImage
+                    ? `url(${teamStyle.pageBackgroundImage})`
+                    : `linear-gradient(135deg, ${teamStyle.pageBackgroundColor || teamStyle.backgroundColor || '#f8fafc'} 0%, rgba(255,255,255,0.8) 100%)`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundAttachment: 'fixed'
+            }}
+        >
             {/* Team Header */}
             <div 
                 className="relative bg-gradient-to-r from-slate-800 to-slate-600 text-white rounded-lg overflow-hidden mb-4 sm:mb-6"
