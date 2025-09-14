@@ -193,22 +193,26 @@ const NewsManager = ({ teams = [], currentUser }) => {
             </div>
 
             {/* Statistics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                     <div className="text-xl font-bold text-blue-900">{newsItems.length}</div>
                     <div className="text-xs text-blue-700">Total Items</div>
                 </div>
                 <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <div className="text-xl font-bold text-green-900">{newsItems.filter(n => n.type === 'text').length}</div>
-                    <div className="text-xs text-green-700">Text Only</div>
+                    <div className="text-xl font-bold text-green-900">{getActiveNewsItems().length}</div>
+                    <div className="text-xs text-green-700">Active</div>
+                </div>
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <div className="text-xl font-bold text-red-900">{newsItems.filter(n => !n.active).length}</div>
+                    <div className="text-xs text-red-700">Inactive</div>
+                </div>
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                    <div className="text-xl font-bold text-yellow-900">{newsItems.filter(n => isExpired(n)).length}</div>
+                    <div className="text-xs text-yellow-700">Expired</div>
                 </div>
                 <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
                     <div className="text-xl font-bold text-purple-900">{newsItems.filter(n => n.type === 'image').length}</div>
                     <div className="text-xs text-purple-700">With Images</div>
-                </div>
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                    <div className="text-xl font-bold text-orange-900">{newsItems.filter(n => n.type === 'video').length}</div>
-                    <div className="text-xs text-orange-700">With Videos</div>
                 </div>
             </div>
 
