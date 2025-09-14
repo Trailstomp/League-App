@@ -153,7 +153,7 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
                 tickerElement.scrollLeft = scrollPosition;
                 
                 // Reset when we've scrolled through one set of items
-                if (scrollPosition >= tickerElement.scrollWidth / 3) {
+                if (scrollPosition >= tickerElement.scrollWidth / 2) {
                     scrollPosition = 0;
                 }
             }
