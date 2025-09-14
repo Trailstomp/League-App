@@ -210,10 +210,8 @@ const GallerySection = ({ gallery, showTeamName, isVideo = false, onImageClick =
     const [isPaused, setIsPaused] = useState(false);
     const [currentTranslate, setCurrentTranslate] = useState(0);
 
-    const handleVideoClick = (videoUrl) => {
-        if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-            window.open(videoUrl, '_blank');
-        }
+    const handleVideoClick = (item) => {
+        setSelectedVideoPopup(item);
     };
 
     // Helper functions for item status (same as parent component)
