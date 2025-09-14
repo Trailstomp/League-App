@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LacrosseIcon } from '../LacrosseIcons';
+import SimpleCropTool from '../SimpleCropTool';
 
 const NewsManager = ({ teams = [], currentUser }) => {
     const [newsItems, setNewsItems] = useState([]);
