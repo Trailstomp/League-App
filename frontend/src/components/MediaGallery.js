@@ -313,7 +313,7 @@ const GallerySection = ({ gallery, showTeamName, isVideo = false, onImageClick =
                 <div className="flex items-center justify-between">
                     <div>
                         <h4 className="text-lg font-semibold text-slate-700">{gallery.name}</h4>
-                        {showTeamName && gallery.teamName && (
+                        {showTeamName && gallery.teamName && gallery.teamId !== 'league' && (
                             <span className="text-xs text-blue-600 font-medium">{gallery.teamName}</span>
                         )}
                     </div>
