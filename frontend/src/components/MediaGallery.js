@@ -31,6 +31,7 @@ const ImageIcon = ({ size = 16, color = "currentColor", ...props }) => (
 
 const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) => {
     const [selectedImagePopup, setSelectedImagePopup] = useState(null);
+    const [selectedVideoPopup, setSelectedVideoPopup] = useState(null);
     const [activeTab, setActiveTab] = useState('photos');
 
     // Helper functions for item status
