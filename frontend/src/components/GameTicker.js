@@ -188,12 +188,16 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
         return () => clearTimeout(timeoutId);
     }, [isHovering, allItems.length]);
     
+    // Debug: Add console log to confirm component is rendering
+    console.log('🎫 GameTicker render called - allItems count:', allItems.length);
+
     return (
         <div 
             className="text-white py-1 overflow-hidden shadow-lg"
             style={{ backgroundColor: websiteStyle?.tickerColor || '#1e293b' }}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
+            data-testid="game-ticker"
         >
             <div 
                 ref={tickerRef} 
