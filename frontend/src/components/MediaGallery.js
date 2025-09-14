@@ -61,11 +61,14 @@ const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) =>
         }
         // For league-wide HomePage, only show league-wide galleries (not team-specific)
         return teams.flatMap(team => (team.galleries || [])
-            .filter(gallery => gallery.teamId === 'league')
+            .filter(gallery => {
+                // Only show galleries specifically marked as league-wide
+                return gallery.teamId === 'league';
+            })
             .map(gallery => ({
                 ...gallery,
                 teamName: team.name,
-                teamId: team.id
+                originalTeamId: team.id  // Keep original team ID for reference
             }))
         );
     };
