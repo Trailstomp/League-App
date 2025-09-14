@@ -11,7 +11,10 @@ const Layout = ({
     onLogin,
     onLogout,
     teams = [],
-    websiteStyle = {} 
+    websiteStyle = {},
+    events = [],
+    onEventClick,
+    onTeamClick
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
