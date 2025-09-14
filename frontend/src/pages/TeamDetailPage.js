@@ -872,6 +872,7 @@ const TeamContactTab = ({ team }) => (
             </div>
         </div>
     </div>
-);
+    );
+};
 
 export default TeamDetailPage;
