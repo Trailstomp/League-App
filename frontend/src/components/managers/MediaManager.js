@@ -312,9 +312,20 @@ const MediaManager = ({ teams = [], setTeams, currentUser, isTeamSpecific = fals
                                     <div className="overflow-x-auto">
                                         <div className="flex space-x-3 pb-2" style={{minWidth: 'max-content'}}>
                                             {(gallery.items || []).map((item, index) => (
-                                                <div key={item.id} className="group relative bg-slate-50 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-shadow flex-shrink-0" style={{width: '120px', height: '100px'}}>
+                                                <div key={item.id} className={`group relative bg-slate-50 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-shadow flex-shrink-0 ${!isItemActive(item) ? 'opacity-60 border-2 border-red-300' : ''}`} style={{width: '120px', height: '100px'}}>
+                                                    {/* Status Indicator */}
+                                                    {!item.active && (
+                                                        <div className="absolute top-1 left-1 z-10 bg-red-500 text-white text-xs px-1 py-0.5 rounded">
+                                                            Inactive
+                                                        </div>
+                                                    )}
+                                                    {isItemExpired(item) && (
+                                                        <div className="absolute top-1 right-1 z-10 bg-orange-500 text-white text-xs px-1 py-0.5 rounded">
+                                                            Expired
+                                                        </div>
+                                                    )}
                                                     <div 
-                                                        onClick={() => openSlideshow(gallery.items.filter(item => item.active && !isItemExpired(item)), index)}
+                                                        onClick={() => openSlideshow(gallery.items || [], index)}
                                                         className="w-full h-full relative overflow-hidden"
                                                     >
                                                         {activeTab === 'photos' ? (
