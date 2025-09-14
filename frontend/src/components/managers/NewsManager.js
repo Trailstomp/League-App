@@ -231,7 +231,7 @@ const NewsManager = ({ teams = [], currentUser }) => {
                         
                         <div className="flex-grow overflow-hidden relative max-w-2xl bg-red-800 rounded-lg shadow-lg" style={{ height: '200px' }}>
                             <div className="animate-scroll-vertical absolute w-full">
-                                {newsItems.concat(newsItems).map((item, index) => (
+                                {getActiveNewsItems().concat(getActiveNewsItems()).map((item, index) => (
                                     <div 
                                         key={`${item.id}-${index}`}
                                         className="relative flex items-center py-4 px-4 cursor-pointer hover:bg-red-700 hover:bg-opacity-50 rounded transition-colors"
