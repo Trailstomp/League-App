@@ -287,8 +287,8 @@ const TeamHomeTab = ({ team }) => {
                     style={{ backgroundColor: teamStyle.backgroundColor || '#f8fafc' }}
                 >
                     <GameTicker 
-                        teams={[team]} 
-                        leagueSchedule={[]} 
+                        teams={teams} 
+                        leagueSchedule={events || []} 
                         websiteStyle={{
                             tickerFilters: {
                                 games: true,
@@ -303,7 +303,7 @@ const TeamHomeTab = ({ team }) => {
                         }}
                         onEventClick={() => {}} 
                         onTeamClick={() => {}}
-                        onNavigate={() => {}}
+                        onNavigate={onNavigate || (() => {})}
                     />
                 </div>
             </div>
