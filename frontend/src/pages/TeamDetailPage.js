@@ -135,19 +135,103 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
     );
 };
 
-// Team Home Tab
-const TeamHomeTab = ({ team }) => (
-    <div className="space-y-4 sm:space-y-6">
-        <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4">Welcome to {team.name}</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 sm:p-6 rounded-lg">
-                    <h3 className="text-base sm:text-lg font-semibold text-blue-800 mb-3">Season Overview</h3>
+// Team Home Tab - Enhanced with Team Identity
+const TeamHomeTab = ({ team }) => {
+    const teamStyle = team.style || {};
+    
+    return (
+        <div className="space-y-4 sm:space-y-6">
+            {/* Team Identity Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Team Logo Showcase */}
+                <div className="text-center">
+                    <div className="w-32 h-32 mx-auto rounded-xl overflow-hidden border-4 border-white shadow-xl bg-white mb-4">
+                        {teamStyle.logoUrl ? (
+                            <img 
+                                src={teamStyle.logoUrl} 
+                                alt={`${team.name} logo`}
+                                className="w-full h-full object-contain p-3"
+                            />
+                        ) : (
+                            <div 
+                                className="w-full h-full flex items-center justify-center rounded-xl"
+                                style={{ backgroundColor: teamStyle.primaryColor || '#dc2626' }}
+                            >
+                                <LacrosseIcon name="stick" style={{fontSize: '48px', color: 'white'}} />
+                            </div>
+                        )}
+                    </div>
+                    <h3 className="text-lg font-bold" style={{ color: teamStyle.primaryColor || '#1f2937' }}>
+                        {team.name}
+                    </h3>
+                    <p className="text-slate-600">{team.division || 'Field'} Division</p>
+                </div>
+
+                {/* Season Record */}
+                <div 
+                    className="p-6 rounded-lg text-center"
+                    style={{ 
+                        backgroundColor: teamStyle.backgroundColor || '#f8fafc',
+                        border: `2px solid ${teamStyle.primaryColor || '#dc2626'}`
+                    }}
+                >
+                    <h3 className="text-lg font-semibold mb-3" style={{ color: teamStyle.primaryColor || '#1f2937' }}>
+                        Season Record
+                    </h3>
+                    <div className="text-4xl font-bold mb-2" style={{ color: teamStyle.primaryColor || '#1f2937' }}>
+                        {team.wins || 0}-{team.losses || 0}
+                        {(team.ties || 0) > 0 && `-${team.ties}`}
+                    </div>
+                    <div className="text-sm text-slate-600">
+                        {((team.wins || 0) + (team.losses || 0) + (team.ties || 0))} games played
+                    </div>
+                </div>
+
+                {/* Team Info */}
+                <div 
+                    className="p-6 rounded-lg"
+                    style={{ backgroundColor: teamStyle.backgroundColor || '#f8fafc' }}
+                >
+                    <h3 className="text-lg font-semibold mb-3" style={{ color: teamStyle.primaryColor || '#1f2937' }}>
+                        Team Details
+                    </h3>
                     <div className="space-y-2 text-sm">
+                        {team.coach && (
+                            <div className="flex justify-between">
+                                <span>Head Coach:</span>
+                                <span className="font-semibold">{team.coach}</span>
+                            </div>
+                        )}
+                        {team.homeField && (
+                            <div className="flex justify-between">
+                                <span>Home Field:</span>
+                                <span className="font-semibold">{team.homeField}</span>
+                            </div>
+                        )}
                         <div className="flex justify-between">
-                            <span>Games Played:</span>
-                            <span className="font-semibold">{(team.wins || 0) + (team.losses || 0) + (team.ties || 0)}</span>
+                            <span>Division:</span>
+                            <span className="font-semibold">{team.division || 'Field'}</span>
                         </div>
+                        {team.contactEmail && (
+                            <div className="flex justify-between">
+                                <span>Contact:</span>
+                                <span className="font-semibold text-xs">{team.contactEmail}</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4">Welcome to {team.name}</h2>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 sm:p-6 rounded-lg">
+                        <h3 className="text-base sm:text-lg font-semibold text-blue-800 mb-3">Season Overview</h3>
+                        <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                                <span>Games Played:</span>
+                                <span className="font-semibold">{(team.wins || 0) + (team.losses || 0) + (team.ties || 0)}</span>
+                            </div>
                         <div className="flex justify-between">
                             <span>Wins:</span>
                             <span className="font-semibold text-green-600">{team.wins || 0}</span>
