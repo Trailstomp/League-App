@@ -355,6 +355,12 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                 )}
             </div>
 
+            {/* Media Gallery */}
+            <MediaGallery 
+                teams={teams} 
+                title="League Media Gallery" 
+            />
+
             {/* Event Detail Modal */}
             {showEventModal && selectedEvent && (
                 <EventDetailModal
