@@ -134,7 +134,6 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
         </div>
     );
 };
-};
 
 // Team Home Tab - Enhanced with Team Identity
 const TeamHomeTab = ({ team }) => {
