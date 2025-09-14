@@ -8,6 +8,9 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
 
     // Combine games and upcoming events with tournament consolidation and filtering
     const allItems = useMemo(() => {
+        console.log('🎫 GameTicker processing leagueSchedule:', leagueSchedule?.length || 0, 'events');
+        console.log('🎫 First event sample:', leagueSchedule?.[0]);
+        
         // Get ticker filter settings from websiteStyle
         const tickerFilters = websiteStyle?.tickerFilters || {
             games: true,
