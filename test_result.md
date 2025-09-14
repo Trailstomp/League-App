@@ -282,7 +282,7 @@ frontend:
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "📰 TEAM PAGE RESTRUCTURE COMPLETED: Successfully reorganized team home page layout as requested. CHANGES: 1) Removed extra team info section, season overview, and recent news sections to streamline layout, 2) Moved locations section below stats (logo + season record), 3) Added news ticker using existing GameTicker component between stats and locations, 4) Maintained satellite map previews for locations, 5) Updated component props to pass teams/events data to GameTicker. FINAL LAYOUT: Team logo & season record → News ticker → Team locations (with satellite maps). Clean, focused layout with only essential information and dynamic news content."
+        comment: "📰 TEAM PAGE RESTRUCTURE COMPLETED: Successfully reorganized team home page layout as requested. CHANGES: 1) Removed duplicated team identity section (logo + season record) from top of home tab, 2) Streamlined layout to start directly with news ticker, 3) Added news ticker using existing GameTicker component, 4) Maintained satellite map previews for locations, 5) Updated component props to pass teams/events data to GameTicker. FINAL LAYOUT: Team news ticker → Team media gallery → Team locations (with satellite maps). Clean, focused layout eliminating duplication and providing direct access to dynamic content."
 
   - task: "Enhanced Location Previews with Satellite Maps"
     implemented: true
