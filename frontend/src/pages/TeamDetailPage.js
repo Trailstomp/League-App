@@ -156,9 +156,76 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
     );
 };
 
-// Team Home Tab - Enhanced with Team Identity
+// Team Home Tab - Enhanced with Team Identity and Locations
 const TeamHomeTab = ({ team }) => {
+    const [teamLocations, setTeamLocations] = useState([]);
+    const [apiIntegrations, setApiIntegrations] = useState({});
+    const [loadingLocations, setLoadingLocations] = useState(true);
     const teamStyle = team.style || {};
+
+    // Load team locations from API
+    useEffect(() => {
+        const loadTeamLocations = async () => {
+            try {
+                setLoadingLocations(true);
+                
+                // Load team-specific locations
+                const locationsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/locations?team_id=${team.id}`);
+                if (locationsResponse.ok) {
+                    const locationsData = await locationsResponse.json();
+                    setTeamLocations(locationsData);
+                    console.log('📍 Loaded team locations:', locationsData.length, 'for team', team.name);
+                }
+
+                // Load API integrations for Google Maps
+                const apiResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/api-integrations`);
+                if (apiResponse.ok) {
+                    const apiData = await apiResponse.json();
+                    setApiIntegrations(apiData);
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading team locations:', error);
+            } finally {
+                setLoadingLocations(false);
+            }
+        };
+
+        if (team.id) {
+            loadTeamLocations();
+        }
+    }, [team.id, team.name]);
+
+    const getLocationTypeIcon = (type) => {
+        const icons = {
+            practice_field: '🏃‍♂️',
+            game_field: '🏟️',
+            social_venue: '🍽️',
+            training_facility: '💪'
+        };
+        return icons[type] || '📍';
+    };
+
+    const getSurfaceIcon = (surface) => {
+        const icons = {
+            turf: '🌿',
+            grass: '🌱',
+            concrete: '🧱',
+            indoor_court: '🏢'
+        };
+        return icons[surface] || '🌿';
+    };
+
+    const openGoogleMaps = (address) => {
+        if (!address) return;
+        window.open(`https://maps.google.com/maps?q=${encodeURIComponent(address)}&t=k`, '_blank');
+    };
+
+    const getMapImageUrl = (address) => {
+        const apiKey = apiIntegrations?.googleMapsApiKey;
+        if (!apiKey || !address) return null;
+        return `https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(address)}&zoom=15&size=300x150&markers=color:red%7C${encodeURIComponent(address)}&key=${apiKey}&scale=2`;
+    };
     
     return (
         <div className="space-y-4 sm:space-y-6">
