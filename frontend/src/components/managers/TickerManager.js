@@ -217,10 +217,10 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">
                     Visual Settings
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Ticker Background
+                            Ticker Background Color
                         </label>
                         <div className="flex items-center space-x-2">
                             <input
@@ -242,84 +242,49 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
                                 className="flex-1 px-3 py-2 border border-slate-300 rounded text-sm"
                             />
                         </div>
+                        <p className="text-xs text-slate-500 mt-1">
+                            Background color for the entire ticker bar
+                        </p>
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Item Background
+                            Scrolling Speed
                         </label>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-3">
                             <input
-                                type="color"
-                                value={tickerConfig.tickerItemColor}
+                                type="range"
+                                min="0.5"
+                                max="3"
+                                step="0.1"
+                                value={tickerConfig.tickerSpeed}
                                 onChange={(e) => setTickerConfig(prev => ({
                                     ...prev,
-                                    tickerItemColor: e.target.value
+                                    tickerSpeed: parseFloat(e.target.value)
                                 }))}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                                className="flex-1"
                             />
-                            <input
-                                type="text"
-                                value={tickerConfig.tickerItemColor}
-                                onChange={(e) => setTickerConfig(prev => ({
-                                    ...prev,
-                                    tickerItemColor: e.target.value
-                                }))}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded text-sm"
-                            />
+                            <span className="text-sm text-slate-600 w-12">
+                                {tickerConfig.tickerSpeed}x
+                            </span>
                         </div>
+                        <p className="text-xs text-slate-500 mt-1">
+                            How fast events scroll across the screen
+                        </p>
                     </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Border Color
-                        </label>
-                        <div className="flex items-center space-x-2">
-                            <input
-                                type="color"
-                                value={tickerConfig.tickerBorderColor}
-                                onChange={(e) => setTickerConfig(prev => ({
-                                    ...prev,
-                                    tickerBorderColor: e.target.value
-                                }))}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={tickerConfig.tickerBorderColor}
-                                onChange={(e) => setTickerConfig(prev => ({
-                                    ...prev,
-                                    tickerBorderColor: e.target.value
-                                }))}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded text-sm"
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Text Color
-                        </label>
-                        <div className="flex items-center space-x-2">
-                            <input
-                                type="color"
-                                value={tickerConfig.tickerTextColor}
-                                onChange={(e) => setTickerConfig(prev => ({
-                                    ...prev,
-                                    tickerTextColor: e.target.value
-                                }))}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={tickerConfig.tickerTextColor}
-                                onChange={(e) => setTickerConfig(prev => ({
-                                    ...prev,
-                                    tickerTextColor: e.target.value
-                                }))}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded text-sm"
-                            />
-                        </div>
+                </div>
+                
+                <div className="mt-4 p-4 bg-slate-50 rounded-lg">
+                    <h4 className="text-sm font-medium text-slate-700 mb-2">Event Type Colors</h4>
+                    <p className="text-xs text-slate-500 mb-3">
+                        Event badges use predefined colors: Games (green), Tournaments (purple), Practices (blue), Meetings (yellow), Social (pink)
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                        <span className="px-2 py-1 rounded text-xs font-bold text-white bg-green-600">GAME</span>
+                        <span className="px-2 py-1 rounded text-xs font-bold text-white bg-purple-600">TOURNAMENT</span>
+                        <span className="px-2 py-1 rounded text-xs font-bold text-white bg-blue-600">PRACTICE</span>
+                        <span className="px-2 py-1 rounded text-xs font-bold text-white bg-yellow-600">MEETING</span>
+                        <span className="px-2 py-1 rounded text-xs font-bold text-white bg-pink-600">SOCIAL</span>
                     </div>
                 </div>
             </div>
