@@ -299,6 +299,9 @@ function App() {
         onLogout={handleLogout}
         teams={teams}
         websiteStyle={websiteStyle}
+        events={events}
+        onEventClick={handleEventClick}
+        onTeamClick={handleTeamClick}
       >
         {renderPage()}
       </Layout>
