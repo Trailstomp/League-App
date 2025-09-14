@@ -587,9 +587,32 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                     >
                                         {player.position || 'Player'}
                                     </div>
+                                    
+                                    {/* Additional Positions */}
+                                    {player.additionalPositions && player.additionalPositions.length > 0 && (
+                                        <div className="flex flex-wrap justify-center gap-1">
+                                            {player.additionalPositions.slice(0, 2).map((pos, idx) => (
+                                                <span 
+                                                    key={idx}
+                                                    className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-600"
+                                                    style={{ borderColor: team.style?.primaryColor || '#2563eb' }}
+                                                >
+                                                    +{pos}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                    
                                     {player.handedness && (
                                         <div className="text-xs text-slate-600 font-medium">
                                             {player.handedness} Handed
+                                        </div>
+                                    )}
+                                    
+                                    {/* Additional Teams Indicator */}
+                                    {player.additionalTeams && player.additionalTeams.length > 0 && (
+                                        <div className="text-xs text-slate-500">
+                                            +{player.additionalTeams.length} other team{player.additionalTeams.length > 1 ? 's' : ''}
                                         </div>
                                     )}
                                 </div>
