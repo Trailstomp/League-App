@@ -105,7 +105,7 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
                             : 'bg-blue-600 text-white hover:bg-blue-700'
                     }`}
                 >
-                    <Save className="mr-2" size={16} />
+                    ✓
                     {saved ? 'Saved!' : 'Save Configuration'}
                 </button>
             </div>
