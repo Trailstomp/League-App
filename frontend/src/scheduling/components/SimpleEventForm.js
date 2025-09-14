@@ -226,28 +226,36 @@ const SimpleEventForm = ({
                             Location
                         </label>
                         {(() => {
-                            // Get all available locations
-                            const teamLocations = teams.reduce((acc, team) => {
-                                if (team.locations && team.locations.length > 0) {
-                                    team.locations.forEach(location => {
-                                        acc.push({
-                                            value: location.name,
-                                            label: `🥍 ${location.name} (${team.name})`,
-                                            type: 'team',
-                                            teamName: team.name
-                                        });
-                                    });
-                                }
-                                return acc;
-                            }, []);
+                            // Get team-specific locations from API
+                            const teamLocations = locations.filter(loc => loc.teamId && loc.teamId !== '').map(location => ({
+                                value: location.name,
+                                label: `🥍 ${location.name} (${getTeamName(location.teamId)})`,
+                                type: 'team',
+                                teamName: getTeamName(location.teamId),
+                                surface: location.surface,
+                                indoor: location.indoor,
+                                address: location.address
+                            }));
 
-                            const leagueLocationOptions = leagueLocations.map(location => ({
+                            // Get league-wide locations from API
+                            const leagueLocationOptions = locations.filter(loc => !loc.teamId || loc.teamId === '').map(location => ({
                                 value: location.name,
                                 label: `🏛️ ${location.name}${location.address ? ` - ${location.address}` : ''}`,
-                                type: 'league'
+                                type: 'league',
+                                surface: location.surface,
+                                indoor: location.indoor,
+                                address: location.address
                             }));
 
                             const allLocationOptions = [...teamLocations, ...leagueLocationOptions];
+
+                            if (loadingLocations) {
+                                return (
+                                    <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500">
+                                        Loading locations...
+                                    </div>
+                                );
+                            }
 
                             return (
                                 <div className="space-y-2">
@@ -258,8 +266,8 @@ const SimpleEventForm = ({
                                     >
                                         <option value="">🏟️ Select location or enter custom</option>
                                         {allLocationOptions.map((option, index) => (
-                                            <option key={index} value={option.value}>
-                                                {option.label}
+                                            <option key={index} value={option.value} title={option.address}>
+                                                {option.label} {option.indoor ? '(Indoor)' : '(Outdoor)'} - {option.surface}
                                             </option>
                                         ))}
                                     </select>
@@ -278,6 +286,16 @@ const SimpleEventForm = ({
                                     </div>
                                 </div>
                             );
+                        })()}
+
+                        {/* Helper function for team names */}
+                        {(() => {
+                            window.getTeamName = (teamId) => {
+                                if (!teamId) return 'League-wide';
+                                const team = teams.find(t => t.id === teamId);
+                                return team ? team.name : 'Unknown Team';
+                            };
+                            return null;
                         })()}
                     </div>
 
