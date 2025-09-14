@@ -45,6 +45,13 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
                 backgroundAttachment: 'fixed'
             }}
         >
+            {/* DEBUG: Log team colors */}
+            {console.log('🎨 Team page background colors:', {
+                pageBackgroundType: teamStyle.pageBackgroundType,
+                pageBackgroundColor: teamStyle.pageBackgroundColor,
+                backgroundColor: teamStyle.backgroundColor,
+                finalColor: teamStyle.pageBackgroundColor || teamStyle.backgroundColor || '#f8fafc'
+            })}
             {/* Team Header */}
             <div 
                 className="relative bg-gradient-to-r from-slate-800 to-slate-600 text-white rounded-lg overflow-hidden mb-4 sm:mb-6"
