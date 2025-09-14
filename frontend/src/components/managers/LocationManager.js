@@ -3,8 +3,7 @@ import { LacrosseIcon } from '../LacrosseIcons';
 
 const LocationManager = ({ teams, currentUser }) => {
     const [locations, setLocations] = useState([]);
-    const [apiIntegrations, setApiIntegrations] = useState({});
-    const [activeTab, setActiveTab] = useState('locations');
+    const [apiIntegrations, setApiIntegrations] = useState({}); // Keep for Google Maps
     const [editingLocation, setEditingLocation] = useState(null);
     const [showAddForm, setShowAddForm] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -27,12 +26,12 @@ const LocationManager = ({ teams, currentUser }) => {
                 console.log('✅ Loaded locations:', locationsData.length, 'locations');
             }
 
-            // Load API integrations
+            // Load API integrations for Google Maps
             const apiResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/api-integrations`);
             if (apiResponse.ok) {
                 const apiData = await apiResponse.json();
                 setApiIntegrations(apiData || {});
-                console.log('✅ Loaded API integrations:', Object.keys(apiData));
+                console.log('✅ Loaded API integrations for maps');
             }
             
         } catch (error) {
