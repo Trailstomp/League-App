@@ -19,25 +19,43 @@ const useEventPersistence = () => {
             
             console.log('💾 Final event to save:', eventToSave);
             
+            let updatedSchedule;
+            
             if (!eventData.id || eventData.id.startsWith('temp_') || eventData.id.startsWith('event_')) {
                 // New event
                 console.log('➕ Adding new event to schedule');
-                setLeagueSchedule(prev => {
-                    const newSchedule = [...prev, eventToSave];
-                    console.log('💾 New schedule with added event:', newSchedule.length, 'events');
-                    return newSchedule;
-                });
+                updatedSchedule = [...leagueSchedule, eventToSave];
+                setLeagueSchedule(updatedSchedule);
+                console.log('💾 New schedule with added event:', updatedSchedule.length, 'events');
             } else {
                 // Update existing event
                 console.log('✏️ Updating existing event in schedule');
-                setLeagueSchedule(prev => {
-                    const updated = prev.map(e => 
-                        e.id === eventData.id ? eventToSave : e
-                    );
-                    console.log('💾 Schedule updated, found existing event:', updated.some(e => e.id === eventData.id));
-                    return updated;
-                });
+                updatedSchedule = leagueSchedule.map(e => 
+                    e.id === eventData.id ? eventToSave : e
+                );
+                setLeagueSchedule(updatedSchedule);
+                console.log('💾 Schedule updated, found existing event:', updatedSchedule.some(e => e.id === eventData.id));
             }
+            
+            // CRITICAL FIX: Save to backend API
+            console.log('🔄 Saving schedule to backend API...');
+            const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+            const response = await fetch(`${backendUrl}/api/league-data/leagueSchedule`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedSchedule)
+            });
+            
+            if (!response.ok) {
+                console.error('❌ Failed to save events to backend:', response.status, response.statusText);
+                throw new Error(`Backend save failed: ${response.status}`);
+            }
+            
+            console.log('✅ Events successfully saved to backend');
+            
+            return { success: true, event: eventToSave };
             
             return { success: true, event: eventToSave };
             
