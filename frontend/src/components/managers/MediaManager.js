@@ -707,6 +707,40 @@ const ItemForm = ({ item, gallery, itemType, onSave, onCancel }) => {
                         </div>
                     )}
                     
+                    {/* Expiration Date */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">
+                            Expiration Date (Optional)
+                        </label>
+                        <input
+                            type="date"
+                            value={formData.expirationDate}
+                            onChange={(e) => setFormData(prev => ({ ...prev, expirationDate: e.target.value }))}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        <p className="text-xs text-slate-500 mt-1">
+                            Leave empty for permanent items. Expired items won't be shown in public galleries.
+                        </p>
+                    </div>
+
+                    {/* Active Status */}
+                    <div className="flex items-center space-x-3">
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={formData.active}
+                                onChange={(e) => setFormData(prev => ({ ...prev, active: e.target.checked }))}
+                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                            />
+                            <span className="text-sm font-medium text-slate-700">
+                                Active
+                            </span>
+                        </label>
+                        <span className="text-xs text-slate-500">
+                            Only active items are shown in public galleries
+                        </span>
+                    </div>
+                    
                     <div className="flex justify-end space-x-3 pt-4">
                         <button
                             type="button"
