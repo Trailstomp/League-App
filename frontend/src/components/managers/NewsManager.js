@@ -30,6 +30,7 @@ const NewsManager = ({ teams = [], currentUser }) => {
                     text: 'The Hawks dominated their season opener with a decisive 15-8 victory over the Eagles. Outstanding performance by the entire team!',
                     comments: 'Next game scheduled for Saturday at 2 PM',
                     date: new Date().toISOString().split('T')[0],
+                    expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days from now
                     teamId: teams[0]?.id || 'league',
                     active: true
                 },
@@ -41,6 +42,7 @@ const NewsManager = ({ teams = [], currentUser }) => {
                     comments: 'Awards ceremony photos available in the gallery',
                     imageUrl: 'https://placehold.co/400x250/dc2626/FFFFFF?text=Championship+Trophy',
                     date: new Date().toISOString().split('T')[0],
+                    expirationDate: null, // No expiration
                     teamId: teams[1]?.id || 'league',
                     active: true
                 },
@@ -53,8 +55,9 @@ const NewsManager = ({ teams = [], currentUser }) => {
                     videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                     thumbnailUrl: 'https://placehold.co/400x250/1d4ed8/FFFFFF?text=Training+Video',
                     date: new Date().toISOString().split('T')[0],
+                    expirationDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7 days from now
                     teamId: 'league',
-                    active: true
+                    active: false // Manually set to inactive
                 }
             ];
             setNewsItems(mockNews);
