@@ -637,6 +637,7 @@ logger = logging.getLogger(__name__)
 async def startup_event():
     """Initialize data on startup"""
     await initialize_api_integrations()
+    await migrate_locations()
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
