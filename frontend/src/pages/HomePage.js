@@ -258,13 +258,15 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                     {/* Logo container - centered on background */}
                                     <div className="w-full h-full flex items-center justify-center relative z-10">
                                         <div 
-                                            className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-white bg-white relative"
+                                            className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-white relative"
                                             style={{ 
                                                 boxShadow: `
                                                     0 8px 32px rgba(0,0,0,0.2),
                                                     inset 0 2px 0 rgba(255,255,255,0.8),
                                                     inset 0 -2px 0 rgba(0,0,0,0.05)
-                                                `
+                                                `,
+                                                backgroundColor: 'rgba(255,255,255,0.1)', // Slight transparency
+                                                backdropFilter: 'blur(8px)' // Glass effect
                                             }}
                                         >
                                             {team.style?.logoUrl ? (
