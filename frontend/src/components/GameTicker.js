@@ -193,8 +193,13 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
 
     return (
         <div 
-            className="text-white py-1 overflow-hidden shadow-lg"
-            style={{ backgroundColor: websiteStyle?.tickerColor || '#1e293b' }}
+            className="text-white py-2 overflow-hidden shadow-lg"
+            style={{ 
+                backgroundColor: websiteStyle?.tickerColor || '#1e293b',
+                minHeight: '60px',
+                display: 'block',
+                visibility: 'visible'
+            }}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
             data-testid="game-ticker"
