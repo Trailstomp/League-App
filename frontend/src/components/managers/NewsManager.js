@@ -484,6 +484,24 @@ const NewsItemForm = ({ item, teams, onSave, onCancel, saving, onImageUpload }) 
         active: item?.active !== undefined ? item.active : true
     });
 
+    const handleFileUpload = (e, field) => {
+        const file = e.target.files[0];
+        if (file) {
+            console.log(`📸 News ${field} upload:`, file.name, file.size);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imageData = e.target.result;
+                if (onImageUpload) {
+                    onImageUpload(imageData, field);
+                } else {
+                    // Direct upload without cropping
+                    setFormData(prev => ({...prev, [field]: imageData}));
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!formData.heading.trim() && !formData.text.trim()) {
