@@ -14,7 +14,7 @@ class ProductionPlayerTester:
     def __init__(self):
         # Test both development and production URLs
         self.environments = {
-            "Development": "https://lax-league-portal.preview.emergentagent.com/api",
+            "Development": "https://lacrosse-league-2.preview.emergentagent.com/api",
             "Production": "https://team-lax-portal.emergent.host/api"
         }
         self.test_results = []
