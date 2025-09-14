@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
 import GameTicker from '../components/GameTicker';
+import MediaGallery from '../components/MediaGallery';
 import EventDetailModal from '../scheduling/components/EventDetailModal';
 import TeamDetailModal from '../teams/components/TeamDetailModal';
 
