@@ -245,9 +245,22 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                                     inset 0 2px 0 rgba(255,255,255,0.8),
                                                     inset 0 -2px 0 rgba(0,0,0,0.05)
                                                 `,
-                                                background: `linear-gradient(135deg, #ffffff 0%, ${team.style?.backgroundColor || '#f8fafc'} 100%)`
+                                                background: team.style?.cardBackgroundImage 
+                                                    ? `url(${team.style.cardBackgroundImage})`
+                                                    : `linear-gradient(135deg, #ffffff 0%, ${team.style?.backgroundColor || '#f8fafc'} 100%)`,
+                                                backgroundSize: 'cover',
+                                                backgroundPosition: 'center'
                                             }}
                                         >
+                                            {/* Background image overlay for opacity */}
+                                            {team.style?.cardBackgroundImage && (
+                                                <div 
+                                                    className="absolute inset-0"
+                                                    style={{ 
+                                                        backgroundColor: 'rgba(255,255,255,' + (1 - (team.style?.cardBackgroundOpacity || 0.3)) + ')'
+                                                    }}
+                                                ></div>
+                                            )}
                                             {team.style?.logoUrl ? (
                                                 <>
                                                     <img 
