@@ -144,7 +144,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
             case 'roles':
                 return <RoleManager users={users} setUsers={setUsers} />;
             case 'website':
-                return <WebsiteDesignManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} />;
+                return <WebsiteDesignManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} teams={teams} events={events} />;
             case 'api':
                 return <APIIntegrationsManager />;
             default:
