@@ -665,6 +665,117 @@ const PlayerForm = ({ teams, player, onSave, onCancel }) => {
                         placeholder="Enter additional player information, achievements, playing style, etc."
                     />
                 </div>
+
+                {/* Social Media Links */}
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-3">
+                        🔗 Social Media Links (Optional)
+                    </label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-xs font-medium text-slate-600 mb-1">📷 Instagram</label>
+                            <input
+                                type="url"
+                                value={formData.social.instagram}
+                                onChange={(e) => setFormData({
+                                    ...formData, 
+                                    social: { ...formData.social, instagram: e.target.value }
+                                })}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
+                                placeholder="https://instagram.com/username"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium text-slate-600 mb-1">🐦 Twitter</label>
+                            <input
+                                type="url"
+                                value={formData.social.twitter}
+                                onChange={(e) => setFormData({
+                                    ...formData, 
+                                    social: { ...formData.social, twitter: e.target.value }
+                                })}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                placeholder="https://twitter.com/username"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium text-slate-600 mb-1">📘 Facebook</label>
+                            <input
+                                type="url"
+                                value={formData.social.facebook}
+                                onChange={(e) => setFormData({
+                                    ...formData, 
+                                    social: { ...formData.social, facebook: e.target.value }
+                                })}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                placeholder="https://facebook.com/username"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium text-slate-600 mb-1">💼 LinkedIn</label>
+                            <input
+                                type="url"
+                                value={formData.social.linkedin}
+                                onChange={(e) => setFormData({
+                                    ...formData, 
+                                    social: { ...formData.social, linkedin: e.target.value }
+                                })}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                placeholder="https://linkedin.com/in/username"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Multiple Teams & Positions */}
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-3">
+                        ⚡ Additional Teams & Positions (Optional)
+                    </label>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-xs font-medium text-slate-600 mb-1">Additional Teams</label>
+                            <select
+                                multiple
+                                value={formData.additionalTeams}
+                                onChange={(e) => {
+                                    const selectedTeams = Array.from(e.target.selectedOptions, option => option.value);
+                                    setFormData({...formData, additionalTeams: selectedTeams});
+                                }}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+                                size="3"
+                            >
+                                {teams.filter(team => team.id !== formData.teamId).map(team => (
+                                    <option key={team.id} value={team.id}>
+                                        {team.name}
+                                    </option>
+                                ))}
+                            </select>
+                            <p className="text-xs text-slate-500 mt-1">Hold Ctrl/Cmd to select multiple teams</p>
+                        </div>
+                        
+                        <div>
+                            <label className="block text-xs font-medium text-slate-600 mb-1">Additional Positions</label>
+                            <select
+                                multiple
+                                value={formData.additionalPositions}
+                                onChange={(e) => {
+                                    const selectedPositions = Array.from(e.target.selectedOptions, option => option.value);
+                                    setFormData({...formData, additionalPositions: selectedPositions});
+                                }}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
+                                size="3"
+                            >
+                                {['Attack', 'Midfield', 'Defense', 'Goalie'].filter(pos => pos !== formData.position).map(position => (
+                                    <option key={position} value={position}>
+                                        {position}
+                                    </option>
+                                ))}
+                            </select>
+                            <p className="text-xs text-slate-500 mt-1">Hold Ctrl/Cmd to select multiple positions</p>
+                        </div>
+                    </div>
+                </div>
                 
                 <div className="flex justify-end space-x-3 pt-4">
                     <button
