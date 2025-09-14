@@ -39,12 +39,15 @@ const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) =>
             const team = teams.find(t => t.id === teamId);
             return team?.galleries || [];
         }
-        // For league-wide, get galleries from all teams
-        return teams.flatMap(team => (team.galleries || []).map(gallery => ({
-            ...gallery,
-            teamName: team.name,
-            teamId: team.id
-        })));
+        // For league-wide HomePage, only show league-wide galleries (not team-specific)
+        return teams.flatMap(team => (team.galleries || [])
+            .filter(gallery => gallery.teamId === 'league')
+            .map(gallery => ({
+                ...gallery,
+                teamName: team.name,
+                teamId: team.id
+            }))
+        );
     };
 
     const galleries = getGalleries();
