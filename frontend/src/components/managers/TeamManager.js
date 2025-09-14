@@ -613,13 +613,13 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                                 onChange={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    console.log('🎨 Primary color changed to:', e.target.value, '(NO SAVE)');
+                                    console.log('🎨 Primary color changed to:', e.target.value, '(NO AUTO-SAVE)');
                                     handleStyleChange('primaryColor', e.target.value);
                                 }}
                                 onFocus={(e) => e.stopPropagation()}
                                 onBlur={(e) => e.stopPropagation()}
-                                className="w-16 h-12 border-2 border-slate-300 rounded cursor-pointer"
-                                style={{ padding: '2px' }}
+                                className="w-20 h-16 border-2 border-slate-400 rounded-lg cursor-pointer"
+                                style={{ padding: '4px', minWidth: '80px', minHeight: '64px' }}
                             />
                             <input
                                 type="text"
