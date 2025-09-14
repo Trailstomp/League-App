@@ -1180,6 +1180,18 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
         </div>
     );
 
+    // Event Ticker Section
+    const renderTickerSection = () => (
+        <div className="space-y-6">
+            <TickerManager 
+                websiteStyle={websiteStyle} 
+                setWebsiteStyle={setWebsiteStyle} 
+                teams={[]} 
+                events={[]} 
+            />
+        </div>
+    );
+
     // Menus Section - MISSING IMPLEMENTATION ADDED
     const renderMenusSection = () => (
         <div className="space-y-6">
