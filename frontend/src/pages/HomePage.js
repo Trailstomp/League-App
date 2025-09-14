@@ -233,46 +233,52 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20"></div>
                                 </div>
                                 
-                                {/* MASSIVE LOGO SECTION - 3/4 of card */}
-                                <div className="relative p-4" style={{ height: '240px' }}>
-                                    {/* Logo container taking up most of the card */}
-                                    <div className="w-full h-full flex items-center justify-center">
+                                {/* MASSIVE LOGO SECTION - 3/4 of card with FULL BACKGROUND */}
+                                <div 
+                                    className="relative p-4" 
+                                    style={{ 
+                                        height: '240px',
+                                        background: team.style?.cardBackgroundImage 
+                                            ? `url(${team.style.cardBackgroundImage})`
+                                            : `linear-gradient(135deg, ${team.style?.backgroundColor || '#f8fafc'} 0%, rgba(255,255,255,0.9) 100%)`,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center'
+                                    }}
+                                >
+                                    {/* Background overlay for opacity control */}
+                                    {team.style?.cardBackgroundImage && (
                                         <div 
-                                            className="w-40 h-40 rounded-2xl overflow-hidden border-4 border-white bg-white relative"
+                                            className="absolute inset-0"
+                                            style={{ 
+                                                backgroundColor: `rgba(255,255,255,${1 - (team.style?.cardBackgroundOpacity || 0.3)})`
+                                            }}
+                                        ></div>
+                                    )}
+                                    
+                                    {/* Logo container - centered on background */}
+                                    <div className="w-full h-full flex items-center justify-center relative z-10">
+                                        <div 
+                                            className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-white bg-white relative"
                                             style={{ 
                                                 boxShadow: `
-                                                    0 8px 32px rgba(0,0,0,0.12),
+                                                    0 8px 32px rgba(0,0,0,0.2),
                                                     inset 0 2px 0 rgba(255,255,255,0.8),
                                                     inset 0 -2px 0 rgba(0,0,0,0.05)
-                                                `,
-                                                background: team.style?.cardBackgroundImage 
-                                                    ? `url(${team.style.cardBackgroundImage})`
-                                                    : `linear-gradient(135deg, #ffffff 0%, ${team.style?.backgroundColor || '#f8fafc'} 100%)`,
-                                                backgroundSize: 'cover',
-                                                backgroundPosition: 'center'
+                                                `
                                             }}
                                         >
-                                            {/* Background image overlay for opacity */}
-                                            {team.style?.cardBackgroundImage && (
-                                                <div 
-                                                    className="absolute inset-0"
-                                                    style={{ 
-                                                        backgroundColor: 'rgba(255,255,255,' + (1 - (team.style?.cardBackgroundOpacity || 0.3)) + ')'
-                                                    }}
-                                                ></div>
-                                            )}
                                             {team.style?.logoUrl ? (
                                                 <>
                                                     <img 
                                                         src={team.style.logoUrl} 
                                                         alt={team.name}
-                                                        className="w-full h-full object-contain p-4"
+                                                        className="w-full h-full object-contain p-3"
                                                         style={{ 
                                                             filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
                                                         }}
                                                     />
                                                     {/* Logo shine overlay */}
-                                                    <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-10 pointer-events-none"></div>
+                                                    <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-15 pointer-events-none"></div>
                                                 </>
                                             ) : (
                                                 <div 
@@ -281,7 +287,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                                         background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`
                                                     }}
                                                 >
-                                                    <span className="text-white font-bold text-6xl drop-shadow-lg">
+                                                    <span className="text-white font-bold text-4xl drop-shadow-lg">
                                                         {team.name.charAt(0)}
                                                     </span>
                                                     {/* Gradient shine overlay */}
