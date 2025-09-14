@@ -452,22 +452,21 @@ const GalleryForm = ({ gallery, teams, isTeamSpecific, teamId, onSave, onCancel 
                         />
                     </div>
                     
-                    {!isTeamSpecific && (
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">
-                                Team
-                            </label>
-                            <select
-                                value={formData.teamId}
-                                onChange={(e) => setFormData({...formData, teamId: e.target.value})}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            >
-                                {teams.map(team => (
-                                    <option key={team.id} value={team.id}>{team.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">
+                            Team Association
+                        </label>
+                        <select
+                            value={formData.teamId}
+                            onChange={(e) => setFormData({...formData, teamId: e.target.value})}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            <option value="league">League-wide gallery</option>
+                            {teams.map(team => (
+                                <option key={team.id} value={team.id}>{team.name}</option>
+                            ))}
+                        </select>
+                    </div>
                     
                     <div className="flex justify-end space-x-3 pt-4">
                         <button
