@@ -252,9 +252,9 @@ backend:
 frontend:
   - task: "Media Gallery System Integration"
     implemented: true
-    working: true
+    working: false
     file: "frontend/src/components/managers/MediaManager.js, frontend/src/components/MediaGallery.js, frontend/src/pages/"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
