@@ -462,12 +462,21 @@ const LocationForm = ({ location, teams = [], onSave, onCancel, saving = false }
     const [formData, setFormData] = useState({
         name: location?.name || '',
         address: location?.address || '',
-        type: location?.type || 'practice_field',
+        types: location?.types || [],
         indoor: location?.indoor || false,
         surface: location?.surface || 'grass',
         description: location?.description || '',
         teamId: location?.teamId || ''
     });
+
+    const handleTypeToggle = (type) => {
+        setFormData(prev => ({
+            ...prev,
+            types: prev.types.includes(type) 
+                ? prev.types.filter(t => t !== type)
+                : [...prev.types, type]
+        }));
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
