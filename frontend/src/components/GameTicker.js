@@ -145,21 +145,23 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
         if (!tickerElement || allItems.length === 0) return;
 
         // Add a small delay to ensure content is rendered
-        const checkScrolling = () => {
+        const startScrolling = () => {
             const containerWidth = tickerElement.clientWidth;
             const contentWidth = tickerElement.scrollWidth;
+            
+            console.log('🎫 Ticker dimensions:', { containerWidth, contentWidth, items: allItems.length });
             
             // Only scroll if content is wider than container
             if (contentWidth <= containerWidth) {
                 console.log('🎫 Ticker content fits in container, no scrolling needed');
-                return;
+                return; // Don't scroll, but content is still visible
             }
 
             let scrollPosition = 0;
             const scrollSpeed = 1;
             
             const scroll = () => {
-                if (!isHovering && tickerElement.scrollWidth > tickerElement.clientWidth) {
+                if (!isHovering) {
                     scrollPosition += scrollSpeed;
                     tickerElement.scrollLeft = scrollPosition;
                     
@@ -175,7 +177,7 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
             return () => clearInterval(intervalId);
         };
 
-        const timeoutId = setTimeout(checkScrolling, 100);
+        const timeoutId = setTimeout(startScrolling, 100);
         return () => clearTimeout(timeoutId);
     }, [isHovering, allItems.length]);
     
