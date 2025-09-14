@@ -162,8 +162,7 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
                 {/* Event Type Filters */}
                 <div className="bg-white rounded-lg shadow-sm border p-6">
                     <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-                        <Filter className="mr-2" size={20} />
-                        Event Type Filters
+                        🔽 Event Type Filters
                     </h3>
                     <div className="space-y-3">
                         {Object.entries(tickerConfig.tickerFilters).map(([filterType, enabled]) => {
