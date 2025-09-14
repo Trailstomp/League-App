@@ -49,12 +49,14 @@
 ##
 ## test_plan:
 ##   current_focus:
-##     - "Task name 1"
-##     - "Task name 2"
+##     - "Locations Management Backend API"
+##     - "API Integrations Settings Backend"
+##     - "LocationManager Component with Google Maps Integration"
+##     - "AdminPage Locations Tab Integration"
 ##   stuck_tasks:
-##     - "Task name with persistent issues"
+##     - "Website Design Save Functionality - Banner Text Persistence Fix"
 ##   test_all: false
-##   test_priority: "high_first"  # or "sequential" or "stuck_first"
+##   test_priority: "high_first"
 ##
 ## agent_communication:
 ##     -agent: "main"
