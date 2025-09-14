@@ -64,6 +64,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle })
         { id: 'navigation', label: 'Navigation & Sidebar', icon: 'players', description: 'Header navigation, sidebar, and menu styling' },
         { id: 'banner', label: 'Top Banner', icon: 'image', description: 'Main banner/hero section' },
         { id: 'content', label: 'Main Content', icon: 'text', description: 'Page background and content text' },
+        { id: 'ticker', label: 'Event Ticker', icon: 'customize', description: 'Configure the scrolling events ticker' },
         { id: 'preview', label: 'Live Preview', icon: 'customize', description: 'See all changes applied' }
     ];
 
