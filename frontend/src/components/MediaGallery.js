@@ -69,7 +69,7 @@ const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) =>
         );
     };
 
-    const galleries = getGalleries();
+    const galleries = getGalleries().filter(gallery => isGalleryActive(gallery));
     const photoGalleries = galleries.filter(g => g.type === 'photo' && g.items && g.items.length > 0);
     const videoGalleries = galleries.filter(g => g.type === 'video' && g.items && g.items.length > 0);
 
