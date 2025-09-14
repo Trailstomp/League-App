@@ -467,7 +467,9 @@ const GalleryForm = ({ gallery, teams, isTeamSpecific, teamId, onSave, onCancel 
         name: gallery?.name || '',
         description: gallery?.description || '',
         type: gallery?.type || 'photo',
-        teamId: gallery?.teamId || teamId || teams[0]?.id || ''
+        teamId: gallery?.teamId || teamId || teams[0]?.id || 'league',
+        expirationDate: gallery?.expirationDate || '',
+        active: gallery?.active !== undefined ? gallery.active : true
     });
 
     const handleSubmit = (e) => {
@@ -512,20 +514,53 @@ const GalleryForm = ({ gallery, teams, isTeamSpecific, teamId, onSave, onCancel 
                         />
                     </div>
                     
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Team Association
+                            </label>
+                            <select
+                                value={formData.teamId}
+                                onChange={(e) => setFormData({...formData, teamId: e.target.value})}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                                <option value="league">League-wide gallery</option>
+                                {teams.map(team => (
+                                    <option key={team.id} value={team.id}>{team.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Status
+                            </label>
+                            <div className="flex items-center pt-2">
+                                <label className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.active}
+                                        onChange={(e) => setFormData({...formData, active: e.target.checked})}
+                                        className="mr-2"
+                                    />
+                                    <span className="text-sm font-medium text-slate-700">Active</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Team Association
+                            Expiration Date (optional)
                         </label>
-                        <select
-                            value={formData.teamId}
-                            onChange={(e) => setFormData({...formData, teamId: e.target.value})}
+                        <input
+                            type="date"
+                            value={formData.expirationDate}
+                            onChange={(e) => setFormData({...formData, expirationDate: e.target.value})}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <option value="league">League-wide gallery</option>
-                            {teams.map(team => (
-                                <option key={team.id} value={team.id}>{team.name}</option>
-                            ))}
-                        </select>
+                            min={new Date().toISOString().split('T')[0]}
+                        />
+                        <p className="text-xs text-slate-500 mt-1">Leave blank for no expiration. Gallery will become inactive after this date.</p>
                     </div>
                     
                     <div className="flex justify-end space-x-3 pt-4">
