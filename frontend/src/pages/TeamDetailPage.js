@@ -279,7 +279,36 @@ const TeamHomeTab = ({ team }) => {
                 </div>
             </div>
 
-            {/* Team Locations Section */}
+            {/* Team News Ticker */}
+            <div>
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">📰 Team News & Updates</h3>
+                <div 
+                    className="rounded-lg border border-slate-200 overflow-hidden"
+                    style={{ backgroundColor: teamStyle.backgroundColor || '#f8fafc' }}
+                >
+                    <GameTicker 
+                        teams={[team]} 
+                        leagueSchedule={[]} 
+                        websiteStyle={{
+                            tickerFilters: {
+                                games: true,
+                                tournaments: true,
+                                practices: true,
+                                meetings: true,
+                                social: true,
+                                other: true
+                            },
+                            tickerLookBack: 14,
+                            tickerLookForward: 60
+                        }}
+                        onEventClick={() => {}} 
+                        onTeamClick={() => {}}
+                        onNavigate={() => {}}
+                    />
+                </div>
+            </div>
+
+            {/* Team Locations Section - Moved below stats */}
             {teamLocations.length > 0 && (
                 <div>
                     <h3 className="text-lg font-semibold text-slate-800 mb-4">🏟️ Team Locations</h3>
