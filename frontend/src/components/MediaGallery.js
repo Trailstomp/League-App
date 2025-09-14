@@ -272,7 +272,11 @@ const GallerySection = ({ gallery, showTeamName, isVideo = false, onImageClick =
                                     style={{width: '280px', height: '240px'}}
                                     onClick={() => {
                                         if (isVideo) {
-                                            handleVideoClick(item.url);
+                                            handleVideoClick({
+                                                url: item.url,
+                                                caption: item.caption || `Video from ${gallery.name}`,
+                                                galleryName: gallery.name
+                                            });
                                         } else {
                                             onImageClick({
                                                 url: item.url,
