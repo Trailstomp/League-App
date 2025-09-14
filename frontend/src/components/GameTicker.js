@@ -42,10 +42,22 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
         // Process individual events from leagueSchedule
         (leagueSchedule || []).forEach(event => {
             if (event.type === 'game') {
+                // Extract teams from teamIds array or fallback to homeTeam/awayTeam
+                const homeTeam = event.teamIds?.[0] || event.homeTeam;
+                const awayTeam = event.teamIds?.[1] || event.awayTeam;
+                
+                console.log('🎫 Processing game event:', {
+                    eventTitle: event.title,
+                    teamIds: event.teamIds,
+                    extractedHome: homeTeam,
+                    extractedAway: awayTeam
+                });
+                
                 allTickerItems.push({
                     id: event.id,
-                    homeTeam: event.homeTeam,
-                    awayTeam: event.awayTeam,
+                    title: event.title,
+                    homeTeam: homeTeam,
+                    awayTeam: awayTeam,
                     homeScore: event.homeScore || 0,
                     awayScore: event.awayScore || 0,
                     location: event.location,
