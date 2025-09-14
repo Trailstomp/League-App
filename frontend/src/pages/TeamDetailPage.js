@@ -267,7 +267,8 @@ const TeamHomeTab = ({ team }) => {
             </div>
         </div>
     </div>
-);
+    );
+};
 
 // Team Schedule Tab
 const TeamScheduleTab = ({ team, events = [] }) => {
