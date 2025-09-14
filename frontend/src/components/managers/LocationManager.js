@@ -92,12 +92,14 @@ const LocationManager = ({ teams, currentUser }) => {
                 setEditingLocation(null);
                 console.log('✅ Location updated successfully');
             } else {
-                console.error('❌ Failed to update location:', response.statusText);
-                alert('Failed to update location. Please try again.');
+                const errorData = await response.json().catch(() => ({}));
+                const errorMessage = errorData.detail || `HTTP ${response.status}: ${response.statusText}`;
+                console.error('❌ Failed to update location:', errorMessage);
+                alert(`Failed to update location: ${errorMessage}`);
             }
         } catch (error) {
             console.error('❌ Error updating location:', error);
-            alert('Error updating location. Please try again.');
+            alert(`Error updating location: ${error.message}. Please check your connection and try again.`);
         } finally {
             setSaving(false);
         }
