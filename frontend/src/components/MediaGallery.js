@@ -1,0 +1,314 @@
+import React, { useState } from 'react';
+import { LacrosseIcon } from './LacrosseIcons';
+
+// Icons
+const ChevronLeft = ({ size = 16, color = "currentColor", ...props }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <polyline points="15,18 9,12 15,6"/>
+    </svg>
+);
+
+const ChevronRight = ({ size = 16, color = "currentColor", ...props }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <polyline points="9,18 15,12 9,6"/>
+    </svg>
+);
+
+const Video = ({ size = 16, color = "currentColor", ...props }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <polygon points="23 7 16 12 23 17 23 7"/>
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+    </svg>
+);
+
+const ImageIcon = ({ size = 16, color = "currentColor", ...props }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21,15 16,10 5,21"/>
+    </svg>
+);
+
+const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) => {
+    const [selectedImagePopup, setSelectedImagePopup] = useState(null);
+    const [activeTab, setActiveTab] = useState('photos');
+
+    // Get galleries based on scope (team-specific or all teams)
+    const getGalleries = () => {
+        if (teamId) {
+            const team = teams.find(t => t.id === teamId);
+            return team?.galleries || [];
+        }
+        // For league-wide, get galleries from all teams
+        return teams.flatMap(team => (team.galleries || []).map(gallery => ({
+            ...gallery,
+            teamName: team.name,
+            teamId: team.id
+        })));
+    };
+
+    const galleries = getGalleries();
+    const photoGalleries = galleries.filter(g => g.type === 'photo' && g.items && g.items.length > 0);
+    const videoGalleries = galleries.filter(g => g.type === 'video' && g.items && g.items.length > 0);
+
+    if (galleries.length === 0) {
+        return (
+            <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
+                <div className="text-slate-400 mb-4">
+                    <ImageIcon size={48} className="mx-auto" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-800 mb-2">{title}</h3>
+                <p className="text-slate-600">No media galleries available yet.</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="bg-white rounded-lg shadow-sm border">
+            <div className="border-b px-6 py-4">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-slate-800">{title}</h3>
+                    <div className="flex space-x-2">
+                        <button
+                            onClick={() => setActiveTab('photos')}
+                            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+                                activeTab === 'photos'
+                                    ? 'bg-blue-100 text-blue-700'
+                                    : 'text-slate-600 hover:bg-slate-100'
+                            }`}
+                        >
+                            <ImageIcon className="mr-1 inline" size={14} />
+                            Photos ({photoGalleries.length})
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('videos')}
+                            className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+                                activeTab === 'videos'
+                                    ? 'bg-blue-100 text-blue-700'
+                                    : 'text-slate-600 hover:bg-slate-100'
+                            }`}
+                        >
+                            <Video className="mr-1 inline" size={14} />
+                            Videos ({videoGalleries.length})
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="p-6">
+                {activeTab === 'photos' && (
+                    <div className="space-y-8">
+                        {photoGalleries.map(gallery => (
+                            <GallerySection
+                                key={`${gallery.teamId || 'league'}-${gallery.id}`}
+                                gallery={gallery}
+                                showTeamName={!teamId}
+                                onImageClick={setSelectedImagePopup}
+                            />
+                        ))}
+                        {photoGalleries.length === 0 && (
+                            <div className="text-center py-8 text-slate-500">
+                                <ImageIcon className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
+                                <p>No photo galleries available</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {activeTab === 'videos' && (
+                    <div className="space-y-8">
+                        {videoGalleries.map(gallery => (
+                            <GallerySection
+                                key={`${gallery.teamId || 'league'}-${gallery.id}`}
+                                gallery={gallery}
+                                showTeamName={!teamId}
+                                isVideo={true}
+                            />
+                        ))}
+                        {videoGalleries.length === 0 && (
+                            <div className="text-center py-8 text-slate-500">
+                                <Video className="mx-auto h-12 w-12 text-slate-300 mb-4"/>
+                                <p>No video galleries available</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            {/* Image Popup Modal */}
+            {selectedImagePopup && (
+                <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+                    <div className="relative max-w-4xl max-h-full p-4">
+                        <button
+                            onClick={() => setSelectedImagePopup(null)}
+                            className="absolute top-6 right-6 text-white text-2xl z-10 hover:text-gray-300"
+                        >
+                            ✕
+                        </button>
+                        
+                        <div className="text-center">
+                            <img 
+                                src={selectedImagePopup.url} 
+                                alt={selectedImagePopup.caption}
+                                className="max-w-full max-h-screen object-contain rounded-lg"
+                            />
+                            {selectedImagePopup.caption && (
+                                <div className="text-white mt-4 bg-black bg-opacity-50 rounded-lg p-3">
+                                    <p className="font-medium">{selectedImagePopup.caption}</p>
+                                    {selectedImagePopup.galleryName && (
+                                        <p className="text-sm text-gray-300 mt-1">From: {selectedImagePopup.galleryName}</p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+// Gallery Section Component with auto-scrolling
+const GallerySection = ({ gallery, showTeamName, isVideo = false, onImageClick = () => {} }) => {
+    const [isPaused, setIsPaused] = useState(false);
+
+    const handleVideoClick = (videoUrl) => {
+        if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+            window.open(videoUrl, '_blank');
+        }
+    };
+
+    return (
+        <div>
+            <div className="mb-4">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h4 className="text-lg font-semibold text-slate-700">{gallery.name}</h4>
+                        {showTeamName && gallery.teamName && (
+                            <span className="text-xs text-blue-600 font-medium">{gallery.teamName}</span>
+                        )}
+                    </div>
+                    <span className="text-sm text-slate-500">
+                        {gallery.items?.length || 0} {isVideo ? 'videos' : 'photos'}
+                    </span>
+                </div>
+                {gallery.description && (
+                    <p className="text-slate-600 text-sm mt-1">{gallery.description}</p>
+                )}
+            </div>
+            
+            {gallery.items && gallery.items.length > 0 && (
+                <div className="relative group">
+                    {/* Navigation Arrows - only show if more than 1 item */}
+                    {gallery.items.length > 1 && (
+                        <>
+                            <button
+                                onClick={() => {
+                                    const container = document.getElementById(`gallery-${gallery.id}`);
+                                    if (container) {
+                                        container.style.animationPlayState = 'paused';
+                                        const currentTransform = container.style.transform || 'translateX(0px)';
+                                        const currentX = parseInt(currentTransform.match(/-?\d+/) || [0])[0];
+                                        const newX = Math.min(currentX + 300, 0);
+                                        container.style.transform = `translateX(${newX}px)`;
+                                    }
+                                }}
+                                className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-blue-600 bg-opacity-80 text-white p-2 rounded-full hover:bg-opacity-100 transition-all shadow-lg opacity-0 group-hover:opacity-100"
+                                title="Previous"
+                            >
+                                <ChevronLeft size={20} />
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const container = document.getElementById(`gallery-${gallery.id}`);
+                                    if (container) {
+                                        container.style.animationPlayState = 'paused';
+                                        const currentTransform = container.style.transform || 'translateX(0px)';
+                                        const currentX = parseInt(currentTransform.match(/-?\d+/) || [0])[0];
+                                        const maxX = -(gallery.items.length * 300);
+                                        const newX = currentX - 300;
+                                        container.style.transform = `translateX(${newX >= maxX ? newX : 0}px)`;
+                                    }
+                                }}
+                                className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-blue-600 bg-opacity-80 text-white p-2 rounded-full hover:bg-opacity-100 transition-all shadow-lg opacity-0 group-hover:opacity-100"
+                                title="Next"
+                            >
+                                <ChevronRight size={20} />
+                            </button>
+                        </>
+                    )}
+                    
+                    {/* Auto-Scrolling Gallery Container */}
+                    <div className="overflow-hidden w-full" style={{minHeight: '240px'}}>
+                        <div 
+                            id={`gallery-${gallery.id}`}
+                            className="flex"
+                            style={{
+                                gap: '16px',
+                                width: `${(gallery.items.length * 2) * 300}px`,
+                                animation: gallery.items.length > 1 && !isPaused ? `gallery-scroll 20s linear infinite` : 'none'
+                            }}
+                            onMouseEnter={() => setIsPaused(true)}
+                            onMouseLeave={() => setIsPaused(false)}
+                        >
+                            {/* Duplicate items for seamless scrolling */}
+                            {[...gallery.items, ...gallery.items].map((item, index) => (
+                                <div key={`${item.id}-${index}`} className="flex-shrink-0 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" style={{width: '280px'}}>
+                                    {isVideo ? (
+                                        <div 
+                                            className="aspect-video overflow-hidden relative group"
+                                            onClick={() => handleVideoClick(item.url)}
+                                        >
+                                            {item.url.includes('youtube.com') || item.url.includes('youtu.be') ? (
+                                                <div className="relative w-full h-full">
+                                                    <img 
+                                                        src={`https://img.youtube.com/vi/${item.url.split('v=')[1]?.split('&')[0] || item.url.split('/').pop()}/0.jpg`}
+                                                        alt={item.caption}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                        <div className="bg-red-600 rounded-full p-3 shadow-lg">
+                                                            <Video className="text-white" size={24} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="w-full h-full bg-slate-800 flex items-center justify-center">
+                                                    <Video className="text-slate-400" size={32} />
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div 
+                                            className="aspect-video overflow-hidden relative group"
+                                            onClick={() => onImageClick({
+                                                url: item.url,
+                                                caption: item.caption,
+                                                galleryName: gallery.name
+                                            })}
+                                        >
+                                            <img 
+                                                src={item.url} 
+                                                alt={item.caption}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                            />
+                                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity"></div>
+                                        </div>
+                                    )}
+                                    <div className="p-3">
+                                        <p className="text-sm font-medium text-slate-800 truncate">{item.caption || 'Untitled'}</p>
+                                        <p className="text-xs text-slate-500 mt-1">
+                                            {new Date(item.addedAt).toLocaleDateString()}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default MediaGallery;
