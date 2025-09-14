@@ -354,12 +354,15 @@ const NewsManager = ({ teams = [], currentUser }) => {
 };
 
 // News Item Card Component
-const NewsItemCard = ({ item, teams, onEdit, onDelete, onClick, getTeamName, getTypeIcon }) => {
+const NewsItemCard = ({ item, teams, onEdit, onDelete, onClick, getTeamName, getTypeIcon, isExpired, isItemActive }) => {
+    const expired = isExpired(item);
+    const active = isItemActive(item);
+    
     return (
-        <div className="p-4 hover:bg-slate-50 transition-colors">
+        <div className={`p-4 hover:bg-slate-50 transition-colors ${!active ? 'opacity-60' : ''}`}>
             <div className="flex items-start space-x-4">
                 {/* Type indicator and thumbnail */}
-                <div className="flex-shrink-0">
+                <div className="flex-shrink-0 relative">
                     {item.type === 'image' && item.imageUrl ? (
                         <img 
                             src={item.imageUrl} 
@@ -382,6 +385,18 @@ const NewsItemCard = ({ item, teams, onEdit, onDelete, onClick, getTeamName, get
                     ) : (
                         <div className="w-16 h-12 bg-slate-100 rounded border border-slate-200 flex items-center justify-center">
                             <span className="text-2xl">{getTypeIcon(item.type)}</span>
+                        </div>
+                    )}
+                    
+                    {/* Status indicators */}
+                    {expired && (
+                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center" title="Expired">
+                            <span className="text-white text-xs">⏰</span>
+                        </div>
+                    )}
+                    {!item.active && (
+                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gray-500 rounded-full flex items-center justify-center" title="Inactive">
+                            <span className="text-white text-xs">⏸️</span>
                         </div>
                     )}
                 </div>
