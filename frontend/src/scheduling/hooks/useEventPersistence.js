@@ -40,6 +40,9 @@ const useEventPersistence = () => {
             // CRITICAL FIX: Save to backend API
             console.log('🔄 Saving schedule to backend API...');
             const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+            console.log('🔗 Backend URL:', backendUrl || 'empty (using relative path)');
+            console.log('📦 Sending to API:', JSON.stringify(updatedSchedule, null, 2));
+            
             const response = await fetch(`${backendUrl}/api/league-data/leagueSchedule`, {
                 method: 'POST',
                 headers: {
@@ -48,12 +51,16 @@ const useEventPersistence = () => {
                 body: JSON.stringify(updatedSchedule)
             });
             
+            console.log('📡 API Response status:', response.status);
+            
             if (!response.ok) {
-                console.error('❌ Failed to save events to backend:', response.status, response.statusText);
-                throw new Error(`Backend save failed: ${response.status}`);
+                const errorText = await response.text();
+                console.error('❌ Failed to save events to backend:', response.status, response.statusText, errorText);
+                throw new Error(`Backend save failed: ${response.status} - ${errorText}`);
             }
             
-            console.log('✅ Events successfully saved to backend');
+            const responseData = await response.json();
+            console.log('✅ Events successfully saved to backend:', responseData);
             
             return { success: true, event: eventToSave };
             
