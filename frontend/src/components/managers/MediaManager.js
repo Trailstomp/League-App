@@ -362,17 +362,6 @@ const MediaManager = ({ teams = [], setTeams, currentUser, isTeamSpecific = fals
                                                             </div>
                                                         </div>
                                                         
-                                                        {/* Status indicators */}
-                                                        {isItemExpired(item) && (
-                                                            <div className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center" title="Expired">
-                                                                <span className="text-white text-xs">⏰</span>
-                                                            </div>
-                                                        )}
-                                                        {!item.active && (
-                                                            <div className="absolute bottom-1 right-1 w-4 h-4 bg-gray-500 rounded-full flex items-center justify-center" title="Inactive">
-                                                                <span className="text-white text-xs">⏸️</span>
-                                                            </div>
-                                                        )}
                                                     </div>
                                                     <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white px-1 py-0.5">
                                                         <div className="flex justify-between items-center">
