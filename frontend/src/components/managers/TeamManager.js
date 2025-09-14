@@ -1072,7 +1072,7 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                         <div className="flex items-center space-x-3">
                             <input
                                 type="color"
-                                value={teamStyle.pageBackgroundColor || '#f8fafc'}
+                                value={teamStyle.pageBackgroundColor || teamStyle.backgroundColor || '#f8fafc'}
                                 onChange={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -1085,7 +1085,7 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                             />
                             <input
                                 type="text"
-                                value={teamStyle.pageBackgroundColor || '#f8fafc'}
+                                value={teamStyle.pageBackgroundColor || teamStyle.backgroundColor || '#f8fafc'}
                                 onChange={(e) => {
                                     e.stopPropagation();
                                     if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
@@ -1100,8 +1100,20 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                                     }
                                 }}
                                 className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                placeholder="#f8fafc"
+                                placeholder="Defaults to team background color"
                             />
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('🎨 Reset page background to team colors');
+                                    handleStyleChange('pageBackgroundColor', teamStyle.backgroundColor || '#f8fafc');
+                                }}
+                                className="px-3 py-2 bg-slate-500 text-white text-xs rounded hover:bg-slate-600 transition-colors"
+                            >
+                                Use Team Colors
+                            </button>
                         </div>
                     </div>
                 )}
