@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SimpleTeamSelector from './SimpleTeamSelector'; 
 
 /**
@@ -10,10 +10,35 @@ const SimpleEventForm = ({
     teams = [], 
     leagueSchedule = [], 
     setLeagueSchedule,
-    leagueLocations = [],
+    leagueLocations = [], // Keep for backward compatibility
     onSave,
     onCancel 
 }) => {
+    const [locations, setLocations] = useState([]);
+    const [loadingLocations, setLoadingLocations] = useState(true);
+
+    // Load locations from API
+    useEffect(() => {
+        const loadLocations = async () => {
+            try {
+                setLoadingLocations(true);
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/locations`);
+                if (response.ok) {
+                    const locationsData = await response.json();
+                    setLocations(locationsData);
+                    console.log('📍 Loaded locations for events:', locationsData.length, 'locations');
+                } else {
+                    console.error('❌ Failed to load locations:', response.statusText);
+                }
+            } catch (error) {
+                console.error('❌ Error loading locations:', error);
+            } finally {
+                setLoadingLocations(false);
+            }
+        };
+
+        loadLocations();
+    }, []);
     // Direct state management - no hooks confusion!
     const [eventData, setEventData] = useState(() => {
         console.log('🚀 SimpleEventForm initializing with:', initialEvent);
