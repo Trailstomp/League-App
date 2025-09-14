@@ -202,34 +202,6 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                     }
                                 }}
                             >
-                                onMouseEnter={(e) => {
-                                    // Enhanced 3D card hover effect
-                                    e.currentTarget.style.transform = 'perspective(1000px) rotateX(-3deg) rotateY(3deg) translateY(-8px)';
-                                    e.currentTarget.style.boxShadow = `
-                                        0 25px 50px -12px rgba(0, 0, 0, 0.25),
-                                        0 12px 20px -8px rgba(0, 0, 0, 0.1),
-                                        0 0 0 1px ${team.style?.primaryColor || '#2563eb'}80,
-                                        inset 0 2px 0 rgba(255, 255, 255, 0.3)
-                                    `;
-                                }}
-                                onMouseLeave={(e) => {
-                                    // Return to flat position
-                                    e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
-                                    e.currentTarget.style.boxShadow = `
-                                        0 8px 25px -5px rgba(0, 0, 0, 0.1),
-                                        0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                                        0 0 0 1px ${team.style?.primaryColor || '#2563eb'}60,
-                                        inset 0 1px 0 rgba(255, 255, 255, 0.1)
-                                    `;
-                                }}
-                                onClick={() => {
-                                    console.log('🏆 Team card clicked:', team.name);
-                                    // Navigate to team page like navigation pane
-                                    if (onNavigate) {
-                                        onNavigate('team', team.id);
-                                    }
-                                }}
-                            >
                                 {/* Card Header Stripe with Enhanced Gradient */}
                                 <div 
                                     className="h-4 w-full relative"
