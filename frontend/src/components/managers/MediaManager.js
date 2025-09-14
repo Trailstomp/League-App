@@ -371,9 +371,20 @@ const MediaManager = ({ teams = [], setTeams, currentUser, isTeamSpecific = fals
                                                             <button 
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
+                                                                    setSelectedGallery(gallery);
+                                                                    setEditingItem(item);
+                                                                }}
+                                                                className="text-blue-400 hover:text-blue-300 mr-1"
+                                                                title="Edit item"
+                                                            >
+                                                                <Edit size={10}/>
+                                                            </button>
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
                                                                     handleDeleteItem(gallery.id, item.id, gallery.teamId);
                                                                 }}
-                                                                className="text-red-400 hover:text-red-300 ml-1"
+                                                                className="text-red-400 hover:text-red-300"
                                                                 title="Delete item"
                                                             >
                                                                 <Trash2 size={10}/>
