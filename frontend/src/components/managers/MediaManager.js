@@ -156,6 +156,28 @@ const MediaManager = ({ teams = [], setTeams, currentUser, isTeamSpecific = fals
         }));
     };
 
+    // Check if gallery is expired
+    const isGalleryExpired = (gallery) => {
+        if (!gallery.expirationDate) return false;
+        return new Date(gallery.expirationDate) < new Date();
+    };
+
+    // Check if gallery item is expired
+    const isItemExpired = (item) => {
+        if (!item.expirationDate) return false;
+        return new Date(item.expirationDate) < new Date();
+    };
+
+    // Check if gallery should be displayed (active and not expired)
+    const isGalleryActive = (gallery) => {
+        return gallery.active && !isGalleryExpired(gallery);
+    };
+
+    // Check if item should be displayed (active and not expired)
+    const isItemActive = (item) => {
+        return item.active && !isItemExpired(item);
+    };
+
     const openSlideshow = (items, startIndex = 0) => {
         setSlideshow({ isOpen: true, items, startIndex });
     };
