@@ -158,7 +158,7 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
 };
 
 // Team Home Tab - Enhanced with Team Identity and Locations
-const TeamHomeTab = ({ team }) => {
+const TeamHomeTab = ({ team, teams, events, onNavigate }) => {
     const [teamLocations, setTeamLocations] = useState([]);
     const [apiIntegrations, setApiIntegrations] = useState({});
     const [loadingLocations, setLoadingLocations] = useState(true);
