@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Clock, Filter, Eye, EyeOff, Save } from 'lucide-react';
+import { LacrosseIcon } from '../LacrosseIcons';
 
 const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
     const [tickerConfig, setTickerConfig] = useState({
