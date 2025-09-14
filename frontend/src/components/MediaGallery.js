@@ -168,15 +168,19 @@ const MediaGallery = ({ teams = [], teamId = null, title = "Media Gallery" }) =>
     );
 };
 
-// Gallery Section Component with auto-scrolling
+// Gallery Section Component with enhanced auto-scrolling carousel
 const GallerySection = ({ gallery, showTeamName, isVideo = false, onImageClick = () => {} }) => {
     const [isPaused, setIsPaused] = useState(false);
+    const [currentTranslate, setCurrentTranslate] = useState(0);
 
     const handleVideoClick = (videoUrl) => {
         if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
             window.open(videoUrl, '_blank');
         }
     };
+
+    const itemsToShow = gallery.items || [];
+    const duplicatedItems = itemsToShow.length > 0 ? [...itemsToShow, ...itemsToShow] : [];
 
     return (
         <div>
@@ -189,7 +193,7 @@ const GallerySection = ({ gallery, showTeamName, isVideo = false, onImageClick =
                         )}
                     </div>
                     <span className="text-sm text-slate-500">
-                        {gallery.items?.length || 0} {isVideo ? 'videos' : 'photos'}
+                        {itemsToShow.length} {isVideo ? 'videos' : 'photos'}
                     </span>
                 </div>
                 {gallery.description && (
@@ -197,114 +201,89 @@ const GallerySection = ({ gallery, showTeamName, isVideo = false, onImageClick =
                 )}
             </div>
             
-            {gallery.items && gallery.items.length > 0 && (
+            {itemsToShow.length > 0 && (
                 <div className="relative group">
-                    {/* Navigation Arrows - only show if more than 1 item */}
-                    {gallery.items.length > 1 && (
-                        <>
-                            <button
-                                onClick={() => {
-                                    const container = document.getElementById(`gallery-${gallery.id}`);
-                                    if (container) {
-                                        container.style.animationPlayState = 'paused';
-                                        const currentTransform = container.style.transform || 'translateX(0px)';
-                                        const currentX = parseInt(currentTransform.match(/-?\d+/) || [0])[0];
-                                        const newX = Math.min(currentX + 300, 0);
-                                        container.style.transform = `translateX(${newX}px)`;
-                                    }
-                                }}
-                                className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-blue-600 bg-opacity-80 text-white p-2 rounded-full hover:bg-opacity-100 transition-all shadow-lg opacity-0 group-hover:opacity-100"
-                                title="Previous"
-                            >
-                                <ChevronLeft size={20} />
-                            </button>
-                            <button
-                                onClick={() => {
-                                    const container = document.getElementById(`gallery-${gallery.id}`);
-                                    if (container) {
-                                        container.style.animationPlayState = 'paused';
-                                        const currentTransform = container.style.transform || 'translateX(0px)';
-                                        const currentX = parseInt(currentTransform.match(/-?\d+/) || [0])[0];
-                                        const maxX = -(gallery.items.length * 300);
-                                        const newX = currentX - 300;
-                                        container.style.transform = `translateX(${newX >= maxX ? newX : 0}px)`;
-                                    }
-                                }}
-                                className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-blue-600 bg-opacity-80 text-white p-2 rounded-full hover:bg-opacity-100 transition-all shadow-lg opacity-0 group-hover:opacity-100"
-                                title="Next"
-                            >
-                                <ChevronRight size={20} />
-                            </button>
-                        </>
-                    )}
-                    
-                    {/* Auto-Scrolling Gallery Container */}
-                    <div className="overflow-hidden w-full" style={{minHeight: '240px'}}>
+                    {/* Enhanced Auto-Scrolling Carousel Container */}
+                    <div 
+                        className="overflow-hidden w-full rounded-lg border border-slate-200 shadow-sm bg-slate-50" 
+                        style={{height: '280px'}}
+                        onMouseEnter={() => setIsPaused(true)}
+                        onMouseLeave={() => setIsPaused(false)}
+                    >
                         <div 
-                            id={`gallery-${gallery.id}`}
-                            className="flex"
+                            className="flex items-center h-full"
                             style={{
                                 gap: '16px',
-                                width: `${(gallery.items.length * 2) * 300}px`,
-                                animation: gallery.items.length > 1 && !isPaused ? `gallery-scroll 20s linear infinite` : 'none'
+                                width: `${duplicatedItems.length * 320}px`,
+                                animation: itemsToShow.length > 1 && !isPaused ? `gallery-scroll 30s linear infinite` : 'none',
+                                padding: '20px'
                             }}
-                            onMouseEnter={() => setIsPaused(true)}
-                            onMouseLeave={() => setIsPaused(false)}
                         >
-                            {/* Duplicate items for seamless scrolling */}
-                            {[...gallery.items, ...gallery.items].map((item, index) => (
-                                <div key={`${item.id}-${index}`} className="flex-shrink-0 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" style={{width: '280px'}}>
+                            {duplicatedItems.map((item, index) => (
+                                <div 
+                                    key={`${item.id}-${index}`} 
+                                    className="flex-shrink-0 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all cursor-pointer group/item transform hover:scale-105" 
+                                    style={{width: '280px', height: '240px'}}
+                                    onClick={() => {
+                                        if (isVideo) {
+                                            handleVideoClick(item.url);
+                                        } else {
+                                            onImageClick({
+                                                url: item.url,
+                                                caption: item.caption || `Photo from ${gallery.name}`,
+                                                galleryName: gallery.name
+                                            });
+                                        }
+                                    }}
+                                >
                                     {isVideo ? (
-                                        <div 
-                                            className="aspect-video overflow-hidden relative group"
-                                            onClick={() => handleVideoClick(item.url)}
-                                        >
+                                        <div className="w-full h-full relative">
                                             {item.url.includes('youtube.com') || item.url.includes('youtu.be') ? (
                                                 <div className="relative w-full h-full">
                                                     <img 
                                                         src={`https://img.youtube.com/vi/${item.url.split('v=')[1]?.split('&')[0] || item.url.split('/').pop()}/0.jpg`}
-                                                        alt={item.caption}
+                                                        alt={item.caption || 'Video thumbnail'}
                                                         className="w-full h-full object-cover"
                                                     />
                                                     <div className="absolute inset-0 flex items-center justify-center">
-                                                        <div className="bg-red-600 rounded-full p-3 shadow-lg">
-                                                            <Video className="text-white" size={24} />
+                                                        <div className="bg-red-600 rounded-full p-4 shadow-lg group-hover/item:scale-110 transition-transform">
+                                                            <Video className="text-white" size={28} />
                                                         </div>
                                                     </div>
                                                 </div>
                                             ) : (
                                                 <div className="w-full h-full bg-slate-800 flex items-center justify-center">
-                                                    <Video className="text-slate-400" size={32} />
+                                                    <Video className="text-slate-400" size={40} />
                                                 </div>
                                             )}
                                         </div>
                                     ) : (
-                                        <div 
-                                            className="aspect-video overflow-hidden relative group"
-                                            onClick={() => onImageClick({
-                                                url: item.url,
-                                                caption: item.caption,
-                                                galleryName: gallery.name
-                                            })}
-                                        >
+                                        <div className="w-full h-full relative overflow-hidden">
                                             <img 
                                                 src={item.url} 
-                                                alt={item.caption}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                                alt={item.caption || 'Gallery image'}
+                                                className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-300"
                                             />
-                                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity"></div>
+                                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover/item:bg-opacity-30 transition-opacity duration-300 flex items-center justify-center">
+                                                <div className="opacity-0 group-hover/item:opacity-100 transition-opacity">
+                                                    <div className="bg-white rounded-full p-3 shadow-lg">
+                                                        <ImageIcon className="text-slate-800" size={24} />
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
-                                    <div className="p-3">
-                                        <p className="text-sm font-medium text-slate-800 truncate">{item.caption || 'Untitled'}</p>
-                                        <p className="text-xs text-slate-500 mt-1">
-                                            {new Date(item.addedAt).toLocaleDateString()}
-                                        </p>
-                                    </div>
                                 </div>
                             ))}
                         </div>
                     </div>
+                    
+                    {/* Pause indicator */}
+                    {isPaused && itemsToShow.length > 1 && (
+                        <div className="absolute top-4 right-4 bg-black bg-opacity-60 text-white px-3 py-1 rounded-full text-sm">
+                            ⏸️ Paused
+                        </div>
+                    )}
                 </div>
             )}
         </div>
