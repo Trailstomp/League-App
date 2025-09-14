@@ -48,16 +48,23 @@ const TeamManager = ({ teams, setTeams, websiteStyle = {}, seasons = [], current
         console.log('🎨 Style change:', field, value);
         setEditingTeam(prev => {
             if (!prev) {
-                console.error('❌ No editing team to update');
-                return prev;
+                console.error('❌ No editing team to update - creating temporary team');
+                // Create temporary team if null to prevent crashes
+                return {
+                    id: 'temp-' + Date.now(),
+                    name: 'Temporary Team',
+                    style: { [field]: value }
+                };
             }
-            return {
+            const updatedTeam = {
                 ...prev, 
                 style: { 
                     ...(prev.style || {}), 
                     [field]: value 
                 }
             };
+            console.log('✅ Team style updated:', updatedTeam.name, field, value);
+            return updatedTeam;
         });
     }, []);
 
