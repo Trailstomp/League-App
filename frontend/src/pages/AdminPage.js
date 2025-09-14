@@ -137,8 +137,6 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <LocationManager teams={teams} currentUser={currentUser} />;
             case 'news':
                 return <NewsManager teams={teams} currentUser={currentUser} />;
-            case 'ticker':
-                return <TickerManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} teams={teams} events={events} />;
             case 'media':
                 return <MediaManager teams={teams} setTeams={setTeams} currentUser={currentUser} />;
             case 'users':
