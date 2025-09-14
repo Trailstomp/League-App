@@ -589,18 +589,27 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                                 onChange={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    console.log('🎨 Primary color changed to:', e.target.value);
+                                    console.log('🎨 Primary color changed to:', e.target.value, '(NO SAVE)');
                                     handleStyleChange('primaryColor', e.target.value);
                                 }}
+                                onFocus={(e) => e.stopPropagation()}
+                                onBlur={(e) => e.stopPropagation()}
                                 className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
                             />
                             <input
                                 type="text"
                                 value={teamStyle.primaryColor || '#dc2626'}
                                 onChange={(e) => {
+                                    e.stopPropagation();
                                     if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                        console.log('🎨 Primary color (text) changed to:', e.target.value);
+                                        console.log('🎨 Primary color (text) changed to:', e.target.value, '(NO SAVE)');
                                         handleStyleChange('primaryColor', e.target.value);
+                                    }
+                                }}
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        e.stopPropagation();
                                     }
                                 }}
                                 className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500"
