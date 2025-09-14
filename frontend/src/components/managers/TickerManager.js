@@ -187,7 +187,7 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
                                                     : 'bg-slate-300 text-slate-600'
                                             }`}
                                         >
-                                            {enabled ? <Eye size={14} /> : <EyeOff size={14} />}
+                                            {enabled ? '👁️' : '❌'}
                                         </button>
                                         <div>
                                             <div className="font-medium text-slate-800">
