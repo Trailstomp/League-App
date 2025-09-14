@@ -632,6 +632,8 @@ const ItemForm = ({ item, gallery, itemType, onSave, onCancel }) => {
             onSave({ 
                 url, 
                 caption: formData.captions[index] || '', 
+                expirationDate: formData.expirationDate,
+                active: formData.active,
                 id: item?.id && index === 0 ? item.id : undefined 
             });
         });
