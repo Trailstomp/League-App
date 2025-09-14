@@ -733,11 +733,10 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        console.log('🎨 Manual color extraction from logo');
+                                        console.log('🎨 Manual color extraction from logo - FORM SHOULD STAY OPEN');
                                         // Don't trigger automatic saves - just update local state
                                         if (teamStyle.logoUrl) {
-                                            // This should open color extraction modal, not save
-                                            console.log('🎨 Logo available for color extraction');
+                                            console.log('🎨 Logo available for color extraction - NO SAVE TRIGGERED');
                                         } else {
                                             alert('Please upload a logo first');
                                         }
