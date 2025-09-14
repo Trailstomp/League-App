@@ -115,7 +115,6 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         { id: 'players', label: 'Players', icon: 'players' },
         { id: 'locations', label: 'Locations', icon: 'location' },
         { id: 'news', label: 'News', icon: '📰' },
-        { id: 'ticker', label: 'Event Ticker', icon: '📰' },
         { id: 'users', label: 'Users & Security', icon: 'admin' },
         { id: 'roles', label: 'Roles & Permissions', icon: 'settings' },
         { id: 'communications', label: 'Communications', icon: 'email' },
@@ -123,6 +122,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         { id: 'social', label: 'Social Media', icon: 'social' },
         { id: 'friends', label: 'Friends & Sponsors', icon: 'players' },
         { id: 'website', label: 'Website Design', icon: 'view' },
+        { id: 'ticker', label: 'Event Ticker', icon: '🎫' },
         { id: 'api', label: 'API & Integrations', icon: 'settings' },
     ];
 
