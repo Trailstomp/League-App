@@ -48,21 +48,21 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
                 {teamStyle.bannerUrl && <div className="absolute inset-0 bg-black bg-opacity-40"></div>}
                 <div className="relative z-10 p-4 sm:p-6 lg:p-8">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
-                        {/* Team Logo */}
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-4 border-white shadow-lg flex-shrink-0">
+                        {/* Team Logo - Enhanced */}
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border-4 border-white shadow-xl flex-shrink-0 bg-white">
                             {teamStyle.logoUrl ? (
                                 <img 
                                     src={teamStyle.logoUrl} 
                                     alt={`${team.name} logo`}
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-contain p-2"
                                     style={{ opacity: teamStyle.logoOpacity || 1 }}
                                 />
                             ) : (
                                 <div 
-                                    className="w-full h-full flex items-center justify-center"
-                                    style={{ backgroundColor: teamStyle.accentColor || '#dc2626' }}
+                                    className="w-full h-full flex items-center justify-center rounded-xl"
+                                    style={{ backgroundColor: teamStyle.primaryColor || '#dc2626' }}
                                 >
-                                    <LacrosseIcon name="stick" style={{fontSize: '24px', color: 'white'}} />
+                                    <LacrosseIcon name="stick" style={{fontSize: '32px', color: 'white'}} />
                                 </div>
                             )}
                         </div>
