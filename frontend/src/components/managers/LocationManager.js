@@ -129,35 +129,6 @@ const LocationManager = ({ teams, currentUser }) => {
         }
     };
 
-    const handleSaveApiIntegrations = async (integrationData) => {
-        try {
-            setSaving(true);
-            console.log('🔧 Saving API integrations:', integrationData);
-            
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/api-integrations`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(integrationData)
-            });
-            
-            if (response.ok) {
-                setApiIntegrations(integrationData);
-                console.log('✅ API integrations saved successfully');
-                alert('API integrations saved successfully!');
-            } else {
-                console.error('❌ Failed to save API integrations:', response.statusText);
-                alert('Failed to save API integrations. Please try again.');
-            }
-        } catch (error) {
-            console.error('❌ Error saving API integrations:', error);
-            alert('Error saving API integrations. Please try again.');
-        } finally {
-            setSaving(false);
-        }
-    };
-
     const getLocationTypeIcon = (type) => {
         const icons = {
             practice_field: '🏃‍♂️',
