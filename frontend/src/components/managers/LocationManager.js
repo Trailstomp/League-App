@@ -186,70 +186,29 @@ const LocationManager = ({ teams, currentUser }) => {
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
-                    <h2 className="text-2xl font-bold text-slate-800">Locations & Integrations</h2>
-                    <p className="text-slate-600">Manage team locations and API integrations</p>
+                    <h2 className="text-2xl font-bold text-slate-800">Locations Management</h2>
+                    <p className="text-slate-600">Manage team locations and facilities</p>
                 </div>
             </div>
 
-            {/* Tabs */}
-            <div className="bg-white rounded-lg shadow-sm border">
-                <div className="border-b px-6 py-4">
-                    <div className="flex space-x-4">
-                        <button
-                            onClick={() => setActiveTab('locations')}
-                            className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                                activeTab === 'locations'
-                                    ? 'bg-blue-100 text-blue-700'
-                                    : 'text-slate-600 hover:bg-slate-100'
-                            }`}
-                        >
-                            <LacrosseIcon name="location" className="mr-2" style={{fontSize: '16px'}} />
-                            Locations ({locations.length})
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('integrations')}
-                            className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                                activeTab === 'integrations'
-                                    ? 'bg-blue-100 text-blue-700'
-                                    : 'text-slate-600 hover:bg-slate-100'
-                            }`}
-                        >
-                            <LacrosseIcon name="settings" className="mr-2" style={{fontSize: '16px'}} />
-                            API Integrations
-                        </button>
-                    </div>
-                </div>
-
-                <div className="p-6">
-                    {activeTab === 'locations' && (
-                        <LocationsTab
-                            locations={locations}
-                            teams={teams}
-                            apiIntegrations={apiIntegrations}
-                            onAddLocation={handleAddLocation}
-                            onEditLocation={handleEditLocation}
-                            onDeleteLocation={handleDeleteLocation}
-                            showAddForm={showAddForm}
-                            setShowAddForm={setShowAddForm}
-                            editingLocation={editingLocation}
-                            setEditingLocation={setEditingLocation}
-                            saving={saving}
-                            getLocationTypeIcon={getLocationTypeIcon}
-                            getLocationTypeColor={getLocationTypeColor}
-                            getSurfaceIcon={getSurfaceIcon}
-                            getTeamName={getTeamName}
-                            openGoogleMaps={openGoogleMaps}
-                        />
-                    )}
-                    {activeTab === 'integrations' && (
-                        <IntegrationsTab
-                            apiIntegrations={apiIntegrations}
-                            onSave={handleSaveApiIntegrations}
-                            saving={saving}
-                        />
-                    )}
-                </div>
-            </div>
+            <LocationsTab
+                locations={locations}
+                teams={teams}
+                apiIntegrations={apiIntegrations}
+                onAddLocation={handleAddLocation}
+                onEditLocation={handleEditLocation}
+                onDeleteLocation={handleDeleteLocation}
+                showAddForm={showAddForm}
+                setShowAddForm={setShowAddForm}
+                editingLocation={editingLocation}
+                setEditingLocation={setEditingLocation}
+                saving={saving}
+                getLocationTypeIcon={getLocationTypeIcon}
+                getLocationTypeColor={getLocationTypeColor}
+                getSurfaceIcon={getSurfaceIcon}
+                getTeamName={getTeamName}
+                openGoogleMaps={openGoogleMaps}
+            />
         </div>
     );
 };
