@@ -325,7 +325,8 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                 <div className="absolute inset-0 rounded-xl border border-white/30 pointer-events-none"></div>
                                 <div className="absolute inset-0 rounded-xl border-2 border-black/5 pointer-events-none"></div>
                             </div>
-                        ))}
+                            );
+                        })}}
                     </div>
                 ) : (
                     <div className="text-center py-8 text-slate-500">
