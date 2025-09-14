@@ -129,24 +129,28 @@ const LocationManager = ({ teams, currentUser }) => {
         }
     };
 
-    const getLocationTypeIcon = (type) => {
+    const getLocationTypeIcon = (types) => {
+        if (!types || types.length === 0) return '📍';
         const icons = {
             practice_field: '🏃‍♂️',
             game_field: '🏟️',
             social_venue: '🍽️',
             training_facility: '💪'
         };
-        return icons[type] || '📍';
+        // Return first type's icon, but we'll show all types in labels
+        return icons[types[0]] || '📍';
     };
 
-    const getLocationTypeColor = (type) => {
+    const getLocationTypeColor = (types) => {
+        if (!types || types.length === 0) return 'bg-gray-100 text-gray-800 border-gray-200';
         const colors = {
             practice_field: 'bg-green-100 text-green-800 border-green-200',
             game_field: 'bg-blue-100 text-blue-800 border-blue-200',
             social_venue: 'bg-purple-100 text-purple-800 border-purple-200',
             training_facility: 'bg-orange-100 text-orange-800 border-orange-200'
         };
-        return colors[type] || 'bg-gray-100 text-gray-800 border-gray-200';
+        // Use first type's color
+        return colors[types[0]] || 'bg-gray-100 text-gray-800 border-gray-200';
     };
 
     const getSurfaceIcon = (surface) => {
