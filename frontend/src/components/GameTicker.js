@@ -192,8 +192,8 @@ const GameTicker = ({ teams, leagueSchedule, onTeamClick, websiteStyle, onNaviga
                         </div>
                     </div>
                 ) : (
-                    // Duplicate items for infinite scrolling effect - always duplicate for smooth scrolling
-                    [...allItems, ...allItems, ...allItems].map((item, index) => {
+                    // Duplicate items for infinite scrolling effect - duplicate only when needed
+                    (allItems.length > 2 ? [...allItems, ...allItems] : allItems).map((item, index) => {
                         if (item.itemType === 'game') {
                             const home = getTeam(item.homeTeam);
                             const away = getTeam(item.awayTeam);
