@@ -568,14 +568,19 @@ const SimpleEventForm = ({
                     </div>
                 </div>
 
-                {/* Team Selection - Simple Component */}
+                {/* Team Selection - Filtered by Division */}
                 <div>
                     <SimpleTeamSelector 
-                        teams={teams}
+                        teams={getFilteredTeams()}
                         selectedTeamIds={eventData.teamIds}
                         onTeamToggle={handleTeamToggle}
-                        title="Participating Teams"
+                        title={selectedDivision ? `Teams in ${selectedDivision} Division` : "Participating Teams"}
                     />
+                    {selectedDivision && (
+                        <div className="mt-2 text-sm text-blue-600">
+                            Showing {getFilteredTeams().length} teams from {selectedDivision} division
+                        </div>
+                    )}
                 </div>
             </div>
 
