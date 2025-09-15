@@ -23,6 +23,10 @@ const SimpleEventForm = ({
     // State for optional field visibility - show if editing existing event with these fields
     const [showSeasonField, setShowSeasonField] = useState(!!initialEvent?.season);
     const [showLeagueField, setShowLeagueField] = useState(!!initialEvent?.league);
+    
+    // State for dynamic picklist options
+    const [seasons, setSeasons] = useState([]);
+    const [leagues, setLeagues] = useState([]);
 
     // Load locations from API
     useEffect(() => {
