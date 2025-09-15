@@ -135,13 +135,48 @@ const SimpleEventForm = ({
 
             // CRITICAL FIX: Use API persistence instead of memory-only saves
             console.log('🔄 Saving event to database via API...');
+            
+            // CRITICAL BSON FIX: Check document size before saving
+            try {
+                const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+                const currentDataResponse = await fetch(`${BACKEND_URL}/api/league-data`);
+                if (currentDataResponse.ok) {
+                    const currentData = await currentDataResponse.json();
+                    const currentSize = JSON.stringify(currentData).length;
+                    const eventSize = JSON.stringify(eventToSave).length;
+                    const estimatedTotalSize = currentSize + eventSize;
+                    const sizeLimitMB = 15; // Safety margin below 16MB
+                    const sizeLimitBytes = sizeLimitMB * 1024 * 1024;
+                    
+                    console.log('📏 Document size check:', {
+                        currentSizeMB: (currentSize / 1024 / 1024).toFixed(2),
+                        eventSizeMB: (eventSize / 1024 / 1024).toFixed(2),
+                        estimatedTotalMB: (estimatedTotalSize / 1024 / 1024).toFixed(2),
+                        limitMB: sizeLimitMB
+                    });
+                    
+                    if (estimatedTotalSize > sizeLimitBytes) {
+                        const errorMsg = `Document size would exceed ${sizeLimitMB}MB limit. Current: ${(currentSize/1024/1024).toFixed(1)}MB, Adding: ${(eventSize/1024/1024).toFixed(1)}MB. Please contact admin to optimize database.`;
+                        console.error('🚨 BSON size limit exceeded:', errorMsg);
+                        alert(errorMsg);
+                        return;
+                    }
+                }
+            } catch (sizeCheckError) {
+                console.warn('⚠️ Could not check document size, proceeding with save:', sizeCheckError);
+            }
+            
             const saveResult = await saveEventToSchedule(eventToSave, leagueSchedule, setLeagueSchedule);
             
             if (saveResult.success) {
                 console.log('✅ Event successfully saved to database:', saveResult.event.title);
             } else {
                 console.error('❌ Failed to save event to database:', saveResult.error);
-                alert(`Failed to save event: ${saveResult.error}`);
+                if (saveResult.error.includes('BSONObj size') || saveResult.error.includes('too large')) {
+                    alert('Database document too large. Please contact admin to optimize data storage. Error: Document size exceeded MongoDB limit.');
+                } else {
+                    alert(`Failed to save event: ${saveResult.error}`);
+                }
                 return;
             }
 
