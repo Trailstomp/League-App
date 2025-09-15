@@ -1,5 +1,168 @@
-import React, { useState } from 'react';
-import LacrosseIcons, { LacrosseIcon } from './LacrosseIcons';
+import React, { useState, useEffect } from 'react';
+import { LacrosseIcon } from './LacrosseIcons';
+
+// Teams grouped by division component
+const TeamsByDivision = ({ teams, websiteStyle, isCollapsed, onNavigate, onMobileClose }) => {
+    const [collapsedDivisions, setCollapsedDivisions] = useState(new Set());
+
+    // Group teams by division with specific order: Field, Box, External, then others
+    const groupTeamsByDivision = () => {
+        const grouped = {};
+        teams.forEach(team => {
+            const division = team.division || 'Field';
+            if (!grouped[division]) grouped[division] = [];
+            grouped[division].push(team);
+        });
+
+        // Sort teams within each division alphabetically
+        Object.keys(grouped).forEach(division => {
+            grouped[division].sort((a, b) => a.name.localeCompare(b.name));
+        });
+
+        return grouped;
+    };
+
+    // Get ordered division keys: Field, Box, External, then others alphabetically
+    const getOrderedDivisions = (groupedTeams) => {
+        const divisions = Object.keys(groupedTeams);
+        const orderedDivisions = [];
+        
+        if (divisions.includes('Field')) orderedDivisions.push('Field');
+        if (divisions.includes('Box')) orderedDivisions.push('Box');
+        if (divisions.includes('External')) orderedDivisions.push('External');
+        
+        const remaining = divisions.filter(d => !['Field', 'Box', 'External'].includes(d)).sort();
+        return [...orderedDivisions, ...remaining];
+    };
+
+    const toggleDivision = (division) => {
+        const newCollapsed = new Set(collapsedDivisions);
+        if (newCollapsed.has(division)) {
+            newCollapsed.delete(division);
+        } else {
+            newCollapsed.add(division);
+        }
+        setCollapsedDivisions(newCollapsed);
+    };
+
+    const groupedTeams = groupTeamsByDivision();
+    const orderedDivisions = getOrderedDivisions(groupedTeams);
+
+    return (
+        <div className="px-4 pb-4 border-b">
+            <h3 
+                className={`text-xs font-semibold uppercase tracking-wider mb-3 ${isCollapsed ? 'text-center' : ''}`}
+                style={{ color: websiteStyle.menuTextColor || '#6b7280' }}
+            >
+                <LacrosseIcon name="stick" className={isCollapsed ? "" : "mr-1"} style={{fontSize: '14px'}} />
+                {!isCollapsed && " Teams"}
+            </h3>
+            
+            {orderedDivisions.map(division => {
+                const divisionTeams = groupedTeams[division];
+                const isCollapsed = collapsedDivisions.has(division);
+                
+                return (
+                    <div key={division} className="mb-4">
+                        {/* Division Header */}
+                        <button
+                            onClick={() => toggleDivision(division)}
+                            className="w-full flex items-center justify-between px-3 py-2 mb-2 text-sm font-medium rounded-lg border transition-all duration-200"
+                            style={{
+                                color: websiteStyle.menuTextColor || '#374151',
+                                backgroundColor: `${websiteStyle.menuBackgroundColor || '#f1f5f9'}${Math.round((websiteStyle.buttonTransparency || 0.9) * 255).toString(16).padStart(2, '0')}`,
+                                border: `1px solid ${websiteStyle.menuTextColor || '#e2e8f0'}60`
+                            }}
+                        >
+                            <span className="flex items-center">
+                                <span className="mr-2">
+                                    {division === 'Field' ? '🥍' : division === 'Box' ? '📦' : division === 'External' ? '🌐' : '🏆'}
+                                </span>
+                                {division} ({divisionTeams.length})
+                            </span>
+                            <span className={`transform transition-transform ${isCollapsed ? 'rotate-0' : 'rotate-90'}`}>
+                                ▶
+                            </span>
+                        </button>
+                        
+                        {/* Division Teams */}
+                        {!isCollapsed && (
+                            <div className="space-y-2 ml-2">
+                                {divisionTeams.map(team => (
+                                    <button
+                                        key={team.id}
+                                        className="w-full flex items-center px-4 py-3 text-sm rounded-full transition-all duration-200 text-left border hover:shadow-sm hover:transform hover:scale-102"
+                                        style={{ 
+                                            color: websiteStyle.menuTextColor || '#374151',
+                                            backgroundColor: `${websiteStyle.menuBackgroundColor || '#f8fafc'}${Math.round((websiteStyle.buttonTransparency || 0.8) * 255).toString(16).padStart(2, '0')}`,
+                                            border: `1px solid ${websiteStyle.menuTextColor || '#e2e8f0'}40`
+                                        }}
+                                        onClick={() => {
+                                            console.log('🏆 Team clicked:', team.name, team.id);
+                                            onNavigate && onNavigate('team', team.id);
+                                            if (onMobileClose) onMobileClose();
+                                        }}
+                                        title={`${team.name} (${team.wins || 0}-${team.losses || 0})`}
+                                    >
+                                        {/* Team Logo */}
+                                        <div className="w-8 h-8 rounded-full flex-shrink-0 overflow-hidden border border-slate-200">
+                                            {team.style?.logoUrl ? (
+                                                <img 
+                                                    src={team.style.logoUrl} 
+                                                    alt={`${team.name} logo`}
+                                                    className="w-full h-full object-contain"
+                                                    style={{ 
+                                                        opacity: team.style.logoOpacity || 1,
+                                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                                    }}
+                                                    onError={(e) => {
+                                                        e.target.style.display = 'none';
+                                                        e.target.nextSibling.style.display = 'flex';
+                                                    }}
+                                                />
+                                            ) : null}
+                                            <div 
+                                                className="w-full h-full rounded-full flex items-center justify-center"
+                                                style={{ 
+                                                    backgroundColor: team.style?.primaryColor || '#dc2626',
+                                                    opacity: websiteStyle.buttonTransparency || 0.9,
+                                                    display: team.style?.logoUrl ? 'none' : 'flex'
+                                                }}
+                                            >
+                                                <LacrosseIcon name="stick" style={{fontSize: '14px', color: 'white'}} />
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="flex-1 min-w-0 ml-3">
+                                            <div 
+                                                className="font-medium truncate text-sm"
+                                                style={{ color: websiteStyle.menuTextColor || '#374151' }}
+                                            >
+                                                {team.name}
+                                            </div>
+                                        </div>
+                                        <div 
+                                            className="text-xs ml-2 flex-shrink-0"
+                                            style={{ color: websiteStyle.menuTextColor || '#9ca3af' }}
+                                        >
+                                            {team.wins || 0}-{team.losses || 0}
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                );
+            })}
+            
+            {teams.length === 0 && (
+                <div className="text-center py-8 text-gray-500 text-sm">
+                    No teams available
+                </div>
+            )}
+        </div>
+    );
+};
 import { isAdmin } from './PermissionsSystem';
 
 const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, teams = [], websiteStyle = {}, onMobileClose }) => {
