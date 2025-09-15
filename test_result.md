@@ -310,6 +310,18 @@ backend:
         agent: "testing"
         comment: "🚨 CRITICAL ROOT CAUSE IDENTIFIED - USER EVENTS NOT PERSISTING TO DATABASE: Executed comprehensive event search testing specifically for user's missing events ('Game test 1', 'Game test 2', 'Game test 3', 'Tourney test', 'Dayton Classic'). DEFINITIVE FINDINGS: ❌ ZERO USER EVENTS FOUND: Comprehensive search across ALL database collections (league-data, teams, players, locations, api-integrations, status) found NO traces of user's specific event titles - searched 5.4+ million characters of database content with zero matches ❌ ROOT CAUSE DISCOVERED: SimpleEventForm component (used in EventsPage.js) is NOT making API calls to persist events to backend database. Line 127 shows '// Save directly to schedule (no API calls for now)' - events are only saved to frontend state, never to database ❌ MISSING API INTEGRATION: SimpleEventForm saves events only to local state via setLeagueSchedule() but never calls the backend /api/league-data/leagueSchedule endpoint that would persist events to MongoDB ✅ BACKEND WORKING CORRECTLY: Event save path testing confirms POST /api/league-data/leagueSchedule endpoint works perfectly - test events save and retrieve successfully, then get cleaned up properly ✅ PERSISTENCE HOOK EXISTS: useEventPersistence.js hook has correct API integration (lines 46-52) but SimpleEventForm is NOT using this hook. CRITICAL ISSUE: User's events ('Game test 1', 'Game test 2', etc.) are being created in frontend but never persisted to database because SimpleEventForm lacks API integration. This explains why user sees 'a ton of events' during session but they disappear after refresh - they only exist in browser memory, not database."
 
+  - task: "SimpleEventForm API Integration Fix"
+    implemented: false
+    working: false
+    file: "frontend/src/scheduling/components/SimpleEventForm.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL ISSUE IDENTIFIED: SimpleEventForm component is missing API integration to persist events to database. PROBLEM: Line 127 in SimpleEventForm.js shows '// Save directly to schedule (no API calls for now)' - events are only saved to frontend state via setLeagueSchedule() and never persisted to backend database. IMPACT: User's events ('Game test 1', 'Game test 2', 'Game test 3', 'Tourney test', 'Dayton Classic') are created in browser memory but disappear after page refresh because they're never saved to MongoDB. SOLUTION NEEDED: SimpleEventForm must integrate with useEventPersistence.saveEventToSchedule() method to make proper API calls to /api/league-data/leagueSchedule endpoint. The persistence hook already exists with correct implementation - SimpleEventForm just needs to use it instead of direct state updates."
+
 frontend:
   - task: "Media Gallery System Integration"
     implemented: true
