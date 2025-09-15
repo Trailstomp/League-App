@@ -15,6 +15,8 @@ const SimpleEventForm = ({
     onSave,
     onCancel 
 }) => {
+    // Use the event persistence hook for API integration
+    const { saveEventToSchedule } = useEventPersistence();
     const [locations, setLocations] = useState([]);
     const [loadingLocations, setLoadingLocations] = useState(true);
 
