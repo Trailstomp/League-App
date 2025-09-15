@@ -96,8 +96,8 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
                     minWidth: '100%'
                 }}
             >
-                {/* Duplicate events for infinite scroll effect */}
-                {[...tickerEvents, ...tickerEvents].map((event, index) => {
+                {/* Show each unique event only once */}
+                {tickerEvents.map((event, index) => {
                     const eventDate = new Date(event.date);
                     const formattedDate = eventDate.toLocaleDateString('en-US', { 
                         month: 'short', 
