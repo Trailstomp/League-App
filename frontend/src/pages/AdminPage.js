@@ -152,7 +152,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
             case 'dashboard':
                 return <AdminDashboard teams={teams} players={players} users={users} />;
             case 'teams':
-                return <TeamManager teams={teams} setTeams={handleTeamsChange} websiteStyle={{}} seasons={[]} currentSeason={null} />;
+                return <TeamManager teams={teams} setTeams={handleTeamsChange} websiteStyle={{}} seasons={seasons} currentSeason={seasons.find(s => s.status === 'active')?.id || null} />;
             case 'players':
                 return <PlayersManager teams={teams} players={players} setPlayers={handlePlayersChange} />;
             case 'locations':
