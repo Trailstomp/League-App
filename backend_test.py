@@ -135,7 +135,7 @@ class EventSearchTester:
         except Exception as e:
             self.log_test("Database Status Check", False, f"Exception: {str(e)}")
             
-    async def analyze_save_path_issues(self):
+    def analyze_save_path_issues(self):
         """Analyze the event save path and verify it's working"""
         try:
             # Test the POST endpoint that should save events
@@ -151,35 +151,35 @@ class EventSearchTester:
             }
             
             # Try to save a test event
-            async with self.session.post(f"{API_BASE}/league-data/leagueSchedule", 
-                                       json=[test_event]) as response:
-                if response.status == 200:
-                    self.log_test("Event Save Path Test", True, "POST /api/league-data/leagueSchedule accepts events")
+            response = requests.post(f"{API_BASE}/league-data/leagueSchedule", 
+                                   json=[test_event], timeout=10)
+            if response.status_code == 200:
+                self.log_test("Event Save Path Test", True, "POST /api/league-data/leagueSchedule accepts events")
+                
+                # Verify it was saved
+                get_response = requests.get(f"{API_BASE}/league-data", timeout=10)
+                if get_response.status_code == 200:
+                    data = get_response.json()
+                    league_schedule = data.get('leagueSchedule', [])
                     
-                    # Verify it was saved
-                    async with self.session.get(f"{API_BASE}/league-data") as get_response:
-                        if get_response.status == 200:
-                            data = await get_response.json()
-                            league_schedule = data.get('leagueSchedule', [])
-                            
-                            # Check if our test event is there
-                            test_found = any(event.get('title') == test_event['title'] for event in league_schedule)
-                            if test_found:
-                                self.log_test("Event Save-Retrieve Cycle", True, "Test event successfully saved and retrieved")
-                                
-                                # Clean up test event
-                                remaining_events = [e for e in league_schedule if e.get('title') != test_event['title']]
-                                async with self.session.post(f"{API_BASE}/league-data/leagueSchedule", 
-                                                           json=remaining_events) as cleanup_response:
-                                    if cleanup_response.status == 200:
-                                        self.log_test("Test Event Cleanup", True, "Test event removed")
-                            else:
-                                self.log_test("Event Save-Retrieve Cycle", False, "Test event not found after save")
-                        else:
-                            self.log_test("Event Save-Retrieve Cycle", False, f"Could not retrieve after save: HTTP {get_response.status}")
+                    # Check if our test event is there
+                    test_found = any(event.get('title') == test_event['title'] for event in league_schedule)
+                    if test_found:
+                        self.log_test("Event Save-Retrieve Cycle", True, "Test event successfully saved and retrieved")
+                        
+                        # Clean up test event
+                        remaining_events = [e for e in league_schedule if e.get('title') != test_event['title']]
+                        cleanup_response = requests.post(f"{API_BASE}/league-data/leagueSchedule", 
+                                                       json=remaining_events, timeout=10)
+                        if cleanup_response.status_code == 200:
+                            self.log_test("Test Event Cleanup", True, "Test event removed")
+                    else:
+                        self.log_test("Event Save-Retrieve Cycle", False, "Test event not found after save")
                 else:
-                    self.log_test("Event Save Path Test", False, f"HTTP {response.status}")
-                    
+                    self.log_test("Event Save-Retrieve Cycle", False, f"Could not retrieve after save: HTTP {get_response.status_code}")
+            else:
+                self.log_test("Event Save Path Test", False, f"HTTP {response.status_code}")
+                
         except Exception as e:
             self.log_test("Event Save Path Test", False, f"Exception: {str(e)}")
             
