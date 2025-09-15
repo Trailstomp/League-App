@@ -143,6 +143,16 @@ function App() {
         if (leagueResponse.ok) {
           const leagueData = await leagueResponse.json();
           console.log('📊 Raw league data received:', leagueData);
+          console.log('🗂️ ALL FIELDS in league data:', Object.keys(leagueData));
+          console.log('🏆 Teams in league data:', leagueData.teams?.length || 0);
+          console.log('👥 Players in league data:', leagueData.players?.length || 0);
+          console.log('📅 CRITICAL - leagueSchedule field details:', {
+            exists: 'leagueSchedule' in leagueData,
+            value: leagueData.leagueSchedule,
+            type: typeof leagueData.leagueSchedule,
+            isArray: Array.isArray(leagueData.leagueSchedule),
+            length: leagueData.leagueSchedule?.length || 'N/A'
+          });
           
           // CRITICAL: DEFENSIVE TEAM LOADING - Only load if data exists and is valid
           if (leagueData.teams && Array.isArray(leagueData.teams)) {
