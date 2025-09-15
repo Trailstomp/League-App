@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
 import UserManager from '../components/managers/UserManager';
 import RoleManager from '../components/managers/RoleManager';
