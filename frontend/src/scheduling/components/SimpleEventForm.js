@@ -113,7 +113,7 @@ const SimpleEventForm = ({
         });
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         try {
             console.log('💾 SIMPLE SAVE - Starting save process');
             console.log('💾 Event data to save:', eventData);
