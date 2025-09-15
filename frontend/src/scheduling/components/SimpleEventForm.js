@@ -20,9 +20,9 @@ const SimpleEventForm = ({
     const [locations, setLocations] = useState([]);
     const [loadingLocations, setLoadingLocations] = useState(true);
     
-    // State for optional field visibility
-    const [showSeasonField, setShowSeasonField] = useState(false);
-    const [showLeagueField, setShowLeagueField] = useState(false);
+    // State for optional field visibility - show if editing existing event with these fields
+    const [showSeasonField, setShowSeasonField] = useState(!!initialEvent?.season);
+    const [showLeagueField, setShowLeagueField] = useState(!!initialEvent?.league);
 
     // Load locations from API
     useEffect(() => {
