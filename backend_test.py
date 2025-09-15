@@ -1,53 +1,53 @@
 #!/usr/bin/env python3
-"""
-Backend API Testing Suite for Lacrosse League Management Application
-Tests all backend endpoints for functionality, connectivity, and database operations.
-"""
 
-import requests
+import asyncio
+import aiohttp
 import json
 import sys
 from datetime import datetime
-import time
+import os
+from dotenv import load_dotenv
 
-# Get backend URL from frontend .env file
-def get_backend_url():
-    try:
-        with open('/app/frontend/.env', 'r') as f:
-            for line in f:
-                if line.startswith('REACT_APP_BACKEND_URL='):
-                    return line.split('=', 1)[1].strip()
-    except Exception as e:
-        print(f"Error reading frontend .env: {e}")
-        return None
+# Load environment variables
+load_dotenv('/app/frontend/.env')
 
-class BackendTester:
+# Get backend URL from environment
+BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://lacrosse-mgr.preview.emergentagent.com')
+API_BASE = f"{BACKEND_URL}/api"
+
+class EventSearchTester:
     def __init__(self):
-        self.backend_url = get_backend_url()
-        if not self.backend_url:
-            raise Exception("Could not get backend URL from frontend/.env")
-        
-        self.api_base = f"{self.backend_url}/api"
+        self.session = None
         self.test_results = []
-        self.failed_tests = []
+        self.found_events = []
         
-        print(f"Testing backend at: {self.api_base}")
-        print("=" * 60)
-
-    def log_test(self, test_name, success, message="", response_data=None):
+        # User's specific event titles to search for
+        self.target_events = [
+            "Game test 1",
+            "Game test 2", 
+            "Game test 3",
+            "Tourney test",
+            "Dayton Classic"
+        ]
+        
+    async def setup_session(self):
+        """Setup HTTP session"""
+        self.session = aiohttp.ClientSession()
+        
+    async def cleanup_session(self):
+        """Cleanup HTTP session"""
+        if self.session:
+            await self.session.close()
+            
+    def log_test(self, test_name, success, details=""):
         """Log test results"""
         status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} {test_name}")
-        if message:
-            print(f"    {message}")
-        if response_data and success:
-            print(f"    Response: {response_data}")
-        
-        self.test_results.append({
-            'test': test_name,
-            'success': success,
-            'message': message,
-            'response': response_data
+        self.test_results.append(f"{status}: {test_name}")
+        if details:
+            self.test_results.append(f"    Details: {details}")
+        print(f"{status}: {test_name}")
+        if details:
+            print(f"    Details: {details}")
         })
         
         if not success:
