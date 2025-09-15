@@ -322,6 +322,18 @@ backend:
         agent: "testing"
         comment: "🚨 CRITICAL ISSUE IDENTIFIED: SimpleEventForm component is missing API integration to persist events to database. PROBLEM: Line 127 in SimpleEventForm.js shows '// Save directly to schedule (no API calls for now)' - events are only saved to frontend state via setLeagueSchedule() and never persisted to backend database. IMPACT: User's events ('Game test 1', 'Game test 2', 'Game test 3', 'Tourney test', 'Dayton Classic') are created in browser memory but disappear after page refresh because they're never saved to MongoDB. SOLUTION NEEDED: SimpleEventForm must integrate with useEventPersistence.saveEventToSchedule() method to make proper API calls to /api/league-data/leagueSchedule endpoint. The persistence hook already exists with correct implementation - SimpleEventForm just needs to use it instead of direct state updates."
 
+  - task: "Team and Player Persistence Fix"
+    implemented: false
+    working: false
+    file: "frontend/src/App.js, frontend/src/pages/AdminPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL TEAM/PLAYER PERSISTENCE ISSUE IDENTIFIED - SAME PATTERN AS EVENTS: Executed comprehensive investigation specifically for user's reported team logo and player persistence issues. ROOT CAUSE DISCOVERED: ❌ SAVE/LOAD MISMATCH: Teams and players are saved to league-data collection (/api/league-data/teams, /api/league-data/players) but loaded inconsistently - teams ONLY load from league-data with no fallback, players load from league-data with fallback to individual collection ❌ DATA SPLIT: Individual collections have 10 teams (with no logos) and 2 players, while league-data has only 2 teams and 0 players - user's custom teams with logos are trapped in individual collections that frontend never accesses ❌ FRONTEND LOADING LOGIC: App.js lines 158-170 show teams load ONLY from league-data (no fallback like players have), so user's teams in individual collection are never visible ✅ BACKEND WORKING: All 8 backend tests passed (100% success rate) - both individual and league-data endpoints work correctly, team/player CRUD operations functional, data persists through refresh cycles ✅ API INTEGRATION: AdminPage.js handleTeamsChange() and handlePlayersChange() functions correctly save to league-data endpoints with proper error handling. CRITICAL ISSUE: Same pattern as events - user creates teams/players that get saved to one location but frontend loads from different location, causing data to disappear after refresh. Teams need fallback loading logic like players have, or data migration from individual to league-data collections."
+
 frontend:
   - task: "Media Gallery System Integration"
     implemented: true
