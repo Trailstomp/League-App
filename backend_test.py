@@ -121,17 +121,17 @@ class EventSearchTester:
         except Exception as e:
             self.log_test("Individual Events Collection Access", False, f"Exception: {str(e)}")
             
-    async def check_database_collections_directly(self):
+    def check_database_collections_directly(self):
         """Check all database collections for events"""
         try:
             # Try to get database status or collection info
-            async with self.session.get(f"{API_BASE}/status") as response:
-                if response.status == 200:
-                    data = await response.json()
-                    self.log_test("Database Status Check", True, f"Database accessible, found {len(data)} status entries")
-                else:
-                    self.log_test("Database Status Check", False, f"HTTP {response.status}")
-                    
+            response = requests.get(f"{API_BASE}/status", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                self.log_test("Database Status Check", True, f"Database accessible, found {len(data)} status entries")
+            else:
+                self.log_test("Database Status Check", False, f"HTTP {response.status_code}")
+                
         except Exception as e:
             self.log_test("Database Status Check", False, f"Exception: {str(e)}")
             
