@@ -62,7 +62,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
                 }}
             >
                 <div className="flex items-center justify-center h-full">
-                    <span className="text-slate-400 text-sm">No upcoming events</span>
+                    <span className="text-slate-400 text-sm">No events available</span>
                 </div>
             </div>
         );
