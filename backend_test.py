@@ -44,49 +44,49 @@ class EventSearchTester:
         if details:
             print(f"    Details: {details}")
             
-    async def search_main_league_database(self):
+    def search_main_league_database(self):
         """Search main league database for user events"""
         try:
-            async with self.session.get(f"{API_BASE}/league-data") as response:
-                if response.status == 200:
-                    data = await response.json()
-                    league_schedule = data.get('leagueSchedule', [])
-                    
-                    self.log_test("Main League Database Access", True, f"Found {len(league_schedule)} total events")
-                    
-                    # Search for user's specific events
-                    found_user_events = []
-                    for event in league_schedule:
-                        event_title = event.get('title', '').strip()
-                        for target in self.target_events:
-                            if target.lower() in event_title.lower():
-                                found_user_events.append({
-                                    'title': event_title,
-                                    'id': event.get('id', 'No ID'),
-                                    'date': event.get('date', 'No date'),
-                                    'time': event.get('time', 'No time'),
-                                    'location': event.get('location', 'No location'),
-                                    'type': event.get('type', 'No type')
-                                })
-                                self.found_events.append(f"MAIN_LEAGUE: {event_title}")
-                    
-                    if found_user_events:
-                        self.log_test("User Events in Main League Database", True, 
-                                    f"Found {len(found_user_events)} user events: {[e['title'] for e in found_user_events]}")
-                        for event in found_user_events:
-                            self.log_test(f"  Event Details", True, 
-                                        f"Title: {event['title']}, ID: {event['id']}, Date: {event['date']}, Time: {event['time']}")
-                    else:
-                        self.log_test("User Events in Main League Database", False, 
-                                    "No user events found in main league database")
-                        
-                    # Show all events for debugging
-                    all_titles = [event.get('title', 'Untitled') for event in league_schedule]
-                    self.log_test("All Events in Main Database", True, f"Event titles: {all_titles}")
-                    
+            response = requests.get(f"{API_BASE}/league-data", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                league_schedule = data.get('leagueSchedule', [])
+                
+                self.log_test("Main League Database Access", True, f"Found {len(league_schedule)} total events")
+                
+                # Search for user's specific events
+                found_user_events = []
+                for event in league_schedule:
+                    event_title = event.get('title', '').strip()
+                    for target in self.target_events:
+                        if target.lower() in event_title.lower():
+                            found_user_events.append({
+                                'title': event_title,
+                                'id': event.get('id', 'No ID'),
+                                'date': event.get('date', 'No date'),
+                                'time': event.get('time', 'No time'),
+                                'location': event.get('location', 'No location'),
+                                'type': event.get('type', 'No type')
+                            })
+                            self.found_events.append(f"MAIN_LEAGUE: {event_title}")
+                
+                if found_user_events:
+                    self.log_test("User Events in Main League Database", True, 
+                                f"Found {len(found_user_events)} user events: {[e['title'] for e in found_user_events]}")
+                    for event in found_user_events:
+                        self.log_test(f"  Event Details", True, 
+                                    f"Title: {event['title']}, ID: {event['id']}, Date: {event['date']}, Time: {event['time']}")
                 else:
-                    self.log_test("Main League Database Access", False, f"HTTP {response.status}")
+                    self.log_test("User Events in Main League Database", False, 
+                                "No user events found in main league database")
                     
+                # Show all events for debugging
+                all_titles = [event.get('title', 'Untitled') for event in league_schedule]
+                self.log_test("All Events in Main Database", True, f"Event titles: {all_titles}")
+                
+            else:
+                self.log_test("Main League Database Access", False, f"HTTP {response.status_code}")
+                
         except Exception as e:
             self.log_test("Main League Database Access", False, f"Exception: {str(e)}")
             
