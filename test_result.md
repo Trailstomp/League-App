@@ -270,6 +270,18 @@ backend:
         agent: "testing"
         comment: "🎉 EVENT TICKER INTEGRATION TESTING COMPLETED SUCCESSFULLY: Executed comprehensive testing suite specifically for Event Ticker admin functionality integration as requested in review. CRITICAL SUCCESS VERIFICATION: ✅ 1) LOGIN PROCESS: Successfully logged in as Admin Ali using Quick Login functionality ✅ 2) NAVIGATION STRUCTURE: Confirmed NO standalone 'Event Ticker' tab exists in main admin tabs (correctly moved), Website Design tab exists and accessible, Event Ticker appears as sub-section within Website Design ✅ 3) EVENT TICKER INTEGRATION: Successfully clicked Website Design tab, found Event Ticker sub-tab within Website Design, TickerManager component loads correctly with 'Event Ticker Configuration' heading ✅ 4) FUNCTIONALITY VERIFICATION: All ticker configuration sections working - Date Range Settings (Look Back/Forward Days inputs functional), Event Type Filters (6 filter toggles with proper event counts), Visual Settings (3 color pickers, speed slider, event type color badges), Live Preview (showing sample events: Eagles vs Bears, Spring Championship, Team Practice) ✅ 5) DATA ACCESS: Teams data accessible (Eagles team reference found), Event counts properly displayed (1 game event, 0 tournaments, etc.), Save Configuration button present and functional. COMPREHENSIVE RESULT: Event Ticker admin functionality has been successfully moved from standalone tab to Website Design sub-section while maintaining complete functionality. All configuration options work correctly, data integration is proper, and the interface is fully operational within the new location."
 
+  - task: "Ticker Filter Bug - Event Type Mismatch Investigation"
+    implemented: true
+    working: false
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL TICKER FILTER BUG CONFIRMED - ROOT CAUSE IDENTIFIED: Executed comprehensive investigation specifically for the urgent ticker filter bug where unchecking 'Other' filter causes games and tournaments to disappear. BREAKTHROUGH FINDINGS: ❌ CRITICAL EVENT TYPE MISMATCH: Database contains events with types ['tournament', 'event', 'game'] but TickerManager expects ['games', 'tournaments', 'practices', 'meetings', 'social', 'other'] - ALL 3 events in database have mismatched types! ❌ FALLBACK LOGIC ISSUE: Current logic 'eventFilters[eventType] || eventFilters.other' means mismatched events fall back to 'other' filter. When user unchecks 'other', ALL events disappear (0 visible vs 3 with 'other' enabled). ❌ SPECIFIC MISMATCHES IDENTIFIED: 'tournament' should be 'tournaments' (plural), 'game' should be 'games' (plural), 'event' should be 'social' or appropriate type. ✅ SOLUTION CONFIRMED: Need to update event types in database - 3 events require type corrections to match filter configuration. ROOT CAUSE: Event creation uses singular types ('game', 'tournament') but ticker filters expect plural types ('games', 'tournaments'). This is a critical data consistency issue blocking core ticker functionality. IMMEDIATE FIX REQUIRED: Update all event types in database to match TickerManager filter configuration."
+
   - task: "Event Persistence and Race Condition Fix"
     implemented: true
     working: true
