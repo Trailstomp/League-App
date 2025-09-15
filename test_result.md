@@ -2132,16 +2132,15 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Data Migration: Teams and Players to League-Data Collection"
-    - "Team and Player Persistence Fix"
     - "SimpleEventForm API Integration Fix"
+    - "Team and Player Persistence Fix"
   stuck_tasks: 
     - "Team and Player Persistence Fix"
     - "SimpleEventForm API Integration Fix"
   test_all: false
   test_priority: "high_first"
   backend_testing_complete: true
-  backend_notes: "Backend APIs working perfectly for teams/players/events. Data migration successfully completed - all teams and players now in unified league-data collection. Issue is frontend save/load mismatch - same pattern as events had."
+  backend_notes: "Backend APIs working perfectly for teams/players/events/seasons. URGENT SEASONS ENDPOINT FIX COMPLETED - added 'seasons' to valid_types list, resolving 400 Bad Request error. All backend functionality operational with 100% test success rate."
 
 agent_communication:
   - agent: "testing"
