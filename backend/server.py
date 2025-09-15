@@ -143,7 +143,7 @@ async def save_league_data(data: Dict[str, Any]):
 async def update_specific_data(data_type: str, data: List[Any] | Dict[str, Any]):
     """Update specific data type (teams, players, users, etc.)"""
     try:
-        valid_types = ["teams", "players", "users", "newsItems", "gameTickerData", "leagueSchedule", "leagueInfo", "websiteStyle"]
+        valid_types = ["teams", "players", "users", "newsItems", "gameTickerData", "leagueSchedule", "leagueInfo", "websiteStyle", "seasons"]
         if data_type not in valid_types:
             raise HTTPException(status_code=400, detail=f"Invalid data type. Must be one of: {valid_types}")
         
