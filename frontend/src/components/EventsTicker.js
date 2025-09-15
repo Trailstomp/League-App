@@ -117,37 +117,94 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
                     return (
                         <div 
                             key={`ticker-${event.id}-${index}`}
-                            className="flex-shrink-0 rounded-lg px-4 py-2 cursor-pointer hover:opacity-80 transition-opacity border"
+                            className="flex-shrink-0 rounded-lg cursor-pointer hover:opacity-80 transition-opacity border"
                             style={{
                                 backgroundColor: websiteStyle?.tickerItemColor || '#334155',
-                                borderColor: websiteStyle?.tickerBorderColor || '#475569'
+                                borderColor: websiteStyle?.tickerBorderColor || '#475569',
+                                minWidth: '300px'
                             }}
                             onClick={() => onEventClick && onEventClick(event)}
                         >
-                            <div className="flex items-center space-x-3">
-                                {/* Event Type Badge */}
-                                <span className={`px-2 py-1 rounded text-xs font-bold text-white ${typeColor}`}>
-                                    {eventType.toUpperCase()}
-                                </span>
-                                
-                                {/* Event Details */}
-                                <div className="text-white">
-                                    <div className="font-medium text-sm">{event.title}</div>
-                                    <div className="text-xs text-slate-300 flex items-center space-x-2">
-                                        <span>{formattedDate}</span>
-                                        {event.time && <span>• {event.time}</span>}
-                                        {event.location && <span>• {event.location}</span>}
-                                    </div>
+                            <div className="flex">
+                                {/* Event Type Badge - Far Left */}
+                                <div className={`w-12 flex items-center justify-center rounded-l-lg ${typeColor}`}>
+                                    <span className="text-white text-xs font-bold transform -rotate-90 whitespace-nowrap">
+                                        {eventType.toUpperCase()}
+                                    </span>
                                 </div>
                                 
-                                {/* Teams (for games) */}
-                                {event.teamIds && event.teamIds.length > 0 && (
-                                    <div className="text-slate-300 text-xs">
-                                        {event.teamIds.map((teamId, i) => (
-                                            <span 
-                                                key={teamId}
-                                                className="hover:text-white cursor-pointer"
-                                                onClick={(e) => {
+                                {/* Event Details - Rest of Card */}
+                                <div className="flex-1 p-3 text-white">
+                                    {/* Row 1: Event Title (left) | Status (right) */}
+                                    <div className="flex justify-between items-center mb-1">
+                                        <div className="font-medium text-sm truncate">{event.title}</div>
+                                        <div className="text-xs text-slate-300">{event.status || 'Scheduled'}</div>
+                                    </div>
+                                    
+                                    {/* Teams for games/matches with exactly 2 teams */}
+                                    {event.teamIds && event.teamIds.length === 2 ? (
+                                        <>
+                                            {/* Row 2: Home Team */}
+                                            <div className="flex items-center justify-between mb-1">
+                                                <div className="flex items-center space-x-2">
+                                                    <div className="w-4 h-4 bg-slate-400 rounded-full flex-shrink-0"></div>
+                                                    <span className="text-xs text-slate-200 truncate">
+                                                        {getTeamName(event.teamIds[0])}
+                                                    </span>
+                                                </div>
+                                                <span className="text-xs text-slate-300">
+                                                    {event.homeScore || event.homeScore === 0 ? event.homeScore : '-'}
+                                                </span>
+                                            </div>
+                                            
+                                            {/* Row 3: Away Team */}
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center space-x-2">
+                                                    <div className="w-4 h-4 bg-slate-400 rounded-full flex-shrink-0"></div>
+                                                    <span className="text-xs text-slate-200 truncate">
+                                                        {getTeamName(event.teamIds[1])}
+                                                    </span>
+                                                </div>
+                                                <span className="text-xs text-slate-300">
+                                                    {event.awayScore || event.awayScore === 0 ? event.awayScore : '-'}
+                                                </span>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        /* For tournaments or single team events - show participant count */
+                                        event.teamIds && event.teamIds.length > 2 ? (
+                                            <div className="mb-2">
+                                                <span className="text-xs text-slate-300">
+                                                    {event.teamIds.length} teams participating
+                                                </span>
+                                            </div>
+                                        ) : event.teamIds && event.teamIds.length === 1 ? (
+                                            <div className="mb-2">
+                                                <div className="flex items-center space-x-2">
+                                                    <div className="w-4 h-4 bg-slate-400 rounded-full flex-shrink-0"></div>
+                                                    <span className="text-xs text-slate-200">
+                                                        {getTeamName(event.teamIds[0])}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="mb-2"></div>
+                                        )
+                                    )}
+                                    
+                                    {/* Row 4: Date/Time (left) | Location (right) */}
+                                    <div className="flex justify-between items-center text-xs text-slate-300">
+                                        <div>
+                                            <span>{formattedDate}</span>
+                                            {event.time && <span> • {event.time}</span>}
+                                        </div>
+                                        {event.location && (
+                                            <span className="truncate ml-2">{event.location}</span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                                                     e.stopPropagation();
                                                     onTeamClick && onTeamClick(teamId);
                                                 }}
