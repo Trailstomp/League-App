@@ -22,11 +22,11 @@ const SimpleEventForm = ({
     
     // State for optional field visibility - show if editing existing event with these fields
     const [showSeasonField, setShowSeasonField] = useState(!!initialEvent?.season);
-    const [showLeagueField, setShowLeagueField] = useState(!!initialEvent?.league);
+    const [showDivisionField, setShowDivisionField] = useState(!!initialEvent?.division);
     
-    // State for dynamic picklist options
+    // State for dynamic picklist options and team filtering
     const [seasons, setSeasons] = useState([]);
-    const [leagues, setLeagues] = useState([]);
+    const [selectedDivision, setSelectedDivision] = useState(initialEvent?.division || '');
 
     // Load locations from API
     useEffect(() => {
