@@ -422,6 +422,56 @@ const SimpleEventForm = ({
                             placeholder="Event description..."
                         />
                     </div>
+                    
+                    {/* Optional Fields with Checkboxes */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Optional Information</label>
+                        <div className="space-y-3">
+                            {/* Season Field */}
+                            <div>
+                                <label className="flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={showSeasonField}
+                                        onChange={(e) => setShowSeasonField(e.target.checked)}
+                                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <span className="text-sm text-gray-600">Include Season</span>
+                                </label>
+                                {showSeasonField && (
+                                    <input
+                                        type="text"
+                                        value={eventData.season}
+                                        onChange={(e) => updateField('season', e.target.value)}
+                                        placeholder="e.g., Spring 2024, Fall 2024"
+                                        className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                )}
+                            </div>
+                            
+                            {/* League Field */}
+                            <div>
+                                <label className="flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={showLeagueField}
+                                        onChange={(e) => setShowLeagueField(e.target.checked)}
+                                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <span className="text-sm text-gray-600">Include League</span>
+                                </label>
+                                {showLeagueField && (
+                                    <input
+                                        type="text"
+                                        value={eventData.league}
+                                        onChange={(e) => updateField('league', e.target.value)}
+                                        placeholder="e.g., Division A, Championship League"
+                                        className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Team Selection - Simple Component */}
