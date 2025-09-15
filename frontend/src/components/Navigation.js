@@ -126,87 +126,14 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                     </div>
                 </nav>
 
-                {/* Teams Section */}
-                <div className="px-4 pb-4 border-b">
-                    <h3 
-                        className={`text-xs font-semibold uppercase tracking-wider mb-3 ${isCollapsed ? 'text-center' : ''}`}
-                        style={{ color: websiteStyle.menuTextColor || '#6b7280' }}
-                    >
-                        <LacrosseIcon name="stick" className={isCollapsed ? "" : "mr-1"} style={{fontSize: '14px'}} />
-                        {!isCollapsed && " Teams"}
-                    </h3>
-                    <div className="space-y-2">
-                        {teams.sort((a, b) => a.name.localeCompare(b.name)).map(team => (
-                            <button
-                                key={team.id} 
-                                className={`w-full flex items-center px-4 py-3 text-sm rounded-full transition-all duration-200 text-left border hover:shadow-sm hover:transform hover:scale-102 ${isCollapsed ? 'justify-center' : ''}`}
-                                style={{ 
-                                    color: websiteStyle.menuTextColor || '#374151',
-                                    backgroundColor: `${websiteStyle.menuBackgroundColor || '#f8fafc'}${Math.round((websiteStyle.buttonTransparency || 0.8) * 255).toString(16).padStart(2, '0')}`,
-                                    border: `1px solid ${websiteStyle.menuTextColor || '#e2e8f0'}40`
-                                }}
-                                onClick={() => {
-                                    console.log('🏆 Team clicked:', team.name, team.id);
-                                    onNavigate && onNavigate('team', team.id);
-                                    if (onMobileClose) onMobileClose();
-                                }}
-                                title={isCollapsed ? `${team.name} (${team.wins || 0}-${team.losses || 0})` : ''}
-                            >
-                                {/* Team Logo or Colored Circle - MADE TALLER */}
-                                <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden border border-slate-200">
-                                    {team.style?.logoUrl ? (
-                                        <img 
-                                            src={team.style.logoUrl} 
-                                            alt={`${team.name} logo`}
-                                            className="w-full h-full object-contain"
-                                            style={{ 
-                                                opacity: team.style.logoOpacity || 1,
-                                                backgroundColor: 'rgba(255,255,255,0.1)'
-                                            }}
-                                            onError={(e) => {
-                                                e.target.style.display = 'none';
-                                                e.target.nextSibling.style.display = 'flex';
-                                            }}
-                                        />
-                                    ) : null}
-                                    <div 
-                                        className="w-full h-full rounded-full flex items-center justify-center"
-                                        style={{ 
-                                            backgroundColor: team.style?.primaryColor || '#dc2626',
-                                            opacity: websiteStyle.buttonTransparency || 0.9,
-                                            display: team.style?.logoUrl ? 'none' : 'flex'
-                                        }}
-                                    >
-                                        <LacrosseIcon name="stick" style={{fontSize: '16px', color: 'white'}} />
-                                    </div>
-                                </div>
-                                
-                                {!isCollapsed && (
-                                    <>
-                                        <div className="flex-1 min-w-0 ml-3">
-                                            <div 
-                                                className="font-medium truncate text-sm"
-                                                style={{ color: websiteStyle.menuTextColor || '#374151' }}
-                                            >
-                                                {team.name}
-                                            </div>
-                                            <div 
-                                                className="text-xs truncate"
-                                                style={{ color: websiteStyle.menuTextColor || '#6b7280' }}
-                                            >
-                                                {team.division || 'Field'}
-                                            </div>
-                                        </div>
-                                        <div 
-                                            className="text-xs ml-2 flex-shrink-0"
-                                            style={{ color: websiteStyle.menuTextColor || '#9ca3af' }}
-                                        >
-                                            {team.wins || 0}-{team.losses || 0}
-                                        </div>
-                                    </>
-                                )}
-                            </button>
-                        ))}
+                {/* Teams Section - Grouped by Division */}
+                <TeamsByDivision 
+                    teams={teams}
+                    websiteStyle={websiteStyle}
+                    isCollapsed={isCollapsed}
+                    onNavigate={onNavigate}
+                    onMobileClose={onMobileClose}
+                />
                         {!isCollapsed && teams.length === 0 && (
                             <div className="text-xs text-slate-500 px-3 py-4 text-center bg-slate-50 rounded">
                                 <LacrosseIcon name="teams" className="mx-auto mb-2" style={{fontSize: '24px'}} />
