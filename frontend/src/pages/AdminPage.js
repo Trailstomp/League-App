@@ -147,6 +147,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <WebsiteDesignManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} teams={teams} events={events} />;
             case 'api':
                 return <APIIntegrationsManager />;
+            case 'seasons':
+                return <SeasonManager teams={teams} events={events} websiteStyle={websiteStyle} currentUser={currentUser} />;
             default:
                 return (
                     <div className="text-center py-16">
