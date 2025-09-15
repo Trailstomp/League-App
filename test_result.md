@@ -684,8 +684,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Website Design Save Functionality - Banner Text Persistence Fix"
-  stuck_tasks: []
+    - "SimpleEventForm API Integration Fix"
+  stuck_tasks:
+    - "SimpleEventForm API Integration Fix"
   test_all: false
   test_priority: "high_first"
 
