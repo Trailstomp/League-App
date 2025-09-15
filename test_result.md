@@ -776,7 +776,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "SimpleEventForm API Integration Fix"
+    - "Ticker Filter Bug - Event Type Mismatch Investigation"
   stuck_tasks:
     - "SimpleEventForm API Integration Fix"
   test_all: false
