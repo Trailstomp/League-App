@@ -127,23 +127,16 @@ const SimpleEventForm = ({
 
             console.log('💾 Final event to save:', eventToSave);
 
-            // Save directly to schedule (no API calls for now)
-            if (isNewEvent) {
-                console.log('➕ Adding new event');
-                setLeagueSchedule(prev => {
-                    const newSchedule = [...prev, eventToSave];
-                    console.log('💾 New schedule length:', newSchedule.length);
-                    return newSchedule;
-                });
+            // CRITICAL FIX: Use API persistence instead of memory-only saves
+            console.log('🔄 Saving event to database via API...');
+            const saveResult = await saveEventToSchedule(eventToSave, leagueSchedule, setLeagueSchedule);
+            
+            if (saveResult.success) {
+                console.log('✅ Event successfully saved to database:', saveResult.event.title);
             } else {
-                console.log('✏️ Updating existing event');
-                setLeagueSchedule(prev => {
-                    const updated = prev.map(e => 
-                        e.id === eventData.id ? eventToSave : e
-                    );
-                    console.log('💾 Updated schedule, found match:', updated.some(e => e.id === eventData.id));
-                    return updated;
-                });
+                console.error('❌ Failed to save event to database:', saveResult.error);
+                alert(`Failed to save event: ${saveResult.error}`);
+                return;
             }
 
             console.log('✅ SIMPLE SAVE - Success!');
