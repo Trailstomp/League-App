@@ -167,36 +167,33 @@
 #====================================================================================================
 
 user_problem_statement: |
-  PHASE 4: LOCATIONS MANAGEMENT FEATURE IMPLEMENTATION
-  
-  **OBJECTIVE**: Implement comprehensive locations management system for lacrosse league teams with Google Maps integration.
-  
-  **REQUIRED IMPLEMENTATION**:
-  
-  1. **Team Location Management**:
-     - Admin interface for adding/editing/deleting multiple locations per team
-     - Location types: Practice Fields, Game Fields, Social Venues, Training Facilities  
-     - Location characteristics: Indoor/Outdoor, Surface Type (Turf, Grass, Concrete, Indoor Court)
-     - Team-specific locations with league admin override capability
-  
-  2. **Google Maps Integration**:
-     - Embedded clickable Google Maps for each location
-     - API key configuration in admin settings (not hardcoded)
-     - Static map preview images with click-to-open functionality
-     - Address validation and geocoding support
-  
-  3. **API Integration Settings**:
-     - Dedicated admin tab for API key management
-     - Google Maps API key configuration
-     - Future-ready structure for email/SMS integrations
-  
-  4. **Backend Infrastructure**:
-     - Location model with full CRUD operations
-     - API integrations model for secure key storage
-     - Location filtering by team
-     - Automatic backup system integration
-  
-  **TESTING STATUS**: ✅ IMPLEMENTATION COMPLETED! Full locations management system with Google Maps integration, comprehensive admin interface, and backend API ready for testing.
+  **URGENT: TICKER FILTER BUG - EVENT TYPE MISMATCH**
+
+  User reports that unchecking "Other" filter causes games and tournaments to disappear from ticker. This indicates a bug in the event type filtering logic.
+
+  **INVESTIGATION NEEDED:**
+
+  1. **Check Actual Event Types in Database**:
+     - Look at the actual event.type values stored in events
+     - Check if events have "game" vs "games", "tournament" vs "tournaments"
+     - Verify exact spelling and case of event types
+
+  2. **Filter Configuration vs Reality**:
+     - TickerManager filters: games, tournaments, practices, meetings, social, other
+     - Actual event types in database: ??? (need to check)
+     - Look for mismatches between filter keys and actual data
+
+  3. **Test Event Type Examples**:
+     - Check the 3 events in database for their exact type values
+     - See if they match the filter configuration
+     - Identify any events falling back to "other" incorrectly
+
+  4. **Fallback Logic Issue**:
+     - Current code: `eventFilters[eventType] || eventFilters.other`
+     - This means if eventType doesn't match a filter, it uses "other"
+     - If "other" is false, valid events get filtered out
+
+  **EXPECTED**: Find the exact event types in database and identify the mismatch causing games/tournaments to be treated as "other" events.
 
 backend:
   - task: "Locations Management Backend API"
