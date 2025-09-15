@@ -1,23 +1,27 @@
 #!/usr/bin/env python3
 
-import asyncio
-import aiohttp
+import requests
 import json
 import sys
 from datetime import datetime
 import os
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv('/app/frontend/.env')
+# Get backend URL from frontend .env file
+def get_backend_url():
+    try:
+        with open('/app/frontend/.env', 'r') as f:
+            for line in f:
+                if line.startswith('REACT_APP_BACKEND_URL='):
+                    return line.split('=', 1)[1].strip()
+    except Exception as e:
+        print(f"Error reading frontend .env: {e}")
+        return None
 
-# Get backend URL from environment
-BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://lacrosse-mgr.preview.emergentagent.com')
+BACKEND_URL = get_backend_url() or 'https://lacrosse-mgr.preview.emergentagent.com'
 API_BASE = f"{BACKEND_URL}/api"
 
 class EventSearchTester:
     def __init__(self):
-        self.session = None
         self.test_results = []
         self.found_events = []
         
@@ -29,15 +33,6 @@ class EventSearchTester:
             "Tourney test",
             "Dayton Classic"
         ]
-        
-    async def setup_session(self):
-        """Setup HTTP session"""
-        self.session = aiohttp.ClientSession()
-        
-    async def cleanup_session(self):
-        """Cleanup HTTP session"""
-        if self.session:
-            await self.session.close()
             
     def log_test(self, test_name, success, details=""):
         """Log test results"""
