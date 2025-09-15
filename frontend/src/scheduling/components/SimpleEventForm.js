@@ -535,36 +535,32 @@ const SimpleEventForm = ({
                                 )}
                             </div>
                             
-                            {/* League Field */}
+                            {/* Division Field */}
                             <div>
                                 <label className="flex items-center space-x-2">
                                     <input
                                         type="checkbox"
-                                        checked={showLeagueField}
-                                        onChange={(e) => setShowLeagueField(e.target.checked)}
+                                        checked={showDivisionField}
+                                        onChange={(e) => setShowDivisionField(e.target.checked)}
                                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                     />
-                                    <span className="text-sm text-gray-600">Include League</span>
+                                    <span className="text-sm text-gray-600">Filter Teams by Division</span>
                                 </label>
-                                {showLeagueField && (
+                                {showDivisionField && (
                                     <select
-                                        value={eventData.league}
-                                        onChange={(e) => updateField('league', e.target.value)}
+                                        value={selectedDivision}
+                                        onChange={(e) => {
+                                            setSelectedDivision(e.target.value);
+                                            updateField('division', e.target.value);
+                                        }}
                                         className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
-                                        <option value="">Select League</option>
-                                        {leagues.length > 0 ? (
-                                            leagues
-                                                .filter(league => league.status === 'active')
-                                                .map(league => (
-                                                    <option key={league.id} value={league.name}>
-                                                        {league.name}
-                                                        {league.division && ` (${league.division})`}
-                                                    </option>
-                                                ))
-                                        ) : (
-                                            <option value="" disabled>No leagues available - Create leagues in Admin</option>
-                                        )}
+                                        <option value="">All Divisions</option>
+                                        {getAvailableDivisions().map(division => (
+                                            <option key={division} value={division}>
+                                                {division}
+                                            </option>
+                                        ))}
                                     </select>
                                 )}
                             </div>
