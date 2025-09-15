@@ -262,31 +262,31 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                         ></div>
                                     )}
                                     
-                                    {/* Logo container - LARGER and NO WHITE BOX */}
+                                    {/* Logo container - COMPACT for narrow cards */}
                                     <div className="w-full h-full flex items-center justify-center relative z-10">
                                         {team.style?.logoUrl ? (
                                             <img 
                                                 src={team.style.logoUrl} 
                                                 alt={team.name}
-                                                className="w-48 h-48 object-contain drop-shadow-2xl"
+                                                className="w-16 h-16 object-contain drop-shadow-lg"
                                                 style={{ 
-                                                    filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.4)) drop-shadow(0 4px 8px rgba(255,255,255,0.1))',
+                                                    filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
                                                     backgroundColor: 'transparent'
                                                 }}
                                             />
                                         ) : (
                                             <div 
-                                                className="w-48 h-48 rounded-2xl flex items-center justify-center relative"
+                                                className="w-16 h-16 rounded-xl flex items-center justify-center relative"
                                                 style={{ 
                                                     background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
-                                                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
                                                 }}
                                             >
-                                                <span className="text-white font-bold text-8xl drop-shadow-lg">
+                                                <span className="text-white font-bold text-2xl drop-shadow-lg">
                                                     {team.name.charAt(0)}
                                                 </span>
                                                 {/* Gradient shine overlay */}
-                                                <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-20 pointer-events-none rounded-2xl"></div>
+                                                <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-20 pointer-events-none rounded-xl"></div>
                                             </div>
                                         )}
                                     </div>
