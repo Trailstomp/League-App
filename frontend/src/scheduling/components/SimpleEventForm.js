@@ -535,21 +535,18 @@ const SimpleEventForm = ({
                                         className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
                                         <option value="">Select League</option>
-                                        <option value="Recreational">Recreational</option>
-                                        <option value="Competitive">Competitive</option>
-                                        <option value="Division A">Division A</option>
-                                        <option value="Division B">Division B</option>
-                                        <option value="Division C">Division C</option>
-                                        <option value="Championship">Championship</option>
-                                        <option value="Tournament">Tournament</option>
-                                        <option value="Playoff">Playoff</option>
-                                        <option value="Exhibition">Exhibition</option>
-                                        <option value="Youth">Youth</option>
-                                        <option value="Adult">Adult</option>
-                                        <option value="Masters">Masters</option>
-                                        <option value="Women's">Women's</option>
-                                        <option value="Men's">Men's</option>
-                                        <option value="Co-Ed">Co-Ed</option>
+                                        {leagues.length > 0 ? (
+                                            leagues
+                                                .filter(league => league.status === 'active')
+                                                .map(league => (
+                                                    <option key={league.id} value={league.name}>
+                                                        {league.name}
+                                                        {league.division && ` (${league.division})`}
+                                                    </option>
+                                                ))
+                                        ) : (
+                                            <option value="" disabled>No leagues available - Create leagues in Admin</option>
+                                        )}
                                     </select>
                                 )}
                             </div>
