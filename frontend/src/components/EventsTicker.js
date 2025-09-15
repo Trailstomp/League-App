@@ -10,17 +10,61 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         return team?.name || teamId;
     };
 
-    // Show ALL events with deduplication by event ID
-    const uniqueEvents = events.reduce((unique, event) => {
-        // Deduplicate by event ID - each event shows only once
-        if (!unique.find(e => e.id === event.id)) {
-            unique.push(event);
-        }
-        return unique;
-    }, []);
+    // Filter events based on admin ticker settings
+    const applyTickerFilters = (events) => {
+        // First deduplicate by event ID
+        const uniqueEvents = events.reduce((unique, event) => {
+            if (!unique.find(e => e.id === event.id)) {
+                unique.push(event);
+            }
+            return unique;
+        }, []);
+
+        // Get admin filter settings
+        const lookBackDays = websiteStyle?.tickerLookBack || 7;
+        const lookForwardDays = websiteStyle?.tickerLookForward || 120;
+        const eventFilters = websiteStyle?.tickerFilters || {
+            games: true,
+            tournaments: true,
+            practices: true,
+            meetings: true,
+            social: true,
+            other: true
+        };
+
+        // Apply date range filter
+        const today = new Date();
+        const lookBackDate = new Date();
+        lookBackDate.setDate(today.getDate() - lookBackDays);
+        const lookForwardDate = new Date();
+        lookForwardDate.setDate(today.getDate() + lookForwardDays);
+
+        const filteredEvents = uniqueEvents.filter(event => {
+            // Date range filter
+            if (!event.date) return false;
+            const eventDate = new Date(event.date);
+            const inDateRange = eventDate >= lookBackDate && eventDate <= lookForwardDate;
+            
+            // Event type filter
+            const eventType = event.type || 'other';
+            const typeAllowed = eventFilters[eventType] || eventFilters.other;
+            
+            return inDateRange && typeAllowed;
+        });
+
+        console.log('🎫 Ticker filtering:', {
+            total: events.length,
+            unique: uniqueEvents.length,
+            filtered: filteredEvents.length,
+            lookBackDays,
+            lookForwardDays,
+            activeFilters: Object.entries(eventFilters).filter(([_, enabled]) => enabled).map(([type]) => type)
+        });
+
+        return filteredEvents;
+    };
     
-    const tickerEvents = uniqueEvents;
-    console.log('🎫 Ticker: Total events:', events.length, 'Unique events:', tickerEvents.length);
+    const tickerEvents = applyTickerFilters(events);
 
     // Auto-scroll animation
     useEffect(() => {
