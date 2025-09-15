@@ -2067,13 +2067,15 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Media Gallery System Integration - Three-Option Visibility System Data Persistence Issue"
+    - "Team and Player Persistence Fix"
+    - "SimpleEventForm API Integration Fix"
   stuck_tasks: 
-    - "Media Gallery System Integration - Three-Option Visibility System Data Persistence Issue"
+    - "Team and Player Persistence Fix"
+    - "SimpleEventForm API Integration Fix"
   test_all: false
-  test_priority: "critical_first"
+  test_priority: "high_first"
   backend_testing_complete: true
-  backend_notes: "Three-option gallery visibility system UI implemented correctly but critical data persistence and legacy data compatibility issues prevent galleries from displaying."
+  backend_notes: "Backend APIs working perfectly for teams/players/events. Issue is frontend save/load mismatch - same pattern as events had."
 
 agent_communication:
   - agent: "testing"
