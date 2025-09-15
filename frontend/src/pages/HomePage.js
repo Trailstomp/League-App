@@ -291,29 +291,16 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                         )}
                                     </div>
                                     
-                                    {/* Team Record Badge - Floating */}
-                                    <div className="absolute top-2 right-2">
+                                    {/* Team Record Badge - Compact */}
+                                    <div className="absolute top-1 right-1">
                                         <div 
-                                            className="px-3 py-1 rounded-full text-white text-sm font-bold shadow-lg"
+                                            className="px-2 py-1 rounded-full text-white text-xs font-bold shadow-md"
                                             style={{ 
                                                 background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
-                                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                                                boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
                                             }}
                                         >
                                             {team.wins || 0}-{team.losses || 0}
-                                        </div>
-                                    </div>
-                                    
-                                    {/* Division Badge - Floating */}
-                                    <div className="absolute top-2 left-2">
-                                        <div 
-                                            className="px-2 py-1 rounded-full text-xs font-semibold shadow-lg bg-white border"
-                                            style={{ 
-                                                color: team.style?.primaryColor || '#2563eb',
-                                                borderColor: team.style?.primaryColor || '#2563eb'
-                                            }}
-                                        >
-                                            {team.division || 'Field'}
                                         </div>
                                     </div>
                                     
