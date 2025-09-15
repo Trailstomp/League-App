@@ -204,19 +204,6 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                                                    e.stopPropagation();
-                                                    onTeamClick && onTeamClick(teamId);
-                                                }}
-                                            >
-                                                {getTeamName(teamId)}
-                                                {i < event.teamIds.length - 1 && ' vs '}
-                                            </span>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
                     );
                 })}
             </div>
