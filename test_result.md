@@ -2079,6 +2079,7 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Data Migration: Teams and Players to League-Data Collection"
     - "Team and Player Persistence Fix"
     - "SimpleEventForm API Integration Fix"
   stuck_tasks: 
@@ -2087,7 +2088,7 @@ test_plan:
   test_all: false
   test_priority: "high_first"
   backend_testing_complete: true
-  backend_notes: "Backend APIs working perfectly for teams/players/events. Issue is frontend save/load mismatch - same pattern as events had."
+  backend_notes: "Backend APIs working perfectly for teams/players/events. Data migration successfully completed - all teams and players now in unified league-data collection. Issue is frontend save/load mismatch - same pattern as events had."
 
 agent_communication:
   - agent: "testing"
