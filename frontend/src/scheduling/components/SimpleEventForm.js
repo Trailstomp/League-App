@@ -52,7 +52,7 @@ const SimpleEventForm = ({
         loadSeasonsAndLeagues();
     }, []);
 
-    // Load seasons and leagues from backend
+    // Load seasons from backend
     const loadSeasonsAndLeagues = async () => {
         try {
             const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
@@ -60,12 +60,10 @@ const SimpleEventForm = ({
             if (response.ok) {
                 const data = await response.json();
                 setSeasons(data.seasons || []);
-                setLeagues(data.leagues || []);
                 console.log('📅 Loaded seasons:', data.seasons?.length || 0);
-                console.log('🏆 Loaded leagues:', data.leagues?.length || 0);
             }
         } catch (error) {
-            console.error('Error loading seasons/leagues:', error);
+            console.error('Error loading seasons:', error);
         }
     };
     // Helper function to get team name by ID
