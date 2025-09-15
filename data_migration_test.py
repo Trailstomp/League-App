@@ -301,6 +301,7 @@ def verify_complete_migration():
             print(f"  - Custom styling preserved: {'✅' if teams_with_custom_styling > 0 else '❌'}")
             print(f"  - Existing events preserved: {'✅' if len(events) >= 0 else '❌'}")
             
+            # Success criteria: teams and players migrated, styling preserved
             success = teams_count_correct and players_count_correct and teams_with_custom_styling > 0
             
             if success:
