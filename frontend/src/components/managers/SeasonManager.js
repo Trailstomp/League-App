@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import LeagueManager from './LeagueManager';
 
 const SeasonManager = ({ teams = [], events = [], websiteStyle = {}, currentUser }) => {
-    const [activeTab, setActiveTab] = useState('seasons');
     const [seasons, setSeasons] = useState([]);
     const [newSeason, setNewSeason] = useState({
         name: '',
