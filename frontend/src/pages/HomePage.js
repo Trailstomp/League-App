@@ -13,7 +13,17 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
     // Calculate real statistics from current data
     const stats = {
         totalTeams: teams.length,
-        activeEvents: events ? events.length : 0,
+        activeEvents: events ? events.filter(event => {
+            // Filter for active/upcoming events only
+            if (!event.date) return false;
+            
+            const eventDate = new Date(event.date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Reset time to compare dates only
+            
+            // Include events that are today or in the future
+            return eventDate >= today;
+        }).length : 0,
         totalPlayers: teams.reduce((total, team) => total + (team.players?.length || 0), 0)
     };
 
