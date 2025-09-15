@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import SimpleTeamSelector from './SimpleTeamSelector'; 
+import SimpleTeamSelector from './SimpleTeamSelector';
+import useEventPersistence from '../hooks/useEventPersistence'; 
 
 /**
  * Simple Event Form - Direct state management, no complex hooks
