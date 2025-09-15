@@ -473,13 +473,28 @@ const SimpleEventForm = ({
                                     <span className="text-sm text-gray-600">Include League</span>
                                 </label>
                                 {showLeagueField && (
-                                    <input
-                                        type="text"
+                                    <select
                                         value={eventData.league}
                                         onChange={(e) => updateField('league', e.target.value)}
-                                        placeholder="e.g., Division A, Championship League"
                                         className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
+                                    >
+                                        <option value="">Select League</option>
+                                        <option value="Recreational">Recreational</option>
+                                        <option value="Competitive">Competitive</option>
+                                        <option value="Division A">Division A</option>
+                                        <option value="Division B">Division B</option>
+                                        <option value="Division C">Division C</option>
+                                        <option value="Championship">Championship</option>
+                                        <option value="Tournament">Tournament</option>
+                                        <option value="Playoff">Playoff</option>
+                                        <option value="Exhibition">Exhibition</option>
+                                        <option value="Youth">Youth</option>
+                                        <option value="Adult">Adult</option>
+                                        <option value="Masters">Masters</option>
+                                        <option value="Women's">Women's</option>
+                                        <option value="Men's">Men's</option>
+                                        <option value="Co-Ed">Co-Ed</option>
+                                    </select>
                                 )}
                             </div>
                         </div>
