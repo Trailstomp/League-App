@@ -34,26 +34,9 @@ const useStatistics = () => {
                     setSeasonStats(JSON.parse(savedSeasonStats));
                 }
                 
-                // Then load from backend to sync any server updates
-                const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
-                const response = await fetch(`${BACKEND_URL}/api/league-data`);
-                
-                if (response.ok) {
-                    const apiData = await response.json();
-                    console.log('🏆 Loaded tournament data from backend:', apiData.tournamentData);
-                    
-                    if (apiData.tournamentData) {
-                        setTournamentData(apiData.tournamentData);
-                    }
-                    if (apiData.gameStatistics) {
-                        setGameStatistics(apiData.gameStatistics);
-                    }
-                    if (apiData.seasonStats) {
-                        setSeasonStats(apiData.seasonStats);
-                    }
-                } else {
-                    console.warn('Could not load statistics from backend, using localStorage only');
-                }
+                // Note: Statistics are now loaded by App.js main data loading to prevent race conditions
+                // useStatistics hook only manages statistics-specific data (gameStats, tournaments, seasons)
+                console.log('📊 Statistics hook initialized with localStorage data only');
             } catch (error) {
                 console.warn('Error loading statistics:', error);
             }
