@@ -164,32 +164,13 @@ function App() {
             setTeams([]);
           }
           
-          // Load players safely - with fallback to individual endpoint
-          if (leagueData.players && Array.isArray(leagueData.players) && leagueData.players.length > 0) {
+          // UNIFIED DATA SOURCE: Load players only from league-data
+          if (leagueData.players && Array.isArray(leagueData.players)) {
             setPlayers(leagueData.players);
             console.log('✅ Loaded players from league-data:', leagueData.players.length, 'players');
           } else {
-            console.log('📝 No players in league-data, loading from players endpoint');
-            // Fallback: Load players from individual endpoint
-            try {
-              const playersResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/players`);
-              if (playersResponse.ok) {
-                const playersData = await playersResponse.json();
-                if (playersData && playersData.length > 0) {
-                  console.log('✅ Loaded players from players endpoint:', playersData.length, 'players');
-                  setPlayers(playersData);
-                } else {
-                  console.log('📝 No players in individual endpoint either, starting empty');
-                  setPlayers([]);
-                }
-              } else {
-                console.log('📝 Players endpoint failed, starting empty');
-                setPlayers([]);
-              }
-            } catch (error) {
-              console.error('❌ Error loading players from individual endpoint:', error);
-              setPlayers([]);
-            }
+            console.log('📝 No players in league-data, starting with empty array');
+            setPlayers([]);
           }
           
           // Load events safely with detailed logging
