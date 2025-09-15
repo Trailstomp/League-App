@@ -146,11 +146,41 @@ const SeasonManager = ({ teams = [], events = [], websiteStyle = {}, currentUser
     return (
         <div className="season-manager bg-white rounded-lg shadow-lg p-6">
             <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">📅 Season Management</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">📅 Seasons & Leagues Management</h2>
                 <p className="text-gray-600">
-                    Manage league seasons, set active periods, and track season progress
+                    Manage seasons, leagues, and competition structures
                 </p>
+                
+                {/* Tab Navigation */}
+                <div className="mt-4 border-b border-gray-200">
+                    <div className="flex space-x-8">
+                        <button
+                            onClick={() => setActiveTab('seasons')}
+                            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                                activeTab === 'seasons'
+                                    ? 'border-blue-500 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            }`}
+                        >
+                            📅 Seasons
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('leagues')}
+                            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                                activeTab === 'leagues'
+                                    ? 'border-blue-500 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            }`}
+                        >
+                            🏆 Leagues
+                        </button>
+                    </div>
+                </div>
             </div>
+
+            {/* Tab Content */}
+            {activeTab === 'seasons' ? (
+                <div className="seasons-content">
 
             {/* Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
