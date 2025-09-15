@@ -90,34 +90,34 @@ class EventSearchTester:
         except Exception as e:
             self.log_test("Main League Database Access", False, f"Exception: {str(e)}")
             
-    async def search_individual_events_collection(self):
+    def search_individual_events_collection(self):
         """Check if there's a separate events collection"""
         try:
             # Try to access a potential /api/events endpoint
-            async with self.session.get(f"{API_BASE}/events") as response:
-                if response.status == 200:
-                    data = await response.json()
-                    self.log_test("Individual Events Collection Access", True, f"Found events collection with {len(data)} events")
-                    
-                    # Search for user events
-                    found_user_events = []
-                    for event in data:
-                        event_title = event.get('title', '').strip()
-                        for target in self.target_events:
-                            if target.lower() in event_title.lower():
-                                found_user_events.append(event_title)
-                                self.found_events.append(f"EVENTS_COLLECTION: {event_title}")
-                    
-                    if found_user_events:
-                        self.log_test("User Events in Events Collection", True, f"Found: {found_user_events}")
-                    else:
-                        self.log_test("User Events in Events Collection", False, "No user events found")
-                        
-                elif response.status == 404:
-                    self.log_test("Individual Events Collection Access", True, "No separate events collection (404 - expected)")
+            response = requests.get(f"{API_BASE}/events", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                self.log_test("Individual Events Collection Access", True, f"Found events collection with {len(data)} events")
+                
+                # Search for user events
+                found_user_events = []
+                for event in data:
+                    event_title = event.get('title', '').strip()
+                    for target in self.target_events:
+                        if target.lower() in event_title.lower():
+                            found_user_events.append(event_title)
+                            self.found_events.append(f"EVENTS_COLLECTION: {event_title}")
+                
+                if found_user_events:
+                    self.log_test("User Events in Events Collection", True, f"Found: {found_user_events}")
                 else:
-                    self.log_test("Individual Events Collection Access", False, f"HTTP {response.status}")
+                    self.log_test("User Events in Events Collection", False, "No user events found")
                     
+            elif response.status_code == 404:
+                self.log_test("Individual Events Collection Access", True, "No separate events collection (404 - expected)")
+            else:
+                self.log_test("Individual Events Collection Access", False, f"HTTP {response.status_code}")
+                
         except Exception as e:
             self.log_test("Individual Events Collection Access", False, f"Exception: {str(e)}")
             
