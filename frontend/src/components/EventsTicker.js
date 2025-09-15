@@ -45,9 +45,24 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
             const eventDate = new Date(event.date);
             const inDateRange = eventDate >= lookBackDate && eventDate <= lookForwardDate;
             
-            // Event type filter
+            // Event type filter - handle both singular and plural forms
             const eventType = event.type || 'other';
-            const typeAllowed = eventFilters[eventType] || eventFilters.other;
+            let typeAllowed = false;
+            
+            // Map singular database types to plural filter types
+            const typeMapping = {
+                'game': 'games',
+                'tournament': 'tournaments', 
+                'practice': 'practices',
+                'meeting': 'meetings',
+                'social': 'social',
+                'event': 'other', // Generic events fall under 'other'
+                'other': 'other'
+            };
+            
+            // Check both the original type and mapped type
+            const mappedType = typeMapping[eventType] || 'other';
+            typeAllowed = eventFilters[eventType] || eventFilters[mappedType] || false;
             
             return inDateRange && typeAllowed;
         });
