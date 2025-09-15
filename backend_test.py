@@ -214,33 +214,33 @@ class EventSearchTester:
         except Exception as e:
             self.log_test("Event Structure Analysis", False, f"Exception: {str(e)}")
             
-    async def search_chronological_history(self):
+    def search_chronological_history(self):
         """Look for chronological history of user events"""
         try:
             # Check if there are any backup collections or historical data
-            async with self.session.get(f"{API_BASE}/backup/teams") as response:
-                if response.status == 200:
-                    self.log_test("Backup System Access", True, "Backup system is accessible")
-                else:
-                    self.log_test("Backup System Access", False, f"HTTP {response.status}")
-                    
+            response = requests.get(f"{API_BASE}/backup/teams", timeout=10)
+            if response.status_code == 200:
+                self.log_test("Backup System Access", True, "Backup system is accessible")
+            else:
+                self.log_test("Backup System Access", False, f"HTTP {response.status_code}")
+                
             # Try to get teams data to see if events are stored there
-            async with self.session.get(f"{API_BASE}/teams") as response:
-                if response.status == 200:
-                    teams = await response.json()
-                    self.log_test("Teams Collection Access", True, f"Found {len(teams)} teams")
-                    
-                    # Check if any teams have event data
-                    teams_with_events = []
-                    for team in teams:
-                        if 'events' in team or 'schedule' in team or 'games' in team:
-                            teams_with_events.append(team.get('name', 'Unknown'))
-                            
-                    if teams_with_events:
-                        self.log_test("Team-Level Event Storage", True, f"Teams with events: {teams_with_events}")
-                    else:
-                        self.log_test("Team-Level Event Storage", True, "No team-level event storage found")
+            response = requests.get(f"{API_BASE}/teams", timeout=10)
+            if response.status_code == 200:
+                teams = response.json()
+                self.log_test("Teams Collection Access", True, f"Found {len(teams)} teams")
+                
+                # Check if any teams have event data
+                teams_with_events = []
+                for team in teams:
+                    if 'events' in team or 'schedule' in team or 'games' in team:
+                        teams_with_events.append(team.get('name', 'Unknown'))
                         
+                if teams_with_events:
+                    self.log_test("Team-Level Event Storage", True, f"Teams with events: {teams_with_events}")
+                else:
+                    self.log_test("Team-Level Event Storage", True, "No team-level event storage found")
+                    
         except Exception as e:
             self.log_test("Chronological History Search", False, f"Exception: {str(e)}")
             
