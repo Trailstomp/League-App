@@ -244,7 +244,7 @@ class EventSearchTester:
         except Exception as e:
             self.log_test("Chronological History Search", False, f"Exception: {str(e)}")
             
-    async def comprehensive_database_search(self):
+    def comprehensive_database_search(self):
         """Perform comprehensive search across all accessible endpoints"""
         try:
             # List of all possible endpoints to check
@@ -261,25 +261,25 @@ class EventSearchTester:
             
             for endpoint in endpoints_to_check:
                 try:
-                    async with self.session.get(f"{API_BASE}{endpoint}") as response:
-                        if response.status == 200:
-                            data = await response.json()
-                            # Convert to string and search for user event titles
-                            data_str = json.dumps(data, default=str).lower()
+                    response = requests.get(f"{API_BASE}{endpoint}", timeout=10)
+                    if response.status_code == 200:
+                        data = response.json()
+                        # Convert to string and search for user event titles
+                        data_str = json.dumps(data, default=str).lower()
+                        
+                        found_in_endpoint = []
+                        for target in self.target_events:
+                            if target.lower() in data_str:
+                                found_in_endpoint.append(target)
+                                self.found_events.append(f"{endpoint.upper()}: {target}")
+                        
+                        if found_in_endpoint:
+                            self.log_test(f"Search in {endpoint}", True, f"Found user events: {found_in_endpoint}")
+                        else:
+                            self.log_test(f"Search in {endpoint}", True, f"No user events found (searched {len(data_str)} characters)")
                             
-                            found_in_endpoint = []
-                            for target in self.target_events:
-                                if target.lower() in data_str:
-                                    found_in_endpoint.append(target)
-                                    self.found_events.append(f"{endpoint.upper()}: {target}")
-                            
-                            if found_in_endpoint:
-                                self.log_test(f"Search in {endpoint}", True, f"Found user events: {found_in_endpoint}")
-                            else:
-                                self.log_test(f"Search in {endpoint}", True, f"No user events found (searched {len(data_str)} characters)")
-                                
-                            all_text_content.append(data_str)
-                            
+                        all_text_content.append(data_str)
+                        
                 except Exception as e:
                     self.log_test(f"Search in {endpoint}", False, f"Exception: {str(e)}")
                     
