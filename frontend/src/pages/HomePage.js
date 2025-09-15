@@ -239,18 +239,32 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                     </div>
                                 </div>
                                 
-                                {/* Info Section - 20% of card like player info */}
+                                {/* Info Section - Team name and data in white space */}
                                 <div className="p-4">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <span className="text-sm font-semibold text-slate-600">
-                                            {team.coach || 'No Coach'}
+                                    {/* Team Name - Main heading */}
+                                    <h3 className="font-bold text-lg text-center mb-2" style={{ color: team.style?.primaryColor || '#2563eb' }}>
+                                        {team.name}
+                                    </h3>
+                                    
+                                    {/* Team Details */}
+                                    <div className="text-center mb-2">
+                                        <p className="text-sm text-slate-600">{team.division || 'Division'}</p>
+                                        <p className="text-xs text-slate-500">Record: {team.wins || 0}-{team.losses || 0}</p>
+                                    </div>
+                                    
+                                    {/* Coach Info */}
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="text-slate-600">
+                                            Coach: {team.coach || 'TBD'}
                                         </span>
                                         {team.captain && (
-                                            <span className="bg-yellow-500 text-white px-2 py-1 rounded text-xs font-bold">CAPTAIN</span>
+                                            <span className="bg-yellow-500 text-white px-2 py-1 rounded font-bold">CAPTAIN</span>
                                         )}
                                     </div>
+                                    
+                                    {/* Team Motto */}
                                     {team.motto && (
-                                        <p className="text-slate-500 text-sm">"{team.motto}"</p>
+                                        <p className="text-slate-500 text-xs mt-2 italic text-center">"{team.motto}"</p>
                                     )}
                                 </div>
                             </div>
