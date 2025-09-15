@@ -12,6 +12,8 @@ import SeasonManager from '../components/managers/SeasonManager';
 
 const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, currentUser, websiteStyle, setWebsiteStyle, events, setEvents }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
+    const [seasons, setSeasons] = useState([]);
+    const [loadingSeasons, setLoadingSeasons] = useState(true);
 
     // Protected teams update function that saves to API
     const handleTeamsChange = async (newTeams) => {
