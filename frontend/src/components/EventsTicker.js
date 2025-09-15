@@ -57,7 +57,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
 
         const timeoutId = setTimeout(checkAndScroll, 100);
         return () => clearTimeout(timeoutId);
-    }, [isHovering, tickerEvents.length]);
+    }, [isHovering, tickerEvents.length, websiteStyle?.tickerSpeed]);
 
     // Don't render if no events
     if (tickerEvents.length === 0) {
@@ -204,6 +204,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
                                     </div>
                                 </div>
                             </div>
+                        </div>
                     );
                 })}
             </div>
