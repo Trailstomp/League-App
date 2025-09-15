@@ -183,34 +183,34 @@ class EventSearchTester:
         except Exception as e:
             self.log_test("Event Save Path Test", False, f"Exception: {str(e)}")
             
-    async def check_filtering_requirements(self):
+    def check_filtering_requirements(self):
         """Check if events are being filtered out due to missing fields"""
         try:
             # Get current league data to analyze event structure
-            async with self.session.get(f"{API_BASE}/league-data") as response:
-                if response.status == 200:
-                    data = await response.json()
-                    league_schedule = data.get('leagueSchedule', [])
+            response = requests.get(f"{API_BASE}/league-data", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                league_schedule = data.get('leagueSchedule', [])
+                
+                if league_schedule:
+                    # Analyze the structure of existing events
+                    sample_event = league_schedule[0]
+                    required_fields = list(sample_event.keys())
+                    self.log_test("Event Structure Analysis", True, 
+                                f"Existing events have fields: {required_fields}")
                     
-                    if league_schedule:
-                        # Analyze the structure of existing events
-                        sample_event = league_schedule[0]
-                        required_fields = list(sample_event.keys())
-                        self.log_test("Event Structure Analysis", True, 
-                                    f"Existing events have fields: {required_fields}")
-                        
-                        # Check for common filtering fields
-                        filtering_fields = ['season', 'league', 'active', 'published', 'approved']
-                        found_filtering_fields = [field for field in filtering_fields if field in sample_event]
-                        
-                        if found_filtering_fields:
-                            self.log_test("Potential Filtering Fields", True, 
-                                        f"Found filtering fields: {found_filtering_fields}")
-                        else:
-                            self.log_test("Potential Filtering Fields", True, "No obvious filtering fields found")
+                    # Check for common filtering fields
+                    filtering_fields = ['season', 'league', 'active', 'published', 'approved']
+                    found_filtering_fields = [field for field in filtering_fields if field in sample_event]
+                    
+                    if found_filtering_fields:
+                        self.log_test("Potential Filtering Fields", True, 
+                                    f"Found filtering fields: {found_filtering_fields}")
                     else:
-                        self.log_test("Event Structure Analysis", False, "No events to analyze")
-                        
+                        self.log_test("Potential Filtering Fields", True, "No obvious filtering fields found")
+                else:
+                    self.log_test("Event Structure Analysis", False, "No events to analyze")
+                    
         except Exception as e:
             self.log_test("Event Structure Analysis", False, f"Exception: {str(e)}")
             
