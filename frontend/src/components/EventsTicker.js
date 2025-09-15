@@ -37,7 +37,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
             }
 
             let scrollPosition = 0;
-            const scrollSpeed = websiteStyle?.tickerSpeed || 1;
+            const scrollSpeed = Math.max(websiteStyle?.tickerSpeed || 1, 0.5); // Ensure minimum scroll speed
             
             const scroll = () => {
                 if (!isHovering) {
