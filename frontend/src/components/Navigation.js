@@ -136,7 +136,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                         {!isCollapsed && " Teams"}
                     </h3>
                     <div className="space-y-2">
-                        {teams.map(team => (
+                        {teams.sort((a, b) => a.name.localeCompare(b.name)).map(team => (
                             <button
                                 key={team.id} 
                                 className={`w-full flex items-center px-4 py-3 text-sm rounded-full transition-all duration-200 text-left border hover:shadow-sm hover:transform hover:scale-102 ${isCollapsed ? 'justify-center' : ''}`}
