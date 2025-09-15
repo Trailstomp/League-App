@@ -296,7 +296,7 @@ class EventSearchTester:
         except Exception as e:
             self.log_test("Comprehensive Database Search", False, f"Exception: {str(e)}")
             
-    async def run_all_tests(self):
+    def run_all_tests(self):
         """Run all event search tests"""
         print("🔍 CRITICAL USER EVENT SEARCH - FINDING MISSING EVENTS")
         print("=" * 60)
@@ -304,20 +304,14 @@ class EventSearchTester:
         print(f"Backend URL: {API_BASE}")
         print("=" * 60)
         
-        await self.setup_session()
-        
-        try:
-            # Run all search tests
-            await self.search_main_league_database()
-            await self.search_individual_events_collection()
-            await self.check_database_collections_directly()
-            await self.analyze_save_path_issues()
-            await self.check_filtering_requirements()
-            await self.search_chronological_history()
-            await self.comprehensive_database_search()
-            
-        finally:
-            await self.cleanup_session()
+        # Run all search tests
+        self.search_main_league_database()
+        self.search_individual_events_collection()
+        self.check_database_collections_directly()
+        self.analyze_save_path_issues()
+        self.check_filtering_requirements()
+        self.search_chronological_history()
+        self.comprehensive_database_search()
             
         # Summary
         print("\n" + "=" * 60)
@@ -339,10 +333,10 @@ class EventSearchTester:
         
         return len(self.found_events) > 0
 
-async def main():
+def main():
     """Main test execution"""
     tester = EventSearchTester()
-    events_found = await tester.run_all_tests()
+    events_found = tester.run_all_tests()
     
     if not events_found:
         print("\n🚨 CRITICAL FINDING: USER EVENTS ARE NOT PERSISTING")
@@ -352,4 +346,4 @@ async def main():
     return events_found
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
