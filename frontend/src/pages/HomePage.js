@@ -165,40 +165,8 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                         {teams.slice(0, 8).map(team => (
                             <div 
                                 key={team.id} 
-                                className="relative bg-white rounded-xl overflow-hidden transition-all duration-300 cursor-pointer group"
-                                style={{ 
-                                    borderColor: team.style?.primaryColor || '#2563eb',
-                                    background: `linear-gradient(135deg, rgba(255,255,255,1) 0%, ${team.style?.backgroundColor || '#f8fafc'} 100%)`,
-                                    // SPECTACULAR CARD SHADOWS - like premium trading cards
-                                    boxShadow: `
-                                        0 8px 25px -5px rgba(0, 0, 0, 0.1),
-                                        0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                                        0 0 0 1px ${team.style?.primaryColor || '#2563eb'}60,
-                                        inset 0 1px 0 rgba(255, 255, 255, 0.1)
-                                    `,
-                                    transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg)',
-                                    border: `3px solid ${team.style?.primaryColor || '#2563eb'}`,
-                                }}
-                                onMouseEnter={(e) => {
-                                    // Enhanced 3D card hover effect
-                                    e.currentTarget.style.transform = 'perspective(1000px) rotateX(-3deg) rotateY(3deg) translateY(-8px)';
-                                    e.currentTarget.style.boxShadow = `
-                                        0 25px 50px -12px rgba(0, 0, 0, 0.25),
-                                        0 12px 20px -8px rgba(0, 0, 0, 0.1),
-                                        0 0 0 1px ${team.style?.primaryColor || '#2563eb'}80,
-                                        inset 0 2px 0 rgba(255, 255, 255, 0.3)
-                                    `;
-                                }}
-                                onMouseLeave={(e) => {
-                                    // Return to flat position
-                                    e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
-                                    e.currentTarget.style.boxShadow = `
-                                        0 8px 25px -5px rgba(0, 0, 0, 0.1),
-                                        0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                                        0 0 0 1px ${team.style?.primaryColor || '#2563eb'}60,
-                                        inset 0 1px 0 rgba(255, 255, 255, 0.1)
-                                    `;
-                                }}
+                                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform hover:scale-105 duration-300 border-4 cursor-pointer group"
+                                style={{ borderColor: team.style?.primaryColor || '#2563eb' }}
                                 onClick={() => {
                                     console.log('🏆 Team card clicked:', team.name);
                                     console.log('🎨 Team colors for card:', team.style);
@@ -207,132 +175,88 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                         onNavigate('team', team.id);
                                     }
                                 }}
-                                onMouseEnter={(e) => {
-                                    // Enhanced 3D card hover effect
-                                    e.currentTarget.style.transform = 'perspective(1000px) rotateX(-3deg) rotateY(3deg) translateY(-8px)';
-                                    e.currentTarget.style.boxShadow = `
-                                        0 25px 50px -12px rgba(0, 0, 0, 0.25),
-                                        0 12px 20px -8px rgba(0, 0, 0, 0.1),
-                                        0 0 0 1px ${team.style?.primaryColor || '#2563eb'}80,
-                                        inset 0 2px 0 rgba(255, 255, 255, 0.3)
-                                    `;
-                                }}
-                                onMouseLeave={(e) => {
-                                    // Return to flat position
-                                    e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
-                                    e.currentTarget.style.boxShadow = `
-                                        0 8px 25px -5px rgba(0, 0, 0, 0.1),
-                                        0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                                        0 0 0 1px ${team.style?.primaryColor || '#2563eb'}60,
-                                        inset 0 1px 0 rgba(255, 255, 255, 0.1)
-                                    `;
-                                }}
+                                title="Click for team details"
                             >
-                                {/* Card Header Stripe with Enhanced Gradient */}
-                                <div 
-                                    className="h-4 w-full relative"
-                                    style={{ 
-                                        background: `linear-gradient(90deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 50%, ${team.style?.primaryColor || '#2563eb'} 100%)`
-                                    }}
-                                >
-                                    {/* Shine effect on header */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20"></div>
-                                </div>
-                                
-                                {/* COMPACT LOGO SECTION - Narrower cards */}
-                                <div 
-                                    className="relative p-2" 
-                                    style={{ 
-                                        height: '120px',
-                                        background: team.style?.cardBackgroundImage 
-                                            ? `url(${team.style.cardBackgroundImage})`
-                                            : `linear-gradient(135deg, ${team.style?.backgroundColor || '#f8fafc'} 0%, rgba(255,255,255,0.9) 100%)`,
-                                        backgroundSize: 'cover',
-                                        backgroundPosition: 'center',
-                                        aspectRatio: '1'  // Keep cards square for narrow layout
-                                    }}
-                                >
-                                    {/* Background overlay for opacity control */}
-                                    {team.style?.cardBackgroundImage && (
-                                        <div 
-                                            className="absolute inset-0"
-                                            style={{ 
-                                                backgroundColor: `rgba(255,255,255,${1 - (team.style?.cardBackgroundOpacity || 0.3)})`
-                                            }}
-                                        ></div>
-                                    )}
-                                    
-                                    {/* Logo container - COMPACT for narrow cards */}
-                                    <div className="w-full h-full flex items-center justify-center relative z-10">
-                                        {team.style?.logoUrl ? (
-                                            <img 
-                                                src={team.style.logoUrl} 
-                                                alt={team.name}
-                                                className="w-16 h-16 object-contain drop-shadow-lg"
-                                                style={{ 
-                                                    filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
-                                                    backgroundColor: 'transparent'
-                                                }}
-                                            />
-                                        ) : (
+                                {/* Main Logo Area - 80% of card like player photo */}
+                                <div className="relative overflow-hidden" style={{ aspectRatio: '3/4', minHeight: '200px' }}>
+                                    <div 
+                                        className="w-full h-full flex items-center justify-center relative"
+                                        style={{ 
+                                            background: team.style?.cardBackgroundImage 
+                                                ? `url(${team.style.cardBackgroundImage})`
+                                                : `linear-gradient(135deg, ${team.style?.backgroundColor || '#f8fafc'} 0%, rgba(255,255,255,0.9) 100%)`,
+                                            backgroundSize: 'cover',
+                                            backgroundPosition: 'center'
+                                        }}
+                                    >
+                                        {/* Background overlay for opacity control */}
+                                        {team.style?.cardBackgroundImage && (
                                             <div 
-                                                className="w-16 h-16 rounded-xl flex items-center justify-center relative"
+                                                className="absolute inset-0"
                                                 style={{ 
-                                                    background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
-                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+                                                    backgroundColor: `rgba(255,255,255,${1 - (team.style?.cardBackgroundOpacity || 0.3)})`
                                                 }}
-                                            >
-                                                <span className="text-white font-bold text-2xl drop-shadow-lg">
-                                                    {team.name.charAt(0)}
-                                                </span>
-                                                {/* Gradient shine overlay */}
-                                                <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-20 pointer-events-none rounded-xl"></div>
-                                            </div>
+                                            ></div>
                                         )}
-                                    </div>
-                                    
-                                    {/* Team Record Badge - Compact */}
-                                    <div className="absolute top-1 right-1">
-                                        <div 
-                                            className="px-2 py-1 rounded-full text-white text-xs font-bold shadow-md"
-                                            style={{ 
-                                                background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
-                                                boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
-                                            }}
-                                        >
-                                            {team.wins || 0}-{team.losses || 0}
+                                        
+                                        {/* Logo - 80% of the card area */}
+                                        <div className="relative z-10">
+                                            {team.style?.logoUrl ? (
+                                                <img 
+                                                    src={team.style.logoUrl} 
+                                                    alt={team.name}
+                                                    className="w-32 h-32 object-contain drop-shadow-2xl"
+                                                    style={{ 
+                                                        filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.4)) drop-shadow(0 4px 8px rgba(255,255,255,0.1))',
+                                                        backgroundColor: 'transparent'
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div 
+                                                    className="w-32 h-32 rounded-2xl flex items-center justify-center relative"
+                                                    style={{ 
+                                                        background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
+                                                        boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+                                                    }}
+                                                >
+                                                    <span className="text-white font-bold text-6xl drop-shadow-lg">
+                                                        {team.name.charAt(0)}
+                                                    </span>
+                                                    {/* Gradient shine overlay */}
+                                                    <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-20 pointer-events-none rounded-2xl"></div>
+                                                </div>
+                                            )}
+                                        </div>
+                                        
+                                        {/* Record Badge - Like hover overlay in player card */}
+                                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="bg-black bg-opacity-60 rounded px-2 py-1 text-xs text-white">
+                                                {team.wins || 0}-{team.losses || 0}
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Team Name Overlay - Like player name at bottom */}
+                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                                            <h3 className="text-white font-bold text-lg">{team.name}</h3>
+                                            <p className="text-white text-sm">{team.division || 'Division'}</p>
                                         </div>
                                     </div>
-                                    
-                                    {/* Holographic shine effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white to-transparent opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity"></div>
                                 </div>
                                 
-                                {/* Team Info Footer - VERY Compact for narrow cards */}
-                                <div className="px-2 pb-2 bg-white relative z-10">
-                                    <h3 
-                                        className="text-sm font-bold text-center truncate"
-                                        style={{ color: team.style?.primaryColor || '#2563eb' }}
-                                        title={team.name}
-                                    >
-                                        {team.name}
-                                    </h3>
+                                {/* Info Section - 20% of card like player info */}
+                                <div className="p-4">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="text-sm font-semibold text-slate-600">
+                                            {team.coach || 'No Coach'}
+                                        </span>
+                                        {team.captain && (
+                                            <span className="bg-yellow-500 text-white px-2 py-1 rounded text-xs font-bold">CAPTAIN</span>
+                                        )}
+                                    </div>
+                                    {team.motto && (
+                                        <p className="text-slate-500 text-sm">"{team.motto}"</p>
+                                    )}
                                 </div>
-                                
-                                {/* Card Footer Stripe with Enhanced Gradient */}
-                                <div 
-                                    className="h-4 w-full relative"
-                                    style={{ 
-                                        background: `linear-gradient(90deg, ${team.style?.accentColor || '#3b82f6'} 0%, ${team.style?.primaryColor || '#2563eb'} 50%, ${team.style?.accentColor || '#3b82f6'} 100%)`
-                                    }}
-                                >
-                                    {/* Footer shine effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20"></div>
-                                </div>
-                                
-                                {/* Premium Card Bevel Effect */}
-                                <div className="absolute inset-0 rounded-xl border border-white/30 pointer-events-none"></div>
-                                <div className="absolute inset-0 rounded-xl border-2 border-black/5 pointer-events-none"></div>
                             </div>
                         ))}
                     </div>
