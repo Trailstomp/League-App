@@ -14,15 +14,16 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
     const stats = {
         totalTeams: teams.length,
         activeEvents: events ? events.filter(event => {
-            // Filter for active/upcoming events only
+            // Filter for upcoming events (consistent with EventsTicker logic)
             if (!event.date) return false;
             
             const eventDate = new Date(event.date);
             const today = new Date();
-            today.setHours(0, 0, 0, 0); // Reset time to compare dates only
+            const thirtyDaysFromNow = new Date();
+            thirtyDaysFromNow.setDate(today.getDate() + 30);
             
-            // Include events that are today or in the future
-            return eventDate >= today;
+            // Include upcoming events within 30 days (matches ticker filtering)
+            return eventDate >= today && eventDate <= thirtyDaysFromNow;
         }).length : 0,
         totalPlayers: teams.reduce((total, team) => total + (team.players?.length || 0), 0)
     };
