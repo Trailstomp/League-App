@@ -178,9 +178,8 @@ const SeasonManager = ({ teams = [], events = [], websiteStyle = {}, currentUser
                 </div>
             </div>
 
-            {/* Tab Content */}
-            {activeTab === 'seasons' ? (
-                <div className="seasons-content">
+            {/* Seasons Content Only - Leagues removed */}
+            <div className="seasons-content">
 
             {/* Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
