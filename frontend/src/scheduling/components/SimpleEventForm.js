@@ -88,7 +88,7 @@ const SimpleEventForm = ({
             description: initialEvent?.description || '',
             type: initialEvent?.type || 'event',
             season: initialEvent?.season || '',
-            league: initialEvent?.league || '',
+            division: initialEvent?.division || '',
             imageUrl: initialEvent?.imageUrl || '',
             imageStyle: initialEvent?.imageStyle || 'cover',
         };
