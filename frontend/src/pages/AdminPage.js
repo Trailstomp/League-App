@@ -15,6 +15,26 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
     const [seasons, setSeasons] = useState([]);
     const [loadingSeasons, setLoadingSeasons] = useState(true);
 
+    // Load seasons from unified data source
+    useEffect(() => {
+        loadSeasons();
+    }, []);
+
+    const loadSeasons = async () => {
+        try {
+            const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+            const response = await fetch(`${BACKEND_URL}/api/league-data`);
+            if (response.ok) {
+                const data = await response.json();
+                setSeasons(data.seasons || []);
+                console.log('📅 AdminPage: Loaded seasons:', data.seasons?.length || 0);
+            }
+        } catch (error) {
+            console.error('Error loading seasons in AdminPage:', error);
+        }
+        setLoadingSeasons(false);
+    };
+
     // Protected teams update function that saves to API
     const handleTeamsChange = async (newTeams) => {
         try {
