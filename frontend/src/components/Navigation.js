@@ -297,14 +297,6 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                     onNavigate={onNavigate}
                     onMobileClose={onMobileClose}
                 />
-                        {!isCollapsed && teams.length === 0 && (
-                            <div className="text-xs text-slate-500 px-3 py-4 text-center bg-slate-50 rounded">
-                                <LacrosseIcon name="teams" className="mx-auto mb-2" style={{fontSize: '24px'}} />
-                                <div>No teams yet</div>
-                            </div>
-                        )}
-                    </div>
-                </div>
             </div>
 
             {/* Authentication Actions - Fixed at bottom */}
