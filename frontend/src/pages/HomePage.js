@@ -321,19 +321,15 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                     <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white to-transparent opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity"></div>
                                 </div>
                                 
-                                {/* Team Info Footer - Compact */}
-                                <div className="px-4 pb-4 bg-white relative z-10">
+                                {/* Team Info Footer - VERY Compact for narrow cards */}
+                                <div className="px-2 pb-2 bg-white relative z-10">
                                     <h3 
-                                        className="text-lg font-bold text-center mb-1 truncate"
+                                        className="text-sm font-bold text-center truncate"
                                         style={{ color: team.style?.primaryColor || '#2563eb' }}
+                                        title={team.name}
                                     >
                                         {team.name}
                                     </h3>
-                                    {team.coach && (
-                                        <div className="text-center text-xs text-slate-600">
-                                            Coach: {team.coach}
-                                        </div>
-                                    )}
                                 </div>
                                 
                                 {/* Card Footer Stripe with Enhanced Gradient */}
