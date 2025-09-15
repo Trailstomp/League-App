@@ -154,19 +154,28 @@ function App() {
             length: leagueData.leagueSchedule?.length || 'N/A'
           });
           
-          // CRITICAL: DEFENSIVE TEAM LOADING - Only load if data exists and is valid
-          if (leagueData.teams && Array.isArray(leagueData.teams)) {
+          // CRITICAL: DEFENSIVE TEAM LOADING - with fallback to individual collection
+          if (leagueData.teams && Array.isArray(leagueData.teams) && leagueData.teams.length > 0) {
             console.log('🏆 Teams in league data:', leagueData.teams.length);
-            if (leagueData.teams.length > 0) {
-              console.log('✅ Setting teams from league-data:', leagueData.teams.map(t => t.name));
-              setTeams(leagueData.teams);
-            } else {
-              console.log('📝 No teams in league-data, starting with empty array');
+            console.log('✅ Setting teams from league-data:', leagueData.teams.map(t => t.name));
+            setTeams(leagueData.teams);
+          } else {
+            console.log('📝 No teams in league-data, trying individual teams endpoint...');
+            try {
+              const teamsResponse = await fetch(`${BACKEND_URL}/api/teams`);
+              if (teamsResponse.ok) {
+                const individualTeams = await teamsResponse.json();
+                console.log('✅ Loaded teams from individual endpoint:', individualTeams.length, 'teams');
+                console.log('🏆 Individual team names:', individualTeams.map(t => t.name));
+                setTeams(individualTeams);
+              } else {
+                console.error('❌ Error loading teams from individual endpoint:', teamsResponse.status);
+                setTeams([]);
+              }
+            } catch (error) {
+              console.error('❌ Error loading teams from individual endpoint:', error);
               setTeams([]);
             }
-          } else {
-            console.log('📝 No teams array in league-data, starting with empty array');
-            setTeams([]);
           }
           
           // Load players safely - with fallback to individual endpoint
