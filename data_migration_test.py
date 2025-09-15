@@ -266,17 +266,26 @@ def verify_complete_migration():
             
             # Detailed team verification
             teams_with_custom_styling = 0
+            teams_with_logos = 0
             for team in teams:
-                if team.get('style') and team.get('logo'):
+                has_logo = bool(team.get('logo'))
+                has_style = bool(team.get('style'))
+                
+                if has_logo:
+                    teams_with_logos += 1
+                if has_style:
                     teams_with_custom_styling += 1
+                
+                if has_style and has_logo:
                     print(f"  🏆 {team.get('name', 'Unknown')}: ✅ Logo + Custom Style")
-                elif team.get('style'):
+                elif has_style:
                     print(f"  🏆 {team.get('name', 'Unknown')}: ✅ Custom Style")
-                elif team.get('logo'):
+                elif has_logo:
                     print(f"  🏆 {team.get('name', 'Unknown')}: ✅ Logo")
                 else:
                     print(f"  🏆 {team.get('name', 'Unknown')}: ❌ No customization")
             
+            print(f"  - Teams with logos: {teams_with_logos}")
             print(f"  - Teams with custom styling: {teams_with_custom_styling}")
             
             # Check if we have the expected 10 teams and 2 players
