@@ -235,11 +235,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                             </div>
                                         </div>
                                         
-                                        {/* Team Name Overlay - Like player name at bottom */}
-                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                                            <h3 className="text-white font-bold text-lg">{team.name}</h3>
-                                            <p className="text-white text-sm">{team.division || 'Division'}</p>
-                                        </div>
+                                        {/* Remove overlay - move to white space below */}
                                     </div>
                                 </div>
                                 
