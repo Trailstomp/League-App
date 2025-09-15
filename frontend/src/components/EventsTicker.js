@@ -10,8 +10,17 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         return team?.name || teamId;
     };
 
-    // Show ALL events with NO filtering or constraints
-    const tickerEvents = events; // No filtering - show everything!
+    // Show ALL events with deduplication by event ID
+    const uniqueEvents = events.reduce((unique, event) => {
+        // Deduplicate by event ID - each event shows only once
+        if (!unique.find(e => e.id === event.id)) {
+            unique.push(event);
+        }
+        return unique;
+    }, []);
+    
+    const tickerEvents = uniqueEvents;
+    console.log('🎫 Ticker: Total events:', events.length, 'Unique events:', tickerEvents.length);
 
     // Auto-scroll animation
     useEffect(() => {
