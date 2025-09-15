@@ -187,11 +187,22 @@ function App() {
             }
           }
           
-          // Load events safely  
-          if (leagueData.leagueSchedule && Array.isArray(leagueData.leagueSchedule) && leagueData.leagueSchedule.length > 0) {
+          // Load events safely with detailed logging
+          console.log('📅 Event loading check:', {
+            hasLeagueSchedule: !!leagueData.leagueSchedule,
+            isArray: Array.isArray(leagueData.leagueSchedule),
+            length: leagueData.leagueSchedule?.length || 0,
+            leagueScheduleKeys: leagueData.leagueSchedule ? Object.keys(leagueData.leagueSchedule) : 'none'
+          });
+          
+          if (leagueData.leagueSchedule && Array.isArray(leagueData.leagueSchedule)) {
             setEvents(leagueData.leagueSchedule);
             console.log('✅ Loaded events:', leagueData.leagueSchedule.length, 'events');
+            if (leagueData.leagueSchedule.length > 0) {
+              console.log('📅 Event titles:', leagueData.leagueSchedule.map(e => e.title || e.id));
+            }
           } else {
+            console.log('📝 No leagueSchedule found in API response, setting empty events array');
             setEvents([]);
           }
           
