@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Plus, Edit, Trash2, Archive, Play, Pause } from 'lucide-react';
 
 const SeasonManager = ({ teams = [], events = [], websiteStyle = {}, currentUser }) => {
     const [seasons, setSeasons] = useState([]);
