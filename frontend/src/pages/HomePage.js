@@ -161,7 +161,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
             <div className="bg-white rounded-lg shadow-sm border p-6">
                 <h2 className="text-xl font-semibold text-slate-800 mb-4">League Teams</h2>
                 {teams.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
                         {teams.slice(0, 8).map(team => (
                             <div 
                                 key={team.id} 
