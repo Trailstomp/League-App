@@ -239,16 +239,17 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20"></div>
                                 </div>
                                 
-                                {/* MASSIVE LOGO SECTION - 3/4 of card with FULL BACKGROUND */}
+                                {/* COMPACT LOGO SECTION - Narrower cards */}
                                 <div 
-                                    className="relative p-4" 
+                                    className="relative p-2" 
                                     style={{ 
-                                        height: '240px',
+                                        height: '120px',
                                         background: team.style?.cardBackgroundImage 
                                             ? `url(${team.style.cardBackgroundImage})`
                                             : `linear-gradient(135deg, ${team.style?.backgroundColor || '#f8fafc'} 0%, rgba(255,255,255,0.9) 100%)`,
                                         backgroundSize: 'cover',
-                                        backgroundPosition: 'center'
+                                        backgroundPosition: 'center',
+                                        aspectRatio: '1'  // Keep cards square for narrow layout
                                     }}
                                 >
                                     {/* Background overlay for opacity control */}
