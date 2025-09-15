@@ -49,7 +49,25 @@ const SimpleEventForm = ({
         };
 
         loadLocations();
+        loadSeasonsAndLeagues();
     }, []);
+
+    // Load seasons and leagues from backend
+    const loadSeasonsAndLeagues = async () => {
+        try {
+            const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+            const response = await fetch(`${BACKEND_URL}/api/league-data`);
+            if (response.ok) {
+                const data = await response.json();
+                setSeasons(data.seasons || []);
+                setLeagues(data.leagues || []);
+                console.log('📅 Loaded seasons:', data.seasons?.length || 0);
+                console.log('🏆 Loaded leagues:', data.leagues?.length || 0);
+            }
+        } catch (error) {
+            console.error('Error loading seasons/leagues:', error);
+        }
+    };
     // Helper function to get team name by ID
     const getTeamName = (teamId) => {
         if (!teamId) return 'League-wide';
