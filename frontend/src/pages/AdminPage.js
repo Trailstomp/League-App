@@ -23,14 +23,21 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
     const loadSeasons = async () => {
         try {
             const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+            console.log('📅 AdminPage: Starting season load from:', `${BACKEND_URL}/api/league-data`);
             const response = await fetch(`${BACKEND_URL}/api/league-data`);
+            console.log('📅 AdminPage: API response status:', response.ok, response.status);
             if (response.ok) {
                 const data = await response.json();
+                console.log('📅 AdminPage: Raw API data keys:', Object.keys(data));
+                console.log('📅 AdminPage: Seasons field type:', typeof data.seasons);
+                console.log('📅 AdminPage: Seasons field value:', data.seasons);
                 setSeasons(data.seasons || []);
-                console.log('📅 AdminPage: Loaded seasons:', data.seasons?.length || 0);
+                console.log('📅 AdminPage: Final seasons state:', data.seasons?.length || 0);
+            } else {
+                console.error('📅 AdminPage: API failed with status:', response.status);
             }
         } catch (error) {
-            console.error('Error loading seasons in AdminPage:', error);
+            console.error('📅 AdminPage: Error loading seasons:', error);
         }
         setLoadingSeasons(false);
     };
