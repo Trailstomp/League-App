@@ -418,6 +418,15 @@ const SeasonManager = ({ teams = [], events = [], websiteStyle = {}, currentUser
                     </div>
                 </div>
             )}
+                </div>
+            ) : (
+                <LeagueManager 
+                    teams={teams} 
+                    events={events} 
+                    websiteStyle={websiteStyle} 
+                    currentUser={currentUser} 
+                />
+            )}
         </div>
     );
 };
