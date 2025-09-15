@@ -13,18 +13,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
     // Calculate real statistics from current data
     const stats = {
         totalTeams: teams.length,
-        activeEvents: events ? events.filter(event => {
-            // Filter for upcoming events (consistent with EventsTicker logic)
-            if (!event.date) return false;
-            
-            const eventDate = new Date(event.date);
-            const today = new Date();
-            const thirtyDaysFromNow = new Date();
-            thirtyDaysFromNow.setDate(today.getDate() + 30);
-            
-            // Include upcoming events within 30 days (matches ticker filtering)
-            return eventDate >= today && eventDate <= thirtyDaysFromNow;
-        }).length : 0,
+        activeEvents: events ? events.length : 0, // Show ALL events count
         totalPlayers: teams.reduce((total, team) => total + (team.players?.length || 0), 0)
     };
 
