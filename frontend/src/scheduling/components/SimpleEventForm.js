@@ -439,13 +439,25 @@ const SimpleEventForm = ({
                                     <span className="text-sm text-gray-600">Include Season</span>
                                 </label>
                                 {showSeasonField && (
-                                    <input
-                                        type="text"
+                                    <select
                                         value={eventData.season}
                                         onChange={(e) => updateField('season', e.target.value)}
-                                        placeholder="e.g., Spring 2024, Fall 2024"
                                         className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
+                                    >
+                                        <option value="">Select Season</option>
+                                        <option value="Spring 2024">Spring 2024</option>
+                                        <option value="Summer 2024">Summer 2024</option>
+                                        <option value="Fall 2024">Fall 2024</option>
+                                        <option value="Winter 2024">Winter 2024</option>
+                                        <option value="Spring 2025">Spring 2025</option>
+                                        <option value="Summer 2025">Summer 2025</option>
+                                        <option value="Fall 2025">Fall 2025</option>
+                                        <option value="Winter 2025">Winter 2025</option>
+                                        <option value="Spring 2026">Spring 2026</option>
+                                        <option value="Summer 2026">Summer 2026</option>
+                                        <option value="Fall 2026">Fall 2026</option>
+                                        <option value="Winter 2026">Winter 2026</option>
+                                    </select>
                                 )}
                             </div>
                             
