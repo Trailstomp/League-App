@@ -52,6 +52,26 @@ const SimpleEventForm = ({
         loadSeasonsAndLeagues();
     }, []);
 
+    // Get available divisions from teams
+    const getAvailableDivisions = () => {
+        const divisions = [...new Set(teams.map(team => team.division).filter(Boolean))];
+        // Order: Field, Box, External, then others alphabetically
+        const orderedDivisions = [];
+        if (divisions.includes('Field')) orderedDivisions.push('Field');
+        if (divisions.includes('Box')) orderedDivisions.push('Box'); 
+        if (divisions.includes('External')) orderedDivisions.push('External');
+        
+        // Add remaining divisions alphabetically
+        const remaining = divisions.filter(d => !['Field', 'Box', 'External'].includes(d)).sort();
+        return [...orderedDivisions, ...remaining];
+    };
+
+    // Filter teams by selected division
+    const getFilteredTeams = () => {
+        if (!selectedDivision) return teams;
+        return teams.filter(team => team.division === selectedDivision);
+    };
+
     // Load seasons from backend
     const loadSeasonsAndLeagues = async () => {
         try {
