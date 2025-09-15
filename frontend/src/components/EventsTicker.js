@@ -10,16 +10,8 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         return team?.name || teamId;
     };
 
-    // Filter and format events for ticker
-    const tickerEvents = events.filter(event => {
-        // Only show upcoming events (within next 30 days)
-        const eventDate = new Date(event.date);
-        const today = new Date();
-        const thirtyDaysFromNow = new Date();
-        thirtyDaysFromNow.setDate(today.getDate() + 30);
-        
-        return eventDate >= today && eventDate <= thirtyDaysFromNow;
-    }).slice(0, 10); // Limit to 10 events
+    // Show ALL events with NO filtering or constraints
+    const tickerEvents = events; // No filtering - show everything!
 
     // Auto-scroll animation
     useEffect(() => {
