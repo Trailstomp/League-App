@@ -19,6 +19,10 @@ const SimpleEventForm = ({
     const { saveEventToSchedule } = useEventPersistence();
     const [locations, setLocations] = useState([]);
     const [loadingLocations, setLoadingLocations] = useState(true);
+    
+    // State for optional field visibility
+    const [showSeasonField, setShowSeasonField] = useState(false);
+    const [showLeagueField, setShowLeagueField] = useState(false);
 
     // Load locations from API
     useEffect(() => {
