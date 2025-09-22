@@ -393,14 +393,23 @@ async def upload_and_create_gallery(
         gallery_data = {
             "name": gallery_name,
             "description": gallery_description,
-            "type": gallery_type,
+            "type": "photo",  # Default type
             "visibility": visibility,
-            "status": "active",  # Default status
+            "status": status,
             "teamId": team_id if team_id != "league-wide" else None,
             "googleDriveFolderId": gallery_folder_id,  # Store gallery folder ID
-            "expirationDate": None,  # No expiration by default
+            "expirationDate": None,
             "mediaItems": uploaded_media_items  # Already dictionaries, no need for .dict()
         }
+        
+        # Parse expiration date if provided
+        if expiration_date:
+            try:
+                parsed_date = datetime.fromisoformat(expiration_date.replace('T', ' ').replace('Z', '+00:00'))
+                gallery_data["expirationDate"] = parsed_date.isoformat()
+            except ValueError:
+                logger.warning(f"⚠️ Invalid expiration date format: {expiration_date}")
+                # Continue without expiration date
         
         logger.info(f"📡 Creating gallery using NEW system: {gallery_name}")
         
