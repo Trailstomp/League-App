@@ -27,6 +27,9 @@ from googleapiclient.errors import HttpError
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
+# Backend URL for proxy endpoints
+BACKEND_URL = os.environ.get('BACKEND_URL', 'https://drive-token-manager.preview.emergentagent.com')
+
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
