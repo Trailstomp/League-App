@@ -1012,11 +1012,11 @@ async def fix_google_drive_urls():
                 # Check if thumbnail URL needs updating
                 if item.get('thumbnailUrl', '').startswith('https://drive.google.com/thumbnail?id='):
                     old_thumb = item['thumbnailUrl']
-                    if '&sz=w300' in old_thumb:
+                    if 'id=' in old_thumb:
                         file_id = old_thumb.split('id=')[1].split('&')[0]
-                        updated_item['thumbnailUrl'] = f"https://drive.google.com/thumbnail?id={file_id}&sz=w300-h300-c"
+                        updated_item['thumbnailUrl'] = f"{BACKEND_URL}/api/media/drive/{file_id}?size=w300-h300-c"
                         needs_update = True
-                        logger.info(f"🔧 Updated thumbnail for {item.get('filename', 'unknown')}: {file_id}")
+                        logger.info(f"🔧 Updated thumbnail to use proxy for {item.get('filename', 'unknown')}: {file_id}")
                 
                 updated_media_items.append(updated_item)
             
