@@ -218,32 +218,8 @@ async def upload_and_create_gallery(
         if not folder_id:
             logger.warning("⚠️ No folder ID found - creating main folder")
         
-        # Refresh access token
-        import requests as token_requests
-        token_data = {
-            'client_id': google_drive_config["clientId"],
-            'client_secret': google_drive_config["clientSecret"],
-            'refresh_token': refresh_token,
-            'grant_type': 'refresh_token'
-        }
-        
-        logger.info("🔄 Refreshing Google Drive access token...")
-        refresh_response = token_requests.post(
-            'https://oauth2.googleapis.com/token',
-            data=token_data,
-            timeout=15
-        )
-        
-        logger.info(f"🔄 Token refresh response: {refresh_response.status_code}")
-        
-        if refresh_response.status_code != 200:
-            error_data = refresh_response.json()
-            logger.error(f"❌ Token refresh failed: {error_data}")
-            raise HTTPException(status_code=400, detail=f"Failed to refresh Google Drive access token: {error_data}")
-        
-        tokens = refresh_response.json()
-        access_token = tokens.get('access_token', '')
-        logger.info(f"✅ Token refreshed successfully - Access token length: {len(access_token)}")
+        # Get or refresh access token
+        access_token = await get_fresh_access_token(google_drive_config, refresh_token)
         
         # If no folder ID, create/find the main folder now with fresh access token
         if not folder_id:
