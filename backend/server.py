@@ -945,6 +945,36 @@ async def create_main_folder(access_token: str, folder_name: str) -> str:
         logger.error(f"Error creating Google Drive folder: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to create Drive folder: {str(e)}")
 
+# Proxy endpoint to serve Google Drive images (bypasses CORS)
+@api_router.get("/media/drive/{file_id}")
+async def proxy_drive_image(file_id: str, size: str = "w300-h300-c"):
+    """Proxy Google Drive images to bypass CORS restrictions"""
+    try:
+        import requests
+        
+        # Construct Google Drive thumbnail URL
+        drive_url = f"https://drive.google.com/thumbnail?id={file_id}&sz={size}"
+        
+        # Fetch the image from Google Drive
+        response = requests.get(drive_url, timeout=10)
+        
+        if response.status_code == 200:
+            # Return the image with proper headers
+            return Response(
+                content=response.content,
+                media_type=response.headers.get('content-type', 'image/jpeg'),
+                headers={
+                    "Cache-Control": "public, max-age=3600",  # Cache for 1 hour
+                    "Access-Control-Allow-Origin": "*"
+                }
+            )
+        else:
+            raise HTTPException(status_code=404, detail="Image not found")
+            
+    except Exception as e:
+        logger.error(f"Error proxying Drive image: {e}")
+        raise HTTPException(status_code=500, detail="Failed to load image")
+
 # Migration endpoint to fix existing Google Drive URLs
 @api_router.post("/galleries/fix-drive-urls")
 async def fix_google_drive_urls():
