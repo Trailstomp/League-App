@@ -34,7 +34,8 @@ const TeamGalleryDisplay = ({ teamId = null, pageType = 'league' }) => {
     const loadGalleries = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${BACKEND_URL}/api/galleries-new`);
+            // Use the active galleries endpoint to automatically filter expired and hidden galleries
+            const response = await fetch(`${BACKEND_URL}/api/galleries-new/active`);
             if (response.ok) {
                 const data = await response.json();
                 setGalleries(data.galleries || []);
