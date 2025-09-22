@@ -393,7 +393,10 @@ async def upload_and_create_gallery(
             "description": gallery_description,
             "type": gallery_type,
             "visibility": visibility,
+            "status": "active",  # Default status
             "teamId": team_id if team_id != "league-wide" else None,
+            "googleDriveFolderId": gallery_folder_id,  # Store gallery folder ID
+            "expirationDate": None,  # No expiration by default
             "mediaItems": uploaded_media_items  # Already dictionaries, no need for .dict()
         }
         
