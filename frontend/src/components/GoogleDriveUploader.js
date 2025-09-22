@@ -11,6 +11,8 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
     const [galleryName, setGalleryName] = useState('');
     const [galleryDescription, setGalleryDescription] = useState('');
     const [visibility, setVisibility] = useState(defaultVisibility);
+    const [status, setStatus] = useState('active');
+    const [expirationDate, setExpirationDate] = useState('');
 
     useEffect(() => {
         loadCloudConfig();
