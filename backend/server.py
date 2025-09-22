@@ -584,7 +584,10 @@ async def create_gallery_new(gallery_data: Dict[str, Any]):
             "description": gallery_data.get("description", ""),
             "type": gallery_data.get("type", "photo"),
             "visibility": gallery_data.get("visibility", "public"),
+            "status": gallery_data.get("status", "active"),
             "teamId": gallery_data.get("teamId"),
+            "googleDriveFolderId": gallery_data.get("googleDriveFolderId"),
+            "expirationDate": gallery_data.get("expirationDate"),
             "mediaItems": gallery_data.get("mediaItems", []),
             "createdAt": datetime.utcnow().isoformat(),
             "updatedAt": datetime.utcnow().isoformat()
