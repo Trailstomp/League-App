@@ -1192,22 +1192,148 @@ async def update_gallery(gallery_id: str, gallery_data: Dict[str, Any]):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.delete("/galleries-new/{gallery_id}")
-async def delete_gallery(gallery_id: str):
-    """Delete a gallery"""
+async def delete_gallery(gallery_id: str, delete_files: bool = False):
+    """Delete a gallery with optional Google Drive file cleanup"""
     try:
-        logger.info(f"🗑️ Deleting gallery: {gallery_id}")
+        logger.info(f"🗑️ Deleting gallery: {gallery_id} (delete_files: {delete_files})")
         
+        # Get gallery first to check for Google Drive files
+        gallery = await db.galleries_new.find_one({"id": gallery_id})
+        if not gallery:
+            raise HTTPException(status_code=404, detail="Gallery not found")
+        
+        deleted_files_info = {"deleted": 0, "failed": 0, "total": 0}
+        
+        # If delete_files is True, delete from Google Drive
+        if delete_files and gallery.get('mediaItems'):
+            try:
+                # Get Google Drive config for access token
+                config = await db.cloud_storage.find_one({"id": "main_cloud_storage"})
+                if config and config.get("googleDrive", {}).get("refreshToken"):
+                    google_drive_config = config["googleDrive"]
+                    refresh_token = google_drive_config["refreshToken"]
+                    
+                    # Get fresh access token
+                    access_token = await get_fresh_access_token(google_drive_config, refresh_token)
+                    
+                    # Extract file IDs from media items
+                    file_ids = [item.get('googleDriveId') for item in gallery['mediaItems'] if item.get('googleDriveId')]
+                    
+                    if file_ids:
+                        deleted_files_info = await delete_drive_files(access_token, file_ids)
+                        logger.info(f"🗑️ Google Drive cleanup: {deleted_files_info}")
+                    
+                    # Also try to delete the gallery folder if it exists
+                    if gallery.get('googleDriveFolderId'):
+                        try:
+                            import requests
+                            folder_response = requests.delete(
+                                f'https://www.googleapis.com/drive/v3/files/{gallery["googleDriveFolderId"]}',
+                                headers={'Authorization': f'Bearer {access_token}'},
+                                timeout=15
+                            )
+                            if folder_response.status_code == 200:
+                                logger.info(f"🗑️ Deleted gallery folder: {gallery['googleDriveFolderId']}")
+                            else:
+                                logger.warning(f"⚠️ Could not delete gallery folder: {folder_response.status_code}")
+                        except Exception as folder_error:
+                            logger.warning(f"⚠️ Error deleting gallery folder: {folder_error}")
+                
+            except Exception as drive_error:
+                logger.error(f"❌ Error during Google Drive cleanup: {drive_error}")
+        
+        # Delete gallery from database
         result = await db.galleries_new.delete_one({"id": gallery_id})
         
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Gallery not found")
         
         logger.info(f"🗑️ ✅ Gallery deleted: {gallery_id}")
-        return {"status": "success", "message": "Gallery deleted successfully"}
         
+        response_data = {
+            "status": "success", 
+            "message": "Gallery deleted successfully",
+            "deletedFiles": deleted_files_info if delete_files else None
+        }
+        
+        return response_data
+        
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"🗑️ ❌ Error deleting gallery: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.patch("/galleries-new/{gallery_id}/status")
+async def update_gallery_status(gallery_id: str, status: str, expiration_date: Optional[str] = None):
+    """Update gallery status (active, hidden, archived) and expiration date"""
+    try:
+        logger.info(f"📝 Updating gallery status: {gallery_id} -> {status}")
+        
+        # Validate status
+        if status not in ["active", "hidden", "archived"]:
+            raise HTTPException(status_code=400, detail="Invalid status. Must be: active, hidden, or archived")
+        
+        update_data = {
+            "status": status,
+            "updatedAt": datetime.utcnow().isoformat()
+        }
+        
+        # Parse and validate expiration date if provided
+        if expiration_date:
+            try:
+                parsed_date = datetime.fromisoformat(expiration_date.replace('Z', '+00:00'))
+                update_data["expirationDate"] = parsed_date.isoformat()
+            except ValueError:
+                raise HTTPException(status_code=400, detail="Invalid expiration date format. Use ISO format (YYYY-MM-DDTHH:MM:SS)")
+        
+        result = await db.galleries_new.update_one(
+            {"id": gallery_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Gallery not found")
+        
+        logger.info(f"📝 ✅ Gallery status updated: {gallery_id}")
+        return {"status": "success", "message": f"Gallery status updated to {status}"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"📝 ❌ Error updating gallery status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/galleries-new/active")
+async def get_active_galleries():
+    """Get only active galleries (not hidden/archived and not expired)"""
+    try:
+        logger.info("📡 Getting active galleries only...")
+        current_time = datetime.utcnow()
+        
+        # Query for active galleries that are not expired
+        query = {
+            "status": "active",
+            "$or": [
+                {"expirationDate": None},
+                {"expirationDate": {"$gt": current_time.isoformat()}}
+            ]
+        }
+        
+        galleries = await db.galleries_new.find(query).to_list(length=None)
+        
+        # Convert MongoDB documents to proper format
+        result_galleries = []
+        for gallery in galleries:
+            gallery.pop('_id', None)  # Remove MongoDB _id
+            result_galleries.append(gallery)
+        
+        logger.info(f"📡 Retrieved {len(result_galleries)} active galleries")
+        return {"galleries": result_galleries}
+        
+    except Exception as e:
+        logger.error(f"📡 Error getting active galleries: {e}")
+        return {"galleries": []}
 
 # Duplicate function removed - using the first definition above
 
