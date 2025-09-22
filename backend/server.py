@@ -945,7 +945,71 @@ async def create_main_folder(access_token: str, folder_name: str) -> str:
         logger.error(f"Error creating Google Drive folder: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to create Drive folder: {str(e)}")
 
-# NEW GALLERY SYSTEM ENDPOINTS - Added to existing system
+# Migration endpoint to fix existing Google Drive URLs
+@api_router.post("/galleries/fix-drive-urls")
+async def fix_google_drive_urls():
+    """Fix existing Google Drive URLs to use public format"""
+    try:
+        logger.info("🔧 Starting Google Drive URL migration...")
+        
+        # Get all galleries
+        galleries = await db.galleries_new.find().to_list(length=None)
+        updated_count = 0
+        
+        for gallery in galleries:
+            if not gallery.get('mediaItems'):
+                continue
+                
+            needs_update = False
+            updated_media_items = []
+            
+            for item in gallery['mediaItems']:
+                updated_item = item.copy()
+                
+                # Check if URL needs updating (old format)
+                if item.get('url', '').startswith('https://drive.google.com/file/d/'):
+                    # Extract file ID from old URL
+                    old_url = item['url']
+                    if '/d/' in old_url and '/view' in old_url:
+                        file_id = old_url.split('/d/')[1].split('/view')[0]
+                        updated_item['url'] = f"https://drive.google.com/uc?id={file_id}"
+                        needs_update = True
+                        logger.info(f"🔧 Updated URL for {item.get('filename', 'unknown')}: {file_id}")
+                
+                # Check if thumbnail URL needs updating
+                if item.get('thumbnailUrl', '').startswith('https://drive.google.com/thumbnail?id='):
+                    old_thumb = item['thumbnailUrl']
+                    if '&sz=w300' in old_thumb:
+                        file_id = old_thumb.split('id=')[1].split('&')[0]
+                        updated_item['thumbnailUrl'] = f"https://drive.google.com/thumbnail?id={file_id}&sz=w300-h300-c"
+                        needs_update = True
+                        logger.info(f"🔧 Updated thumbnail for {item.get('filename', 'unknown')}: {file_id}")
+                
+                updated_media_items.append(updated_item)
+            
+            if needs_update:
+                # Update the gallery
+                gallery['mediaItems'] = updated_media_items
+                gallery['updatedAt'] = datetime.utcnow().isoformat()
+                
+                await db.galleries_new.replace_one(
+                    {"id": gallery['id']},
+                    gallery
+                )
+                updated_count += 1
+                logger.info(f"🔧 ✅ Updated gallery: {gallery['name']}")
+        
+        logger.info(f"🔧 ✅ Migration completed. Updated {updated_count} galleries.")
+        
+        return {
+            "status": "success",
+            "message": f"Migration completed. Updated {updated_count} galleries with new Google Drive URLs.",
+            "updatedGalleries": updated_count
+        }
+        
+    except Exception as e:
+        logger.error(f"🔧 ❌ Error during URL migration: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 @api_router.get("/galleries-new")
 async def get_galleries_new():
     """Get all galleries - New clean implementation"""
