@@ -323,12 +323,31 @@ async def upload_and_create_gallery(
                     file_data = upload_response.json()
                     drive_file_id = file_data['id']
                     
-                    # Create media item dictionary (not using Pydantic model)
+                    # Make the file publicly accessible
+                    try:
+                        make_file_public_response = requests.post(
+                            f'https://www.googleapis.com/drive/v3/files/{drive_file_id}/permissions',
+                            headers={'Authorization': f'Bearer {access_token}'},
+                            json={
+                                'role': 'reader',
+                                'type': 'anyone'
+                            },
+                            timeout=15
+                        )
+                        
+                        if make_file_public_response.status_code == 200:
+                            logger.info(f"✅ File made public: {drive_file_id}")
+                        else:
+                            logger.warning(f"⚠️ Could not make file public: {make_file_public_response.status_code}")
+                    except Exception as perm_error:
+                        logger.warning(f"⚠️ Error making file public: {perm_error}")
+                    
+                    # Create media item dictionary with proper public URLs
                     media_item = {
                         "id": str(uuid.uuid4()),
                         "filename": file.filename,
-                        "url": f"https://drive.google.com/file/d/{drive_file_id}/view",
-                        "thumbnailUrl": f"https://drive.google.com/thumbnail?id={drive_file_id}&sz=w300",
+                        "url": f"https://drive.google.com/uc?id={drive_file_id}",  # Direct download/view URL
+                        "thumbnailUrl": f"https://drive.google.com/thumbnail?id={drive_file_id}&sz=w300-h300-c",  # Improved thumbnail with crop
                         "googleDriveId": drive_file_id,
                         "type": "image" if file.content_type.startswith("image/") else "video" if file.content_type.startswith("video/") else "file",
                         "size": len(file_content),
