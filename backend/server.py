@@ -243,7 +243,7 @@ async def upload_and_create_gallery(
             client_secret=google_drive_config["clientSecret"]
         )
         
-        # Upload files to Google Drive
+        # Upload files to Google Drive with retry on token expiration
         uploaded_media_items = []
         import requests
         
@@ -255,21 +255,37 @@ async def upload_and_create_gallery(
                 file_content = await file.read()
                 logger.info(f"📁 File content read - Size: {len(file_content)} bytes")
                 
-                # Upload to Google Drive
-                upload_response = requests.post(
-                    'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
-                    headers={'Authorization': f'Bearer {access_token}'},
-                    files={
-                        'metadata': (None, json.dumps({
-                            'name': file.filename,
-                            'parents': [folder_id] if folder_id else []
-                        }), 'application/json'),
-                        'data': (file.filename, file_content, file.content_type)
-                    },
-                    timeout=30
-                )
+                # Upload to Google Drive with retry logic
+                upload_success = False
+                retry_count = 0
+                max_retries = 2
                 
-                logger.info(f"📁 Google Drive upload response: {upload_response.status_code}")
+                while not upload_success and retry_count <= max_retries:
+                    upload_response = requests.post(
+                        'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+                        headers={'Authorization': f'Bearer {access_token}'},
+                        files={
+                            'metadata': (None, json.dumps({
+                                'name': file.filename,
+                                'parents': [folder_id] if folder_id else []
+                            }), 'application/json'),
+                            'data': (file.filename, file_content, file.content_type)
+                        },
+                        timeout=30
+                    )
+                    
+                    logger.info(f"📁 Google Drive upload response: {upload_response.status_code} (attempt {retry_count + 1})")
+                    
+                    if upload_response.status_code == 200:
+                        upload_success = True
+                    elif upload_response.status_code == 401 and retry_count < max_retries:
+                        # Token expired, refresh and retry
+                        logger.warning(f"🔄 Token expired during upload, refreshing... (retry {retry_count + 1})")
+                        access_token = await get_fresh_access_token(google_drive_config, refresh_token)
+                        retry_count += 1
+                    else:
+                        # Other error or max retries reached
+                        break
                 
                 if upload_response.status_code == 200:
                     file_data = upload_response.json()
