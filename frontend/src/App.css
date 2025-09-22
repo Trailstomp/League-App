@@ -1,0 +1,135 @@
+.App-logo {
+    height: 40vmin;
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .App-logo {
+        animation: App-logo-spin infinite 20s linear;
+    }
+}
+
+.App-header {
+    background-color: #0f0f10;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
+}
+
+.App-link {
+    color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* News ticker marquee animation */
+@keyframes marquee {
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+/* Vertical scrolling animation for news feed */
+@keyframes scroll-vertical {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-50%);
+    }
+}
+
+.animate-marquee {
+    animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+    animation-play-state: paused;
+}
+
+.animate-scroll-vertical {
+    animation: scroll-vertical 20s linear infinite;
+}
+
+.animate-scroll-vertical:hover {
+    animation-play-state: paused;
+}
+
+/* Hide scrollbar for horizontal gallery */
+.scrollbar-hide {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+}
+
+/* Line clamp utility for captions */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Gallery auto-scroll animations - dynamically generated per gallery */
+@keyframes gallery-scroll-gallery-1 {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-1480px); /* 5 items * 296px = exact loop point */
+    }
+}
+
+@keyframes gallery-scroll-gallery-2 {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-592px); /* 2 items * 296px = exact loop point */
+    }
+}
+
+/* Default gallery scroll */
+@keyframes gallery-scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.gallery-auto-scroll {
+    animation-play-state: running;
+}
+
+.gallery-auto-scroll:hover {
+    animation-play-state: paused;
+}
+
+/* Ticker scroll styles */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
