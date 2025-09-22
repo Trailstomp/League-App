@@ -309,7 +309,7 @@ async def upload_and_create_gallery(
                         files={
                             'metadata': (None, json.dumps({
                                 'name': file.filename,
-                                'parents': [folder_id] if folder_id else []
+                                'parents': [gallery_folder_id]  # Use gallery-specific folder
                             }), 'application/json'),
                             'data': (file.filename, file_content, file.content_type)
                         },
