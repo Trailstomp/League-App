@@ -154,7 +154,17 @@ async def get_fresh_access_token(google_drive_config: Dict[str, Any], refresh_to
         if refresh_response.status_code != 200:
             error_data = refresh_response.json()
             logger.error(f"❌ Token refresh failed: {error_data}")
-            raise HTTPException(status_code=400, detail=f"Failed to refresh Google Drive access token: {error_data}")
+            
+            # Provide more specific error messages
+            error_type = error_data.get('error', 'unknown_error')
+            if error_type == 'invalid_grant':
+                error_msg = "Google Drive refresh token is invalid or expired. Please re-authorize the application."
+            elif error_type == 'invalid_client':
+                error_msg = "Google Drive client credentials are invalid. Please check your OAuth configuration."
+            else:
+                error_msg = f"Google Drive token refresh failed: {error_data.get('error_description', error_type)}"
+            
+            raise HTTPException(status_code=400, detail=error_msg)
         
         tokens = refresh_response.json()
         access_token = tokens.get('access_token', '')
@@ -162,9 +172,31 @@ async def get_fresh_access_token(google_drive_config: Dict[str, Any], refresh_to
         
         return access_token
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"❌ Error refreshing access token: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to refresh access token: {str(e)}")
+
+# Enhanced error handling for Google Drive operations
+async def handle_drive_error(response, operation: str) -> str:
+    """Handle Google Drive API errors and provide meaningful messages"""
+    try:
+        error_data = response.json() if response.content else {}
+        error_msg = error_data.get('error', {}).get('message', 'Unknown error')
+        
+        if response.status_code == 401:
+            return f"Google Drive authentication failed during {operation}. Token may be expired."
+        elif response.status_code == 403:
+            return f"Google Drive access denied for {operation}. Check permissions and quotas."
+        elif response.status_code == 404:
+            return f"Google Drive resource not found during {operation}."
+        elif response.status_code == 429:
+            return f"Google Drive API rate limit exceeded for {operation}. Please try again later."
+        else:
+            return f"Google Drive {operation} failed with status {response.status_code}: {error_msg}"
+    except:
+        return f"Google Drive {operation} failed with status {response.status_code}"
 
 # Google Drive Upload Endpoint - Updated for new gallery system
 @api_router.post("/cloud-storage/google-drive/upload-and-create-gallery")
