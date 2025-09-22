@@ -338,8 +338,9 @@ async def upload_and_create_gallery(
                     uploaded_media_items.append(media_item)
                     logger.info(f"✅ File uploaded: {file.filename} -> {drive_file_id}")
                 else:
-                    error_text = upload_response.text
-                    logger.error(f"❌ Upload failed for {file.filename}: {upload_response.status_code} - {error_text}")
+                    error_msg = await handle_drive_error(upload_response, "file upload")
+                    logger.error(f"❌ Upload failed for {file.filename}: {error_msg}")
+                    # Continue with other files rather than failing completely
                     
             except Exception as file_error:
                 logger.error(f"❌ Error uploading file {file.filename}: {file_error}")
