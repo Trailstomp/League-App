@@ -97,6 +97,12 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
             formData.append('gallery_name', galleryName);
             formData.append('gallery_description', galleryDescription);
             formData.append('visibility', visibility);
+            formData.append('status', status);
+            
+            // Add expiration date if set
+            if (expirationDate) {
+                formData.append('expiration_date', expirationDate);
+            }
             
             // Add team ID (or null for league-wide)
             if (teamId && teamId !== 'league-wide') {
