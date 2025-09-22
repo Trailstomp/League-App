@@ -1318,7 +1318,11 @@ async def delete_gallery(gallery_id: str, delete_files: bool = False):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.patch("/galleries-new/{gallery_id}/status")
-async def update_gallery_status(gallery_id: str, status: str, expiration_date: Optional[str] = None):
+async def update_gallery_status(
+    gallery_id: str, 
+    status: str = Form(...), 
+    expiration_date: Optional[str] = Form(None)
+):
     """Update gallery status (active, hidden, archived) and expiration date"""
     try:
         logger.info(f"📝 Updating gallery status: {gallery_id} -> {status}")
