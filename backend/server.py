@@ -130,6 +130,42 @@ async def get_league_data():
 
 # Gallery endpoints moved to bottom of file to avoid duplicates
 
+# Helper function for Google Drive token management
+async def get_fresh_access_token(google_drive_config: Dict[str, Any], refresh_token: str) -> str:
+    """Get or refresh Google Drive access token"""
+    try:
+        import requests as token_requests
+        token_data = {
+            'client_id': google_drive_config["clientId"],
+            'client_secret': google_drive_config["clientSecret"],
+            'refresh_token': refresh_token,
+            'grant_type': 'refresh_token'
+        }
+        
+        logger.info("🔄 Refreshing Google Drive access token...")
+        refresh_response = token_requests.post(
+            'https://oauth2.googleapis.com/token',
+            data=token_data,
+            timeout=15
+        )
+        
+        logger.info(f"🔄 Token refresh response: {refresh_response.status_code}")
+        
+        if refresh_response.status_code != 200:
+            error_data = refresh_response.json()
+            logger.error(f"❌ Token refresh failed: {error_data}")
+            raise HTTPException(status_code=400, detail=f"Failed to refresh Google Drive access token: {error_data}")
+        
+        tokens = refresh_response.json()
+        access_token = tokens.get('access_token', '')
+        logger.info(f"✅ Token refreshed successfully - Access token length: {len(access_token)}")
+        
+        return access_token
+        
+    except Exception as e:
+        logger.error(f"❌ Error refreshing access token: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to refresh access token: {str(e)}")
+
 # Google Drive Upload Endpoint - Updated for new gallery system
 @api_router.post("/cloud-storage/google-drive/upload-and-create-gallery")
 async def upload_and_create_gallery(
