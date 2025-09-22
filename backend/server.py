@@ -81,7 +81,10 @@ class Gallery(BaseModel):
     description: str = ""
     type: str = "photo"  # photo, video
     visibility: str = "public"  # public, private, league-wide
+    status: str = "active"  # active, hidden, archived
     teamId: Optional[str] = None  # None for league-wide galleries
+    googleDriveFolderId: Optional[str] = None  # Dedicated folder for this gallery
+    expirationDate: Optional[datetime] = None  # When gallery should stop displaying
     mediaItems: List[MediaItem] = []
     createdAt: datetime = Field(default_factory=datetime.utcnow)
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
