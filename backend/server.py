@@ -906,7 +906,96 @@ async def complete_google_drive_auth(data: Dict[str, Any]):
         logger.error(f"🔑 ❌ Error completing Google Drive auth: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# Helper Functions
+# Helper function to create gallery folder in Google Drive
+async def create_gallery_folder(access_token: str, main_folder_id: str, gallery_name: str) -> str:
+    """Create a subfolder for a specific gallery in Google Drive"""
+    try:
+        import requests
+        
+        # Clean gallery name for folder (remove special characters)
+        import re
+        clean_name = re.sub(r'[<>:"/\\|?*]', '_', gallery_name)
+        clean_name = clean_name.strip()[:50]  # Limit length
+        
+        # Create the gallery folder
+        folder_metadata = {
+            'name': clean_name,
+            'mimeType': 'application/vnd.google-apps.folder',
+            'parents': [main_folder_id]
+        }
+        
+        response = requests.post(
+            'https://www.googleapis.com/drive/v3/files',
+            headers={'Authorization': f'Bearer {access_token}'},
+            json=folder_metadata,
+            timeout=15
+        )
+        
+        if response.status_code == 200:
+            folder_data = response.json()
+            gallery_folder_id = folder_data['id']
+            
+            # Make the folder publicly readable
+            permission_response = requests.post(
+                f'https://www.googleapis.com/drive/v3/files/{gallery_folder_id}/permissions',
+                headers={'Authorization': f'Bearer {access_token}'},
+                json={
+                    'role': 'reader',
+                    'type': 'anyone'
+                },
+                timeout=15
+            )
+            
+            if permission_response.status_code == 200:
+                logger.info(f"✅ Created and shared gallery folder: {clean_name} -> {gallery_folder_id}")
+            else:
+                logger.warning(f"⚠️ Gallery folder created but sharing failed: {permission_response.status_code}")
+            
+            return gallery_folder_id
+        else:
+            logger.error(f"❌ Failed to create gallery folder: {response.status_code} - {response.text}")
+            return main_folder_id  # Fall back to main folder
+            
+    except Exception as e:
+        logger.error(f"❌ Error creating gallery folder: {e}")
+        return main_folder_id  # Fall back to main folder
+
+# Helper function to delete files from Google Drive
+async def delete_drive_files(access_token: str, file_ids: List[str]) -> dict:
+    """Delete multiple files from Google Drive"""
+    try:
+        import requests
+        deleted_count = 0
+        failed_count = 0
+        
+        for file_id in file_ids:
+            try:
+                response = requests.delete(
+                    f'https://www.googleapis.com/drive/v3/files/{file_id}',
+                    headers={'Authorization': f'Bearer {access_token}'},
+                    timeout=15
+                )
+                
+                if response.status_code == 200:
+                    deleted_count += 1
+                    logger.info(f"✅ Deleted file from Drive: {file_id}")
+                else:
+                    failed_count += 1
+                    logger.warning(f"⚠️ Failed to delete file: {file_id} - {response.status_code}")
+                    
+            except Exception as file_error:
+                failed_count += 1
+                logger.error(f"❌ Error deleting file {file_id}: {file_error}")
+        
+        return {
+            "deleted": deleted_count,
+            "failed": failed_count,
+            "total": len(file_ids)
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error in bulk delete: {e}")
+        return {"deleted": 0, "failed": len(file_ids), "total": len(file_ids)}
 async def create_main_folder(access_token: str, folder_name: str) -> str:
     """Create the main folder in Google Drive and return its ID"""
     try:
