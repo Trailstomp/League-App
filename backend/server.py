@@ -272,6 +272,10 @@ async def upload_and_create_gallery(
             )
             logging.info(f"✅ Folder ID saved to database: {folder_id}")
         
+        # Create gallery-specific folder
+        gallery_folder_id = await create_gallery_folder(access_token, folder_id, gallery_name)
+        logger.info(f"📁 Gallery folder created: {gallery_folder_id}")
+        
         # Create credentials with the fresh access token
         creds = Credentials(
             token=access_token,
