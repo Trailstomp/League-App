@@ -211,7 +211,9 @@ async def upload_and_create_gallery(
     gallery_name: str = Form(...),
     gallery_description: str = Form(""),
     visibility: str = Form("public"),
-    team_id: Optional[str] = Form(None)
+    status: str = Form("active"),
+    team_id: Optional[str] = Form(None),
+    expiration_date: Optional[str] = Form(None)
 ):
     """Upload files to Google Drive and create a gallery with those files"""
     logger.info(f"🚀 UPLOAD ENDPOINT CALLED - Gallery: {gallery_name}")
