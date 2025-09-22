@@ -1163,9 +1163,48 @@ async def get_galleries_new():
         return {"galleries": []}
 
 @api_router.post("/galleries-new")
-async def create_gallery_new_endpoint(gallery_data: Dict[str, Any]):
-    """Create a new gallery - New clean implementation"""
-    return await create_gallery_new(gallery_data)
+async def create_gallery_new_endpoint(
+    gallery_name: str = Form(...),
+    gallery_description: str = Form(""),
+    gallery_type: str = Form("photo"),
+    visibility: str = Form("public"),
+    status: str = Form("active"),
+    team_id: Optional[str] = Form(None),
+    expiration_date: Optional[str] = Form(None)
+):
+    """Create a new gallery with enhanced options"""
+    try:
+        # Validate inputs
+        if status not in ["active", "hidden", "archived"]:
+            raise HTTPException(status_code=400, detail="Invalid status. Must be: active, hidden, or archived")
+        
+        gallery_data = {
+            "name": gallery_name,
+            "description": gallery_description,
+            "type": gallery_type,
+            "visibility": visibility,
+            "status": status,
+            "teamId": team_id if team_id != "league-wide" else None,
+            "googleDriveFolderId": None,  # Will be set when files are uploaded
+            "expirationDate": None,
+            "mediaItems": []
+        }
+        
+        # Parse expiration date if provided
+        if expiration_date:
+            try:
+                parsed_date = datetime.fromisoformat(expiration_date.replace('Z', '+00:00'))
+                gallery_data["expirationDate"] = parsed_date.isoformat()
+            except ValueError:
+                raise HTTPException(status_code=400, detail="Invalid expiration date format. Use ISO format (YYYY-MM-DDTHH:MM:SS)")
+        
+        return await create_gallery_new(gallery_data)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"📡 Error creating gallery endpoint: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.put("/galleries-new/{gallery_id}")
 async def update_gallery(gallery_id: str, gallery_data: Dict[str, Any]):
