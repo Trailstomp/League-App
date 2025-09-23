@@ -249,7 +249,7 @@ const GroupMeChat = ({ teamId = null, channelType = "all" }) => {
                         <div>
                             <h4 className="font-semibold">{selectedChannel.name}</h4>
                             <p className="text-sm text-blue-100">
-                                {selectedChannel.channel_type === 'league' ? 'League-wide Chat' : 'Team Chat'}
+                                {selectedChannel.channel_type === 'league' ? 'League Chat' : 'Team Chat'}
                                 {selectedChannel.team_name && ` • ${selectedChannel.team_name}`}
                             </p>
                         </div>
