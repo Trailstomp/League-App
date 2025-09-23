@@ -184,7 +184,75 @@ async def get_fresh_access_token(google_drive_config: Dict[str, Any], refresh_to
         logger.error(f"❌ Error refreshing access token: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to refresh access token: {str(e)}")
 
-# Enhanced error handling for Google Drive operations
+# Debug endpoint to check database contents
+@api_router.get("/debug/galleries")
+async def debug_galleries():
+    """Debug endpoint to see all galleries and their media items"""
+    try:
+        # Check all collections
+        galleries_new = await db.galleries_new.find().to_list(length=None)
+        
+        # Try to access old galleries collection if it exists
+        try:
+            galleries_old = await db.galleries.find().to_list(length=None)
+        except:
+            galleries_old = []
+        
+        # Format the results
+        result = {
+            "galleries_new": {
+                "count": len(galleries_new),
+                "galleries": []
+            },
+            "galleries_old": {
+                "count": len(galleries_old),
+                "galleries": []
+            }
+        }
+        
+        # Process new galleries
+        for gallery in galleries_new:
+            gallery.pop('_id', None)
+            media_items_info = []
+            for item in gallery.get('mediaItems', []):
+                media_items_info.append({
+                    "filename": item.get('filename'),
+                    "url": item.get('url'),
+                    "thumbnailUrl": item.get('thumbnailUrl'),
+                    "googleDriveId": item.get('googleDriveId')
+                })
+            
+            result["galleries_new"]["galleries"].append({
+                "id": gallery.get('id'),
+                "name": gallery.get('name'),
+                "mediaItemsCount": len(gallery.get('mediaItems', [])),
+                "mediaItems": media_items_info
+            })
+        
+        # Process old galleries
+        for gallery in galleries_old:
+            gallery.pop('_id', None)
+            media_items_info = []
+            for item in gallery.get('mediaItems', []):
+                media_items_info.append({
+                    "filename": item.get('filename'),
+                    "url": item.get('url'),
+                    "thumbnailUrl": item.get('thumbnailUrl'),
+                    "googleDriveId": item.get('googleDriveId')
+                })
+            
+            result["galleries_old"]["galleries"].append({
+                "id": gallery.get('id'),
+                "name": gallery.get('name'),
+                "mediaItemsCount": len(gallery.get('mediaItems', [])),
+                "mediaItems": media_items_info
+            })
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Debug error: {e}")
+        return {"error": str(e)}
 async def handle_drive_error(response, operation: str) -> str:
     """Handle Google Drive API errors and provide meaningful messages"""
     try:
