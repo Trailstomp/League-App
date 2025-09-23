@@ -375,7 +375,8 @@ const APIIntegrationsManager = () => {
             <div className="mb-8">
                 <nav className="flex space-x-8">
                     {[
-                        { id: 'dashboard', label: 'Integrations' },
+                        { id: 'dashboard', label: 'API Integrations' },
+                        { id: 'groupme-channels', label: 'GroupMe Channels' },
                     ].map((tab) => (
                         <button
                             key={tab.id}
@@ -395,6 +396,7 @@ const APIIntegrationsManager = () => {
             {/* Content */}
             {activeView === 'dashboard' && renderDashboard()}
             {activeView === 'create-groupme' && renderCreateGroupMe()}
+            {activeView === 'groupme-channels' && renderGroupMeChannels()}
         </div>
     );
 };
