@@ -60,18 +60,37 @@ const GroupMeManager = () => {
     const loadAvailableGroups = async () => {
         try {
             setLoading(true);
+            setError('');
+            
             const response = await fetch(`${backendUrl}/api/groupme/groups`);
             const data = await response.json();
             
-            if (data.error) {
-                setError(data.error);
-                setAvailableGroups([]);
+            if (response.ok) {
+                if (data.error) {
+                    setError(`GroupMe API Error: ${data.error}`);
+                    setAvailableGroups([]);
+                } else {
+                    setAvailableGroups(data.groups || []);
+                    if (data.groups && data.groups.length === 0) {
+                        setError('No GroupMe groups found. Make sure your API token has access to groups.');
+                    }
+                }
             } else {
-                setAvailableGroups(data.groups || []);
-                setError('');
+                // Handle different HTTP error statuses
+                if (response.status === 400) {
+                    setError('GroupMe not configured. Please add GROUPME_ACCESS_TOKEN to environment variables.');
+                } else if (response.status === 401) {
+                    setError('GroupMe API authentication failed. Check your access token.');
+                } else if (response.status === 403) {
+                    setError('GroupMe API access forbidden. Check token permissions.');
+                } else {
+                    setError(`Failed to load GroupMe groups (Status: ${response.status}). Check server logs.`);
+                }
+                setAvailableGroups([]);
             }
         } catch (error) {
-            setError('Failed to load GroupMe groups. Check your configuration.');
+            console.error('Failed to load available groups:', error);
+            setError(`Network error loading GroupMe groups: ${error.message}`);
             setAvailableGroups([]);
         } finally {
             setLoading(false);
