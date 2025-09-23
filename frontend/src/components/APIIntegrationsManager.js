@@ -235,7 +235,7 @@ const APIIntegrationsManager = () => {
                     )}
 
                     {/* Configuration Status */}
-                    {!groupmeIntegration && (
+                    {!groupmeIntegration ? (
                         <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                             <div className="flex items-start">
                                 <span className="text-yellow-500 mr-2">⚠️</span>
@@ -245,6 +245,20 @@ const APIIntegrationsManager = () => {
                                 </div>
                             </div>
                         </div>
+                    ) : (
+                        testResults.groupme && !testResults.groupme.success && (
+                            <div className="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                                <div className="flex items-start">
+                                    <span className="text-orange-500 mr-2">⚠️</span>
+                                    <div>
+                                        <p className="text-sm font-medium text-orange-800">Configuration Issue</p>
+                                        <p className="text-sm text-orange-700">
+                                            GroupMe is configured but connection test failed. Please update your access token.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )
                     )}
                 </div>
 
