@@ -263,6 +263,34 @@ const GalleryManager = ({ teams = [], currentUser }) => {
             {activeView === 'upload' ? (
                 /* Upload View */
                 <div>
+                    {/* Show context banner when adding to existing gallery */}
+                    {addImagesGalleryId && (
+                        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <div className="flex items-center">
+                                <svg className="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <div>
+                                    <p className="text-sm font-medium text-green-800">
+                                        Adding images to existing gallery
+                                    </p>
+                                    <p className="text-xs text-green-600">
+                                        {galleries.find(g => g.id === addImagesGalleryId)?.name || 'Selected gallery'}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => setAddImagesGalleryId(null)}
+                                    className="ml-auto text-green-600 hover:text-green-800"
+                                    title="Cancel adding to existing gallery"
+                                >
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    
                     <GoogleDriveUploader 
                         teamId="league-wide" 
                         defaultVisibility="all_pages"
