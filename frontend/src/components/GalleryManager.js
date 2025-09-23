@@ -245,7 +245,7 @@ const GalleryManager = ({ teams = [], currentUser }) => {
                             No galleries found.
                         </div>
                     ) : (
-                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                     {/* Table Header */}
                     <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
                         <div className="grid grid-cols-8 gap-3 text-xs font-medium text-gray-700 uppercase tracking-wide">
