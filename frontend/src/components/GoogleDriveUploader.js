@@ -6,11 +6,13 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
     const [uploadProgress, setUploadProgress] = useState(0);
     const [dragActive, setDragActive] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState([]);
+    const [teams, setTeams] = useState([]);
     
     // Gallery creation fields
     const [galleryName, setGalleryName] = useState('');
     const [galleryDescription, setGalleryDescription] = useState('');
-    const [visibility, setVisibility] = useState(defaultVisibility);
+    const [displayLocation, setDisplayLocation] = useState(defaultVisibility);
+    const [selectedTeams, setSelectedTeams] = useState([]);
     const [status, setStatus] = useState('active');
     const [expirationDate, setExpirationDate] = useState('');
 
