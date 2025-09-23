@@ -221,6 +221,8 @@ const GroupMeManager = () => {
             setLoading(false);
         }
     };
+
+    const handleBroadcast = async (e) => {
         e.preventDefault();
         setLoading(true);
 
