@@ -135,22 +135,22 @@ const Layout = ({
             </div>
 
             {/* Main Layout Container with proper spacing for fixed header */}
-            <div className="flex min-h-screen" style={{...getBackgroundStyle(), paddingTop: '120px'}}>
+            <div className="flex min-h-screen" style={{...getBackgroundStyle(), paddingTop: '100px'}}>
                 {/* Mobile Navigation Overlay */}
                 {isMobileMenuOpen && (
                     <div 
                         className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        style={{top: '120px'}} // Position below fixed header
+                        style={{top: '68px'}} // Position below banner only
                     />
                 )}
                 
-                {/* Navigation - Fixed position for desktop, hidden on mobile */}
+                {/* Navigation - Fixed position for desktop, goes to bottom of banner */}
                 <div className="hidden md:block">
                     <div 
                         className="fixed left-0 z-20 h-screen overflow-hidden"
                         style={{
-                            top: '120px', // Position below fixed header
+                            top: '68px', // Position below banner only
                             bottom: '0',
                         }}
                     >
@@ -167,14 +167,14 @@ const Layout = ({
                     </div>
                 </div>
                 
-                {/* Mobile Navigation - Slide in from left, positioned below fixed header */}
+                {/* Mobile Navigation - Slide in from left, positioned below banner */}
                 <div className={`
                     ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
                     fixed left-0 z-50 md:hidden
                     transition-transform duration-300 ease-in-out
                 `}
                 style={{
-                    top: '120px', // Position below fixed header
+                    top: '68px', // Position below banner only
                     bottom: '0'
                 }}>
                     <Navigation 
