@@ -375,119 +375,175 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
                             </h4>
                             
                             <div className="space-y-4">
+                                {/* Add to existing or create new */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Gallery Name *
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Gallery Action
                                     </label>
-                                    <input
-                                        type="text"
-                                        value={galleryName}
-                                        onChange={(e) => setGalleryName(e.target.value)}
-                                        placeholder="Enter gallery name..."
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                        disabled={uploading}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Description (Optional)
-                                    </label>
-                                    <textarea
-                                        value={galleryDescription}
-                                        onChange={(e) => setGalleryDescription(e.target.value)}
-                                        placeholder="Enter gallery description..."
-                                        rows={2}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                        disabled={uploading}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Where should it appear
-                                    </label>
-                                    <select
-                                        value={displayLocation}
-                                        onChange={(e) => {
-                                            setDisplayLocation(e.target.value);
-                                            if (e.target.value !== 'team_only') {
-                                                setSelectedTeams([]);
-                                            }
-                                        }}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                        disabled={uploading}
-                                    >
-                                        <option value="all_pages">All Pages (League and Team)</option>
-                                        <option value="league_only">League Page Only</option>
-                                        <option value="team_only">Team Only</option>
-                                    </select>
-                                </div>
-
-                                {displayLocation === 'team_only' && (
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Select Teams
+                                    <div className="flex space-x-4">
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                name="galleryAction"
+                                                checked={!addToExisting}
+                                                onChange={() => setAddToExisting(false)}
+                                                className="mr-2"
+                                                disabled={uploading}
+                                            />
+                                            <span className="text-sm">Create New Gallery</span>
                                         </label>
-                                        <div className="border border-gray-300 rounded-md p-2 max-h-32 overflow-y-auto">
-                                            {teams.map(team => (
-                                                <label key={team.id} className="flex items-center space-x-2 text-sm py-1">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedTeams.includes(team.id)}
-                                                        onChange={(e) => {
-                                                            if (e.target.checked) {
-                                                                setSelectedTeams([...selectedTeams, team.id]);
-                                                            } else {
-                                                                setSelectedTeams(selectedTeams.filter(id => id !== team.id));
-                                                            }
-                                                        }}
-                                                        disabled={uploading}
-                                                    />
-                                                    <span>{team.name}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                        {selectedTeams.length === 0 && (
-                                            <p className="text-xs text-red-600 mt-1">Please select at least one team</p>
-                                        )}
+                                        <label className="flex items-center">
+                                            <input
+                                                type="radio"
+                                                name="galleryAction"
+                                                checked={addToExisting}
+                                                onChange={() => setAddToExisting(true)}
+                                                className="mr-2"
+                                                disabled={uploading}
+                                            />
+                                            <span className="text-sm">Add to Existing Gallery</span>
+                                        </label>
                                     </div>
-                                )}
+                                </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                {addToExisting ? (
+                                    /* Add to existing gallery */
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Status
+                                            Select Gallery *
                                         </label>
                                         <select
-                                            value={status}
-                                            onChange={(e) => setStatus(e.target.value)}
+                                            value={targetGalleryId}
+                                            onChange={(e) => setTargetGalleryId(e.target.value)}
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                             disabled={uploading}
                                         >
-                                            <option value="active">Active (Visible Now)</option>
-                                            <option value="hidden">Hidden (Draft)</option>
-                                            <option value="archived">Archived</option>
+                                            <option value="">Select a gallery...</option>
+                                            {galleries.map(gallery => (
+                                                <option key={gallery.id} value={gallery.id}>
+                                                    {gallery.name} ({gallery.mediaItems?.length || 0} images)
+                                                </option>
+                                            ))}
                                         </select>
                                     </div>
-                                    
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Expiration Date (Optional)
-                                        </label>
-                                        <input
-                                            type="datetime-local"
-                                            value={expirationDate}
-                                            onChange={(e) => setExpirationDate(e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                            disabled={uploading}
-                                            min={new Date().toISOString().slice(0, 16)}
-                                        />
-                                    </div>
-                                </div>
+                                ) : (
+                                    /* Create new gallery */
+                                    <>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Gallery Name *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={galleryName}
+                                                onChange={(e) => setGalleryName(e.target.value)}
+                                                placeholder="Enter gallery name..."
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                                disabled={uploading}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Description (Optional)
+                                            </label>
+                                            <textarea
+                                                value={galleryDescription}
+                                                onChange={(e) => setGalleryDescription(e.target.value)}
+                                                placeholder="Enter gallery description..."
+                                                rows={2}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                                disabled={uploading}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Where should it appear
+                                            </label>
+                                            <select
+                                                value={displayLocation}
+                                                onChange={(e) => {
+                                                    setDisplayLocation(e.target.value);
+                                                    if (e.target.value !== 'team_only') {
+                                                        setSelectedTeams([]);
+                                                    }
+                                                }}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                                disabled={uploading}
+                                            >
+                                                <option value="all_pages">All Pages (League and Team)</option>
+                                                <option value="league_only">League Page Only</option>
+                                                <option value="team_only">Team Only</option>
+                                            </select>
+                                        </div>
+
+                                        {displayLocation === 'team_only' && (
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    Select Teams
+                                                </label>
+                                                <div className="border border-gray-300 rounded-md p-2 max-h-32 overflow-y-auto">
+                                                    {teams.map(team => (
+                                                        <label key={team.id} className="flex items-center space-x-2 text-sm py-1">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedTeams.includes(team.id)}
+                                                                onChange={(e) => {
+                                                                    if (e.target.checked) {
+                                                                        setSelectedTeams([...selectedTeams, team.id]);
+                                                                    } else {
+                                                                        setSelectedTeams(selectedTeams.filter(id => id !== team.id));
+                                                                    }
+                                                                }}
+                                                                disabled={uploading}
+                                                            />
+                                                            <span>{team.name}</span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                                {selectedTeams.length === 0 && (
+                                                    <p className="text-xs text-red-600 mt-1">Please select at least one team</p>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    Status
+                                                </label>
+                                                <select
+                                                    value={status}
+                                                    onChange={(e) => setStatus(e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                                    disabled={uploading}
+                                                >
+                                                    <option value="active">Active (Visible Now)</option>
+                                                    <option value="hidden">Hidden (Draft)</option>
+                                                    <option value="archived">Archived</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    Expiration Date (Optional)
+                                                </label>
+                                                <input
+                                                    type="datetime-local"
+                                                    value={expirationDate}
+                                                    onChange={(e) => setExpirationDate(e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                                    disabled={uploading}
+                                                    min={new Date().toISOString().slice(0, 16)}
+                                                />
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
 
                                 <div className="text-xs text-blue-600">
-                                    💡 Files will be uploaded to Google Drive and organized in this gallery
+                                    💡 Files will be uploaded to Google Drive and {addToExisting ? 'added to the selected gallery' : 'organized in this new gallery'}
                                 </div>
                             </div>
                         </div>
