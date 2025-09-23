@@ -187,7 +187,7 @@ const GroupMeChat = ({ teamId = null, channelType = "all" }) => {
                                 <p className="text-sm mt-1">Start chatting in GroupMe to see messages here!</p>
                             </div>
                         ) : (
-                            messages.map((message) => (
+                            Array.isArray(messages) && messages.map((message) => (
                                 <div key={message.id} className="flex space-x-3">
                                     <div className="flex-shrink-0">
                                         <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
