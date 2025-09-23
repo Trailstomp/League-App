@@ -2515,8 +2515,13 @@ async def broadcast_groupme_message(
 ):
     """Broadcast message to multiple GroupMe channels"""
     
-    if not GROUPME_ACCESS_TOKEN:
-        raise HTTPException(status_code=400, detail="GroupMe not configured")
+    # Get GroupMe service using stored credentials
+    try:
+        groupme_service = get_groupme_service()
+        if not groupme_service:
+            raise HTTPException(status_code=400, detail="GroupMe not configured")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="GroupMe configuration error")
     
     try:
         import json
