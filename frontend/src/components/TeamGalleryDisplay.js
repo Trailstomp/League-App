@@ -230,7 +230,7 @@ const TeamGalleryDisplay = ({ teamId = null, pageType = 'league' }) => {
                                         <div className="flex space-x-4 pb-2" style={{minWidth: 'max-content'}}>
                                             {gallery.mediaItems?.map(item => (
                                                 <div key={item.id} className="flex-shrink-0 w-48 h-32 bg-slate-100 rounded overflow-hidden group cursor-pointer"
-                                                     onClick={() => window.open(item.url, '_blank')}>
+                                                     onClick={() => window.open(fixGoogleDriveUrl(item.url), '_blank')}>
                                                     <div className="w-full h-full flex items-center justify-center bg-slate-200 group-hover:bg-slate-300 transition-colors">
                                                         <Video className="w-8 h-8 text-slate-500" />
                                                     </div>
