@@ -172,30 +172,69 @@ const GalleryManager = ({ teams = [], currentUser }) => {
 
     return (
         <div className="p-4">
-            {/* Header */}
+            {/* Header with Tabs */}
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-gray-900">Gallery Manager</h2>
-                <div className="flex items-center space-x-3">
-                    <label className="flex items-center text-sm">
-                        <input
-                            type="checkbox"
-                            checked={showAll}
-                            onChange={(e) => setShowAll(e.target.checked)}
-                            className="mr-2"
-                        />
-                        Show all galleries
-                    </label>
+                <div className="flex space-x-4">
                     <button
-                        onClick={loadGalleries}
-                        className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                        disabled={loading}
+                        onClick={() => setActiveView('manage')}
+                        className={`px-4 py-2 rounded-lg font-medium ${
+                            activeView === 'manage'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
                     >
-                        {loading ? 'Loading...' : 'Refresh'}
+                        📋 Manage Galleries
+                    </button>
+                    <button
+                        onClick={() => setActiveView('upload')}
+                        className={`px-4 py-2 rounded-lg font-medium ${
+                            activeView === 'upload'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                    >
+                        📤 Upload Images
                     </button>
                 </div>
+                
+                {activeView === 'manage' && (
+                    <div className="flex items-center space-x-3">
+                        <label className="flex items-center text-sm">
+                            <input
+                                type="checkbox"
+                                checked={showAll}
+                                onChange={(e) => setShowAll(e.target.checked)}
+                                className="mr-2"
+                            />
+                            Show all galleries
+                        </label>
+                        <button
+                            onClick={loadGalleries}
+                            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                            disabled={loading}
+                        >
+                            {loading ? 'Loading...' : 'Refresh'}
+                        </button>
+                    </div>
+                )}
             </div>
 
-            {loading ? (
+            {/* Content based on active view */}
+            {activeView === 'upload' ? (
+                /* Upload View */
+                <div>
+                    <GoogleDriveUploader 
+                        teamId="league-wide" 
+                        defaultVisibility="all_pages"
+                        onUploadSuccess={() => {
+                            loadGalleries();
+                            setActiveView('manage');
+                        }}
+                    />
+                </div>
+            ) : (
+                /* Manage View */
+                <div>
                 <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
                     <p className="mt-2 text-gray-600 text-sm">Loading galleries...</p>
