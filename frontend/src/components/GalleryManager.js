@@ -527,6 +527,86 @@ const GalleryManager = ({ teams = [], currentUser }) => {
                     </div>
                 </div>
             )}
+            
+            {/* Delete Confirmation Dialog */}
+            {deleteDialogGallery && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setDeleteDialogGallery(null)}>
+                    <div className="bg-white rounded-lg max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+                        {/* Dialog Header */}
+                        <div className="flex justify-between items-center p-4 border-b border-gray-200">
+                            <h3 className="text-lg font-semibold text-gray-900">Delete Gallery</h3>
+                            <button
+                                onClick={() => setDeleteDialogGallery(null)}
+                                className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        
+                        {/* Dialog Content */}
+                        <div className="p-4">
+                            <p className="text-gray-700 mb-4">
+                                What would you like to delete for gallery <strong>"{deleteDialogGallery.name}"</strong>?
+                            </p>
+                            
+                            <div className="space-y-3">
+                                {/* Option 1: Delete Gallery Only */}
+                                <button
+                                    onClick={() => {
+                                        deleteGallery(deleteDialogGallery.id, deleteDialogGallery.name, false);
+                                        setDeleteDialogGallery(null);
+                                    }}
+                                    className="w-full p-3 text-left border border-orange-300 rounded-lg hover:bg-orange-50 transition-colors"
+                                >
+                                    <div className="flex items-center">
+                                        <div className="w-4 h-4 bg-orange-500 rounded-full mr-3"></div>
+                                        <div>
+                                            <div className="font-medium text-gray-900">Delete Gallery Only</div>
+                                            <div className="text-sm text-gray-600">
+                                                Remove gallery from the website but keep all {deleteDialogGallery.mediaItems?.length || 0} files in Google Drive
+                                            </div>
+                                        </div>
+                                    </div>
+                                </button>
+                                
+                                {/* Option 2: Delete Everything */}
+                                {deleteDialogGallery.mediaItems?.length > 0 && (
+                                    <button
+                                        onClick={() => {
+                                            deleteGallery(deleteDialogGallery.id, deleteDialogGallery.name, true);
+                                            setDeleteDialogGallery(null);
+                                        }}
+                                        className="w-full p-3 text-left border border-red-300 rounded-lg hover:bg-red-50 transition-colors"
+                                    >
+                                        <div className="flex items-center">
+                                            <div className="w-4 h-4 bg-red-500 rounded-full mr-3"></div>
+                                            <div>
+                                                <div className="font-medium text-gray-900">Delete Everything</div>
+                                                <div className="text-sm text-gray-600">
+                                                    Remove gallery AND permanently delete all {deleteDialogGallery.mediaItems.length} files from Google Drive
+                                                </div>
+                                                <div className="text-xs text-red-600 mt-1">
+                                                    ⚠️ This action cannot be undone!
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                        
+                        {/* Dialog Footer */}
+                        <div className="border-t border-gray-200 px-4 py-3 bg-gray-50">
+                            <button
+                                onClick={() => setDeleteDialogGallery(null)}
+                                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
