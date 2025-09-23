@@ -357,7 +357,7 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Visibility
+                                            Where it should appear
                                         </label>
                                         <select
                                             value={visibility}
@@ -365,9 +365,9 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                             disabled={uploading}
                                         >
-                                            <option value="public">Public</option>
-                                            <option value="team">Team Only</option>
-                                            <option value="private">Private</option>
+                                            <option value="public">All Pages (Public)</option>
+                                            <option value="team">Team Page Only</option>
+                                            <option value="private">Admin Only (Private)</option>
                                         </select>
                                     </div>
                                     
@@ -381,8 +381,8 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
                                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                             disabled={uploading}
                                         >
-                                            <option value="active">Active</option>
-                                            <option value="hidden">Hidden</option>
+                                            <option value="active">Active (Visible Now)</option>
+                                            <option value="hidden">Hidden (Draft)</option>
                                             <option value="archived">Archived</option>
                                         </select>
                                     </div>
@@ -391,10 +391,10 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Gallery Type
+                                            Gallery For
                                         </label>
                                         <div className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-sm text-gray-600">
-                                            {teamId && teamId !== 'league-wide' ? `Team Gallery` : 'League-wide Gallery'}
+                                            {teamId && teamId !== 'league-wide' ? `Team Gallery` : 'League Gallery'}
                                         </div>
                                     </div>
                                     
