@@ -2184,13 +2184,13 @@ async def get_channel_messages(
 async def delete_channel(channel_id: str):
     """Delete a GroupMe channel"""
     try:
-        # Check if channel exists
-        channel = await db.groupme_channels.find_one({"channel_id": channel_id})
+        # Check if channel exists - use "id" field not "channel_id"
+        channel = await db.groupme_channels.find_one({"id": channel_id})
         if not channel:
             raise HTTPException(status_code=404, detail="Channel not found")
         
-        # Delete the channel
-        result = await db.groupme_channels.delete_one({"channel_id": channel_id})
+        # Delete the channel - use "id" field not "channel_id"
+        result = await db.groupme_channels.delete_one({"id": channel_id})
         
         if result.deleted_count > 0:
             return {"message": "Channel deleted successfully"}
