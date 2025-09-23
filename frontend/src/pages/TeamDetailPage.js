@@ -152,6 +152,7 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
                 {activeTab === 'schedule' && <TeamScheduleTab team={team} events={events} />}
                 {activeTab === 'roster' && <TeamRosterTab team={team} players={players} />}
                 {activeTab === 'stats' && <TeamStatsTab team={team} events={events} />}
+                {activeTab === 'chat' && <TeamChatTab team={team} />}
                 {activeTab === 'media' && <TeamMediaTab team={team} />}
                 {activeTab === 'contact' && <TeamContactTab team={team} />}
             </div>
