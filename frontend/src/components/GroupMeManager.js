@@ -149,6 +149,7 @@ const GroupMeManager = () => {
                     groupme_group_id: '',
                     channel_type: 'team',
                     team_id: '',
+                    existing_bot_id: '',
                     notification_settings: {}
                 });
                 await loadChannels();
