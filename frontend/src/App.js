@@ -236,6 +236,7 @@ function App() {
       case 'home':
         return <HomePage teams={teams} currentUser={currentUser} events={events} setEvents={setEvents} websiteStyle={websiteStyle} onNavigate={handleNavigate} />;
       case 'admin':
+        console.log('🔍 Admin case reached - checking permissions...');
         // Debug the admin check
         console.log('🔍 Admin access check:', { 
           currentUser: currentUser, 
