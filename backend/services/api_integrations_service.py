@@ -36,8 +36,9 @@ class APIIntegrationsService:
         
         # Remove sensitive data from response
         for integration in integrations:
+            has_encrypted_credentials = bool(integration.get("encrypted_credentials"))
             integration.pop("encrypted_credentials", None)
-            integration["has_credentials"] = bool(integration.get("encrypted_credentials"))
+            integration["has_credentials"] = has_encrypted_credentials
             
         return integrations
     
