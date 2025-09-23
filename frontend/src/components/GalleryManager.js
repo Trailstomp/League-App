@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import GoogleDriveUploader from './GoogleDriveUploader';
 
-const GalleryManager = () => {
+const GalleryManager = ({ teams = [], currentUser }) => {
     const [galleries, setGalleries] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showAll, setShowAll] = useState(false);
     const [editingGallery, setEditingGallery] = useState(null);
+    const [activeView, setActiveView] = useState('manage'); // 'manage' or 'upload'
     const [editForm, setEditForm] = useState({
         status: '',
         expirationDate: ''
