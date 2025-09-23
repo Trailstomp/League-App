@@ -107,14 +107,21 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
             return;
         }
 
-        if (!galleryName.trim()) {
-            alert('Please enter a gallery name');
-            return;
-        }
+        if (addToExisting) {
+            if (!targetGalleryId) {
+                alert('Please select a gallery to add images to');
+                return;
+            }
+        } else {
+            if (!galleryName.trim()) {
+                alert('Please enter a gallery name');
+                return;
+            }
 
-        if (displayLocation === 'team_only' && selectedTeams.length === 0) {
-            alert('Please select at least one team for team-only display');
-            return;
+            if (displayLocation === 'team_only' && selectedTeams.length === 0) {
+                alert('Please select at least one team for team-only display');
+                return;
+            }
         }
 
         setUploading(true);
