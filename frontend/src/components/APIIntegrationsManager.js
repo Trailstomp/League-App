@@ -27,6 +27,13 @@ const APIIntegrationsManager = () => {
             const response = await fetch(`${backendUrl}/api/api-integrations`);
             const data = await response.json();
             setIntegrations(data.integrations || []);
+            
+            // Auto-test GroupMe integration if it exists to verify credentials
+            const groupmeIntegration = (data.integrations || []).find(i => i.integration_name === 'groupme');
+            if (groupmeIntegration && groupmeIntegration.is_active) {
+                // Test the integration to see if credentials are valid
+                handleTestIntegration('groupme');
+            }
         } catch (error) {
             console.error('Failed to load integrations:', error);
             setError('Failed to load API integrations');
