@@ -28,9 +28,13 @@ const YouTubeGallery = ({ teamId = null, title = "YouTube Videos" }) => {
                     const mockVideos = generateMockVideos(config);
                     setVideos(mockVideos);
                 }
+            } else {
+                // YouTube integration endpoint not found - set disabled config to prevent console spam
+                setYoutubeConfig({ enabled: false });
             }
         } catch (error) {
-            console.error('Error loading YouTube videos:', error);
+            // Silently handle the error and set disabled config to prevent console spam
+            setYoutubeConfig({ enabled: false });
         }
         setLoading(false);
     };
