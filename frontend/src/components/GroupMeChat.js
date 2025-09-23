@@ -57,10 +57,23 @@ const GroupMeChat = ({ teamId = null, channelType = "all" }) => {
     const loadMessages = async (channelId) => {
         try {
             const response = await fetch(`${backendUrl}/api/groupme/channels/${channelId}/messages?limit=50`);
-            const data = await response.json();
-            setMessages(data || []);
+            if (response.ok) {
+                const data = await response.json();
+                // Ensure we always have an array
+                if (Array.isArray(data)) {
+                    setMessages(data);
+                } else if (Array.isArray(data.messages)) {
+                    setMessages(data.messages);
+                } else {
+                    setMessages([]);
+                }
+            } else {
+                console.warn('Messages endpoint not available, showing placeholder');
+                setMessages([]);
+            }
         } catch (error) {
             console.error('Failed to load messages:', error);
+            setMessages([]); // Always set to empty array on error
         }
     };
 
