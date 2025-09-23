@@ -6,6 +6,8 @@ const GroupMeChat = ({ teamId = null, channelType = "all" }) => {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [newMessage, setNewMessage] = useState('');
+    const [sending, setSending] = useState(false);
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
