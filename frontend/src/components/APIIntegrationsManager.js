@@ -160,7 +160,7 @@ const APIIntegrationsManager = () => {
                             </div>
                         </div>
                         <div className="flex items-center space-x-3">
-                            {groupmeIntegration && (
+                            {groupmeIntegration ? (
                                 <>
                                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                                         groupmeIntegration.is_active 
@@ -191,6 +191,10 @@ const APIIntegrationsManager = () => {
                                         Delete
                                     </button>
                                 </>
+                            ) : (
+                                <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
+                                    Not Configured
+                                </span>
                             )}
                         </div>
                     </div>
