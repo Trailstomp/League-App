@@ -597,57 +597,120 @@ const GalleryManager = ({ teams = [], currentUser }) => {
                             
                             <div className="space-y-3">
                                 {/* Option 1: Delete Gallery Only */}
-                                <button
-                                    onClick={() => {
-                                        deleteGallery(deleteDialogGallery.id, deleteDialogGallery.name, false);
-                                        setDeleteDialogGallery(null);
-                                    }}
-                                    className="w-full p-3 text-left border border-orange-300 rounded-lg hover:bg-orange-50 transition-colors"
-                                >
-                                    <div className="flex items-center">
-                                        <div className="w-4 h-4 bg-orange-500 rounded-full mr-3"></div>
+                                <div className="relative">
+                                    <input
+                                        type="radio"
+                                        id="delete_gallery_only"
+                                        name="deleteOption"
+                                        value="gallery_only"
+                                        checked={selectedDeleteOption === 'gallery_only'}
+                                        onChange={(e) => setSelectedDeleteOption(e.target.value)}
+                                        className="sr-only"
+                                    />
+                                    <label
+                                        htmlFor="delete_gallery_only"
+                                        className={`w-full p-3 cursor-pointer border-2 rounded-lg transition-colors flex items-center ${
+                                            selectedDeleteOption === 'gallery_only'
+                                                ? 'border-orange-500 bg-orange-50'
+                                                : 'border-gray-300 hover:border-orange-300 hover:bg-orange-25'
+                                        }`}
+                                    >
+                                        <div className={`w-5 h-5 rounded-full border-2 mr-3 relative ${
+                                            selectedDeleteOption === 'gallery_only'
+                                                ? 'border-orange-500 bg-orange-500'
+                                                : 'border-gray-300'
+                                        }`}>
+                                            {selectedDeleteOption === 'gallery_only' && (
+                                                <div className="w-2 h-2 bg-white rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                                            )}
+                                        </div>
                                         <div>
                                             <div className="font-medium text-gray-900">Delete Gallery Only</div>
                                             <div className="text-sm text-gray-600">
                                                 Remove gallery from the website but keep all {deleteDialogGallery.mediaItems?.length || 0} files in Google Drive
                                             </div>
                                         </div>
-                                    </div>
-                                </button>
+                                    </label>
+                                </div>
                                 
                                 {/* Option 2: Delete Everything */}
-                                {deleteDialogGallery.mediaItems?.length > 0 && (
-                                    <button
-                                        onClick={() => {
-                                            deleteGallery(deleteDialogGallery.id, deleteDialogGallery.name, true);
-                                            setDeleteDialogGallery(null);
-                                        }}
-                                        className="w-full p-3 text-left border border-red-300 rounded-lg hover:bg-red-50 transition-colors"
+                                <div className="relative">
+                                    <input
+                                        type="radio"
+                                        id="delete_everything"
+                                        name="deleteOption"
+                                        value="delete_everything"
+                                        checked={selectedDeleteOption === 'delete_everything'}
+                                        onChange={(e) => setSelectedDeleteOption(e.target.value)}
+                                        className="sr-only"
+                                        disabled={!deleteDialogGallery.mediaItems?.length}
+                                    />
+                                    <label
+                                        htmlFor="delete_everything"
+                                        className={`w-full p-3 cursor-pointer border-2 rounded-lg transition-colors flex items-center ${
+                                            !deleteDialogGallery.mediaItems?.length
+                                                ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-50'
+                                                : selectedDeleteOption === 'delete_everything'
+                                                ? 'border-red-500 bg-red-50'
+                                                : 'border-gray-300 hover:border-red-300 hover:bg-red-25'
+                                        }`}
                                     >
-                                        <div className="flex items-center">
-                                            <div className="w-4 h-4 bg-red-500 rounded-full mr-3"></div>
-                                            <div>
-                                                <div className="font-medium text-gray-900">Delete Everything</div>
-                                                <div className="text-sm text-gray-600">
-                                                    Remove gallery AND permanently delete all {deleteDialogGallery.mediaItems.length} files from Google Drive
-                                                </div>
-                                                <div className="text-xs text-red-600 mt-1">
-                                                    ⚠️ This action cannot be undone!
-                                                </div>
+                                        <div className={`w-5 h-5 rounded-full border-2 mr-3 relative ${
+                                            !deleteDialogGallery.mediaItems?.length
+                                                ? 'border-gray-300'
+                                                : selectedDeleteOption === 'delete_everything'
+                                                ? 'border-red-500 bg-red-500'
+                                                : 'border-gray-300'
+                                        }`}>
+                                            {selectedDeleteOption === 'delete_everything' && deleteDialogGallery.mediaItems?.length > 0 && (
+                                                <div className="w-2 h-2 bg-white rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <div className="font-medium text-gray-900">Delete Everything</div>
+                                            <div className="text-sm text-gray-600">
+                                                {deleteDialogGallery.mediaItems?.length > 0 ? (
+                                                    <>
+                                                        Remove gallery AND permanently delete all {deleteDialogGallery.mediaItems.length} files from Google Drive
+                                                        <div className="text-xs text-red-600 mt-1">
+                                                            ⚠️ This action cannot be undone!
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    "No files to delete (gallery is empty)"
+                                                )}
                                             </div>
                                         </div>
-                                    </button>
-                                )}
+                                    </label>
+                                </div>
                             </div>
                         </div>
                         
                         {/* Dialog Footer */}
-                        <div className="border-t border-gray-200 px-4 py-3 bg-gray-50">
+                        <div className="border-t border-gray-200 px-4 py-3 bg-gray-50 flex justify-between">
                             <button
-                                onClick={() => setDeleteDialogGallery(null)}
+                                onClick={() => {
+                                    setDeleteDialogGallery(null);
+                                    setSelectedDeleteOption('gallery_only'); // Reset selection
+                                }}
                                 className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
                             >
                                 Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const deleteFiles = selectedDeleteOption === 'delete_everything';
+                                    deleteGallery(deleteDialogGallery.id, deleteDialogGallery.name, deleteFiles);
+                                    setDeleteDialogGallery(null);
+                                    setSelectedDeleteOption('gallery_only'); // Reset selection
+                                }}
+                                className={`px-4 py-2 text-white rounded transition-colors ${
+                                    selectedDeleteOption === 'delete_everything'
+                                        ? 'bg-red-600 hover:bg-red-700'
+                                        : 'bg-orange-600 hover:bg-orange-700'
+                                }`}
+                            >
+                                {selectedDeleteOption === 'delete_everything' ? 'Delete Everything' : 'Delete Gallery Only'}
                             </button>
                         </div>
                     </div>
