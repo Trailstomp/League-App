@@ -172,8 +172,6 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <NewsManager teams={teams} currentUser={currentUser} />;
             case 'api-integrations':
                 return <APIIntegrationsManager />;
-            case 'groupme':
-                return <GroupMeManager />;
             case 'media':
                 return <GalleryManager teams={teams} currentUser={currentUser} />;
             case 'cloud-storage':
