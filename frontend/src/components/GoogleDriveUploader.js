@@ -388,7 +388,7 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Where to Display
+                                        Where should it appear
                                     </label>
                                     <select
                                         value={displayLocation}
