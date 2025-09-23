@@ -439,12 +439,24 @@ const GalleryManager = ({ teams = [], currentUser }) => {
                                 <h3 className="text-lg font-semibold text-gray-900">{selectedGallery.name}</h3>
                                 <p className="text-sm text-gray-600">{selectedGallery.mediaItems?.length || 0} images</p>
                             </div>
-                            <button
-                                onClick={closeGalleryManager}
-                                className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
-                            >
-                                ×
-                            </button>
+                            <div className="flex items-center space-x-2">
+                                <button
+                                    onClick={() => {
+                                        setActiveView('upload');
+                                        setSelectedGallery(null);
+                                    }}
+                                    className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
+                                    title="Add more images to this gallery"
+                                >
+                                    + Add Images
+                                </button>
+                                <button
+                                    onClick={closeGalleryManager}
+                                    className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                                >
+                                    ×
+                                </button>
+                            </div>
                         </div>
                         
                         {/* Modal Content */}
