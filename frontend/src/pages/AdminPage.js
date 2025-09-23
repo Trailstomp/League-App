@@ -170,7 +170,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
             case 'news':
                 return <NewsManager teams={teams} currentUser={currentUser} />;
             case 'media':
-                return <GalleryAdminManager teams={teams} currentUser={currentUser} />;
+                return <GalleryManager teams={teams} currentUser={currentUser} />;
             case 'cloud-storage':
                 return <CloudStorageManager teams={teams} />;
             case 'users':
