@@ -241,7 +241,7 @@ const GalleryManager = () => {
                                         </select>
                                     </div>
                                     <div className="text-xs text-gray-600">
-                                        {gallery.teamId || 'League-wide'}
+                                        {getDisplayLocation(gallery)}
                                     </div>
                                     <div className="text-xs text-gray-600">
                                         {gallery.mediaItems?.length || 0}
