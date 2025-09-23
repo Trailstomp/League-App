@@ -6,7 +6,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from environment
-BACKEND_URL = "https://sportscomms-setup.preview.emergentagent.com/api"
+BACKEND_URL = "https://api-rescue-2.preview.emergentagent.com/api"
 
 def investigate_event_types():
     """Investigate actual event types in database vs ticker filter configuration"""

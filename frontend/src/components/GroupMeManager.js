@@ -718,7 +718,7 @@ const GroupMeManager = () => {
                                                 Make sure your bot is already created in the GroupMe group with callback URL: 
                                                 <br />
                                                 <code className="bg-blue-100 px-1 rounded mt-1 inline-block">
-                                                    https://sportscomms-setup.preview.emergentagent.com/api/groupme/webhook
+                                                    https://api-rescue-2.preview.emergentagent.com/api/groupme/webhook
                                                 </code>
                                             </p>
                                         </div>
