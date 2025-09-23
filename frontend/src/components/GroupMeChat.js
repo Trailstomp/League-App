@@ -238,30 +238,30 @@ const GroupMeChat = ({ teamId = null, channelType = "all" }) => {
                         </div>
                     </div>
 
-                    {/* Messages List */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    {/* Messages Display */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-96 max-h-96">
                         {messages.length === 0 ? (
-                            <div className="text-center py-8 text-gray-500">
+                            <div className="text-center py-12 text-gray-500">
                                 <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                 </svg>
-                                <p>No messages yet</p>
-                                <p className="text-sm mt-1">Start chatting in GroupMe to see messages here!</p>
+                                <p className="text-lg font-medium mb-2">No messages yet</p>
+                                <p className="text-sm">Be the first to send a message to this channel!</p>
                             </div>
                         ) : Array.isArray(messages) ? (
                             messages.map((message) => (
-                                <div key={message.id} className="flex space-x-3">
+                                <div key={message.id} className="flex space-x-3 bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
                                     <div className="flex-shrink-0">
-                                        <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                                            <span className="text-xs font-bold text-gray-600">
+                                        <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                                            <span className="text-sm font-bold text-white">
                                                 {message.sender_name.charAt(0).toUpperCase()}
                                             </span>
                                         </div>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-center space-x-2">
-                                            <span className="font-medium text-gray-900">{message.sender_name}</span>
-                                            <span className="text-sm text-gray-500">
+                                        <div className="flex items-center space-x-2 mb-1">
+                                            <span className="font-semibold text-gray-900">{message.sender_name}</span>
+                                            <span className="text-xs text-gray-500">
                                                 {formatTimeAgo(message.created_at)}
                                             </span>
                                             {message.message_type === 'command' && (
@@ -270,7 +270,7 @@ const GroupMeChat = ({ teamId = null, channelType = "all" }) => {
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-gray-700 mt-1">{message.text || 'Media message'}</p>
+                                        <p className="text-gray-700 text-sm leading-relaxed break-words">{message.text || 'Media message'}</p>
                                     </div>
                                 </div>
                             ))
