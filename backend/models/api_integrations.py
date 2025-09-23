@@ -41,8 +41,8 @@ class APIIntegrationResponse(BaseModel):
     integration_name: str
     display_name: str
     is_active: bool
-    created_at: datetime
-    updated_at: datetime
+    created_at: str  # ISO format string for JSON serialization
+    updated_at: str  # ISO format string for JSON serialization
     created_by: Optional[str]
     # Note: credentials are NOT included in response for security
     has_credentials: bool = True
