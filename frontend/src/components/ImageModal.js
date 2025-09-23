@@ -86,7 +86,7 @@ const ImageModal = ({ imageUrl, imageAlt, onClose }) => {
         onClose(); // Close when clicking the image itself
     };
 
-    if (!imageUrl) return null;
+    if (!currentImageUrl) return null;
 
     return (
         <div 
