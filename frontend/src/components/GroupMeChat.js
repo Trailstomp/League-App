@@ -22,10 +22,16 @@ const GroupMeChat = ({ teamId = null, channelType = "all" }) => {
     const loadChannels = async () => {
         try {
             setLoading(true);
+            console.log('🔍 Loading GroupMe channels...');
             const response = await fetch(`${backendUrl}/api/groupme/channels?active_only=true`);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
             const data = await response.json();
+            console.log('🔍 Raw channels data:', data);
             
             let filteredChannels = data.channels || [];
+            console.log('🔍 All channels found:', filteredChannels.length, filteredChannels);
             
             // Filter channels based on context
             if (teamId && channelType === "team") {
