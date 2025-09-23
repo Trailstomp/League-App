@@ -1797,3 +1797,584 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# GroupMe Integration Endpoints
+GROUPME_ACCESS_TOKEN = os.environ.get('GROUPME_ACCESS_TOKEN')
+GROUPME_WEBHOOK_SECRET = os.environ.get('GROUPME_WEBHOOK_SECRET')
+
+@api_router.get("/groupme/groups")
+async def list_available_groupme_groups():
+    """Get available GroupMe groups for configuration"""
+    if not GROUPME_ACCESS_TOKEN:
+        raise HTTPException(status_code=400, detail="GroupMe not configured. Please add GROUPME_ACCESS_TOKEN to environment variables.")
+    
+    try:
+        import urllib.request
+        import json
+        
+        url = f"https://api.groupme.com/v3/groups?token={GROUPME_ACCESS_TOKEN}"
+        request = urllib.request.Request(url)
+        
+        with urllib.request.urlopen(request) as response:
+            data = json.loads(response.read().decode())
+        
+        if data.get('meta', {}).get('code') == 200:
+            groups = data.get('response', [])
+            return {"groups": groups, "count": len(groups)}
+        else:
+            logger.error(f"GroupMe API error: {data}")
+            return {"groups": [], "error": "Failed to fetch groups"}
+            
+    except Exception as e:
+        logger.error(f"Error fetching GroupMe groups: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch groups: {str(e)}")
+
+@api_router.post("/groupme/channels")
+async def create_groupme_channel(
+    name: str = Form(...),
+    groupme_group_id: str = Form(...),
+    channel_type: str = Form(...),  # 'league' or 'team'
+    team_id: Optional[str] = Form(None),
+    notification_settings: Optional[str] = Form("{}")  # JSON string
+):
+    """Create a new GroupMe channel configuration"""
+    
+    if not GROUPME_ACCESS_TOKEN:
+        raise HTTPException(status_code=400, detail="GroupMe not configured")
+    
+    try:
+        # Parse notification settings
+        import json
+        settings = json.loads(notification_settings) if notification_settings else {}
+        
+        # Validate channel type
+        if channel_type not in ["league", "team"]:
+            raise HTTPException(status_code=400, detail="channel_type must be 'league' or 'team'")
+        
+        # Validate team exists if team channel
+        if channel_type == "team":
+            if not team_id:
+                raise HTTPException(status_code=400, detail="team_id required for team channels")
+            
+            # Check if team exists
+            team = await db.teams.find_one({"id": team_id})
+            if not team:
+                raise HTTPException(status_code=404, detail="Team not found")
+        
+        # Check for duplicate group ID
+        existing = await db.groupme_channels.find_one({"groupme_group_id": groupme_group_id})
+        if existing:
+            raise HTTPException(status_code=400, detail="GroupMe group already configured")
+        
+        # Create bot
+        bot_name = f"{name} League Bot"
+        callback_url = f"{os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')}/api/groupme/webhook"
+        
+        bot_data = {
+            "bot": {
+                "name": bot_name,
+                "group_id": groupme_group_id,
+                "callback_url": callback_url
+            }
+        }
+        
+        bot_url = f"https://api.groupme.com/v3/bots?token={GROUPME_ACCESS_TOKEN}"
+        
+        import urllib.request
+        import json
+        
+        request = urllib.request.Request(
+            bot_url,
+            json.dumps(bot_data).encode(),
+            {"Content-Type": "application/json"}
+        )
+        
+        with urllib.request.urlopen(request) as response:
+            bot_response = json.loads(response.read().decode())
+        
+        if bot_response.get('meta', {}).get('code') != 201:
+            logger.error(f"Bot creation failed: {bot_response}")
+            raise HTTPException(status_code=400, detail="Failed to create GroupMe bot")
+        
+        bot_id = bot_response['response']['bot']['bot_id']
+        
+        # Create channel record
+        channel_id = str(uuid.uuid4())
+        channel = {
+            "id": channel_id,
+            "name": name,
+            "groupme_group_id": groupme_group_id,
+            "groupme_bot_id": bot_id,
+            "channel_type": channel_type,
+            "team_id": team_id,
+            "is_active": True,
+            "notification_settings": settings,
+            "created_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+        await db.groupme_channels.insert_one(channel)
+        
+        return {"message": "GroupMe channel created successfully", "channel_id": channel_id, "bot_id": bot_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating GroupMe channel: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/groupme/channels")
+async def list_groupme_channels(
+    active_only: bool = True,
+    channel_type: Optional[str] = None
+):
+    """List configured GroupMe channels"""
+    
+    try:
+        # Build query
+        query = {}
+        if active_only:
+            query["is_active"] = True
+        if channel_type:
+            query["channel_type"] = channel_type
+        
+        # Get channels
+        channels_cursor = db.groupme_channels.find(query)
+        channels = await channels_cursor.to_list(length=None)
+        
+        # Get team names for team channels
+        team_ids = [c["team_id"] for c in channels if c.get("team_id")]
+        team_names = {}
+        
+        if team_ids:
+            teams_cursor = db.teams.find({"id": {"$in": team_ids}})
+            teams = await teams_cursor.to_list(length=None)
+            team_names = {team["id"]: team["name"] for team in teams}
+        
+        # Add team names to response
+        for channel in channels:
+            if channel.get("team_id"):
+                channel["team_name"] = team_names.get(channel["team_id"], "Unknown Team")
+            else:
+                channel["team_name"] = None
+        
+        return {"channels": channels, "count": len(channels)}
+        
+    except Exception as e:
+        logger.error(f"Error listing GroupMe channels: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/groupme/webhook")
+async def groupme_webhook(request: Request):
+    """Handle GroupMe webhook messages"""
+    
+    try:
+        body = await request.body()
+        webhook_data = json.loads(body.decode())
+        
+        # Verify signature if configured
+        if GROUPME_WEBHOOK_SECRET:
+            signature = request.headers.get("X-GroupMe-Signature")
+            if signature:
+                import hmac
+                import hashlib
+                
+                expected_signature = hmac.new(
+                    GROUPME_WEBHOOK_SECRET.encode(),
+                    body,
+                    hashlib.sha256
+                ).hexdigest()
+                
+                if not hmac.compare_digest(signature, expected_signature):
+                    raise HTTPException(status_code=401, detail="Invalid webhook signature")
+        
+        # Skip system messages and bot messages
+        if webhook_data.get("system") or _is_bot_message(webhook_data):
+            return {"status": "ignored"}
+        
+        # Process the message
+        await _process_groupme_message(webhook_data)
+        
+        return {"status": "processed"}
+        
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON")
+    except Exception as e:
+        logger.error(f"Webhook processing error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Processing failed")
+
+def _is_bot_message(webhook_data: dict) -> bool:
+    """Check if message is from a bot"""
+    sender_type = webhook_data.get("sender_type", "")
+    name = webhook_data.get("name", "")
+    return sender_type == "bot" or "bot" in name.lower() or name.endswith("Bot")
+
+async def _process_groupme_message(webhook_data: dict):
+    """Process incoming GroupMe message"""
+    
+    try:
+        group_id = webhook_data.get("group_id")
+        text = webhook_data.get("text", "").strip()
+        
+        # Find the channel
+        channel = await db.groupme_channels.find_one({
+            "groupme_group_id": group_id,
+            "is_active": True
+        })
+        
+        if not channel:
+            logger.warning(f"No channel found for group_id: {group_id}")
+            return
+        
+        # Store message
+        message_id = str(uuid.uuid4())
+        message_data = {
+            "id": message_id,
+            "channel_id": channel["id"],
+            "groupme_message_id": str(webhook_data.get("id")),
+            "sender_id": str(webhook_data.get("user_id", webhook_data.get("sender_id"))),
+            "sender_name": webhook_data.get("name", "Unknown"),
+            "text": text,
+            "attachments": webhook_data.get("attachments", []),
+            "created_at": datetime.fromtimestamp(webhook_data.get("created_at", 0), tz=timezone.utc).isoformat(),
+            "message_type": "command" if text.startswith("/") else "standard",
+            "processed": False
+        }
+        
+        await db.groupme_messages.insert_one(message_data)
+        
+        # Process commands
+        if text.startswith("/"):
+            await _process_groupme_command(text, webhook_data, channel, message_data)
+        
+        # Mark message as processed
+        await db.groupme_messages.update_one(
+            {"id": message_id},
+            {"$set": {"processed": True}}
+        )
+        
+    except Exception as e:
+        logger.error(f"Error processing GroupMe message: {str(e)}")
+
+async def _process_groupme_command(text: str, webhook_data: dict, channel: dict, message_data: dict):
+    """Process GroupMe command"""
+    
+    try:
+        command_parts = text.lower().split()
+        command = command_parts[0]
+        
+        if command == "/rsvp" and len(command_parts) >= 2:
+            await _handle_rsvp_command(command_parts, webhook_data, channel, message_data)
+        elif command == "/schedule":
+            await _handle_schedule_command(webhook_data, channel)
+        elif command == "/help":
+            await _handle_help_command(webhook_data, channel)
+        
+    except Exception as e:
+        logger.error(f"Error processing command {text}: {str(e)}")
+
+async def _handle_rsvp_command(command_parts: list, webhook_data: dict, channel: dict, message_data: dict):
+    """Handle RSVP command"""
+    
+    response = command_parts[1].lower()
+    if response not in ["yes", "no", "maybe"]:
+        await _send_groupme_message(channel["groupme_bot_id"], "❓ Please use: /rsvp yes, /rsvp no, or /rsvp maybe")
+        return
+    
+    # Convert response format
+    response_map = {"yes": "attending", "no": "not_attending", "maybe": "maybe"}
+    db_response = response_map[response]
+    
+    # Find next upcoming event
+    now = datetime.utcnow()
+    
+    if channel["channel_type"] == "team":
+        # Team-specific events
+        events_cursor = db.events.find({
+            "team_id": channel["team_id"],
+            "start_datetime": {"$gt": now.isoformat()},
+            "requires_rsvp": True
+        }).sort("start_datetime", 1).limit(1)
+    else:
+        # League-wide events  
+        events_cursor = db.events.find({
+            "start_datetime": {"$gt": now.isoformat()},
+            "requires_rsvp": True
+        }).sort("start_datetime", 1).limit(1)
+    
+    events = await events_cursor.to_list(length=1)
+    
+    if not events:
+        await _send_groupme_message(channel["groupme_bot_id"], "❌ No upcoming events found")
+        return
+    
+    event = events[0]
+    user_id = str(webhook_data.get("user_id", webhook_data.get("sender_id")))
+    user_name = webhook_data.get("name", "Unknown")
+    
+    # Update or create RSVP
+    rsvp_data = {
+        "event_id": event["id"],
+        "groupme_user_id": user_id,
+        "user_name": user_name,
+        "user_avatar_url": webhook_data.get("avatar_url"),
+        "response": db_response,
+        "response_time": datetime.utcnow().isoformat(),
+        "message_id": message_data["id"]
+    }
+    
+    # Check for existing RSVP
+    existing_rsvp = await db.event_rsvps.find_one({
+        "event_id": event["id"],
+        "groupme_user_id": user_id
+    })
+    
+    if existing_rsvp:
+        await db.event_rsvps.update_one(
+            {"_id": existing_rsvp["_id"]},
+            {"$set": rsvp_data}
+        )
+    else:
+        rsvp_data["id"] = str(uuid.uuid4())
+        await db.event_rsvps.insert_one(rsvp_data)
+    
+    # Send confirmation
+    confirmation_msg = f"✅ {user_name}, your RSVP for '{event['title']}' has been recorded as: {response.upper()}"
+    await _send_groupme_message(channel["groupme_bot_id"], confirmation_msg)
+
+async def _handle_schedule_command(webhook_data: dict, channel: dict):
+    """Handle schedule command"""
+    
+    now = datetime.utcnow()
+    
+    if channel["channel_type"] == "team":
+        events_cursor = db.events.find({
+            "team_id": channel["team_id"],
+            "start_datetime": {"$gt": now.isoformat()}
+        }).sort("start_datetime", 1).limit(5)
+    else:
+        events_cursor = db.events.find({
+            "start_datetime": {"$gt": now.isoformat()}
+        }).sort("start_datetime", 1).limit(5)
+    
+    events = await events_cursor.to_list(length=5)
+    
+    if not events:
+        response = "📅 No upcoming events scheduled."
+    else:
+        response = "📅 Upcoming Events:\n\n"
+        for i, event in enumerate(events, 1):
+            try:
+                event_date = datetime.fromisoformat(event["start_datetime"]).strftime("%m/%d %I:%M %p")
+            except:
+                event_date = event["start_datetime"]
+            response += f"{i}. {event['title']}\n"
+            response += f"   📅 {event_date}"
+            if event.get("location"):
+                response += f" • 📍 {event['location']}"
+            response += "\n\n"
+        
+        response += "Use '/rsvp yes [event#]' to respond to a specific event"
+    
+    await _send_groupme_message(channel["groupme_bot_id"], response)
+
+async def _handle_help_command(webhook_data: dict, channel: dict):
+    """Handle help command"""
+    
+    help_text = """🤖 Lacrosse League Bot Commands:
+
+📋 /schedule - View upcoming events
+✅ /rsvp yes|no|maybe - Respond to events
+❓ /help - Show this help message
+
+Examples:
+• /rsvp yes - RSVP to next event
+• /rsvp no - Decline next event
+• /rsvp maybe - Mark as tentative"""
+    
+    await _send_groupme_message(channel["groupme_bot_id"], help_text)
+
+async def _send_groupme_message(bot_id: str, text: str) -> bool:
+    """Send message through GroupMe bot"""
+    
+    if not GROUPME_ACCESS_TOKEN:
+        return False
+    
+    try:
+        import urllib.request
+        import json
+        
+        url = "https://api.groupme.com/v3/bots/post"
+        
+        data = {
+            "bot_id": bot_id,
+            "text": text
+        }
+        
+        request = urllib.request.Request(
+            url,
+            json.dumps(data).encode(),
+            {"Content-Type": "application/json"}
+        )
+        
+        response = urllib.request.urlopen(request)
+        return response.status == 202  # GroupMe returns 202 for successful bot posts
+        
+    except Exception as e:
+        logger.error(f"Failed to send GroupMe message: {str(e)}")
+        return False
+
+@api_router.post("/groupme/broadcast")
+async def broadcast_groupme_message(
+    message: str = Form(...),
+    channel_ids: str = Form(...),  # JSON array as string
+    notification_type: str = Form("announcement")
+):
+    """Broadcast message to multiple GroupMe channels"""
+    
+    if not GROUPME_ACCESS_TOKEN:
+        raise HTTPException(status_code=400, detail="GroupMe not configured")
+    
+    try:
+        import json
+        channel_id_list = json.loads(channel_ids)
+        
+        # Get active channels
+        channels_cursor = db.groupme_channels.find({
+            "id": {"$in": channel_id_list},
+            "is_active": True,
+            "groupme_bot_id": {"$exists": True, "$ne": None}
+        })
+        channels = await channels_cursor.to_list(length=None)
+        
+        if not channels:
+            raise HTTPException(status_code=404, detail="No active channels found")
+        
+        # Send messages with rate limiting
+        results = {}
+        for channel in channels:
+            success = await _send_groupme_message(channel["groupme_bot_id"], message)
+            results[channel["name"]] = success
+            
+            # Log notification
+            notification = {
+                "id": str(uuid.uuid4()),
+                "channel_id": channel["id"],
+                "notification_type": notification_type,
+                "message_text": message,
+                "sent_at": datetime.utcnow().isoformat(),
+                "delivery_status": "sent" if success else "failed"
+            }
+            await db.groupme_notifications.insert_one(notification)
+            
+            # Rate limiting - wait between messages
+            await asyncio.sleep(2.1)
+        
+        successful_sends = sum(1 for success in results.values() if success)
+        
+        return {
+            "message": f"Broadcast sent to {successful_sends}/{len(channels)} channels",
+            "results": results
+        }
+        
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid channel_ids JSON")
+    except Exception as e:
+        logger.error(f"Error broadcasting message: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/groupme/events/{event_id}/rsvps")
+async def get_event_groupme_rsvps(event_id: str):
+    """Get GroupMe RSVP summary for an event"""
+    
+    try:
+        # Get event
+        event = await db.events.find_one({"id": event_id})
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Get RSVPs
+        rsvps_cursor = db.event_rsvps.find({"event_id": event_id})
+        rsvps = await rsvps_cursor.to_list(length=None)
+        
+        # Group by response
+        attending = [{"name": r["user_name"], "id": r["groupme_user_id"], "avatar_url": r.get("user_avatar_url")} 
+                    for r in rsvps if r["response"] == "attending"]
+        not_attending = [{"name": r["user_name"], "id": r["groupme_user_id"], "avatar_url": r.get("user_avatar_url")} 
+                        for r in rsvps if r["response"] == "not_attending"]
+        maybe = [{"name": r["user_name"], "id": r["groupme_user_id"], "avatar_url": r.get("user_avatar_url")} 
+                for r in rsvps if r["response"] == "maybe"]
+        
+        return {
+            "event": {
+                "id": event["id"],
+                "title": event["title"],
+                "start_datetime": event["start_datetime"],
+                "requires_rsvp": event.get("requires_rsvp", False)
+            },
+            "summary": {
+                "total_responses": len(rsvps),
+                "attending_count": len(attending),
+                "not_attending_count": len(not_attending),
+                "maybe_count": len(maybe)
+            },
+            "responses": {
+                "attending": attending,
+                "not_attending": not_attending,
+                "maybe": maybe
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting event RSVPs: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/groupme/dashboard/stats")
+async def get_groupme_dashboard_stats():
+    """Get GroupMe integration dashboard statistics"""
+    
+    try:
+        # Count active channels
+        active_channels = await db.groupme_channels.count_documents({"is_active": True})
+        
+        # Count team vs league channels
+        team_channels = await db.groupme_channels.count_documents({
+            "is_active": True,
+            "channel_type": "team"
+        })
+        
+        league_channels = await db.groupme_channels.count_documents({
+            "is_active": True,
+            "channel_type": "league"
+        })
+        
+        # Count messages from last 24 hours
+        yesterday = (datetime.utcnow() - timedelta(days=1)).isoformat()
+        recent_messages = await db.groupme_messages.count_documents({
+            "created_at": {"$gt": yesterday}
+        })
+        
+        # Count notifications sent in last 24 hours
+        notifications_sent = await db.groupme_notifications.count_documents({
+            "sent_at": {"$gt": yesterday},
+            "delivery_status": "sent"
+        })
+        
+        return {
+            "active_channels": active_channels,
+            "team_channels": team_channels,
+            "league_channels": league_channels,
+            "recent_messages": recent_messages,
+            "notifications_sent": notifications_sent,
+            "integration_status": "active" if active_channels > 0 else "inactive"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting GroupMe stats: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8001)
