@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
 import TeamGalleryDisplay from '../components/TeamGalleryDisplay';
+import GroupMeChat from '../components/GroupMeChat';
 
 const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
     const [activeTab, setActiveTab] = useState('home');
