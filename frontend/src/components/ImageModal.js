@@ -95,10 +95,11 @@ const ImageModal = ({ imageUrl, imageAlt, onClose }) => {
         >
             <div className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center">
                 <img 
-                    src={imageUrl}
+                    src={currentImageUrl}
                     alt={imageAlt || 'Gallery image'}
                     className="max-w-full max-h-full object-contain cursor-pointer shadow-2xl"
                     onClick={handleImageClick}
+                    onError={handleImageError}
                 />
                 
                 {/* Close button */}
