@@ -1798,9 +1798,12 @@ async def get_active_galleries():
 # Add this at the end of server.py before the GroupMe endpoints
 
 # API Integrations Management Endpoints
-from .services.api_integrations_service import APIIntegrationsService
-from .services.encryption_service import encryption_service
-from .models.api_integrations import APIIntegrationCreate, APIIntegrationUpdate, APIIntegrationResponse
+import sys
+import os
+sys.path.append(os.path.dirname(__file__))
+from services.api_integrations_service import APIIntegrationsService
+from services.encryption_service import encryption_service
+from models.api_integrations import APIIntegrationCreate, APIIntegrationUpdate, APIIntegrationResponse
 
 @api_router.get("/api-integrations")
 async def get_all_api_integrations():
