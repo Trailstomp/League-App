@@ -235,15 +235,16 @@ const GalleryManager = ({ teams = [], currentUser }) => {
             ) : (
                 /* Manage View */
                 <div>
-                <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-2 text-gray-600 text-sm">Loading galleries...</p>
-                </div>
-            ) : galleries.length === 0 ? (
-                <div className="text-center py-8 text-gray-500 text-sm">
-                    No galleries found.
-                </div>
-            ) : (
+                    {loading ? (
+                        <div className="text-center py-8">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+                            <p className="mt-2 text-gray-600 text-sm">Loading galleries...</p>
+                        </div>
+                    ) : galleries.length === 0 ? (
+                        <div className="text-center py-8 text-gray-500 text-sm">
+                            No galleries found.
+                        </div>
+                    ) : (
                 <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                     {/* Table Header */}
                     <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
