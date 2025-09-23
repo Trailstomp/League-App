@@ -149,10 +149,11 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         >
             <div 
                 ref={tickerRef}
-                className="flex items-center space-x-6 overflow-x-auto no-scrollbar"
+                className="flex items-center space-x-6 overflow-x-auto no-scrollbar md:ml-64"
                 style={{ 
                     width: 'max-content',
-                    minWidth: '100%'
+                    minWidth: '100%',
+                    paddingLeft: '1rem'
                 }}
             >
                 {/* Show each unique event only once */}
