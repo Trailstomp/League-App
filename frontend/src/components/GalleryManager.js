@@ -164,6 +164,10 @@ const GalleryManager = () => {
         }
     };
 
+    const isExpired = (expirationDate) => {
+        return expirationDate && new Date(expirationDate) < new Date();
+    };
+
     return (
         <div className="p-4">
             {/* Header */}
