@@ -1215,13 +1215,16 @@ async def fix_google_drive_urls():
                 gallery['mediaItems'] = updated_media_items
                 gallery['updatedAt'] = datetime.utcnow().isoformat()
                 
+                # Get the gallery ID (could be 'id' or '_id')
+                gallery_id = gallery.get('id') or str(gallery.get('_id'))
+                
                 # Try to update in both collections
-                result_new = await db.galleries_new.replace_one({"id": gallery['id']}, gallery)
-                result_old = await db.galleries.replace_one({"id": gallery['id']}, gallery) if hasattr(db, 'galleries') else None
+                result_new = await db.galleries_new.replace_one({"id": gallery_id}, gallery)
+                result_old = await db.galleries.replace_one({"id": gallery_id}, gallery) if hasattr(db, 'galleries') else None
                 
                 if result_new.modified_count > 0 or (result_old and result_old.modified_count > 0):
                     updated_count += 1
-                    logger.info(f"🔧 ✅ Updated gallery: {gallery['name']}")
+                    logger.info(f"🔧 ✅ Updated gallery: {gallery.get('name', 'Unknown')}")
         
         logger.info(f"🔧 ✅ Migration completed. Updated {updated_count} galleries.")
         
