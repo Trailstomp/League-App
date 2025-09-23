@@ -15,10 +15,12 @@ const GroupMeManager = () => {
         groupme_group_id: '',
         channel_type: 'team',
         team_id: '',
+        existing_bot_id: '', // Add bot ID field
         notification_settings: {}
     });
 
     const [inputMethod, setInputMethod] = useState('dropdown'); // 'dropdown' or 'manual'
+    const [botMethod, setBotMethod] = useState('auto'); // 'auto' or 'existing'
 
     const [broadcastForm, setBroadcastForm] = useState({
         message: '',
