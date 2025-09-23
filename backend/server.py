@@ -1361,9 +1361,10 @@ async def create_gallery_new_endpoint(
     gallery_name: str = Form(...),
     gallery_description: str = Form(""),
     gallery_type: str = Form("photo"),
-    visibility: str = Form("public"),
+    visibility: str = Form("all_pages"),
     status: str = Form("active"),
-    team_id: Optional[str] = Form(None),
+    selected_teams: List[str] = Form([]),
+    context_team_id: Optional[str] = Form(None),
     expiration_date: Optional[str] = Form(None)
 ):
     """Create a new gallery with enhanced options"""
@@ -1372,13 +1373,17 @@ async def create_gallery_new_endpoint(
         if status not in ["active", "hidden", "archived"]:
             raise HTTPException(status_code=400, detail="Invalid status. Must be: active, hidden, or archived")
         
+        if visibility not in ["all_pages", "league_only", "team_only"]:
+            raise HTTPException(status_code=400, detail="Invalid visibility. Must be: all_pages, league_only, or team_only")
+        
         gallery_data = {
             "name": gallery_name,
             "description": gallery_description,
             "type": gallery_type,
             "visibility": visibility,
             "status": status,
-            "teamId": team_id if team_id != "league-wide" else None,
+            "teamId": context_team_id if context_team_id != "league-wide" else None,
+            "selectedTeams": selected_teams,
             "googleDriveFolderId": None,  # Will be set when files are uploaded
             "expirationDate": None,
             "mediaItems": []
