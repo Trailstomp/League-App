@@ -412,24 +412,13 @@ const GalleryManager = ({ teams = [], currentUser }) => {
                                             </button>
                                         )}
                                         
-                                        {/* Clear delete buttons instead of dropdown */}
                                         <button
-                                            onClick={() => deleteGallery(gallery.id, gallery.name, false)}
-                                            className="px-2 py-1 bg-orange-600 text-white rounded text-xs hover:bg-orange-700"
-                                            title="Delete gallery only (keep Google Drive files)"
+                                            onClick={() => setDeleteDialogGallery(gallery)}
+                                            className="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700"
+                                            title="Delete gallery"
                                         >
-                                            Delete Gallery
+                                            Delete
                                         </button>
-                                        
-                                        {gallery.mediaItems?.length > 0 && (
-                                            <button
-                                                onClick={() => deleteGallery(gallery.id, gallery.name, true)}
-                                                className="px-2 py-1 bg-red-700 text-white rounded text-xs hover:bg-red-800"
-                                                title="Delete gallery AND all files from Google Drive"
-                                            >
-                                                Delete All ({gallery.mediaItems.length} files)
-                                            </button>
-                                        )}
                                     </div>
                                 </div>
                             )}
