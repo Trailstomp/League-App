@@ -51,9 +51,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include the API router
-app.include_router(api_router)
-
 
 # Define Models
 class StatusCheck(BaseModel):
