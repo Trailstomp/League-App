@@ -362,6 +362,38 @@ const APIIntegrationsManager = () => {
         </div>
     );
 
+    const renderGroupMeChannels = () => {
+        const groupmeIntegration = integrations.find(i => i.integration_name === 'groupme');
+        
+        if (!groupmeIntegration || !groupmeIntegration.is_active) {
+            return (
+                <div className="text-center py-16">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-yellow-100 rounded-full flex items-center justify-center">
+                        <span className="text-2xl">⚠️</span>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">GroupMe Not Configured</h3>
+                    <p className="text-gray-600 mb-4">You need to configure GroupMe integration first.</p>
+                    <button
+                        onClick={() => setActiveView('dashboard')}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                        Go to API Integrations
+                    </button>
+                </div>
+            );
+        }
+
+        return (
+            <div>
+                <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">GroupMe Channels</h2>
+                    <p className="text-gray-600">Manage your GroupMe channel connections and settings.</p>
+                </div>
+                <GroupMeManager />
+            </div>
+        );
+    };
+
     if (loading && integrations.length === 0) {
         return (
             <div className="flex justify-center items-center h-64">
