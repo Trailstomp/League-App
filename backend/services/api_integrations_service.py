@@ -34,16 +34,19 @@ class APIIntegrationsService:
         cursor = self.db.api_integrations.find({})
         integrations = await cursor.to_list(length=None)
         
-        print(f"🔧 DEBUG: Retrieved {len(integrations)} integrations from database")
-        
-        # Remove sensitive data from response
-        for i, integration in enumerate(integrations):
-            print(f"🔧 DEBUG: Integration {i}: {integration}")
+        # Remove sensitive data from response and normalize datetime fields
+        for integration in integrations:
+            # Normalize datetime fields to ISO strings if they're datetime objects
+            for field in ['created_at', 'updated_at']:
+                if field in integration:
+                    value = integration[field]
+                    if hasattr(value, 'isoformat'):  # It's a datetime object
+                        integration[field] = value.isoformat()
+            
+            # Calculate has_credentials before removing encrypted_credentials
             has_encrypted_credentials = bool(integration.get("encrypted_credentials"))
-            print(f"🔧 DEBUG: Integration {i} has encrypted_credentials: {has_encrypted_credentials}")
             integration.pop("encrypted_credentials", None)
             integration["has_credentials"] = has_encrypted_credentials
-            print(f"🔧 DEBUG: Integration {i} after processing: {integration}")
             
         return integrations
     
