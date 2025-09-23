@@ -345,44 +345,6 @@ const GroupMeChat = ({ teamId = null, channelType = "all" }) => {
             )}
         </div>
     );
-
-    const sendMessage = async () => {
-        if (!newMessage.trim() || !selectedChannel || sending) return;
-        
-        try {
-            setSending(true);
-            const formData = new FormData();
-            formData.append('message', newMessage.trim());
-            formData.append('channel_ids', JSON.stringify([selectedChannel.id]));
-            formData.append('notification_type', 'message');
-            
-            const response = await fetch(`${backendUrl}/api/groupme/broadcast`, {
-                method: 'POST',
-                body: formData
-            });
-            
-            if (response.ok) {
-                setNewMessage('');
-                // Refresh messages to show the sent message
-                await loadMessages(selectedChannel.id);
-            } else {
-                const errorData = await response.json();
-                alert(`Failed to send message: ${errorData.detail || 'Unknown error'}`);
-            }
-        } catch (error) {
-            console.error('Failed to send message:', error);
-            alert('Failed to send message. Please try again.');
-        } finally {
-            setSending(false);
-        }
-    };
-
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    };
 };
 
 export default GroupMeChat;
