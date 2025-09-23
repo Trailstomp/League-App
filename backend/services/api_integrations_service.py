@@ -1,6 +1,9 @@
 from typing import Optional, Dict, Any
-from ..models.api_integrations import APIIntegration, APIIntegrationCreate, APIIntegrationUpdate
-from .encryption_service import encryption_service
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from models.api_integrations import APIIntegration, APIIntegrationCreate, APIIntegrationUpdate
+from services.encryption_service import encryption_service
 from datetime import datetime
 
 class APIIntegrationsService:
