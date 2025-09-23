@@ -172,6 +172,8 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
                     setSelectedFiles([]);
                     setGalleryName('');
                     setGalleryDescription('');
+                    setSelectedTeams([]);
+                    setExpirationDate('');
                     setUploadProgress(0);
                     
                     // Callback for parent component to refresh galleries
