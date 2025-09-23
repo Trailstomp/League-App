@@ -135,6 +135,93 @@ async def get_league_data():
         logger.error(f"Error fetching league data: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/league-data")
+async def update_league_data(league_data: Dict[str, Any]):
+    """Update league data including team logos and other information"""
+    try:
+        # Ensure the data has the required ID
+        league_data["id"] = "main_league"
+        league_data["lastUpdated"] = datetime.utcnow().isoformat()
+        
+        # Update the database
+        result = await db.league_data.replace_one(
+            {"id": "main_league"},
+            league_data,
+            upsert=True
+        )
+        
+        logger.info(f"✅ League data updated - modified: {result.modified_count}, upserted: {result.upserted_id is not None}")
+        
+        return {
+            "status": "success",
+            "message": "League data updated successfully",
+            "modified": result.modified_count,
+            "upserted": result.upserted_id is not None
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error updating league data: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/league-data/teams/{team_id}")
+async def update_team_data(team_id: str, team_data: Dict[str, Any]):
+    """Update specific team data including logo"""
+    try:
+        # Get current league data
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        if not league_data:
+            league_data = {
+                "id": "main_league",
+                "teams": [],
+                "players": [],
+                "users": [],
+                "newsItems": [],
+                "gameTickerData": [],
+                "leagueSchedule": [],
+                "leagueInfo": {},
+                "websiteStyle": {}
+            }
+        
+        # Find and update the specific team
+        teams = league_data.get("teams", [])
+        team_found = False
+        
+        for i, team in enumerate(teams):
+            if team.get("id") == team_id:
+                # Update existing team
+                teams[i] = {**team, **team_data}
+                team_found = True
+                logger.info(f"✅ Updated existing team: {team_id}")
+                break
+        
+        if not team_found:
+            # Add new team
+            team_data["id"] = team_id
+            teams.append(team_data)
+            logger.info(f"✅ Added new team: {team_id}")
+        
+        # Update the database
+        league_data["teams"] = teams
+        league_data["lastUpdated"] = datetime.utcnow().isoformat()
+        
+        result = await db.league_data.replace_one(
+            {"id": "main_league"},
+            league_data,
+            upsert=True
+        )
+        
+        logger.info(f"✅ Team {team_id} data saved successfully")
+        
+        return {
+            "status": "success",
+            "message": f"Team {team_id} updated successfully",
+            "team_data": team_data
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error updating team {team_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Gallery endpoints moved to bottom of file to avoid duplicates
 
 # Helper function for Google Drive token management
