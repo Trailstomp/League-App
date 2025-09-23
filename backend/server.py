@@ -1817,8 +1817,27 @@ async def create_api_integration(
         # Check if integration already exists
         existing = await service.get_integration(integration_name)
         if existing:
-            raise HTTPException(status_code=400, detail=f"Integration '{integration_name}' already exists")
+            # If it exists, update it instead of creating new one
+            logger.info(f"Updating existing {integration_name} integration instead of creating new one")
+            
+            update_data = APIIntegrationUpdate(
+                display_name=display_name,
+                credentials=credentials_dict,
+                settings=settings_dict,
+                is_active=is_active
+            )
+            
+            success = await service.update_integration(integration_name, update_data)
+            
+            if success:
+                return {
+                    "message": f"API integration '{display_name}' updated successfully",
+                    "integration_name": integration_name
+                }
+            else:
+                raise HTTPException(status_code=500, detail="Failed to update existing integration")
         
+        # Create new integration if it doesn't exist
         integration_data = APIIntegrationCreate(
             integration_name=integration_name,
             display_name=display_name,
