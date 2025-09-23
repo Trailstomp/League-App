@@ -571,20 +571,23 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
                         <div className="mt-4">
                             <button
                                 onClick={uploadFiles}
-                                disabled={uploading || selectedFiles.length === 0 || !galleryName.trim()}
+                                disabled={uploading || selectedFiles.length === 0 || (!addToExisting && !galleryName.trim())}
                                 className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                             >
                                 {uploading ? (
                                     <>
                                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                        Creating Gallery & Uploading...
+                                        {addToExisting ? 'Adding Images...' : 'Creating Gallery & Uploading...'}
                                     </>
                                 ) : (
                                     <>
                                         <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M14.06 9L15 7.94V9zm-4.06 0H15l-3.94-6z"/>
                                         </svg>
-                                        Upload {selectedFiles.length} file{selectedFiles.length !== 1 ? 's' : ''} & Create Gallery
+                                        {addToExisting 
+                                            ? `Add ${selectedFiles.length} file${selectedFiles.length !== 1 ? 's' : ''} to Gallery`
+                                            : `Upload ${selectedFiles.length} file${selectedFiles.length !== 1 ? 's' : ''} & Create Gallery`
+                                        }
                                     </>
                                 )}
                             </button>
