@@ -2120,12 +2120,16 @@ async def list_groupme_channels(
             teams = await teams_cursor.to_list(length=None)
             team_names = {team["id"]: team["name"] for team in teams}
         
-        # Add team names to response
+        # Add team names to response and remove MongoDB ObjectIds
         for channel in channels:
             if channel.get("team_id"):
                 channel["team_name"] = team_names.get(channel["team_id"], "Unknown Team")
             else:
                 channel["team_name"] = None
+            
+            # Convert ObjectId to string or remove it to avoid serialization issues
+            if "_id" in channel:
+                del channel["_id"]
         
         return {"channels": channels, "count": len(channels)}
         
