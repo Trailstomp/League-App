@@ -2478,12 +2478,20 @@ Examples:
     await _send_groupme_message(channel["groupme_bot_id"], help_text)
 
 async def _send_groupme_message(bot_id: str, text: str) -> bool:
-    """Send message through GroupMe bot"""
-    
-    if not GROUPME_ACCESS_TOKEN:
-        return False
+    """Send message through GroupMe bot using stored credentials"""
     
     try:
+        # Get GroupMe service using stored credentials
+        groupme_service = await get_groupme_service()
+        if not groupme_service:
+            logger.error("GroupMe service not available - no stored credentials")
+            return False
+        
+        access_token = groupme_service.access_token
+        if not access_token:
+            logger.error("No GroupMe access token available")
+            return False
+        
         import urllib.request
         import json
         
