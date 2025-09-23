@@ -493,6 +493,9 @@ const PlayersManager = ({ teams, players, setPlayers }) => {
 // Team Form Component
 // Player Form Component  
 const PlayerForm = ({ teams, player, onSave, onCancel }) => {
+    const isEditing = !!player;
+    const formId = isEditing ? 'edit' : 'add';
+    
     const [formData, setFormData] = useState({
         name: player?.name || '',
         teamId: player?.teamId || '',
