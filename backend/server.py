@@ -1795,37 +1795,194 @@ async def get_active_galleries():
 
 # Duplicate function removed - using the first definition above
 
-# GroupMe Integration Endpoints
-GROUPME_ACCESS_TOKEN = os.environ.get('GROUPME_ACCESS_TOKEN')
-GROUPME_WEBHOOK_SECRET = os.environ.get('GROUPME_WEBHOOK_SECRET')
+# Add this at the end of server.py before the GroupMe endpoints
+
+# API Integrations Management Endpoints
+from .services.api_integrations_service import APIIntegrationsService
+from .services.encryption_service import encryption_service
+from .models.api_integrations import APIIntegrationCreate, APIIntegrationUpdate, APIIntegrationResponse
+
+@api_router.get("/api-integrations")
+async def get_all_api_integrations():
+    """Get all configured API integrations"""
+    try:
+        service = APIIntegrationsService(db)
+        integrations = await service.get_all_integrations()
+        
+        # Convert to response format
+        response_integrations = []
+        for integration in integrations:
+            response_integrations.append({
+                "id": integration["id"],
+                "integration_name": integration["integration_name"],
+                "display_name": integration["display_name"],
+                "is_active": integration["is_active"],
+                "created_at": integration["created_at"],
+                "updated_at": integration["updated_at"],
+                "created_by": integration.get("created_by"),
+                "has_credentials": bool(integration.get("encrypted_credentials")),
+                "status": "active" if integration["is_active"] else "inactive"
+            })
+        
+        return {"integrations": response_integrations}
+        
+    except Exception as e:
+        logger.error(f"Error getting API integrations: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/api-integrations")
+async def create_api_integration(
+    integration_name: str = Form(...),
+    display_name: str = Form(...),
+    credentials: str = Form(...),  # JSON string
+    settings: str = Form("{}"),  # JSON string
+    is_active: bool = Form(True)
+):
+    """Create new API integration"""
+    try:
+        import json
+        
+        # Parse JSON strings
+        credentials_dict = json.loads(credentials)
+        settings_dict = json.loads(settings)
+        
+        service = APIIntegrationsService(db)
+        
+        # Check if integration already exists
+        existing = await service.get_integration(integration_name)
+        if existing:
+            raise HTTPException(status_code=400, detail=f"Integration '{integration_name}' already exists")
+        
+        integration_data = APIIntegrationCreate(
+            integration_name=integration_name,
+            display_name=display_name,
+            credentials=credentials_dict,
+            settings=settings_dict,
+            is_active=is_active
+        )
+        
+        integration_id = await service.create_integration(integration_data)
+        
+        return {
+            "message": f"API integration '{display_name}' created successfully",
+            "integration_id": integration_id
+        }
+        
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid JSON in credentials or settings: {str(e)}")
+    except Exception as e:
+        logger.error(f"Error creating API integration: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/api-integrations/{integration_name}")
+async def update_api_integration(
+    integration_name: str,
+    display_name: Optional[str] = Form(None),
+    credentials: Optional[str] = Form(None),  # JSON string
+    settings: Optional[str] = Form(None),  # JSON string
+    is_active: Optional[bool] = Form(None)
+):
+    """Update existing API integration"""
+    try:
+        import json
+        
+        service = APIIntegrationsService(db)
+        
+        update_dict = {}
+        if display_name is not None:
+            update_dict["display_name"] = display_name
+        if credentials is not None:
+            update_dict["credentials"] = json.loads(credentials)
+        if settings is not None:
+            update_dict["settings"] = json.loads(settings)
+        if is_active is not None:
+            update_dict["is_active"] = is_active
+        
+        update_data = APIIntegrationUpdate(**update_dict)
+        success = await service.update_integration(integration_name, update_data)
+        
+        if success:
+            return {"message": f"Integration '{integration_name}' updated successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Integration not found")
+            
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid JSON: {str(e)}")
+    except Exception as e:
+        logger.error(f"Error updating API integration: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/api-integrations/{integration_name}/test")
+async def test_api_integration(integration_name: str):
+    """Test an API integration"""
+    try:
+        service = APIIntegrationsService(db)
+        result = await service.test_integration(integration_name)
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error testing API integration: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/api-integrations/{integration_name}")
+async def delete_api_integration(integration_name: str):
+    """Delete (deactivate) an API integration"""
+    try:
+        service = APIIntegrationsService(db)
+        success = await service.delete_integration(integration_name)
+        
+        if success:
+            return {"message": f"Integration '{integration_name}' deactivated successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Integration not found")
+            
+    except Exception as e:
+        logger.error(f"Error deleting API integration: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Updated GroupMe Integration Endpoints (using stored credentials)
+async def get_groupme_service():
+    """Get GroupMe service with stored credentials"""
+    service = APIIntegrationsService(db)
+    credentials = await service.get_groupme_credentials()
+    
+    if not credentials:
+        raise HTTPException(status_code=400, detail="GroupMe not configured. Please configure GroupMe integration in API settings.")
+    
+    access_token = credentials.get("access_token")
+    if not access_token:
+        raise HTTPException(status_code=400, detail="GroupMe access token not found in configuration.")
+    
+    # Import here to avoid circular imports
+    from .services.groupme_service import GroupMeService
+    return GroupMeService(access_token)
 
 @api_router.get("/groupme/groups")
 async def list_available_groupme_groups():
     """Get available GroupMe groups for configuration"""
-    if not GROUPME_ACCESS_TOKEN:
-        raise HTTPException(status_code=400, detail="GroupMe not configured. Please add GROUPME_ACCESS_TOKEN to environment variables.")
-    
     try:
-        import urllib.request
-        import json
+        service = APIIntegrationsService(db)
+        result = await service.test_integration("groupme")
         
-        url = f"https://api.groupme.com/v3/groups?token={GROUPME_ACCESS_TOKEN}"
-        request = urllib.request.Request(url)
-        
-        with urllib.request.urlopen(request) as response:
-            data = json.loads(response.read().decode())
-        
-        if data.get('meta', {}).get('code') == 200:
-            groups = data.get('response', [])
-            return {"groups": groups, "count": len(groups)}
+        if result.get("success"):
+            return {
+                "groups": result.get("groups", []),
+                "count": result.get("groups_count", 0)
+            }
         else:
-            logger.error(f"GroupMe API error: {data}")
-            return {"groups": [], "error": "Failed to fetch groups"}
+            return {
+                "groups": [],
+                "error": result.get("error", "Unknown error")
+            }
             
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error fetching GroupMe groups: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch groups: {str(e)}")
 
+# Update the existing GroupMe endpoints to use the new service
 @api_router.post("/groupme/channels")
 async def create_groupme_channel(
     name: str = Form(...),
@@ -1836,10 +1993,10 @@ async def create_groupme_channel(
 ):
     """Create a new GroupMe channel configuration"""
     
-    if not GROUPME_ACCESS_TOKEN:
-        raise HTTPException(status_code=400, detail="GroupMe not configured")
-    
     try:
+        # Get GroupMe service with stored credentials
+        groupme_service = await get_groupme_service()
+        
         # Parse notification settings
         import json
         settings = json.loads(notification_settings) if notification_settings else {}
@@ -1875,13 +2032,18 @@ async def create_groupme_channel(
             }
         }
         
-        bot_url = f"https://api.groupme.com/v3/bots?token={GROUPME_ACCESS_TOKEN}"
+        bot_url = f"https://api.groupme.com/v3/bots"
         
         import urllib.request
         import json
         
+        # Get credentials for bot creation
+        service = APIIntegrationsService(db)
+        credentials = await service.get_groupme_credentials()
+        access_token = credentials.get("access_token")
+        
         request = urllib.request.Request(
-            bot_url,
+            f"{bot_url}?token={access_token}",
             json.dumps(bot_data).encode(),
             {"Content-Type": "application/json"}
         )
@@ -1919,6 +2081,10 @@ async def create_groupme_channel(
     except Exception as e:
         logger.error(f"Error creating GroupMe channel: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+# GroupMe Integration Endpoints
+GROUPME_ACCESS_TOKEN = os.environ.get('GROUPME_ACCESS_TOKEN')
+GROUPME_WEBHOOK_SECRET = os.environ.get('GROUPME_WEBHOOK_SECRET')
 
 @api_router.get("/groupme/channels")
 async def list_groupme_channels(
