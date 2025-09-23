@@ -2137,6 +2137,35 @@ async def list_groupme_channels(
         logger.error(f"Error listing GroupMe channels: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/groupme/channels/{channel_id}/messages")
+async def get_channel_messages(
+    channel_id: str,
+    limit: int = 50,
+    offset: int = 0
+):
+    """Get messages from a GroupMe channel"""
+    
+    try:
+        # For now, return empty messages array since we don't store messages locally
+        # In a full implementation, this would fetch messages from GroupMe API or local storage
+        
+        # Verify channel exists first
+        channel_query = {"channel_id": channel_id}
+        channel = await db.groupme_channels.find_one(channel_query)
+        
+        if not channel:
+            raise HTTPException(status_code=404, detail="Channel not found")
+        
+        # Return empty messages for now - in future this could fetch from GroupMe API
+        # or local message storage if implemented
+        return []
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting messages for channel {channel_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/groupme/webhook")
 async def groupme_webhook(request: Request):
     """Handle GroupMe webhook messages"""
