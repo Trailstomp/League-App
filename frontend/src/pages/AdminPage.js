@@ -151,13 +151,11 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         { id: 'roles', label: 'Roles & Permissions', icon: 'settings' },
         { id: 'communications', label: 'Communications', icon: 'email' },
         { id: 'api-integrations', label: 'API Integrations', icon: 'settings' },
-        { id: 'groupme', label: 'GroupMe Chat', icon: '💬' },
         { id: 'media', label: 'Media Gallery', icon: 'view' },
         { id: 'cloud-storage', label: 'Cloud Storage', icon: 'backup' },
         { id: 'social', label: 'Social Media', icon: 'social' },
         { id: 'friends', label: 'Friends & Sponsors', icon: 'players' },
         { id: 'website', label: 'Website Design', icon: 'view' },
-        { id: 'api', label: 'API & Integrations', icon: 'settings' },
     ];
 
     const renderTabContent = () => {
