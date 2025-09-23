@@ -581,10 +581,10 @@ const PlayerForm = ({ teams, player, onSave, onCancel }) => {
                                 accept="image/*"
                                 onChange={handleFileUpload}
                                 className="hidden"
-                                id="player-photo-upload"
+                                id={`player-photo-upload-${formId}`}
                             />
                             <label 
-                                htmlFor="player-photo-upload"
+                                htmlFor={`player-photo-upload-${formId}`}
                                 className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
                             >
                                 Choose Photo
