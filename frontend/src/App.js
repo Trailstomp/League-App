@@ -7,6 +7,8 @@ import OAuthCallback from './components/OAuthCallback';
 import { isAdmin, canEditEvent, canEditTeam } from './components/PermissionsSystem';
 import "./App.css";
 
+import GroupMeChat from './components/GroupMeChat';
+
 function App() {
   // Basic state management
   const [currentPage, setCurrentPage] = useState('home'); // Back to home as default
