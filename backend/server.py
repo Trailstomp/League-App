@@ -2044,38 +2044,13 @@ async def create_groupme_channel(
         if existing:
             raise HTTPException(status_code=400, detail="GroupMe group already configured")
         
-        # Create bot
+        # Create bot using the service
         bot_name = f"{name} League Bot"
         callback_url = f"{os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')}/api/groupme/webhook"
         
-        bot_data = {
-            "bot": {
-                "name": bot_name,
-                "group_id": groupme_group_id,
-                "callback_url": callback_url
-            }
-        }
+        bot_response = await groupme_service.create_bot(groupme_group_id, bot_name, callback_url)
         
-        bot_url = f"https://api.groupme.com/v3/bots"
-        
-        import urllib.request
-        import json
-        
-        # Get credentials for bot creation
-        service = APIIntegrationsService(db)
-        credentials = await service.get_groupme_credentials()
-        access_token = credentials.get("access_token")
-        
-        request = urllib.request.Request(
-            f"{bot_url}?token={access_token}",
-            json.dumps(bot_data).encode(),
-            {"Content-Type": "application/json"}
-        )
-        
-        with urllib.request.urlopen(request) as response:
-            bot_response = json.loads(response.read().decode())
-        
-        if bot_response.get('meta', {}).get('code') != 201:
+        if bot_response.get('error') or bot_response.get('meta', {}).get('code') != 201:
             logger.error(f"Bot creation failed: {bot_response}")
             raise HTTPException(status_code=400, detail="Failed to create GroupMe bot")
         
