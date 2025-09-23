@@ -438,6 +438,105 @@ const GalleryManager = ({ teams = [], currentUser }) => {
                     )}
                 </div>
             )}
+            
+            {/* Image Management Modal */}
+            {selectedGallery && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={closeGalleryManager}>
+                    <div className="bg-white rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                        {/* Modal Header */}
+                        <div className="flex justify-between items-center p-4 border-b border-gray-200">
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-900">{selectedGallery.name}</h3>
+                                <p className="text-sm text-gray-600">{selectedGallery.mediaItems?.length || 0} images</p>
+                            </div>
+                            <button
+                                onClick={closeGalleryManager}
+                                className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        
+                        {/* Modal Content */}
+                        <div className="p-4 overflow-y-auto max-h-[70vh]">
+                            {selectedGallery.mediaItems?.length === 0 ? (
+                                <div className="text-center py-8 text-gray-500">
+                                    <p>No images in this gallery yet.</p>
+                                    <p className="text-sm mt-2">Use the "📤 Upload Images" tab to add images.</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    {selectedGallery.mediaItems.map((item) => (
+                                        <div key={item.id} className="border border-gray-200 rounded-lg overflow-hidden">
+                                            {/* Image Preview */}
+                                            <div className="aspect-square bg-gray-100 relative">
+                                                <img
+                                                    src={item.thumbnailUrl || item.url}
+                                                    alt={item.filename}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        // Fallback to a placeholder
+                                                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMiA5VjEzTTEyIDE3SDE2TDEyIDEzSDhMMTIgMTdaIiBzdHJva2U9IiM5Q0E0QUYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=';
+                                                    }}
+                                                />
+                                                {/* File type indicator */}
+                                                <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                                                    {item.type === 'video' ? '🎥' : '📷'}
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Image Details */}
+                                            <div className="p-3">
+                                                <p className="text-sm font-medium text-gray-900 truncate" title={item.filename}>
+                                                    {item.filename}
+                                                </p>
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    {item.size ? `${Math.round(item.size / 1024)} KB` : 'Unknown size'}
+                                                </p>
+                                                <p className="text-xs text-gray-500">
+                                                    {item.uploadedAt ? new Date(item.uploadedAt).toLocaleDateString() : 'Unknown date'}
+                                                </p>
+                                                
+                                                {/* Image Actions */}
+                                                <div className="flex space-x-2 mt-3">
+                                                    <button
+                                                        onClick={() => window.open(item.url, '_blank')}
+                                                        className="flex-1 px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+                                                    >
+                                                        View
+                                                    </button>
+                                                    <button
+                                                        onClick={() => deleteImageFromGallery(selectedGallery.id, item.id, item.filename)}
+                                                        className="flex-1 px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700"
+                                                    >
+                                                        Remove
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        
+                        {/* Modal Footer */}
+                        <div className="border-t border-gray-200 px-4 py-3 bg-gray-50">
+                            <div className="flex justify-between items-center">
+                                <p className="text-sm text-gray-600">
+                                    Gallery: {getDisplayLocation(selectedGallery)} | 
+                                    Status: <span className={getStatusBadge(selectedGallery.status)}>{selectedGallery.status}</span>
+                                </p>
+                                <button
+                                    onClick={closeGalleryManager}
+                                    className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
