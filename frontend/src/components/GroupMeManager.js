@@ -131,6 +131,9 @@ const GroupMeManager = () => {
             if (newChannelForm.team_id) {
                 formData.append('team_id', newChannelForm.team_id);
             }
+            if (newChannelForm.existing_bot_id) {
+                formData.append('existing_bot_id', newChannelForm.existing_bot_id);
+            }
             formData.append('notification_settings', JSON.stringify(newChannelForm.notification_settings));
 
             const response = await fetch(`${backendUrl}/api/groupme/channels`, {
