@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Delete Gallery Dialog</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 50; }
+        .modal-content { background: white; border-radius: 8px; max-width: 400px; width: 100%; margin: 16px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #e5e7eb; }
+        .modal-body { padding: 16px; }
+        .modal-footer { border-top: 1px solid #e5e7eb; padding: 16px; background: #f9fafb; display: flex; justify-content: space-between; }
+        .radio-option { width: 100%; padding: 12px; cursor: pointer; border: 2px solid #d1d5db; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; transition: all 0.2s; }
+        .radio-option.selected { border-color: #f59e0b; background: #fef3c7; }
+        .radio-option.selected.red { border-color: #dc2626; background: #fee2e2; }
+        .radio-circle { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #d1d5db; margin-right: 12px; position: relative; }
+        .radio-circle.selected { border-color: #f59e0b; background: #f59e0b; }
+        .radio-circle.selected.red { border-color: #dc2626; background: #dc2626; }
+        .radio-circle.selected::after { content: ''; width: 8px; height: 8px; background: white; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .btn { padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; border: none; }
+        .btn-gray { background: #6b7280; color: white; }
+        .btn-orange { background: #f59e0b; color: white; }
+        .btn-red { background: #dc2626; color: white; }
+        .btn:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <h1>Delete Gallery Dialog Test</h1>
+    <p>This tests the delete gallery functionality with radio button options.</p>
+    <button onclick="showDeleteDialog()" style="background: #dc2626; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">
+        Delete Gallery (Test)
+    </button>
+
+    <div id="react-container"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const DeleteDialog = ({ gallery, onClose, onDelete }) => {
+            const [selectedDeleteOption, setSelectedDeleteOption] = useState('gallery_only');
+
+            const handleDelete = () => {
+                const deleteFiles = selectedDeleteOption === 'delete_everything';
+                onDelete(gallery.id, gallery.name, deleteFiles);
+                onClose();
+            };
+
+            return (
+                <div className="modal" onClick={onClose}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3 style={{fontSize: '18px', fontWeight: '600', color: '#111827'}}>Delete Gallery</h3>
+                            <button onClick={onClose} style={{background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#9ca3af'}}>×</button>
+                        </div>
+                        
+                        <div className="modal-body">
+                            <p style={{color: '#374151', marginBottom: '16px'}}>
+                                What would you like to delete for gallery <strong>"{gallery.name}"</strong>?
+                            </p>
+                            
+                            <div style={{marginBottom: '12px'}}>
+                                <input
+                                    type="radio"
+                                    id="delete_gallery_only"
+                                    name="deleteOption"
+                                    value="gallery_only"
+                                    checked={selectedDeleteOption === 'gallery_only'}
+                                    onChange={(e) => setSelectedDeleteOption(e.target.value)}
+                                    style={{display: 'none'}}
+                                />
+                                <label
+                                    htmlFor="delete_gallery_only"
+                                    className={`radio-option ${selectedDeleteOption === 'gallery_only' ? 'selected' : ''}`}
+                                >
+                                    <div className={`radio-circle ${selectedDeleteOption === 'gallery_only' ? 'selected' : ''}`}></div>
+                                    <div>
+                                        <div style={{fontWeight: '500', color: '#111827'}}>Delete Gallery Only</div>
+                                        <div style={{fontSize: '14px', color: '#6b7280'}}>
+                                            Remove gallery from the website but keep all {gallery.mediaItems || 0} files in Google Drive
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <div>
+                                <input
+                                    type="radio"
+                                    id="delete_everything"
+                                    name="deleteOption"
+                                    value="delete_everything"
+                                    checked={selectedDeleteOption === 'delete_everything'}
+                                    onChange={(e) => setSelectedDeleteOption(e.target.value)}
+                                    style={{display: 'none'}}
+                                    disabled={!gallery.mediaItems}
+                                />
+                                <label
+                                    htmlFor="delete_everything"
+                                    className={`radio-option ${!gallery.mediaItems ? 'disabled' : selectedDeleteOption === 'delete_everything' ? 'selected red' : ''}`}
+                                    style={!gallery.mediaItems ? {opacity: 0.5, cursor: 'not-allowed'} : {}}
+                                >
+                                    <div className={`radio-circle ${!gallery.mediaItems ? '' : selectedDeleteOption === 'delete_everything' ? 'selected red' : ''}`}></div>
+                                    <div>
+                                        <div style={{fontWeight: '500', color: '#111827'}}>Delete Everything</div>
+                                        <div style={{fontSize: '14px', color: '#6b7280'}}>
+                                            {gallery.mediaItems > 0 ? (
+                                                <>
+                                                    Remove gallery AND permanently delete all {gallery.mediaItems} files from Google Drive
+                                                    <div style={{fontSize: '12px', color: '#dc2626', marginTop: '4px'}}>
+                                                        ⚠️ This action cannot be undone!
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                "No files to delete (gallery is empty)"
+                                            )}
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div className="modal-footer">
+                            <button className="btn btn-gray" onClick={onClose}>
+                                Cancel
+                            </button>
+                            <button
+                                className={`btn ${selectedDeleteOption === 'delete_everything' ? 'btn-red' : 'btn-orange'}`}
+                                onClick={handleDelete}
+                            >
+                                {selectedDeleteOption === 'delete_everything' ? 'Delete Everything' : 'Delete Gallery Only'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const TestApp = () => {
+            const [showDialog, setShowDialog] = useState(false);
+            const [testResult, setTestResult] = useState('');
+
+            const testGallery = {
+                id: 'test-gallery-123',
+                name: 'Test Gallery with Images',
+                mediaItems: 5
+            };
+
+            const handleDelete = (galleryId, galleryName, deleteFiles) => {
+                const action = deleteFiles ? 'DELETE gallery AND all files' : 'DELETE gallery (keep files)';
+                setTestResult(`✅ Delete action called: ${action} for "${galleryName}"`);
+                console.log('Delete action:', { galleryId, galleryName, deleteFiles });
+            };
+
+            return (
+                <div>
+                    <div style={{marginTop: '20px'}}>
+                        <h3>Test Results:</h3>
+                        <div style={{padding: '10px', background: '#f3f4f6', borderRadius: '4px', minHeight: '50px'}}>
+                            {testResult || 'Click "Delete Gallery (Test)" button to test the dialog'}
+                        </div>
+                    </div>
+                    
+                    {showDialog && (
+                        <DeleteDialog
+                            gallery={testGallery}
+                            onClose={() => setShowDialog(false)}
+                            onDelete={handleDelete}
+                        />
+                    )}
+                </div>
+            );
+        };
+
+        window.showDeleteDialog = () => {
+            const container = document.getElementById('react-container');
+            ReactDOM.render(<TestApp />, container);
+            // Trigger the dialog
+            setTimeout(() => {
+                const event = new CustomEvent('showDialog');
+                window.dispatchEvent(event);
+            }, 100);
+        };
+
+        // Initialize the test app
+        const container = document.getElementById('react-container');
+        ReactDOM.render(<TestApp />, container);
+
+        // Listen for the show dialog event
+        window.addEventListener('showDialog', () => {
+            // This is handled by React state management
+        });
+
+        // Automatically show dialog for testing
+        setTimeout(() => {
+            showDeleteDialog();
+            setTimeout(() => {
+                const testApp = document.querySelector('#react-container');
+                if (testApp && testApp._reactInternalFiber) {
+                    // Trigger show dialog in React
+                    const container = document.getElementById('react-container');
+                    const TestAppWithDialog = () => {
+                        const [showDialog, setShowDialog] = useState(true);
+                        const [testResult, setTestResult] = useState('');
+
+                        const testGallery = {
+                            id: 'test-gallery-123',
+                            name: 'Test Gallery with Images',
+                            mediaItems: 5
+                        };
+
+                        const handleDelete = (galleryId, galleryName, deleteFiles) => {
+                            const action = deleteFiles ? 'DELETE gallery AND all files' : 'DELETE gallery (keep files)';
+                            setTestResult(`✅ Delete action called: ${action} for "${galleryName}"`);
+                            console.log('Delete action:', { galleryId, galleryName, deleteFiles });
+                        };
+
+                        return (
+                            <div>
+                                <div style={{marginTop: '20px'}}>
+                                    <h3>Test Results:</h3>
+                                    <div style={{padding: '10px', background: '#f3f4f6', borderRadius: '4px', minHeight: '50px'}}>
+                                        {testResult || 'Use the radio buttons to select delete option, then click Delete button'}
+                                    </div>
+                                </div>
+                                
+                                {showDialog && (
+                                    <DeleteDialog
+                                        gallery={testGallery}
+                                        onClose={() => setShowDialog(false)}
+                                        onDelete={handleDelete}
+                                    />
+                                )}
+                            </div>
+                        );
+                    };
+                    ReactDOM.render(<TestAppWithDialog />, container);
+                }
+            }, 500);
+        }, 1000);
+    </script>
+</body>
+</html>
