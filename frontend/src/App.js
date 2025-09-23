@@ -236,12 +236,26 @@ function App() {
       case 'home':
         return <HomePage teams={teams} currentUser={currentUser} events={events} setEvents={setEvents} websiteStyle={websiteStyle} onNavigate={handleNavigate} />;
       case 'admin':
+        // Debug the admin check
+        console.log('🔍 Admin access check:', { 
+          currentUser: currentUser, 
+          hasCurrentUser: !!currentUser,
+          isAdminResult: currentUser ? isAdmin(currentUser) : 'no user',
+          userRoles: currentUser?.roles,
+          userRole: currentUser?.role,
+          userRoleIds: currentUser?.roleIds
+        });
+        
         // Check if user has admin permissions
         if (!currentUser || !isAdmin(currentUser)) {
           return (
             <div className="text-center py-16">
               <h2 className="text-2xl font-bold text-slate-800 mb-4">Access Denied</h2>
               <p className="text-slate-600 mb-4">You must be logged in as an administrator to view this page.</p>
+              <p className="text-sm text-gray-500 mb-4">
+                Debug: User={currentUser?.name}, Roles={JSON.stringify(currentUser?.roles)}, 
+                Role={currentUser?.role}, isAdmin={currentUser ? isAdmin(currentUser) : 'no user'}
+              </p>
               <button 
                 onClick={handleShowLogin}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
