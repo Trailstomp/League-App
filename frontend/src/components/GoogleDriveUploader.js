@@ -129,36 +129,43 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
 
         try {
             const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
-            console.log(`📤 Uploading ${selectedFiles.length} files and creating gallery: ${galleryName}`);
-            
             const formData = new FormData();
             
-            // Add all files
             selectedFiles.forEach(file => {
                 formData.append('files', file);
             });
+
+            let uploadEndpoint;
             
-            // Add gallery metadata
-            formData.append('gallery_name', galleryName);
-            formData.append('gallery_description', galleryDescription);
-            formData.append('visibility', displayLocation);
-            formData.append('status', status);
-            
-            // Add selected teams if team-only display
-            if (displayLocation === 'team_only' && selectedTeams.length > 0) {
-                selectedTeams.forEach(teamId => {
-                    formData.append('selected_teams', teamId);
-                });
-            }
-            
-            // Add expiration date if set
-            if (expirationDate) {
-                formData.append('expiration_date', expirationDate);
-            }
-            
-            // Add team ID context (where uploader was accessed from)
-            if (teamId && teamId !== 'league-wide') {
-                formData.append('context_team_id', teamId);
+            if (addToExisting && targetGalleryId) {
+                // Add to existing gallery
+                uploadEndpoint = `${BACKEND_URL}/api/galleries-new/${targetGalleryId}/add-images`;
+            } else {
+                // Create new gallery
+                uploadEndpoint = `${BACKEND_URL}/api/cloud-storage/google-drive/upload-and-create-gallery`;
+                
+                // Add gallery metadata for new gallery
+                formData.append('gallery_name', galleryName);
+                formData.append('gallery_description', galleryDescription);
+                formData.append('visibility', displayLocation);
+                formData.append('status', status);
+                
+                // Add selected teams if team-only display
+                if (displayLocation === 'team_only' && selectedTeams.length > 0) {
+                    selectedTeams.forEach(teamId => {
+                        formData.append('selected_teams', teamId);
+                    });
+                }
+                
+                // Add expiration date if set
+                if (expirationDate) {
+                    formData.append('expiration_date', expirationDate);
+                }
+                
+                // Add team ID context (where uploader was accessed from)
+                if (teamId && teamId !== 'league-wide') {
+                    formData.append('context_team_id', teamId);
+                }
             }
 
             const response = await fetch(`${BACKEND_URL}/api/cloud-storage/google-drive/upload-and-create-gallery`, {
