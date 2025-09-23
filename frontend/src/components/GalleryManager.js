@@ -140,8 +140,40 @@ const GalleryManager = ({ teams = [], currentUser }) => {
     };
 
     const openGallery = (gallery) => {
-        // TODO: Implement gallery image viewer/manager
-        alert(`Opening gallery: ${gallery.name}\nImages: ${gallery.mediaItems?.length || 0}\n\nImage management interface coming soon!`);
+        setSelectedGallery(gallery);
+    };
+
+    const closeGalleryManager = () => {
+        setSelectedGallery(null);
+    };
+
+    const deleteImageFromGallery = async (galleryId, imageId, imageName) => {
+        if (!confirm(`Delete image "${imageName}" from this gallery?\n\nThis will remove it from the gallery but keep it in Google Drive.`)) return;
+
+        try {
+            const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+            
+            const response = await fetch(`${BACKEND_URL}/api/galleries-new/${galleryId}/images/${imageId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                // Refresh the gallery data
+                loadGalleries();
+                // Update the selected gallery view
+                const updatedGallery = galleries.find(g => g.id === galleryId);
+                if (updatedGallery) {
+                    setSelectedGallery(updatedGallery);
+                }
+                alert(`Image "${imageName}" removed from gallery`);
+            } else {
+                const error = await response.json();
+                alert(`Failed to delete image: ${error.detail}`);
+            }
+        } catch (error) {
+            console.error('Error deleting image:', error);
+            alert('Error deleting image');
+        }
     };
 
     const formatDate = (dateStr) => {
