@@ -18,7 +18,21 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
 
     useEffect(() => {
         loadCloudConfig();
+        loadTeams();
     }, []);
+
+    const loadTeams = async () => {
+        try {
+            const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+            const response = await fetch(`${BACKEND_URL}/api/league-data`);
+            if (response.ok) {
+                const data = await response.json();
+                setTeams(data.teams || []);
+            }
+        } catch (error) {
+            console.error('Error loading teams:', error);
+        }
+    };
 
     const loadCloudConfig = async () => {
         try {
