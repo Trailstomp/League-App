@@ -360,6 +360,14 @@ const GalleryManager = ({ teams = [], currentUser }) => {
                                             Edit
                                         </button>
                                         
+                                        <button
+                                            onClick={() => openGallery(gallery)}
+                                            className="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700"
+                                            title="View and manage images"
+                                        >
+                                            Images ({gallery.mediaItems?.length || 0})
+                                        </button>
+                                        
                                         {gallery.status !== 'active' && (
                                             <button
                                                 onClick={() => quickStatusUpdate(gallery.id, 'active')}
@@ -370,27 +378,24 @@ const GalleryManager = ({ teams = [], currentUser }) => {
                                             </button>
                                         )}
                                         
-                                        <div className="relative group">
-                                            <button className="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700">
-                                                Delete ▼
+                                        {/* Clear delete buttons instead of dropdown */}
+                                        <button
+                                            onClick={() => deleteGallery(gallery.id, gallery.name, false)}
+                                            className="px-2 py-1 bg-orange-600 text-white rounded text-xs hover:bg-orange-700"
+                                            title="Delete gallery only (keep Google Drive files)"
+                                        >
+                                            Delete Gallery
+                                        </button>
+                                        
+                                        {gallery.mediaItems?.length > 0 && (
+                                            <button
+                                                onClick={() => deleteGallery(gallery.id, gallery.name, true)}
+                                                className="px-2 py-1 bg-red-700 text-white rounded text-xs hover:bg-red-800"
+                                                title="Delete gallery AND all files from Google Drive"
+                                            >
+                                                Delete All ({gallery.mediaItems.length} files)
                                             </button>
-                                            <div className="absolute right-0 mt-1 py-1 bg-white border border-gray-200 rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
-                                                <button
-                                                    onClick={() => deleteGallery(gallery.id, gallery.name, false)}
-                                                    className="block w-full text-left px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 whitespace-nowrap"
-                                                >
-                                                    Delete Gallery Only
-                                                </button>
-                                                {gallery.mediaItems?.length > 0 && (
-                                                    <button
-                                                        onClick={() => deleteGallery(gallery.id, gallery.name, true)}
-                                                        className="block w-full text-left px-3 py-1 text-xs text-red-700 hover:bg-red-50 whitespace-nowrap"
-                                                    >
-                                                        Delete Gallery + Files
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
+                                        )}
                                     </div>
                                 </div>
                             )}
