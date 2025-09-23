@@ -150,8 +150,18 @@ const GalleryManager = () => {
         return `px-2 py-1 rounded text-xs font-medium ${colors[status] || colors.active}`;
     };
 
-    const isExpired = (expirationDate) => {
-        return expirationDate && new Date(expirationDate) < new Date();
+    const getDisplayLocation = (gallery) => {
+        const visibility = gallery.visibility || 'all_pages';
+        switch (visibility) {
+            case 'all_pages': return 'All Pages';
+            case 'league_only': return 'League Only';
+            case 'team_only': 
+                if (gallery.selectedTeams && gallery.selectedTeams.length > 0) {
+                    return `Teams (${gallery.selectedTeams.length})`;
+                }
+                return 'Team Only';
+            default: return 'All Pages';
+        }
     };
 
     return (
