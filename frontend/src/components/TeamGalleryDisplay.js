@@ -174,13 +174,26 @@ const TeamGalleryDisplay = ({ teamId = null, pageType = 'league' }) => {
                                             {gallery.mediaItems?.map(item => (
                                                 <div key={item.id} className="flex-shrink-0 w-32 h-32 bg-slate-100 rounded overflow-hidden group">
                                                     <img 
-                                                        src={item.thumbnailUrl || item.url} 
+                                                        src={fixGoogleDriveUrl(item.thumbnailUrl) || fixGoogleDriveUrl(item.url)} 
                                                         alt={item.filename}
                                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform cursor-pointer"
                                                         onClick={() => setSelectedImage({
-                                                            url: item.url,
+                                                            url: fixGoogleDriveUrl(item.url),
                                                             alt: item.filename
                                                         })}
+                                                        onError={(e) => {
+                                                            console.error(`Failed to load image: ${item.filename}`, {
+                                                                thumbnailUrl: item.thumbnailUrl,
+                                                                url: item.url,
+                                                                fixedThumbnailUrl: fixGoogleDriveUrl(item.thumbnailUrl),
+                                                                fixedUrl: fixGoogleDriveUrl(item.url)
+                                                            });
+                                                            // Try using the proxy URL as fallback
+                                                            if (item.googleDriveId) {
+                                                                const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+                                                                e.target.src = `${BACKEND_URL}/api/media/drive/${item.googleDriveId}?size=w300-h300-c`;
+                                                            }
+                                                        }}
                                                     />
                                                 </div>
                                             ))}
