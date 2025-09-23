@@ -12,7 +12,7 @@ class APIIntegration(BaseModel):
     is_active: bool = True
     created_at: datetime = None
     updated_at: datetime = None
-    created_by: str = None  # User who configured it
+    created_by: Optional[str] = None  # User who configured it
     
     def __init__(self, **data):
         if not data.get('id'):
