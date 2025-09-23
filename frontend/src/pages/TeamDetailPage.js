@@ -29,6 +29,7 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
         { id: 'schedule', label: 'Schedule', icon: 'calendar' },
         { id: 'roster', label: 'Roster', icon: 'teams' },
         { id: 'stats', label: 'Stats', icon: 'trophy' },
+        { id: 'chat', label: 'Team Chat', icon: 'email' },
         { id: 'media', label: 'Photos & Vids', icon: 'view' },
         { id: 'contact', label: 'Contact', icon: 'email' }
     ];
