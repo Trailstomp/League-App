@@ -400,32 +400,117 @@ const GroupMeManager = () => {
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            GroupMe Group
+                            GroupMe Group Configuration
                         </label>
-                        <div className="flex space-x-2">
-                            <select
-                                value={newChannelForm.groupme_group_id}
-                                onChange={(e) => setNewChannelForm({...newChannelForm, groupme_group_id: e.target.value})}
-                                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required
-                            >
-                                <option value="">Select GroupMe group...</option>
-                                {availableGroups.map((group) => (
-                                    <option key={group.id} value={group.id}>
-                                        {group.name} ({group.members_count} members)
-                                    </option>
-                                ))}
-                            </select>
+                        
+                        {/* Input method toggle */}
+                        <div className="flex space-x-4 mb-4">
                             <button
                                 type="button"
-                                onClick={loadAvailableGroups}
-                                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                                onClick={() => setInputMethod('dropdown')}
+                                className={`px-3 py-2 text-sm rounded-md ${
+                                    inputMethod === 'dropdown'
+                                        ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                                        : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'
+                                }`}
                             >
-                                Refresh
+                                📋 Select from Groups
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setInputMethod('manual')}
+                                className={`px-3 py-2 text-sm rounded-md ${
+                                    inputMethod === 'manual'
+                                        ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                                        : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'
+                                }`}
+                            >
+                                ✍️ Enter Group ID Manually
                             </button>
                         </div>
+
+                        {inputMethod === 'dropdown' ? (
+                            /* Dropdown Selection */
+                            <div>
+                                <div className="flex space-x-2 mb-2">
+                                    <select
+                                        value={newChannelForm.groupme_group_id}
+                                        onChange={(e) => setNewChannelForm({...newChannelForm, groupme_group_id: e.target.value})}
+                                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        required
+                                    >
+                                        <option value="">
+                                            {availableGroups.length > 0 ? 'Select GroupMe group...' : 'Loading groups...'}
+                                        </option>
+                                        {availableGroups.map((group) => (
+                                            <option key={group.id} value={group.id}>
+                                                {group.name} ({group.members_count} members)
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <button
+                                        type="button"
+                                        onClick={loadAvailableGroups}
+                                        disabled={loading}
+                                        className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:opacity-50"
+                                    >
+                                        {loading ? '⟳' : 'Refresh'}
+                                    </button>
+                                </div>
+                                
+                                {availableGroups.length === 0 && !loading && (
+                                    <div className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded p-3 mb-2">
+                                        <div className="flex items-start">
+                                            <span className="text-amber-500 mr-2">⚠️</span>
+                                            <div>
+                                                <p className="font-medium">No GroupMe groups found</p>
+                                                <p className="text-xs mt-1">
+                                                    This could mean: (1) GroupMe API not configured, (2) No groups available, or (3) API error. 
+                                                    Try manual input below or check your GroupMe API configuration.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            /* Manual Input */
+                            <div>
+                                <div className="mb-4">
+                                    <input
+                                        type="text"
+                                        value={newChannelForm.groupme_group_id}
+                                        onChange={(e) => setNewChannelForm({...newChannelForm, groupme_group_id: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="e.g., 12345678"
+                                        required
+                                    />
+                                </div>
+                                
+                                {/* Instructions for getting Group ID */}
+                                <div className="text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded p-3">
+                                    <div className="flex items-start">
+                                        <span className="text-blue-500 mr-2">ℹ️</span>
+                                        <div>
+                                            <p className="font-medium mb-2">How to find your GroupMe Group ID:</p>
+                                            <ol className="list-decimal list-inside space-y-1 text-xs">
+                                                <li>Open GroupMe app or web version</li>
+                                                <li>Go to your group</li>
+                                                <li>Click the group name at the top</li>
+                                                <li>Click "Share Group" or look for sharing options</li>
+                                                <li>The Group ID is in the share URL: <code className="bg-blue-100 px-1 rounded">groupme.com/join_group/XXXXXXXX/XXXXXX</code></li>
+                                                <li>Copy the first set of numbers (the Group ID)</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        
                         {error && (
-                            <p className="mt-2 text-sm text-red-600">{error}</p>
+                            <div className="mt-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded p-2">
+                                <strong>Error:</strong> {error}
+                            </div>
                         )}
                     </div>
 
