@@ -10,8 +10,8 @@ class APIIntegration(BaseModel):
     credentials: Dict[str, Any]  # Encrypted storage for API keys/tokens
     settings: Dict[str, Any] = {}
     is_active: bool = True
-    created_at: datetime = None
-    updated_at: datetime = None
+    created_at: str = None  # Store as ISO format string for JSON serialization
+    updated_at: str = None  # Store as ISO format string for JSON serialization
     created_by: Optional[str] = None  # User who configured it
     
     def __init__(self, **data):
