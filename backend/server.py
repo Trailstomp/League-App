@@ -2166,6 +2166,55 @@ async def get_channel_messages(
         logger.error(f"Error getting messages for channel {channel_id}: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.delete("/groupme/channels/{channel_id}")
+async def delete_channel(channel_id: str):
+    """Delete a GroupMe channel"""
+    try:
+        # Check if channel exists
+        channel = await db.groupme_channels.find_one({"channel_id": channel_id})
+        if not channel:
+            raise HTTPException(status_code=404, detail="Channel not found")
+        
+        # Delete the channel
+        result = await db.groupme_channels.delete_one({"channel_id": channel_id})
+        
+        if result.deleted_count > 0:
+            return {"message": "Channel deleted successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Channel not found")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting channel {channel_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.patch("/groupme/channels/{channel_id}")
+async def update_channel(channel_id: str, update_data: dict):
+    """Update a GroupMe channel (e.g., activate/deactivate)"""
+    try:
+        # Check if channel exists
+        channel = await db.groupme_channels.find_one({"channel_id": channel_id})
+        if not channel:
+            raise HTTPException(status_code=404, detail="Channel not found")
+        
+        # Update the channel
+        result = await db.groupme_channels.update_one(
+            {"channel_id": channel_id}, 
+            {"$set": update_data}
+        )
+        
+        if result.modified_count > 0:
+            return {"message": "Channel updated successfully"}
+        else:
+            return {"message": "No changes made to channel"}
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating channel {channel_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/groupme/webhook")
 async def groupme_webhook(request: Request):
     """Handle GroupMe webhook messages"""
