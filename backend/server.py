@@ -2013,6 +2013,7 @@ async def create_groupme_channel(
     groupme_group_id: str = Form(...),
     channel_type: str = Form(...),  # 'league' or 'team'
     team_id: Optional[str] = Form(None),
+    existing_bot_id: Optional[str] = Form(None),  # Allow existing bot ID
     notification_settings: Optional[str] = Form("{}")  # JSON string
 ):
     """Create a new GroupMe channel configuration"""
