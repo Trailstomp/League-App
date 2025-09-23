@@ -391,7 +391,7 @@ const GalleryManager = ({ teams = [], currentUser }) => {
                             )}
                         </div>
                     ))}
-                </div>
+                        </div>
                     )}
                 </div>
             )}
