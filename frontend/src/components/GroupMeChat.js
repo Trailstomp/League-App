@@ -113,32 +113,60 @@ const GroupMeChat = ({ teamId = null, channelType = "all" }) => {
     };
 
     const sendMessage = async () => {
-        if (!newMessage.trim() || !selectedChannel || sending) return;
+        console.log('🚀 sendMessage called', { 
+            newMessage: newMessage.trim(), 
+            selectedChannel: selectedChannel?.id, 
+            sending 
+        });
+        
+        if (!newMessage.trim() || !selectedChannel || sending) {
+            console.log('❌ Send conditions not met:', {
+                hasMessage: !!newMessage.trim(),
+                hasChannel: !!selectedChannel,
+                notSending: !sending
+            });
+            return;
+        }
         
         try {
+            console.log('📤 Starting message send...');
             setSending(true);
             const formData = new FormData();
             formData.append('message', newMessage.trim());
             formData.append('channel_ids', JSON.stringify([selectedChannel.id]));
             formData.append('notification_type', 'message');
             
+            console.log('📋 FormData prepared:', {
+                message: newMessage.trim(),
+                channel_ids: [selectedChannel.id],
+                notification_type: 'message'
+            });
+            
             const response = await fetch(`${backendUrl}/api/groupme/broadcast`, {
                 method: 'POST',
                 body: formData
             });
             
+            console.log('📡 Response received:', {
+                status: response.status,
+                ok: response.ok
+            });
+            
             if (response.ok) {
+                console.log('✅ Message sent successfully');
                 setNewMessage('');
                 // Refresh messages to show the sent message
                 await loadMessages(selectedChannel.id);
             } else {
                 const errorData = await response.json();
+                console.log('❌ Send failed:', errorData);
                 alert(`Failed to send message: ${errorData.detail || 'Unknown error'}`);
             }
         } catch (error) {
-            console.error('Failed to send message:', error);
+            console.error('💥 Failed to send message:', error);
             alert('Failed to send message. Please try again.');
         } finally {
+            console.log('🏁 Send process finished');
             setSending(false);
         }
     };
