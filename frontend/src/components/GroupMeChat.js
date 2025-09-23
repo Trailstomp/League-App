@@ -57,7 +57,9 @@ const GroupMeChat = ({ teamId = null, channelType = "all" }) => {
                 console.log('🔍 No channels available after filtering');
             }
         } catch (error) {
-            setError('Failed to load GroupMe channels');
+            console.error('Failed to load channels:', error);
+            setChannels([]);
+            setSelectedChannel(null); // Reset selected channel on error
         } finally {
             setLoading(false);
         }
