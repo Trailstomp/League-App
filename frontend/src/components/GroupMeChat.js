@@ -124,9 +124,20 @@ const GroupMeChat = ({ teamId = null, channelType = "all" }) => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                     </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-yellow-800 mb-2">GroupMe Not Available</h3>
-                <p className="text-yellow-700">{error}</p>
-                <p className="text-sm text-yellow-600 mt-2">Ask your admin to set up GroupMe integration.</p>
+                <h3 className="text-lg font-semibold text-yellow-800 mb-2">No GroupMe Channels Available</h3>
+                <p className="text-yellow-700 mb-4">{error}</p>
+                <div className="space-y-2">
+                    <p className="text-sm text-yellow-600">To see your GroupMe groups in Team Chat:</p>
+                    <p className="text-sm text-yellow-600">1. Go to <strong>Admin Portal → API Integrations</strong></p>
+                    <p className="text-sm text-yellow-600">2. Click <strong>"Manage Channels"</strong> in GroupMe section</p>
+                    <p className="text-sm text-yellow-600">3. Create channels from your available GroupMe groups</p>
+                </div>
+                <a 
+                    href="/admin" 
+                    className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                    Go to Admin Portal
+                </a>
             </div>
         );
     }
