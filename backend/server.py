@@ -2160,9 +2160,6 @@ async def get_channel_messages(
     """Get messages from a GroupMe channel"""
     
     try:
-        # For now, return empty messages array since we don't store messages locally
-        # In a full implementation, this would fetch messages from GroupMe API or local storage
-        
         # Verify channel exists first - FIX: Use 'id' field instead of 'channel_id'
         channel_query = {"id": channel_id}
         channel = await db.groupme_channels.find_one(channel_query)
@@ -2170,9 +2167,30 @@ async def get_channel_messages(
         if not channel:
             raise HTTPException(status_code=404, detail="Channel not found")
         
-        # Return empty messages for now - in future this could fetch from GroupMe API
-        # or local message storage if implemented
-        return []
+        # Fetch messages for this channel from the database
+        messages_cursor = db.groupme_messages.find(
+            {"channel_id": channel_id}
+        ).sort("created_at", -1).limit(limit).skip(offset)
+        
+        messages = await messages_cursor.to_list(length=limit)
+        
+        # Convert ObjectId to string and format dates for frontend
+        formatted_messages = []
+        for msg in messages:
+            # Remove MongoDB ObjectId
+            if "_id" in msg:
+                del msg["_id"]
+            
+            # Ensure created_at is properly formatted
+            if isinstance(msg.get("created_at"), str):
+                msg["created_at"] = msg["created_at"]
+            else:
+                # Fallback for any datetime objects
+                msg["created_at"] = datetime.now(timezone.utc).isoformat()
+            
+            formatted_messages.append(msg)
+        
+        return formatted_messages
         
     except HTTPException:
         raise
