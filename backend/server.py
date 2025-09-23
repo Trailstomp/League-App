@@ -1098,16 +1098,24 @@ async def fix_google_drive_urls():
     try:
         logger.info("🔧 Starting Google Drive URL migration...")
         
-        # Get all galleries
-        galleries = await db.galleries_new.find().to_list(length=None)
+        # Get all galleries from both collections
+        galleries_new = await db.galleries_new.find().to_list(length=None)
+        galleries_old = await db.galleries.find().to_list(length=None) if hasattr(db, 'galleries') else []
+        
+        all_galleries = galleries_new + galleries_old
         updated_count = 0
         
-        for gallery in galleries:
+        logger.info(f"🔧 Found {len(galleries_new)} galleries in new collection")
+        logger.info(f"🔧 Found {len(galleries_old)} galleries in old collection")
+        
+        for gallery in all_galleries:
             if not gallery.get('mediaItems'):
                 continue
                 
             needs_update = False
             updated_media_items = []
+            
+            logger.info(f"🔧 Checking gallery: {gallery.get('name', 'Unknown')} with {len(gallery['mediaItems'])} media items")
             
             for item in gallery['mediaItems']:
                 updated_item = item.copy()
@@ -1134,23 +1142,26 @@ async def fix_google_drive_urls():
                 updated_media_items.append(updated_item)
             
             if needs_update:
-                # Update the gallery
+                # Update the gallery in the appropriate collection
                 gallery['mediaItems'] = updated_media_items
                 gallery['updatedAt'] = datetime.utcnow().isoformat()
                 
-                await db.galleries_new.replace_one(
-                    {"id": gallery['id']},
-                    gallery
-                )
-                updated_count += 1
-                logger.info(f"🔧 ✅ Updated gallery: {gallery['name']}")
+                # Try to update in both collections
+                result_new = await db.galleries_new.replace_one({"id": gallery['id']}, gallery)
+                result_old = await db.galleries.replace_one({"id": gallery['id']}, gallery) if hasattr(db, 'galleries') else None
+                
+                if result_new.modified_count > 0 or (result_old and result_old.modified_count > 0):
+                    updated_count += 1
+                    logger.info(f"🔧 ✅ Updated gallery: {gallery['name']}")
         
         logger.info(f"🔧 ✅ Migration completed. Updated {updated_count} galleries.")
         
         return {
             "status": "success",
             "message": f"Migration completed. Updated {updated_count} galleries with new Google Drive URLs.",
-            "updatedGalleries": updated_count
+            "updatedGalleries": updated_count,
+            "totalGalleriesChecked": len(all_galleries),
+            "galleriesWithMedia": len([g for g in all_galleries if g.get('mediaItems')])
         }
         
     except Exception as e:
