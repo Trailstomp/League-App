@@ -222,62 +222,6 @@ const GroupMeManager = () => {
         }
     };
 
-    const handleDeleteChannel = async (channelId, channelName) => {
-        if (!window.confirm(`Are you sure you want to delete the channel "${channelName}"? This action cannot be undone.`)) {
-            return;
-        }
-
-        try {
-            setLoading(true);
-            const response = await fetch(`${backendUrl}/api/groupme/channels/${channelId}`, {
-                method: 'DELETE'
-            });
-
-            if (response.ok) {
-                alert('Channel deleted successfully');
-                await loadChannels();
-                await loadDashboardStats();
-            } else {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'Failed to delete channel');
-            }
-        } catch (error) {
-            setError(`Failed to delete channel: ${error.message}`);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleToggleChannel = async (channelId, currentStatus) => {
-        const action = currentStatus ? 'deactivate' : 'activate';
-        
-        try {
-            setLoading(true);
-            const response = await fetch(`${backendUrl}/api/groupme/channels/${channelId}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    is_active: !currentStatus 
-                })
-            });
-
-            if (response.ok) {
-                alert(`Channel ${action}d successfully`);
-                await loadChannels();
-                await loadDashboardStats();
-            } else {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || `Failed to ${action} channel`);
-            }
-        } catch (error) {
-            setError(`Failed to ${action} channel: ${error.message}`);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleBroadcast = async (e) => {
         e.preventDefault();
         setLoading(true);
