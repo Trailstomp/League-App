@@ -176,6 +176,14 @@ const APIIntegrationsManager = () => {
                                     >
                                         {testResults.groupme?.loading ? 'Testing...' : 'Test Connection'}
                                     </button>
+                                    {groupmeIntegration.is_active && (
+                                        <button
+                                            onClick={() => setActiveView('groupme-channels')}
+                                            className="px-3 py-1 bg-green-100 text-green-800 rounded text-sm hover:bg-green-200"
+                                        >
+                                            Manage Channels
+                                        </button>
+                                    )}
                                     <button
                                         onClick={() => handleDeleteIntegration('groupme')}
                                         className="px-3 py-1 bg-red-100 text-red-800 rounded text-sm hover:bg-red-200"
