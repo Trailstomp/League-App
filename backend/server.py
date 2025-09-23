@@ -1786,7 +1786,7 @@ async def get_all_api_integrations():
                 "created_at": integration["created_at"],
                 "updated_at": integration["updated_at"],
                 "created_by": integration.get("created_by"),
-                "has_credentials": bool(integration.get("encrypted_credentials")),
+                "has_credentials": integration.get("has_credentials", False),  # Use service-calculated value
                 "status": "active" if integration["is_active"] else "inactive"
             })
         
