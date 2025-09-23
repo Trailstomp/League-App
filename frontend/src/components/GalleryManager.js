@@ -9,6 +9,7 @@ const GalleryManager = ({ teams = [], currentUser }) => {
     const [activeView, setActiveView] = useState('manage'); // 'manage' or 'upload'
     const [selectedGallery, setSelectedGallery] = useState(null); // For image management
     const [deleteDialogGallery, setDeleteDialogGallery] = useState(null); // For delete confirmation
+    const [selectedDeleteOption, setSelectedDeleteOption] = useState('gallery_only'); // For delete option selection
     const [addImagesGalleryId, setAddImagesGalleryId] = useState(null); // For maintaining gallery context when adding images
     const [editForm, setEditForm] = useState({
         status: '',
