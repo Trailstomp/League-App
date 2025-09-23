@@ -443,8 +443,9 @@ const GalleryManager = ({ teams = [], currentUser }) => {
                             <div className="flex items-center space-x-2">
                                 <button
                                     onClick={() => {
+                                        // Set the gallery context and switch to upload mode
                                         setActiveView('upload');
-                                        setSelectedGallery(null);
+                                        closeGalleryManager(); // This will clear selectedGallery, so we need to store it
                                     }}
                                     className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
                                     title="Add more images to this gallery"
