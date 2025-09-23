@@ -34,11 +34,16 @@ class APIIntegrationsService:
         cursor = self.db.api_integrations.find({})
         integrations = await cursor.to_list(length=None)
         
+        print(f"🔧 DEBUG: Retrieved {len(integrations)} integrations from database")
+        
         # Remove sensitive data from response
-        for integration in integrations:
+        for i, integration in enumerate(integrations):
+            print(f"🔧 DEBUG: Integration {i}: {integration}")
             has_encrypted_credentials = bool(integration.get("encrypted_credentials"))
+            print(f"🔧 DEBUG: Integration {i} has encrypted_credentials: {has_encrypted_credentials}")
             integration.pop("encrypted_credentials", None)
             integration["has_credentials"] = has_encrypted_credentials
+            print(f"🔧 DEBUG: Integration {i} after processing: {integration}")
             
         return integrations
     
