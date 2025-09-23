@@ -148,9 +148,8 @@ const APIIntegrationsManager = () => {
                     <button
                         onClick={() => setActiveView('create-groupme')}
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                        disabled={groupmeIntegration && groupmeIntegration.is_active}
                     >
-                        {groupmeIntegration ? 'Update GroupMe' : 'Configure GroupMe'}
+                        {groupmeIntegration ? 'Update GroupMe Configuration' : 'Configure GroupMe'}
                     </button>
                 </div>
 
