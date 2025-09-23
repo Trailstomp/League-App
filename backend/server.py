@@ -1547,6 +1547,162 @@ async def update_gallery_status(
         logger.error(f"📝 ❌ Error updating gallery status: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/galleries-new/{gallery_id}/add-images")
+async def add_images_to_gallery(
+    gallery_id: str,
+    files: List[UploadFile] = File(...),
+):
+    """Add images to an existing gallery"""
+    try:
+        logger.info(f"📤 Adding {len(files)} files to existing gallery: {gallery_id}")
+        
+        # Get the existing gallery
+        gallery = await db.galleries_new.find_one({"id": gallery_id})
+        if not gallery:
+            raise HTTPException(status_code=404, detail="Gallery not found")
+        
+        # Get cloud storage configuration
+        config = await db.cloud_storage.find_one({"id": "main_cloud_storage"})
+        if not config or not config.get("googleDrive", {}).get("refreshToken"):
+            raise HTTPException(status_code=400, detail="Google Drive not configured")
+        
+        google_drive_config = config["googleDrive"]
+        refresh_token = google_drive_config["refreshToken"]
+        folder_id = google_drive_config.get("folderId")
+        folder_name = google_drive_config.get("folderName", "League Media")
+        
+        # Get or refresh access token
+        access_token = await get_fresh_access_token(google_drive_config, refresh_token)
+        
+        # Use existing gallery folder or create one if needed
+        gallery_folder_id = gallery.get('googleDriveFolderId')
+        if not gallery_folder_id:
+            # Create gallery folder if it doesn't exist
+            gallery_folder_id = await create_gallery_folder(access_token, folder_id, gallery['name'])
+            # Update the gallery with the folder ID
+            await db.galleries_new.update_one(
+                {"id": gallery_id},
+                {"$set": {"googleDriveFolderId": gallery_folder_id}}
+            )
+        
+        # Upload files to Google Drive with retry logic
+        uploaded_media_items = []
+        import requests
+        
+        for i, file in enumerate(files):
+            try:
+                logger.info(f"📁 Uploading file {i+1}/{len(files)}: {file.filename}")
+                
+                # Read file content
+                file_content = await file.read()
+                logger.info(f"📁 File content read - Size: {len(file_content)} bytes")
+                
+                # Upload to Google Drive with retry logic
+                upload_success = False
+                retry_count = 0
+                max_retries = 2
+                
+                while not upload_success and retry_count <= max_retries:
+                    upload_response = requests.post(
+                        'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+                        headers={'Authorization': f'Bearer {access_token}'},
+                        files={
+                            'metadata': (None, json.dumps({
+                                'name': file.filename,
+                                'parents': [gallery_folder_id]
+                            }), 'application/json'),
+                            'data': (file.filename, file_content, file.content_type)
+                        },
+                        timeout=30
+                    )
+                    
+                    logger.info(f"📁 Google Drive upload response: {upload_response.status_code} (attempt {retry_count + 1})")
+                    
+                    if upload_response.status_code == 200:
+                        upload_success = True
+                    elif upload_response.status_code == 401 and retry_count < max_retries:
+                        logger.warning(f"🔄 Token expired during upload, refreshing... (retry {retry_count + 1})")
+                        access_token = await get_fresh_access_token(google_drive_config, refresh_token)
+                        retry_count += 1
+                    else:
+                        break
+                
+                if upload_response.status_code == 200:
+                    file_data = upload_response.json()
+                    drive_file_id = file_data['id']
+                    
+                    # Make the file publicly accessible
+                    try:
+                        make_file_public_response = requests.post(
+                            f'https://www.googleapis.com/drive/v3/files/{drive_file_id}/permissions',
+                            headers={'Authorization': f'Bearer {access_token}'},
+                            json={'role': 'reader', 'type': 'anyone'},
+                            timeout=15
+                        )
+                        if make_file_public_response.status_code == 200:
+                            logger.info(f"✅ File made public: {drive_file_id}")
+                    except Exception as perm_error:
+                        logger.warning(f"⚠️ Error making file public: {perm_error}")
+                    
+                    # Create media item dictionary
+                    media_item = {
+                        "id": str(uuid.uuid4()),
+                        "filename": file.filename,
+                        "url": f"https://drive.google.com/uc?id={drive_file_id}",
+                        "thumbnailUrl": f"{BACKEND_URL}/api/media/drive/{drive_file_id}?size=w300-h300-c",
+                        "googleDriveId": drive_file_id,
+                        "type": "image" if file.content_type.startswith("image/") else "video" if file.content_type.startswith("video/") else "file",
+                        "size": len(file_content),
+                        "uploadedAt": datetime.utcnow().isoformat()
+                    }
+                    
+                    uploaded_media_items.append(media_item)
+                    logger.info(f"✅ File uploaded: {file.filename} -> {drive_file_id}")
+                else:
+                    error_msg = await handle_drive_error(upload_response, "file upload")
+                    logger.error(f"❌ Upload failed for {file.filename}: {error_msg}")
+                    
+            except Exception as file_error:
+                logger.error(f"❌ Error uploading {file.filename}: {file_error}")
+                continue
+        
+        if not uploaded_media_items:
+            raise HTTPException(status_code=500, detail="No files were uploaded successfully")
+        
+        # Add the new media items to the existing gallery
+        existing_media_items = gallery.get('mediaItems', [])
+        all_media_items = existing_media_items + uploaded_media_items
+        
+        # Update the gallery
+        result = await db.galleries_new.update_one(
+            {"id": gallery_id},
+            {
+                "$set": {
+                    "mediaItems": all_media_items,
+                    "updatedAt": datetime.utcnow().isoformat()
+                }
+            }
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=500, detail="Failed to update gallery")
+        
+        logger.info(f"📤 ✅ Added {len(uploaded_media_items)} files to gallery: {gallery['name']}")
+        
+        return {
+            "status": "success",
+            "message": f"Added {len(uploaded_media_items)} files to gallery",
+            "galleryId": gallery_id,
+            "uploadedFiles": len(uploaded_media_items),
+            "totalFiles": len(all_media_items)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"📤 ❌ Error adding images to gallery: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.delete("/galleries-new/{gallery_id}/images/{image_id}")
 async def remove_image_from_gallery(gallery_id: str, image_id: str):
     """Remove a specific image from a gallery"""
