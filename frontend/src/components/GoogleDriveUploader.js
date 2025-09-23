@@ -112,17 +112,24 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
             // Add gallery metadata
             formData.append('gallery_name', galleryName);
             formData.append('gallery_description', galleryDescription);
-            formData.append('visibility', visibility);
+            formData.append('visibility', displayLocation);
             formData.append('status', status);
+            
+            // Add selected teams if team-only display
+            if (displayLocation === 'team_only' && selectedTeams.length > 0) {
+                selectedTeams.forEach(teamId => {
+                    formData.append('selected_teams', teamId);
+                });
+            }
             
             // Add expiration date if set
             if (expirationDate) {
                 formData.append('expiration_date', expirationDate);
             }
             
-            // Add team ID (or null for league-wide)
+            // Add team ID context (where uploader was accessed from)
             if (teamId && teamId !== 'league-wide') {
-                formData.append('team_id', teamId);
+                formData.append('context_team_id', teamId);
             }
 
             const response = await fetch(`${BACKEND_URL}/api/cloud-storage/google-drive/upload-and-create-gallery`, {
