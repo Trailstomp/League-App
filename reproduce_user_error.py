@@ -7,7 +7,7 @@ from datetime import datetime
 import time
 
 # Backend URL from environment
-BACKEND_URL = "https://teamdrive-gallery.preview.emergentagent.com/api"
+BACKEND_URL = "https://sportify-chat.preview.emergentagent.com/api"
 
 def get_document_size_mb(data):
     """Calculate document size in MB"""
