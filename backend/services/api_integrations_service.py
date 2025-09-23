@@ -52,31 +52,20 @@ class APIIntegrationsService:
     
     async def create_integration(self, integration_data: APIIntegrationCreate, created_by: str = None) -> str:
         """Create new API integration"""
-        print(f"🔧 DEBUG: Creating integration with data: {integration_data.dict()}")
-        
         integration = APIIntegration(
             **integration_data.dict(),
             created_by=created_by
         )
         
-        print(f"🔧 DEBUG: Integration object created: {integration.dict()}")
-        print(f"🔧 DEBUG: Credentials to encrypt: {integration.credentials}")
-        
         # Encrypt credentials
         encrypted_credentials = encryption_service.encrypt_credentials(integration.credentials)
-        print(f"🔧 DEBUG: Encrypted credentials: {encrypted_credentials}")
-        print(f"🔧 DEBUG: Encrypted credentials type: {type(encrypted_credentials)}")
-        print(f"🔧 DEBUG: Encrypted credentials length: {len(encrypted_credentials) if encrypted_credentials else 0}")
         
         # Store in database
         db_integration = integration.dict()
         db_integration["encrypted_credentials"] = encrypted_credentials
         db_integration.pop("credentials", None)  # Remove plaintext credentials
         
-        print(f"🔧 DEBUG: DB integration data: {db_integration}")
-        
         result = await self.db.api_integrations.insert_one(db_integration)
-        print(f"🔧 DEBUG: Insert result: {result}")
         
         return integration.id
     
