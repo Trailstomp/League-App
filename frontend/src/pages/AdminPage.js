@@ -6,7 +6,7 @@ import TeamManager from '../components/managers/TeamManager';
 import LocationManager from '../components/managers/LocationManager';
 import NewsManager from '../components/managers/NewsManager';
 import MediaManager from '../components/managers/MediaManager';
-import APIIntegrationsManager from '../components/managers/APIIntegrationsManager';
+import APIIntegrationsManager from '../components/APIIntegrationsManager';
 import WebsiteDesignManager from '../components/managers/WebsiteDesignManager';
 import SeasonManager from '../components/managers/SeasonManager';
 import CloudStorageManager from '../components/managers/CloudStorageManager';
