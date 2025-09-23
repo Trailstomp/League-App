@@ -168,7 +168,7 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
                 }
             }
 
-            const response = await fetch(`${BACKEND_URL}/api/cloud-storage/google-drive/upload-and-create-gallery`, {
+            const response = await fetch(uploadEndpoint, {
                 method: 'POST',
                 body: formData,
             });
