@@ -18,9 +18,9 @@ class APIIntegration(BaseModel):
         if not data.get('id'):
             data['id'] = str(uuid.uuid4())
         if not data.get('created_at'):
-            data['created_at'] = datetime.utcnow()
+            data['created_at'] = datetime.utcnow().isoformat()
         if not data.get('updated_at'):
-            data['updated_at'] = datetime.utcnow()
+            data['updated_at'] = datetime.utcnow().isoformat()
         super().__init__(**data)
 
 class APIIntegrationCreate(BaseModel):
