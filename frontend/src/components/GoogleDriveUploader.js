@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', onUploadSuccess = null }) => {
+const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', onUploadSuccess = null, selectedGalleryId = null }) => {
     const [cloudConfig, setCloudConfig] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [dragActive, setDragActive] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [teams, setTeams] = useState([]);
+    const [galleries, setGalleries] = useState([]);
     
     // Gallery creation fields
     const [galleryName, setGalleryName] = useState('');
@@ -15,6 +16,8 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
     const [selectedTeams, setSelectedTeams] = useState([]);
     const [status, setStatus] = useState('active');
     const [expirationDate, setExpirationDate] = useState('');
+    const [addToExisting, setAddToExisting] = useState(!!selectedGalleryId);
+    const [targetGalleryId, setTargetGalleryId] = useState(selectedGalleryId || '');
 
     useEffect(() => {
         loadCloudConfig();
