@@ -1836,6 +1836,9 @@ async def create_api_integration(
         
     except json.JSONDecodeError as e:
         raise HTTPException(status_code=400, detail=f"Invalid JSON in credentials or settings: {str(e)}")
+    except HTTPException:
+        # Re-raise HTTPExceptions without wrapping them
+        raise
     except Exception as e:
         logger.error(f"Error creating API integration: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
