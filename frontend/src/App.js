@@ -136,6 +136,30 @@ function App() {
   };
 
   // Load data from API on mount - DEFENSIVE LOADING TO PREVENT OVERWRITES
+  // Check URL on app load and sync with currentPage state
+  useEffect(() => {
+    const path = window.location.pathname;
+    console.log('🌐 Current URL path:', path);
+    
+    // Map URL paths to page names
+    const urlToPage = {
+      '/': 'home',
+      '/home': 'home', 
+      '/admin': 'admin',
+      '/events': 'events',
+      '/standings': 'standings',
+      '/chat': 'chat',
+      '/league_contact': 'league_contact'
+    };
+    
+    const pageFromUrl = urlToPage[path] || 'home';
+    
+    if (pageFromUrl !== currentPage) {
+      console.log('🔄 Syncing currentPage with URL:', pageFromUrl);
+      setCurrentPage(pageFromUrl);
+    }
+  }, []); // Run once on mount
+
   useEffect(() => {
     const loadData = async () => {
       try {
