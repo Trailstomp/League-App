@@ -2207,14 +2207,14 @@ async def delete_channel(channel_id: str):
 async def update_channel(channel_id: str, update_data: dict):
     """Update a GroupMe channel (e.g., activate/deactivate)"""
     try:
-        # Check if channel exists
-        channel = await db.groupme_channels.find_one({"channel_id": channel_id})
+        # Check if channel exists - use "id" field not "channel_id"
+        channel = await db.groupme_channels.find_one({"id": channel_id})
         if not channel:
             raise HTTPException(status_code=404, detail="Channel not found")
         
-        # Update the channel
+        # Update the channel - use "id" field not "channel_id"
         result = await db.groupme_channels.update_one(
-            {"channel_id": channel_id}, 
+            {"id": channel_id}, 
             {"$set": update_data}
         )
         
