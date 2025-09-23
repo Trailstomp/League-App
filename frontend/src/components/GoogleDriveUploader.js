@@ -175,22 +175,27 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
 
             if (response.ok) {
                 const result = await response.json();
-                console.log(`✅ Upload and gallery creation successful:`, result);
                 
-                const message = `Success! ${result.message}\n\nGallery "${galleryName}" created with ${result.uploadedFiles} files.`;
-                alert(message);
-                
+                if (addToExisting) {
+                    alert(`✅ Successfully added ${result.uploadedFiles} files to the gallery!`);
+                } else {
+                    alert(`✅ Gallery "${galleryName}" created with ${selectedFiles.length} files!`);
+                }
+
                 // Reset form
                 setSelectedFiles([]);
-                setGalleryName('');
-                setGalleryDescription('');
-                setSelectedTeams([]);
-                setExpirationDate('');
+                if (!addToExisting) {
+                    setGalleryName('');
+                    setGalleryDescription('');
+                    setSelectedTeams([]);
+                    setExpirationDate('');
+                }
+                setTargetGalleryId('');
                 setUploadProgress(0);
-                
-                // Callback for parent component
+
+                // Call success callback
                 if (onUploadSuccess) {
-                    onUploadSuccess(result);
+                    onUploadSuccess();
                 }
             } else if (response.status === 500) {
                 // Handle 500 errors - uploads might still be successful
