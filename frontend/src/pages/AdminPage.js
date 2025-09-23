@@ -410,7 +410,7 @@ const PlayersManager = ({ teams, players, setPlayers }) => {
                 </button>
             </div>
 
-            {showAddForm && (
+            {showAddForm && !editingPlayer && (
                 <PlayerForm
                     teams={teams}
                     onSave={handleAddPlayer}
