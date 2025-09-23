@@ -44,14 +44,17 @@ const GroupMeChat = ({ teamId = null, channelType = "all" }) => {
             // If channelType === "all", show all channels
             
             setChannels(filteredChannels);
+            console.log('🔍 Filtered channels set:', filteredChannels.length, filteredChannels);
             
             // Auto-select first channel if available
             if (filteredChannels.length > 0 && !selectedChannel) {
                 setSelectedChannel(filteredChannels[0]);
+                console.log('🔍 Auto-selected channel:', filteredChannels[0]);
             }
             
             if (filteredChannels.length === 0) {
                 setError('No GroupMe channels available');
+                console.log('🔍 No channels available after filtering');
             }
         } catch (error) {
             setError('Failed to load GroupMe channels');
