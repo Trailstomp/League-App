@@ -138,6 +138,11 @@ const GalleryManager = ({ teams = [], currentUser }) => {
         }
     };
 
+    const openGallery = (gallery) => {
+        // TODO: Implement gallery image viewer/manager
+        alert(`Opening gallery: ${gallery.name}\nImages: ${gallery.mediaItems?.length || 0}\n\nImage management interface coming soon!`);
+    };
+
     const formatDate = (dateStr) => {
         if (!dateStr) return 'Never';
         return new Date(dateStr).toLocaleDateString();
