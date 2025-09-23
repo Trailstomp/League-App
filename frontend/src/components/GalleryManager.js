@@ -265,6 +265,7 @@ const GalleryManager = ({ teams = [], currentUser }) => {
                     <GoogleDriveUploader 
                         teamId="league-wide" 
                         defaultVisibility="all_pages"
+                        selectedGalleryId={selectedGallery?.id} // Pass the selected gallery ID
                         onUploadSuccess={() => {
                             loadGalleries();
                             setActiveView('manage');
