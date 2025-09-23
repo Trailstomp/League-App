@@ -285,6 +285,13 @@ function App() {
             <p className="text-slate-600">Coming soon...</p>
           </div>
         );
+      case 'chat':
+        return (
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold text-slate-800 mb-6">Team Chat</h1>
+            <GroupMeChat channelType="all" />
+          </div>
+        );
       case 'team':
         return (
           <TeamDetailPage 
