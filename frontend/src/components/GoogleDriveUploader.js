@@ -391,6 +391,11 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
                         <div className="mt-6 p-4 bg-blue-50 rounded-lg border">
                             <h4 className="text-sm font-medium text-blue-800 mb-3">
                                 📸 Gallery Information
+                                {addToExisting && targetGalleryId && (
+                                    <span className="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded font-normal">
+                                        Adding to existing gallery
+                                    </span>
+                                )}
                             </h4>
                             
                             <div className="space-y-4">
