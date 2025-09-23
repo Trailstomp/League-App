@@ -198,6 +198,57 @@ const GroupMeManager = () => {
         <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900">GroupMe Integration Dashboard</h2>
             
+            {/* Configuration Status */}
+            <div className="bg-white rounded-lg shadow p-6">
+                <div className="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 className="text-lg font-medium text-gray-900">Configuration Status</h3>
+                        <p className="text-sm text-gray-600">Check your GroupMe API setup</p>
+                    </div>
+                    <button
+                        onClick={loadAvailableGroups}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                    >
+                        Test Configuration
+                    </button>
+                </div>
+                
+                {error && (
+                    <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <div className="flex items-start">
+                            <span className="text-red-500 mr-2">❌</span>
+                            <div>
+                                <p className="text-sm font-medium text-red-800">Configuration Issue</p>
+                                <p className="text-sm text-red-700 mt-1">{error}</p>
+                                {error.includes('GROUPME_ACCESS_TOKEN') && (
+                                    <div className="mt-2 text-xs text-red-600">
+                                        <p><strong>To fix:</strong></p>
+                                        <ol className="list-decimal list-inside mt-1 space-y-1">
+                                            <li>Go to <a href="https://dev.groupme.com/" target="_blank" rel="noopener noreferrer" className="underline">https://dev.groupme.com/</a></li>
+                                            <li>Create an application and get your Access Token</li>
+                                            <li>Add GROUPME_ACCESS_TOKEN to your environment variables</li>
+                                            <li>Restart your backend server</li>
+                                        </ol>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+                
+                {!error && availableGroups.length > 0 && (
+                    <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                        <div className="flex items-center">
+                            <span className="text-green-500 mr-2">✅</span>
+                            <div>
+                                <p className="text-sm font-medium text-green-800">Configuration Working</p>
+                                <p className="text-sm text-green-700">Found {availableGroups.length} GroupMe groups available</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="bg-white rounded-lg shadow p-6">
