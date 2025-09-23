@@ -40,19 +40,17 @@ const MediaGalleryNew = ({ teams = [], teamId = null, title = "Media Gallery" })
     const loadGalleries = async () => {
         try {
             setLoading(true);
-            console.log('📡 Loading galleries from backend...');
             
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/galleries-new`);
             if (response.ok) {
                 const data = await response.json();
-                console.log('📡 Galleries loaded:', data);
                 setGalleries(data.galleries || []);
             } else {
-                console.log('📡 No galleries found or error loading');
+                // API endpoint not found or error - silently handle to prevent console spam
                 setGalleries([]);
             }
         } catch (error) {
-            console.error('📡 Error loading galleries:', error);
+            // Silently handle fetch errors to prevent console spam
             setGalleries([]);
         } finally {
             setLoading(false);
