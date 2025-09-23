@@ -80,9 +80,10 @@ class Gallery(BaseModel):
     name: str
     description: str = ""
     type: str = "photo"  # photo, video
-    visibility: str = "public"  # public, private, league-wide
+    visibility: str = "all_pages"  # all_pages, league_only, team_only
     status: str = "active"  # active, hidden, archived
-    teamId: Optional[str] = None  # None for league-wide galleries
+    teamId: Optional[str] = None  # Context team (where gallery was created)
+    selectedTeams: List[str] = []  # Teams this gallery is assigned to (for team_only visibility)
     googleDriveFolderId: Optional[str] = None  # Dedicated folder for this gallery
     expirationDate: Optional[datetime] = None  # When gallery should stop displaying
     mediaItems: List[MediaItem] = []
