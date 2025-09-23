@@ -377,23 +377,58 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Where to Display
+                                    </label>
+                                    <select
+                                        value={displayLocation}
+                                        onChange={(e) => {
+                                            setDisplayLocation(e.target.value);
+                                            if (e.target.value !== 'team_only') {
+                                                setSelectedTeams([]);
+                                            }
+                                        }}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                        disabled={uploading}
+                                    >
+                                        <option value="all_pages">All Pages (League and Team)</option>
+                                        <option value="league_only">League Page Only</option>
+                                        <option value="team_only">Team Only</option>
+                                    </select>
+                                </div>
+
+                                {displayLocation === 'team_only' && (
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Where it should appear
+                                            Select Teams
                                         </label>
-                                        <select
-                                            value={visibility}
-                                            onChange={(e) => setVisibility(e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                            disabled={uploading}
-                                        >
-                                            <option value="public">All Pages (Public)</option>
-                                            <option value="team">Team Page Only</option>
-                                            <option value="private">Admin Only (Private)</option>
-                                        </select>
+                                        <div className="border border-gray-300 rounded-md p-2 max-h-32 overflow-y-auto">
+                                            {teams.map(team => (
+                                                <label key={team.id} className="flex items-center space-x-2 text-sm py-1">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedTeams.includes(team.id)}
+                                                        onChange={(e) => {
+                                                            if (e.target.checked) {
+                                                                setSelectedTeams([...selectedTeams, team.id]);
+                                                            } else {
+                                                                setSelectedTeams(selectedTeams.filter(id => id !== team.id));
+                                                            }
+                                                        }}
+                                                        disabled={uploading}
+                                                    />
+                                                    <span>{team.name}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                        {selectedTeams.length === 0 && (
+                                            <p className="text-xs text-red-600 mt-1">Please select at least one team</p>
+                                        )}
                                     </div>
-                                    
+                                )}
+
+                                <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
                                             Status
@@ -408,17 +443,6 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
                                             <option value="hidden">Hidden (Draft)</option>
                                             <option value="archived">Archived</option>
                                         </select>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Gallery For
-                                        </label>
-                                        <div className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-sm text-gray-600">
-                                            {teamId && teamId !== 'league-wide' ? `Team Gallery` : 'League Gallery'}
-                                        </div>
                                     </div>
                                     
                                     <div>
