@@ -5,6 +5,7 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
 import json
 import logging
+import os
 
 from ..database import get_db
 from ..models.groupme import (
