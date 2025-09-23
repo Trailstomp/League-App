@@ -133,8 +133,8 @@ const GroupMeChat = ({ teamId = null, channelType = "all" }) => {
 
     return (
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            {/* Channel Selector */}
-            {channels.length > 1 && (
+            {/* Channel Selector - Always show if channels exist */}
+            {channels.length >= 1 && (
                 <div className="bg-gray-50 p-4 border-b">
                     <h3 className="text-sm font-medium text-gray-900 mb-3">GroupMe Channels</h3>
                     <div className="flex flex-wrap gap-2">
