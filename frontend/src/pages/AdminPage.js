@@ -10,7 +10,7 @@ import APIIntegrationsManager from '../components/managers/APIIntegrationsManage
 import WebsiteDesignManager from '../components/managers/WebsiteDesignManager';
 import SeasonManager from '../components/managers/SeasonManager';
 import CloudStorageManager from '../components/managers/CloudStorageManager';
-import GalleryAdminManager from '../components/managers/GalleryAdminManager';
+import GalleryManager from '../components/GalleryManager';  // Updated to use improved GalleryManager
 
 const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, currentUser, websiteStyle, setWebsiteStyle, events, setEvents }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
