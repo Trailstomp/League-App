@@ -1929,7 +1929,45 @@ async def delete_api_integration(integration_name: str):
         logger.error(f"Error deleting API integration: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# Updated GroupMe Integration Endpoints (using stored credentials)
+# Simple GroupMe Service for channel creation
+class SimpleGroupMeService:
+    """Simple GroupMe service for basic API operations"""
+    
+    def __init__(self, access_token: str):
+        self.access_token = access_token
+        self.base_url = "https://api.groupme.com/v3"
+    
+    async def create_bot(self, group_id: str, bot_name: str, callback_url: str):
+        """Create a GroupMe bot for a specific group"""
+        try:
+            import urllib.request
+            import json
+            
+            url = f"{self.base_url}/bots?token={self.access_token}"
+            
+            data = {
+                "bot": {
+                    "name": bot_name,
+                    "group_id": group_id,
+                    "callback_url": callback_url
+                }
+            }
+            
+            request = urllib.request.Request(
+                url,
+                json.dumps(data).encode(),
+                {"Content-Type": "application/json"}
+            )
+            
+            with urllib.request.urlopen(request) as response:
+                result = json.loads(response.read().decode())
+                
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error creating GroupMe bot: {str(e)}")
+            return {"error": str(e)}
+
 async def get_groupme_service():
     """Get GroupMe service with stored credentials"""
     service = APIIntegrationsService(db)
@@ -1942,9 +1980,7 @@ async def get_groupme_service():
     if not access_token:
         raise HTTPException(status_code=400, detail="GroupMe access token not found in configuration.")
     
-    # Import here to avoid circular imports
-    from .services.groupme_service import GroupMeService
-    return GroupMeService(access_token)
+    return SimpleGroupMeService(access_token)
 
 @api_router.get("/groupme/groups")
 async def list_available_groupme_groups():
