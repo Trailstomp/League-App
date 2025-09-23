@@ -150,6 +150,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         { id: 'users', label: 'Users & Security', icon: 'admin' },
         { id: 'roles', label: 'Roles & Permissions', icon: 'settings' },
         { id: 'communications', label: 'Communications', icon: 'email' },
+        { id: 'groupme', label: 'GroupMe Integration', icon: '💬' },
         { id: 'media', label: 'Media Gallery', icon: 'view' },
         { id: 'cloud-storage', label: 'Cloud Storage', icon: 'backup' },
         { id: 'social', label: 'Social Media', icon: 'social' },
