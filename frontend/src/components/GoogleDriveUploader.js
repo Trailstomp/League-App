@@ -22,7 +22,21 @@ const GoogleDriveUploader = ({ teamId = null, defaultVisibility = 'all_pages', o
     useEffect(() => {
         loadCloudConfig();
         loadTeams();
+        loadGalleries();
     }, []);
+
+    const loadGalleries = async () => {
+        try {
+            const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+            const response = await fetch(`${BACKEND_URL}/api/galleries-new`);
+            if (response.ok) {
+                const data = await response.json();
+                setGalleries(data.galleries || []);
+            }
+        } catch (error) {
+            console.error('Error loading galleries:', error);
+        }
+    };
 
     const loadTeams = async () => {
         try {
