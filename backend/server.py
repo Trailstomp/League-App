@@ -1274,8 +1274,8 @@ async def fix_google_drive_urls():
                     old_thumb = item['thumbnailUrl']
                     if 'id=' in old_thumb:
                         file_id = old_thumb.split('id=')[1].split('&')[0]
-                        # Use a placeholder for BACKEND_URL - will be replaced by frontend
-                        updated_item['thumbnailUrl'] = f"BACKEND_URL/api/media/drive/{file_id}?size=w300-h300-c"
+                        # Use the actual BACKEND_URL instead of placeholder
+                        updated_item['thumbnailUrl'] = f"{BACKEND_URL}/api/media/drive/{file_id}?size=w300-h300-c"
                         needs_update = True
                         logger.info(f"🔧 Updated thumbnail to use proxy for {item.get('filename', 'unknown')}: {file_id}")
                 
