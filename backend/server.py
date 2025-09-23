@@ -2517,7 +2517,7 @@ async def broadcast_groupme_message(
     
     # Get GroupMe service using stored credentials
     try:
-        groupme_service = get_groupme_service()
+        groupme_service = await get_groupme_service()
         if not groupme_service:
             raise HTTPException(status_code=400, detail="GroupMe not configured")
     except Exception as e:
