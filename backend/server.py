@@ -1547,6 +1547,55 @@ async def update_gallery_status(
         logger.error(f"📝 ❌ Error updating gallery status: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.delete("/galleries-new/{gallery_id}/images/{image_id}")
+async def remove_image_from_gallery(gallery_id: str, image_id: str):
+    """Remove a specific image from a gallery"""
+    try:
+        logger.info(f"🖼️ Removing image {image_id} from gallery {gallery_id}")
+        
+        # Get the gallery
+        gallery = await db.galleries_new.find_one({"id": gallery_id})
+        if not gallery:
+            raise HTTPException(status_code=404, detail="Gallery not found")
+        
+        # Find and remove the specific image
+        media_items = gallery.get('mediaItems', [])
+        original_count = len(media_items)
+        
+        # Remove the image with the matching ID
+        updated_media_items = [item for item in media_items if item.get('id') != image_id]
+        
+        if len(updated_media_items) == original_count:
+            raise HTTPException(status_code=404, detail="Image not found in gallery")
+        
+        # Update the gallery
+        gallery['mediaItems'] = updated_media_items
+        gallery['updatedAt'] = datetime.utcnow().isoformat()
+        
+        result = await db.galleries_new.replace_one(
+            {"id": gallery_id},
+            gallery
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=500, detail="Failed to update gallery")
+        
+        removed_count = original_count - len(updated_media_items)
+        logger.info(f"🖼️ ✅ Removed {removed_count} image(s) from gallery {gallery_id}")
+        
+        return {
+            "status": "success",
+            "message": f"Image removed from gallery",
+            "removedImages": removed_count,
+            "remainingImages": len(updated_media_items)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"🖼️ ❌ Error removing image from gallery: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/galleries-new/active")
 async def get_active_galleries():
     """Get only active galleries (not hidden/archived and not expired)"""
