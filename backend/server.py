@@ -1798,18 +1798,6 @@ async def get_active_galleries():
 
 # Duplicate function removed - using the first definition above
 
-# Include the router in the main app
-app.include_router(api_router)
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your domain
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 # GroupMe Integration Endpoints
 GROUPME_ACCESS_TOKEN = os.environ.get('GROUPME_ACCESS_TOKEN')
 GROUPME_WEBHOOK_SECRET = os.environ.get('GROUPME_WEBHOOK_SECRET')
