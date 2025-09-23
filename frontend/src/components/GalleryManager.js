@@ -266,10 +266,11 @@ const GalleryManager = ({ teams = [], currentUser }) => {
                     <GoogleDriveUploader 
                         teamId="league-wide" 
                         defaultVisibility="all_pages"
-                        selectedGalleryId={selectedGallery?.id} // Pass the selected gallery ID
+                        selectedGalleryId={addImagesGalleryId} // Use the dedicated state for add images flow
                         onUploadSuccess={() => {
                             loadGalleries();
                             setActiveView('manage');
+                            setAddImagesGalleryId(null); // Clear the add images context
                         }}
                     />
                 </div>
