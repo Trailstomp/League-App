@@ -2040,10 +2040,24 @@ async def create_groupme_channel(
             if not team:
                 raise HTTPException(status_code=404, detail="Team not found")
         
-        # Check for duplicate group ID
-        existing = await db.groupme_channels.find_one({"groupme_group_id": groupme_group_id})
+        # Check for duplicate group ID with same channel type and team combination
+        query = {"groupme_group_id": groupme_group_id, "channel_type": channel_type}
+        if channel_type == "team" and team_id:
+            query["team_id"] = team_id
+        
+        existing = await db.groupme_channels.find_one(query)
         if existing:
-            raise HTTPException(status_code=400, detail="GroupMe group already configured")
+            channel_description = f"{channel_type} channel"
+            if channel_type == "team" and team_id:
+                # Get team name for better error message
+                team = await db.teams.find_one({"id": team_id})
+                team_name = team.get("name", "Unknown") if team else "Unknown"
+                channel_description = f"team channel for {team_name}"
+            
+            raise HTTPException(
+                status_code=400, 
+                detail=f"GroupMe group already configured as {channel_description}. Use a different group or delete the existing channel first."
+            )
         
         # Handle bot creation or use existing bot
         if existing_bot_id:
