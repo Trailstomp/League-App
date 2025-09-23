@@ -18,6 +18,8 @@ const GroupMeManager = () => {
         notification_settings: {}
     });
 
+    const [inputMethod, setInputMethod] = useState('dropdown'); // 'dropdown' or 'manual'
+
     const [broadcastForm, setBroadcastForm] = useState({
         message: '',
         channel_ids: [],
