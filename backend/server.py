@@ -2163,8 +2163,8 @@ async def get_channel_messages(
         # For now, return empty messages array since we don't store messages locally
         # In a full implementation, this would fetch messages from GroupMe API or local storage
         
-        # Verify channel exists first
-        channel_query = {"channel_id": channel_id}
+        # Verify channel exists first - FIX: Use 'id' field instead of 'channel_id'
+        channel_query = {"id": channel_id}
         channel = await db.groupme_channels.find_one(channel_query)
         
         if not channel:
