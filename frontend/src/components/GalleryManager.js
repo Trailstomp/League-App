@@ -4,6 +4,11 @@ const GalleryManager = () => {
     const [galleries, setGalleries] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showAll, setShowAll] = useState(false);
+    const [editingGallery, setEditingGallery] = useState(null);
+    const [editForm, setEditForm] = useState({
+        status: '',
+        expirationDate: ''
+    });
 
     useEffect(() => {
         loadGalleries();
@@ -14,7 +19,6 @@ const GalleryManager = () => {
             setLoading(true);
             const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
             
-            // Use different endpoint based on showAll toggle
             const endpoint = showAll ? '/api/galleries-new' : '/api/galleries-new/active';
             const response = await fetch(`${BACKEND_URL}${endpoint}`);
             
@@ -22,7 +26,6 @@ const GalleryManager = () => {
                 const data = await response.json();
                 setGalleries(data.galleries || []);
             } else {
-                console.error('Failed to load galleries');
                 setGalleries([]);
             }
         } catch (error) {
@@ -33,43 +36,79 @@ const GalleryManager = () => {
         }
     };
 
-    const updateGalleryStatus = async (galleryId, newStatus, expirationDate = null) => {
+    const startEdit = (gallery) => {
+        setEditingGallery(gallery.id);
+        setEditForm({
+            status: gallery.status || 'active',
+            expirationDate: gallery.expirationDate ? gallery.expirationDate.slice(0, 16) : ''
+        });
+    };
+
+    const cancelEdit = () => {
+        setEditingGallery(null);
+        setEditForm({ status: '', expirationDate: '' });
+    };
+
+    const saveEdit = async (galleryId) => {
+        try {
+            const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+            
+            const body = new URLSearchParams();
+            body.append('status', editForm.status);
+            if (editForm.expirationDate) {
+                body.append('expiration_date', editForm.expirationDate);
+            }
+            
+            const response = await fetch(`${BACKEND_URL}/api/galleries-new/${galleryId}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body
+            });
+
+            if (response.ok) {
+                loadGalleries();
+                cancelEdit();
+                alert('Gallery updated successfully');
+            } else {
+                const error = await response.json();
+                alert(`Failed to update: ${error.detail}`);
+            }
+        } catch (error) {
+            console.error('Error updating gallery:', error);
+            alert('Error updating gallery');
+        }
+    };
+
+    const quickStatusUpdate = async (galleryId, newStatus) => {
         try {
             const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
             
             const body = new URLSearchParams();
             body.append('status', newStatus);
-            if (expirationDate) {
-                body.append('expiration_date', expirationDate);
-            }
             
             const response = await fetch(`${BACKEND_URL}/api/galleries-new/${galleryId}/status`, {
                 method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: body
             });
 
             if (response.ok) {
-                loadGalleries(); // Refresh the list
-                alert(`Gallery status updated to ${newStatus}`);
+                loadGalleries();
+                alert(`Gallery ${newStatus === 'active' ? 'activated' : newStatus}`);
             } else {
                 const error = await response.json();
-                alert(`Failed to update status: ${error.detail}`);
+                alert(`Failed to update: ${error.detail}`);
             }
         } catch (error) {
-            console.error('Error updating gallery status:', error);
-            alert('Error updating gallery status');
+            console.error('Error updating gallery:', error);
+            alert('Error updating gallery');
         }
     };
 
     const deleteGallery = async (galleryId, galleryName, deleteFiles = false) => {
-        const confirmMessage = deleteFiles 
-            ? `Are you sure you want to DELETE "${galleryName}" and permanently remove all files from Google Drive?\n\nThis action cannot be undone!`
-            : `Are you sure you want to delete the gallery "${galleryName}"?\n\nFiles will remain in Google Drive.`;
-            
-        if (!confirm(confirmMessage)) return;
+        const action = deleteFiles ? 'DELETE gallery AND all files from Google Drive' : 'DELETE gallery (keep files in Google Drive)';
+        
+        if (!confirm(`${action}\n\nGallery: "${galleryName}"\n\nThis action cannot be undone!`)) return;
 
         try {
             const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
@@ -80,16 +119,16 @@ const GalleryManager = () => {
 
             if (response.ok) {
                 const result = await response.json();
-                loadGalleries(); // Refresh the list
+                loadGalleries();
                 
-                let message = `Gallery "${galleryName}" deleted successfully.`;
+                let message = `Gallery "${galleryName}" deleted.`;
                 if (deleteFiles && result.deletedFiles) {
-                    message += `\n\nGoogle Drive cleanup: ${result.deletedFiles.deleted} files deleted, ${result.deletedFiles.failed} failed.`;
+                    message += ` Files: ${result.deletedFiles.deleted} deleted, ${result.deletedFiles.failed} failed.`;
                 }
                 alert(message);
             } else {
                 const error = await response.json();
-                alert(`Failed to delete gallery: ${error.detail}`);
+                alert(`Delete failed: ${error.detail}`);
             }
         } catch (error) {
             console.error('Error deleting gallery:', error);
@@ -99,42 +138,40 @@ const GalleryManager = () => {
 
     const formatDate = (dateStr) => {
         if (!dateStr) return 'Never';
-        return new Date(dateStr).toLocaleString();
+        return new Date(dateStr).toLocaleDateString();
     };
 
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'active': return 'bg-green-100 text-green-800';
-            case 'hidden': return 'bg-yellow-100 text-yellow-800';
-            case 'archived': return 'bg-gray-100 text-gray-800';
-            default: return 'bg-blue-100 text-blue-800';
-        }
+    const getStatusBadge = (status) => {
+        const colors = {
+            active: 'bg-green-100 text-green-700',
+            hidden: 'bg-yellow-100 text-yellow-700', 
+            archived: 'bg-gray-100 text-gray-700'
+        };
+        return `px-2 py-1 rounded text-xs font-medium ${colors[status] || colors.active}`;
     };
 
     const isExpired = (expirationDate) => {
-        if (!expirationDate) return false;
-        return new Date(expirationDate) < new Date();
+        return expirationDate && new Date(expirationDate) < new Date();
     };
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Gallery Manager</h2>
-                
-                <div className="flex items-center space-x-4">
-                    <label className="flex items-center">
+        <div className="p-4">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-gray-900">Gallery Manager</h2>
+                <div className="flex items-center space-x-3">
+                    <label className="flex items-center text-sm">
                         <input
                             type="checkbox"
                             checked={showAll}
                             onChange={(e) => setShowAll(e.target.checked)}
                             className="mr-2"
                         />
-                        Show all galleries (including hidden/archived)
+                        Show all galleries
                     </label>
-                    
                     <button
                         onClick={loadGalleries}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
                         disabled={loading}
                     >
                         {loading ? 'Loading...' : 'Refresh'}
@@ -144,98 +181,158 @@ const GalleryManager = () => {
 
             {loading ? (
                 <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-2 text-gray-600">Loading galleries...</p>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="mt-2 text-gray-600 text-sm">Loading galleries...</p>
                 </div>
             ) : galleries.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-gray-500 text-sm">
                     No galleries found.
                 </div>
             ) : (
-                <div className="grid gap-6">
-                    {galleries.map((gallery) => (
-                        <div key={gallery.id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="flex-1">
-                                    <div className="flex items-center space-x-3 mb-2">
-                                        <h3 className="text-lg font-semibold text-gray-900">{gallery.name}</h3>
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(gallery.status)}`}>
+                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    {/* Table Header */}
+                    <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
+                        <div className="grid grid-cols-8 gap-3 text-xs font-medium text-gray-700 uppercase tracking-wide">
+                            <div className="col-span-2">Gallery</div>
+                            <div>Status</div>
+                            <div>Where it Appears</div>
+                            <div>Files</div>
+                            <div>Created</div>
+                            <div>Expires</div>
+                            <div>Actions</div>
+                        </div>
+                    </div>
+
+                    {/* Gallery Rows */}
+                    {galleries.map((gallery, index) => (
+                        <div key={gallery.id} className={`px-4 py-3 border-b border-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                            {editingGallery === gallery.id ? (
+                                /* Edit Mode */
+                                <div className="grid grid-cols-8 gap-3 items-center text-sm">
+                                    <div className="col-span-2">
+                                        <div className="font-medium text-gray-900">{gallery.name}</div>
+                                        {gallery.description && (
+                                            <div className="text-xs text-gray-500 truncate">{gallery.description}</div>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <select
+                                            value={editForm.status}
+                                            onChange={(e) => setEditForm({...editForm, status: e.target.value})}
+                                            className="text-xs border border-gray-300 rounded px-2 py-1 w-full"
+                                        >
+                                            <option value="active">Active</option>
+                                            <option value="hidden">Hidden</option>
+                                            <option value="archived">Archived</option>
+                                        </select>
+                                    </div>
+                                    <div className="text-xs text-gray-600">
+                                        {gallery.teamId || 'League-wide'}
+                                    </div>
+                                    <div className="text-xs text-gray-600">
+                                        {gallery.mediaItems?.length || 0}
+                                    </div>
+                                    <div className="text-xs text-gray-600">
+                                        {formatDate(gallery.createdAt)}
+                                    </div>
+                                    <div>
+                                        <input
+                                            type="datetime-local"
+                                            value={editForm.expirationDate}
+                                            onChange={(e) => setEditForm({...editForm, expirationDate: e.target.value})}
+                                            className="text-xs border border-gray-300 rounded px-1 py-1 w-full"
+                                            min={new Date().toISOString().slice(0, 16)}
+                                        />
+                                    </div>
+                                    <div className="flex space-x-1">
+                                        <button
+                                            onClick={() => saveEdit(gallery.id)}
+                                            className="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700"
+                                        >
+                                            Save
+                                        </button>
+                                        <button
+                                            onClick={cancelEdit}
+                                            className="px-2 py-1 bg-gray-600 text-white rounded text-xs hover:bg-gray-700"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                /* View Mode */
+                                <div className="grid grid-cols-8 gap-3 items-center text-sm">
+                                    <div className="col-span-2">
+                                        <div className="font-medium text-gray-900">{gallery.name}</div>
+                                        {gallery.description && (
+                                            <div className="text-xs text-gray-500 truncate">{gallery.description}</div>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <span className={getStatusBadge(gallery.status)}>
                                             {gallery.status}
                                         </span>
                                         {isExpired(gallery.expirationDate) && (
-                                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">
                                                 EXPIRED
                                             </span>
                                         )}
                                     </div>
-                                    
-                                    {gallery.description && (
-                                        <p className="text-gray-600 mb-2">{gallery.description}</p>
-                                    )}
-                                    
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-500">
-                                        <div>
-                                            <span className="font-medium">Team:</span> {gallery.teamId || 'League-wide'}
-                                        </div>
-                                        <div>
-                                            <span className="font-medium">Files:</span> {gallery.mediaItems?.length || 0}
-                                        </div>
-                                        <div>
-                                            <span className="font-medium">Created:</span> {formatDate(gallery.createdAt)}
-                                        </div>
-                                        <div>
-                                            <span className="font-medium">Expires:</span> {formatDate(gallery.expirationDate)}
+                                    <div className="text-xs text-gray-600">
+                                        {gallery.teamId || 'League-wide'}
+                                    </div>
+                                    <div className="text-xs text-gray-600">
+                                        {gallery.mediaItems?.length || 0}
+                                    </div>
+                                    <div className="text-xs text-gray-600">
+                                        {formatDate(gallery.createdAt)}
+                                    </div>
+                                    <div className="text-xs text-gray-600">
+                                        {formatDate(gallery.expirationDate)}
+                                    </div>
+                                    <div className="flex space-x-1">
+                                        <button
+                                            onClick={() => startEdit(gallery)}
+                                            className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+                                            title="Edit gallery"
+                                        >
+                                            Edit
+                                        </button>
+                                        
+                                        {gallery.status !== 'active' && (
+                                            <button
+                                                onClick={() => quickStatusUpdate(gallery.id, 'active')}
+                                                className="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700"
+                                                title="Make active"
+                                            >
+                                                Activate
+                                            </button>
+                                        )}
+                                        
+                                        <div className="relative group">
+                                            <button className="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700">
+                                                Delete ▼
+                                            </button>
+                                            <div className="absolute right-0 mt-1 py-1 bg-white border border-gray-200 rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                                                <button
+                                                    onClick={() => deleteGallery(gallery.id, gallery.name, false)}
+                                                    className="block w-full text-left px-3 py-1 text-xs text-gray-700 hover:bg-gray-100 whitespace-nowrap"
+                                                >
+                                                    Delete Gallery Only
+                                                </button>
+                                                {gallery.mediaItems?.length > 0 && (
+                                                    <button
+                                                        onClick={() => deleteGallery(gallery.id, gallery.name, true)}
+                                                        className="block w-full text-left px-3 py-1 text-xs text-red-700 hover:bg-red-50 whitespace-nowrap"
+                                                    >
+                                                        Delete Gallery + Files
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div className="flex flex-wrap gap-2">
-                                {/* Status Update Buttons */}
-                                {gallery.status !== 'active' && (
-                                    <button
-                                        onClick={() => updateGalleryStatus(gallery.id, 'active')}
-                                        className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
-                                    >
-                                        Make Active
-                                    </button>
-                                )}
-                                
-                                {gallery.status !== 'hidden' && (
-                                    <button
-                                        onClick={() => updateGalleryStatus(gallery.id, 'hidden')}
-                                        className="px-3 py-1 bg-yellow-600 text-white rounded text-sm hover:bg-yellow-700"
-                                    >
-                                        Hide
-                                    </button>
-                                )}
-                                
-                                {gallery.status !== 'archived' && (
-                                    <button
-                                        onClick={() => updateGalleryStatus(gallery.id, 'archived')}
-                                        className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-700"
-                                    >
-                                        Archive
-                                    </button>
-                                )}
-
-                                {/* Delete Buttons */}
-                                <button
-                                    onClick={() => deleteGallery(gallery.id, gallery.name, false)}
-                                    className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
-                                >
-                                    Delete Gallery Only
-                                </button>
-                                
-                                {gallery.mediaItems?.length > 0 && (
-                                    <button
-                                        onClick={() => deleteGallery(gallery.id, gallery.name, true)}
-                                        className="px-3 py-1 bg-red-800 text-white rounded text-sm hover:bg-red-900"
-                                    >
-                                        Delete Gallery + Files
-                                    </button>
-                                )}
-                            </div>
+                            )}
                         </div>
                     ))}
                 </div>
