@@ -278,15 +278,17 @@ async def upload_and_create_gallery(
     files: List[UploadFile] = File(...),
     gallery_name: str = Form(...),
     gallery_description: str = Form(""),
-    visibility: str = Form("public"),
+    visibility: str = Form("all_pages"),
     status: str = Form("active"),
-    team_id: Optional[str] = Form(None),
+    selected_teams: List[str] = Form([]),
+    context_team_id: Optional[str] = Form(None),
     expiration_date: Optional[str] = Form(None)
 ):
     """Upload files to Google Drive and create a gallery with those files"""
     logger.info(f"🚀 UPLOAD ENDPOINT CALLED - Gallery: {gallery_name}")
     logger.info(f"🚀 Files received: {len(files)}")
-    logger.info(f"🚀 Team ID: {team_id}")
+    logger.info(f"🚀 Context Team ID: {context_team_id}")
+    logger.info(f"🚀 Selected Teams: {selected_teams}")
     logger.info(f"🚀 Visibility: {visibility}")
     
     try:
@@ -458,13 +460,17 @@ async def upload_and_create_gallery(
         logger.info(f"📡 Gallery type determined: {gallery_type} (images: {has_images}, videos: {has_videos})")
         
         # Create gallery with uploaded files using NEW system
+        # Handle team assignment based on new parameters
+        team_id = context_team_id if context_team_id and context_team_id != "league-wide" else None
+        
         gallery_data = {
             "name": gallery_name,
             "description": gallery_description,
             "type": "photo",  # Default type
             "visibility": visibility,
             "status": status,
-            "teamId": team_id if team_id != "league-wide" else None,
+            "teamId": team_id,
+            "selectedTeams": selected_teams,  # Store selected teams for multi-team galleries
             "googleDriveFolderId": gallery_folder_id,  # Store gallery folder ID
             "expirationDate": None,
             "mediaItems": uploaded_media_items  # Already dictionaries, no need for .dict()
@@ -517,13 +523,16 @@ async def upload_and_create_gallery(
         
         try:
             # Create a basic gallery entry manually to ensure data is saved
+            team_id = context_team_id if context_team_id and context_team_id != "league-wide" else None
+            
             basic_gallery = {
                 "id": str(uuid.uuid4()),
                 "name": gallery_name,
                 "description": gallery_description or "Uploaded via Google Drive",
                 "type": "photo",  # Default to photo
                 "visibility": visibility,
-                "teamId": team_id if team_id != "league-wide" else None,
+                "teamId": team_id,
+                "selectedTeams": selected_teams,
                 "mediaItems": uploaded_media_items if 'uploaded_media_items' in locals() else [],
                 "createdAt": datetime.utcnow().isoformat(),
                 "updatedAt": datetime.utcnow().isoformat()
