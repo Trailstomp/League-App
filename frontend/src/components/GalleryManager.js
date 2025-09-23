@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import GoogleDriveUploader from './GoogleDriveUploader';
 
 const GalleryManager = () => {
     const [galleries, setGalleries] = useState([]);
