@@ -856,43 +856,6 @@ async def save_youtube_config(data: Dict[str, Any]):
         logger.error(f"Error saving YouTube config: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.get("/api-integrations")
-async def get_api_integrations():
-    """Get API integrations configuration"""
-    try:
-        data = await db.api_integrations.find_one({"id": "main_integrations"})
-        if data:
-            data.pop('_id', None)
-            return data
-        else:
-            return {
-                "id": "main_integrations",
-                "googleMapsApiKey": "",
-                "emailApiKey": "",
-                "smsApiKey": "",
-                "socialMediaApiKeys": {},
-                "lastUpdated": datetime.utcnow().isoformat()
-            }
-    except Exception as e:
-        logger.error(f"Error fetching API integrations: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@api_router.post("/api-integrations")
-async def save_api_integrations(data: Dict[str, Any]):
-    """Save API integrations configuration"""
-    try:
-        data["lastUpdated"] = datetime.utcnow()
-        
-        await db.api_integrations.replace_one(
-            {"id": "main_integrations"},
-            data,
-            upsert=True
-        )
-        return {"message": "API integrations saved successfully", "timestamp": data["lastUpdated"]}
-    except Exception as e:
-        logger.error(f"Error saving API integrations: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
 @api_router.get("/locations")
 async def get_locations():
     """Get locations"""
