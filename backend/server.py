@@ -2724,20 +2724,14 @@ async def send_event_notification(
         
         # Add RSVP instructions if requested
         if include_rsvp:
-            # Create quick RSVP link for each channel
-            rsvp_links = []
-            for channel_id in channel_ids_list:
-                channel = await db.groupme_channels.find_one({"id": channel_id})
-                if channel:
-                    # Generate quick RSVP URL
-                    rsvp_url = f"{os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:3000')}/quick-rsvp/{event_id}?channel={channel_id}"
-                    rsvp_links.append(rsvp_url)
+            # Create quick RSVP link 
+            frontend_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:3000').replace('/api', '')
+            rsvp_url = f"{frontend_url}/quick-rsvp/{event_id}"
+            if len(channel_ids_list) > 0:
+                rsvp_url += f"?channel={channel_ids_list[0]}"
             
-            if rsvp_links:
-                base_message += f"\n\n📱 Quick RSVP (tap to respond):\n{rsvp_links[0]}"
-                base_message += f"\n\n💬 Or reply with commands:\n• '/rsvp yes' - I'll be there\n• '/rsvp no' - Can't make it\n• '/rsvp maybe' - Tentative"
-            else:
-                base_message += f"\n\n💬 To RSVP, reply with:\n• '/rsvp yes' - I'll be there\n• '/rsvp no' - Can't make it\n• '/rsvp maybe' - Tentative"
+            base_message += f"\n\n🎯 QUICK RSVP (tap link):\n{rsvp_url}"
+            base_message += f"\n\n💬 Or text reply:\n• 'yes' - I'll be there!\n• 'no' - Can't make it\n• 'maybe' - Tentative"
         
         # Send to selected channels
         success_channels = []
