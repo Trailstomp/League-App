@@ -2906,6 +2906,107 @@ async def get_event_rsvp_summary(event_id: str):
         logger.error(f"Error getting event RSVP summary: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/quick-rsvp")
+async def submit_quick_rsvp(request_data: dict):
+    """Handle quick RSVP form submissions"""
+    try:
+        event_id = request_data.get("event_id")
+        channel_id = request_data.get("channel_id")
+        user_name = request_data.get("user_name")
+        response = request_data.get("response")  # yes, no, maybe
+        notes = request_data.get("notes", "")
+        source = request_data.get("source", "quick_form")
+        
+        if not all([event_id, user_name, response]):
+            raise HTTPException(status_code=400, detail="Missing required fields")
+        
+        if response not in ["yes", "no", "maybe"]:
+            raise HTTPException(status_code=400, detail="Invalid response value")
+        
+        # Get event details for validation
+        event_doc = await db.league_data.find_one({"leagueSchedule.id": event_id})
+        if not event_doc:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        target_event = None
+        for e in event_doc.get("leagueSchedule", []):
+            if e.get("id") == event_id:
+                target_event = e
+                break
+        
+        if not target_event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Create RSVP record
+        rsvp_data = {
+            "id": str(uuid.uuid4()),
+            "event_id": event_id,
+            "event_title": target_event["title"],
+            "user_name": user_name,
+            "response": response,
+            "notes": notes,
+            "source": source,
+            "channel_id": channel_id,
+            "created_at": datetime.utcnow().isoformat(),
+            "groupme_user_id": f"web_form_{user_name.lower().replace(' ', '_')}",
+            "groupme_user_name": user_name
+        }
+        
+        # Check if user already has an RSVP for this event
+        existing_rsvp = await db.event_rsvps.find_one({
+            "event_id": event_id,
+            "user_name": user_name
+        })
+        
+        if existing_rsvp:
+            # Update existing RSVP
+            await db.event_rsvps.update_one(
+                {"event_id": event_id, "user_name": user_name},
+                {"$set": {
+                    "response": response,
+                    "notes": notes,
+                    "updated_at": datetime.utcnow().isoformat(),
+                    "source": source
+                }}
+            )
+        else:
+            # Create new RSVP
+            await db.event_rsvps.insert_one(rsvp_data)
+        
+        # Send confirmation message to GroupMe if channel_id provided
+        if channel_id:
+            try:
+                groupme_service = await get_groupme_service()
+                if groupme_service:
+                    # Get channel info
+                    channel = await db.groupme_channels.find_one({"id": channel_id})
+                    if channel and channel.get("groupme_bot_id"):
+                        confirmation_msg = f"✅ {user_name} responded '{response.upper()}' for {target_event['title']}"
+                        if notes:
+                            confirmation_msg += f"\nNote: {notes}"
+                        
+                        await _send_groupme_message(
+                            groupme_service,
+                            channel["groupme_bot_id"],
+                            confirmation_msg
+                        )
+            except Exception as e:
+                logger.error(f"Failed to send confirmation to GroupMe: {str(e)}")
+                # Don't fail the RSVP if GroupMe confirmation fails
+        
+        return {
+            "message": "RSVP submitted successfully",
+            "event_title": target_event["title"],
+            "user_name": user_name,
+            "response": response
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error submitting quick RSVP: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Database Administration Endpoints
 @api_router.get("/admin/collections")
 async def get_collections():
