@@ -142,6 +142,12 @@ function App() {
     const path = window.location.pathname;
     console.log('🌐 Current URL path:', path);
     
+    // Check for quick RSVP form URLs
+    if (path.startsWith('/quick-rsvp/')) {
+      setCurrentPage('quick-rsvp');
+      return;
+    }
+    
     // Map URL paths to page names
     const urlToPage = {
       '/': 'home',
