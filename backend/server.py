@@ -2870,11 +2870,25 @@ async def get_event_rsvp_summary(event_id: str):
         
         # Get RSVPs from GroupMe
         rsvps_cursor = db.event_rsvps.find({"event_id": event_id})
-        rsvps = await rsvps_cursor.to_list(length=None)
+        rsvps_raw = await rsvps_cursor.to_list(length=None)
+        
+        # Remove ObjectId from RSVPs
+        rsvps = []
+        for rsvp in rsvps_raw:
+            if "_id" in rsvp:
+                del rsvp["_id"]
+            rsvps.append(rsvp)
         
         # Get notification history for this event
         notifications_cursor = db.groupme_event_notifications.find({"event_id": event_id})
-        notifications = await notifications_cursor.to_list(length=None)
+        notifications_raw = await notifications_cursor.to_list(length=None)
+        
+        # Remove ObjectId from notifications
+        notifications_clean = []
+        for n in notifications_raw:
+            if "_id" in n:
+                del n["_id"]
+            notifications_clean.append(n)
         
         # Categorize RSVPs
         attending = [r for r in rsvps if r["response"] == "yes"]
