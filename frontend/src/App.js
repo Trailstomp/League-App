@@ -337,6 +337,8 @@ function App() {
             <GroupMeChatUnified channelType="all" currentUser={currentUser} />
           </div>
         );
+      case 'quick-rsvp':
+        return <QuickRSVPForm />;
       case 'team':
         return (
           <TeamDetailPage 
