@@ -2912,13 +2912,7 @@ async def get_event_rsvp_summary(event_id: str):
                 "not_attending": not_attending,
                 "maybe": maybe
             },
-            "notifications": [{
-                "id": n["id"],
-                "notification_type": n["notification_type"],
-                "sent_at": n["sent_at"],
-                "total_sent": n["total_sent"],
-                "success_channels": n["success_channels"]
-            } for n in notifications if "_id" not in n or n.pop("_id")]
+            "notifications": notifications_clean
         }
         
     except HTTPException:
