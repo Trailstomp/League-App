@@ -19,8 +19,8 @@ const QuickRSVPForm = () => {
     });
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-    const channelId = searchParams.get('channel');
-    const userName = searchParams.get('name') || '';
+    const channelId = urlParams.get('channel');
+    const userName = urlParams.get('name') || '';
 
     useEffect(() => {
         loadEvent();
