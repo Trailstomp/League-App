@@ -2671,6 +2671,241 @@ async def get_groupme_dashboard_stats():
         logger.error(f"Error getting GroupMe stats: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# GroupMe Event Notifications and RSVP Integration
+@api_router.post("/groupme/send-event-notification")
+async def send_event_notification(
+    event_id: str = Form(...),
+    channel_ids: str = Form(...),  # JSON string
+    notification_type: str = Form("event_announcement"),
+    include_rsvp: bool = Form(True)
+):
+    """Send event notification to selected GroupMe channels"""
+    try:
+        import json
+        
+        # Parse channel IDs
+        channel_ids_list = json.loads(channel_ids)
+        
+        # Get event details
+        event = await db.league_data.find_one({"leagueSchedule.id": event_id})
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Find the specific event in the schedule
+        target_event = None
+        for e in event.get("leagueSchedule", []):
+            if e.get("id") == event_id:
+                target_event = e
+                break
+        
+        if not target_event:
+            raise HTTPException(status_code=404, detail="Event not found in schedule")
+        
+        # Format event message based on notification type
+        event_datetime = datetime.fromisoformat(target_event["start_datetime"].replace('Z', '+00:00'))
+        formatted_date = event_datetime.strftime("%B %d, %Y at %I:%M %p")
+        
+        message_templates = {
+            "event_announcement": f"📢 Event Announcement\n\n🏆 {target_event['title']}\n📅 {formatted_date}",
+            "rsvp_reminder": f"📋 RSVP Reminder\n\n🏆 {target_event['title']}\n📅 {formatted_date}\n\n⏰ Please respond if you haven't already!",
+            "event_update": f"✏️ Event Update\n\n🏆 {target_event['title']}\n📅 {formatted_date}\n\n📝 Check for any changes to the event details.",
+            "last_call": f"⏰ Last Call for RSVPs\n\n🏆 {target_event['title']}\n📅 {formatted_date}\n\n🚨 This is your final reminder to RSVP!"
+        }
+        
+        base_message = message_templates.get(notification_type, message_templates["event_announcement"])
+        
+        # Add location if available
+        if target_event.get("location"):
+            base_message += f"\n📍 {target_event['location']}"
+        
+        # Add description if available
+        if target_event.get("description"):
+            base_message += f"\n\n📝 {target_event['description']}"
+        
+        # Add RSVP instructions if requested
+        if include_rsvp:
+            base_message += f"\n\n💬 To RSVP, reply with:\n• '/rsvp yes' - I'll be there\n• '/rsvp no' - Can't make it\n• '/rsvp maybe' - Tentative"
+        
+        # Send to selected channels
+        success_channels = []
+        failed_channels = []
+        
+        for channel_id in channel_ids_list:
+            try:
+                # Send broadcast to this channel
+                broadcast_response = await _send_broadcast_to_channels([channel_id], base_message, "announcement")
+                if broadcast_response.get("success", False):
+                    success_channels.append(channel_id)
+                else:
+                    failed_channels.append(channel_id)
+            except Exception as e:
+                logger.error(f"Failed to send to channel {channel_id}: {str(e)}")
+                failed_channels.append(channel_id)
+        
+        # Store notification record
+        notification_record = {
+            "id": str(uuid.uuid4()),
+            "event_id": event_id,
+            "event_title": target_event["title"],
+            "notification_type": notification_type,
+            "channel_ids": channel_ids_list,
+            "message": base_message,
+            "include_rsvp": include_rsvp,
+            "sent_at": datetime.utcnow().isoformat(),
+            "success_channels": success_channels,
+            "failed_channels": failed_channels,
+            "total_sent": len(success_channels)
+        }
+        
+        await db.groupme_event_notifications.insert_one(notification_record)
+        
+        return {
+            "message": f"Event notification sent to {len(success_channels)}/{len(channel_ids_list)} channels",
+            "success_channels": success_channels,
+            "failed_channels": failed_channels,
+            "notification_id": notification_record["id"]
+        }
+        
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid channel_ids format")
+    except Exception as e:
+        logger.error(f"Error sending event notification: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+async def _send_broadcast_to_channels(channel_ids: list, message: str, notification_type: str = "message"):
+    """Helper function to send broadcast to specific channels"""
+    try:
+        # Use existing broadcast endpoint logic
+        form_data = {
+            "message": message,
+            "channel_ids": json.dumps(channel_ids),
+            "notification_type": notification_type
+        }
+        
+        # Get GroupMe service
+        service = APIIntegrationsService(db)
+        groupme_service = await get_groupme_service()
+        
+        if not groupme_service:
+            return {"success": False, "error": "GroupMe not configured"}
+        
+        # Get active channels
+        active_channels = []
+        for channel_id in channel_ids:
+            channel = await db.groupme_channels.find_one({"id": channel_id, "is_active": True})
+            if channel:
+                active_channels.append(channel)
+        
+        if not active_channels:
+            return {"success": False, "error": "No active channels found"}
+        
+        # Send messages
+        results = {}
+        for channel in active_channels:
+            try:
+                success = await _send_groupme_message(
+                    groupme_service, 
+                    channel["groupme_bot_id"], 
+                    message
+                )
+                results[channel["name"]] = success
+            except Exception as e:
+                logger.error(f"Failed to send to channel {channel['name']}: {str(e)}")
+                results[channel["name"]] = False
+        
+        success_count = sum(1 for success in results.values() if success)
+        return {
+            "success": success_count > 0,
+            "results": results,
+            "success_count": success_count,
+            "total_count": len(active_channels)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in _send_broadcast_to_channels: {str(e)}")
+        return {"success": False, "error": str(e)}
+
+@api_router.get("/groupme/event-notifications")
+async def get_event_notifications():
+    """Get list of sent event notifications"""
+    try:
+        cursor = db.groupme_event_notifications.find({}).sort("sent_at", -1).limit(50)
+        notifications = await cursor.to_list(length=50)
+        
+        # Remove MongoDB ObjectId
+        for notification in notifications:
+            if "_id" in notification:
+                del notification["_id"]
+        
+        return {"notifications": notifications}
+        
+    except Exception as e:
+        logger.error(f"Error getting event notifications: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/groupme/events/{event_id}/rsvp-summary")
+async def get_event_rsvp_summary(event_id: str):
+    """Get detailed RSVP summary for an event including GroupMe responses"""
+    try:
+        # Get event details
+        event = await db.league_data.find_one({"leagueSchedule.id": event_id})
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        target_event = None
+        for e in event.get("leagueSchedule", []):
+            if e.get("id") == event_id:
+                target_event = e
+                break
+        
+        if not target_event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Get RSVPs from GroupMe
+        rsvps_cursor = db.event_rsvps.find({"event_id": event_id})
+        rsvps = await rsvps_cursor.to_list(length=None)
+        
+        # Get notification history for this event
+        notifications_cursor = db.groupme_event_notifications.find({"event_id": event_id})
+        notifications = await notifications_cursor.to_list(length=None)
+        
+        # Categorize RSVPs
+        attending = [r for r in rsvps if r["response"] == "yes"]
+        not_attending = [r for r in rsvps if r["response"] == "no"]
+        maybe = [r for r in rsvps if r["response"] == "maybe"]
+        
+        return {
+            "event": {
+                "id": target_event["id"],
+                "title": target_event["title"],
+                "start_datetime": target_event["start_datetime"],
+                "location": target_event.get("location"),
+                "type": target_event.get("type")
+            },
+            "rsvp_summary": {
+                "total_responses": len(rsvps),
+                "attending_count": len(attending),
+                "not_attending_count": len(not_attending),
+                "maybe_count": len(maybe),
+                "attending": attending,
+                "not_attending": not_attending,
+                "maybe": maybe
+            },
+            "notifications": [{
+                "id": n["id"],
+                "notification_type": n["notification_type"],
+                "sent_at": n["sent_at"],
+                "total_sent": n["total_sent"],
+                "success_channels": n["success_channels"]
+            } for n in notifications if "_id" not in n or n.pop("_id")]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting event RSVP summary: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Database Administration Endpoints
 @api_router.get("/admin/collections")
 async def get_collections():
