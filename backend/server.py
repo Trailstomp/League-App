@@ -2671,6 +2671,131 @@ async def get_groupme_dashboard_stats():
         logger.error(f"Error getting GroupMe stats: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# Database Administration Endpoints
+@api_router.get("/admin/collections")
+async def get_collections():
+    """Get list of database collections"""
+    try:
+        collection_names = await db.list_collection_names()
+        return {"collections": collection_names}
+    except Exception as e:
+        logger.error(f"Error getting collections: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/admin/collections/{collection_name}/documents")
+async def get_collection_documents(collection_name: str):
+    """Get documents from a collection"""
+    try:
+        collection = db[collection_name]
+        cursor = collection.find().limit(100)  # Limit to 100 documents for performance
+        documents = await cursor.to_list(length=100)
+        
+        # Convert ObjectId to string for JSON serialization
+        for doc in documents:
+            if "_id" in doc:
+                doc["_id"] = str(doc["_id"])
+        
+        return {"documents": documents}
+    except Exception as e:
+        logger.error(f"Error getting documents from {collection_name}: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/admin/collections/{collection_name}/documents")
+async def create_document(collection_name: str, document: dict):
+    """Create a new document in a collection"""
+    try:
+        collection = db[collection_name]
+        
+        # Remove _id if present for new documents
+        if "_id" in document:
+            del document["_id"]
+        
+        # Add timestamps if not present
+        if "created_at" not in document:
+            document["created_at"] = datetime.utcnow().isoformat()
+        if "updated_at" not in document:
+            document["updated_at"] = datetime.utcnow().isoformat()
+            
+        result = await collection.insert_one(document)
+        return {"message": "Document created successfully", "id": str(result.inserted_id)}
+    except Exception as e:
+        logger.error(f"Error creating document in {collection_name}: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/admin/collections/{collection_name}/documents/{document_id}")
+async def update_document(collection_name: str, document_id: str, document: dict):
+    """Update a document in a collection"""
+    try:
+        collection = db[collection_name]
+        
+        # Update timestamp
+        document["updated_at"] = datetime.utcnow().isoformat()
+        
+        # Try to find by id field first, then by _id
+        query = {"id": document_id}
+        existing = await collection.find_one(query)
+        
+        if not existing:
+            # Try with ObjectId if it's a valid ObjectId format
+            try:
+                from bson import ObjectId
+                query = {"_id": ObjectId(document_id)}
+                existing = await collection.find_one(query)
+            except:
+                pass
+        
+        if not existing:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Remove _id from update data to avoid conflicts
+        update_data = {k: v for k, v in document.items() if k != "_id"}
+        
+        result = await collection.update_one(query, {"$set": update_data})
+        
+        if result.modified_count > 0:
+            return {"message": "Document updated successfully"}
+        else:
+            return {"message": "Document not modified (no changes)"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating document in {collection_name}: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/admin/collections/{collection_name}/documents/{document_id}")
+async def delete_document(collection_name: str, document_id: str):
+    """Delete a document from a collection"""
+    try:
+        collection = db[collection_name]
+        
+        # Try to find by id field first, then by _id
+        query = {"id": document_id}
+        existing = await collection.find_one(query)
+        
+        if not existing:
+            # Try with ObjectId if it's a valid ObjectId format
+            try:
+                from bson import ObjectId
+                query = {"_id": ObjectId(document_id)}
+                existing = await collection.find_one(query)
+            except:
+                pass
+        
+        if not existing:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        result = await collection.delete_one(query)
+        
+        if result.deleted_count > 0:
+            return {"message": "Document deleted successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Document not found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting document from {collection_name}: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Include the API router in the main app (after all routes are defined)
 app.include_router(api_router)
 
