@@ -8,6 +8,7 @@ import { isAdmin, canEditEvent, canEditTeam } from './components/PermissionsSyst
 import "./App.css";
 
 import GroupMeChatUnified from './components/GroupMeChatUnified';
+import QuickRSVPForm from './components/QuickRSVPForm';
 
 function App() {
   // Basic state management
