@@ -2190,7 +2190,7 @@ async def get_channel_messages(
             
             formatted_messages.append(msg)
         
-        return formatted_messages
+        return {"messages": formatted_messages}
         
     except HTTPException:
         raise
