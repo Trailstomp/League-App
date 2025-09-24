@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
 
 const QuickRSVPForm = () => {
-    const { eventId } = useParams();
-    const [searchParams] = useSearchParams();
+    // Extract eventId from URL path
+    const path = window.location.pathname;
+    const eventId = path.split('/quick-rsvp/')[1] || '';
+    
+    // Extract search parameters manually
+    const urlParams = new URLSearchParams(window.location.search);
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
