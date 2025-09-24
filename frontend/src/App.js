@@ -7,7 +7,7 @@ import OAuthCallback from './components/OAuthCallback';
 import { isAdmin, canEditEvent, canEditTeam } from './components/PermissionsSystem';
 import "./App.css";
 
-import GroupMeChat from './components/GroupMeChat';
+import GroupMeChatUnified from './components/GroupMeChatUnified';
 
 function App() {
   // Basic state management
