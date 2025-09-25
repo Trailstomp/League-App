@@ -219,38 +219,37 @@ const EventStats = ({ events }) => {
     );
 };
 
-// Upcoming Events Component
-const UpcomingEvents = ({ events, teams }) => {
+// Upcoming Events Component with Enhanced Cards
+const UpcomingEvents = ({ events, teams, currentUser }) => {
     const getTeamName = (teamId) => {
         const team = teams.find(t => t.id === teamId);
         return team ? team.name : 'Unknown Team';
     };
 
     const upcomingEvents = events
-        .filter(event => new Date(event.date) >= new Date())
-        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .filter(event => new Date(event.start_datetime || event.date) >= new Date())
+        .sort((a, b) => new Date(a.start_datetime || a.date) - new Date(b.start_datetime || b.date))
         .slice(0, 5);
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Upcoming Events</h3>
+        <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-slate-800">Upcoming Events</h3>
             
             {upcomingEvents.length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-4">
                     {upcomingEvents.map(event => (
-                        <div key={event.id} className="flex items-center space-x-3">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
-                            <div className="flex-1 min-w-0">
-                                <p className="font-medium text-slate-800 truncate">{event.title}</p>
-                                <p className="text-sm text-slate-600">
-                                    {new Date(event.date).toLocaleDateString()} at {event.time || 'TBD'}
-                                </p>
-                            </div>
-                        </div>
+                        <EnhancedEventCardWithGroupMe 
+                            key={event.id} 
+                            event={event} 
+                            currentUser={currentUser}
+                            showRSVP={true}
+                        />
                     ))}
                 </div>
             ) : (
-                <p className="text-slate-500 text-sm">No upcoming events</p>
+                <div className="bg-white rounded-lg shadow-sm border p-6">
+                    <p className="text-slate-500 text-sm">No upcoming events</p>
+                </div>
             )}
         </div>
     );
