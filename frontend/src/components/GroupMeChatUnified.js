@@ -174,9 +174,9 @@ const GroupMeChatUnified = ({ teamId = null, channelType = "all", currentUser })
     }
 
     return (
-        <div className="flex h-screen max-h-screen bg-white">
+        <div className="flex h-full bg-white">
             {/* Sidebar - Channels List */}
-            <div className="w-80 bg-gray-50 border-r flex flex-col">
+            <div className="w-full md:w-80 bg-gray-50 border-r flex flex-col">
                 {/* Header */}
                 <div className="p-4 border-b bg-white">
                     <div className="flex items-center justify-between">
