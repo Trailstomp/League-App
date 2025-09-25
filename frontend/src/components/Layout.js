@@ -196,7 +196,8 @@ const Layout = ({
                     {/* Mobile Navigation Button - Fixed at top left for mobile */}
                     <button
                         onClick={() => setIsMobileMenuOpen(true)}
-                        className="md:hidden fixed top-4 left-4 z-40 p-2 rounded-lg shadow-lg transition-colors"
+                        className="md:hidden fixed z-40 p-2 rounded-lg shadow-lg transition-colors mobile-nav-button"
+                        style={{top: '150px', left: '1rem'}}
                         style={{
                             backgroundColor: websiteStyle.navBackgroundColor || '#ffffff',
                             color: websiteStyle.navTextColor || '#374151'
