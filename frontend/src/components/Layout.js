@@ -168,15 +168,16 @@ const Layout = ({
                     </div>
                 </div>
                 
-                {/* Mobile Navigation - Slide in from left, positioned below banner */}
+                {/* Mobile Navigation - Slide in from left, positioned below full header */}
                 <div className={`
                     ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
                     fixed left-0 z-50 md:hidden
                     transition-transform duration-300 ease-in-out
                 `}
                 style={{
-                    top: '68px', // Position below banner only
-                    bottom: '0'
+                    top: '140px', // Position below full header (banner + ticker)
+                    bottom: '0',
+                    height: 'calc(100vh - 140px)'
                 }}>
                     <Navigation 
                         currentPage={currentPage}
