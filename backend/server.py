@@ -3071,6 +3071,55 @@ async def get_collections():
         logger.error(f"Error getting collections: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/admin/database-info")
+async def get_database_info():
+    """Get database size information for troubleshooting"""
+    try:
+        collections_info = []
+        
+        # Get all collections
+        collection_names = await db.list_collection_names()
+        
+        for collection_name in collection_names:
+            collection = db[collection_name]
+            
+            # Get collection stats
+            stats = await db.command("collStats", collection_name)
+            doc_count = await collection.count_documents({})
+            
+            # Get largest document size in collection
+            pipeline = [
+                {"$project": {"docSize": {"$bsonSize": "$$ROOT"}}},
+                {"$sort": {"docSize": -1}},
+                {"$limit": 1}
+            ]
+            
+            largest_doc = await collection.aggregate(pipeline).to_list(1)
+            max_doc_size = largest_doc[0]["docSize"] if largest_doc else 0
+            
+            collections_info.append({
+                "collection": collection_name,
+                "document_count": doc_count,
+                "storage_size_mb": round(stats.get("storageSize", 0) / (1024 * 1024), 2),
+                "index_size_mb": round(stats.get("totalIndexSize", 0) / (1024 * 1024), 2),
+                "avg_doc_size_kb": round(stats.get("avgObjSize", 0) / 1024, 2) if doc_count > 0 else 0,
+                "max_doc_size_mb": round(max_doc_size / (1024 * 1024), 2),
+                "max_doc_size_bytes": max_doc_size
+            })
+        
+        # Sort by storage size descending
+        collections_info.sort(key=lambda x: x["storage_size_mb"], reverse=True)
+        
+        return {
+            "collections": collections_info,
+            "mongodb_doc_limit_mb": 16,  # MongoDB document size limit
+            "warning_threshold_mb": 15   # Warning when docs approach limit
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting database info: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/admin/collections/{collection_name}/documents")
 async def get_collection_documents(collection_name: str):
     """Get documents from a collection"""
