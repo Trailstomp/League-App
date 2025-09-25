@@ -85,7 +85,7 @@ const EventsPage = ({ teams, currentUser, events, setEvents }) => {
                 {/* Event Stats Sidebar */}
                 <div className="space-y-4">
                     <EventStats events={events} />
-                    <UpcomingEvents events={events} teams={teams} />
+                    <UpcomingEvents events={events} teams={teams} currentUser={currentUser} />
                 </div>
             </div>
 
