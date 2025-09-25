@@ -93,28 +93,62 @@ const EventsPage = ({ teams, currentUser, events, setEvents }) => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Advanced Events Calendar */}
-                <div className="lg:col-span-2">
-                    <AdvancedEventCalendar 
-                        leagueSchedule={events}
-                        teams={teams}
-                        onEventClick={handleEventClick}
-                        onEditEvent={(event) => {
-                            setSelectedEvent(event);
-                            setShowAddForm(true);
-                        }}
-                        onDeleteEvent={handleDeleteEvent}
-                        currentUser={currentUser}
-                    />
-                </div>
+            {/* Calendar View */}
+            {activeTab === 'calendar' && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Advanced Events Calendar */}
+                    <div className="lg:col-span-2">
+                        <AdvancedEventCalendar 
+                            leagueSchedule={events}
+                            teams={teams}
+                            onEventClick={handleEventClick}
+                            onEditEvent={(event) => {
+                                setSelectedEvent(event);
+                                setShowAddForm(true);
+                            }}
+                            onDeleteEvent={handleDeleteEvent}
+                            currentUser={currentUser}
+                        />
+                    </div>
 
-                {/* Event Stats Sidebar */}
-                <div className="space-y-4">
-                    <EventStats events={events} />
-                    <UpcomingEvents events={events} teams={teams} currentUser={currentUser} />
+                    {/* Event Stats Sidebar */}
+                    <div className="space-y-4">
+                        <EventStats events={events} />
+                        <UpcomingEvents events={events} teams={teams} currentUser={currentUser} />
+                    </div>
                 </div>
-            </div>
+            )}
+
+            {/* List View with Enhanced Event Cards */}
+            {activeTab === 'list' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {events.length > 0 ? (
+                        events
+                            .sort((a, b) => new Date(a.start_datetime || a.date) - new Date(b.start_datetime || b.date))
+                            .map(event => (
+                                <EnhancedEventCardWithGroupMe 
+                                    key={event.id} 
+                                    event={event} 
+                                    currentUser={currentUser}
+                                    showRSVP={true}
+                                />
+                            ))
+                    ) : (
+                        <div className="col-span-full bg-white rounded-lg shadow-sm border p-8 text-center">
+                            <LacrosseIcon name="calendar" style={{fontSize: '48px'}} className="text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">No Events Yet</h3>
+                            <p className="text-gray-500 mb-4">Create your first event to get started with RSVP management</p>
+                            <button
+                                onClick={() => setShowAddForm(true)}
+                                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            >
+                                <LacrosseIcon name="add" style={{fontSize: '20px'}} className="mr-2" />
+                                Add First Event
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Advanced Event Form Modal */}
             {showAddForm && (
