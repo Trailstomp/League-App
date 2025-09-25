@@ -219,10 +219,29 @@ const GroupMeChatUnified = ({ teamId = null, channelType = "all", currentUser })
 
             {/* Main Chat Area */}
             <div className="flex-1 flex flex-col">
+                {/* Mobile Channel Selector */}
+                <div className="md:hidden p-4 bg-white border-b">
+                    <select 
+                        value={selectedChannel?.id || ''} 
+                        onChange={(e) => {
+                            const channel = channels.find(c => c.id === e.target.value);
+                            setSelectedChannel(channel);
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                        <option value="">Select a channel...</option>
+                        {channels.map((channel) => (
+                            <option key={channel.id} value={channel.id}>
+                                {channel.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                
                 {selectedChannel ? (
                     <>
                         {/* Chat Header */}
-                        <div className="p-4 border-b bg-white">
+                        <div className="p-4 border-b bg-white hidden md:block">
                             <div className="flex items-center">
                                 <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold mr-3">
                                     {getInitials(selectedChannel.name)}
