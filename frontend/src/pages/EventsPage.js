@@ -9,6 +9,7 @@ const EventsPage = ({ teams, currentUser, events, setEvents }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showEventModal, setShowEventModal] = useState(false);
     const [showAddForm, setShowAddForm] = useState(false);
+    const [activeTab, setActiveTab] = useState('calendar');
 
     const handleAddEvent = (eventData) => {
         const newEvent = {
