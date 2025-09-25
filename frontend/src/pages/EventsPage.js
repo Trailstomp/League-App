@@ -3,6 +3,7 @@ import { LacrosseIcon } from '../components/LacrosseIcons';
 import AdvancedEventCalendar from '../scheduling/components/EventCalendar';
 import EventDetailModal from '../scheduling/components/EventDetailModal';
 import SimpleEventForm from '../scheduling/components/SimpleEventForm';
+import EnhancedEventCardWithGroupMe from '../components/EnhancedEventCardWithGroupMe';
 
 const EventsPage = ({ teams, currentUser, events, setEvents }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
