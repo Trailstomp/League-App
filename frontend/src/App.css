@@ -43,6 +43,89 @@
     }
 }
 
+/* Responsive Layout Fixes */
+html, body {
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* Ensure forms are responsive */
+.form-container {
+    max-width: 100%;
+    padding: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .form-container {
+        padding: 1.5rem;
+    }
+}
+
+/* Fix mobile navigation button positioning */
+.mobile-nav-button {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 50;
+}
+
+/* Ensure content doesn't overflow on small screens */
+.main-content {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+/* Mobile-first responsive grids */
+.responsive-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+    .responsive-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 768px) {
+    .responsive-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .responsive-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Chat component responsiveness */
+.chat-container {
+    height: calc(100vh - 140px);
+    max-height: calc(100vh - 140px);
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 768px) {
+    .chat-sidebar {
+        display: none;
+    }
+}
+
+/* Form input responsiveness */
+input, textarea, select {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Button responsiveness */
+button {
+    min-height: 44px; /* Touch-friendly minimum */
+}
+
 /* Vertical scrolling animation for news feed */
 @keyframes scroll-vertical {
     0% {
