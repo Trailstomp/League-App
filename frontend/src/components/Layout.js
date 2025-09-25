@@ -135,23 +135,24 @@ const Layout = ({
             </div>
 
             {/* Main Layout Container with proper spacing for fixed header */}
-            <div className="flex min-h-screen" style={{...getBackgroundStyle(), paddingTop: '100px'}}>
+            <div className="flex min-h-screen" style={{...getBackgroundStyle(), paddingTop: '140px'}}>
                 {/* Mobile Navigation Overlay */}
                 {isMobileMenuOpen && (
                     <div 
                         className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        style={{top: '68px'}} // Position below banner only
+                        style={{top: '140px'}} // Position below full header (banner + ticker)
                     />
                 )}
                 
-                {/* Navigation - Fixed position for desktop, goes to bottom of banner */}
+                {/* Navigation - Fixed position for desktop, goes to bottom of full header */}
                 <div className="hidden md:block">
                     <div 
-                        className="fixed left-0 z-20 h-screen overflow-hidden"
+                        className="fixed left-0 z-20 overflow-hidden"
                         style={{
-                            top: '68px', // Position below banner only
+                            top: '140px', // Position below full header (banner + ticker)
                             bottom: '0',
+                            height: 'calc(100vh - 140px)'
                         }}
                     >
                         <Navigation 
