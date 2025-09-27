@@ -136,8 +136,8 @@ const Layout = ({
                 </div>
             </div>
 
-            {/* Main Layout Container with proper spacing for fixed header */}
-            <div className="flex min-h-screen" style={{...getBackgroundStyle(), paddingTop: '100px'}}>
+            {/* Main Container with proper spacing for fixed header */}
+            <div style={{...getBackgroundStyle(), paddingTop: '100px', minHeight: '100vh'}}>
                 {/* Mobile Navigation Overlay */}
                 {isMobileMenuOpen && (
                     <div 
