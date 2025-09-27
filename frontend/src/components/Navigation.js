@@ -215,7 +215,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                     : 'none',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                height: 'calc(100vh - 120px)' // Account for fixed header
+                height: 'calc(100vh - 100px)' // Account for fixed header (ticker + banner)
             }}
         >
             {/* Header with Toggle */}
