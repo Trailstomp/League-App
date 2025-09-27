@@ -536,7 +536,7 @@ const PlayerForm = ({ teams, player, onSave, onCancel }) => {
         onSave(formData);
     };
 
-    const handleFileUpload = (event) => {
+    const handleFileUpload = async (event) => {
         const file = event.target.files[0];
         if (file) {
             if (file.size > 5 * 1024 * 1024) { // 5MB limit
@@ -544,11 +544,34 @@ const PlayerForm = ({ teams, player, onSave, onCancel }) => {
                 return;
             }
             
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setFormData({...formData, photoUrl: e.target.result});
-            };
-            reader.readAsDataURL(file);
+            // Show loading state
+            setFormData({...formData, photoUrl: 'uploading...'});
+            
+            try {
+                const uploadFormData = new FormData();
+                uploadFormData.append('file', file);
+                
+                const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+                const response = await fetch(`${BACKEND_URL}/api/player-photo-upload`, {
+                    method: 'POST',
+                    body: uploadFormData
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('✅ Player photo uploaded successfully:', result);
+                    setFormData({...formData, photoUrl: result.photo_url});
+                } else {
+                    const errorData = await response.json();
+                    console.error('❌ Photo upload failed:', errorData);
+                    alert(`Photo upload failed: ${errorData.detail || 'Unknown error'}`);
+                    setFormData({...formData, photoUrl: ''});
+                }
+            } catch (error) {
+                console.error('❌ Photo upload error:', error);
+                alert('Photo upload failed. Please try again.');
+                setFormData({...formData, photoUrl: ''});
+            }
         }
     };
 
