@@ -194,7 +194,8 @@ const Layout = ({
                 </div>
                 
                 {/* Main Content Area */}
-                <div className="flex-1 flex flex-col w-full min-w-0 md:ml-64 relative">
+                <div className="w-full md:ml-64" style={{minHeight: 'calc(100vh - 100px)'}}>
+                    <div className="flex flex-col">
                     {/* Mobile Navigation Button - Fixed at top left for mobile */}
                     <button
                         onClick={() => setIsMobileMenuOpen(true)}
