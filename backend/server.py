@@ -432,11 +432,17 @@ async def upload_player_photo(file: UploadFile = File(...)):
         }
         
         async with httpx.AsyncClient() as client:
-            await client.post(
+            permissions_response = await client.post(
                 permissions_url,
                 headers=headers,
                 json=permission_data
             )
+        
+        if permissions_response.status_code != 200:
+            logger.error(f"⚠️ Failed to set public permissions on file {file_id}: {permissions_response.status_code} - {permissions_response.text}")
+            # Continue anyway - file is uploaded, just may not be publicly accessible
+        else:
+            logger.info(f"✅ File {file_id} set to public access")
         
         # Generate public URL
         photo_url = f"https://drive.google.com/uc?id={file_id}"
