@@ -173,7 +173,7 @@ const Layout = ({
                 {/* Mobile Navigation - Slide in from left, positioned below full header */}
                 <div className={`
                     ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
-                    fixed left-0 z-50 md:hidden
+                    fixed left-0 z-50 md:hidden w-64 bg-white shadow-lg
                     transition-transform duration-300 ease-in-out
                 `}
                 style={{
