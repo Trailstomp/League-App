@@ -217,7 +217,8 @@ const Layout = ({
                         style={{
                             fontFamily: websiteStyle.mainFont || 'Inter, sans-serif',
                             fontSize: websiteStyle.mainFontSize || '16px',
-                            color: websiteStyle.mainTextColor || '#374151'
+                            color: websiteStyle.mainTextColor || '#374151',
+                            minHeight: 'calc(100vh - 100px)' // Ensure full height below header
                         }}
                     >
                         <div className="w-full max-w-none">
