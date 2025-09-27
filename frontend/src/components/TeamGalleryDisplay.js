@@ -28,7 +28,12 @@ const TeamGalleryDisplay = ({ teamId = null, pageType = 'league' }) => {
     console.log('🖼️ TeamGalleryDisplay:', { teamId, pageType });
 
     useEffect(() => {
-        loadGalleries();
+        // Small delay to allow parent to cache dashboard data
+        const timer = setTimeout(() => {
+            loadGalleries();
+        }, 50); // 50ms delay
+        
+        return () => clearTimeout(timer);
     }, [teamId, pageType]);
 
     // Helper function to fix Google Drive URLs on the client side
