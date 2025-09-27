@@ -54,7 +54,17 @@ const TeamGalleryDisplay = ({ teamId = null, pageType = 'league' }) => {
     const loadGalleries = async () => {
         try {
             setLoading(true);
-            // Use the active galleries endpoint to automatically filter expired and hidden galleries
+            
+            // First try to use cached dashboard data for faster loading
+            if (window.dashboardData && window.dashboardData.galleries) {
+                console.log('🚀 Using cached dashboard data for galleries');
+                setGalleries(window.dashboardData.galleries);
+                setLoading(false);
+                return;
+            }
+            
+            // Fallback to API call if no cached data
+            console.log('📡 Loading galleries from API...');
             const response = await fetch(`${BACKEND_URL}/api/galleries-new/active`);
             if (response.ok) {
                 const data = await response.json();
