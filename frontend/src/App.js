@@ -238,13 +238,6 @@ function App() {
             console.log('📝 No saved websiteStyle found, keeping current defaults');
           }
           
-          // Store galleries and YouTube config for child components
-          window.dashboardData = {
-            galleries: dashboardData.galleries || [],
-            youtubeConfig: dashboardData.youtubeConfig || { enabled: false }
-          };
-          console.log('✅ Dashboard data cached for child components');
-          
         } else {
           console.error('❌ Failed to load dashboard data, status:', dashboardResponse.status);
           // Fallback to individual API calls
