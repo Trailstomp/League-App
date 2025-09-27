@@ -249,6 +249,56 @@ async def update_players(players_data: List[Dict[str, Any]]):
         logger.error(f"❌ Error updating players: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/player-photo-upload")
+async def upload_player_photo(file: UploadFile = File(...)):
+    """Upload a player photo to cloud storage and return URL"""
+    try:
+        # Validate file type
+        if not file.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="File must be an image")
+        
+        # Check file size (5MB limit)
+        file_size = 0
+        content = await file.read()
+        file_size = len(content)
+        
+        if file_size > 5 * 1024 * 1024:  # 5MB
+            raise HTTPException(status_code=400, detail="File size must be less than 5MB")
+        
+        # Reset file position
+        await file.seek(0)
+        
+        # Get cloud storage service
+        cloud_service = CloudStorageService(db)
+        
+        # Generate unique filename
+        file_extension = os.path.splitext(file.filename)[1] if file.filename else '.jpg'
+        unique_filename = f"player_photos/{uuid.uuid4()}{file_extension}"
+        
+        # Upload to cloud storage
+        upload_result = await cloud_service.upload_file(
+            file_content=content,
+            filename=unique_filename,
+            content_type=file.content_type,
+            folder_id="player_photos"
+        )
+        
+        if upload_result.get('success'):
+            return {
+                "success": True,
+                "photo_url": upload_result.get('url'),
+                "filename": unique_filename,
+                "file_size": file_size
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to upload photo to cloud storage")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error uploading player photo: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.put("/league-data/teams/{team_id}")
 async def update_team_data(team_id: str, team_data: Dict[str, Any]):
     """Update specific team data including logo"""
