@@ -211,6 +211,44 @@ async def update_teams(teams_data: List[Dict[str, Any]]):
         logger.error(f"❌ Error updating teams: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/league-data/players")
+async def update_players(players_data: List[Dict[str, Any]]):
+    """Update players data in the league database"""
+    try:
+        # Get the current league data
+        league_doc = await db.league_data.find_one({"id": "main_league"})
+        if not league_doc:
+            # Create new league data if it doesn't exist
+            league_doc = {
+                "id": "main_league",
+                "players": [],
+                "lastUpdated": datetime.utcnow().isoformat()
+            }
+        
+        # Update the players field
+        league_doc["players"] = players_data
+        league_doc["lastUpdated"] = datetime.utcnow().isoformat()
+        
+        # Save back to database
+        result = await db.league_data.replace_one(
+            {"id": "main_league"},
+            league_doc,
+            upsert=True
+        )
+        
+        logger.info(f"✅ Players updated - {len(players_data)} players, modified: {result.modified_count}")
+        
+        return {
+            "status": "success", 
+            "message": f"Successfully updated {len(players_data)} players",
+            "modified": result.modified_count,
+            "upserted": result.upserted_id is not None
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error updating players: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.put("/league-data/teams/{team_id}")
 async def update_team_data(team_id: str, team_data: Dict[str, Any]):
     """Update specific team data including logo"""
