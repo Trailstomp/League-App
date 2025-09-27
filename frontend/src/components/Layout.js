@@ -134,15 +134,6 @@ const Layout = ({
                         </div>
                     </div>
                 </div>
-
-                {/* Event Ticker - Below Banner */}
-                <EventsTicker 
-                    events={events}
-                    teams={teams}
-                    websiteStyle={websiteStyle}
-                    onEventClick={onEventClick}
-                    onTeamClick={onTeamClick}
-                />
             </div>
 
             {/* Main Layout Container with proper spacing for fixed header */}
