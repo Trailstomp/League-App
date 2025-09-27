@@ -333,7 +333,7 @@ function App() {
         );
       case 'chat':
         return (
-          <div className="flex flex-col" style={{height: 'calc(100vh - 100px)'}}>
+          <div className="flex flex-col chat-container">
             <GroupMeChatUnified channelType="all" currentUser={currentUser} />
           </div>
         );
