@@ -162,24 +162,40 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                                         filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.4)) drop-shadow(0 4px 8px rgba(255,255,255,0.1))',
                                                         backgroundColor: 'transparent'
                                                     }}
-                                                />
-                                            ) : (
-                                                <div 
-                                                    className="rounded-2xl flex items-center justify-center relative"
-                                                    style={{ 
-                                                        width: '192px', // 50% larger than w-32 (128px)
-                                                        height: '192px', // 50% larger than h-32 (128px)
-                                                        background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
-                                                        boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+                                                    onLoad={(e) => {
+                                                        // Image loaded successfully
+                                                        e.target.style.opacity = '1';
+                                                        e.target.style.transition = 'opacity 0.3s ease';
                                                     }}
-                                                >
-                                                    <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '5rem' }}>
-                                                        {team.name.charAt(0)}
-                                                    </span>
-                                                    {/* Gradient shine overlay */}
-                                                    <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-20 pointer-events-none rounded-2xl"></div>
-                                                </div>
-                                            )}
+                                                    onError={(e) => {
+                                                        console.warn(`Failed to load logo for team: ${team.name}`, team.style?.logoUrl);
+                                                        // Hide the broken image and show fallback
+                                                        e.target.style.display = 'none';
+                                                        // Show the fallback letter logo
+                                                        const fallback = e.target.parentElement.querySelector('.fallback-logo');
+                                                        if (fallback) fallback.style.display = 'flex';
+                                                    }}
+                                                    loading="lazy"
+                                                />
+                                            ) : null}
+                                            
+                                            {/* Fallback letter logo - always present but hidden if image loads */}
+                                            <div 
+                                                className="fallback-logo rounded-2xl flex items-center justify-center relative"
+                                                style={{ 
+                                                    width: '192px', 
+                                                    height: '192px',
+                                                    background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
+                                                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                                                    display: team.style?.logoUrl ? 'none' : 'flex' // Hidden if logo URL exists, shown otherwise
+                                                }}
+                                            >
+                                                <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '5rem' }}>
+                                                    {team.name.charAt(0)}
+                                                </span>
+                                                {/* Gradient shine overlay */}
+                                                <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-20 pointer-events-none rounded-2xl"></div>
+                                            </div>
                                         </div>
                                         
                                         {/* Record Badge - Like hover overlay in player card */}
