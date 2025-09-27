@@ -226,6 +226,7 @@ const Layout = ({
                             {children}
                         </div>
                     </main>
+                    </div>
                 </div>
             </div>
         </div>
