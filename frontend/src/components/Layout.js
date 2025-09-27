@@ -202,10 +202,7 @@ const Layout = ({
                 
                 {/* Main Content Area */}
                 <div className="main-content-area">
-                    <div className="flex flex-col" style={{
-                        marginLeft: '20vw', // Leave space for desktop sidebar navigation  
-                        '@media (max-width: 768px)': { marginLeft: '0' } // No margin on mobile
-                    }}>
+                    <div className="flex flex-col">
                     {/* Mobile Navigation Button - Fixed at top left for mobile */}
                     <button
                         onClick={() => setIsMobileMenuOpen(true)}
