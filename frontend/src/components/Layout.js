@@ -150,7 +150,7 @@ const Layout = ({
                 {/* Navigation - Fixed position for desktop, goes to bottom of full header */}
                 <div className="hidden md:block">
                     <div 
-                        className="fixed left-0 z-20 overflow-hidden"
+                        className="fixed left-0 z-20 overflow-hidden w-64"
                         style={{
                             top: '100px', // Position below full header (ticker + banner)
                             bottom: '0',
