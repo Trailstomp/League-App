@@ -178,13 +178,15 @@ const Layout = ({
                 {/* Mobile Navigation - Slide in from left, positioned below full header */}
                 <div className={`
                     ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
-                    fixed left-0 z-50 md:hidden w-64 bg-white shadow-lg
+                    fixed left-0 z-50 md:hidden bg-white shadow-lg
                     transition-transform duration-300 ease-in-out
                 `}
                 style={{
-                    top: '100px', // Position below full header (ticker + banner)
+                    top: '12vh', // Position below full header (ticker + banner)
                     bottom: '0',
-                    height: 'calc(100vh - 100px)'
+                    height: '88vh', // 100vh - 12vh header
+                    width: '75vw', // 75% of viewport width on mobile
+                    maxWidth: '320px'
                 }}>
                     <Navigation 
                         currentPage={currentPage}
