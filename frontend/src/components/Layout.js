@@ -224,12 +224,13 @@ const Layout = ({
 
                     {/* Main Content Container */}
                     <main 
-                        className="flex-1 p-3 sm:p-6 overflow-x-hidden"
+                        className="flex-1 overflow-x-hidden"
                         style={{
                             fontFamily: websiteStyle.mainFont || 'Inter, sans-serif',
                             fontSize: websiteStyle.mainFontSize || '16px',
                             color: websiteStyle.mainTextColor || '#374151',
-                            minHeight: 'calc(100vh - 100px)' // Ensure full height below header
+                            minHeight: '88vh', // Ensure full height below header
+                            padding: '2vh 3vw' // Responsive padding
                         }}
                     >
                         <div className="w-full max-w-none">
