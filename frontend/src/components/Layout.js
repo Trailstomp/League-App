@@ -202,16 +202,17 @@ const Layout = ({
                 
                 {/* Main Content Area */}
                 <div className="main-content-area">
-                    <div className="flex flex-col">
+                    <div className="flex flex-col" style={{
+                        marginLeft: '20vw', // Leave space for desktop sidebar navigation  
+                        '@media (max-width: 768px)': { marginLeft: '0' } // No margin on mobile
+                    }}>
                     {/* Mobile Navigation Button - Fixed at top left for mobile */}
                     <button
                         onClick={() => setIsMobileMenuOpen(true)}
                         className="md:hidden fixed z-40 p-2 rounded-lg shadow-lg transition-colors mobile-nav-button"
                         style={{
                             top: '13vh', // Just below header
-                            left: '2vw' // 2% from left edge
-                        }}
-                        style={{
+                            left: '2vw', // 2% from left edge
                             backgroundColor: websiteStyle.navBackgroundColor || '#ffffff',
                             color: websiteStyle.navTextColor || '#374151'
                         }}
