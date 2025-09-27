@@ -103,8 +103,8 @@ html, body {
 
 /* Chat component responsiveness */
 .chat-container {
-    height: calc(100vh - 140px);
-    max-height: calc(100vh - 140px);
+    height: calc(100vh - 100px);
+    max-height: calc(100vh - 100px);
     display: flex;
     flex-direction: column;
 }
