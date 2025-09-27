@@ -78,9 +78,9 @@ const Layout = ({
     return (
         <div>
             {/* Fixed Header Container - Event Ticker (Top) + League Banner (Below) */}
-            <div className="fixed top-0 left-0 right-0 z-40 flex flex-col">
+            <div className="fixed top-0 left-0 right-0 z-40 flex flex-col" style={{ height: '12vh' }}>
                 {/* Event Ticker - At Very Top */}
-                <div className="bg-slate-800 text-white shadow-sm">
+                <div className="bg-slate-800 text-white shadow-sm" style={{ height: '4vh', minHeight: '32px' }}>
                     <EventsTicker 
                         events={events}
                         teams={teams}
@@ -92,7 +92,7 @@ const Layout = ({
                 
                 {/* League Banner - Below Ticker */}
                 <div 
-                    className="px-4 py-3 border-b shadow-sm"
+                    className="px-4 py-3 border-b shadow-sm flex-1"
                     style={{
                         backgroundColor: websiteStyle.bannerBackgroundType === 'image' ? 'transparent' : (websiteStyle.bannerBackgroundColor || '#ffffff'),
                         backgroundImage: websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage 
@@ -100,7 +100,9 @@ const Layout = ({
                             : 'none',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
-                        position: 'relative'
+                        position: 'relative',
+                        height: '8vh',
+                        minHeight: '68px'
                     }}
                 >
                     {/* Overlay for image banners */}
