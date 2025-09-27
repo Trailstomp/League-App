@@ -251,52 +251,102 @@ async def update_players(players_data: List[Dict[str, Any]]):
 
 @api_router.post("/player-photo-upload")
 async def upload_player_photo(file: UploadFile = File(...)):
-    """Upload a player photo to cloud storage and return URL"""
+    """Upload a player photo to Google Drive and return URL"""
     try:
+        logger.info(f"📸 Player photo upload started - File: {file.filename}")
+        
         # Validate file type
         if not file.content_type.startswith('image/'):
             raise HTTPException(status_code=400, detail="File must be an image")
         
         # Check file size (5MB limit)
-        file_size = 0
         content = await file.read()
         file_size = len(content)
         
         if file_size > 5 * 1024 * 1024:  # 5MB
             raise HTTPException(status_code=400, detail="File size must be less than 5MB")
         
-        # Reset file position
-        await file.seek(0)
+        # Get Google Drive configuration
+        config = await db.cloud_storage.find_one({"id": "main_cloud_storage"})
         
-        # Get cloud storage service
-        cloud_service = CloudStorageService(db)
+        if not config:
+            raise HTTPException(status_code=400, detail="Google Drive not configured")
+            
+        google_drive_config = config.get("googleDrive", {})
+        
+        if not google_drive_config.get("refreshToken"):
+            raise HTTPException(status_code=400, detail="Google Drive not authorized")
+        
+        refresh_token = google_drive_config["refreshToken"]
+        folder_id = google_drive_config.get("folderId")
+        
+        # Get fresh access token
+        access_token = await get_fresh_access_token(google_drive_config, refresh_token)
         
         # Generate unique filename
         file_extension = os.path.splitext(file.filename)[1] if file.filename else '.jpg'
-        unique_filename = f"player_photos/{uuid.uuid4()}{file_extension}"
+        unique_filename = f"player_photo_{uuid.uuid4()}{file_extension}"
         
-        # Upload to cloud storage
-        upload_result = await cloud_service.upload_file(
-            file_content=content,
-            filename=unique_filename,
-            content_type=file.content_type,
-            folder_id="player_photos"
-        )
+        # Upload to Google Drive
+        upload_url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
         
-        if upload_result.get('success'):
-            return {
-                "success": True,
-                "photo_url": upload_result.get('url'),
-                "filename": unique_filename,
-                "file_size": file_size
-            }
-        else:
-            raise HTTPException(status_code=500, detail="Failed to upload photo to cloud storage")
+        # Create metadata
+        metadata = {
+            'name': unique_filename,
+            'parents': [folder_id] if folder_id else []
+        }
+        
+        # Create multipart data
+        files_data = {
+            'metadata': (None, json.dumps(metadata), 'application/json'),
+            'file': (file.filename, content, file.content_type)
+        }
+        
+        headers = {
+            'Authorization': f'Bearer {access_token}'
+        }
+        
+        async with httpx.AsyncClient() as client:
+            upload_response = await client.post(upload_url, headers=headers, files=files_data)
+        
+        if upload_response.status_code != 200:
+            logger.error(f"❌ Google Drive upload failed: {upload_response.status_code} - {upload_response.text}")
+            raise HTTPException(status_code=500, detail="Failed to upload photo to Google Drive")
+        
+        upload_data = upload_response.json()
+        file_id = upload_data.get('id')
+        
+        # Make file publicly viewable
+        permissions_url = f"https://www.googleapis.com/drive/v3/files/{file_id}/permissions"
+        permission_data = {
+            'role': 'reader',
+            'type': 'anyone'
+        }
+        
+        async with httpx.AsyncClient() as client:
+            await client.post(
+                permissions_url,
+                headers=headers,
+                json=permission_data
+            )
+        
+        # Generate public URL
+        photo_url = f"https://drive.google.com/uc?id={file_id}"
+        
+        logger.info(f"✅ Player photo uploaded successfully - ID: {file_id}")
+        
+        return {
+            "success": True,
+            "photo_url": photo_url,
+            "filename": unique_filename,
+            "file_size": file_size,
+            "google_drive_id": file_id
+        }
             
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error uploading player photo: {str(e)}")
+        logger.error(f"❌ Error uploading player photo: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.put("/league-data/teams/{team_id}")
