@@ -8,7 +8,12 @@ const YouTubeGallery = ({ teamId = null, title = "YouTube Videos" }) => {
     const [selectedVideo, setSelectedVideo] = useState(null);
 
     useEffect(() => {
-        loadYouTubeVideos();
+        // Small delay to allow parent to cache dashboard data
+        const timer = setTimeout(() => {
+            loadYouTubeVideos();
+        }, 50); // 50ms delay
+        
+        return () => clearTimeout(timer);
     }, [teamId]);
 
     const loadYouTubeVideos = async () => {
