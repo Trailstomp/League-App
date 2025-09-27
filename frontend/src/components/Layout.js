@@ -177,9 +177,9 @@ const Layout = ({
                     transition-transform duration-300 ease-in-out
                 `}
                 style={{
-                    top: '140px', // Position below full header (banner + ticker)
+                    top: '100px', // Position below full header (ticker + banner)
                     bottom: '0',
-                    height: 'calc(100vh - 140px)'
+                    height: 'calc(100vh - 100px)'
                 }}>
                     <Navigation 
                         currentPage={currentPage}
