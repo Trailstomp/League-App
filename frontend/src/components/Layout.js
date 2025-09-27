@@ -201,7 +201,11 @@ const Layout = ({
                 </div>
                 
                 {/* Main Content Area */}
-                <div className="main-content-area">
+                <div className="main-content-area" style={{
+                    marginLeft: '20vw', // Force margin left for desktop
+                    minHeight: '88vh',
+                    width: '80vw'
+                }}>
                     <div className="flex flex-col">
                     {/* Mobile Navigation Button - Fixed at top left for mobile */}
                     <button
