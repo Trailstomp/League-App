@@ -112,7 +112,11 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                             <div 
                                 key={team.id} 
                                 className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform hover:scale-105 duration-300 border-4 cursor-pointer group"
-                                style={{ borderColor: team.style?.primaryColor || '#2563eb' }}
+                                style={{ 
+                                    borderColor: team.style?.primaryColor || '#2563eb',
+                                    transform: 'scale(0.7)', // Make cards 30% smaller
+                                    transformOrigin: 'center'
+                                }}
                                 onClick={() => {
                                     console.log('🏆 Team card clicked:', team.name);
                                     console.log('🎨 Team colors for card:', team.style);
@@ -124,7 +128,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                 title="Click for team details"
                             >
                                 {/* Main Logo Area - 80% of card like player photo */}
-                                <div className="relative overflow-hidden" style={{ aspectRatio: '3/4', minHeight: '200px' }}>
+                                <div className="relative overflow-hidden" style={{ aspectRatio: '3/4', minHeight: '140px' }}>
                                     <div 
                                         className="w-full h-full flex items-center justify-center relative"
                                         style={{ 
