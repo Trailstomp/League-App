@@ -187,6 +187,15 @@ function App() {
             youtubeEnabled: dashboardData.youtubeConfig?.enabled || false
           });
           
+          // Store galleries and YouTube config for child components BEFORE setting state
+          // This ensures child components can access cached data immediately
+          const cacheData = {
+            galleries: dashboardData.galleries || [],
+            youtubeConfig: dashboardData.youtubeConfig || { enabled: false }
+          };
+          window.dashboardData = cacheData;
+          console.log('✅ Dashboard data cached for child components');
+          
           // UNIFIED DATA SOURCE: Load teams from dashboard data
           if (dashboardData.teams && Array.isArray(dashboardData.teams)) {
             console.log('🏆 Setting teams from dashboard-data:', dashboardData.teams.map(t => t.name || 'Unnamed'));
