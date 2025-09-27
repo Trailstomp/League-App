@@ -101,10 +101,24 @@ html, body {
     }
 }
 
+/* Layout responsiveness with viewport units */
+.main-content-area {
+    margin-left: 20vw;
+    min-height: 88vh;
+    width: 80vw;
+}
+
+@media (max-width: 768px) {
+    .main-content-area {
+        margin-left: 0;
+        width: 100vw;
+    }
+}
+
 /* Chat component responsiveness */
 .chat-container {
-    height: calc(100vh - 100px);
-    max-height: calc(100vh - 100px);
+    height: 88vh;
+    max-height: 88vh;
     display: flex;
     flex-direction: column;
 }
