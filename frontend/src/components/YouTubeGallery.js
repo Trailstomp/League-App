@@ -14,17 +14,31 @@ const YouTubeGallery = ({ teamId = null, title = "YouTube Videos" }) => {
     const loadYouTubeVideos = async () => {
         try {
             setLoading(true);
+            
+            // First try to use cached dashboard data for faster loading
+            if (window.dashboardData && window.dashboardData.youtubeConfig) {
+                console.log('🚀 Using cached dashboard data for YouTube config');
+                const config = window.dashboardData.youtubeConfig;
+                setYoutubeConfig(config);
+                
+                if (config.enabled && config.channelId) {
+                    const mockVideos = generateMockVideos(config);
+                    setVideos(mockVideos);
+                }
+                setLoading(false);
+                return;
+            }
+            
+            // Fallback to API call if no cached data
+            console.log('📡 Loading YouTube config from API...');
             const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
             
-            // Load YouTube configuration
             const response = await fetch(`${BACKEND_URL}/api/youtube-integration`);
             if (response.ok) {
                 const config = await response.json();
                 setYoutubeConfig(config);
                 
                 if (config.enabled && config.channelId) {
-                    // TODO: In a real implementation, you would call YouTube API here
-                    // For now, we'll create mock videos based on the configuration
                     const mockVideos = generateMockVideos(config);
                     setVideos(mockVideos);
                 }
