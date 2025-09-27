@@ -170,90 +170,133 @@ function App() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        console.log('🔄 Starting fresh data load from API...');
+        console.log('🔄 Starting optimized dashboard data load...');
+        const startTime = Date.now();
         
-        // Load complete league data
-        const leagueResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/league-data`);
-        if (leagueResponse.ok) {
-          const leagueData = await leagueResponse.json();
-          console.log('📊 Raw league data received:', leagueData);
-          console.log('🗂️ ALL FIELDS in league data:', Object.keys(leagueData));
-          console.log('🏆 Teams in league data:', leagueData.teams?.length || 0);
-          console.log('👥 Players in league data:', leagueData.players?.length || 0);
-          console.log('📅 CRITICAL - leagueSchedule field details:', {
-            exists: 'leagueSchedule' in leagueData,
-            value: leagueData.leagueSchedule,
-            type: typeof leagueData.leagueSchedule,
-            isArray: Array.isArray(leagueData.leagueSchedule),
-            length: leagueData.leagueSchedule?.length || 'N/A'
+        // Use new optimized dashboard endpoint for faster loading
+        const dashboardResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/dashboard-data`);
+        if (dashboardResponse.ok) {
+          const dashboardData = await dashboardResponse.json();
+          const loadTime = Date.now() - startTime;
+          console.log(`⚡ Dashboard data loaded in ${loadTime}ms`);
+          console.log('📊 Dashboard data received:', {
+            teams: dashboardData.teams?.length || 0,
+            players: dashboardData.players?.length || 0,
+            events: dashboardData.leagueSchedule?.length || 0,
+            galleries: dashboardData.galleries?.length || 0,
+            youtubeEnabled: dashboardData.youtubeConfig?.enabled || false
           });
           
-          // UNIFIED DATA SOURCE: Load teams only from league-data
-          if (leagueData.teams && Array.isArray(leagueData.teams)) {
-            console.log('🏆 Teams in league data:', leagueData.teams.length);
-            console.log('✅ Setting teams from league-data:', leagueData.teams.map(t => t.name || 'Unnamed'));
-            setTeams(leagueData.teams);
+          // UNIFIED DATA SOURCE: Load teams from dashboard data
+          if (dashboardData.teams && Array.isArray(dashboardData.teams)) {
+            console.log('🏆 Setting teams from dashboard-data:', dashboardData.teams.map(t => t.name || 'Unnamed'));
+            setTeams(dashboardData.teams);
           } else {
-            console.log('📝 No teams in league-data, starting with empty array');
+            console.log('📝 No teams in dashboard-data, starting with empty array');
             setTeams([]);
           }
           
-          // UNIFIED DATA SOURCE: Load players only from league-data
-          if (leagueData.players && Array.isArray(leagueData.players)) {
-            setPlayers(leagueData.players);
-            console.log('✅ Loaded players from league-data:', leagueData.players.length, 'players');
+          // UNIFIED DATA SOURCE: Load players from dashboard data
+          if (dashboardData.players && Array.isArray(dashboardData.players)) {
+            setPlayers(dashboardData.players);
+            console.log('✅ Loaded players from dashboard-data:', dashboardData.players.length, 'players');
           } else {
-            console.log('📝 No players in league-data, starting with empty array');
+            console.log('📝 No players in dashboard-data, starting with empty array');
             setPlayers([]);
           }
           
-          // Load events safely with detailed logging
-          console.log('📅 Event loading check:', {
-            hasLeagueSchedule: !!leagueData.leagueSchedule,
-            isArray: Array.isArray(leagueData.leagueSchedule),
-            length: leagueData.leagueSchedule?.length || 0,
-            leagueScheduleKeys: leagueData.leagueSchedule ? Object.keys(leagueData.leagueSchedule) : 'none'
-          });
-          
-          if (leagueData.leagueSchedule && Array.isArray(leagueData.leagueSchedule)) {
-            setEvents(leagueData.leagueSchedule);
-            console.log('✅ Loaded events:', leagueData.leagueSchedule.length, 'events');
-            if (leagueData.leagueSchedule.length > 0) {
-              console.log('📅 Event titles:', leagueData.leagueSchedule.map(e => e.title || e.id));
+          // Load events from dashboard data
+          if (dashboardData.leagueSchedule && Array.isArray(dashboardData.leagueSchedule)) {
+            setEvents(dashboardData.leagueSchedule);
+            console.log('✅ Loaded events from dashboard-data:', dashboardData.leagueSchedule.length, 'events');
+            if (dashboardData.leagueSchedule.length > 0) {
+              console.log('📅 Event titles:', dashboardData.leagueSchedule.map(e => e.title || e.id));
             }
           } else {
-            console.log('📝 No leagueSchedule found in API response, setting empty events array');
+            console.log('📝 No leagueSchedule found in dashboard response, setting empty events array');
             setEvents([]);
           }
           
-          // Load websiteStyle safely
-          if (leagueData.websiteStyle && typeof leagueData.websiteStyle === 'object') {
-            console.log('🎨 Loading saved websiteStyle with keys:', Object.keys(leagueData.websiteStyle));
+          // Load websiteStyle from dashboard data
+          if (dashboardData.websiteStyle && typeof dashboardData.websiteStyle === 'object') {
+            console.log('🎨 Loading saved websiteStyle with keys:', Object.keys(dashboardData.websiteStyle));
             setWebsiteStyle(prev => ({
               ...prev,
-              ...leagueData.websiteStyle
+              ...dashboardData.websiteStyle
             }));
             console.log('✅ WebsiteStyle loaded and applied');
           } else {
             console.log('📝 No saved websiteStyle found, keeping current defaults');
           }
           
+          // Store galleries and YouTube config for child components
+          window.dashboardData = {
+            galleries: dashboardData.galleries || [],
+            youtubeConfig: dashboardData.youtubeConfig || { enabled: false }
+          };
+          console.log('✅ Dashboard data cached for child components');
+          
         } else {
-          console.error('❌ Failed to load league data, status:', leagueResponse.status);
-          // Do NOT fall back to anything - keep empty arrays to start fresh
-          console.log('📝 Keeping empty arrays for fresh start');
+          console.error('❌ Failed to load dashboard data, status:', dashboardResponse.status);
+          // Fallback to individual API calls
+          console.log('⚠️ Falling back to individual API calls...');
+          await loadDataFallback();
+        }
+
+      } catch (error) {
+        console.error('❌ Error loading dashboard data:', error);
+        console.log('⚠️ Falling back to individual API calls...');
+        await loadDataFallback();
+      }
+    };
+
+    // Fallback to original loading method if dashboard endpoint fails
+    const loadDataFallback = async () => {
+      try {
+        // Load complete league data
+        const leagueResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/league-data`);
+        if (leagueResponse.ok) {
+          const leagueData = await leagueResponse.json();
+          
+          if (leagueData.teams && Array.isArray(leagueData.teams)) {
+            setTeams(leagueData.teams);
+          } else {
+            setTeams([]);
+          }
+          
+          if (leagueData.players && Array.isArray(leagueData.players)) {
+            setPlayers(leagueData.players);
+          } else {
+            setPlayers([]);
+          }
+          
+          if (leagueData.leagueSchedule && Array.isArray(leagueData.leagueSchedule)) {
+            setEvents(leagueData.leagueSchedule);
+          } else {
+            setEvents([]);
+          }
+          
+          if (leagueData.websiteStyle && typeof leagueData.websiteStyle === 'object') {
+            setWebsiteStyle(prev => ({
+              ...prev,
+              ...leagueData.websiteStyle
+            }));
+          }
+        } else {
           setTeams([]);
           setPlayers([]);
           setEvents([]);
         }
-
+        
+        // Clear cached data since fallback doesn't include galleries/youtube
+        window.dashboardData = { galleries: [], youtubeConfig: { enabled: false } };
+        
       } catch (error) {
-        console.error('❌ Error loading data from API:', error);
-        console.log('📝 Keeping empty arrays due to error - fresh start');
-        // Keep empty arrays for fresh start
+        console.error('❌ Fallback loading also failed:', error);
         setTeams([]);
         setPlayers([]);
         setEvents([]);
+        window.dashboardData = { galleries: [], youtubeConfig: { enabled: false } };
       }
     };
 
