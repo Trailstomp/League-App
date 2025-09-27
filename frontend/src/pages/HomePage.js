@@ -149,27 +149,31 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                             ></div>
                                         )}
                                         
-                                        {/* Logo - 80% of the card area */}
+                                        {/* Logo - Made 50% larger */}
                                         <div className="relative z-10">
                                             {team.style?.logoUrl ? (
                                                 <img 
                                                     src={team.style.logoUrl} 
                                                     alt={team.name}
-                                                    className="w-32 h-32 object-contain drop-shadow-2xl"
+                                                    className="object-contain drop-shadow-2xl"
                                                     style={{ 
+                                                        width: '192px', // 50% larger than w-32 (128px)
+                                                        height: '192px', // 50% larger than h-32 (128px)
                                                         filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.4)) drop-shadow(0 4px 8px rgba(255,255,255,0.1))',
                                                         backgroundColor: 'transparent'
                                                     }}
                                                 />
                                             ) : (
                                                 <div 
-                                                    className="w-32 h-32 rounded-2xl flex items-center justify-center relative"
+                                                    className="rounded-2xl flex items-center justify-center relative"
                                                     style={{ 
+                                                        width: '192px', // 50% larger than w-32 (128px)
+                                                        height: '192px', // 50% larger than h-32 (128px)
                                                         background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
                                                         boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
                                                     }}
                                                 >
-                                                    <span className="text-white font-bold text-6xl drop-shadow-lg">
+                                                    <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '5rem' }}>
                                                         {team.name.charAt(0)}
                                                     </span>
                                                     {/* Gradient shine overlay */}
