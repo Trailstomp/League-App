@@ -77,9 +77,14 @@ const Layout = ({
 
     return (
         <div>
-            {/* Fixed Header Container - League Banner + Event Ticker */}
+            {/* Fixed Header Container - Event Ticker (Top) + League Banner (Below) */}
             <div className="fixed top-0 left-0 right-0 z-40 flex flex-col">
-                {/* League Banner - Top */}
+                {/* Event Ticker - At Very Top */}
+                <div className="bg-slate-800 text-white shadow-sm">
+                    <EventsTicker events={events} />
+                </div>
+                
+                {/* League Banner - Below Ticker */}
                 <div 
                     className="px-4 py-3 border-b shadow-sm"
                     style={{
