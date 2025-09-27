@@ -81,7 +81,13 @@ const Layout = ({
             <div className="fixed top-0 left-0 right-0 z-40 flex flex-col">
                 {/* Event Ticker - At Very Top */}
                 <div className="bg-slate-800 text-white shadow-sm">
-                    <EventsTicker events={events} />
+                    <EventsTicker 
+                        events={events}
+                        teams={teams}
+                        websiteStyle={websiteStyle}
+                        onEventClick={onEventClick}
+                        onTeamClick={onTeamClick}
+                    />
                 </div>
                 
                 {/* League Banner - Below Ticker */}
