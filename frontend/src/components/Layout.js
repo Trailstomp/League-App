@@ -139,24 +139,27 @@ const Layout = ({
             </div>
 
             {/* Main Container with proper spacing for fixed header */}
-            <div style={{...getBackgroundStyle(), paddingTop: '100px', minHeight: '100vh'}}>
+            <div style={{...getBackgroundStyle(), paddingTop: '12vh', minHeight: '100vh'}}>
                 {/* Mobile Navigation Overlay */}
                 {isMobileMenuOpen && (
                     <div 
                         className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        style={{top: '100px'}} // Position below full header (ticker + banner)
+                        style={{top: '12vh'}} // Position below full header (ticker + banner)
                     />
                 )}
                 
                 {/* Navigation - Fixed position for desktop, goes to bottom of full header */}
                 <div className="hidden md:block">
                     <div 
-                        className="fixed left-0 z-20 overflow-hidden w-64"
+                        className="fixed left-0 z-20 overflow-hidden"
                         style={{
-                            top: '100px', // Position below full header (ticker + banner)
+                            top: '12vh', // Position below full header (ticker + banner)
                             bottom: '0',
-                            height: 'calc(100vh - 100px)'
+                            height: '88vh', // 100vh - 12vh header
+                            width: '20vw', // 20% of viewport width instead of fixed 256px
+                            maxWidth: '280px', // Max width cap
+                            minWidth: '200px' // Min width cap
                         }}
                     >
                         <Navigation 
