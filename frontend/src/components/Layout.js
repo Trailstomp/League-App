@@ -78,12 +78,9 @@ const Layout = ({
     return (
         <div>
             {/* Fixed Header Container - Event Ticker (Top) + League Banner (Below) */}
-            <div className="fixed top-0 left-0 right-0 z-50" style={{ height: '12vh' }}>
+            <div className="fixed top-0 left-0 right-0 z-50 flex flex-col" style={{ height: '12vh' }}>
                 {/* Event Ticker - At Very Top */}
-                <div 
-                    className="bg-slate-800 text-white shadow-sm absolute top-0 left-0 right-0" 
-                    style={{ height: '4vh', minHeight: '32px', zIndex: 51 }}
-                >
+                <div className="bg-slate-800 text-white shadow-sm flex-shrink-0" style={{ height: '4vh', minHeight: '32px' }}>
                     <EventsTicker 
                         events={events}
                         teams={teams}
@@ -95,18 +92,15 @@ const Layout = ({
                 
                 {/* League Banner - Below Ticker */}
                 <div 
-                    className="px-4 py-3 border-b shadow-sm absolute left-0 right-0"
+                    className="px-4 py-3 border-b shadow-sm flex-1 flex items-center"
                     style={{
-                        top: '4vh', // Start exactly where ticker ends
-                        height: '8vh',
-                        minHeight: '68px',
-                        zIndex: 50,
                         backgroundColor: websiteStyle.bannerBackgroundType === 'image' ? 'transparent' : (websiteStyle.bannerBackgroundColor || '#ffffff'),
                         backgroundImage: websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage 
                             ? `url(${websiteStyle.bannerBackgroundImage})` 
                             : 'none',
                         backgroundSize: 'cover',
-                        backgroundPosition: 'center'
+                        backgroundPosition: 'center',
+                        minHeight: '68px'
                     }}
                 >
                     {/* Overlay for image banners */}
@@ -114,7 +108,7 @@ const Layout = ({
                         <div className="absolute inset-0 bg-black bg-opacity-30"></div>
                     )}
                     
-                    <div className="flex items-center justify-between relative z-10 max-w-7xl mx-auto h-full">
+                    <div className="flex items-center justify-between relative z-10 max-w-7xl mx-auto w-full">
                         <div className="flex items-center space-x-4">
                             <div className="text-3xl">🥍</div>
                             <div>
