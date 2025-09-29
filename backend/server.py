@@ -3334,6 +3334,120 @@ async def get_collections():
         logger.error(f"Error getting collections: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/admin/cleanup/base64-images")
+async def cleanup_base64_images():
+    """Clean up base64 images from database to reduce bloat"""
+    try:
+        logger.info("🧹 Starting database cleanup for base64 images")
+        cleanup_results = {
+            "teams_cleaned": 0,
+            "players_cleaned": 0,
+            "events_cleaned": 0,
+            "size_saved_mb": 0.0,
+            "details": []
+        }
+        
+        # Clean up team logos (base64 data)
+        teams_result = await db.league_data.find_one({"id": "main_league"})
+        if teams_result and "teams" in teams_result:
+            teams_updated = []
+            teams_cleaned = 0
+            
+            for team in teams_result["teams"]:
+                team_updated = False
+                if "style" in team and "logoUrl" in team["style"]:
+                    logo_url = team["style"]["logoUrl"]
+                    if logo_url and logo_url.startswith("data:image/"):
+                        # Remove base64 logo, replace with placeholder
+                        original_size = len(logo_url)
+                        team["style"]["logoUrl"] = ""  # Remove base64 data
+                        cleanup_results["size_saved_mb"] += original_size / (1024 * 1024)
+                        cleanup_results["details"].append(f"Removed base64 logo from team: {team.get('name', 'Unknown')} ({original_size} bytes)")
+                        teams_cleaned += 1
+                        team_updated = True
+                        logger.info(f"🧹 Cleaned base64 logo from team: {team.get('name', 'Unknown')}")
+                
+                teams_updated.append(team)
+            
+            if teams_cleaned > 0:
+                # Update teams in database
+                await db.league_data.update_one(
+                    {"id": "main_league"},
+                    {"$set": {"teams": teams_updated}}
+                )
+                cleanup_results["teams_cleaned"] = teams_cleaned
+        
+        # Clean up player photos (base64 data)
+        if teams_result and "players" in teams_result:
+            players_updated = []
+            players_cleaned = 0
+            
+            for player in teams_result["players"]:
+                if "photoUrl" in player and player["photoUrl"]:
+                    photo_url = player["photoUrl"]
+                    if photo_url.startswith("data:image/"):
+                        # Remove base64 photo, replace with placeholder
+                        original_size = len(photo_url)
+                        player["photoUrl"] = ""  # Remove base64 data
+                        cleanup_results["size_saved_mb"] += original_size / (1024 * 1024)
+                        cleanup_results["details"].append(f"Removed base64 photo from player: {player.get('name', 'Unknown')} ({original_size} bytes)")
+                        players_cleaned += 1
+                        logger.info(f"🧹 Cleaned base64 photo from player: {player.get('name', 'Unknown')}")
+                
+                players_updated.append(player)
+            
+            if players_cleaned > 0:
+                # Update players in database
+                await db.league_data.update_one(
+                    {"id": "main_league"},
+                    {"$set": {"players": players_updated}}
+                )
+                cleanup_results["players_cleaned"] = players_cleaned
+        
+        # Clean up any base64 images from events
+        events_cursor = db.league_data.find({"leagueSchedule": {"$exists": True}})
+        events_cleaned = 0
+        
+        async for doc in events_cursor:
+            if "leagueSchedule" in doc:
+                events_updated = []
+                doc_updated = False
+                
+                for event in doc["leagueSchedule"]:
+                    if "image" in event and event["image"] and event["image"].startswith("data:image/"):
+                        # Remove base64 event image
+                        original_size = len(event["image"])
+                        event["image"] = ""  # Remove base64 data
+                        cleanup_results["size_saved_mb"] += original_size / (1024 * 1024)
+                        cleanup_results["details"].append(f"Removed base64 image from event: {event.get('title', 'Unknown')} ({original_size} bytes)")
+                        events_cleaned += 1
+                        doc_updated = True
+                        logger.info(f"🧹 Cleaned base64 image from event: {event.get('title', 'Unknown')}")
+                    
+                    events_updated.append(event)
+                
+                if doc_updated:
+                    await db.league_data.update_one(
+                        {"_id": doc["_id"]},
+                        {"$set": {"leagueSchedule": events_updated}}
+                    )
+        
+        cleanup_results["events_cleaned"] = events_cleaned
+        
+        # Log final results
+        total_cleaned = cleanup_results["teams_cleaned"] + cleanup_results["players_cleaned"] + cleanup_results["events_cleaned"]
+        logger.info(f"🧹 Database cleanup completed: {total_cleaned} items cleaned, {cleanup_results['size_saved_mb']:.2f}MB saved")
+        
+        return {
+            "success": True,
+            "message": f"Database cleanup completed successfully",
+            "results": cleanup_results
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error during database cleanup: {e}")
+        raise HTTPException(status_code=500, detail=f"Database cleanup failed: {str(e)}")
+
 @api_router.get("/admin/database-info")
 async def get_database_info():
     """Get database size information for troubleshooting"""
