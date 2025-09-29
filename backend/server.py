@@ -3448,6 +3448,94 @@ async def cleanup_base64_images():
         logger.error(f"❌ Error during database cleanup: {e}")
         raise HTTPException(status_code=500, detail=f"Database cleanup failed: {str(e)}")
 
+@api_router.post("/admin/check-document-sizes")
+async def check_document_sizes():
+    """Check document sizes across collections to identify bloat"""
+    try:
+        logger.info("📏 Checking document sizes across collections")
+        
+        size_report = {
+            "collections": {},
+            "large_documents": [],
+            "total_size_mb": 0.0,
+            "warnings": []
+        }
+        
+        # Check each collection
+        collections_to_check = ["league_data", "galleries_new", "api_integrations", "groupme_channels", 
+                              "groupme_messages", "event_rsvps", "groupme_event_notifications"]
+        
+        for collection_name in collections_to_check:
+            collection = db[collection_name]
+            
+            collection_info = {
+                "document_count": 0,
+                "total_size_bytes": 0,
+                "largest_doc_size_bytes": 0,
+                "largest_doc_id": None,
+                "documents_over_1mb": [],
+                "documents_over_10mb": []
+            }
+            
+            async for doc in collection.find():
+                # Calculate document size in bytes
+                import bson
+                doc_size = len(bson.encode(doc))
+                
+                collection_info["document_count"] += 1
+                collection_info["total_size_bytes"] += doc_size
+                
+                # Track largest document
+                if doc_size > collection_info["largest_doc_size_bytes"]:
+                    collection_info["largest_doc_size_bytes"] = doc_size
+                    collection_info["largest_doc_id"] = str(doc.get("_id", doc.get("id", "unknown")))
+                
+                # Flag large documents
+                if doc_size > 1 * 1024 * 1024:  # 1MB
+                    doc_info = {
+                        "id": str(doc.get("_id", doc.get("id", "unknown"))),
+                        "size_mb": doc_size / (1024 * 1024),
+                        "fields": list(doc.keys())
+                    }
+                    collection_info["documents_over_1mb"].append(doc_info)
+                
+                if doc_size > 10 * 1024 * 1024:  # 10MB
+                    doc_info = {
+                        "id": str(doc.get("_id", doc.get("id", "unknown"))),
+                        "size_mb": doc_size / (1024 * 1024),
+                        "fields": list(doc.keys())
+                    }
+                    collection_info["documents_over_10mb"].append(doc_info)
+                    size_report["warnings"].append(f"Collection '{collection_name}' has document over 10MB: {doc_info['size_mb']:.2f}MB")
+                
+                # MongoDB document limit warning
+                if doc_size > 15 * 1024 * 1024:  # 15MB warning threshold
+                    size_report["warnings"].append(f"CRITICAL: Document in '{collection_name}' is {doc_size / (1024 * 1024):.2f}MB (approaching 16MB limit)")
+            
+            collection_info["average_doc_size_bytes"] = collection_info["total_size_bytes"] / max(collection_info["document_count"], 1)
+            size_report["collections"][collection_name] = collection_info
+            size_report["total_size_mb"] += collection_info["total_size_bytes"] / (1024 * 1024)
+        
+        # Generate summary warnings
+        if size_report["total_size_mb"] > 100:
+            size_report["warnings"].append(f"Total database size is {size_report['total_size_mb']:.2f}MB - consider cleanup")
+        
+        # Find collections with base64 data
+        for collection_name, info in size_report["collections"].items():
+            if info["largest_doc_size_bytes"] > 5 * 1024 * 1024:  # 5MB+
+                size_report["warnings"].append(f"Collection '{collection_name}' has large documents - may contain base64 images")
+        
+        logger.info(f"📏 Document size check completed: {size_report['total_size_mb']:.2f}MB total, {len(size_report['warnings'])} warnings")
+        
+        return {
+            "success": True,
+            "size_report": size_report
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error checking document sizes: {e}")
+        raise HTTPException(status_code=500, detail=f"Document size check failed: {str(e)}")
+
 @api_router.get("/admin/database-info")
 async def get_database_info():
     """Get database size information for troubleshooting"""
