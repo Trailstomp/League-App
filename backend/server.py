@@ -359,7 +359,7 @@ async def update_players(players_data: List[Dict[str, Any]]):
 
 @api_router.post("/player-photo-upload")
 async def upload_player_photo(file: UploadFile = File(...)):
-    """Upload a player photo to Google Drive and return URL"""
+    """Upload a player photo to Google Drive with organized folder structure"""
     try:
         logger.info(f"📸 Player photo upload started - File: {file.filename}")
         
@@ -386,22 +386,26 @@ async def upload_player_photo(file: UploadFile = File(...)):
             raise HTTPException(status_code=400, detail="Google Drive not authorized")
         
         refresh_token = google_drive_config["refreshToken"]
-        folder_id = google_drive_config.get("folderId")
+        main_folder_id = google_drive_config.get("folderId")
         
         # Get fresh access token
         access_token = await get_fresh_access_token(google_drive_config, refresh_token)
+        
+        # Create or get "Player Images" folder
+        player_folder_id = await create_organized_folder(access_token, main_folder_id, "Player Images")
+        logger.info(f"📁 Player Images folder ID: {player_folder_id}")
         
         # Generate unique filename
         file_extension = os.path.splitext(file.filename)[1] if file.filename else '.jpg'
         unique_filename = f"player_photo_{uuid.uuid4()}{file_extension}"
         
-        # Upload to Google Drive
+        # Upload to Google Drive in Player Images folder
         upload_url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
         
-        # Create metadata
+        # Create metadata - upload to Player Images folder
         metadata = {
             'name': unique_filename,
-            'parents': [folder_id] if folder_id else []
+            'parents': [player_folder_id]  # Upload to Player Images folder
         }
         
         # Create multipart data
