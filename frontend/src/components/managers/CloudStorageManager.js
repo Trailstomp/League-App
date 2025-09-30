@@ -471,66 +471,6 @@ const CloudStorageManager = ({ teams = [] }) => {
                 </div>
             )}
 
-            {/* Storage Behavior Settings */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Storage Behavior Settings</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Thumbnail Cache Size (KB)
-                        </label>
-                        <input
-                            type="number"
-                            value={config.thumbnailCacheSize}
-                            onChange={(e) => updateConfig('thumbnailCacheSize', parseInt(e.target.value))}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            min="50"
-                            max="500"
-                        />
-                        <p className="text-xs text-slate-500 mt-1">
-                            Small thumbnails cached in database for fast loading
-                        </p>
-                    </div>
-                    
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Max File Size (MB)
-                        </label>
-                        <input
-                            type="number"
-                            value={config.maxFileSize}
-                            onChange={(e) => updateConfig('maxFileSize', parseInt(e.target.value))}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            min="10"
-                            max="500"
-                        />
-                        <p className="text-xs text-slate-500 mt-1">
-                            Maximum file size for uploads
-                        </p>
-                    </div>
-                    
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                            Status
-                        </label>
-                        <div className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                            config.activeProvider === 'none' 
-                                ? 'bg-red-100 text-red-700'
-                                : config.googleCloud?.enabled 
-                                    ? 'bg-green-100 text-green-700'
-                                    : 'bg-yellow-100 text-yellow-700'
-                        }`}>
-                            {config.activeProvider === 'none' 
-                                ? 'Cloud Storage Disabled'
-                                : config.googleCloud?.enabled 
-                                    ? 'Google Cloud Storage Active'
-                                    : 'Configuration Incomplete'
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             {/* Warning for disabled storage */}
             {config.activeProvider === 'none' && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-6">
