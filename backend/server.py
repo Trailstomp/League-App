@@ -3424,6 +3424,194 @@ async def debug_google_drive_config():
         logger.error(f"❌ Error debugging Google Drive: {e}")
         raise HTTPException(status_code=500, detail=f"Debug failed: {str(e)}")
 
+@api_router.post("/team-logo-upload")
+async def upload_team_logo(file: UploadFile = File(...)):
+    """Upload a team logo to Google Drive with organized folder structure"""
+    try:
+        logger.info(f"🏆 Team logo upload started - File: {file.filename}")
+        
+        # Validate file type
+        if not file.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="File must be an image")
+        
+        # Check file size (5MB limit)
+        content = await file.read()
+        file_size = len(content)
+        
+        if file_size > 5 * 1024 * 1024:  # 5MB
+            raise HTTPException(status_code=400, detail="File size must be less than 5MB")
+        
+        # Get Google Drive configuration
+        config = await db.cloud_storage.find_one({"id": "main_cloud_storage"})
+        
+        if not config:
+            raise HTTPException(status_code=400, detail="Google Drive not configured")
+            
+        google_drive_config = config.get("googleDrive", {})
+        
+        if not google_drive_config.get("refreshToken"):
+            raise HTTPException(status_code=400, detail="Google Drive not authorized")
+        
+        refresh_token = google_drive_config["refreshToken"]
+        main_folder_id = google_drive_config.get("folderId")
+        
+        # Get fresh access token
+        access_token = await get_fresh_access_token(google_drive_config, refresh_token)
+        
+        # Create or get "Team Images" folder
+        team_folder_id = await create_organized_folder(access_token, main_folder_id, "Team Images")
+        logger.info(f"📁 Team Images folder ID: {team_folder_id}")
+        
+        # Generate unique filename
+        file_extension = os.path.splitext(file.filename)[1] if file.filename else '.jpg'
+        unique_filename = f"team_logo_{uuid.uuid4()}{file_extension}"
+        
+        # Upload to Google Drive in Team Images folder
+        upload_url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
+        
+        # Create metadata - upload to Team Images folder
+        metadata = {
+            'name': unique_filename,
+            'parents': [team_folder_id]  # Upload to Team Images folder
+        }
+        
+        # Create multipart data
+        files_data = {
+            'metadata': (None, json.dumps(metadata), 'application/json'),
+            'file': (file.filename, content, file.content_type)
+        }
+        
+        headers = {'Authorization': f'Bearer {access_token}'}
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.post(upload_url, headers=headers, files=files_data)
+        
+        if response.status_code != 200:
+            logger.error(f"❌ Google Drive upload failed: {response.status_code} - {response.text}")
+            raise HTTPException(status_code=500, detail=f"Upload failed: {response.text}")
+        
+        file_data = response.json()
+        file_id = file_data['id']
+        
+        # Make file publicly viewable with enhanced error handling
+        permissions_url = f"https://www.googleapis.com/drive/v3/files/{file_id}/permissions"
+        permission_data = {
+            'role': 'reader',
+            'type': 'anyone'
+        }
+        
+        async with httpx.AsyncClient() as client:
+            permissions_response = await client.post(
+                permissions_url,
+                headers=headers,
+                json=permission_data
+            )
+        
+        if permissions_response.status_code != 200:
+            logger.error(f"⚠️ Failed to set public permissions on team logo {file_id}: {permissions_response.status_code} - {permissions_response.text}")
+            # Continue anyway - file is uploaded, just may not be publicly accessible
+        else:
+            logger.info(f"✅ Team logo {file_id} set to public access")
+        
+        # Generate public URL
+        photo_url = f"https://drive.google.com/uc?id={file_id}"
+        
+        # Test if the URL is accessible
+        try:
+            async with httpx.AsyncClient() as client:
+                test_response = await client.head(photo_url, timeout=5.0)
+                if test_response.status_code == 200:
+                    logger.info(f"✅ Team logo URL is publicly accessible: {photo_url}")
+                else:
+                    logger.warning(f"⚠️ Team logo URL may not be accessible: {test_response.status_code}")
+        except Exception as url_test_error:
+            logger.warning(f"⚠️ Could not verify team logo URL accessibility: {url_test_error}")
+        
+        logger.info(f"✅ Team logo uploaded successfully - ID: {file_id}")
+        
+        return {
+            "success": True,
+            "photo_url": photo_url,
+            "filename": unique_filename,
+            "file_size": file_size,
+            "file_id": file_id
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error uploading team logo: {e}")
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+
+# Helper function to create organized folders like "Player Images" and "Team Images"
+async def create_organized_folder(access_token: str, main_folder_id: str, folder_name: str) -> str:
+    """Create or get an organized folder (Player Images, Team Images) in Google Drive"""
+    try:
+        # First check if the folder already exists
+        search_url = f"https://www.googleapis.com/drive/v3/files?q=name='{folder_name}' and parents in '{main_folder_id}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+        
+        headers = {'Authorization': f'Bearer {access_token}'}
+        
+        async with httpx.AsyncClient() as client:
+            search_response = await client.get(search_url, headers=headers)
+        
+        if search_response.status_code == 200:
+            search_data = search_response.json()
+            files = search_data.get('files', [])
+            
+            if files:
+                existing_folder_id = files[0]['id']
+                logger.info(f"📁 Found existing {folder_name} folder: {existing_folder_id}")
+                return existing_folder_id
+        
+        # Create the folder if it doesn't exist
+        create_folder_url = "https://www.googleapis.com/drive/v3/files"
+        folder_metadata = {
+            'name': folder_name,
+            'parents': [main_folder_id] if main_folder_id else [],
+            'mimeType': 'application/vnd.google-apps.folder'
+        }
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                create_folder_url,
+                headers=headers,
+                json=folder_metadata
+            )
+        
+        if response.status_code == 200:
+            folder_data = response.json()
+            folder_id = folder_data['id']
+            
+            # Make folder publicly accessible
+            permissions_url = f"https://www.googleapis.com/drive/v3/files/{folder_id}/permissions"
+            permission_data = {
+                'role': 'reader',
+                'type': 'anyone'
+            }
+            
+            async with httpx.AsyncClient() as client:
+                permission_response = await client.post(
+                    permissions_url,
+                    headers=headers,
+                    json=permission_data
+                )
+            
+            if permission_response.status_code == 200:
+                logger.info(f"✅ Created and shared {folder_name} folder: {folder_id}")
+            else:
+                logger.warning(f"⚠️ {folder_name} folder created but sharing failed: {permission_response.status_code}")
+            
+            return folder_id
+        else:
+            logger.error(f"❌ Failed to create {folder_name} folder: {response.status_code} - {response.text}")
+            raise Exception(f"Could not create {folder_name} folder")
+            
+    except Exception as e:
+        logger.error(f"❌ Error creating {folder_name} folder: {e}")
+        # Return main folder as fallback
+        return main_folder_id if main_folder_id else ""
+
 @api_router.post("/admin/test-drive-upload")
 async def cleanup_base64_images():
     """Clean up base64 images from database to reduce bloat"""
