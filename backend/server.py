@@ -3334,7 +3334,79 @@ async def get_collections():
         logger.error(f"Error getting collections: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@api_router.post("/admin/cleanup/base64-images")
+@api_router.get("/admin/google-drive-debug")
+async def debug_google_drive_config():
+    """Debug Google Drive configuration for production issues"""
+    try:
+        # Get Google Drive configuration
+        api_integration_doc = await db.api_integrations.find_one({"service": "google_drive"})
+        
+        if not api_integration_doc:
+            return {
+                "status": "error",
+                "message": "Google Drive not configured",
+                "has_config": False
+            }
+        
+        google_drive_config = api_integration_doc.get("config", {})
+        
+        # Check configuration without exposing sensitive data
+        debug_info = {
+            "has_config": True,
+            "has_refresh_token": bool(google_drive_config.get("refreshToken")),
+            "has_access_token": bool(google_drive_config.get("accessToken")),
+            "has_client_id": bool(google_drive_config.get("clientId")),
+            "has_client_secret": bool(google_drive_config.get("clientSecret")),
+            "refresh_token_length": len(google_drive_config.get("refreshToken", "")) if google_drive_config.get("refreshToken") else 0,
+            "access_token_length": len(google_drive_config.get("accessToken", "")) if google_drive_config.get("accessToken") else 0,
+            "config_keys": list(google_drive_config.keys()),
+        }
+        
+        # Test if we can get a valid access token
+        try:
+            if google_drive_config.get("refreshToken"):
+                refresh_token = google_drive_config["refreshToken"]
+                client_id = google_drive_config.get("clientId")
+                client_secret = google_drive_config.get("clientSecret")
+                
+                if client_id and client_secret:
+                    # Try to refresh the access token
+                    token_data = {
+                        'grant_type': 'refresh_token',
+                        'refresh_token': refresh_token,
+                        'client_id': client_id,
+                        'client_secret': client_secret,
+                    }
+                    
+                    async with httpx.AsyncClient() as client:
+                        response = await client.post('https://oauth2.googleapis.com/token', data=token_data)
+                    
+                    if response.status_code == 200:
+                        debug_info["token_refresh_test"] = "✅ SUCCESS"
+                        token_response = response.json()
+                        debug_info["new_access_token_received"] = bool(token_response.get("access_token"))
+                    else:
+                        debug_info["token_refresh_test"] = f"❌ FAILED: {response.status_code}"
+                        debug_info["token_error"] = response.text[:200]
+                else:
+                    debug_info["token_refresh_test"] = "❌ Missing client credentials"
+            else:
+                debug_info["token_refresh_test"] = "❌ No refresh token"
+        except Exception as e:
+            debug_info["token_refresh_test"] = f"❌ ERROR: {str(e)}"
+        
+        logger.info(f"🔧 Google Drive debug: {debug_info}")
+        
+        return {
+            "status": "success",
+            "debug_info": debug_info
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error debugging Google Drive: {e}")
+        raise HTTPException(status_code=500, detail=f"Debug failed: {str(e)}")
+
+@api_router.post("/admin/test-drive-upload")
 async def cleanup_base64_images():
     """Clean up base64 images from database to reduce bloat"""
     try:
