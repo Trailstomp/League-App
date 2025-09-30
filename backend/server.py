@@ -3338,21 +3338,34 @@ async def get_collections():
 async def debug_google_drive_config():
     """Debug Google Drive configuration for production issues"""
     try:
-        # Get Google Drive configuration
-        api_integration_doc = await db.api_integrations.find_one({"service": "google_drive"})
+        # Get Google Drive configuration from cloud_storage collection (not api_integrations)
+        cloud_storage_doc = await db.cloud_storage.find_one({"id": "main_cloud_storage"})
         
-        if not api_integration_doc:
+        if not cloud_storage_doc:
             return {
                 "status": "error",
-                "message": "Google Drive not configured",
-                "has_config": False
+                "message": "Cloud storage not configured",
+                "has_config": False,
+                "checked_collection": "cloud_storage"
             }
         
-        google_drive_config = api_integration_doc.get("config", {})
+        google_drive_config = cloud_storage_doc.get("googleDrive", {})
+        
+        if not google_drive_config:
+            return {
+                "status": "error", 
+                "message": "Google Drive not configured in cloud storage",
+                "has_config": False,
+                "cloud_storage_exists": True,
+                "active_provider": cloud_storage_doc.get("activeProvider"),
+                "available_configs": list(cloud_storage_doc.keys())
+            }
         
         # Check configuration without exposing sensitive data
         debug_info = {
             "has_config": True,
+            "active_provider": cloud_storage_doc.get("activeProvider"),
+            "google_drive_enabled": google_drive_config.get("enabled", False),
             "has_refresh_token": bool(google_drive_config.get("refreshToken")),
             "has_access_token": bool(google_drive_config.get("accessToken")),
             "has_client_id": bool(google_drive_config.get("clientId")),
@@ -3360,6 +3373,7 @@ async def debug_google_drive_config():
             "refresh_token_length": len(google_drive_config.get("refreshToken", "")) if google_drive_config.get("refreshToken") else 0,
             "access_token_length": len(google_drive_config.get("accessToken", "")) if google_drive_config.get("accessToken") else 0,
             "config_keys": list(google_drive_config.keys()),
+            "redirect_uri": google_drive_config.get("redirectUri", "Not set"),
         }
         
         # Test if we can get a valid access token
