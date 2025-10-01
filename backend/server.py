@@ -2888,6 +2888,84 @@ async def _process_groupme_message(webhook_data: dict):
     except Exception as e:
         logger.error(f"Error processing GroupMe message: {str(e)}")
 
+async def _check_for_rsvp_keywords(text: str, webhook_data: dict, channel: dict):
+    """Check if message contains RSVP keywords and process automatically"""
+    try:
+        text_lower = text.lower().strip()
+        user_id = str(webhook_data.get("user_id", webhook_data.get("sender_id")))
+        user_name = webhook_data.get("name", "Unknown")
+        
+        # Determine RSVP response from keywords
+        rsvp_response = None
+        if any(keyword in text_lower for keyword in ['going', 'yes', 'count me in', 'i\'m in', 'ill be there']):
+            rsvp_response = 'going'
+        elif any(keyword in text_lower for keyword in ['maybe', 'might', 'possibly', 'tentative']):
+            rsvp_response = 'maybe'
+        elif any(keyword in text_lower for keyword in ['no', 'not going', 'cant go', 'can\'t go', 'won\'t make it', 'unable']):
+            rsvp_response = 'not_going'
+        
+        if not rsvp_response:
+            return
+        
+        # Find the most recent event notification in this channel
+        recent_notification = await db.groupme_messages.find_one(
+            {
+                "channel_id": channel["id"],
+                "notification_type": {"$exists": True},
+                "event_id": {"$exists": True}
+            },
+            sort=[("created_at", -1)]
+        )
+        
+        if not recent_notification or not recent_notification.get("event_id"):
+            logger.info(f"No recent event found for RSVP keyword from {user_name}")
+            return
+        
+        event_id = recent_notification["event_id"]
+        
+        # Create or update RSVP
+        existing_rsvp = await db.event_rsvps.find_one({
+            "event_id": event_id,
+            "user_id": user_id
+        })
+        
+        rsvp_record = {
+            "event_id": event_id,
+            "user_id": user_id,
+            "response": rsvp_response,
+            "user_name": user_name,
+            "updated_at": datetime.utcnow().isoformat(),
+            "via_groupme": True
+        }
+        
+        if existing_rsvp:
+            await db.event_rsvps.update_one(
+                {"event_id": event_id, "user_id": user_id},
+                {"$set": rsvp_record}
+            )
+            action = "updated"
+        else:
+            rsvp_record['id'] = str(uuid.uuid4())
+            rsvp_record['created_at'] = datetime.utcnow().isoformat()
+            await db.event_rsvps.insert_one(rsvp_record)
+            action = "recorded"
+        
+        logger.info(f"✅ RSVP {action} via GroupMe: {user_name} -> {rsvp_response} for event {event_id}")
+        
+        # Send confirmation message
+        response_emojis = {
+            'going': '✅',
+            'maybe': '❓',
+            'not_going': '❌'
+        }
+        confirmation = f"{response_emojis[rsvp_response]} Got it {user_name}! Your RSVP has been {action}."
+        
+        if channel.get('groupme_bot_id'):
+            await _send_groupme_message(channel['groupme_bot_id'], confirmation)
+        
+    except Exception as e:
+        logger.error(f"Error checking RSVP keywords: {e}")
+
 async def _process_groupme_command(text: str, webhook_data: dict, channel: dict, message_data: dict):
     """Process GroupMe command"""
     
