@@ -138,87 +138,68 @@ const TeamAdminPage = ({ currentUser }) => {
 };
 
 // Team-specific wrapper components that fetch filtered data
+// Placeholder components until managers are properly integrated
 const TeamGalleryManager = ({ teamId, teamName }) => {
-    const [galleries, setGalleries] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
-
-    useEffect(() => {
-        loadGalleries();
-    }, [teamId]);
-
-    const loadGalleries = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch(`${BACKEND_URL}/api/team/${teamId}/galleries`);
-            if (response.ok) {
-                const data = await response.json();
-                setGalleries(data.galleries || []);
-            }
-        } catch (error) {
-            console.error('Error loading team galleries:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) return <div className="text-center py-8">Loading galleries...</div>;
-
     return (
-        <div>
-            <div className="mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">{teamName} - Media Gallery</h2>
-                <p className="text-gray-600">Manage your team's photo galleries and media</p>
+        <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">{teamName} - Media Gallery</h2>
+            <p className="text-gray-600 mb-4">Manage your team's photo galleries and media</p>
+            <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                <p className="text-blue-800">📸 Gallery management coming soon!</p>
+                <p className="text-sm text-gray-600 mt-2">Team ID: {teamId}</p>
             </div>
-            <GalleryManager initialGalleries={galleries} teamId={teamId} />
         </div>
     );
 };
 
 const TeamNewsManager = ({ teamId, teamName }) => {
     return (
-        <div>
-            <div className="mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">{teamName} - News</h2>
-                <p className="text-gray-600">Post team announcements and updates</p>
+        <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">{teamName} - News</h2>
+            <p className="text-gray-600 mb-4">Post team announcements and updates</p>
+            <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                <p className="text-blue-800">📰 News management coming soon!</p>
+                <p className="text-sm text-gray-600 mt-2">Team ID: {teamId}</p>
             </div>
-            <NewsManager teamId={teamId} />
         </div>
     );
 };
 
 const TeamLocationManager = ({ teamId, teamName }) => {
     return (
-        <div>
-            <div className="mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">{teamName} - Locations</h2>
-                <p className="text-gray-600">Manage practice and game locations</p>
+        <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">{teamName} - Locations</h2>
+            <p className="text-gray-600 mb-4">Manage practice and game locations</p>
+            <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                <p className="text-blue-800">📍 Location management coming soon!</p>
+                <p className="text-sm text-gray-600 mt-2">Team ID: {teamId}</p>
             </div>
-            <LocationManager teamId={teamId} />
         </div>
     );
 };
 
 const TeamPlayerManager = ({ teamId, teamName }) => {
     return (
-        <div>
-            <div className="mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">{teamName} - Roster</h2>
-                <p className="text-gray-600">Manage your team's player roster</p>
+        <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">{teamName} - Roster</h2>
+            <p className="text-gray-600 mb-4">Manage your team's player roster</p>
+            <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                <p className="text-blue-800">👥 Player management coming soon!</p>
+                <p className="text-sm text-gray-600 mt-2">Team ID: {teamId}</p>
             </div>
-            <PlayerManager teamId={teamId} />
         </div>
     );
 };
 
 const TeamUserManager = ({ teamId, teamName }) => {
     return (
-        <div>
-            <div className="mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">{teamName} - Users & Security</h2>
-                <p className="text-gray-600">Manage team coaches, parents, and user access</p>
+        <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">{teamName} - Users & Security</h2>
+            <p className="text-gray-600 mb-4">Manage team coaches, parents, and user access</p>
+            <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                <p className="text-blue-800">👤 User management coming soon!</p>
+                <p className="text-sm text-gray-600 mt-2">Team ID: {teamId}</p>
             </div>
-            <UserManager teamId={teamId} />
         </div>
     );
 };
@@ -250,12 +231,20 @@ const TeamChatManager = ({ teamId, teamName, currentUser }) => {
     if (loading) return <div className="text-center py-8">Loading chat...</div>;
 
     return (
-        <div>
-            <div className="mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">{teamName} - Team Chat</h2>
-                <p className="text-gray-600">Team and league chat channels</p>
+        <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">{teamName} - Team Chat</h2>
+            <p className="text-gray-600 mb-4">Team and league chat channels</p>
+            <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                <p className="text-blue-800">💬 Chat interface coming soon!</p>
+                <p className="text-sm text-gray-600 mt-2">
+                    Found {channels.length} channel(s) for this team
+                </p>
+                {channels.map(ch => (
+                    <div key={ch.id} className="text-sm text-gray-700 mt-1">
+                        • {ch.name} ({ch.channel_type})
+                    </div>
+                ))}
             </div>
-            <GroupMeChatUnified currentUser={currentUser} availableChannels={channels} />
         </div>
     );
 };
