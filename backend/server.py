@@ -1410,75 +1410,77 @@ async def complete_google_drive_auth(data: Dict[str, Any]):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.post("/cloud-storage/google-drive/upload-json")
-async def upload_json_to_google_drive(data: Dict[str, Any]):
-    """Upload JSON data to Google Drive"""
+async def process_google_credentials_file(file: UploadFile = File(...)):
+    """Process Google OAuth credentials JSON file and configure Google Drive"""
     try:
-        json_data = data.get("jsonData")
-        filename = data.get("filename", "league_data.json")
+        logger.info(f"📤 Processing Google credentials file: {file.filename}")
         
-        if not json_data:
-            raise HTTPException(status_code=400, detail="JSON data is required")
+        # Read and parse the JSON file
+        content = await file.read()
+        credentials_data = json.loads(content.decode('utf-8'))
         
-        logger.info(f"📤 Uploading JSON file to Google Drive: {filename}")
+        # Extract credentials from the JSON structure
+        # Google OAuth credentials file has either "web" or "installed" key
+        client_data = credentials_data.get('web') or credentials_data.get('installed')
         
-        # Get Google Drive configuration
+        if not client_data:
+            raise HTTPException(
+                status_code=400, 
+                detail="Invalid Google OAuth credentials file. Expected 'web' or 'installed' key."
+            )
+        
+        client_id = client_data.get('client_id')
+        client_secret = client_data.get('client_secret')
+        redirect_uris = client_data.get('redirect_uris', [])
+        
+        if not client_id or not client_secret:
+            raise HTTPException(
+                status_code=400,
+                detail="Missing client_id or client_secret in credentials file"
+            )
+        
+        # Get or create cloud storage config
         config = await db.cloud_storage.find_one({"id": "main_cloud_storage"})
         
         if not config:
-            raise HTTPException(status_code=400, detail="Google Drive not configured")
-            
-        google_drive_config = config.get("googleDrive", {})
+            config = {
+                "id": "main_cloud_storage",
+                "googleDrive": {
+                    "enabled": False,
+                    "folderName": "MLBL Gallery"
+                }
+            }
         
-        if not google_drive_config.get("refreshToken"):
-            raise HTTPException(status_code=400, detail="Google Drive not authorized")
+        # Update Google Drive configuration with credentials
+        if "googleDrive" not in config:
+            config["googleDrive"] = {}
         
-        refresh_token = google_drive_config["refreshToken"]
-        main_folder_id = google_drive_config.get("folderId")
+        config["googleDrive"]["clientId"] = client_id
+        config["googleDrive"]["clientSecret"] = client_secret
+        config["googleDrive"]["redirectUri"] = redirect_uris[0] if redirect_uris else "https://app-takeover.emergent.host"
+        config["lastUpdated"] = datetime.utcnow()
         
-        # Get fresh access token
-        access_token = await get_fresh_access_token(google_drive_config, refresh_token)
+        # Save to database
+        await db.cloud_storage.replace_one(
+            {"id": "main_cloud_storage"},
+            config,
+            upsert=True
+        )
         
-        # Convert JSON data to string
-        json_string = json.dumps(json_data, indent=2)
-        json_bytes = json_string.encode('utf-8')
-        
-        # Upload to Google Drive
-        upload_url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
-        
-        metadata = {
-            'name': filename,
-            'parents': [main_folder_id] if main_folder_id else [],
-            'mimeType': 'application/json'
-        }
-        
-        files_data = {
-            'metadata': (None, json.dumps(metadata), 'application/json'),
-            'file': (filename, json_bytes, 'application/json')
-        }
-        
-        headers = {'Authorization': f'Bearer {access_token}'}
-        
-        async with httpx.AsyncClient() as client:
-            response = await client.post(upload_url, headers=headers, files=files_data)
-        
-        if response.status_code != 200:
-            logger.error(f"❌ JSON upload to Google Drive failed: {response.status_code} - {response.text}")
-            raise HTTPException(status_code=500, detail=f"Upload failed: {response.text}")
-        
-        file_data = response.json()
-        file_id = file_data['id']
-        
-        logger.info(f"✅ JSON file uploaded to Google Drive with ID: {file_id}")
+        logger.info(f"✅ Google credentials configured successfully")
         
         return {
             "status": "success",
-            "message": "JSON file uploaded successfully",
-            "fileId": file_id,
-            "filename": filename
+            "message": "Google OAuth credentials configured successfully!",
+            "nextStep": "Click 'Authorize Google Drive' to complete the setup",
+            "clientId": client_id[:20] + "..." if len(client_id) > 20 else client_id
         }
         
+    except json.JSONDecodeError as e:
+        logger.error(f"❌ Invalid JSON file: {e}")
+        raise HTTPException(status_code=400, detail="Invalid JSON file format")
     except Exception as e:
-        logger.error(f"❌ Error uploading JSON to Google Drive: {e}")
+        logger.error(f"❌ Error processing Google credentials: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # Helper function to create gallery folder in Google Drive
