@@ -538,8 +538,8 @@ const BasicInfoTab = ({ editingTeam, handleInputChange, seasons, currentSeason }
 );
 
 // Team Style Tab with Advanced Color Picker and Smart Color Extraction
-const TeamStyleTab = ({ editingTeam, handleStyleChange, uploadingLogo, setUploadingLogo }) => {
-    // CRITICAL FIX: Add null check for editingTeam
+const TeamStyleTab = ({ editingTeam, handleStyleChange, uploadingLogo = false, setUploadingLogo = () => {} }) => {
+    // CRITICAL FIX: Add null check for editingTeam and default values for upload state
     const teamStyle = (editingTeam && editingTeam.style) ? editingTeam.style : {};
     const [extractedColors, setExtractedColors] = useState([]);
     const [showCropTool, setShowCropTool] = useState(false);
