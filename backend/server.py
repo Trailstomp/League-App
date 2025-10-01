@@ -2895,6 +2895,80 @@ async def _process_groupme_message(webhook_data: dict):
     except Exception as e:
         logger.error(f"Error processing GroupMe message: {str(e)}")
 
+async def _process_rsvp_button_vote(webhook_data: dict, channel: dict, poll_attachment: dict):
+    """Process RSVP button click from GroupMe poll"""
+    try:
+        vote_option_id = poll_attachment.get("vote", "")
+        user_id = str(webhook_data.get("user_id", webhook_data.get("sender_id")))
+        user_name = webhook_data.get("name", "Unknown")
+        
+        # Parse the vote option ID to get event ID and response
+        # Format: rsvp_{response}_{event_id}
+        if not vote_option_id.startswith("rsvp_"):
+            return
+        
+        parts = vote_option_id.split("_", 2)
+        if len(parts) < 3:
+            return
+        
+        response_type = parts[1]  # going, maybe, no
+        event_id = parts[2]
+        
+        # Map response type to our RSVP format
+        rsvp_mapping = {
+            "going": "going",
+            "maybe": "maybe",
+            "no": "not_going"
+        }
+        
+        rsvp_response = rsvp_mapping.get(response_type)
+        if not rsvp_response:
+            return
+        
+        # Create or update RSVP
+        existing_rsvp = await db.event_rsvps.find_one({
+            "event_id": event_id,
+            "user_id": user_id
+        })
+        
+        rsvp_record = {
+            "event_id": event_id,
+            "user_id": user_id,
+            "response": rsvp_response,
+            "user_name": user_name,
+            "updated_at": datetime.utcnow().isoformat(),
+            "via_groupme": True,
+            "via_button": True
+        }
+        
+        if existing_rsvp:
+            await db.event_rsvps.update_one(
+                {"event_id": event_id, "user_id": user_id},
+                {"$set": rsvp_record}
+            )
+            action = "updated"
+        else:
+            rsvp_record['id'] = str(uuid.uuid4())
+            rsvp_record['created_at'] = datetime.utcnow().isoformat()
+            await db.event_rsvps.insert_one(rsvp_record)
+            action = "recorded"
+        
+        logger.info(f"✅ RSVP {action} via button: {user_name} -> {rsvp_response} for event {event_id}")
+        
+        # Send confirmation message
+        response_emojis = {
+            'going': '✅',
+            'maybe': '❓',
+            'not_going': '❌'
+        }
+        confirmation = f"{response_emojis[rsvp_response]} Thanks {user_name}! Your RSVP has been {action}."
+        
+        if channel.get('groupme_bot_id'):
+            await _send_groupme_message(channel['groupme_bot_id'], confirmation)
+        
+    except Exception as e:
+        logger.error(f"Error processing RSVP button vote: {e}")
+
 async def _check_for_rsvp_keywords(text: str, webhook_data: dict, channel: dict):
     """Check if message contains RSVP keywords and process automatically"""
     try:
