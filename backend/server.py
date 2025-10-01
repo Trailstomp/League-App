@@ -3062,6 +3062,21 @@ async def broadcast_groupme_message(request_data: Dict[str, Any]):
             success = await _send_groupme_message(channel["groupme_bot_id"], message)
             results[channel["name"]] = success
             
+            # Save message to groupme_messages collection so it appears in chat
+            if success:
+                message_record = {
+                    "id": str(uuid.uuid4()),
+                    "channel_id": channel["id"],
+                    "text": message,
+                    "name": "League Bot",
+                    "sender_type": "bot",
+                    "sender_id": channel["groupme_bot_id"],
+                    "created_at": int(datetime.utcnow().timestamp()),
+                    "system": False,
+                    "sent_by_bot": True
+                }
+                await db.groupme_messages.insert_one(message_record)
+            
             # Log notification
             notification = {
                 "id": str(uuid.uuid4()),
