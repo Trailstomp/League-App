@@ -4347,8 +4347,34 @@ async def send_event_notification(event_id: str, notification_data: Dict[str, An
         if not event:
             raise HTTPException(status_code=404, detail="Event not found")
         
-        # Format notification message
-        formatted_message = f"📅 **{event.get('title', 'Event')}**\n{message}"
+        # Format rich notification message with event details
+        event_details = []
+        event_details.append(f"📅 {event.get('title', 'Event')}")
+        event_details.append("=" * 40)
+        
+        # Add date and time
+        if event.get('date'):
+            event_details.append(f"📆 Date: {event.get('date')}")
+        if event.get('time'):
+            event_details.append(f"🕐 Time: {event.get('time')}")
+        
+        # Add location
+        if event.get('location'):
+            event_details.append(f"📍 Location: {event.get('location')}")
+        
+        # Add description if exists
+        if event.get('description'):
+            event_details.append(f"\n{event.get('description')}")
+        
+        # Add RSVP link
+        rsvp_url = f"{BACKEND_URL.replace('/api', '')}/events/{event_id}"
+        event_details.append(f"\n👉 RSVP Here: {rsvp_url}")
+        event_details.append("✅ Going  ❓ Maybe  ❌ Can't Go")
+        
+        formatted_message = "\n".join(event_details)
+        
+        # Get event image URL if exists
+        event_image_url = event.get('imageUrl')
         
         # Send to GroupMe channels if specified
         sent_channels = []
@@ -4356,7 +4382,11 @@ async def send_event_notification(event_id: str, notification_data: Dict[str, An
             for channel_id in channel_ids:
                 channel = await db.groupme_channels.find_one({"id": channel_id, "is_active": True})
                 if channel and channel.get('groupme_bot_id'):
-                    success = await _send_groupme_message(channel['groupme_bot_id'], formatted_message)
+                    success = await _send_groupme_message(
+                        channel['groupme_bot_id'], 
+                        formatted_message,
+                        event_image_url
+                    )
                     if success:
                         sent_channels.append(channel['name'])
                     
