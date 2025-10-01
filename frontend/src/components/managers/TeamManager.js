@@ -36,9 +36,12 @@ const TeamManager = ({ teams, setTeams, websiteStyle = {}, seasons = [], current
     const [activeTab, setActiveTab] = useState('basic'); // 'basic' or 'style'
     const [showCropTool, setShowCropTool] = useState(false);
     const [cropImageUrl, setCropImageUrl] = useState('');
+    const [cropTargetField, setCropTargetField] = useState('');
+    const [uploadingLogo, setUploadingLogo] = useState(false);
 
     // Get form background color from website style or default
     const formBackgroundColor = websiteStyle?.formBackgroundColor || '#f8fafc';
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
     const handleInputChange = useCallback((field, value) => {
         setEditingTeam(prev => ({...prev, [field]: value}));
