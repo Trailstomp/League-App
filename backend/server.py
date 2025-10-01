@@ -3625,28 +3625,25 @@ async def upload_team_logo(file: UploadFile = File(...)):
         else:
             logger.info(f"✅ Team logo {file_id} set to public access")
         
-        # Generate public URL
-        photo_url = f"https://drive.google.com/uc?id={file_id}"
+        # Generate public URL - use thumbnail format for better image loading
+        # The thumbnail format works better for embedding and doesn't require cookies
+        photo_url = f"https://drive.google.com/thumbnail?id={file_id}&sz=w1000"
         
-        # Test if the URL is accessible
-        try:
-            async with httpx.AsyncClient() as client:
-                test_response = await client.head(photo_url, timeout=5.0)
-                if test_response.status_code == 200:
-                    logger.info(f"✅ Team logo URL is publicly accessible: {photo_url}")
-                else:
-                    logger.warning(f"⚠️ Team logo URL may not be accessible: {test_response.status_code}")
-        except Exception as url_test_error:
-            logger.warning(f"⚠️ Could not verify team logo URL accessibility: {url_test_error}")
+        # Also provide alternative URLs in response
+        direct_url = f"https://drive.google.com/uc?id={file_id}"
+        view_url = f"https://drive.google.com/file/d/{file_id}/view"
         
         logger.info(f"✅ Team logo uploaded successfully - ID: {file_id}")
+        logger.info(f"📸 Thumbnail URL: {photo_url}")
         
         return {
             "success": True,
             "photo_url": photo_url,
             "filename": unique_filename,
             "file_size": file_size,
-            "file_id": file_id
+            "file_id": file_id,
+            "direct_url": direct_url,
+            "view_url": view_url
         }
         
     except HTTPException:
