@@ -3146,6 +3146,84 @@ async def upload_image_to_groupme(image_url: str, access_token: str) -> str:
         logger.error(f"Error uploading image to GroupMe: {e}")
         return None
 
+async def _send_groupme_message_with_rsvp(bot_id: str, text: str, event_id: str, image_url: str = None) -> bool:
+    """Send message through GroupMe bot with RSVP poll buttons"""
+    
+    try:
+        # Get GroupMe service using stored credentials
+        groupme_service = await get_groupme_service()
+        if not groupme_service:
+            logger.error("GroupMe service not available - no stored credentials")
+            return False
+        
+        access_token = groupme_service.access_token
+        if not access_token:
+            logger.error("No GroupMe access token available")
+            return False
+        
+        import urllib.request
+        import json
+        
+        url = "https://api.groupme.com/v3/bots/post"
+        
+        attachments = []
+        
+        # Add image attachment if provided
+        if image_url:
+            try:
+                image_service_url = await upload_image_to_groupme(image_url, access_token)
+                if image_service_url:
+                    attachments.append({
+                        "type": "image",
+                        "url": image_service_url
+                    })
+            except Exception as img_error:
+                logger.warning(f"⚠️ Error processing image: {img_error}")
+        
+        # Add RSVP poll attachment with buttons
+        rsvp_poll = {
+            "type": "poll",
+            "subject": "RSVP",
+            "options": [
+                {
+                    "title": "✅ Going",
+                    "id": f"rsvp_going_{event_id}"
+                },
+                {
+                    "title": "❓ Maybe",
+                    "id": f"rsvp_maybe_{event_id}"
+                },
+                {
+                    "title": "❌ Can't Go",
+                    "id": f"rsvp_no_{event_id}"
+                }
+            ],
+            "expiration": None,  # Never expires
+            "multi_vote": False  # Only one selection allowed
+        }
+        
+        attachments.append(rsvp_poll)
+        
+        data = {
+            "bot_id": bot_id,
+            "text": text,
+            "attachments": attachments
+        }
+        
+        request = urllib.request.Request(
+            url,
+            json.dumps(data).encode(),
+            {"Content-Type": "application/json"}
+        )
+        
+        response = urllib.request.urlopen(request)
+        return response.status == 202
+        
+    except Exception as e:
+        logger.error(f"Failed to send GroupMe message with RSVP: {str(e)}")
+        # Fallback to regular message
+        return await _send_groupme_message(bot_id, text, image_url)
+
 async def _send_groupme_message(bot_id: str, text: str, image_url: str = None) -> bool:
     """Send message through GroupMe bot using stored credentials with optional image"""
     
