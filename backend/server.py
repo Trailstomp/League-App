@@ -2872,11 +2872,18 @@ async def _process_groupme_message(webhook_data: dict):
         
         await db.groupme_messages.insert_one(message_data)
         
+        # Check for poll vote (RSVP button click)
+        if webhook_data.get("attachments"):
+            for attachment in webhook_data["attachments"]:
+                if attachment.get("type") == "poll" and "rsvp_" in str(attachment.get("vote")):
+                    await _process_rsvp_button_vote(webhook_data, channel, attachment)
+                    return
+        
         # Process commands
         if text.startswith("/"):
             await _process_groupme_command(text, webhook_data, channel, message_data)
         else:
-            # Check for RSVP keywords
+            # Check for RSVP keywords as fallback
             await _check_for_rsvp_keywords(text, webhook_data, channel)
         
         # Mark message as processed
