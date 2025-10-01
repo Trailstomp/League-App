@@ -3023,8 +3023,8 @@ Examples:
     
     await _send_groupme_message(channel["groupme_bot_id"], help_text)
 
-async def _send_groupme_message(bot_id: str, text: str) -> bool:
-    """Send message through GroupMe bot using stored credentials"""
+async def _send_groupme_message(bot_id: str, text: str, image_url: str = None) -> bool:
+    """Send message through GroupMe bot using stored credentials with optional image"""
     
     try:
         # Get GroupMe service using stored credentials
@@ -3047,6 +3047,15 @@ async def _send_groupme_message(bot_id: str, text: str) -> bool:
             "bot_id": bot_id,
             "text": text
         }
+        
+        # Add image attachment if provided
+        if image_url:
+            # GroupMe requires images to be uploaded to their image service first
+            # For now, we'll include the image URL in attachments
+            data["attachments"] = [{
+                "type": "image",
+                "url": image_url
+            }]
         
         request = urllib.request.Request(
             url,
