@@ -865,9 +865,11 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                                 />
                                 <label 
                                     htmlFor="team-logo-crop"
-                                    className="bg-green-600 text-white px-3 py-2 text-sm rounded hover:bg-green-700 transition-colors cursor-pointer"
+                                    className={`bg-green-600 text-white px-3 py-2 text-sm rounded hover:bg-green-700 transition-colors cursor-pointer ${
+                                        uploadingLogo ? 'opacity-50 cursor-not-allowed' : ''
+                                    }`}
                                 >
-                                    📐 Crop & Upload
+                                    {uploadingLogo ? 'Uploading...' : '📐 Crop & Upload'}
                                 </label>
                             </div>
                         </div>
