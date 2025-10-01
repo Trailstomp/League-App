@@ -859,8 +859,8 @@ async def upload_and_create_gallery(
                     media_item = {
                         "id": str(uuid.uuid4()),
                         "filename": file.filename,
-                        "url": f"https://drive.google.com/uc?id={drive_file_id}",  # Direct download/view URL
-                        "thumbnailUrl": f"{BACKEND_URL}/api/media/drive/{drive_file_id}?size=w300-h300-c",  # Use our proxy for thumbnails
+                        "url": f"https://drive.google.com/thumbnail?id={drive_file_id}&sz=w1000",  # Thumbnail format for better loading
+                        "thumbnailUrl": f"https://drive.google.com/thumbnail?id={drive_file_id}&sz=w400",  # Smaller thumbnail
                         "googleDriveId": drive_file_id,
                         "type": "image" if file.content_type.startswith("image/") else "video" if file.content_type.startswith("video/") else "file",
                         "size": len(file_content),
