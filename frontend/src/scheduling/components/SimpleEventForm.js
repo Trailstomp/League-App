@@ -280,9 +280,21 @@ const SimpleEventForm = ({
                 }
             }
             
+            // Store reminder settings in event
+            if (enableReminders && reminderTiming.length > 0) {
+                eventToSave.reminders = {
+                    enabled: true,
+                    timing: reminderTiming,
+                    channels: notificationChannels
+                };
+            }
+            
             // Send notifications if enabled
             if (sendNotification && notificationChannels.length > 0) {
                 console.log('📢 Sending event notification...');
+                console.log('📢 Channels:', notificationChannels);
+                console.log('📢 Event ID:', eventToSave.id);
+                
                 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
                 try {
                     const notifResponse = await fetch(`${BACKEND_URL}/api/events/${eventToSave.id}/send-notification`, {
@@ -295,12 +307,20 @@ const SimpleEventForm = ({
                         })
                     });
                     
+                    console.log('📢 Notification response status:', notifResponse.status);
+                    
                     if (notifResponse.ok) {
                         const notifResult = await notifResponse.json();
-                        console.log('✅ Notification sent:', notifResult.channels);
+                        console.log('✅ Notification sent:', notifResult);
+                        alert(`Notification sent to ${notifResult.channels?.length || 0} channels!`);
+                    } else {
+                        const errorData = await notifResponse.json();
+                        console.error('❌ Notification failed:', errorData);
+                        alert(`Failed to send notification: ${errorData.detail || 'Unknown error'}`);
                     }
                 } catch (notifError) {
-                    console.error('⚠️ Notification failed:', notifError);
+                    console.error('⚠️ Notification error:', notifError);
+                    alert(`Notification error: ${notifError.message}`);
                 }
             }
 
