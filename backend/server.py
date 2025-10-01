@@ -1260,17 +1260,18 @@ async def update_location(location_id: str, location_data: Dict[str, Any]):
             {"$set": location_data}
         )
         
-        if result.modified_count == 0:
+        if result.matched_count == 0:
             logger.warning(f"⚠️ No location found with id: {location_id}")
             raise HTTPException(status_code=404, detail="Location not found")
         
+        # Fetch and return the updated location
+        updated_location = await db.locations.find_one({"id": location_id})
+        if updated_location:
+            updated_location.pop('_id', None)
+        
         logger.info(f"✅ Location updated successfully: {location_id}")
         
-        return {
-            "status": "success",
-            "message": "Location updated successfully",
-            "modified": result.modified_count
-        }
+        return updated_location
         
     except HTTPException:
         raise
