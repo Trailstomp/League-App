@@ -221,6 +221,8 @@ const TeamManager = ({ teams, setTeams, websiteStyle = {}, seasons = [], current
                     currentSeason={currentSeason}
                     activeTab={activeTab}
                     setActiveTab={setActiveTab}
+                    uploadingLogo={uploadingLogo}
+                    setUploadingLogo={setUploadingLogo}
                 />
             )}
             
