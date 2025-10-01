@@ -3050,12 +3050,20 @@ async def _send_groupme_message(bot_id: str, text: str, image_url: str = None) -
         
         # Add image attachment if provided
         if image_url:
-            # GroupMe requires images to be uploaded to their image service first
-            # For now, we'll include the image URL in attachments
-            data["attachments"] = [{
-                "type": "image",
-                "url": image_url
-            }]
+            try:
+                # GroupMe requires images to be uploaded to their image service first
+                # Upload image to GroupMe image service
+                image_service_url = await upload_image_to_groupme(image_url, access_token)
+                if image_service_url:
+                    data["attachments"] = [{
+                        "type": "image",
+                        "url": image_service_url
+                    }]
+                    logger.info(f"✅ Image attached to GroupMe message: {image_service_url}")
+                else:
+                    logger.warning(f"⚠️ Failed to upload image to GroupMe, sending message without image")
+            except Exception as img_error:
+                logger.warning(f"⚠️ Error processing image for GroupMe: {img_error}")
         
         request = urllib.request.Request(
             url,
