@@ -2553,9 +2553,13 @@ async def create_groupme_channel(
         if existing:
             channel_description = f"{channel_type} channel"
             if channel_type == "team" and team_id:
-                # Get team name for better error message
-                team = await db.teams.find_one({"id": team_id})
-                team_name = team.get("name", "Unknown") if team else "Unknown"
+                # Get team name for better error message from league_data
+                league_doc = await db.league_data.find_one({"id": "main_league"})
+                if league_doc and league_doc.get("teams"):
+                    team = next((t for t in league_doc["teams"] if t.get("id") == team_id), None)
+                    team_name = team.get("name", "Unknown") if team else "Unknown"
+                else:
+                    team_name = "Unknown"
                 channel_description = f"team channel for {team_name}"
             
             raise HTTPException(
