@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-// Import existing manager components
-import GalleryManager from '../components/managers/GalleryManager';
-import NewsManager from '../components/managers/NewsManager';
-import LocationManager from '../components/managers/LocationManager';
-import PlayerManager from '../components/managers/PlayerManager';
-import UserManager from '../components/managers/UserManager';
-import GroupMeChatUnified from '../components/GroupMeChatUnified';
+// Note: Manager components don't exist yet in the expected locations
+// Using placeholder components for now until managers are properly set up
+// import GalleryManager from '../components/managers/GalleryManager';
+// import NewsManager from '../components/managers/NewsManager';
+// import LocationManager from '../components/managers/LocationManager';
+// import PlayerManager from '../components/managers/PlayerManager';
+// import UserManager from '../components/managers/UserManager';
+// import GroupMeChatUnified from '../components/GroupMeChatUnified';
 
 const TeamAdminPage = ({ currentUser }) => {
     const { teamId } = useParams();
