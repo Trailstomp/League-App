@@ -796,6 +796,59 @@ const SimpleEventForm = ({
                     {sendNotification && availableChannels.length === 0 && (
                         <p className="text-sm text-gray-500">No active GroupMe channels found. Configure channels in Admin.</p>
                     )}
+                    
+                    {/* Reminder Settings */}
+                    {sendNotification && (
+                        <div className="mt-4 pt-4 border-t border-blue-200">
+                            <label className="flex items-center space-x-2 mb-3">
+                                <input
+                                    type="checkbox"
+                                    checked={enableReminders}
+                                    onChange={(e) => setEnableReminders(e.target.checked)}
+                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-sm font-medium text-gray-700">Send automatic reminders before event</span>
+                            </label>
+                            
+                            {enableReminders && (
+                                <div className="ml-6 space-y-2">
+                                    <label className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={reminderTiming.includes('24h')}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setReminderTiming([...reminderTiming, '24h']);
+                                                } else {
+                                                    setReminderTiming(reminderTiming.filter(t => t !== '24h'));
+                                                }
+                                            }}
+                                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span className="text-sm text-gray-600">24 hours before</span>
+                                    </label>
+                                    <label className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={reminderTiming.includes('1h')}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setReminderTiming([...reminderTiming, '1h']);
+                                                } else {
+                                                    setReminderTiming(reminderTiming.filter(t => t !== '1h'));
+                                                }
+                                            }}
+                                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span className="text-sm text-gray-600">1 hour before</span>
+                                    </label>
+                                    <p className="text-xs text-gray-500 mt-2">
+                                        ℹ️ Reminders will be sent automatically to selected channels at these times
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
 
