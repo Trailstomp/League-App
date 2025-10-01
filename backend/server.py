@@ -3168,7 +3168,8 @@ async def _send_groupme_message(bot_id: str, text: str, image_url: str = None) -
         
         data = {
             "bot_id": bot_id,
-            "text": text
+            "text": text,
+            "attachments": []
         }
         
         # Add image attachment if provided
@@ -3178,10 +3179,10 @@ async def _send_groupme_message(bot_id: str, text: str, image_url: str = None) -
                 # Upload image to GroupMe image service
                 image_service_url = await upload_image_to_groupme(image_url, access_token)
                 if image_service_url:
-                    data["attachments"] = [{
+                    data["attachments"].append({
                         "type": "image",
                         "url": image_service_url
-                    }]
+                    })
                     logger.info(f"✅ Image attached to GroupMe message: {image_service_url}")
                 else:
                     logger.warning(f"⚠️ Failed to upload image to GroupMe, sending message without image")
