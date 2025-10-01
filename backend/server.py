@@ -4564,26 +4564,19 @@ async def send_event_notification(event_id: str, notification_data: Dict[str, An
         
         # Add date and time
         if event.get('date'):
-            event_details.append(f"📆 Date: {event.get('date')}")
+            event_details.append(f"📆 {event.get('date')}")
         if event.get('time'):
-            event_details.append(f"🕐 Time: {event.get('time')}")
+            event_details.append(f"🕐 {event.get('time')}")
         
         # Add location
         if event.get('location'):
-            event_details.append(f"📍 Location: {event.get('location')}")
+            event_details.append(f"📍 {event.get('location')}")
         
         # Add description if exists
         if event.get('description'):
             event_details.append(f"\n{event.get('description')}")
         
-        # Add RSVP instructions - reply to message
-        event_details.append("\n" + "=" * 40)
-        event_details.append("📝 RSVP by replying to this message:")
-        event_details.append("✅ Reply 'Going' or 'Yes'")
-        event_details.append("❓ Reply 'Maybe'")
-        event_details.append("❌ Reply 'No' or 'Can't go'")
-        event_details.append("")
-        event_details.append(f"View full details: {BACKEND_URL.replace('/api', '')}/events/{event_id}")
+        event_details.append("\n👇 Click below to RSVP")
         
         formatted_message = "\n".join(event_details)
         
@@ -4596,9 +4589,11 @@ async def send_event_notification(event_id: str, notification_data: Dict[str, An
             for channel_id in channel_ids:
                 channel = await db.groupme_channels.find_one({"id": channel_id, "is_active": True})
                 if channel and channel.get('groupme_bot_id'):
-                    success = await _send_groupme_message(
+                    # Send with RSVP buttons
+                    success = await _send_groupme_message_with_rsvp(
                         channel['groupme_bot_id'], 
                         formatted_message,
+                        event_id,
                         event_image_url
                     )
                     if success:
