@@ -551,9 +551,49 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
     }
 
     // Handle crop completion for teams
-    const handleCropComplete = (croppedImageData) => {
+    const handleCropComplete = async (croppedImageData) => {
         console.log('✅ Team crop completed for field:', cropTargetField);
-        handleStyleChange(cropTargetField, croppedImageData);
+        
+        // If it's a logo field, upload to Google Drive
+        if (cropTargetField === 'logoUrl') {
+            try {
+                setUploadingLogo(true);
+                
+                // Convert data URL to blob
+                const response = await fetch(croppedImageData);
+                const blob = await response.blob();
+                
+                // Create form data for upload
+                const formData = new FormData();
+                formData.append('file', blob, 'cropped-logo.png');
+                
+                // Upload to Google Drive
+                const uploadResponse = await fetch(`${BACKEND_URL}/api/team-logo-upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (uploadResponse.ok) {
+                    const result = await uploadResponse.json();
+                    console.log('✅ Cropped team logo uploaded to Google Drive:', result.photo_url);
+                    handleStyleChange(cropTargetField, result.photo_url);
+                } else {
+                    console.error('❌ Cropped team logo upload failed:', uploadResponse.status);
+                    alert('Failed to upload cropped logo. Please try again.');
+                    return;
+                }
+            } catch (error) {
+                console.error('❌ Error uploading cropped team logo:', error);
+                alert('Error uploading cropped logo. Please try again.');
+                return;
+            } finally {
+                setUploadingLogo(false);
+            }
+        } else {
+            // For other fields, use the data URL directly
+            handleStyleChange(cropTargetField, croppedImageData);
+        }
+        
         setShowCropTool(false);
         setCropImageUrl('');
     };
