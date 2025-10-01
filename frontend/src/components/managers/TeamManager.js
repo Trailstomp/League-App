@@ -795,17 +795,39 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                                 <input 
                                     type="file"
                                     accept="image/*"
-                                    onChange={(e) => {
+                                    onChange={async (e) => {
                                         const file = e.target.files[0];
                                         if (file) {
                                             console.log('📸 Team logo upload (direct):', file.name, file.size);
-                                            const reader = new FileReader();
-                                            reader.onload = (e) => {
-                                                const logoData = e.target.result;
-                                                handleStyleChange('logoUrl', logoData);
-                                                console.log('✅ Team logo converted to data URL');
-                                            };
-                                            reader.readAsDataURL(file);
+                                            
+                                            try {
+                                                setUploadingLogo(true);
+                                                
+                                                // Upload to Google Drive using organized folder structure
+                                                const formData = new FormData();
+                                                formData.append('file', file);
+                                                
+                                                const response = await fetch(`${BACKEND_URL}/api/team-logo-upload`, {
+                                                    method: 'POST',
+                                                    body: formData
+                                                });
+                                                
+                                                if (response.ok) {
+                                                    const result = await response.json();
+                                                    console.log('✅ Team logo uploaded to Google Drive:', result.photo_url);
+                                                    
+                                                    // Use the Google Drive URL instead of base64
+                                                    handleStyleChange('logoUrl', result.photo_url);
+                                                } else {
+                                                    console.error('❌ Team logo upload failed:', response.status);
+                                                    alert('Failed to upload team logo. Please try again.');
+                                                }
+                                            } catch (error) {
+                                                console.error('❌ Error uploading team logo:', error);
+                                                alert('Error uploading team logo. Please try again.');
+                                            } finally {
+                                                setUploadingLogo(false);
+                                            }
                                         }
                                     }}
                                     className="hidden"
