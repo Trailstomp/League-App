@@ -3023,6 +3023,48 @@ Examples:
     
     await _send_groupme_message(channel["groupme_bot_id"], help_text)
 
+async def upload_image_to_groupme(image_url: str, access_token: str) -> str:
+    """Upload an image to GroupMe's image service and return the GroupMe URL"""
+    try:
+        import httpx
+        
+        # Download the image
+        async with httpx.AsyncClient() as client:
+            img_response = await client.get(image_url, timeout=10.0)
+            if img_response.status_code != 200:
+                logger.error(f"Failed to download image from {image_url}")
+                return None
+            
+            image_data = img_response.content
+        
+        # Upload to GroupMe image service
+        upload_url = "https://image.groupme.com/pictures"
+        headers = {
+            "X-Access-Token": access_token,
+            "Content-Type": "image/jpeg"
+        }
+        
+        async with httpx.AsyncClient() as client:
+            upload_response = await client.post(
+                upload_url,
+                headers=headers,
+                content=image_data,
+                timeout=15.0
+            )
+            
+            if upload_response.status_code == 200:
+                result = upload_response.json()
+                groupme_image_url = result.get('payload', {}).get('url')
+                logger.info(f"✅ Image uploaded to GroupMe: {groupme_image_url}")
+                return groupme_image_url
+            else:
+                logger.error(f"GroupMe image upload failed: {upload_response.status_code}")
+                return None
+                
+    except Exception as e:
+        logger.error(f"Error uploading image to GroupMe: {e}")
+        return None
+
 async def _send_groupme_message(bot_id: str, text: str, image_url: str = None) -> bool:
     """Send message through GroupMe bot using stored credentials with optional image"""
     
