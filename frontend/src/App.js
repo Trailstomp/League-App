@@ -395,6 +395,28 @@ function App() {
             onNavigate={handleNavigate}
           />
         );
+      case 'team-admin':
+        // Check if user has team admin or coach role
+        if (!currentUser || (!currentUser.team_id && !isAdmin(currentUser))) {
+          return (
+            <div className="text-center py-16">
+              <h2 className="text-2xl font-bold text-slate-800 mb-4">Access Denied</h2>
+              <p className="text-slate-600 mb-4">You must be a team coach to view this page.</p>
+              <button 
+                onClick={handleShowLogin}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Login
+              </button>
+            </div>
+          );
+        }
+        return (
+          <TeamAdminPage 
+            currentUser={currentUser}
+            teamId={selectedTeam?.id || currentUser.team_id}
+          />
+        );
       default:
         console.log('🔄 Rendering default (HomePage)');
         return <HomePage teams={teams} currentUser={currentUser} />;
