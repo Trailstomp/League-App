@@ -2875,6 +2875,9 @@ async def _process_groupme_message(webhook_data: dict):
         # Process commands
         if text.startswith("/"):
             await _process_groupme_command(text, webhook_data, channel, message_data)
+        else:
+            # Check for RSVP keywords
+            await _check_for_rsvp_keywords(text, webhook_data, channel)
         
         # Mark message as processed
         await db.groupme_messages.update_one(
