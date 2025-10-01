@@ -4416,10 +4416,14 @@ async def send_event_notification(event_id: str, notification_data: Dict[str, An
         if event.get('description'):
             event_details.append(f"\n{event.get('description')}")
         
-        # Add RSVP link
-        rsvp_url = f"{BACKEND_URL.replace('/api', '')}/events/{event_id}"
-        event_details.append(f"\n👉 RSVP Here: {rsvp_url}")
-        event_details.append("✅ Going  ❓ Maybe  ❌ Can't Go")
+        # Add RSVP instructions - reply to message
+        event_details.append("\n" + "=" * 40)
+        event_details.append("📝 RSVP by replying to this message:")
+        event_details.append("✅ Reply 'Going' or 'Yes'")
+        event_details.append("❓ Reply 'Maybe'")
+        event_details.append("❌ Reply 'No' or 'Can't go'")
+        event_details.append("")
+        event_details.append(f"View full details: {BACKEND_URL.replace('/api', '')}/events/{event_id}")
         
         formatted_message = "\n".join(event_details)
         
