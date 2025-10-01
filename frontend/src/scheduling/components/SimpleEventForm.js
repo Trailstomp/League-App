@@ -233,18 +233,73 @@ const SimpleEventForm = ({
                 console.warn('⚠️ Could not check document size, proceeding with save:', sizeCheckError);
             }
             
-            const saveResult = await saveEventToSchedule(eventToSave, leagueSchedule, setLeagueSchedule);
-            
-            if (saveResult.success) {
-                console.log('✅ Event successfully saved to database:', saveResult.event.title);
-            } else {
-                console.error('❌ Failed to save event to database:', saveResult.error);
-                if (saveResult.error.includes('BSONObj size') || saveResult.error.includes('too large')) {
-                    alert('Database document too large. Please contact admin to optimize data storage. Error: Document size exceeded MongoDB limit.');
+            // Handle recurring event separately
+            if (isRecurring && recurrencePattern.end_date) {
+                console.log('🔄 Creating recurring event...');
+                const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+                const recurringResponse = await fetch(`${BACKEND_URL}/api/events/recurring`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        event: eventToSave,
+                        recurrence_pattern: recurrencePattern
+                    })
+                });
+                
+                if (recurringResponse.ok) {
+                    const recurringResult = await recurringResponse.json();
+                    console.log('✅ Created recurring events:', recurringResult.instances);
+                    alert(`Created ${recurringResult.instances} recurring event instances!`);
+                    
+                    // Reload schedule to show new instances
+                    const dataResponse = await fetch(`${BACKEND_URL}/api/league-data`);
+                    if (dataResponse.ok) {
+                        const data = await dataResponse.json();
+                        setLeagueSchedule(data.leagueSchedule || []);
+                    }
                 } else {
-                    alert(`Failed to save event: ${saveResult.error}`);
+                    console.error('❌ Failed to create recurring events');
+                    alert('Event saved but failed to create recurring instances');
                 }
-                return;
+            } else {
+                // Regular single event
+                const saveResult = await saveEventToSchedule(eventToSave, leagueSchedule, setLeagueSchedule);
+                
+                if (saveResult.success) {
+                    console.log('✅ Event successfully saved to database:', saveResult.event.title);
+                } else {
+                    console.error('❌ Failed to save event to database:', saveResult.error);
+                    if (saveResult.error.includes('BSONObj size') || saveResult.error.includes('too large')) {
+                        alert('Database document too large. Please contact admin to optimize data storage. Error: Document size exceeded MongoDB limit.');
+                    } else {
+                        alert(`Failed to save event: ${saveResult.error}`);
+                    }
+                    return;
+                }
+            }
+            
+            // Send notifications if enabled
+            if (sendNotification && notificationChannels.length > 0) {
+                console.log('📢 Sending event notification...');
+                const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+                try {
+                    const notifResponse = await fetch(`${BACKEND_URL}/api/events/${eventToSave.id}/send-notification`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            type: 'event_created',
+                            message: `${eventToSave.title} scheduled for ${eventToSave.date} at ${eventToSave.time}`,
+                            channel_ids: notificationChannels
+                        })
+                    });
+                    
+                    if (notifResponse.ok) {
+                        const notifResult = await notifResponse.json();
+                        console.log('✅ Notification sent:', notifResult.channels);
+                    }
+                } catch (notifError) {
+                    console.error('⚠️ Notification failed:', notifError);
+                }
             }
 
             console.log('✅ SIMPLE SAVE - Success!');
