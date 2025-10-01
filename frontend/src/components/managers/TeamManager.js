@@ -536,13 +536,15 @@ const BasicInfoTab = ({ editingTeam, handleInputChange, seasons, currentSeason }
 );
 
 // Team Style Tab with Advanced Color Picker and Smart Color Extraction
-const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
+const TeamStyleTab = ({ editingTeam, handleStyleChange, uploadingLogo, setUploadingLogo }) => {
     // CRITICAL FIX: Add null check for editingTeam
     const teamStyle = (editingTeam && editingTeam.style) ? editingTeam.style : {};
     const [extractedColors, setExtractedColors] = useState([]);
     const [showCropTool, setShowCropTool] = useState(false);
     const [cropImageUrl, setCropImageUrl] = useState('');
     const [cropTargetField, setCropTargetField] = useState('');
+    
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
     const [showColorExtractor, setShowColorExtractor] = useState(false);
 
     // Early return if no editing team
