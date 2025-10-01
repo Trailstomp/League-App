@@ -1765,7 +1765,7 @@ async def fix_google_drive_urls():
                     old_url = item['url']
                     if '/d/' in old_url and '/view' in old_url:
                         file_id = old_url.split('/d/')[1].split('/view')[0]
-                        updated_item['url'] = f"https://drive.google.com/uc?id={file_id}"
+                        updated_item['url'] = f"https://drive.google.com/thumbnail?id={file_id}&sz=w1000"
                         needs_update = True
                         logger.info(f"🔧 Updated URL for {item.get('filename', 'unknown')}: {file_id}")
                 
