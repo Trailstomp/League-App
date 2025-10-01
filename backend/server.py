@@ -4692,19 +4692,30 @@ async def send_event_notification(event_id: str, notification_data: Dict[str, An
                     if success:
                         sent_channels.append(channel['name'])
                     
-                    # Save to messages collection
+                    # Save to messages collection - check for duplicates first
                     if success:
-                        message_record = {
-                            "id": str(uuid.uuid4()),
+                        # Check if this exact event notification was recently sent
+                        recent_time = datetime.utcnow().timestamp() - 10  # Within last 10 seconds
+                        
+                        existing_msg = await db.groupme_messages.find_one({
                             "channel_id": channel_id,
-                            "text": formatted_message,
-                            "name": "Event Notification",
-                            "sender_type": "bot",
-                            "created_at": int(datetime.utcnow().timestamp()),
                             "event_id": event_id,
-                            "notification_type": notification_type
-                        }
-                        await db.groupme_messages.insert_one(message_record)
+                            "notification_type": notification_type,
+                            "created_at": {"$gte": int(recent_time)}
+                        })
+                        
+                        if not existing_msg:
+                            message_record = {
+                                "id": str(uuid.uuid4()),
+                                "channel_id": channel_id,
+                                "text": formatted_message,
+                                "name": "Event Notification",
+                                "sender_type": "bot",
+                                "created_at": int(datetime.utcnow().timestamp()),
+                                "event_id": event_id,
+                                "notification_type": notification_type
+                            }
+                            await db.groupme_messages.insert_one(message_record)
         
         # Log notification
         notification_log = {
