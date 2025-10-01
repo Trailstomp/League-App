@@ -67,12 +67,39 @@ const GroupMeChatUnified = ({ teamId = null, channelType = "all", currentUser })
         }
     };
 
-    const loadMessages = async (channelId) => {
+    const loadMessages = async (channelId, preserveOptimistic = false) => {
         try {
             const response = await fetch(`${backendUrl}/api/groupme/channels/${channelId}/messages`);
             if (response.ok) {
                 const data = await response.json();
-                setMessages(Array.isArray(data.messages) ? data.messages : []);
+                const newMessages = Array.isArray(data.messages) ? data.messages : [];
+                
+                if (preserveOptimistic) {
+                    // Keep optimistic messages (those with sent_by_bot=true and recent timestamp)
+                    setMessages(prev => {
+                        const now = Date.now() / 1000;
+                        const optimisticMessages = prev.filter(m => 
+                            m.sent_by_bot === true && (now - m.created_at) < 30
+                        );
+                        
+                        // Merge: remove duplicates by checking text similarity
+                        const merged = [...newMessages];
+                        optimisticMessages.forEach(optMsg => {
+                            const exists = newMessages.some(msg => 
+                                msg.text === optMsg.text && 
+                                Math.abs(msg.created_at - optMsg.created_at) < 5
+                            );
+                            if (!exists) {
+                                merged.push(optMsg);
+                            }
+                        });
+                        
+                        // Sort by timestamp
+                        return merged.sort((a, b) => a.created_at - b.created_at);
+                    });
+                } else {
+                    setMessages(newMessages);
+                }
             } else {
                 setMessages([]);
             }
