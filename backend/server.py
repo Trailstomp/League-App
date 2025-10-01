@@ -357,6 +357,44 @@ async def update_players(players_data: List[Dict[str, Any]]):
         logger.error(f"❌ Error updating players: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/league-data/seasons")
+async def update_seasons(seasons_data: List[Dict[str, Any]]):
+    """Update seasons data in the league database"""
+    try:
+        # Get the current league data
+        league_doc = await db.league_data.find_one({"id": "main_league"})
+        if not league_doc:
+            # Create new league data if it doesn't exist
+            league_doc = {
+                "id": "main_league",
+                "seasons": [],
+                "lastUpdated": datetime.utcnow().isoformat()
+            }
+        
+        # Update the seasons field
+        league_doc["seasons"] = seasons_data
+        league_doc["lastUpdated"] = datetime.utcnow().isoformat()
+        
+        # Save back to database
+        result = await db.league_data.replace_one(
+            {"id": "main_league"},
+            league_doc,
+            upsert=True
+        )
+        
+        logger.info(f"✅ Seasons updated - {len(seasons_data)} seasons, modified: {result.modified_count}")
+        
+        return {
+            "status": "success", 
+            "message": f"Successfully updated {len(seasons_data)} seasons",
+            "modified": result.modified_count,
+            "upserted": result.upserted_id is not None
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error updating seasons: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/player-photo-upload")
 async def upload_player_photo(file: UploadFile = File(...)):
     """Upload a player photo to Google Drive with organized folder structure"""
