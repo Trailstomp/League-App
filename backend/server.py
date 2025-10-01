@@ -486,21 +486,11 @@ async def upload_player_photo(file: UploadFile = File(...)):
         else:
             logger.info(f"✅ File {file_id} set to public access")
         
-        # Generate public URL
-        photo_url = f"https://drive.google.com/uc?id={file_id}"
-        
-        # Test if the URL is accessible
-        try:
-            async with httpx.AsyncClient() as client:
-                test_response = await client.head(photo_url, timeout=5.0)
-                if test_response.status_code == 200:
-                    logger.info(f"✅ Photo URL is publicly accessible: {photo_url}")
-                else:
-                    logger.warning(f"⚠️ Photo URL may not be accessible: {test_response.status_code}")
-        except Exception as url_test_error:
-            logger.warning(f"⚠️ Could not verify photo URL accessibility: {url_test_error}")
+        # Generate public URL - use thumbnail format for better image loading
+        photo_url = f"https://drive.google.com/thumbnail?id={file_id}&sz=w1000"
         
         logger.info(f"✅ Player photo uploaded successfully - ID: {file_id}")
+        logger.info(f"📸 Thumbnail URL: {photo_url}")
         
         return {
             "success": True,
