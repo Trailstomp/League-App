@@ -26,6 +26,13 @@ const GroupMeChatUnified = ({ teamId = null, channelType = "all", currentUser })
     useEffect(() => {
         if (selectedChannel) {
             loadMessages(selectedChannel.id);
+            
+            // Auto-refresh messages every 10 seconds
+            const refreshInterval = setInterval(() => {
+                loadMessages(selectedChannel.id);
+            }, 10000);
+            
+            return () => clearInterval(refreshInterval);
         }
     }, [selectedChannel]);
 
