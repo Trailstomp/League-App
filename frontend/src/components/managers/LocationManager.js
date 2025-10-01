@@ -55,10 +55,11 @@ const LocationManager = ({ teams, currentUser }) => {
             });
             
             if (response.ok) {
-                const newLocation = await response.json();
+                const result = await response.json();
+                const newLocation = result.location || result; // Extract location from response
                 setLocations(prev => [...prev, newLocation]);
                 setShowAddForm(false);
-                console.log('✅ Location added successfully');
+                console.log('✅ Location added successfully:', newLocation);
             } else {
                 const errorData = await response.json().catch(() => ({}));
                 const errorMessage = errorData.detail || `HTTP ${response.status}: ${response.statusText}`;
