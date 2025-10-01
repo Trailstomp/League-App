@@ -878,9 +878,11 @@ const TeamStyleTab = ({ editingTeam, handleStyleChange }) => {
                                 />
                                 <label 
                                     htmlFor="team-logo-direct"
-                                    className="bg-blue-600 text-white px-3 py-2 text-sm rounded hover:bg-blue-700 transition-colors cursor-pointer"
+                                    className={`bg-blue-600 text-white px-3 py-2 text-sm rounded hover:bg-blue-700 transition-colors cursor-pointer ${
+                                        uploadingLogo ? 'opacity-50 cursor-not-allowed' : ''
+                                    }`}
                                 >
-                                    Upload Direct
+                                    {uploadingLogo ? 'Uploading...' : 'Upload Direct'}
                                 </label>
                                 
                                 <input 
