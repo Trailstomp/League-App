@@ -3401,19 +3401,31 @@ async def broadcast_groupme_message(request_data: Dict[str, Any]):
             results[channel["name"]] = success
             
             # Save message to groupme_messages collection so it appears in chat
+            # Check for duplicate first to prevent re-timing issues
             if success:
-                message_record = {
-                    "id": str(uuid.uuid4()),
+                # Create a unique identifier based on channel, text, and rough time window
+                recent_time = datetime.utcnow().timestamp() - 5  # Within last 5 seconds
+                
+                existing_msg = await db.groupme_messages.find_one({
                     "channel_id": channel["id"],
                     "text": message,
-                    "name": "League Bot",
-                    "sender_type": "bot",
-                    "sender_id": channel["groupme_bot_id"],
-                    "created_at": int(datetime.utcnow().timestamp()),
-                    "system": False,
-                    "sent_by_bot": True
-                }
-                await db.groupme_messages.insert_one(message_record)
+                    "sent_by_bot": True,
+                    "created_at": {"$gte": int(recent_time)}
+                })
+                
+                if not existing_msg:
+                    message_record = {
+                        "id": str(uuid.uuid4()),
+                        "channel_id": channel["id"],
+                        "text": message,
+                        "name": "League Bot",
+                        "sender_type": "bot",
+                        "sender_id": channel["groupme_bot_id"],
+                        "created_at": int(datetime.utcnow().timestamp()),
+                        "system": False,
+                        "sent_by_bot": True
+                    }
+                    await db.groupme_messages.insert_one(message_record)
             
             # Log notification
             notification = {
