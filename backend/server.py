@@ -4709,6 +4709,145 @@ async def delete_document(collection_name: str, document_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 # ============================================================================
+# TEAM-SPECIFIC DATA ENDPOINTS
+# ============================================================================
+
+@api_router.get("/team/{team_id}/galleries")
+async def get_team_galleries(team_id: str):
+    """Get galleries visible to a specific team (team-specific + league-wide)"""
+    try:
+        galleries_cursor = db.galleries.find({
+            "$or": [
+                {"team_id": team_id},  # Team-specific galleries
+                {"visibility": "league"}  # League-wide galleries
+            ]
+        })
+        
+        galleries = await galleries_cursor.to_list(length=None)
+        
+        for gallery in galleries:
+            gallery.pop('_id', None)
+        
+        logger.info(f"✅ Loaded {len(galleries)} galleries for team {team_id}")
+        
+        return {"galleries": galleries}
+        
+    except Exception as e:
+        logger.error(f"❌ Error fetching team galleries: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/team/{team_id}/news")
+async def get_team_news(team_id: str):
+    """Get news visible to a specific team (team-specific + league-wide)"""
+    try:
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        
+        if not league_data or not league_data.get("newsItems"):
+            return {"news": []}
+        
+        # Filter news items
+        team_news = [
+            item for item in league_data["newsItems"]
+            if item.get("team_id") == team_id or item.get("visibility") == "league"
+        ]
+        
+        logger.info(f"✅ Loaded {len(team_news)} news items for team {team_id}")
+        
+        return {"news": team_news}
+        
+    except Exception as e:
+        logger.error(f"❌ Error fetching team news: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/team/{team_id}/locations")
+async def get_team_locations(team_id: str):
+    """Get locations for a specific team"""
+    try:
+        locations_cursor = db.locations.find({"team_id": team_id})
+        locations = await locations_cursor.to_list(length=None)
+        
+        for location in locations:
+            location.pop('_id', None)
+        
+        logger.info(f"✅ Loaded {len(locations)} locations for team {team_id}")
+        
+        return locations
+        
+    except Exception as e:
+        logger.error(f"❌ Error fetching team locations: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/team/{team_id}/players")
+async def get_team_players(team_id: str):
+    """Get players for a specific team"""
+    try:
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        
+        if not league_data or not league_data.get("players"):
+            return []
+        
+        # Filter players by team
+        team_players = [
+            player for player in league_data["players"]
+            if player.get("team_id") == team_id or player.get("teamId") == team_id
+        ]
+        
+        logger.info(f"✅ Loaded {len(team_players)} players for team {team_id}")
+        
+        return team_players
+        
+    except Exception as e:
+        logger.error(f"❌ Error fetching team players: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/team/{team_id}/users")
+async def get_team_users(team_id: str):
+    """Get users associated with a specific team"""
+    try:
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        
+        if not league_data or not league_data.get("users"):
+            return []
+        
+        # Filter users by team
+        team_users = [
+            user for user in league_data["users"]
+            if user.get("team_id") == team_id
+        ]
+        
+        logger.info(f"✅ Loaded {len(team_users)} users for team {team_id}")
+        
+        return team_users
+        
+    except Exception as e:
+        logger.error(f"❌ Error fetching team users: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/team/{team_id}/channels")
+async def get_team_channels(team_id: str):
+    """Get GroupMe channels visible to a specific team (their team channel + league channels)"""
+    try:
+        channels_cursor = db.groupme_channels.find({
+            "$or": [
+                {"team_id": team_id, "is_active": True},  # Team-specific channel
+                {"channel_type": "league", "is_active": True}  # League-wide channels
+            ]
+        })
+        
+        channels = await channels_cursor.to_list(length=None)
+        
+        for channel in channels:
+            channel.pop('_id', None)
+        
+        logger.info(f"✅ Loaded {len(channels)} channels for team {team_id}")
+        
+        return {"channels": channels}
+        
+    except Exception as e:
+        logger.error(f"❌ Error fetching team channels: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ============================================================================
 # EVENT RSVP & NOTIFICATIONS
 # ============================================================================
 
