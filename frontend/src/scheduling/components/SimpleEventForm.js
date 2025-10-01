@@ -40,6 +40,8 @@ const SimpleEventForm = ({
     const [sendNotification, setSendNotification] = useState(true);
     const [notificationChannels, setNotificationChannels] = useState([]);
     const [availableChannels, setAvailableChannels] = useState([]);
+    const [enableReminders, setEnableReminders] = useState(true);
+    const [reminderTiming, setReminderTiming] = useState(['24h', '1h']);
 
     // Load locations from API
     useEffect(() => {
