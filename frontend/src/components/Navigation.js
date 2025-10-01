@@ -292,6 +292,9 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                         {currentUser && isAdmin(currentUser) && (
                             <NavItem icon={<LacrosseIcon name="admin" />} label="Admin Portal" pageName="admin" />
                         )}
+                        {currentUser && currentUser.team_id && !isAdmin(currentUser) && (
+                            <NavItem icon={<span>🏆</span>} label="My Team Admin" pageName="team-admin" />
+                        )}
                     </div>
                 </nav>
 
