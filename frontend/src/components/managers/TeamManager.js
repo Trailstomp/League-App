@@ -422,6 +422,8 @@ const TeamFormModal = ({
                             <TeamStyleTab 
                                 editingTeam={editingTeam}
                                 handleStyleChange={handleStyleChange}
+                                uploadingLogo={uploadingLogo}
+                                setUploadingLogo={setUploadingLogo}
                             />
                             
                             {/* Manual Save for Style Tab - NO AUTO SAVE */}
