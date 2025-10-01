@@ -433,6 +433,172 @@ async def update_league_schedule(schedule_data: List[Dict[str, Any]]):
         logger.error(f"❌ Error updating league schedule: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/league-logo-upload")
+async def upload_league_logo(file: UploadFile = File(...)):
+    """Upload league logo to Google Drive"""
+    try:
+        # Get Google Drive configuration
+        config = await db.cloud_storage.find_one({"id": "main_cloud_storage"})
+        
+        if not config:
+            raise HTTPException(status_code=400, detail="Google Drive not configured")
+            
+        google_drive_config = config.get("googleDrive", {})
+        
+        if not google_drive_config.get("refreshToken"):
+            raise HTTPException(status_code=400, detail="Google Drive not authorized")
+        
+        refresh_token = google_drive_config["refreshToken"]
+        main_folder_id = google_drive_config.get("folderId")
+        
+        # Get fresh access token
+        access_token = await get_fresh_access_token(google_drive_config, refresh_token)
+        
+        # Read file content
+        content = await file.read()
+        file_size = len(content)
+        
+        # Check file size (5MB limit)
+        if file_size > 5 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="File too large. Maximum size is 5MB")
+        
+        # Create unique filename
+        file_extension = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+        unique_filename = f"league_logo_{str(uuid.uuid4())[:8]}.{file_extension}"
+        
+        # Create "League Images" folder if it doesn't exist
+        league_folder_id = await ensure_google_drive_folder(main_folder_id, "League Images", access_token)
+        
+        # Upload to Google Drive
+        upload_url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
+        
+        metadata = {
+            'name': unique_filename,
+            'parents': [league_folder_id]
+        }
+        
+        files_data = {
+            'metadata': (None, json.dumps(metadata), 'application/json'),
+            'file': (unique_filename, content, file.content_type)
+        }
+        
+        headers = {'Authorization': f'Bearer {access_token}'}
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.post(upload_url, headers=headers, files=files_data)
+        
+        if response.status_code != 200:
+            logger.error(f"Google Drive upload failed: {response.status_code} - {response.text}")
+            raise HTTPException(status_code=500, detail="Failed to upload logo to Google Drive")
+        
+        file_data = response.json()
+        file_id = file_data['id']
+        
+        # Make file publicly accessible
+        make_file_public_result = await make_google_drive_file_public(file_id, access_token)
+        
+        # Generate public URL using thumbnail format
+        photo_url = f"https://drive.google.com/thumbnail?id={file_id}&sz=w1000"
+        
+        logger.info(f"✅ League logo uploaded successfully - ID: {file_id}")
+        
+        return {
+            "success": True,
+            "photo_url": photo_url,
+            "filename": unique_filename,
+            "file_size": file_size,
+            "google_drive_id": file_id
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error uploading league logo: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/league-background-upload")
+async def upload_league_background(file: UploadFile = File(...)):
+    """Upload league background image to Google Drive"""
+    try:
+        # Get Google Drive configuration
+        config = await db.cloud_storage.find_one({"id": "main_cloud_storage"})
+        
+        if not config:
+            raise HTTPException(status_code=400, detail="Google Drive not configured")
+            
+        google_drive_config = config.get("googleDrive", {})
+        
+        if not google_drive_config.get("refreshToken"):
+            raise HTTPException(status_code=400, detail="Google Drive not authorized")
+        
+        refresh_token = google_drive_config["refreshToken"]
+        main_folder_id = google_drive_config.get("folderId")
+        
+        # Get fresh access token
+        access_token = await get_fresh_access_token(google_drive_config, refresh_token)
+        
+        # Read file content
+        content = await file.read()
+        file_size = len(content)
+        
+        # Check file size (10MB limit for backgrounds)
+        if file_size > 10 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="File too large. Maximum size is 10MB")
+        
+        # Create unique filename
+        file_extension = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+        unique_filename = f"league_bg_{str(uuid.uuid4())[:8]}.{file_extension}"
+        
+        # Create "League Images" folder if it doesn't exist
+        league_folder_id = await ensure_google_drive_folder(main_folder_id, "League Images", access_token)
+        
+        # Upload to Google Drive
+        upload_url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
+        
+        metadata = {
+            'name': unique_filename,
+            'parents': [league_folder_id]
+        }
+        
+        files_data = {
+            'metadata': (None, json.dumps(metadata), 'application/json'),
+            'file': (unique_filename, content, file.content_type)
+        }
+        
+        headers = {'Authorization': f'Bearer {access_token}'}
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.post(upload_url, headers=headers, files=files_data)
+        
+        if response.status_code != 200:
+            logger.error(f"Google Drive upload failed: {response.status_code} - {response.text}")
+            raise HTTPException(status_code=500, detail="Failed to upload background to Google Drive")
+        
+        file_data = response.json()
+        file_id = file_data['id']
+        
+        # Make file publicly accessible
+        make_file_public_result = await make_google_drive_file_public(file_id, access_token)
+        
+        # Generate public URL using thumbnail format for large images
+        photo_url = f"https://drive.google.com/thumbnail?id={file_id}&sz=w2000"
+        
+        logger.info(f"✅ League background uploaded successfully - ID: {file_id}")
+        
+        return {
+            "success": True,
+            "photo_url": photo_url,
+            "filename": unique_filename,
+            "file_size": file_size,
+            "google_drive_id": file_id
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error uploading league background: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/player-photo-upload")
 async def upload_player_photo(file: UploadFile = File(...)):
     """Upload a player photo to Google Drive with organized folder structure"""
