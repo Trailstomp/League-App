@@ -91,11 +91,24 @@ const GroupMeChatUnified = ({ teamId = null, channelType = "all", currentUser })
             });
 
             if (response.ok) {
+                // Optimistically add sent message to UI immediately
+                const sentMessage = {
+                    id: Date.now().toString(),
+                    text: newMessage.trim(),
+                    name: currentUser?.name || 'You',
+                    created_at: Math.floor(Date.now() / 1000),
+                    sender_type: 'user',
+                    system: false,
+                    sent_by_bot: true // Mark as sent by our system
+                };
+                setMessages(prev => [...prev, sentMessage]);
+                
                 setNewMessage('');
                 setSuccess('Message sent successfully!');
                 setTimeout(() => setSuccess(''), 3000);
-                // Reload messages to show the new one
-                loadMessages(selectedChannel.id);
+                
+                // Reload messages after a delay to get the actual message from GroupMe
+                setTimeout(() => loadMessages(selectedChannel.id), 2000);
             } else {
                 const errorData = await response.json();
                 throw new Error(errorData.detail || 'Failed to send message');
