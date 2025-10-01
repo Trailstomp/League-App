@@ -3024,11 +3024,7 @@ async def _send_groupme_message(bot_id: str, text: str) -> bool:
         return False
 
 @api_router.post("/groupme/broadcast")
-async def broadcast_groupme_message(
-    message: str = Form(...),
-    channel_ids: str = Form(...),  # JSON array as string
-    notification_type: str = Form("announcement")
-):
+async def broadcast_groupme_message(request_data: Dict[str, Any]):
     """Broadcast message to multiple GroupMe channels"""
     
     # Get GroupMe service using stored credentials
@@ -3040,8 +3036,14 @@ async def broadcast_groupme_message(
         raise HTTPException(status_code=400, detail="GroupMe configuration error")
     
     try:
-        import json
-        channel_id_list = json.loads(channel_ids)
+        message = request_data.get("message")
+        channel_id_list = request_data.get("channel_ids", [])
+        notification_type = request_data.get("notification_type", "announcement")
+        
+        if not message:
+            raise HTTPException(status_code=400, detail="Message is required")
+        if not channel_id_list:
+            raise HTTPException(status_code=400, detail="At least one channel is required")
         
         # Get active channels
         channels_cursor = db.groupme_channels.find({
