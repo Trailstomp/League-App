@@ -4230,6 +4230,218 @@ async def delete_document(collection_name: str, document_id: str):
         logger.error(f"Error deleting document from {collection_name}: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ============================================================================
+# EVENT RSVP & NOTIFICATIONS
+# ============================================================================
+
+@api_router.post("/events/{event_id}/rsvp")
+async def create_or_update_rsvp(event_id: str, rsvp_data: Dict[str, Any]):
+    """Create or update an RSVP for an event"""
+    try:
+        user_id = rsvp_data.get('user_id')
+        response = rsvp_data.get('response')  # 'going', 'not_going', 'maybe'
+        
+        if not user_id or not response:
+            raise HTTPException(status_code=400, detail="user_id and response are required")
+        
+        if response not in ['going', 'not_going', 'maybe']:
+            raise HTTPException(status_code=400, detail="Invalid response type")
+        
+        # Check if RSVP already exists
+        existing_rsvp = await db.event_rsvps.find_one({
+            "event_id": event_id,
+            "user_id": user_id
+        })
+        
+        rsvp_record = {
+            "event_id": event_id,
+            "user_id": user_id,
+            "response": response,
+            "user_name": rsvp_data.get('user_name', 'Unknown'),
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+        if existing_rsvp:
+            # Update existing RSVP
+            await db.event_rsvps.update_one(
+                {"event_id": event_id, "user_id": user_id},
+                {"$set": rsvp_record}
+            )
+            logger.info(f"✅ Updated RSVP for event {event_id} by user {user_id}: {response}")
+        else:
+            # Create new RSVP
+            rsvp_record['id'] = str(uuid.uuid4())
+            rsvp_record['created_at'] = datetime.utcnow().isoformat()
+            await db.event_rsvps.insert_one(rsvp_record)
+            logger.info(f"✅ Created RSVP for event {event_id} by user {user_id}: {response}")
+        
+        return {"status": "success", "message": "RSVP recorded"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error creating/updating RSVP: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/events/{event_id}/rsvps")
+async def get_event_rsvps(event_id: str):
+    """Get all RSVPs for an event with summary"""
+    try:
+        rsvps_cursor = db.event_rsvps.find({"event_id": event_id})
+        rsvps = await rsvps_cursor.to_list(length=None)
+        
+        # Remove MongoDB _id
+        for rsvp in rsvps:
+            rsvp.pop('_id', None)
+        
+        # Calculate summary
+        going = [r for r in rsvps if r['response'] == 'going']
+        not_going = [r for r in rsvps if r['response'] == 'not_going']
+        maybe = [r for r in rsvps if r['response'] == 'maybe']
+        
+        return {
+            "rsvps": rsvps,
+            "summary": {
+                "going": len(going),
+                "not_going": len(not_going),
+                "maybe": len(maybe),
+                "total": len(rsvps)
+            },
+            "details": {
+                "going": going,
+                "not_going": not_going,
+                "maybe": maybe
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error fetching RSVPs: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/events/{event_id}/send-notification")
+async def send_event_notification(event_id: str, notification_data: Dict[str, Any]):
+    """Send notification for an event to specified channels"""
+    try:
+        notification_type = notification_data.get('type', 'event_created')  # event_created, event_updated, event_cancelled, reminder_24h, reminder_1h
+        message = notification_data.get('message')
+        channel_ids = notification_data.get('channel_ids', [])
+        
+        if not message:
+            raise HTTPException(status_code=400, detail="Message is required")
+        
+        # Get event details
+        league_doc = await db.league_data.find_one({"id": "main_league"})
+        event = None
+        if league_doc and league_doc.get("leagueSchedule"):
+            event = next((e for e in league_doc["leagueSchedule"] if e.get("id") == event_id), None)
+        
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Format notification message
+        formatted_message = f"📅 **{event.get('title', 'Event')}**\n{message}"
+        
+        # Send to GroupMe channels if specified
+        sent_channels = []
+        if channel_ids:
+            for channel_id in channel_ids:
+                channel = await db.groupme_channels.find_one({"id": channel_id, "is_active": True})
+                if channel and channel.get('groupme_bot_id'):
+                    success = await _send_groupme_message(channel['groupme_bot_id'], formatted_message)
+                    if success:
+                        sent_channels.append(channel['name'])
+                    
+                    # Save to messages collection
+                    if success:
+                        message_record = {
+                            "id": str(uuid.uuid4()),
+                            "channel_id": channel_id,
+                            "text": formatted_message,
+                            "name": "Event Notification",
+                            "sender_type": "bot",
+                            "created_at": int(datetime.utcnow().timestamp()),
+                            "event_id": event_id,
+                            "notification_type": notification_type
+                        }
+                        await db.groupme_messages.insert_one(message_record)
+        
+        # Log notification
+        notification_log = {
+            "id": str(uuid.uuid4()),
+            "event_id": event_id,
+            "notification_type": notification_type,
+            "message": message,
+            "channels_sent": sent_channels,
+            "sent_at": datetime.utcnow().isoformat()
+        }
+        await db.event_notifications.insert_one(notification_log)
+        
+        logger.info(f"✅ Event notification sent for {event_id} to {len(sent_channels)} channels")
+        
+        return {
+            "status": "success",
+            "message": f"Notification sent to {len(sent_channels)} channels",
+            "channels": sent_channels
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error sending event notification: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/events/recurring")
+async def create_recurring_event(event_data: Dict[str, Any]):
+    """Create a recurring event with multiple instances"""
+    try:
+        from event_recurrence import generate_recurring_events
+        
+        recurrence_pattern = event_data.get('recurrence_pattern')
+        if not recurrence_pattern:
+            raise HTTPException(status_code=400, detail="recurrence_pattern is required")
+        
+        base_event = event_data.get('event')
+        end_date = recurrence_pattern.get('end_date')
+        
+        if not base_event or not end_date:
+            raise HTTPException(status_code=400, detail="event and end_date are required")
+        
+        # Generate instances
+        instances = generate_recurring_events(base_event, recurrence_pattern, end_date)
+        
+        # Get current league schedule
+        league_doc = await db.league_data.find_one({"id": "main_league"})
+        if not league_doc:
+            league_doc = {"id": "main_league", "leagueSchedule": []}
+        
+        # Add instances to schedule
+        current_schedule = league_doc.get("leagueSchedule", [])
+        current_schedule.extend(instances)
+        
+        league_doc["leagueSchedule"] = current_schedule
+        league_doc["lastUpdated"] = datetime.utcnow().isoformat()
+        
+        # Save to database
+        await db.league_data.replace_one(
+            {"id": "main_league"},
+            league_doc,
+            upsert=True
+        )
+        
+        logger.info(f"✅ Created {len(instances)} recurring event instances")
+        
+        return {
+            "status": "success",
+            "message": f"Created {len(instances)} event instances",
+            "instances": len(instances)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error creating recurring event: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Include the API router in the main app (after all routes are defined)
 app.include_router(api_router)
 
