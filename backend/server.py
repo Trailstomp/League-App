@@ -2535,10 +2535,14 @@ async def create_groupme_channel(
             if not team_id:
                 raise HTTPException(status_code=400, detail="team_id required for team channels")
             
-            # Check if team exists
-            team = await db.teams.find_one({"id": team_id})
-            if not team:
-                raise HTTPException(status_code=404, detail="Team not found")
+            # Check if team exists in league_data
+            league_doc = await db.league_data.find_one({"id": "main_league"})
+            if league_doc and league_doc.get("teams"):
+                team = next((t for t in league_doc["teams"] if t.get("id") == team_id), None)
+                if not team:
+                    raise HTTPException(status_code=404, detail="Team not found")
+            else:
+                raise HTTPException(status_code=404, detail="No teams found in league data")
         
         # Check for duplicate group ID with same channel type and team combination
         query = {"groupme_group_id": groupme_group_id, "channel_type": channel_type}
