@@ -3083,8 +3083,6 @@ async def broadcast_groupme_message(request_data: Dict[str, Any]):
             "results": results
         }
         
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=400, detail="Invalid channel_ids JSON")
     except Exception as e:
         logger.error(f"Error broadcasting message: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
