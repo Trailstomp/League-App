@@ -167,6 +167,63 @@ const GroupMeManager = () => {
         }
     };
 
+    const handleEditChannel = (channel) => {
+        setEditingChannel(channel);
+        setNewChannelForm({
+            name: channel.name,
+            groupme_group_id: channel.groupme_group_id,
+            channel_type: channel.channel_type,
+            team_id: channel.team_id || '',
+            existing_bot_id: channel.groupme_bot_id || '',
+            notification_settings: channel.notification_settings || {}
+        });
+        setActiveView('create');
+    };
+
+    const handleUpdateChannel = async (e) => {
+        e.preventDefault();
+        
+        try {
+            setLoading(true);
+            
+            const updateData = {
+                name: newChannelForm.name,
+                notification_settings: newChannelForm.notification_settings
+            };
+            
+            const response = await fetch(`${backendUrl}/api/groupme/channels/${editingChannel.id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updateData)
+            });
+            
+            if (response.ok) {
+                alert('Channel updated successfully!');
+                setNewChannelForm({
+                    name: '',
+                    groupme_group_id: '',
+                    channel_type: 'team',
+                    team_id: '',
+                    existing_bot_id: '',
+                    notification_settings: {}
+                });
+                setEditingChannel(null);
+                await loadChannels();
+                await loadDashboardStats();
+                setActiveView('channels');
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Failed to update channel');
+            }
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleDeleteChannel = async (channelId, channelName) => {
         if (!window.confirm(`Are you sure you want to delete the channel "${channelName}"? This action cannot be undone.`)) {
             return;
