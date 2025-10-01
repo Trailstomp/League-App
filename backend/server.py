@@ -1409,6 +1409,78 @@ async def complete_google_drive_auth(data: Dict[str, Any]):
         logger.error(f"🔑 ❌ Error completing Google Drive auth: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/cloud-storage/google-drive/upload-json")
+async def upload_json_to_google_drive(data: Dict[str, Any]):
+    """Upload JSON data to Google Drive"""
+    try:
+        json_data = data.get("jsonData")
+        filename = data.get("filename", "league_data.json")
+        
+        if not json_data:
+            raise HTTPException(status_code=400, detail="JSON data is required")
+        
+        logger.info(f"📤 Uploading JSON file to Google Drive: {filename}")
+        
+        # Get Google Drive configuration
+        config = await db.cloud_storage.find_one({"id": "main_cloud_storage"})
+        
+        if not config:
+            raise HTTPException(status_code=400, detail="Google Drive not configured")
+            
+        google_drive_config = config.get("googleDrive", {})
+        
+        if not google_drive_config.get("refreshToken"):
+            raise HTTPException(status_code=400, detail="Google Drive not authorized")
+        
+        refresh_token = google_drive_config["refreshToken"]
+        main_folder_id = google_drive_config.get("folderId")
+        
+        # Get fresh access token
+        access_token = await get_fresh_access_token(google_drive_config, refresh_token)
+        
+        # Convert JSON data to string
+        json_string = json.dumps(json_data, indent=2)
+        json_bytes = json_string.encode('utf-8')
+        
+        # Upload to Google Drive
+        upload_url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
+        
+        metadata = {
+            'name': filename,
+            'parents': [main_folder_id] if main_folder_id else [],
+            'mimeType': 'application/json'
+        }
+        
+        files_data = {
+            'metadata': (None, json.dumps(metadata), 'application/json'),
+            'file': (filename, json_bytes, 'application/json')
+        }
+        
+        headers = {'Authorization': f'Bearer {access_token}'}
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.post(upload_url, headers=headers, files=files_data)
+        
+        if response.status_code != 200:
+            logger.error(f"❌ JSON upload to Google Drive failed: {response.status_code} - {response.text}")
+            raise HTTPException(status_code=500, detail=f"Upload failed: {response.text}")
+        
+        file_data = response.json()
+        file_id = file_data['id']
+        
+        logger.info(f"✅ JSON file uploaded to Google Drive with ID: {file_id}")
+        
+        return {
+            "status": "success",
+            "message": "JSON file uploaded successfully",
+            "fileId": file_id,
+            "filename": filename
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error uploading JSON to Google Drive: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Helper function to create gallery folder in Google Drive
 async def create_gallery_folder(access_token: str, main_folder_id: str, gallery_name: str) -> str:
     """Create a subfolder for a specific gallery in Google Drive"""
