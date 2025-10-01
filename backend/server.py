@@ -4390,6 +4390,56 @@ async def send_event_notification(event_id: str, notification_data: Dict[str, An
         logger.error(f"❌ Error sending event notification: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/users/{user_id}/communication-preferences")
+async def get_user_comm_preferences(user_id: str):
+    """Get user's communication preferences"""
+    try:
+        prefs = await db.user_preferences.find_one({"user_id": user_id})
+        
+        if not prefs:
+            # Return defaults
+            return {
+                "user_id": user_id,
+                "notifications": {
+                    "groupme": True,
+                    "email": False,
+                    "sms": False
+                },
+                "event_reminders": {
+                    "enabled": True,
+                    "timing": ["24h", "1h"]
+                },
+                "rsvp_reminders": True
+            }
+        
+        prefs.pop('_id', None)
+        return prefs
+        
+    except Exception as e:
+        logger.error(f"❌ Error fetching user preferences: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/users/{user_id}/communication-preferences")
+async def update_user_comm_preferences(user_id: str, preferences: Dict[str, Any]):
+    """Update user's communication preferences"""
+    try:
+        preferences['user_id'] = user_id
+        preferences['updated_at'] = datetime.utcnow().isoformat()
+        
+        await db.user_preferences.update_one(
+            {"user_id": user_id},
+            {"$set": preferences},
+            upsert=True
+        )
+        
+        logger.info(f"✅ Updated communication preferences for user {user_id}")
+        
+        return {"status": "success", "message": "Preferences updated"}
+        
+    except Exception as e:
+        logger.error(f"❌ Error updating user preferences: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/events/recurring")
 async def create_recurring_event(event_data: Dict[str, Any]):
     """Create a recurring event with multiple instances"""
