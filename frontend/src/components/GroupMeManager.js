@@ -801,6 +801,7 @@ const GroupMeManager = () => {
                             </div>
                         )}
                     </div>
+                    )}
 
                     <div className="flex justify-end space-x-3">
                         <button
