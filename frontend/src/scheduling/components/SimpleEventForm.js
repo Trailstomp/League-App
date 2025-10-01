@@ -686,6 +686,117 @@ const SimpleEventForm = ({
                 </div>
             </div>
 
+            {/* Recurring Event Section */}
+            <div className="bg-purple-50 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">🔄 Recurring Event</h3>
+                <div className="space-y-4">
+                    <label className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={isRecurring}
+                            onChange={(e) => setIsRecurring(e.target.checked)}
+                            className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                        />
+                        <span className="text-sm text-gray-700">Make this a recurring event</span>
+                    </label>
+                    
+                    {isRecurring && (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Repeat Pattern
+                                </label>
+                                <select
+                                    value={recurrencePattern.type}
+                                    onChange={(e) => setRecurrencePattern({...recurrencePattern, type: e.target.value})}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                >
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                    <option value="custom">Custom Interval</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Every (interval)
+                                </label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    value={recurrencePattern.interval}
+                                    onChange={(e) => setRecurrencePattern({...recurrencePattern, interval: parseInt(e.target.value)})}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                                <span className="text-xs text-gray-500">e.g., every 2 weeks</span>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Repeat Until
+                                </label>
+                                <input
+                                    type="date"
+                                    value={recurrencePattern.end_date}
+                                    onChange={(e) => setRecurrencePattern({...recurrencePattern, end_date: e.target.value})}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    required={isRecurring}
+                                />
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Notification Section */}
+            <div className="bg-blue-50 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">📢 Notifications</h3>
+                <div className="space-y-4">
+                    <label className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={sendNotification}
+                            onChange={(e) => setSendNotification(e.target.checked)}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-700">Send notification when event is created</span>
+                    </label>
+                    
+                    {sendNotification && availableChannels.length > 0 && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Send to GroupMe Channels
+                            </label>
+                            <div className="space-y-2 max-h-40 overflow-y-auto">
+                                {availableChannels.map(channel => (
+                                    <label key={channel.id} className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={notificationChannels.includes(channel.id)}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setNotificationChannels([...notificationChannels, channel.id]);
+                                                } else {
+                                                    setNotificationChannels(notificationChannels.filter(id => id !== channel.id));
+                                                }
+                                            }}
+                                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span className="text-sm text-gray-700">
+                                            {channel.name} ({channel.channel_type})
+                                        </span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {sendNotification && availableChannels.length === 0 && (
+                        <p className="text-sm text-gray-500">No active GroupMe channels found. Configure channels in Admin.</p>
+                    )}
+                </div>
+            </div>
+
             {/* Action Buttons */}
             <div className="mt-6 flex justify-end space-x-4">
                 <button
@@ -695,7 +806,7 @@ const SimpleEventForm = ({
                     Cancel
                 </button>
                 <button
-                    onClick={handleSave}
+                    onClick={handleSave
                     disabled={!eventData.title}
                     className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
