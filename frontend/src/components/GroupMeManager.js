@@ -549,11 +549,13 @@ const GroupMeManager = () => {
                 >
                     ← Back
                 </button>
-                <h2 className="text-2xl font-bold text-gray-900">Create GroupMe Channel</h2>
+                <h2 className="text-2xl font-bold text-gray-900">
+                    {editingChannel ? 'Edit GroupMe Channel' : 'Create GroupMe Channel'}
+                </h2>
             </div>
 
             <div className="bg-white rounded-lg shadow p-6">
-                <form onSubmit={handleCreateChannel} className="space-y-6">
+                <form onSubmit={editingChannel ? handleUpdateChannel : handleCreateChannel} className="space-y-6">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Channel Name
