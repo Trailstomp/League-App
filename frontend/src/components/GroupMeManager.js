@@ -511,6 +511,13 @@ const GroupMeManager = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <button 
+                                        onClick={() => handleEditChannel(channel)}
+                                        disabled={loading}
+                                        className="text-indigo-600 hover:text-indigo-900 mr-3 disabled:opacity-50"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button 
                                         onClick={() => handleToggleChannel(channel.id, channel.is_active)}
                                         disabled={loading}
                                         className="text-blue-600 hover:text-blue-900 mr-3 disabled:opacity-50"
