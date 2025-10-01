@@ -19,6 +19,7 @@ const GroupMeManager = () => {
         notification_settings: {}
     });
 
+    const [editingChannel, setEditingChannel] = useState(null);
     const [inputMethod, setInputMethod] = useState('dropdown'); // 'dropdown' or 'manual'
     const [botMethod, setBotMethod] = useState('auto'); // 'auto' or 'existing'
 
