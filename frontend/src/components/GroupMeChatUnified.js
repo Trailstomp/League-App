@@ -142,7 +142,8 @@ const GroupMeChatUnified = ({ teamId = null, channelType = "all", currentUser })
                 setTimeout(() => setSuccess(''), 3000);
                 
                 // Reload messages after a delay to get the actual message from GroupMe
-                setTimeout(() => loadMessages(selectedChannel.id), 2000);
+                // Use preserveOptimistic=true to keep our message visible until confirmed
+                setTimeout(() => loadMessages(selectedChannel.id, true), 2000);
             } else {
                 const errorData = await response.json();
                 throw new Error(errorData.detail || 'Failed to send message');
