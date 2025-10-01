@@ -27,6 +27,19 @@ const SimpleEventForm = ({
     // State for dynamic picklist options and team filtering
     const [seasons, setSeasons] = useState([]);
     const [selectedDivision, setSelectedDivision] = useState(initialEvent?.division || '');
+    
+    // State for recurring events
+    const [isRecurring, setIsRecurring] = useState(false);
+    const [recurrencePattern, setRecurrencePattern] = useState({
+        type: 'weekly',
+        interval: 1,
+        end_date: ''
+    });
+    
+    // State for notifications
+    const [sendNotification, setSendNotification] = useState(true);
+    const [notificationChannels, setNotificationChannels] = useState([]);
+    const [availableChannels, setAvailableChannels] = useState([]);
 
     // Load locations from API
     useEffect(() => {
