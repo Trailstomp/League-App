@@ -609,10 +609,11 @@ const GroupMeManager = () => {
                         </>
                     )}
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            GroupMe Group Configuration
-                        </label>
+                    {!editingChannel && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                GroupMe Group Configuration
+                            </label>
                         
                         {/* Input method toggle */}
                         <div className="flex space-x-4 mb-4">
