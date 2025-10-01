@@ -725,8 +725,10 @@ const GroupMeManager = () => {
                             </div>
                         )}
                     </div>
+                    )}
 
                     {/* Bot Configuration Section */}
+                    {!editingChannel && (
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Bot Configuration
