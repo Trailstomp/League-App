@@ -61,8 +61,22 @@ const SimpleEventForm = ({
             }
         };
 
+        const loadChannels = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/groupme/channels?active_only=true`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setAvailableChannels(data.channels || []);
+                    console.log('💬 Loaded GroupMe channels:', data.channels?.length || 0);
+                }
+            } catch (error) {
+                console.error('❌ Error loading channels:', error);
+            }
+        };
+
         loadLocations();
         loadSeasonsAndLeagues();
+        loadChannels();
     }, []);
 
     // Get available divisions from teams
