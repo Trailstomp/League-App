@@ -433,6 +433,44 @@ async def update_league_schedule(schedule_data: List[Dict[str, Any]]):
         logger.error(f"❌ Error updating league schedule: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/league-data/websiteStyle")
+async def update_website_style(style_data: Dict[str, Any]):
+    """Update website style data in the league database"""
+    try:
+        # Get the current league data
+        league_doc = await db.league_data.find_one({"id": "main_league"})
+        if not league_doc:
+            # Create new league data if it doesn't exist
+            league_doc = {
+                "id": "main_league",
+                "websiteStyle": {},
+                "lastUpdated": datetime.utcnow().isoformat()
+            }
+        
+        # Update the websiteStyle field
+        league_doc["websiteStyle"] = style_data
+        league_doc["lastUpdated"] = datetime.utcnow().isoformat()
+        
+        # Save back to database
+        result = await db.league_data.replace_one(
+            {"id": "main_league"},
+            league_doc,
+            upsert=True
+        )
+        
+        logger.info(f"✅ Website style updated - {len(style_data)} settings, modified: {result.modified_count}")
+        
+        return {
+            "status": "success", 
+            "message": f"Successfully updated website style with {len(style_data)} settings",
+            "modified": result.modified_count,
+            "upserted": result.upserted_id is not None
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error updating website style: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/league-logo-upload")
 async def upload_league_logo(file: UploadFile = File(...)):
     """Upload league logo to Google Drive"""
