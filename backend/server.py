@@ -4941,6 +4941,16 @@ async def get_team_channels(team_id: str):
 # EVENT RSVP & NOTIFICATIONS
 # ============================================================================
 
+@api_router.get("/r")
+async def handle_short_rsvp_link(request: Request, e: str, c: str):
+    """Handle short RSVP links from GroupMe messages"""
+    # Map short codes to full choice names
+    choice_map = {'y': 'yes', 'm': 'maybe', 'n': 'no'}
+    full_choice = choice_map.get(c, c)
+    
+    # Redirect to full RSVP handler
+    return await handle_rsvp_link_click(request, event=e, choice=full_choice)
+
 @api_router.get("/rsvp") 
 async def handle_rsvp_link_click(request: Request, event: str = None, choice: str = None, gmid: str = None, name: str = None, e: str = None, c: str = None):
     """Handle RSVP link clicks from GroupMe messages"""
