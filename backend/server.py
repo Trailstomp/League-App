@@ -4977,12 +4977,16 @@ async def handle_rsvp_link_click(request: Request, event: str = None, choice: st
         response = choice_mapping[actual_choice]
         event_id = actual_event
         
-        # Try to get actual username from GroupMe or use provided name
-        user_name = "Someone"  # Default fallback
-        user_id = gmid or f"anonymous_{int(datetime.utcnow().timestamp())}"
+        # Try to get actual username from GroupMe or use a better default
+        user_name = "Team Member"  # Better default fallback
+        user_id = gmid or f"web_user_{int(datetime.utcnow().timestamp())}"
         
-        if name:
-            # Use provided name parameter
+        # Check if GroupMe user agent to identify if it's from GroupMe app
+        user_agent = request.headers.get("user-agent", "").lower()
+        is_from_groupme = "groupme" in user_agent
+        
+        if name and name != "USER":
+            # Use provided name parameter if it's not the placeholder
             user_name = name
         elif gmid:
             # Try to find user name from recent GroupMe messages
@@ -4994,9 +4998,12 @@ async def handle_rsvp_link_click(request: Request, event: str = None, choice: st
                 if recent_message and recent_message.get("name"):
                     user_name = recent_message["name"]
                 else:
-                    user_name = f"User {gmid[-4:]}"  # Show last 4 digits of ID
+                    user_name = f"Team Member #{gmid[-4:]}" if gmid else "Team Member"
             except:
-                user_name = f"User {gmid[-4:]}" if gmid else "Someone"
+                user_name = f"Team Member #{gmid[-4:]}" if gmid else "Team Member"
+        elif is_from_groupme:
+            # If it's from GroupMe but no ID, use generic
+            user_name = "Team Member"
         
         # Create or update RSVP
         existing_rsvp = await db.event_rsvps.find_one({
