@@ -3235,14 +3235,29 @@ async def _check_for_rsvp_keywords(text: str, webhook_data: dict, channel: dict)
         user_id = str(webhook_data.get("user_id", webhook_data.get("sender_id")))
         user_name = webhook_data.get("name", "Unknown")
         
-        # Determine RSVP response from keywords
+        # Determine RSVP response from keywords and /rsvp commands
         rsvp_response = None
-        if any(keyword in text_lower for keyword in ['going', 'yes', 'count me in', 'i\'m in', 'ill be there']):
-            rsvp_response = 'going'
-        elif any(keyword in text_lower for keyword in ['maybe', 'might', 'possibly', 'tentative']):
-            rsvp_response = 'maybe'
-        elif any(keyword in text_lower for keyword in ['no', 'not going', 'cant go', 'can\'t go', 'won\'t make it', 'unable']):
-            rsvp_response = 'not_going'
+        
+        # Check for /rsvp command format first
+        if text_lower.startswith('/rsvp'):
+            parts = text_lower.split()
+            if len(parts) > 1:
+                response_word = parts[1]
+                if response_word in ['yes', 'going', 'go']:
+                    rsvp_response = 'going'
+                elif response_word in ['maybe', 'might']:
+                    rsvp_response = 'maybe'
+                elif response_word in ['no', 'cant', 'can\'t', 'not']:
+                    rsvp_response = 'not_going'
+        
+        # If no /rsvp command, check for natural language keywords
+        if not rsvp_response:
+            if any(keyword in text_lower for keyword in ['going', 'yes', 'count me in', 'i\'m in', 'ill be there']):
+                rsvp_response = 'going'
+            elif any(keyword in text_lower for keyword in ['maybe', 'might', 'possibly', 'tentative']):
+                rsvp_response = 'maybe'
+            elif any(keyword in text_lower for keyword in ['no', 'not going', 'cant go', 'can\'t go', 'won\'t make it', 'unable']):
+                rsvp_response = 'not_going'
         
         if not rsvp_response:
             return
