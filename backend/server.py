@@ -4943,13 +4943,59 @@ async def get_team_channels(team_id: str):
 
 @api_router.get("/r")
 async def handle_short_rsvp_link(request: Request, e: str, c: str):
-    """Handle short RSVP links from GroupMe messages"""
-    # Map short codes to full choice names
-    choice_map = {'y': 'yes', 'm': 'maybe', 'n': 'no'}
-    full_choice = choice_map.get(c, c)
+    """Handle short RSVP links with Open Graph previews for GroupMe"""
     
-    # Redirect to full RSVP handler
-    return await handle_rsvp_link_click(request, event=e, choice=full_choice)
+    # If it's a preview request (not actual click), show Open Graph meta
+    user_agent = request.headers.get("user-agent", "").lower()
+    is_preview = "bot" in user_agent or "crawler" in user_agent or "preview" in user_agent
+    
+    # Map short codes to display info
+    choice_info = {
+        'y': {'title': '✅ RSVP: YES', 'desc': 'Tap to confirm you\'re going', 'color': '#10b981'},
+        'm': {'title': '❓ RSVP: MAYBE', 'desc': 'Tap if you might attend', 'color': '#f59e0b'}, 
+        'n': {'title': '❌ RSVP: NO', 'desc': 'Tap if you can\'t make it', 'color': '#ef4444'}
+    }
+    
+    info = choice_info.get(c, choice_info['y'])
+    
+    if is_preview:
+        # Return HTML with Open Graph meta for rich preview
+        return HTMLResponse(f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta property="og:title" content="{info['title']}" />
+                <meta property="og:description" content="{info['desc']}" />
+                <meta property="og:type" content="website" />
+                <meta property="og:image" content="https://via.placeholder.com/400x200/{info['color'].replace('#','')}/FFFFFF?text={info['title'].replace(' ', '+')}" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content="{info['title']}" />
+                <meta name="twitter:description" content="{info['desc']}" />
+                <title>{info['title']}</title>
+                <style>
+                    body {{ font-family: Arial; text-align: center; padding: 50px; background: {info['color']}; color: white; }}
+                    .button {{ background: white; color: {info['color']}; padding: 20px 40px; border-radius: 10px; font-size: 24px; font-weight: bold; }}
+                </style>
+            </head>
+            <body>
+                <div class="button">{info['title']}</div>
+                <p>{info['desc']}</p>
+                <script>
+                    // Auto-redirect after preview is loaded
+                    setTimeout(() => {{
+                        window.location.href = '/api/rsvp?e={e}&c=' + '{c}'.replace('y','yes').replace('m','maybe').replace('n','no');
+                    }}, 100);
+                </script>
+            </body>
+            </html>
+        """)
+    else:
+        # Map short codes to full choice names for actual processing
+        choice_map = {'y': 'yes', 'm': 'maybe', 'n': 'no'}
+        full_choice = choice_map.get(c, c)
+        
+        # Process the actual RSVP
+        return await handle_rsvp_link_click(request, event=e, choice=full_choice)
 
 @api_router.get("/rsvp") 
 async def handle_rsvp_link_click(request: Request, event: str = None, choice: str = None, gmid: str = None, name: str = None, e: str = None, c: str = None):
