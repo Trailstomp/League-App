@@ -154,7 +154,7 @@ const Layout = ({
                 {isMobileMenuOpen && (
                     <div 
                         className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
-                        style={{top: '140px'}} // Position below header
+                        style={{top: '164px'}} // Position below header
                     />
                 )}
                 
