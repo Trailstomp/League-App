@@ -4999,7 +4999,39 @@ async def handle_rsvp_link_click(event: str, choice: str, gmid: str = None):
         
         logger.info(f"✅ RSVP {action} via link: {user_name} -> {response} for event {event_id}")
         
-        # Response emojis for confirmation
+        # Send confirmation message back to GroupMe if we can find the bot
+        try:
+            # Find a GroupMe channel/bot to send confirmation to
+            channels_cursor = db.groupme_channels.find({"is_active": True})
+            channels = await channels_cursor.to_list(length=1)  # Get first active channel
+            
+            if channels and channels[0].get('groupme_bot_id'):
+                bot_id = channels[0]['groupme_bot_id']
+                
+                # Response emojis for confirmation
+                response_emojis = {
+                    'going': '✅',
+                    'maybe': '❓', 
+                    'not_going': '❌'
+                }
+                
+                response_text = {
+                    'going': 'confirmed they\'re going',
+                    'maybe': 'might attend',
+                    'not_going': 'can\'t make it'
+                }
+                
+                emoji = response_emojis[response]
+                confirmation_message = f"{emoji} {user_name} {response_text[response]}!"
+                
+                # Send confirmation to GroupMe
+                await _send_groupme_message(bot_id, confirmation_message)
+                logger.info(f"📱 Sent RSVP confirmation to GroupMe: {confirmation_message}")
+                
+        except Exception as conf_error:
+            logger.warning(f"Could not send GroupMe confirmation: {conf_error}")
+        
+        # Response for HTML page
         response_emojis = {
             'going': '✅',
             'maybe': '❓', 
