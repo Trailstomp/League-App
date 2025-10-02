@@ -3510,25 +3510,24 @@ async def upload_image_to_groupme(image_url: str, access_token: str) -> str:
         return None
 
 async def _send_groupme_message_with_rsvp(bot_id: str, text: str, event_id: str, image_url: str = None) -> bool:
-    """Send message through GroupMe bot with clickable RSVP links"""
+    """Send message through GroupMe bot with clean clickable RSVP options"""
     
     try:
         # Get the base URL from environment or use a default
         base_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://lacrosse-league-3.preview.emergentagent.com')
         
-        # Create clickable RSVP links - GroupMe will automatically make these clickable
-        rsvp_links = (
-            f"\n\n📱 RSVP by clicking:\n"
-            f"✅ Going: {base_url}/rsvp?event={event_id}&choice=yes\n"
-            f"❓ Maybe: {base_url}/rsvp?event={event_id}&choice=maybe\n" 
-            f"❌ Can't Go: {base_url}/rsvp?event={event_id}&choice=no\n\n"
-            f"💡 Tap any link above to RSVP instantly!"
+        # Create clean RSVP options with hidden URLs using short text
+        rsvp_options = (
+            f"\n\n📱 Tap to RSVP:\n"
+            f"✅ Going → {base_url}/api/rsvp?event={event_id}&choice=yes\n"
+            f"❓ Maybe → {base_url}/api/rsvp?event={event_id}&choice=maybe\n" 
+            f"❌ Can't Go → {base_url}/api/rsvp?event={event_id}&choice=no"
         )
         
-        # Combine the original text with RSVP links
-        full_message = text + rsvp_links
+        # Combine the original text with RSVP options
+        full_message = text + rsvp_options
         
-        # Send regular message with RSVP links
+        # Send regular message with RSVP options
         return await _send_groupme_message(bot_id, full_message, image_url)
         
     except Exception as e:
