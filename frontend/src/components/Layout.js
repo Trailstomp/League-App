@@ -180,9 +180,9 @@ const Layout = ({
                     transition-transform duration-300 ease-in-out
                 `}
                 style={{
-                    top: '12vh', // Position below full header (ticker + banner)
+                    top: 'calc(4vh + 8vh + 8px)', // Position below full header (ticker + banner)
                     bottom: '0',
-                    height: '88vh', // 100vh - 12vh header
+                    height: 'calc(100vh - 4vh - 8vh - 8px)', // Full height minus header
                     width: '75vw', // 75% of viewport width on mobile
                     maxWidth: '320px'
                 }}>
