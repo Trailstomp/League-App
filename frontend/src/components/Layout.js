@@ -243,7 +243,7 @@ const Layout = ({
                             fontFamily: websiteStyle.mainFont || 'Inter, sans-serif',
                             fontSize: websiteStyle.mainFontSize || '16px',
                             color: websiteStyle.mainTextColor || '#374151',
-                            minHeight: 'calc(100vh - 140px)', // Ensure full height below header
+                            minHeight: 'calc(100vh - 164px)', // Ensure full height below header
                             padding: '2vh 3vw' // Responsive padding
                         }}
                     >
