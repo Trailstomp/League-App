@@ -4962,8 +4962,28 @@ async def handle_rsvp_link_click(event: str = None, choice: str = None, gmid: st
                 </body></html>
             """)
         
-        response = choice_mapping[choice]
-        event_id = event
+        # Handle both long and short parameter names
+        actual_choice = choice or c
+        actual_event = event or e
+        
+        if not actual_choice or not actual_event:
+            return HTMLResponse("""
+                <html><body style='font-family: Arial; padding: 20px; text-align: center;'>
+                    <h2>❌ Missing Parameters</h2>
+                    <p>Invalid RSVP link.</p>
+                </body></html>
+            """)
+            
+        if actual_choice not in choice_mapping:
+            return HTMLResponse("""
+                <html><body style='font-family: Arial; padding: 20px; text-align: center;'>
+                    <h2>❌ Invalid RSVP Option</h2>
+                    <p>Please use a valid RSVP link.</p>
+                </body></html>
+            """)
+        
+        response = choice_mapping[actual_choice]
+        event_id = actual_event
         
         # Try to get actual username from GroupMe or use provided name
         user_name = "Someone"  # Default fallback
