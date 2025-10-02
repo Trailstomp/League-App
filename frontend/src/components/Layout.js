@@ -163,9 +163,9 @@ const Layout = ({
                     <div 
                         className="fixed left-0 z-20 overflow-hidden"
                         style={{
-                            top: '140px', // Position below header
+                            top: '164px', // Position below header
                             bottom: '0',
-                            height: 'calc(100vh - 140px)', // Full height minus header
+                            height: 'calc(100vh - 164px)', // Full height minus header
                             width: '20vw', // 20% of viewport width instead of fixed 256px
                             maxWidth: '280px', // Max width cap
                             minWidth: '200px' // Min width cap
