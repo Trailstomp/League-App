@@ -101,7 +101,29 @@ const NewsManager = ({ teams = [], currentUser }) => {
         
         try {
             setSaving(true);
-            setNewsItems(prev => prev.filter(item => item.id !== itemId));
+            
+            // Filter out the item to delete
+            const updatedItems = newsItems.filter(item => item.id !== itemId);
+            
+            // Save to API
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/league-data/newsItems`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedItems)
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log('✅ News items updated in API after deletion:', result);
+                setNewsItems(updatedItems);
+            } else {
+                console.error('❌ Failed to update news items in API:', response.statusText);
+                alert('Failed to delete news item from server. Please try again.');
+                return;
+            }
+            
             console.log('✅ News item deleted successfully');
         } catch (error) {
             console.error('❌ Error deleting news item:', error);
