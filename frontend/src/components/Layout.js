@@ -140,8 +140,8 @@ const Layout = ({
                 {/* Mobile Navigation Overlay */}
                 {isMobileMenuOpen && (
                     <div 
-                        className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
-                        style={{top: 'calc(4vh + 8vh + 8px)'}} // Position below full header (ticker + banner)
+                        className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+                        style={{top: '120px'}} // Position below header
                     />
                 )}
                 
@@ -150,9 +150,9 @@ const Layout = ({
                     <div 
                         className="fixed left-0 z-20 overflow-hidden"
                         style={{
-                            top: 'calc(4vh + 8vh + 8px)', // Position below full header (ticker + banner)
+                            top: '120px', // Position below header
                             bottom: '0',
-                            height: 'calc(100vh - 4vh - 8vh - 8px)', // Full height minus header
+                            height: 'calc(100vh - 120px)', // Full height minus header
                             width: '20vw', // 20% of viewport width instead of fixed 256px
                             maxWidth: '280px', // Max width cap
                             minWidth: '200px' // Min width cap
