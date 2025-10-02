@@ -4942,6 +4942,109 @@ async def get_team_channels(team_id: str):
 # EVENT RSVP & NOTIFICATIONS
 # ============================================================================
 
+@api_router.get("/rsvp")
+async def handle_rsvp_link_click(event: str, choice: str, gmid: str = None):
+    """Handle RSVP link clicks from GroupMe messages"""
+    try:
+        # Validate choice parameter
+        choice_mapping = {
+            'yes': 'going',
+            'going': 'going', 
+            'maybe': 'maybe',
+            'no': 'not_going',
+            'cant': 'not_going'
+        }
+        
+        if choice not in choice_mapping:
+            return HTMLResponse("""
+                <html><body style='font-family: Arial; padding: 20px; text-align: center;'>
+                    <h2>❌ Invalid RSVP Option</h2>
+                    <p>Please use a valid RSVP link.</p>
+                </body></html>
+            """)
+        
+        response = choice_mapping[choice]
+        event_id = event
+        
+        # For now, use a generic user ID if gmid not provided
+        # In production, you could extract this from GroupMe webhook or require login
+        user_id = gmid or f"anonymous_{int(datetime.utcnow().timestamp())}"
+        user_name = f"User {user_id}" if not gmid else f"GroupMe User {gmid}"
+        
+        # Create or update RSVP
+        existing_rsvp = await db.event_rsvps.find_one({
+            "event_id": event_id,
+            "user_id": user_id
+        })
+        
+        rsvp_record = {
+            "event_id": event_id,
+            "user_id": user_id,
+            "response": response,
+            "user_name": user_name,
+            "updated_at": datetime.utcnow().isoformat(),
+            "via_link": True
+        }
+        
+        if existing_rsvp:
+            await db.event_rsvps.update_one(
+                {"event_id": event_id, "user_id": user_id},
+                {"$set": rsvp_record}
+            )
+            action = "updated"
+        else:
+            rsvp_record['id'] = str(uuid.uuid4())
+            rsvp_record['created_at'] = datetime.utcnow().isoformat()
+            await db.event_rsvps.insert_one(rsvp_record)
+            action = "recorded"
+        
+        logger.info(f"✅ RSVP {action} via link: {user_name} -> {response} for event {event_id}")
+        
+        # Response emojis for confirmation
+        response_emojis = {
+            'going': '✅',
+            'maybe': '❓', 
+            'not_going': '❌'
+        }
+        
+        response_text = {
+            'going': 'You\'re going!',
+            'maybe': 'You might attend',
+            'not_going': 'You can\'t make it'
+        }
+        
+        emoji = response_emojis[response]
+        text = response_text[response]
+        
+        # Return a simple HTML confirmation page
+        return HTMLResponse(f"""
+            <html>
+            <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <title>RSVP Confirmed</title>
+            </head>
+            <body style='font-family: Arial, sans-serif; padding: 20px; text-align: center; background: #f8fafc;'>
+                <div style='max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);'>
+                    <h1 style='color: #1f2937; margin-bottom: 20px;'>{emoji} RSVP Confirmed!</h1>
+                    <p style='color: #6b7280; font-size: 18px; margin-bottom: 20px;'>{text}</p>
+                    <p style='color: #9ca3af; font-size: 14px;'>Your response has been {action} for this event.</p>
+                    <div style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;'>
+                        <p style='color: #9ca3af; font-size: 12px;'>You can close this page and return to GroupMe.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+        """)
+        
+    except Exception as e:
+        logger.error(f"❌ Error processing RSVP link: {e}")
+        return HTMLResponse("""
+            <html><body style='font-family: Arial; padding: 20px; text-align: center;'>
+                <h2>❌ Error Processing RSVP</h2>
+                <p>Please try again or contact support.</p>
+            </body></html>
+        """)
+
 @api_router.post("/events/{event_id}/rsvp")
 async def create_or_update_rsvp(event_id: str, rsvp_data: Dict[str, Any]):
     """Create or update an RSVP for an event"""
