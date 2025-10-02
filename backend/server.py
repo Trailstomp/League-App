@@ -3510,21 +3510,25 @@ async def upload_image_to_groupme(image_url: str, access_token: str) -> str:
         return None
 
 async def _send_groupme_message_with_rsvp(bot_id: str, text: str, event_id: str, image_url: str = None) -> bool:
-    """Send message through GroupMe bot with text-based RSVP instructions"""
+    """Send message through GroupMe bot with clickable RSVP links"""
     
     try:
-        # GroupMe API doesn't support poll attachments, so we use text-based RSVP
-        rsvp_instructions = (
-            "\n\n💬 RSVP by replying:\n"
-            "• Type '/rsvp yes' or '/rsvp going' - if you'll be there ✅\n"
-            "• Type '/rsvp maybe' - if you're not sure ❓\n"
-            "• Type '/rsvp no' or '/rsvp cant' - if you can't make it ❌"
+        # Get the base URL from environment or use a default
+        base_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://lacrosse-league-3.preview.emergentagent.com')
+        
+        # Create clickable RSVP links - GroupMe will automatically make these clickable
+        rsvp_links = (
+            f"\n\n📱 RSVP by clicking:\n"
+            f"✅ Going: {base_url}/rsvp?event={event_id}&choice=yes\n"
+            f"❓ Maybe: {base_url}/rsvp?event={event_id}&choice=maybe\n" 
+            f"❌ Can't Go: {base_url}/rsvp?event={event_id}&choice=no\n\n"
+            f"💡 Tap any link above to RSVP instantly!"
         )
         
-        # Combine the original text with RSVP instructions
-        full_message = text + rsvp_instructions
+        # Combine the original text with RSVP links
+        full_message = text + rsvp_links
         
-        # Send regular message with RSVP instructions
+        # Send regular message with RSVP links
         return await _send_groupme_message(bot_id, full_message, image_url)
         
     except Exception as e:
