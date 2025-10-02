@@ -77,33 +77,31 @@ const Layout = ({
 
     return (
         <div>
-            {/* Fixed Header Container - Event Ticker (Top) + League Banner (Below) */}
-            <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
-                {/* Event Ticker - At Very Top */}
-                <div className="bg-slate-800 text-white shadow-sm w-full" style={{ height: '4vh', minHeight: '32px' }}>
-                    <EventsTicker 
-                        events={events}
-                        teams={teams}
-                        websiteStyle={websiteStyle}
-                        onEventClick={onEventClick}
-                        onTeamClick={onTeamClick}
-                    />
-                </div>
-                
-                {/* League Banner - Below Ticker */}
-                <div 
-                    className="px-4 py-3 border-b shadow-sm w-full flex items-center"
-                    style={{
-                        backgroundColor: websiteStyle.bannerBackgroundType === 'image' ? 'transparent' : (websiteStyle.bannerBackgroundColor || '#ffffff'),
-                        backgroundImage: websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage 
-                            ? `url(${websiteStyle.bannerBackgroundImage})` 
-                            : 'none',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        height: '8vh',
-                        minHeight: '68px'
-                    }}
-                >
+            {/* Event Ticker - Fixed at very top */}
+            <div className="fixed top-0 left-0 right-0 z-50 bg-slate-800 text-white shadow-sm" style={{ height: '40px' }}>
+                <EventsTicker 
+                    events={events}
+                    teams={teams}
+                    websiteStyle={websiteStyle}
+                    onEventClick={onEventClick}
+                    onTeamClick={onTeamClick}
+                />
+            </div>
+            
+            {/* League Banner - Fixed below ticker */}
+            <div 
+                className="fixed left-0 right-0 z-40 px-4 py-3 border-b shadow-sm flex items-center"
+                style={{
+                    top: '40px',
+                    backgroundColor: websiteStyle.bannerBackgroundType === 'image' ? 'transparent' : (websiteStyle.bannerBackgroundColor || '#ffffff'),
+                    backgroundImage: websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage 
+                        ? `url(${websiteStyle.bannerBackgroundImage})` 
+                        : 'none',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    height: '80px'
+                }}
+            >
                     {/* Overlay for image banners */}
                     {websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage && (
                         <div className="absolute inset-0 bg-black bg-opacity-30 z-0"></div>
