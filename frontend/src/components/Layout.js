@@ -133,7 +133,6 @@ const Layout = ({
                         </div>
                     </div>
                 </div>
-            </div>
 
             {/* Main Container with proper spacing for fixed header */}
             <div style={{...getBackgroundStyle(), paddingTop: '120px', minHeight: '100vh'}}>
