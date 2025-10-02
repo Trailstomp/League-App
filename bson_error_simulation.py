@@ -6,7 +6,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from environment - PRODUCTION URL
-BACKEND_URL = "https://sports-connect-8.preview.emergentagent.com/api"
+BACKEND_URL = "https://lacrosse-league-3.preview.emergentagent.com/api"
 
 def check_player_photo_sizes():
     """Check if player photos are causing BSON issues"""

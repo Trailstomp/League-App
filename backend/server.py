@@ -30,7 +30,7 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # Backend URL for proxy endpoints
-BACKEND_URL = os.environ.get('BACKEND_URL', 'https://sports-connect-8.preview.emergentagent.com')
+BACKEND_URL = os.environ.get('BACKEND_URL', 'https://lacrosse-league-3.preview.emergentagent.com')
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
