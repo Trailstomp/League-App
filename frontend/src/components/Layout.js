@@ -213,7 +213,7 @@ const Layout = ({
                         onClick={() => setIsMobileMenuOpen(true)}
                         className="md:hidden fixed z-40 p-2 rounded-lg shadow-lg transition-colors mobile-nav-button"
                         style={{
-                            top: '13vh', // Just below header
+                            top: 'calc(4vh + 8vh + 16px)', // Just below header with padding
                             left: '2vw', // 2% from left edge
                             backgroundColor: websiteStyle.navBackgroundColor || '#ffffff',
                             color: websiteStyle.navTextColor || '#374151'
