@@ -79,8 +79,8 @@ const Layout = ({
         <div>
             {/* Fixed Header Container - Event Ticker (Top) + League Banner (Below) */}
             <div className="fixed top-0 left-0 right-0 z-50 flex flex-col" style={{ height: '12vh' }}>
-                {/* Event Ticker - At Very Top */}
-                <div className="bg-slate-800 text-white shadow-sm flex-shrink-0" style={{ height: '4vh', minHeight: '32px' }}>
+                {/* Event Ticker - At Very Top with higher z-index */}
+                <div className="bg-slate-800 text-white shadow-sm flex-shrink-0 relative z-10" style={{ height: '4vh', minHeight: '32px' }}>
                     <EventsTicker 
                         events={events}
                         teams={teams}
@@ -92,7 +92,7 @@ const Layout = ({
                 
                 {/* League Banner - Below Ticker */}
                 <div 
-                    className="px-4 py-3 border-b shadow-sm flex-1 flex items-center"
+                    className="px-4 py-3 border-b shadow-sm flex-1 flex items-center relative"
                     style={{
                         backgroundColor: websiteStyle.bannerBackgroundType === 'image' ? 'transparent' : (websiteStyle.bannerBackgroundColor || '#ffffff'),
                         backgroundImage: websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage 
@@ -105,7 +105,7 @@ const Layout = ({
                 >
                     {/* Overlay for image banners */}
                     {websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage && (
-                        <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+                        <div className="absolute inset-0 bg-black bg-opacity-30 z-0"></div>
                     )}
                     
                     <div className="flex items-center justify-between relative z-10 max-w-7xl mx-auto w-full">
