@@ -471,6 +471,61 @@ async def update_website_style(style_data: Dict[str, Any]):
         logger.error(f"❌ Error updating website style: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/league-data/newsItems")
+async def update_news_items(news_data: List[Dict[str, Any]]):
+    """Update news items data in the league database"""
+    try:
+        # Get the current league data
+        league_doc = await db.league_data.find_one({"id": "main_league"})
+        if not league_doc:
+            # Create new league data if it doesn't exist
+            league_doc = {
+                "id": "main_league",
+                "newsItems": [],
+                "lastUpdated": datetime.utcnow().isoformat()
+            }
+        
+        # Update the newsItems field
+        league_doc["newsItems"] = news_data
+        league_doc["lastUpdated"] = datetime.utcnow().isoformat()
+        
+        # Save back to database
+        result = await db.league_data.replace_one(
+            {"id": "main_league"},
+            league_doc,
+            upsert=True
+        )
+        
+        logger.info(f"✅ News items updated - {len(news_data)} items, modified: {result.modified_count}")
+        
+        return {
+            "status": "success", 
+            "message": f"Successfully updated {len(news_data)} news items",
+            "modified": result.modified_count,
+            "upserted": result.upserted_id is not None
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error updating news items: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/league-data/newsItems")
+async def get_news_items():
+    """Get news items from the league database"""
+    try:
+        league_doc = await db.league_data.find_one({"id": "main_league"})
+        if not league_doc or "newsItems" not in league_doc:
+            return {"newsItems": []}
+        
+        news_items = league_doc["newsItems"]
+        logger.info(f"✅ Retrieved {len(news_items)} news items")
+        
+        return {"newsItems": news_items}
+        
+    except Exception as e:
+        logger.error(f"❌ Error fetching news items: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/league-logo-upload")
 async def upload_league_logo(file: UploadFile = File(...)):
     """Upload league logo to Google Drive"""
