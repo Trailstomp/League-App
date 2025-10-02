@@ -236,11 +236,8 @@ const TeamHomeTab = ({ team, teams, events, onNavigate }) => {
     
     return (
         <div className="space-y-4 sm:space-y-6">
-            {/* Team News Ticker */}
-            <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">📰 Team News & Updates</h3>
-                {/* Game Ticker moved to Layout component - now shows on all pages */}
-            </div>
+            {/* Team News */}
+            <NewsDisplay teamId={team.id} maxItems={5} />
 
             {/* Team Media Gallery */}
             <TeamGalleryDisplay 
