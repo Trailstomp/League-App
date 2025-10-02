@@ -296,6 +296,23 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                             <NavItem icon={<span>🏆</span>} label="My Team Admin" pageName="team-admin" />
                         )}
                     </div>
+                    
+                    {/* Authentication Actions - Moved up here */}
+                    <div className="mt-4 pt-4 border-t border-slate-200">
+                        {currentUser ? (
+                            <NavItem 
+                                icon={<LacrosseIcon name="logout" />} 
+                                label="Logout" 
+                                onClick={onLogout}
+                            />
+                        ) : (
+                            <NavItem 
+                                icon={<LacrosseIcon name="login" />} 
+                                label="Login" 
+                                onClick={onLogin}
+                            />
+                        )}
+                    </div>
                 </nav>
 
                 {/* Teams Section - Grouped by Division */}
