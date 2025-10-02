@@ -325,22 +325,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 />
             </div>
 
-            {/* Authentication Actions - Fixed at bottom */}
-            <div className="p-4 border-t flex-shrink-0">
-                {currentUser ? (
-                    <NavItem 
-                        icon={<LacrosseIcon name="logout" />} 
-                        label="Logout" 
-                        onClick={onLogout}
-                    />
-                ) : (
-                    <NavItem 
-                        icon={<LacrosseIcon name="login" />} 
-                        label="Login" 
-                        onClick={onLogin}
-                    />
-                )}
-            </div>
+            {/* Authentication moved above - this section removed */}
         </div>
     );
 };
