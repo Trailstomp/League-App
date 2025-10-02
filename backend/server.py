@@ -3705,7 +3705,9 @@ async def get_event_groupme_rsvps(event_id: str):
             "event": {
                 "id": event["id"],
                 "title": event["title"],
-                "start_datetime": event["start_datetime"],
+                "date": event.get("date"),
+                "time": event.get("time"),
+                "start_datetime": event.get("start_datetime"),  # Keep for compatibility
                 "requires_rsvp": event.get("requires_rsvp", False)
             },
             "summary": {
