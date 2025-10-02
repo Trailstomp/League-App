@@ -4942,7 +4942,7 @@ async def get_team_channels(team_id: str):
 # ============================================================================
 
 @api_router.get("/rsvp") 
-async def handle_rsvp_link_click(event: str = None, choice: str = None, gmid: str = None, name: str = None, e: str = None, c: str = None):
+async def handle_rsvp_link_click(request: Request, event: str = None, choice: str = None, gmid: str = None, name: str = None, e: str = None, c: str = None):
     """Handle RSVP link clicks from GroupMe messages"""
     try:
         # Validate choice parameter
