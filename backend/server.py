@@ -3516,12 +3516,14 @@ async def _send_groupme_message_with_rsvp(bot_id: str, text: str, event_id: str,
         # Get the base URL from environment or use a default
         base_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://lacrosse-league-3.preview.emergentagent.com')
         
-        # Create clean RSVP options with hidden URLs using short text
+        # Create RSVP options with just clickable text - GroupMe will make the URLs clickable
+        # We'll use URL shortening approach or make the text itself more prominent
         rsvp_options = (
-            f"\n\n📱 Tap to RSVP:\n"
-            f"✅ Going → {base_url}/api/rsvp?event={event_id}&choice=yes\n"
-            f"❓ Maybe → {base_url}/api/rsvp?event={event_id}&choice=maybe\n" 
-            f"❌ Can't Go → {base_url}/api/rsvp?event={event_id}&choice=no"
+            f"\n\n📱 Tap to RSVP:\n\n"
+            f"✅ YES: {base_url}/api/rsvp?event={event_id}&choice=yes&name=USER\n\n"
+            f"❓ MAYBE: {base_url}/api/rsvp?event={event_id}&choice=maybe&name=USER\n\n"
+            f"❌ NO: {base_url}/api/rsvp?event={event_id}&choice=no&name=USER\n\n"
+            f"👆 Just tap any link above!"
         )
         
         # Combine the original text with RSVP options
