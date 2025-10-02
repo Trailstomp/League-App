@@ -48,11 +48,13 @@ const NewsManager = ({ teams = [], currentUser }) => {
             setSaving(true);
             console.log('📰 Saving news item:', itemData);
 
+            let updatedItems;
+            
             if (editingItem) {
                 // Update existing item
-                setNewsItems(prev => prev.map(item => 
+                updatedItems = newsItems.map(item => 
                     item.id === editingItem.id ? { ...itemData, id: editingItem.id } : item
-                ));
+                );
                 setEditingItem(null);
             } else {
                 // Add new item
@@ -62,8 +64,27 @@ const NewsManager = ({ teams = [], currentUser }) => {
                     date: new Date().toISOString().split('T')[0],
                     active: itemData.active !== undefined ? itemData.active : true
                 };
-                setNewsItems(prev => [newItem, ...prev]);
+                updatedItems = [newItem, ...newsItems];
                 setShowAddForm(false);
+            }
+            
+            // Save to API
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/league-data/newsItems`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedItems)
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log('✅ News items saved to API:', result);
+                setNewsItems(updatedItems);
+            } else {
+                console.error('❌ Failed to save news items to API:', response.statusText);
+                alert('Failed to save news item to server. Please try again.');
+                return;
             }
             
             console.log('✅ News item saved successfully');
