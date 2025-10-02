@@ -4841,7 +4841,7 @@ async def get_team_news(team_id: str):
         # Filter news items
         team_news = [
             item for item in league_data["newsItems"]
-            if item.get("team_id") == team_id or item.get("visibility") == "league"
+            if item.get("teamId") == team_id or item.get("teamId") == "league"
         ]
         
         logger.info(f"✅ Loaded {len(team_news)} news items for team {team_id}")
