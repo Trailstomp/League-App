@@ -3430,9 +3430,17 @@ async def _handle_schedule_command(webhook_data: dict, channel: dict):
         response = "📅 Upcoming Events:\n\n"
         for i, event in enumerate(events, 1):
             try:
-                event_date = datetime.fromisoformat(event["start_datetime"]).strftime("%m/%d %I:%M %p")
-            except:
-                event_date = event["start_datetime"]
+                if event.get("start_datetime"):
+                    event_date = datetime.fromisoformat(event["start_datetime"]).strftime("%m/%d %I:%M %p")
+                elif event.get("date") and event.get("time"):
+                    event_date = f"{event['date']} {event['time']}"
+                elif event.get("date"):
+                    event_date = event["date"]
+                else:
+                    event_date = "TBD"
+            except Exception as e:
+                logger.warning(f"Error formatting event date: {e}")
+                event_date = event.get("date", "TBD")
             response += f"{i}. {event['title']}\n"
             response += f"   📅 {event_date}"
             if event.get("location"):
