@@ -83,10 +83,11 @@ const Layout = ({
                 <div 
                     className="w-full bg-slate-800 text-white shadow-sm" 
                     style={{ 
-                        height: '40px',
+                        height: '60px',
                         display: 'block',
                         position: 'relative',
-                        zIndex: 100
+                        zIndex: 100,
+                        overflow: 'hidden'
                     }}
                 >
                     <EventsTicker 
