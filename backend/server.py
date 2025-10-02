@@ -4023,7 +4023,9 @@ async def get_event_rsvp_summary(event_id: str):
             "event": {
                 "id": target_event["id"],
                 "title": target_event["title"],
-                "start_datetime": target_event["start_datetime"],
+                "date": target_event.get("date"),
+                "time": target_event.get("time"),
+                "start_datetime": target_event.get("start_datetime"),  # Keep for compatibility
                 "location": target_event.get("location"),
                 "type": target_event.get("type")
             },
