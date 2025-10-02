@@ -83,7 +83,7 @@ const Layout = ({
                 <div 
                     className="w-full bg-slate-800 text-white shadow-sm" 
                     style={{ 
-                        height: '60px',
+                        height: '84px',
                         display: 'block',
                         position: 'relative',
                         zIndex: 100,
