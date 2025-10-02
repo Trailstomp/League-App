@@ -249,6 +249,9 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                 )}
             </div>
 
+            {/* League News */}
+            <NewsDisplay maxItems={3} showTeamFilter={true} />
+
             {/* League Media Gallery */}
             <TeamGalleryDisplay pageType="league" />
 
