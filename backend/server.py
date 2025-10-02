@@ -3794,8 +3794,30 @@ async def send_event_notification(
             raise HTTPException(status_code=404, detail="Event not found in schedule")
         
         # Format event message based on notification type
-        event_datetime = datetime.fromisoformat(target_event["start_datetime"].replace('Z', '+00:00'))
-        formatted_date = event_datetime.strftime("%B %d, %Y at %I:%M %p")
+        # Handle different event field structures
+        try:
+            if target_event.get("start_datetime"):
+                # Handle events with start_datetime field
+                event_datetime = datetime.fromisoformat(target_event["start_datetime"].replace('Z', '+00:00'))
+                formatted_date = event_datetime.strftime("%B %d, %Y at %I:%M %p")
+            elif target_event.get("date") and target_event.get("time"):
+                # Handle events with separate date and time fields
+                event_date = target_event["date"]
+                event_time = target_event["time"]
+                # Combine date and time for formatting
+                date_obj = datetime.fromisoformat(event_date) if 'T' in event_date else datetime.strptime(event_date, '%Y-%m-%d')
+                formatted_date = date_obj.strftime("%B %d, %Y") + f" at {event_time}"
+            elif target_event.get("date"):
+                # Handle events with only date field
+                event_date = target_event["date"]
+                date_obj = datetime.fromisoformat(event_date) if 'T' in event_date else datetime.strptime(event_date, '%Y-%m-%d')
+                formatted_date = date_obj.strftime("%B %d, %Y")
+            else:
+                # Fallback if no date fields are available
+                formatted_date = "TBD"
+        except (ValueError, KeyError) as e:
+            logger.warning(f"Error parsing event date/time: {e}")
+            formatted_date = "TBD"
         
         message_templates = {
             "event_announcement": f"📢 Event Announcement\n\n🏆 {target_event['title']}\n📅 {formatted_date}",
