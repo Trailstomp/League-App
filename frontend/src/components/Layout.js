@@ -191,9 +191,9 @@ const Layout = ({
                     transition-transform duration-300 ease-in-out
                 `}
                 style={{
-                    top: '180px', // Position below header
+                    top: '200px', // Position below header
                     bottom: '0',
-                    height: 'calc(100vh - 180px)', // Full height minus header
+                    height: 'calc(100vh - 200px)', // Full height minus header
                     width: '75vw', // 75% of viewport width on mobile
                     maxWidth: '320px'
                 }}>
