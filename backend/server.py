@@ -4942,7 +4942,7 @@ async def get_team_channels(team_id: str):
 # ============================================================================
 
 @api_router.get("/rsvp")
-async def handle_rsvp_link_click(event: str, choice: str, gmid: str = None):
+async def handle_rsvp_link_click(event: str, choice: str, gmid: str = None, name: str = None):
     """Handle RSVP link clicks from GroupMe messages"""
     try:
         # Validate choice parameter
@@ -4965,10 +4965,26 @@ async def handle_rsvp_link_click(event: str, choice: str, gmid: str = None):
         response = choice_mapping[choice]
         event_id = event
         
-        # For now, use a generic user ID if gmid not provided
-        # In production, you could extract this from GroupMe webhook or require login
+        # Try to get actual username from GroupMe or use provided name
+        user_name = "Someone"  # Default fallback
         user_id = gmid or f"anonymous_{int(datetime.utcnow().timestamp())}"
-        user_name = f"User {user_id}" if not gmid else f"GroupMe User {gmid}"
+        
+        if name:
+            # Use provided name parameter
+            user_name = name
+        elif gmid:
+            # Try to find user name from recent GroupMe messages
+            try:
+                recent_message = await db.groupme_messages.find_one(
+                    {"sender_id": gmid},
+                    sort=[("created_at", -1)]
+                )
+                if recent_message and recent_message.get("name"):
+                    user_name = recent_message["name"]
+                else:
+                    user_name = f"User {gmid[-4:]}"  # Show last 4 digits of ID
+            except:
+                user_name = f"User {gmid[-4:]}" if gmid else "Someone"
         
         # Create or update RSVP
         existing_rsvp = await db.event_rsvps.find_one({
