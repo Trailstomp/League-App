@@ -4954,14 +4954,6 @@ async def handle_rsvp_link_click(event: str = None, choice: str = None, gmid: st
             'cant': 'not_going'
         }
         
-        if choice not in choice_mapping:
-            return HTMLResponse("""
-                <html><body style='font-family: Arial; padding: 20px; text-align: center;'>
-                    <h2>❌ Invalid RSVP Option</h2>
-                    <p>Please use a valid RSVP link.</p>
-                </body></html>
-            """)
-        
         # Handle both long and short parameter names
         actual_choice = choice or c
         actual_event = event or e
