@@ -21,48 +21,23 @@ const NewsManager = ({ teams = [], currentUser }) => {
     const loadNewsItems = async () => {
         try {
             setLoading(true);
-            // For now, use mock data - this can be connected to API later
-            const mockNews = [
-                {
-                    id: '1',
-                    type: 'text',
-                    heading: 'Season Opener Victory',
-                    text: 'The Hawks dominated their season opener with a decisive 15-8 victory over the Eagles. Outstanding performance by the entire team!',
-                    comments: 'Next game scheduled for Saturday at 2 PM',
-                    date: new Date().toISOString().split('T')[0],
-                    expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days from now
-                    teamId: teams[0]?.id || 'league',
-                    active: true
-                },
-                {
-                    id: '2',
-                    type: 'image',
-                    heading: 'Championship Trophy Presentation',
-                    text: 'Congratulations to our championship team for their incredible season. The dedication and teamwork shown throughout the year was exceptional.',
-                    comments: 'Awards ceremony photos available in the gallery',
-                    imageUrl: 'https://placehold.co/400x250/dc2626/FFFFFF?text=Championship+Trophy',
-                    date: new Date().toISOString().split('T')[0],
-                    expirationDate: null, // No expiration
-                    teamId: teams[1]?.id || 'league',
-                    active: true
-                },
-                {
-                    id: '3',
-                    type: 'video',
-                    heading: 'Training Session Highlights',
-                    text: 'Check out the intense training sessions that prepare our players for competition. Hard work pays off!',
-                    comments: 'Weekly training sessions every Tuesday and Thursday',
-                    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                    thumbnailUrl: 'https://placehold.co/400x250/1d4ed8/FFFFFF?text=Training+Video',
-                    date: new Date().toISOString().split('T')[0],
-                    expirationDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7 days from now
-                    teamId: 'league',
-                    active: false // Manually set to inactive
-                }
-            ];
-            setNewsItems(mockNews);
+            console.log('📰 Loading news items from API...');
+            
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/league-data/newsItems`);
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('✅ News items loaded from API:', data.newsItems);
+                setNewsItems(data.newsItems || []);
+            } else {
+                console.error('❌ Failed to load news items:', response.statusText);
+                // Initialize with empty array if API fails
+                setNewsItems([]);
+            }
         } catch (error) {
             console.error('❌ Error loading news items:', error);
+            // Initialize with empty array on error
+            setNewsItems([]);
         } finally {
             setLoading(false);
         }
