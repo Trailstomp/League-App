@@ -138,7 +138,7 @@ const Layout = ({
             </div>
 
             {/* Main Container with proper spacing for fixed header */}
-            <div style={{...getBackgroundStyle(), paddingTop: '12vh', minHeight: '100vh'}}>
+            <div style={{...getBackgroundStyle(), paddingTop: 'calc(4vh + 8vh + 8px)', minHeight: '100vh'}}>
                 {/* Mobile Navigation Overlay */}
                 {isMobileMenuOpen && (
                     <div 
