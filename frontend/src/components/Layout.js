@@ -186,9 +186,9 @@ const Layout = ({
             {/* Main Container with proper spacing for fixed header */}
             <div style={{...getBackgroundStyle(), paddingTop: '200px', minHeight: '100vh'}}>
                 {/* Mobile Navigation Overlay */}
-                {isMobileMenuOpen && (
+                {isMobileView && isMobileMenuOpen && (
                     <div 
-                        className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+                        className="fixed inset-0 bg-black bg-opacity-50 z-40"
                         style={{top: '200px'}} // Position below header
                         onClick={() => setIsMobileMenuOpen(false)}
                         onTouchStart={(e) => e.stopPropagation()}
