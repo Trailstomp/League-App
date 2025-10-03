@@ -266,11 +266,10 @@ const Layout = ({
                 
                 {/* Main Content Area */}
                 <div 
-                    className="main-content-area w-full" 
+                    className="main-content-area w-full transition-all duration-300" 
                     style={{
-                        marginLeft: isMobileView ? '0' : '20vw',
-                        width: isMobileView ? '100vw' : '80vw',
-                        paddingTop: '200px', // Account for fixed header height
+                        marginLeft: isMobileView ? '0' : (isNavCollapsed ? '80px' : '20vw'),
+                        width: isMobileView ? '100vw' : (isNavCollapsed ? 'calc(100vw - 80px)' : '80vw'),
                         minHeight: '100vh'
                     }}
                 >
@@ -283,18 +282,19 @@ const Layout = ({
                                 e.stopPropagation();
                                 setIsMobileMenuOpen(true);
                             }}
-                            className="fixed z-60 p-3 rounded-lg shadow-lg transition-colors mobile-nav-button touch-manipulation"
+                            className="fixed z-60 p-4 rounded-lg shadow-2xl transition-all duration-200 hover:scale-110 mobile-nav-button touch-manipulation"
                         style={{
                             top: '210px', // Just below header with padding
-                            left: '2vw', // 2% from left edge
-                            backgroundColor: websiteStyle.navBackgroundColor || '#ffffff',
-                            color: websiteStyle.navTextColor || '#374151',
-                            border: '2px solid #e5e7eb'
+                            left: '16px', // Fixed position from left
+                            backgroundColor: websiteStyle.primaryColor || '#3b82f6',
+                            color: '#ffffff',
+                            border: '3px solid #ffffff',
+                            boxShadow: '0 8px 24px rgba(0,0,0,0.3), 0 0 0 4px rgba(59, 130, 246, 0.2)'
                         }}
                         aria-label="Open navigation menu"
                     >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         </button>
                     )}
