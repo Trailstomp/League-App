@@ -165,8 +165,15 @@ const TeamsByDivision = ({ teams, websiteStyle, isCollapsed, onNavigate, onMobil
 };
 import { isAdmin, isCoach } from './PermissionsSystem';
 
-const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, teams = [], websiteStyle = {}, onMobileClose }) => {
+const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, teams = [], websiteStyle = {}, onMobileClose, onCollapseChange }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
+
+    // Notify parent when collapse state changes
+    useEffect(() => {
+        if (onCollapseChange) {
+            onCollapseChange(isCollapsed);
+        }
+    }, [isCollapsed, onCollapseChange]);
 
     const NavItem = ({ icon, label, pageName, onClick }) => (
         <button
