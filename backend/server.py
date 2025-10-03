@@ -62,6 +62,36 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+# League and Division Models
+class League(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    description: str = ""
+    sport: str = "lacrosse"
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    settings: Dict[str, Any] = {}
+
+class Division(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    league_id: str
+    description: str = ""
+    level: int = 1
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class Team(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    league_id: str
+    division_id: str
+    division: str  # For backward compatibility
+    color: str = "#3b82f6"
+    logo: Optional[str] = None
+    active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 # League Data Models
 class LeagueData(BaseModel):
     id: str = Field(default="main_league")
