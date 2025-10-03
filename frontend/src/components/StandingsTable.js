@@ -15,14 +15,21 @@ const StandingsTable = ({ teams = [], onTeamClick }) => {
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
     useEffect(() => {
+        loadLeagues();
         loadSeasons();
     }, []);
+
+    useEffect(() => {
+        if (selectedLeague) {
+            loadDivisions();
+        }
+    }, [selectedLeague]);
 
     useEffect(() => {
         if (selectedSeason) {
             loadStandings();
         }
-    }, [selectedSeason]);
+    }, [selectedSeason, selectedLeague, selectedDivision, viewMode]);
 
     const loadSeasons = async () => {
         try {
