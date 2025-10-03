@@ -239,7 +239,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
             )}
             
             {/* Header with Large Logo */}
-            <div className="p-6 border-b flex-shrink-0" style={{borderColor: websiteStyle.navBorderColor || '#e2e8f0'}}>
+            <div className="p-6 border-b flex-shrink-0 relative" style={{borderColor: websiteStyle.navBorderColor || '#e2e8f0'}}>
                 <div className="flex items-center justify-between">
                     {!isCollapsed && (
                         <div className="flex flex-col items-center w-full space-y-3">
