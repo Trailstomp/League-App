@@ -233,7 +233,7 @@ const Layout = ({
                     </div>
                 )}
                 
-                {/* Mobile Navigation - Slide in from left, positioned below full header */}
+                {/* Mobile Navigation - Slide in from left, full height */}
                 {isMobileView && (
                     <div className={`
                         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
@@ -242,9 +242,9 @@ const Layout = ({
                         overflow-y-auto
                     `}
                 style={{
-                    top: '200px', // Position below header
+                    top: '0', // Start from very top
                     bottom: '0',
-                    height: 'calc(100vh - 200px)', // Full height minus header
+                    height: '100vh', // Full viewport height
                     width: '75vw', // 75% of viewport width on mobile
                     maxWidth: '320px'
                 }}
