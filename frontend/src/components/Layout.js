@@ -206,14 +206,14 @@ const Layout = ({
                     />
                 )}
                 
-                {/* Navigation - Fixed position for desktop, full height from top */}
+                {/* Navigation - Fixed position for desktop, positioned below header */}
                 {!isMobileView && (
                     <div 
-                        className="fixed left-0 z-60 overflow-hidden transition-all duration-300"
+                        className="fixed left-0 z-40 overflow-hidden transition-all duration-300"
                         style={{
-                            top: '0', // Start from very top
+                            top: '200px', // Below ticker (120px) + banner (80px)
                             bottom: '0',
-                            height: '100vh', // Full viewport height
+                            height: 'calc(100vh - 200px)',
                             width: isNavCollapsed ? '80px' : '20vw',
                             maxWidth: isNavCollapsed ? '80px' : '320px',
                             minWidth: isNavCollapsed ? '80px' : '240px'
