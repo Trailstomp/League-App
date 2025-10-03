@@ -5,35 +5,7 @@ const ImageModal = ({ imageUrl, imageAlt, onClose }) => {
     const [currentImageUrl, setCurrentImageUrl] = useState(imageUrl);
     const [hasError, setHasError] = useState(false);
 
-    // Helper function to fix Google Drive URLs using proxy
-    const fixGoogleDriveUrl = (url) => {
-        if (!url) return url;
-        
-        const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
-        
-        // Extract Google Drive file ID from various URL formats
-        let fileId = null;
-        
-        // Format: https://drive.google.com/file/d/{id}/view
-        if (url.includes('drive.google.com/file/d/') && url.includes('/view')) {
-            fileId = url.split('/d/')[1].split('/view')[0];
-        }
-        // Format: https://drive.google.com/uc?id={id}
-        else if (url.includes('drive.google.com/uc?id=')) {
-            fileId = url.split('id=')[1].split('&')[0];
-        }
-        // Format: https://drive.google.com/thumbnail?id={id}
-        else if (url.includes('drive.google.com/thumbnail?id=')) {
-            fileId = url.split('id=')[1].split('&')[0];
-        }
-        
-        // If we found a Google Drive file ID, use the proxy
-        if (fileId) {
-            return `${BACKEND_URL}/api/proxy-image?url=${encodeURIComponent(`https://drive.google.com/uc?id=${fileId}`)}`;
-        }
-        
-        return url;
-    };
+    // Using centralized image utility function
 
     useEffect(() => {
         setCurrentImageUrl(fixGoogleDriveUrl(imageUrl));
