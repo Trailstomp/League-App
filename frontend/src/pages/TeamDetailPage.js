@@ -461,9 +461,9 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                     </div>
                                 )}
                                 
-                                {/* Team Logo Overlay */}
+                                {/* Team Logo Overlay - LARGER */}
                                 <div className="absolute top-3 left-3">
-                                    <div className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden border-2 border-white">
+                                    <div className="w-16 h-16 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden border-2 border-white">
                                         {team.style?.logoUrl ? (
                                             <img 
                                                 src={team.style.logoUrl} 
@@ -475,7 +475,7 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                                 className="w-full h-full rounded-full flex items-center justify-center"
                                                 style={{ backgroundColor: team.style?.primaryColor || '#2563eb' }}
                                             >
-                                                <span className="text-white font-bold text-xs">
+                                                <span className="text-white font-bold text-sm">
                                                     {team.name.charAt(0)}
                                                 </span>
                                             </div>
