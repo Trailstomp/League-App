@@ -6097,6 +6097,160 @@ async def activate_season(season_id: str):
         logger.error(f"Error activating season: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ============================================
+# TOURNAMENT INTEGRATION API ENDPOINTS  
+# ============================================
+
+@api_router.post("/tournaments/{tournament_id}/sync-bracket-scores")
+async def sync_tournament_bracket_scores(tournament_id: str):
+    """Sync tournament bracket match scores to the game stats system"""
+    try:
+        logger.info(f"🏆 Syncing bracket scores for tournament: {tournament_id}")
+        
+        # Find the tournament event
+        tournament_event = await db.league_data.find_one({"leagueSchedule.id": tournament_id})
+        if not tournament_event:
+            raise HTTPException(status_code=404, detail="Tournament not found")
+        
+        # Find the specific tournament in the league schedule
+        tournament = None
+        for event in tournament_event.get("leagueSchedule", []):
+            if event.get("id") == tournament_id:
+                tournament = event
+                break
+        
+        if not tournament or tournament.get("type") != "tournament":
+            raise HTTPException(status_code=404, detail="Tournament event not found")
+        
+        bracket_data = tournament.get("bracket")
+        if not bracket_data or not bracket_data.get("rounds"):
+            raise HTTPException(status_code=400, detail="Tournament has no bracket data")
+        
+        matches_synced = 0
+        matches_skipped = 0
+        
+        # Process each round and match
+        for round_data in bracket_data["rounds"]:
+            for match in round_data.get("matches", []):
+                if match.get("status") == "completed" and match.get("score1") is not None and match.get("score2") is not None:
+                    
+                    # Create unique event ID for this match
+                    match_event_id = f"{tournament_id}_match_{match['id']}"
+                    
+                    # Check if game stats already exist for this match
+                    existing_stats = await db.game_stats.find_one({"event_id": match_event_id})
+                    
+                    # Create game stats entry
+                    game_stat = {
+                        "id": str(uuid.uuid4()),
+                        "event_id": match_event_id,
+                        "tournament_id": tournament_id,
+                        "tournament_match_id": match["id"],
+                        "season_id": "2025",  # Default season, could be parameterized
+                        "status": "final",
+                        "date": tournament.get("date", datetime.now().strftime("%Y-%m-%d")),
+                        "location": tournament.get("location", "Tournament Venue"),
+                        "match_type": "tournament",
+                        "round_name": round_data.get("name", "Round"),
+                        "home_team": {
+                            "team_id": match["team1"]["id"],
+                            "goals_for": match["score1"],
+                            "goals_against": match["score2"],
+                            "players": [],
+                            "goalies": []
+                        },
+                        "away_team": {
+                            "team_id": match["team2"]["id"],
+                            "goals_for": match["score2"],
+                            "goals_against": match["score1"],
+                            "players": [],
+                            "goalies": []
+                        },
+                        "created_at": datetime.now(timezone.utc),
+                        "updated_at": datetime.now(timezone.utc)
+                    }
+                    
+                    if existing_stats:
+                        # Update existing stats
+                        await db.game_stats.update_one(
+                            {"event_id": match_event_id},
+                            {"$set": game_stat}
+                        )
+                        logger.info(f"  ✓ Updated: {match['team1']['name']} {match['score1']}-{match['score2']} {match['team2']['name']}")
+                    else:
+                        # Insert new stats
+                        await db.game_stats.insert_one(game_stat)
+                        logger.info(f"  ✓ Added: {match['team1']['name']} {match['score1']}-{match['score2']} {match['team2']['name']}")
+                    
+                    matches_synced += 1
+                else:
+                    matches_skipped += 1
+                    logger.info(f"  ⏭️  Skipped incomplete match: {match.get('id', 'unknown')}")
+        
+        # Update team season stats for affected teams
+        teams_affected = set()
+        for round_data in bracket_data["rounds"]:
+            for match in round_data.get("matches", []):
+                if match.get("team1"):
+                    teams_affected.add(match["team1"]["id"])
+                if match.get("team2"):
+                    teams_affected.add(match["team2"]["id"])
+        
+        for team_id in teams_affected:
+            await _update_team_season_stats(team_id)
+        
+        logger.info(f"🏆 Tournament bracket sync completed: {matches_synced} synced, {matches_skipped} skipped")
+        
+        return {
+            "status": "success",
+            "message": f"Tournament bracket scores synced successfully",
+            "tournament_id": tournament_id,
+            "matches_synced": matches_synced,
+            "matches_skipped": matches_skipped,
+            "teams_affected": len(teams_affected)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error syncing tournament bracket scores: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/tournaments/{tournament_id}/bracket")
+async def get_tournament_bracket(tournament_id: str):
+    """Get tournament bracket data"""
+    try:
+        # Find the tournament event
+        tournament_event = await db.league_data.find_one({"leagueSchedule.id": tournament_id})
+        if not tournament_event:
+            raise HTTPException(status_code=404, detail="Tournament not found")
+        
+        # Find the specific tournament in the league schedule
+        tournament = None
+        for event in tournament_event.get("leagueSchedule", []):
+            if event.get("id") == tournament_id:
+                tournament = event
+                break
+        
+        if not tournament or tournament.get("type") != "tournament":
+            raise HTTPException(status_code=404, detail="Tournament event not found")
+        
+        bracket_data = tournament.get("bracket", {})
+        
+        return {
+            "tournament_id": tournament_id,
+            "tournament_name": tournament.get("title", "Unknown Tournament"),
+            "date": tournament.get("date"),
+            "location": tournament.get("location"),
+            "bracket": bracket_data
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting tournament bracket: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/seasons/{season_id}/summary")
 async def get_season_summary(season_id: str):
     """Get summary statistics for a season"""
