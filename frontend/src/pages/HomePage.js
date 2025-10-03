@@ -125,9 +125,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                 key={team.id} 
                                 className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform hover:scale-105 duration-300 border-4 cursor-pointer group"
                                 style={{ 
-                                    borderColor: team.style?.primaryColor || '#2563eb',
-                                    transform: 'scale(0.7)', // Make cards 30% smaller
-                                    transformOrigin: 'center'
+                                    borderColor: team.style?.primaryColor || '#2563eb'
                                 }}
                                 onClick={() => {
                                     console.log('🏆 Team card clicked:', team.name);
