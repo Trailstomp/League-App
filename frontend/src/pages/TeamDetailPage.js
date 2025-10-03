@@ -3,6 +3,7 @@ import { LacrosseIcon } from '../components/LacrosseIcons';
 import TeamGalleryDisplay from '../components/TeamGalleryDisplay';
 import GroupMeChat from '../components/GroupMeChat';
 import NewsDisplay from '../components/NewsDisplay';
+import TeamStatsDisplay from '../components/TeamStatsDisplay';
 
 const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
     const [activeTab, setActiveTab] = useState('home');
