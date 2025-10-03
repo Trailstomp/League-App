@@ -258,7 +258,9 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                         
                         {/* Teams without division */}
                         {(() => {
-                            const noDivisionTeams = teams.filter(team => !team.division || (team.division !== 'Field' && team.division !== 'Box'));
+                            const noDivisionTeams = teams
+                                .filter(team => !team.division || (team.division !== 'Field' && team.division !== 'Box'))
+                                .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
                             if (noDivisionTeams.length === 0) return null;
                             
                             return (
