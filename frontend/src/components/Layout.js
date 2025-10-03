@@ -117,7 +117,7 @@ const Layout = ({
     };
 
     return (
-        <div>
+        <div className="min-h-screen" style={{...getBackgroundStyle()}}>
             {/* Fixed Header Container - full width at top */}
             <div 
                 className="fixed top-0 left-0 right-0 z-50"
@@ -194,62 +194,29 @@ const Layout = ({
                 </div>
             </div>
 
-            {/* Main Container with proper spacing for fixed header */}
-            <div style={{...getBackgroundStyle(), minHeight: '100vh'}}>
-                {/* Mobile Navigation Overlay */}
-                {isMobileView && isMobileMenuOpen && (
-                    <div 
-                        className="fixed inset-0 bg-black bg-opacity-50 z-40"
-                        style={{top: '0'}} // Cover full screen
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        onTouchStart={(e) => e.stopPropagation()}
-                    />
-                )}
-                
-                {/* Navigation - Fixed position for desktop, positioned below header */}
-                {!isMobileView && (
-                    <div 
-                        className="fixed left-0 z-40 overflow-hidden transition-all duration-300"
-                        style={{
-                            top: '200px', // Below ticker (120px) + banner (80px)
-                            bottom: '0',
-                            height: 'calc(100vh - 200px)',
-                            width: isNavCollapsed ? '80px' : '20vw',
-                            maxWidth: isNavCollapsed ? '80px' : '320px',
-                            minWidth: isNavCollapsed ? '80px' : '240px'
-                        }}
-                    >
-                        <Navigation 
-                            currentPage={currentPage}
-                            onNavigate={handleNavigate}
-                            currentUser={currentUser}
-                            onLogin={onLogin}
-                            onLogout={onLogout}
-                            teams={teams}
-                            websiteStyle={websiteStyle}
-                            onMobileClose={() => setIsMobileMenuOpen(false)}
-                            onCollapseChange={setIsNavCollapsed}
-                        />
-                    </div>
-                )}
-                
-                {/* Mobile Navigation - Slide in from left, positioned below header */}
-                {isMobileView && (
-                    <div className={`
-                        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
-                        fixed left-0 z-40 bg-white shadow-lg
-                        transition-transform duration-300 ease-in-out
-                        overflow-y-auto
-                    `}
-                style={{
-                    top: '200px', // Below header
-                    bottom: '0',
-                    height: 'calc(100vh - 200px)',
-                    width: '75vw',
-                    maxWidth: '320px'
-                }}
-                onTouchStart={(e) => e.stopPropagation()}
-                onTouchMove={(e) => e.stopPropagation()}>
+            {/* Mobile Navigation Overlay */}
+            {isMobileView && isMobileMenuOpen && (
+                <div 
+                    className="fixed inset-0 bg-black bg-opacity-50 z-40"
+                    style={{top: '0'}} // Cover full screen
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    onTouchStart={(e) => e.stopPropagation()}
+                />
+            )}
+            
+            {/* Navigation - Fixed position for desktop, positioned below header */}
+            {!isMobileView && (
+                <div 
+                    className="fixed left-0 z-40 overflow-hidden transition-all duration-300"
+                    style={{
+                        top: '200px', // Below ticker (120px) + banner (80px)
+                        bottom: '0',
+                        height: 'calc(100vh - 200px)',
+                        width: isNavCollapsed ? '80px' : '20vw',
+                        maxWidth: isNavCollapsed ? '80px' : '320px',
+                        minWidth: isNavCollapsed ? '80px' : '240px'
+                    }}
+                >
                     <Navigation 
                         currentPage={currentPage}
                         onNavigate={handleNavigate}
@@ -259,20 +226,50 @@ const Layout = ({
                         teams={teams}
                         websiteStyle={websiteStyle}
                         onMobileClose={() => setIsMobileMenuOpen(false)}
+                        onCollapseChange={setIsNavCollapsed}
                     />
-                    </div>
-                )}
-                
-                {/* Main Content Area */}
-                <div 
-                    className="main-content-area w-full transition-all duration-300" 
-                    style={{
-                        marginLeft: isMobileView ? '0' : (isNavCollapsed ? '80px' : '20vw'),
-                        width: isMobileView ? '100vw' : (isNavCollapsed ? 'calc(100vw - 80px)' : '80vw'),
-                        paddingTop: '200px', // Account for fixed header (ticker 120px + banner 80px)
-                        minHeight: '100vh'
-                    }}
-                >
+                </div>
+            )}
+            
+            {/* Mobile Navigation - Slide in from left, positioned below header */}
+            {isMobileView && (
+                <div className={`
+                    ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
+                    fixed left-0 z-40 bg-white shadow-lg
+                    transition-transform duration-300 ease-in-out
+                    overflow-y-auto
+                `}
+            style={{
+                top: '200px', // Below header
+                bottom: '0',
+                height: 'calc(100vh - 200px)',
+                width: '75vw',
+                maxWidth: '320px'
+            }}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}>
+                <Navigation 
+                    currentPage={currentPage}
+                    onNavigate={handleNavigate}
+                    currentUser={currentUser}
+                    onLogin={onLogin}
+                    onLogout={onLogout}
+                    teams={teams}
+                    websiteStyle={websiteStyle}
+                    onMobileClose={() => setIsMobileMenuOpen(false)}
+                />
+                </div>
+            )}
+            
+            {/* Main Content Area - starts at top with padding to account for fixed header */}
+            <div 
+                className="main-content-area transition-all duration-300" 
+                style={{
+                    marginLeft: isMobileView ? '0' : (isNavCollapsed ? '80px' : '20vw'),
+                    paddingTop: '200px', // Account for fixed header (ticker 120px + banner 80px)
+                    minHeight: '100vh'
+                }}
+            >
                     <div className="flex flex-col">
                     {/* Mobile Navigation Button - Fixed at top left for mobile */}
                     {isMobileView && (
