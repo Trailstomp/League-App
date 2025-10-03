@@ -164,11 +164,12 @@ const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser }) =
                     {(isAdmin(currentUser) || isCoach(currentUser)) && (
                         <div className="mt-3 flex space-x-2">
                             <button
-                                onClick={() => setShowSendNotification(true)}
-                                className="px-3 py-1 bg-blue-600 text-white text-xs rounded-full hover:bg-blue-700 transition-colors flex items-center space-x-1"
+                                onClick={sendEventNotification}
+                                disabled={loading}
+                                className="px-3 py-1 bg-blue-600 text-white text-xs rounded-full hover:bg-blue-700 transition-colors flex items-center space-x-1 disabled:opacity-50"
                             >
                                 <span>📢</span>
-                                <span>Send Notification</span>
+                                <span>{loading ? 'Sending...' : 'Send Notification'}</span>
                             </button>
                             {showRSVP && (
                                 <button
