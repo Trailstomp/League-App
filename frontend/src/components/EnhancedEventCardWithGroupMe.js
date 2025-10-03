@@ -5,13 +5,7 @@ const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser }) =
     const [showRSVPModal, setShowRSVPModal] = useState(false);
     const [rsvpData, setRSVPData] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [showSendNotification, setShowSendNotification] = useState(false);
-    const [channels, setChannels] = useState([]);
-    const [notificationForm, setNotificationForm] = useState({
-        channel_ids: [],
-        notification_type: 'event_announcement',
-        include_rsvp: true
-    });
+    // Removed unused notification modal state
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
