@@ -203,7 +203,6 @@ const Layout = ({
                 
                 {/* Navigation - Fixed position for desktop only */}
                 {!isMobileView && (
-                    <div>
                     <div 
                         className="fixed left-0 z-20 overflow-hidden"
                         style={{
