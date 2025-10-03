@@ -79,7 +79,7 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
                         <div className="w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 rounded-xl overflow-hidden border-4 border-white shadow-xl flex-shrink-0 bg-white">
                             {teamStyle.logoUrl ? (
                                 <img 
-                                    src={teamStyle.logoUrl} 
+                                    src={fixGoogleDriveUrl(teamStyle.logoUrl)} 
                                     alt={`${team.name} logo`}
                                     className="w-full h-full object-contain p-2"
                                     style={{ opacity: teamStyle.logoOpacity || 1 }}
