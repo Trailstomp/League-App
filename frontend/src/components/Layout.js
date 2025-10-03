@@ -18,6 +18,28 @@ const Layout = ({
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+    // Prevent body scroll when mobile menu is open
+    useEffect(() => {
+        if (isMobileMenuOpen) {
+            // Prevent background scrolling
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+        } else {
+            // Restore scrolling
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+        }
+        
+        // Cleanup on unmount
+        return () => {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+        };
+    }, [isMobileMenuOpen]);
+
     // Apply global website styling
     useEffect(() => {
         const applyGlobalStyling = () => {
