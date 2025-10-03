@@ -82,20 +82,36 @@ const StandingsTable = ({ teams = [], onTeamClick }) => {
 
     return (
         <div className="space-y-6">
-            {/* Division Filter */}
-            <div className="flex items-center justify-between">
+            {/* Season & Division Filters */}
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <h2 className="text-2xl font-bold text-gray-800">League Standings</h2>
-                <select
-                    value={selectedDivision}
-                    onChange={(e) => setSelectedDivision(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                    {divisions.map(div => (
-                        <option key={div} value={div}>
-                            {div === 'all' ? 'All Divisions' : `${div} Division`}
-                        </option>
-                    ))}
-                </select>
+                <div className="flex flex-col sm:flex-row gap-3">
+                    {/* Season Selector */}
+                    <select
+                        value={selectedSeason || ''}
+                        onChange={(e) => setSelectedSeason(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                    >
+                        {seasons.map(season => (
+                            <option key={season.id} value={season.id}>
+                                {season.name} {season.is_active ? '(Current)' : ''}
+                            </option>
+                        ))}
+                    </select>
+                    
+                    {/* Division Filter */}
+                    <select
+                        value={selectedDivision}
+                        onChange={(e) => setSelectedDivision(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                    >
+                        {divisions.map(div => (
+                            <option key={div} value={div}>
+                                {div === 'all' ? 'All Divisions' : `${div} Division`}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
             {/* Standings Table */}
