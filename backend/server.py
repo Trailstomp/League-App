@@ -5644,6 +5644,25 @@ async def create_or_update_game_stats(event_id: str, game_stats: GameStats):
         stats_data["event_id"] = event_id
         stats_data["last_updated"] = datetime.now(timezone.utc)
         
+        # If no season_id provided, get active season
+        if not stats_data.get("season_id"):
+            active_season = await db.seasons.find_one({"is_active": True})
+            if active_season:
+                stats_data["season_id"] = active_season["id"]
+            else:
+                # Create default season if none exists
+                default_season = {
+                    "id": str(uuid.uuid4()),
+                    "name": f"Season {datetime.now().year}",
+                    "league_id": "main_league",
+                    "start_date": datetime.now(timezone.utc),
+                    "end_date": datetime.now(timezone.utc) + timedelta(days=365),
+                    "is_active": True,
+                    "created_at": datetime.now(timezone.utc)
+                }
+                await db.seasons.insert_one(default_season)
+                stats_data["season_id"] = default_season["id"]
+        
         if existing_stats:
             # Update existing stats
             await db.game_stats.update_one(
