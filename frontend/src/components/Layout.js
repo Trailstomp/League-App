@@ -201,17 +201,17 @@ const Layout = ({
                     />
                 )}
                 
-                {/* Navigation - Fixed position for desktop only */}
+                {/* Navigation - Fixed position for desktop, full height from top */}
                 {!isMobileView && (
                     <div 
-                        className="fixed left-0 z-20 overflow-hidden"
+                        className="fixed left-0 z-60 overflow-hidden"
                         style={{
-                            top: '200px', // Position below header
+                            top: '0', // Start from very top
                             bottom: '0',
-                            height: 'calc(100vh - 200px)', // Full height minus header
-                            width: '20vw', // 20% of viewport width instead of fixed 256px
-                            maxWidth: '280px', // Max width cap
-                            minWidth: '200px' // Min width cap
+                            height: '100vh', // Full viewport height
+                            width: '20vw', // 20% of viewport width
+                            maxWidth: '320px', // Increased max width
+                            minWidth: '240px' // Increased min width
                         }}
                     >
                         <Navigation 
