@@ -167,8 +167,8 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                                     alt={team.name}
                                                     className="object-contain drop-shadow-2xl"
                                                     style={{ 
-                                                        width: '192px', // 50% larger than w-32 (128px)
-                                                        height: '192px', // 50% larger than h-32 (128px)
+                                                        width: '240px', // Even larger for better visibility
+                                                        height: '240px', // Even larger for better visibility
                                                         filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.4)) drop-shadow(0 4px 8px rgba(255,255,255,0.1))',
                                                         backgroundColor: 'transparent'
                                                     }}
