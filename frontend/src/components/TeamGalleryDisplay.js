@@ -40,17 +40,27 @@ const TeamGalleryDisplay = ({ teamId = null, pageType = 'league' }) => {
     const fixGoogleDriveUrl = (url) => {
         if (!url) return url;
         
-        // Fix old format: https://drive.google.com/file/d/{id}/view -> https://drive.google.com/uc?id={id}
+        const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+        
+        // Extract Google Drive file ID from various URL formats
+        let fileId = null;
+        
+        // Format: https://drive.google.com/file/d/{id}/view
         if (url.includes('drive.google.com/file/d/') && url.includes('/view')) {
-            const fileId = url.split('/d/')[1].split('/view')[0];
-            return `https://drive.google.com/uc?id=${fileId}`;
+            fileId = url.split('/d/')[1].split('/view')[0];
+        }
+        // Format: https://drive.google.com/uc?id={id}
+        else if (url.includes('drive.google.com/uc?id=')) {
+            fileId = url.split('id=')[1].split('&')[0];
+        }
+        // Format: https://drive.google.com/thumbnail?id={id}
+        else if (url.includes('drive.google.com/thumbnail?id=')) {
+            fileId = url.split('id=')[1].split('&')[0];
         }
         
-        // Fix old thumbnail format: https://drive.google.com/thumbnail?id={id}&sz=w300 -> proxy URL
-        if (url.includes('drive.google.com/thumbnail?id=')) {
-            const fileId = url.split('id=')[1].split('&')[0];
-            const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
-            return `${BACKEND_URL}/api/media/drive/${fileId}?size=w300-h300-c`;
+        // If we found a Google Drive file ID, use the proxy
+        if (fileId) {
+            return `${BACKEND_URL}/api/proxy-image?url=${encodeURIComponent(`https://drive.google.com/uc?id=${fileId}`)}`;
         }
         
         return url;
