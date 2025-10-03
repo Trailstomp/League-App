@@ -267,12 +267,14 @@ async def get_dashboard_data():
     try:
         # Use asyncio.gather to run all database queries in parallel
         league_data_task = db.league_data.find_one({"id": "main_league"})
+        teams_task = db.teams.find().to_list(None)  # Get teams from new collection
         galleries_task = get_active_galleries_internal()
         youtube_task = db.youtube_integration.find_one({"id": "main_youtube"})
         
         # Execute all queries in parallel
-        league_data, galleries_data, youtube_config = await asyncio.gather(
+        league_data, teams_from_collection, galleries_data, youtube_config = await asyncio.gather(
             league_data_task,
+            teams_task,
             galleries_task,
             youtube_task,
             return_exceptions=True
