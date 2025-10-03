@@ -193,14 +193,18 @@ const SimpleEventForm = ({
             console.log('💾 SIMPLE SAVE - Starting save process');
             console.log('💾 Event data to save:', eventData);
 
-            // Create event with proper ID
+            // Create event with proper ID - DON'T regenerate ID if editing
             const eventToSave = {
                 ...eventData,
-                id: eventData.id || `event_${Date.now()}`,
+                id: eventData.id || `event_${Date.now()}`, // Only generate new ID if none exists
                 teamIds: [...eventData.teamIds] // Ensure array copy
             };
 
+            // Check if this is an update (has existing ID that's not temp)
+            const isUpdate = eventData.id && !eventData.id.startsWith('event_');
+
             console.log('💾 Final event to save:', eventToSave);
+            console.log('💾 Is update?', isUpdate);
 
             // CRITICAL FIX: Use API persistence instead of memory-only saves
             console.log('🔄 Saving event to database via API...');
