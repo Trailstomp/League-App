@@ -1326,7 +1326,7 @@ async def upload_and_create_gallery(
             }
 
 # Helper function for folder creation
-async def create_main_folder(access_token: str, folder_name: str) -> str:
+async def create_main_folder_helper(access_token: str, folder_name: str) -> str:
     """Create the main folder in Google Drive and return its ID"""
     try:
         from googleapiclient.discovery import build
