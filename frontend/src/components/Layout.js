@@ -249,12 +249,17 @@ const Layout = ({
                     {/* Mobile Navigation Button - Fixed at top left for mobile */}
                     <button
                         onClick={() => setIsMobileMenuOpen(true)}
-                        className="md:hidden fixed z-30 p-2 rounded-lg shadow-lg transition-colors mobile-nav-button"
+                        onTouchStart={(e) => {
+                            e.stopPropagation();
+                            setIsMobileMenuOpen(true);
+                        }}
+                        className="md:hidden fixed z-60 p-3 rounded-lg shadow-lg transition-colors mobile-nav-button touch-manipulation"
                         style={{
                             top: '210px', // Just below header with padding
                             left: '2vw', // 2% from left edge
                             backgroundColor: websiteStyle.navBackgroundColor || '#ffffff',
-                            color: websiteStyle.navTextColor || '#374151'
+                            color: websiteStyle.navTextColor || '#374151',
+                            border: '2px solid #e5e7eb'
                         }}
                         aria-label="Open navigation menu"
                     >
