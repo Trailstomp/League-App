@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { fixGoogleDriveUrl } from '../utils/imageUtils';
 
 const ImageModal = ({ imageUrl, imageAlt, onClose }) => {
     const [currentImageUrl, setCurrentImageUrl] = useState(imageUrl);
