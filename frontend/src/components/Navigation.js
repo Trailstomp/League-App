@@ -238,27 +238,70 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 </div>
             )}
             
-            {/* Header with Toggle */}
-            <div className="p-4 border-b flex-shrink-0">
+            {/* Header with Large Logo */}
+            <div className="p-6 border-b flex-shrink-0" style={{borderColor: websiteStyle.navBorderColor || '#e2e8f0'}}>
                 <div className="flex items-center justify-between">
                     {!isCollapsed && (
-                        <h1 
-                            className="text-lg sm:text-xl font-bold truncate"
-                            style={{
-                                fontFamily: websiteStyle.navFont || 'Inter, sans-serif',
-                                fontSize: websiteStyle.navFontSize || '18px',
-                                color: websiteStyle.navTextColor || '#1f2937'
-                            }}
-                        >
+                        <div className="flex flex-col items-center w-full space-y-3">
+                            {/* Large Logo */}
+                            <div className="flex items-center justify-center">
+                                {websiteStyle.navLogoUrl ? (
+                                    <img 
+                                        src={websiteStyle.navLogoUrl} 
+                                        alt="League Logo" 
+                                        className="object-contain drop-shadow-lg"
+                                        style={{
+                                            width: '120px',
+                                            height: '120px',
+                                            filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))'
+                                        }}
+                                    />
+                                ) : (
+                                    <div 
+                                        className="flex items-center justify-center rounded-2xl"
+                                        style={{
+                                            width: '120px',
+                                            height: '120px',
+                                            background: `linear-gradient(135deg, ${websiteStyle.primaryColor || '#2563eb'} 0%, ${websiteStyle.accentColor || '#3b82f6'} 100%)`,
+                                            boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
+                                        }}
+                                    >
+                                        <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '3rem' }}>
+                                            🥍
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                            
+                            {/* League Name */}
+                            <h1 
+                                className="text-center font-bold leading-tight"
+                                style={{
+                                    fontFamily: websiteStyle.navFont || 'Inter, sans-serif',
+                                    fontSize: '16px',
+                                    color: websiteStyle.navTextColor || '#1f2937',
+                                    wordWrap: 'break-word'
+                                }}
+                            >
+                                {websiteStyle.navLeagueName || 'Lacrosse League'}
+                            </h1>
+                        </div>
+                    )}
+                    
+                    {/* Collapsed state - small logo */}
+                    {isCollapsed && (
+                        <div className="flex items-center justify-center w-full">
                             {websiteStyle.navLogoUrl ? (
-                                <div className="flex items-center space-x-2">
-                                    <img src={websiteStyle.navLogoUrl} alt="Logo" className="w-6 h-6 object-contain" />
-                                    <span>{websiteStyle.navLeagueName || 'Lacrosse League'}</span>
-                                </div>
+                                <img 
+                                    src={websiteStyle.navLogoUrl} 
+                                    alt="Logo" 
+                                    className="object-contain"
+                                    style={{ width: '32px', height: '32px' }}
+                                />
                             ) : (
-                                <>🥍 {websiteStyle.navLeagueName || 'Lacrosse League'}</>
+                                <span className="text-2xl">🥍</span>
                             )}
-                        </h1>
+                        </div>
                     )}
                     <button
                         onClick={() => setIsCollapsed(!isCollapsed)}
