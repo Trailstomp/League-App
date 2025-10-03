@@ -2,10 +2,15 @@ import React, { useState, useEffect } from 'react';
 
 const StandingsTable = ({ teams = [], onTeamClick }) => {
     const [standings, setStandings] = useState([]);
+    const [standingsByDivision, setStandingsByDivision] = useState({});
     const [loading, setLoading] = useState(true);
     const [selectedDivision, setSelectedDivision] = useState('all');
+    const [selectedLeague, setSelectedLeague] = useState('main_league');
+    const [viewMode, setViewMode] = useState('divisions'); // 'divisions' or 'overall'
     const [seasons, setSeasons] = useState([]);
     const [selectedSeason, setSelectedSeason] = useState(null);
+    const [leagues, setLeagues] = useState([]);
+    const [divisions, setDivisions] = useState([]);
     
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
