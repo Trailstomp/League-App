@@ -111,7 +111,9 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                     <div className="space-y-8">
                         {/* Group teams by division */}
                         {['Field', 'Box'].map(division => {
-                            const divisionTeams = teams.filter(team => team.division === division);
+                            const divisionTeams = teams
+                                .filter(team => team.division === division)
+                                .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
                             if (divisionTeams.length === 0) return null;
                             
                             return (
