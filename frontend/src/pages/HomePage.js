@@ -6,6 +6,7 @@ import YouTubeGallery from '../components/YouTubeGallery';
 import EventDetailModal from '../scheduling/components/EventDetailModal';
 import TeamDetailModal from '../teams/components/TeamDetailModal';
 import NewsDisplay from '../components/NewsDisplay';
+import { fixGoogleDriveUrl } from '../utils/imageUtils';
 
 const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyle = {}, onNavigate }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
