@@ -4938,6 +4938,74 @@ async def get_team_channels(team_id: str):
 # EVENT RSVP & NOTIFICATIONS
 # ============================================================================
 
+@api_router.get("/rsvp/{event_id}")
+async def show_rsvp_page(event_id: str):
+    """Show RSVP page with big buttons"""
+    return HTMLResponse(f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>RSVP</title>
+            <style>
+                body {{
+                    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                    margin: 0;
+                    padding: 20px;
+                    background: #f8fafc;
+                    text-align: center;
+                }}
+                .container {{
+                    max-width: 400px;
+                    margin: 0 auto;
+                    background: white;
+                    border-radius: 12px;
+                    padding: 30px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                }}
+                h1 {{
+                    color: #1f2937;
+                    margin-bottom: 30px;
+                    font-size: 24px;
+                }}
+                .button {{
+                    display: block;
+                    width: 100%;
+                    padding: 20px;
+                    margin: 15px 0;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 18px;
+                    font-weight: bold;
+                    text-decoration: none;
+                    cursor: pointer;
+                    transition: transform 0.2s;
+                }}
+                .button:hover {{
+                    transform: scale(1.02);
+                }}
+                .yes {{ background: #10b981; color: white; }}
+                .maybe {{ background: #f59e0b; color: white; }}
+                .no {{ background: #ef4444; color: white; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>📱 RSVP</h1>
+                <a href="/api/rsvp?e={event_id}&c=yes" class="button yes">
+                    ✅ YES - I'm Going!
+                </a>
+                <a href="/api/rsvp?e={event_id}&c=maybe" class="button maybe">
+                    ❓ MAYBE - I Might Attend
+                </a>
+                <a href="/api/rsvp?e={event_id}&c=no" class="button no">
+                    ❌ NO - Can't Make It
+                </a>
+            </div>
+        </body>
+        </html>
+    """)
+
 @api_router.get("/r")
 async def handle_short_rsvp_link(request: Request, e: str, c: str):
     """Handle short RSVP links with Open Graph previews for GroupMe"""
