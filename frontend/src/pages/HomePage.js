@@ -200,7 +200,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                                     display: team.style?.logoUrl ? 'none' : 'flex' // Hidden if logo URL exists, shown otherwise
                                                 }}
                                             >
-                                                <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '5rem' }}>
+                                                <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '6rem' }}>
                                                     {team.name.charAt(0)}
                                                 </span>
                                                 {/* Gradient shine overlay */}
