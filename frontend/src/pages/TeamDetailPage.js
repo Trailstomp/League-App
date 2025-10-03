@@ -838,65 +838,7 @@ const TeamRosterTab = ({ team, players = [] }) => {
 
 // Team Stats Tab
 const TeamStatsTab = ({ team, events = [] }) => {
-    const teamEvents = events.filter(event => 
-        event.teamIds?.includes(team.id) || 
-        event.homeTeam === team.id || 
-        event.awayTeam === team.id
-    );
-
-    const gamesPlayed = teamEvents.filter(e => e.type === 'game').length;
-    const winPercentage = gamesPlayed > 0 ? ((team.wins || 0) / gamesPlayed * 100).toFixed(1) : 0;
-
-    return (
-        <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-slate-800">Statistics</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg">
-                    <div className="text-center">
-                        <div className="text-3xl font-bold text-green-600">{team.wins || 0}</div>
-                        <div className="text-sm text-green-800">Wins</div>
-                    </div>
-                </div>
-                
-                <div className="bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-lg">
-                    <div className="text-center">
-                        <div className="text-3xl font-bold text-red-600">{team.losses || 0}</div>
-                        <div className="text-sm text-red-800">Losses</div>
-                    </div>
-                </div>
-                
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg">
-                    <div className="text-center">
-                        <div className="text-3xl font-bold text-blue-600">{winPercentage}%</div>
-                        <div className="text-sm text-blue-800">Win Rate</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div className="bg-slate-50 p-6 rounded-lg">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Season Summary</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div className="text-center">
-                        <div className="font-semibold text-slate-800">{gamesPlayed}</div>
-                        <div className="text-slate-600">Games Played</div>
-                    </div>
-                    <div className="text-center">
-                        <div className="font-semibold text-slate-800">{team.ties || 0}</div>
-                        <div className="text-slate-600">Ties</div>
-                    </div>
-                    <div className="text-center">
-                        <div className="font-semibold text-slate-800">{team.pf || 0}</div>
-                        <div className="text-slate-600">Points For</div>
-                    </div>
-                    <div className="text-center">
-                        <div className="font-semibold text-slate-800">{team.pa || 0}</div>
-                        <div className="text-slate-600">Points Against</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+    return <TeamStatsDisplay teamId={team.id} />;
 };
 
 // Team Media Tab
