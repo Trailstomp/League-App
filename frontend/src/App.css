@@ -49,6 +49,16 @@ html, body {
     min-height: 100vh;
 }
 
+/* Hide scrollbar for ticker */
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
 /* Ensure forms are responsive */
 .form-container {
     max-width: 100%;
