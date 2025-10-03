@@ -227,7 +227,7 @@ const GameStatsEntry = ({ event, teams = [], players = [], currentUser, onClose 
     const updateGoalieStat = (playerId, stat, value, side) => {
         const teamKey = side === 'home' ? 'home_team' : 'away_team';
         const updatedGoalies = gameStats[teamKey].goalies.map(g =>
-            g.player_id === playerId ? { ...p, [stat]: value } : g
+            g.player_id === playerId ? { ...g, [stat]: value } : g
         );
         
         setGameStats({
