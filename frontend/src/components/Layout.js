@@ -264,10 +264,11 @@ const Layout = ({
                 style={{
                     marginLeft: isMobileView ? '0' : (isNavCollapsed ? '80px' : '20vw'),
                     paddingTop: '200px', // Account for fixed header (ticker 120px + banner 80px)
-                    minHeight: '100vh'
+                    minHeight: '100vh',
+                    width: isMobileView ? '100vw' : (isNavCollapsed ? 'calc(100vw - 80px)' : 'calc(100vw - 20vw)')
                 }}
             >
-                <div className="flex flex-col">
+                <div className="flex flex-col h-full">
                     {/* Mobile Navigation Button - Fixed at top left for mobile */}
                     {isMobileView && (
                         <button
@@ -295,16 +296,16 @@ const Layout = ({
 
                     {/* Main Content Container */}
                     <main 
-                        className="flex-1 overflow-x-hidden"
+                        className="flex-1 overflow-x-hidden w-full"
                         style={{
                             fontFamily: websiteStyle.mainFont || 'Inter, sans-serif',
                             fontSize: websiteStyle.mainFontSize || '16px',
                             color: websiteStyle.mainTextColor || '#374151',
                             minHeight: 'calc(100vh - 200px)', // Ensure full height below header
-                            padding: '2vh 3vw' // Responsive padding
+                            padding: '0' // Remove padding to eliminate gaps
                         }}
                     >
-                        <div className="w-full max-w-none">
+                        <div className="w-full h-full">
                             {children}
                         </div>
                     </main>
