@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { isAdmin, isCoach } from './PermissionsSystem';
 
-const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser }) => {
+const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser, onEnterStats }) => {
     const [showRSVPModal, setShowRSVPModal] = useState(false);
     const [rsvpData, setRSVPData] = useState(null);
     const [loading, setLoading] = useState(false);
