@@ -6,7 +6,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from environment
-BACKEND_URL = "https://lacrosse-league-3.preview.emergentagent.com/api"
+BACKEND_URL = "https://sportsync-platform.preview.emergentagent.com/api"
 
 def get_document_size_mb(data):
     """Calculate document size in MB"""
