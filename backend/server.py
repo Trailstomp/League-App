@@ -5886,7 +5886,7 @@ async def get_team_player_stats(team_id: str, season_id: Optional[str] = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/league/standings")
-async def get_league_standings():
+async def get_league_standings(season_id: Optional[str] = None):
     """Get league-wide standings with all teams ranked by points"""
     try:
         # Get all teams
@@ -5894,7 +5894,7 @@ async def get_league_standings():
         
         standings = []
         for team in teams:
-            team_stats = await get_team_season_stats(team["id"])
+            team_stats = await get_team_season_stats(team["id"], season_id=season_id)
             standings.append({
                 "team_id": team["id"],
                 "team_name": team["name"],
