@@ -162,15 +162,16 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         >
             <div 
                 ref={tickerRef}
-                className="flex items-center space-x-6 overflow-x-auto no-scrollbar md:ml-64"
+                className="flex items-center space-x-6 overflow-x-hidden no-scrollbar"
                 style={{ 
                     width: 'max-content',
                     minWidth: '100%',
-                    paddingLeft: '1rem'
+                    paddingLeft: '1rem',
+                    paddingRight: '1rem'
                 }}
             >
-                {/* Show each unique event only once */}
-                {tickerEvents.map((event, index) => {
+                {/* Duplicate content for infinite scroll effect */}
+                {[...tickerEvents, ...tickerEvents].map((event, index) => {
                     const eventDate = new Date(event.date);
                     const formattedDate = eventDate.toLocaleDateString('en-US', { 
                         month: 'short', 
