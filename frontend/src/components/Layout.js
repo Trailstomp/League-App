@@ -220,7 +220,7 @@ const Layout = ({
                             onMobileClose={() => setIsMobileMenuOpen(false)}
                         />
                     </div>
-                </div>
+                )}
                 
                 {/* Mobile Navigation - Slide in from left, positioned below full header */}
                 <div className={`
