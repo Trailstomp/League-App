@@ -11,10 +11,11 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         return team?.name || teamId;
     };
 
-    // Get team logo by ID
+    // Get team logo by ID with Google Drive URL fix
     const getTeamLogo = (teamId) => {
         const team = teams.find(t => t.id === teamId);
-        return team?.style?.logoUrl || null;
+        const logoUrl = team?.style?.logoUrl || team?.logo || null;
+        return logoUrl ? fixGoogleDriveUrl(logoUrl) : null;
     };
 
     // Filter events based on admin ticker settings
