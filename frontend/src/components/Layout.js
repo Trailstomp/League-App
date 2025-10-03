@@ -238,11 +238,9 @@ const Layout = ({
                 
                 {/* Main Content Area */}
                 <div 
-                    className="main-content-area" 
+                    className="main-content-area w-full md:ml-[20vw] md:w-[80vw]" 
                     style={{
-                        marginLeft: window.innerWidth > 768 ? '20vw' : '0', // Conditional margin based on screen size
-                        minHeight: '88vh',
-                        width: window.innerWidth > 768 ? '80vw' : '100vw'
+                        minHeight: '88vh'
                     }}
                 >
                     <div className="flex flex-col">
