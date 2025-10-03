@@ -17,15 +17,20 @@ const Layout = ({
     onTeamClick
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isMobileView, setIsMobileView] = useState(false);
+    const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
     
     // Check for mobile view on mount and resize
     useEffect(() => {
         const checkMobileView = () => {
-            setIsMobileView(window.innerWidth < 768);
+            const isMobile = window.innerWidth < 768;
+            console.log('🔍 Mobile check:', window.innerWidth, 'Mobile:', isMobile);
+            setIsMobileView(isMobile);
         };
         
+        // Initial check
         checkMobileView();
+        
+        // Add resize listener
         window.addEventListener('resize', checkMobileView);
         
         return () => window.removeEventListener('resize', checkMobileView);
