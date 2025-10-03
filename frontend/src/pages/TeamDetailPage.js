@@ -73,8 +73,8 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
                 {teamStyle.bannerUrl && <div className="absolute inset-0 bg-black bg-opacity-40"></div>}
                 <div className="relative z-10 p-4 sm:p-6 lg:p-8">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
-                        {/* Team Logo - Enhanced */}
-                        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border-4 border-white shadow-xl flex-shrink-0 bg-white">
+                        {/* Team Logo - Enhanced - LARGER */}
+                        <div className="w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 rounded-xl overflow-hidden border-4 border-white shadow-xl flex-shrink-0 bg-white">
                             {teamStyle.logoUrl ? (
                                 <img 
                                     src={teamStyle.logoUrl} 
@@ -87,7 +87,7 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
                                     className="w-full h-full flex items-center justify-center rounded-xl"
                                     style={{ backgroundColor: teamStyle.primaryColor || '#dc2626' }}
                                 >
-                                    <LacrosseIcon name="stick" style={{fontSize: '32px', color: 'white'}} />
+                                    <LacrosseIcon name="stick" style={{fontSize: '64px', color: 'white'}} />
                                 </div>
                             )}
                         </div>
