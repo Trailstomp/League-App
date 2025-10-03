@@ -5699,12 +5699,27 @@ async def get_game_stats(event_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/teams/{team_id}/season-stats")
-async def get_team_season_stats(team_id: str):
+async def get_team_season_stats(team_id: str, season_id: Optional[str] = None):
     """Get aggregated season stats for a team"""
     try:
+        # Build query filter
+        query_home = {"home_team.team_id": team_id, "status": "final"}
+        query_away = {"away_team.team_id": team_id, "status": "final"}
+        
+        # If season specified, filter by it; otherwise get active season or all
+        if season_id:
+            query_home["season_id"] = season_id
+            query_away["season_id"] = season_id
+        elif season_id is None:
+            # Get active season if no season specified
+            active_season = await db.seasons.find_one({"is_active": True})
+            if active_season:
+                query_home["season_id"] = active_season["id"]
+                query_away["season_id"] = active_season["id"]
+        
         # Get all game stats for this team
-        games_home = await db.game_stats.find({"home_team.team_id": team_id, "status": "final"}).to_list(None)
-        games_away = await db.game_stats.find({"away_team.team_id": team_id, "status": "final"}).to_list(None)
+        games_home = await db.game_stats.find(query_home).to_list(None)
+        games_away = await db.game_stats.find(query_away).to_list(None)
         
         games_played = 0
         wins = 0
