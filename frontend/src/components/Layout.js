@@ -252,8 +252,10 @@ const Layout = ({
                 
                 {/* Main Content Area */}
                 <div 
-                    className="main-content-area w-full md:ml-[20vw] md:w-[80vw]" 
+                    className="main-content-area w-full" 
                     style={{
+                        marginLeft: isMobileView ? '0' : '20vw',
+                        width: isMobileView ? '100vw' : '80vw',
                         minHeight: '88vh'
                     }}
                 >
