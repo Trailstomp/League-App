@@ -5758,26 +5758,34 @@ async def get_team_season_stats(team_id: str, season_id: Optional[str] = None):
         # Process home games
         for game in games_home:
             games_played += 1
-            goals_for += game["home_team"]["goals_for"]
-            goals_against += game["home_team"]["goals_against"]
-            if game["home_team"]["result"] == "win":
+            home_goals = game["home_team"]["goals_for"]
+            away_goals = game["home_team"]["goals_against"]
+            goals_for += home_goals
+            goals_against += away_goals
+            
+            # Calculate result based on goals
+            if home_goals > away_goals:
                 wins += 1
-            elif game["home_team"]["result"] == "loss":
+            elif home_goals < away_goals:
                 losses += 1
-            elif game["home_team"]["result"] == "tie":
+            else:
                 ties += 1
         
         # Process away games
         for game in games_away:
             if game.get("away_team"):
                 games_played += 1
-                goals_for += game["away_team"]["goals_for"]
-                goals_against += game["away_team"]["goals_against"]
-                if game["away_team"]["result"] == "win":
+                away_goals = game["away_team"]["goals_for"]
+                home_goals = game["away_team"]["goals_against"]
+                goals_for += away_goals
+                goals_against += home_goals
+                
+                # Calculate result based on goals
+                if away_goals > home_goals:
                     wins += 1
-                elif game["away_team"]["result"] == "loss":
+                elif away_goals < home_goals:
                     losses += 1
-                elif game["away_team"]["result"] == "tie":
+                else:
                     ties += 1
         
         goal_diff = goals_for - goals_against
