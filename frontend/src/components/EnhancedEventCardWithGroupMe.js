@@ -13,10 +13,7 @@ const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser }) =
         if (showRSVPModal) {
             loadRSVPData();
         }
-        if (showSendNotification) {
-            loadChannels();
-        }
-    }, [showRSVPModal, showSendNotification]);
+    }, [showRSVPModal]);
 
     const loadRSVPData = async () => {
         try {
