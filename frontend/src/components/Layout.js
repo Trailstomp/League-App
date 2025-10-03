@@ -270,7 +270,7 @@ const Layout = ({
                     minHeight: '100vh'
                 }}
             >
-                    <div className="flex flex-col">
+                <div className="flex flex-col">
                     {/* Mobile Navigation Button - Fixed at top left for mobile */}
                     {isMobileView && (
                         <button
@@ -311,7 +311,6 @@ const Layout = ({
                             {children}
                         </div>
                     </main>
-                    </div>
                 </div>
             </div>
         </div>
