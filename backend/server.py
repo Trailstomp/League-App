@@ -101,6 +101,48 @@ class Gallery(BaseModel):
     createdAt: datetime = Field(default_factory=datetime.utcnow)
     updatedAt: datetime = Field(default_factory=datetime.utcnow)
 
+# Stats Models
+class PlayerGameStats(BaseModel):
+    player_id: str
+    player_name: str
+    jersey_number: Optional[str] = None
+    position: Optional[str] = None
+    shots: int = 0
+    goals: int = 0
+    ground_balls: int = 0
+    was_present: bool = True  # Whether player was at the game
+
+class GoalieGameStats(BaseModel):
+    player_id: str
+    player_name: str
+    jersey_number: Optional[str] = None
+    periods_played: List[int] = []  # [1,2,3,4]
+    minutes_played: int = 0
+    shots_on_goal: int = 0
+    saves: int = 0
+    goals_allowed: int = 0
+
+class TeamGameStats(BaseModel):
+    team_id: str
+    team_name: str
+    goals_for: int = 0
+    goals_against: int = 0
+    result: str = "pending"  # win, loss, tie, pending
+    players: List[PlayerGameStats] = []
+    goalies: List[GoalieGameStats] = []
+
+class GameStats(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    event_id: str
+    game_date: datetime
+    status: str = "in_progress"  # in_progress, final, cancelled
+    home_team: TeamGameStats
+    away_team: Optional[TeamGameStats] = None  # Optional for practice/scrimmage
+    entered_by: str  # User ID who entered stats
+    last_updated: datetime = Field(default_factory=datetime.utcnow)
+    is_live: bool = False  # Whether stats are being entered live
+    notes: Optional[str] = None
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
