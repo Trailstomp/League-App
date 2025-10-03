@@ -18,6 +18,7 @@ const Layout = ({
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
+    const [isNavCollapsed, setIsNavCollapsed] = useState(false);
     
     // Check for mobile view on mount and resize
     useEffect(() => {
