@@ -122,7 +122,7 @@ const Layout = ({
             <div 
                 className="fixed top-0 right-0 z-50 transition-all duration-300"
                 style={{
-                    left: isMobileView ? '0' : (isNavCollapsed ? '80px' : '20vw'),
+                    left: isMobileView ? '0' : (isNavCollapsed ? '80px' : '320px'), // Use actual nav maxWidth
                     height: '200px' // Ticker (120px) + Banner (80px)
                 }}
             >
