@@ -109,7 +109,18 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                 <h2 className="text-xl font-semibold text-slate-800 mb-6">League Teams</h2>
                 {teams.length > 0 ? (
                     <div className="space-y-8">
-                        {teams.map(team => (
+                        {/* Group teams by division */}
+                        {['Field', 'Box'].map(division => {
+                            const divisionTeams = teams.filter(team => team.division === division);
+                            if (divisionTeams.length === 0) return null;
+                            
+                            return (
+                                <div key={division} className="space-y-4">
+                                    <h3 className="text-lg font-medium text-slate-700 border-b border-slate-200 pb-2">
+                                        {division} Teams ({divisionTeams.length})
+                                    </h3>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                                        {divisionTeams.map(team => (
                             <div 
                                 key={team.id} 
                                 className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform hover:scale-105 duration-300 border-4 cursor-pointer group"
