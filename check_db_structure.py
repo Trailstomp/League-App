@@ -72,7 +72,7 @@ async def check_database_structure():
             for i, event in enumerate(scored_events[:3]):
                 print(f"  Event {i+1}: {event}")
     
-    await client.close()
+    client.close()
 
 if __name__ == "__main__":
     asyncio.run(check_database_structure())
