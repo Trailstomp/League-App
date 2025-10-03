@@ -563,9 +563,11 @@ const NewsItemForm = ({ item, teams, onSave, onCancel, saving, onImageUpload }) 
                                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             >
                                 <option value="league">League-wide news</option>
-                                {teams.map(team => (
-                                    <option key={team.id} value={team.id}>{team.name}</option>
-                                ))}
+                                {teams
+                                    .sort((a, b) => a.name.localeCompare(b.name))
+                                    .map(team => (
+                                        <option key={team.id} value={team.id}>{team.name}</option>
+                                    ))}
                             </select>
                         </div>
                         
