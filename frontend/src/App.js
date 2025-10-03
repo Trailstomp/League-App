@@ -382,10 +382,19 @@ function App() {
         );
       case 'standings':
         return (
-          <div className="text-center py-16">
-            <h2 className="text-2xl font-bold text-slate-800 mb-4">Team Standings</h2>
-            <p className="text-slate-600">Coming soon...</p>
+          <div className="p-6">
+            <StandingsTable 
+              teams={teams}
+              onTeamClick={(teamId) => handleNavigateToTeam(teamId)}
+            />
           </div>
+        );
+      case 'live-game':
+        return (
+          <LiveGamePage 
+            eventId={selectedTeam} // Reusing selectedTeam state to pass eventId
+            onNavigate={(page) => setCurrentPage(page)}
+          />
         );
       case 'chat':
         return (
