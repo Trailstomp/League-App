@@ -120,10 +120,10 @@ const Layout = ({
         <div>
             {/* Fixed Header Container - positioned to the right of navigation */}
             <div 
-                className="fixed top-0 right-0 z-50"
+                className="fixed top-0 right-0 z-50 transition-all duration-300"
                 style={{
-                    left: isMobileView ? '0' : '20vw',
-                    maxLeft: isMobileView ? '0' : '320px'
+                    left: isMobileView ? '0' : (isNavCollapsed ? '80px' : '20vw'),
+                    maxLeft: isMobileView ? '0' : (isNavCollapsed ? '80px' : '320px')
                 }}
             >
                 {/* Event Ticker */}
