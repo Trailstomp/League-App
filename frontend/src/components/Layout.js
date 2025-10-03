@@ -269,7 +269,8 @@ const Layout = ({
                     style={{
                         marginLeft: isMobileView ? '0' : '20vw',
                         width: isMobileView ? '100vw' : '80vw',
-                        minHeight: '88vh'
+                        paddingTop: '200px', // Account for fixed header height
+                        minHeight: '100vh'
                     }}
                 >
                     <div className="flex flex-col">
