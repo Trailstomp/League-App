@@ -30,7 +30,7 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # Backend URL for proxy endpoints
-BACKEND_URL = os.environ.get('BACKEND_URL', 'https://sportsync-platform.preview.emergentagent.com')
+BACKEND_URL = os.environ.get('BACKEND_URL', 'https://league-manager-app-1.preview.emergentagent.com')
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
@@ -3608,7 +3608,7 @@ async def _send_groupme_message_with_rsvp(bot_id: str, text: str, event_id: str,
     
     try:
         # Get the base URL from environment or use a default
-        base_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://sportsync-platform.preview.emergentagent.com')
+        base_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://league-manager-app-1.preview.emergentagent.com')
         
         # Create single RSVP link that opens page with buttons
         rsvp_options = (
