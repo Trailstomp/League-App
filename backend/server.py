@@ -3516,12 +3516,9 @@ async def _send_groupme_message_with_rsvp(bot_id: str, text: str, event_id: str,
         # Get the base URL from environment or use a default
         base_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://lacrosse-league-3.preview.emergentagent.com')
         
-        # Create RSVP links that will show as rich preview cards in GroupMe
+        # Create single RSVP link that opens page with buttons
         rsvp_options = (
-            f"\n\n📱 RSVP Options:\n\n"
-            f"{base_url}/r?e={event_id}&c=y\n\n"
-            f"{base_url}/r?e={event_id}&c=m\n\n" 
-            f"{base_url}/r?e={event_id}&c=n"
+            f"\n\n📱 RSVP: {base_url}/rsvp/{event_id}"
         )
         
         # Combine the original text with RSVP options
