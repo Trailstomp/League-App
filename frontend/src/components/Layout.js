@@ -262,10 +262,10 @@ const Layout = ({
             <div 
                 className="main-content-area transition-all duration-300" 
                 style={{
-                    marginLeft: isMobileView ? '0' : (isNavCollapsed ? '80px' : '20vw'),
+                    marginLeft: isMobileView ? '0' : (isNavCollapsed ? '80px' : '320px'), // Use actual nav maxWidth
                     paddingTop: '200px', // Account for fixed header (ticker 120px + banner 80px)
                     minHeight: '100vh',
-                    width: isMobileView ? '100vw' : (isNavCollapsed ? 'calc(100vw - 80px)' : 'calc(100vw - 20vw)')
+                    width: isMobileView ? '100vw' : (isNavCollapsed ? 'calc(100vw - 80px)' : 'calc(100vw - 320px)')
                 }}
             >
                 <div className="flex flex-col h-full">
