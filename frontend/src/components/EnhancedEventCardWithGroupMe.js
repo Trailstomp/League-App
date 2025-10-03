@@ -226,15 +226,6 @@ const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser, onE
                     </div>
                 </div>
             </div>
-                                </div>
-                                <div className="text-xs text-blue-600">
-                                    Reply with: <code className="bg-blue-100 px-1 rounded">/rsvp yes</code>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
 
             {/* RSVP Modal */}
             {showRSVPModal && (
