@@ -678,10 +678,10 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                         </div>
                                     )}
                                     
-                                    {/* Team Logo Overlay - Enhanced with Card Border */}
+                                    {/* Team Logo Overlay - Enhanced with Card Border - LARGER */}
                                     <div className="absolute top-3 left-3">
                                         <div 
-                                            className="w-14 h-14 rounded-full bg-white flex items-center justify-center overflow-hidden border-3 border-white"
+                                            className="w-20 h-20 rounded-full bg-white flex items-center justify-center overflow-hidden border-3 border-white"
                                             style={{ 
                                                 boxShadow: '0 4px 12px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8)'
                                             }}
@@ -697,7 +697,7 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                                     className="w-full h-full rounded-full flex items-center justify-center"
                                                     style={{ backgroundColor: team.style?.primaryColor || '#2563eb' }}
                                                 >
-                                                    <span className="text-white font-bold text-sm">
+                                                    <span className="text-white font-bold text-lg">
                                                         {team.name.charAt(0)}
                                                     </span>
                                                 </div>
