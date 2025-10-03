@@ -562,6 +562,9 @@ async def proxy_image(url: str):
             }
         )
         
+    except HTTPException:
+        # Re-raise HTTPExceptions (like our 400 security validation) without modification
+        raise
     except Exception as e:
         logger.error(f"❌ Error proxying image: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch image: {str(e)}")
