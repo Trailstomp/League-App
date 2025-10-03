@@ -490,6 +490,20 @@ function App() {
         onLogin={handleLogin}
         onRegister={handleRegister}
       />
+      
+      {/* Game Stats Entry Modal */}
+      {showStatsEntry && selectedEventForStats && (
+        <GameStatsEntry
+          event={selectedEventForStats}
+          teams={teams}
+          players={players}
+          currentUser={currentUser}
+          onClose={() => {
+            setShowStatsEntry(false);
+            setSelectedEventForStats(null);
+          }}
+        />
+      )}
     </>
   );
 }
