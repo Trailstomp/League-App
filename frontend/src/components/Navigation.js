@@ -303,9 +303,13 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                             )}
                         </div>
                     )}
+                </div>
+                
+                {/* Toggle Button - positioned at bottom right of header */}
+                <div className="absolute top-4 right-4">
                     <button
                         onClick={() => setIsCollapsed(!isCollapsed)}
-                        className="p-2 rounded-lg hover:bg-slate-100 transition-colors flex-shrink-0"
+                        className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
                         title={isCollapsed ? "Expand navigation" : "Collapse navigation"}
                         style={{
                             color: websiteStyle.navTextColor || '#374151'
