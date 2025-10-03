@@ -211,9 +211,7 @@ const Layout = ({
                     className="fixed left-0 top-0 z-60 overflow-hidden transition-all duration-300"
                     style={{
                         height: '100vh',
-                        width: isNavCollapsed ? '80px' : '20vw',
-                        maxWidth: isNavCollapsed ? '80px' : '320px',
-                        minWidth: isNavCollapsed ? '80px' : '240px'
+                        width: isNavCollapsed ? '80px' : '320px' // Fixed widths for consistent alignment
                     }}
                 >
                     <Navigation 
