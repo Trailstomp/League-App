@@ -54,25 +54,21 @@ const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser }) =
     const sendEventNotification = async () => {
         try {
             setLoading(true);
-            const formData = new FormData();
-            formData.append('event_id', event.id);
-            formData.append('channel_ids', JSON.stringify(notificationForm.channel_ids));
-            formData.append('notification_type', notificationForm.notification_type);
-            formData.append('include_rsvp', notificationForm.include_rsvp);
-
-            const response = await fetch(`${backendUrl}/api/groupme/send-event-notification`, {
+            
+            // Use the WORKING notification endpoint (same as event creation)
+            const response = await fetch(`${backendUrl}/api/events/${event.id}/send-notification`, {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    type: 'event_announcement',
+                    message: `📢 Event Reminder: ${event.title}`,
+                    channel_ids: [] // Send to all active channels
+                })
             });
 
             if (response.ok) {
-                setShowSendNotification(false);
-                setNotificationForm({
-                    channel_ids: [],
-                    notification_type: 'event_announcement',
-                    include_rsvp: true
-                });
-                // Show success message (you could add a toast notification here)
                 alert('Event notification sent successfully!');
             } else {
                 const errorData = await response.json();
