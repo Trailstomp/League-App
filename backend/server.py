@@ -5613,6 +5613,319 @@ async def create_recurring_event(event_data: Dict[str, Any]):
         logger.error(f"❌ Error creating recurring event: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ============================================
+# STATS TRACKING API ENDPOINTS
+# ============================================
+
+@api_router.post("/events/{event_id}/game-stats")
+async def create_or_update_game_stats(event_id: str, game_stats: GameStats):
+    """Create or update game stats for an event"""
+    try:
+        # Verify event exists
+        event = await db.events.find_one({"id": event_id})
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Check if stats already exist for this event
+        existing_stats = await db.game_stats.find_one({"event_id": event_id})
+        
+        stats_data = game_stats.dict()
+        stats_data["event_id"] = event_id
+        stats_data["last_updated"] = datetime.now(timezone.utc)
+        
+        if existing_stats:
+            # Update existing stats
+            await db.game_stats.update_one(
+                {"event_id": event_id},
+                {"$set": stats_data}
+            )
+            stats_id = existing_stats["id"]
+        else:
+            # Create new stats
+            await db.game_stats.insert_one(stats_data)
+            stats_id = stats_data["id"]
+        
+        # Sync scores to event if final
+        if game_stats.status == "final":
+            await db.events.update_one(
+                {"id": event_id},
+                {"$set": {
+                    "homeScore": game_stats.home_team.goals_for,
+                    "awayScore": game_stats.away_team.goals_for if game_stats.away_team else 0,
+                    "status": "completed"
+                }}
+            )
+        
+        # Update team and player aggregated stats
+        await _update_team_season_stats(game_stats.home_team.team_id)
+        if game_stats.away_team:
+            await _update_team_season_stats(game_stats.away_team.team_id)
+        
+        return {"status": "success", "stats_id": stats_id}
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error saving game stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/events/{event_id}/game-stats")
+async def get_game_stats(event_id: str):
+    """Get game stats for an event"""
+    try:
+        stats = await db.game_stats.find_one({"event_id": event_id})
+        if not stats:
+            return {"status": "not_found", "stats": None}
+        
+        # Remove MongoDB _id
+        if "_id" in stats:
+            del stats["_id"]
+        
+        return {"status": "success", "stats": stats}
+    
+    except Exception as e:
+        logger.error(f"Error retrieving game stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/teams/{team_id}/season-stats")
+async def get_team_season_stats(team_id: str):
+    """Get aggregated season stats for a team"""
+    try:
+        # Get all game stats for this team
+        games_home = await db.game_stats.find({"home_team.team_id": team_id, "status": "final"}).to_list(None)
+        games_away = await db.game_stats.find({"away_team.team_id": team_id, "status": "final"}).to_list(None)
+        
+        games_played = 0
+        wins = 0
+        losses = 0
+        ties = 0
+        goals_for = 0
+        goals_against = 0
+        
+        # Process home games
+        for game in games_home:
+            games_played += 1
+            goals_for += game["home_team"]["goals_for"]
+            goals_against += game["home_team"]["goals_against"]
+            if game["home_team"]["result"] == "win":
+                wins += 1
+            elif game["home_team"]["result"] == "loss":
+                losses += 1
+            elif game["home_team"]["result"] == "tie":
+                ties += 1
+        
+        # Process away games
+        for game in games_away:
+            if game.get("away_team"):
+                games_played += 1
+                goals_for += game["away_team"]["goals_for"]
+                goals_against += game["away_team"]["goals_against"]
+                if game["away_team"]["result"] == "win":
+                    wins += 1
+                elif game["away_team"]["result"] == "loss":
+                    losses += 1
+                elif game["away_team"]["result"] == "tie":
+                    ties += 1
+        
+        goal_diff = goals_for - goals_against
+        points = (wins * 2) + (ties * 1)
+        
+        return {
+            "team_id": team_id,
+            "games_played": games_played,
+            "wins": wins,
+            "losses": losses,
+            "ties": ties,
+            "goals_for": goals_for,
+            "goals_against": goals_against,
+            "goal_diff": goal_diff,
+            "points": points
+        }
+    
+    except Exception as e:
+        logger.error(f"Error getting team season stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/teams/{team_id}/player-stats")
+async def get_team_player_stats(team_id: str):
+    """Get aggregated player stats for a team"""
+    try:
+        # Get all game stats for this team
+        games_home = await db.game_stats.find({"home_team.team_id": team_id, "status": "final"}).to_list(None)
+        games_away = await db.game_stats.find({"away_team.team_id": team_id, "status": "final"}).to_list(None)
+        
+        player_stats = {}  # player_id -> aggregated stats
+        goalie_stats = {}  # goalie_id -> aggregated stats
+        
+        def process_game(team_data, result):
+            # Process players
+            for player in team_data.get("players", []):
+                pid = player["player_id"]
+                if pid not in player_stats:
+                    player_stats[pid] = {
+                        "player_id": pid,
+                        "player_name": player["player_name"],
+                        "games_played": 0,
+                        "wins": 0,
+                        "losses": 0,
+                        "ties": 0,
+                        "shots": 0,
+                        "goals": 0,
+                        "ground_balls": 0
+                    }
+                
+                if player.get("was_present", True):
+                    player_stats[pid]["games_played"] += 1
+                    if result == "win":
+                        player_stats[pid]["wins"] += 1
+                    elif result == "loss":
+                        player_stats[pid]["losses"] += 1
+                    elif result == "tie":
+                        player_stats[pid]["ties"] += 1
+                
+                player_stats[pid]["shots"] += player.get("shots", 0)
+                player_stats[pid]["goals"] += player.get("goals", 0)
+                player_stats[pid]["ground_balls"] += player.get("ground_balls", 0)
+            
+            # Process goalies
+            for goalie in team_data.get("goalies", []):
+                gid = goalie["player_id"]
+                if gid not in goalie_stats:
+                    goalie_stats[gid] = {
+                        "player_id": gid,
+                        "player_name": goalie["player_name"],
+                        "games_played": 0,
+                        "wins": 0,
+                        "losses": 0,
+                        "ties": 0,
+                        "total_minutes": 0,
+                        "total_periods": 0,
+                        "shots_on_goal": 0,
+                        "saves": 0,
+                        "goals_allowed": 0,
+                        "save_percentage": 0
+                    }
+                
+                if len(goalie.get("periods_played", [])) > 0:
+                    goalie_stats[gid]["games_played"] += 1
+                    if result == "win":
+                        goalie_stats[gid]["wins"] += 1
+                    elif result == "loss":
+                        goalie_stats[gid]["losses"] += 1
+                    elif result == "tie":
+                        goalie_stats[gid]["ties"] += 1
+                
+                goalie_stats[gid]["total_minutes"] += goalie.get("minutes_played", 0)
+                goalie_stats[gid]["total_periods"] += len(goalie.get("periods_played", []))
+                goalie_stats[gid]["shots_on_goal"] += goalie.get("shots_on_goal", 0)
+                goalie_stats[gid]["saves"] += goalie.get("saves", 0)
+                goalie_stats[gid]["goals_allowed"] += goalie.get("goals_allowed", 0)
+        
+        # Process all games
+        for game in games_home:
+            process_game(game["home_team"], game["home_team"]["result"])
+        
+        for game in games_away:
+            if game.get("away_team"):
+                process_game(game["away_team"], game["away_team"]["result"])
+        
+        # Calculate save percentages
+        for goalie in goalie_stats.values():
+            if goalie["shots_on_goal"] > 0:
+                goalie["save_percentage"] = round((goalie["saves"] / goalie["shots_on_goal"]) * 100, 1)
+        
+        return {
+            "team_id": team_id,
+            "players": list(player_stats.values()),
+            "goalies": list(goalie_stats.values())
+        }
+    
+    except Exception as e:
+        logger.error(f"Error getting player stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/league/standings")
+async def get_league_standings():
+    """Get league-wide standings with all teams ranked by points"""
+    try:
+        # Get all teams
+        teams = await db.teams.find().to_list(None)
+        
+        standings = []
+        for team in teams:
+            team_stats = await get_team_season_stats(team["id"])
+            standings.append({
+                "team_id": team["id"],
+                "team_name": team["name"],
+                "division": team.get("division", ""),
+                **team_stats
+            })
+        
+        # Sort by points (descending), then goal diff, then goals for
+        standings.sort(key=lambda x: (x["points"], x["goal_diff"], x["goals_for"]), reverse=True)
+        
+        # Add rank
+        for i, team in enumerate(standings):
+            team["rank"] = i + 1
+        
+        return {"standings": standings}
+    
+    except Exception as e:
+        logger.error(f"Error getting league standings: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/events/{event_id}/live-stats")
+async def get_live_game_stats(event_id: str):
+    """Get live game stats for public viewing"""
+    try:
+        stats = await db.game_stats.find_one({"event_id": event_id})
+        event = await db.events.find_one({"id": event_id})
+        
+        if not stats or not event:
+            raise HTTPException(status_code=404, detail="Game not found")
+        
+        # Remove MongoDB _id and sensitive data
+        if "_id" in stats:
+            del stats["_id"]
+        if "_id" in event:
+            del event["_id"]
+        
+        return {
+            "event": {
+                "id": event["id"],
+                "title": event.get("title", ""),
+                "date": event.get("date", ""),
+                "time": event.get("time", ""),
+                "location": event.get("location", "")
+            },
+            "stats": stats,
+            "is_live": stats.get("is_live", False)
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting live stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+async def _update_team_season_stats(team_id: str):
+    """Helper function to update team's season record"""
+    try:
+        stats = await get_team_season_stats(team_id)
+        
+        # Update team document with season stats
+        await db.teams.update_one(
+            {"id": team_id},
+            {"$set": {
+                "wins": stats["wins"],
+                "losses": stats["losses"],
+                "ties": stats.get("ties", 0),
+                "points": stats["points"]
+            }}
+        )
+    except Exception as e:
+        logger.error(f"Error updating team season stats: {e}")
+
 # Include the API router in the main app (after all routes are defined)
 app.include_router(api_router)
 
