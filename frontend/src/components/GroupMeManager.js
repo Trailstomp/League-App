@@ -598,11 +598,13 @@ const GroupMeManager = () => {
                                         required
                                     >
                                         <option value="">Select a team...</option>
-                                        {teams.map((team) => (
-                                            <option key={team.id} value={team.id}>
-                                                {team.name}
-                                            </option>
-                                        ))}
+                                        {teams
+                                            .sort((a, b) => a.name.localeCompare(b.name))
+                                            .map((team) => (
+                                                <option key={team.id} value={team.id}>
+                                                    {team.name}
+                                                </option>
+                                            ))}
                                     </select>
                                 </div>
                             )}
