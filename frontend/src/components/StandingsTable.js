@@ -31,6 +31,36 @@ const StandingsTable = ({ teams = [], onTeamClick }) => {
         }
     }, [selectedSeason, selectedLeague, selectedDivision, viewMode]);
 
+    const loadLeagues = async () => {
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/leagues`);
+            const data = await response.json();
+            setLeagues(data.leagues || []);
+            
+            // Set main league as default if available
+            const mainLeague = data.leagues.find(l => l.id === 'main_league');
+            if (mainLeague) {
+                setSelectedLeague(mainLeague.id);
+            } else if (data.leagues.length > 0) {
+                setSelectedLeague(data.leagues[0].id);
+            }
+        } catch (error) {
+            console.error('Error loading leagues:', error);
+        }
+    };
+
+    const loadDivisions = async () => {
+        if (!selectedLeague) return;
+        
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/leagues/${selectedLeague}/divisions`);
+            const data = await response.json();
+            setDivisions(data.divisions || []);
+        } catch (error) {
+            console.error('Error loading divisions:', error);
+        }
+    };
+
     const loadSeasons = async () => {
         try {
             const response = await fetch(`${BACKEND_URL}/api/seasons`);
