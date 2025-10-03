@@ -146,6 +146,13 @@ function App() {
     // Check for quick RSVP form URLs
     if (path.startsWith('/quick-rsvp/')) {
       setCurrentPage('quick-rsvp');
+    }
+    
+    // Check for RSVP page URLs - redirect to backend
+    if (path.startsWith('/rsvp/')) {
+      const eventId = path.split('/rsvp/')[1];
+      window.location.href = `${process.env.REACT_APP_BACKEND_URL}/api/rsvp/${eventId}`;
+      return;
       return;
     }
     
