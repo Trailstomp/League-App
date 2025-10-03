@@ -269,6 +269,7 @@ const Layout = ({
                     style={{
                         marginLeft: isMobileView ? '0' : (isNavCollapsed ? '80px' : '20vw'),
                         width: isMobileView ? '100vw' : (isNavCollapsed ? 'calc(100vw - 80px)' : '80vw'),
+                        paddingTop: '200px', // Account for fixed header (ticker 120px + banner 80px)
                         minHeight: '100vh'
                     }}
                 >
