@@ -92,37 +92,44 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         const tickerElement = tickerRef.current;
         if (!tickerElement || tickerEvents.length === 0) return;
 
-        // Only scroll if content is wider than container
-        const checkAndScroll = () => {
-            const containerWidth = tickerElement.clientWidth;
-            const contentWidth = tickerElement.scrollWidth;
-            
-            if (contentWidth <= containerWidth) {
-                console.log('🎫 Ticker content fits, no scrolling needed');
-                return;
-            }
-
-            let scrollPosition = 0;
-            const scrollSpeed = Math.max(websiteStyle?.tickerSpeed || 1, 0.5); // Ensure minimum scroll speed
-            
-            const scroll = () => {
-                if (!isHovering) {
-                    scrollPosition += scrollSpeed;
-                    tickerElement.scrollLeft = scrollPosition;
-                    
-                    // Reset when scrolled halfway (for infinite effect)
-                    if (scrollPosition >= contentWidth / 2) {
-                        scrollPosition = 0;
-                    }
+        let scrollPosition = 0;
+        const scrollSpeed = websiteStyle?.tickerSpeed || 1;
+        let animationId;
+        
+        const scroll = () => {
+            if (!isHovering && tickerElement) {
+                scrollPosition += scrollSpeed;
+                tickerElement.scrollLeft = scrollPosition;
+                
+                // Get content width dynamically
+                const contentWidth = tickerElement.scrollWidth;
+                const containerWidth = tickerElement.clientWidth;
+                
+                // Reset when scrolled to show duplicated content
+                if (scrollPosition >= contentWidth / 2) {
+                    scrollPosition = 0;
                 }
-            };
-
-            const intervalId = setInterval(scroll, 16); // ~60fps
-            return () => clearInterval(intervalId);
+                
+                // Only continue if content is wider than container
+                if (contentWidth > containerWidth) {
+                    animationId = requestAnimationFrame(scroll);
+                }
+            } else if (!isHovering) {
+                animationId = requestAnimationFrame(scroll);
+            }
         };
 
-        const timeoutId = setTimeout(checkAndScroll, 100);
-        return () => clearTimeout(timeoutId);
+        // Start scrolling after a brief delay
+        const startScrolling = setTimeout(() => {
+            scroll();
+        }, 100);
+
+        return () => {
+            clearTimeout(startScrolling);
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+        };
     }, [isHovering, tickerEvents.length, websiteStyle?.tickerSpeed]);
 
     // Don't render if no events
