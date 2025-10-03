@@ -468,7 +468,7 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                     <div className="w-16 h-16 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden border-2 border-white">
                                         {team.style?.logoUrl ? (
                                             <img 
-                                                src={team.style.logoUrl} 
+                                                src={fixGoogleDriveUrl(team.style.logoUrl)} 
                                                 alt={team.name}
                                                 className="w-full h-full object-cover"
                                             />
@@ -690,7 +690,7 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                         >
                                             {team.style?.logoUrl ? (
                                                 <img 
-                                                    src={team.style.logoUrl} 
+                                                    src={fixGoogleDriveUrl(team.style.logoUrl)} 
                                                     alt={team.name}
                                                     className="w-full h-full object-contain p-1"
                                                 />
