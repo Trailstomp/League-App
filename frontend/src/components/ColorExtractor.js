@@ -100,7 +100,7 @@ const ColorExtractor = ({ imageUrl, onColorsExtracted, isVisible = true }) => {
                 setIsExtracting(false);
             };
             
-            img.src = imageUrl;
+            img.src = finalImageUrl;
             
         } catch (error) {
             console.error('Color extraction failed:', error);
