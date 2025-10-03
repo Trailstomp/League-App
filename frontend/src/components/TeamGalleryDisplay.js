@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ImageModal from './ImageModal';
+import { fixGoogleDriveUrl } from '../utils/imageUtils';
 
 // Icons
 const ImageIcon = ({ size = 16, color = "currentColor", ...props }) => (
