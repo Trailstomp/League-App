@@ -5951,11 +5951,22 @@ async def get_team_player_stats(team_id: str, season_id: Optional[str] = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/league/standings")
-async def get_league_standings(season_id: Optional[str] = None):
-    """Get league-wide standings with all teams ranked by points"""
+async def get_league_standings(
+    league_id: Optional[str] = "main_league", 
+    division_id: Optional[str] = None,
+    season_id: Optional[str] = None
+):
+    """Get league standings with optional division and season filtering"""
     try:
-        # Get all teams
-        teams = await db.teams.find().to_list(None)
+        # Build query filter
+        query = {}
+        if league_id:
+            query["league_id"] = league_id
+        if division_id:
+            query["division_id"] = division_id
+        
+        # Get teams based on filters
+        teams = await db.teams.find(query).to_list(None)
         
         standings = []
         for team in teams:
@@ -5964,6 +5975,8 @@ async def get_league_standings(season_id: Optional[str] = None):
                 "team_id": team["id"],
                 "team_name": team["name"],
                 "division": team.get("division", ""),
+                "division_id": team.get("division_id", ""),
+                "league_id": team.get("league_id", ""),
                 **team_stats
             })
         
@@ -5974,7 +5987,14 @@ async def get_league_standings(season_id: Optional[str] = None):
         for i, team in enumerate(standings):
             team["rank"] = i + 1
         
-        return {"standings": standings}
+        return {
+            "standings": standings,
+            "filters": {
+                "league_id": league_id,
+                "division_id": division_id,
+                "season_id": season_id
+            }
+        }
     
     except Exception as e:
         logger.error(f"Error getting league standings: {e}")
