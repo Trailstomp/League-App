@@ -166,7 +166,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                         <div className="relative z-10">
                                             {team.style?.logoUrl ? (
                                                 <img 
-                                                    src={team.style.logoUrl} 
+                                                    src={fixGoogleDriveUrl(team.style.logoUrl)} 
                                                     alt={team.name}
                                                     className="object-contain drop-shadow-2xl"
                                                     style={{ 
