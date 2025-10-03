@@ -4,16 +4,45 @@ const StandingsTable = ({ teams = [], onTeamClick }) => {
     const [standings, setStandings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedDivision, setSelectedDivision] = useState('all');
+    const [seasons, setSeasons] = useState([]);
+    const [selectedSeason, setSelectedSeason] = useState(null);
     
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
     useEffect(() => {
-        loadStandings();
+        loadSeasons();
     }, []);
+
+    useEffect(() => {
+        if (selectedSeason) {
+            loadStandings();
+        }
+    }, [selectedSeason]);
+
+    const loadSeasons = async () => {
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/seasons`);
+            const data = await response.json();
+            setSeasons(data.seasons || []);
+            
+            // Set active season as default
+            const activeSeason = data.seasons.find(s => s.is_active);
+            if (activeSeason) {
+                setSelectedSeason(activeSeason.id);
+            } else if (data.seasons.length > 0) {
+                setSelectedSeason(data.seasons[0].id);
+            }
+        } catch (error) {
+            console.error('Error loading seasons:', error);
+        }
+    };
 
     const loadStandings = async () => {
         try {
-            const response = await fetch(`${BACKEND_URL}/api/league/standings`);
+            const url = selectedSeason 
+                ? `${BACKEND_URL}/api/league/standings?season_id=${selectedSeason}`
+                : `${BACKEND_URL}/api/league/standings`;
+            const response = await fetch(url);
             const data = await response.json();
             setStandings(data.standings || []);
         } catch (error) {
