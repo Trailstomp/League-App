@@ -27,8 +27,8 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         }, []);
 
         // Get admin filter settings
-        const lookBackDays = websiteStyle?.tickerLookBack || 7;
-        const lookForwardDays = websiteStyle?.tickerLookForward || 120;
+        const lookBackDays = websiteStyle?.tickerLookBack || 30; // Increased from 7 to 30 days
+        const lookForwardDays = websiteStyle?.tickerLookForward || 365; // Increased from 120 to 365 days
         const eventFilters = websiteStyle?.tickerFilters || {
             games: true,
             tournaments: true,
