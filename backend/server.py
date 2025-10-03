@@ -300,6 +300,38 @@ async def get_dashboard_data():
                 "websiteStyle": {},
                 "lastUpdated": datetime.utcnow().isoformat()
             }
+            
+        # Process teams from new collection (prioritize over league_data teams)
+        if isinstance(teams_from_collection, Exception):
+            logger.error(f"Error fetching teams from collection: {teams_from_collection}")
+            teams_from_collection = []
+        
+        if teams_from_collection:
+            # Convert teams collection format to frontend format
+            formatted_teams = []
+            for team in teams_from_collection:
+                team.pop('_id', None)  # Remove MongoDB ID
+                # Convert new format to old format for compatibility
+                formatted_team = {
+                    "id": team.get("id", ""),
+                    "name": team.get("name", ""),
+                    "division": team.get("division", ""),
+                    "color": team.get("color", "#3b82f6"),
+                    "logo": team.get("logo", ""),
+                    "active": team.get("active", True),
+                    # Preserve any additional fields from old format
+                    "wins": team.get("wins", 0),
+                    "losses": team.get("losses", 0),
+                    "ties": team.get("ties", 0),
+                    "pf": team.get("pf", 0),
+                    "pa": team.get("pa", 0)
+                }
+                formatted_teams.append(formatted_team)
+            
+            league_data["teams"] = formatted_teams
+            logger.info(f"✅ Using {len(formatted_teams)} teams from teams collection")
+        else:
+            logger.info(f"✅ Using {len(league_data.get('teams', []))} teams from league_data")
         
         # Process galleries data
         if isinstance(galleries_data, Exception):
