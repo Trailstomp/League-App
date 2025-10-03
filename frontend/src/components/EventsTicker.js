@@ -151,7 +151,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
 
     return (
         <div 
-            className="w-full py-3 overflow-hidden"
+            className="w-full py-3 overflow-hidden relative"
             style={{ 
                 backgroundColor: websiteStyle?.tickerColor || '#1e293b',
                 minHeight: '60px'
