@@ -88,8 +88,36 @@ const StandingsTable = ({ teams = [], onTeamClick }) => {
 
     const loadStandings = async () => {
         try {
-            const url = (selectedSeason && selectedSeason !== 'all')
-                ? `${BACKEND_URL}/api/league/standings?season_id=${selectedSeason}`
+            setLoading(true);
+            
+            if (viewMode === 'divisions') {
+                // Load standings grouped by divisions
+                const url = `${BACKEND_URL}/api/leagues/${selectedLeague}/standings${selectedSeason && selectedSeason !== 'all' ? `?season_id=${selectedSeason}` : ''}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                setStandingsByDivision(data.standings_by_division || {});
+                setStandings([]); // Clear overall standings
+            } else {
+                // Load overall standings
+                let url = `${BACKEND_URL}/api/league/standings?league_id=${selectedLeague}`;
+                if (selectedDivision && selectedDivision !== 'all') {
+                    url += `&division_id=${selectedDivision}`;
+                }
+                if (selectedSeason && selectedSeason !== 'all') {
+                    url += `&season_id=${selectedSeason}`;
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                setStandings(data.standings || []);
+                setStandingsByDivision({}); // Clear division standings
+            }
+        } catch (error) {
+            console.error('Error loading standings:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
                 : `${BACKEND_URL}/api/league/standings`;
             const response = await fetch(url);
             const data = await response.json();
