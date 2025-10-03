@@ -189,8 +189,9 @@ const Layout = ({
                 {/* Mobile Navigation - Slide in from left, positioned below full header */}
                 <div className={`
                     ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
-                    fixed left-0 z-35 md:hidden bg-white shadow-lg
+                    fixed left-0 z-50 md:hidden bg-white shadow-lg
                     transition-transform duration-300 ease-in-out
+                    overflow-y-auto
                 `}
                 style={{
                     top: '200px', // Position below header
@@ -198,7 +199,9 @@ const Layout = ({
                     height: 'calc(100vh - 200px)', // Full height minus header
                     width: '75vw', // 75% of viewport width on mobile
                     maxWidth: '320px'
-                }}>
+                }}
+                onTouchStart={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}>
                     <Navigation 
                         currentPage={currentPage}
                         onNavigate={handleNavigate}
