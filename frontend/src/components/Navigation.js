@@ -218,6 +218,26 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 height: '88vh' // Account for fixed header (ticker + banner = 12vh)
             }}
         >
+            {/* Mobile Close Button */}
+            {onMobileClose && (
+                <div className="md:hidden p-4 border-b flex justify-end"
+                    style={{borderColor: websiteStyle.navBorderColor || '#e2e8f0'}}
+                >
+                    <button
+                        onClick={onMobileClose}
+                        className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                        aria-label="Close navigation menu"
+                        style={{
+                            color: websiteStyle.navTextColor || '#374151'
+                        }}
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            )}
+            
             {/* Header with Toggle */}
             <div className="p-4 border-b flex-shrink-0">
                 <div className="flex items-center justify-between">
