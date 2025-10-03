@@ -130,6 +130,7 @@ const EventsPage = ({ teams, players = [], currentUser, events, setEvents, onEnt
                                     event={event} 
                                     currentUser={currentUser}
                                     showRSVP={true}
+                                    onEnterStats={onEnterStats ? () => onEnterStats(event) : null}
                                 />
                             ))
                     ) : (
