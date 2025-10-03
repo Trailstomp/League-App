@@ -409,9 +409,485 @@ const GameStatsEntry = ({ event, teams = [], players = [], currentUser, onClose 
                         </div>
                     </div>
 
-                    {/* Stats Entry - Continue in next part */}
-                    <div className="p-6">
-                        <p className="text-center text-gray-600">Stats entry form continues...</p>
+                    {/* Stats Entry */}
+                    <div className="p-6 space-y-8">
+                        {/* Home Team Stats */}
+                        <div className="border-2 border-blue-200 rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-xl font-bold text-blue-700">
+                                    {gameStats.home_team.team_name || 'Home Team'}
+                                </h3>
+                                <select
+                                    value={gameStats.home_team.team_id}
+                                    onChange={(e) => handleTeamChange(e.target.value, 'home')}
+                                    className="px-3 py-2 border rounded-lg"
+                                >
+                                    <option value="">Select Team</option>
+                                    {teams.map(team => (
+                                        <option key={team.id} value={team.id}>{team.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Add Players */}
+                            <div className="mb-4 flex gap-2 flex-wrap">
+                                <select
+                                    onChange={(e) => {
+                                        if (e.target.value) {
+                                            const player = homeRoster.find(p => p.id === e.target.value);
+                                            if (player) addPlayerToStats(player, 'home');
+                                            e.target.value = '';
+                                        }
+                                    }}
+                                    className="px-3 py-2 border rounded-lg"
+                                >
+                                    <option value="">+ Add Player</option>
+                                    {homeRoster.filter(p => !gameStats.home_team.players.find(ps => ps.player_id === p.id)).map(player => (
+                                        <option key={player.id} value={player.id}>
+                                            {player.name} {player.hasAccepted ? '✓' : ''}
+                                        </option>
+                                    ))}
+                                </select>
+                                <select
+                                    onChange={(e) => {
+                                        if (e.target.value) {
+                                            const player = homeRoster.find(p => p.id === e.target.value);
+                                            if (player) addGoalieToStats(player, 'home');
+                                            e.target.value = '';
+                                        }
+                                    }}
+                                    className="px-3 py-2 border rounded-lg"
+                                >
+                                    <option value="">+ Add Goalie</option>
+                                    {homeRoster.filter(p => !gameStats.home_team.goalies.find(gs => gs.player_id === p.id)).map(player => (
+                                        <option key={player.id} value={player.id}>
+                                            {player.name} {player.hasAccepted ? '✓' : ''}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Players Table */}
+                            {gameStats.home_team.players.length > 0 && (
+                                <div className="mb-6">
+                                    <h4 className="font-semibold mb-2">Field Players</h4>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm">
+                                            <thead className="bg-gray-100">
+                                                <tr>
+                                                    <th className="px-2 py-2 text-left">Player</th>
+                                                    <th className="px-2 py-2 text-center">#</th>
+                                                    <th className="px-2 py-2 text-center">Shots</th>
+                                                    <th className="px-2 py-2 text-center">Goals</th>
+                                                    <th className="px-2 py-2 text-center">GB</th>
+                                                    <th className="px-2 py-2 text-center">Present</th>
+                                                    <th className="px-2 py-2"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {gameStats.home_team.players.map((player, idx) => (
+                                                    <tr key={player.player_id} className="border-b hover:bg-gray-50">
+                                                        <td className="px-2 py-2">{player.player_name}</td>
+                                                        <td className="px-2 py-2 text-center">{player.jersey_number || '-'}</td>
+                                                        <td className="px-2 py-2">
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                value={player.shots}
+                                                                onChange={(e) => updatePlayerStat(player.player_id, 'shots', e.target.value, 'home')}
+                                                                className="w-16 px-2 py-1 border rounded text-center"
+                                                            />
+                                                        </td>
+                                                        <td className="px-2 py-2">
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                value={player.goals}
+                                                                onChange={(e) => updatePlayerStat(player.player_id, 'goals', e.target.value, 'home')}
+                                                                className="w-16 px-2 py-1 border rounded text-center"
+                                                            />
+                                                        </td>
+                                                        <td className="px-2 py-2">
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                value={player.ground_balls}
+                                                                onChange={(e) => updatePlayerStat(player.player_id, 'ground_balls', e.target.value, 'home')}
+                                                                className="w-16 px-2 py-1 border rounded text-center"
+                                                            />
+                                                        </td>
+                                                        <td className="px-2 py-2 text-center">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={player.was_present}
+                                                                onChange={(e) => updatePlayerStat(player.player_id, 'was_present', e.target.checked, 'home')}
+                                                                className="w-5 h-5"
+                                                            />
+                                                        </td>
+                                                        <td className="px-2 py-2">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setGameStats({
+                                                                        ...gameStats,
+                                                                        home_team: {
+                                                                            ...gameStats.home_team,
+                                                                            players: gameStats.home_team.players.filter(p => p.player_id !== player.player_id)
+                                                                        }
+                                                                    });
+                                                                }}
+                                                                className="text-red-600 hover:text-red-800"
+                                                            >
+                                                                ×
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Goalies Table */}
+                            {gameStats.home_team.goalies.length > 0 && (
+                                <div>
+                                    <h4 className="font-semibold mb-2">Goalies</h4>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm">
+                                            <thead className="bg-gray-100">
+                                                <tr>
+                                                    <th className="px-2 py-2 text-left">Goalie</th>
+                                                    <th className="px-2 py-2 text-center">#</th>
+                                                    <th className="px-2 py-2 text-center">Periods</th>
+                                                    <th className="px-2 py-2 text-center">Min</th>
+                                                    <th className="px-2 py-2 text-center">SOG</th>
+                                                    <th className="px-2 py-2 text-center">Saves</th>
+                                                    <th className="px-2 py-2 text-center">GA</th>
+                                                    <th className="px-2 py-2"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {gameStats.home_team.goalies.map((goalie) => (
+                                                    <tr key={goalie.player_id} className="border-b hover:bg-gray-50">
+                                                        <td className="px-2 py-2">{goalie.player_name}</td>
+                                                        <td className="px-2 py-2 text-center">{goalie.jersey_number || '-'}</td>
+                                                        <td className="px-2 py-2">
+                                                            <div className="flex gap-1 justify-center">
+                                                                {[1,2,3,4].map(period => (
+                                                                    <button
+                                                                        key={period}
+                                                                        onClick={() => togglePeriod(goalie.player_id, period, 'home')}
+                                                                        className={`w-8 h-8 rounded ${
+                                                                            goalie.periods_played?.includes(period)
+                                                                                ? 'bg-blue-600 text-white'
+                                                                                : 'bg-gray-200'
+                                                                        }`}
+                                                                    >
+                                                                        {period}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-2 py-2">
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                value={goalie.minutes_played}
+                                                                onChange={(e) => updateGoalieStat(goalie.player_id, 'minutes_played', parseInt(e.target.value) || 0, 'home')}
+                                                                className="w-16 px-2 py-1 border rounded text-center"
+                                                            />
+                                                        </td>
+                                                        <td className="px-2 py-2">
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                value={goalie.shots_on_goal}
+                                                                onChange={(e) => updateGoalieStat(goalie.player_id, 'shots_on_goal', parseInt(e.target.value) || 0, 'home')}
+                                                                className="w-16 px-2 py-1 border rounded text-center"
+                                                            />
+                                                        </td>
+                                                        <td className="px-2 py-2">
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                value={goalie.saves}
+                                                                onChange={(e) => updateGoalieStat(goalie.player_id, 'saves', parseInt(e.target.value) || 0, 'home')}
+                                                                className="w-16 px-2 py-1 border rounded text-center"
+                                                            />
+                                                        </td>
+                                                        <td className="px-2 py-2">
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                value={goalie.goals_allowed}
+                                                                onChange={(e) => updateGoalieStat(goalie.player_id, 'goals_allowed', parseInt(e.target.value) || 0, 'home')}
+                                                                className="w-16 px-2 py-1 border rounded text-center"
+                                                            />
+                                                        </td>
+                                                        <td className="px-2 py-2">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setGameStats({
+                                                                        ...gameStats,
+                                                                        home_team: {
+                                                                            ...gameStats.home_team,
+                                                                            goalies: gameStats.home_team.goalies.filter(g => g.player_id !== goalie.player_id)
+                                                                        }
+                                                                    });
+                                                                }}
+                                                                className="text-red-600 hover:text-red-800"
+                                                            >
+                                                                ×
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Away Team Stats - Similar structure */}
+                        {gameStats.away_team && (
+                            <div className="border-2 border-red-200 rounded-lg p-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-xl font-bold text-red-700">
+                                        {gameStats.away_team.team_name || 'Away Team'}
+                                    </h3>
+                                    <select
+                                        value={gameStats.away_team.team_id}
+                                        onChange={(e) => handleTeamChange(e.target.value, 'away')}
+                                        className="px-3 py-2 border rounded-lg"
+                                    >
+                                        <option value="">Select Team</option>
+                                        {teams.map(team => (
+                                            <option key={team.id} value={team.id}>{team.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Add Players */}
+                                <div className="mb-4 flex gap-2 flex-wrap">
+                                    <select
+                                        onChange={(e) => {
+                                            if (e.target.value) {
+                                                const player = awayRoster.find(p => p.id === e.target.value);
+                                                if (player) addPlayerToStats(player, 'away');
+                                                e.target.value = '';
+                                            }
+                                        }}
+                                        className="px-3 py-2 border rounded-lg"
+                                    >
+                                        <option value="">+ Add Player</option>
+                                        {awayRoster.filter(p => !gameStats.away_team.players.find(ps => ps.player_id === p.id)).map(player => (
+                                            <option key={player.id} value={player.id}>
+                                                {player.name} {player.hasAccepted ? '✓' : ''}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <select
+                                        onChange={(e) => {
+                                            if (e.target.value) {
+                                                const player = awayRoster.find(p => p.id === e.target.value);
+                                                if (player) addGoalieToStats(player, 'away');
+                                                e.target.value = '';
+                                            }
+                                        }}
+                                        className="px-3 py-2 border rounded-lg"
+                                    >
+                                        <option value="">+ Add Goalie</option>
+                                        {awayRoster.filter(p => !gameStats.away_team.goalies.find(gs => gs.player_id === p.id)).map(player => (
+                                            <option key={player.id} value={player.id}>
+                                                {player.name} {player.hasAccepted ? '✓' : ''}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Players & Goalies Tables - Same as home team */}
+                                {gameStats.away_team.players.length > 0 && (
+                                    <div className="mb-6">
+                                        <h4 className="font-semibold mb-2">Field Players</h4>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-sm">
+                                                <thead className="bg-gray-100">
+                                                    <tr>
+                                                        <th className="px-2 py-2 text-left">Player</th>
+                                                        <th className="px-2 py-2 text-center">#</th>
+                                                        <th className="px-2 py-2 text-center">Shots</th>
+                                                        <th className="px-2 py-2 text-center">Goals</th>
+                                                        <th className="px-2 py-2 text-center">GB</th>
+                                                        <th className="px-2 py-2 text-center">Present</th>
+                                                        <th className="px-2 py-2"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {gameStats.away_team.players.map((player) => (
+                                                        <tr key={player.player_id} className="border-b hover:bg-gray-50">
+                                                            <td className="px-2 py-2">{player.player_name}</td>
+                                                            <td className="px-2 py-2 text-center">{player.jersey_number || '-'}</td>
+                                                            <td className="px-2 py-2">
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    value={player.shots}
+                                                                    onChange={(e) => updatePlayerStat(player.player_id, 'shots', e.target.value, 'away')}
+                                                                    className="w-16 px-2 py-1 border rounded text-center"
+                                                                />
+                                                            </td>
+                                                            <td className="px-2 py-2">
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    value={player.goals}
+                                                                    onChange={(e) => updatePlayerStat(player.player_id, 'goals', e.target.value, 'away')}
+                                                                    className="w-16 px-2 py-1 border rounded text-center"
+                                                                />
+                                                            </td>
+                                                            <td className="px-2 py-2">
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    value={player.ground_balls}
+                                                                    onChange={(e) => updatePlayerStat(player.player_id, 'ground_balls', e.target.value, 'away')}
+                                                                    className="w-16 px-2 py-1 border rounded text-center"
+                                                                />
+                                                            </td>
+                                                            <td className="px-2 py-2 text-center">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={player.was_present}
+                                                                    onChange={(e) => updatePlayerStat(player.player_id, 'was_present', e.target.checked, 'away')}
+                                                                    className="w-5 h-5"
+                                                                />
+                                                            </td>
+                                                            <td className="px-2 py-2">
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setGameStats({
+                                                                            ...gameStats,
+                                                                            away_team: {
+                                                                                ...gameStats.away_team,
+                                                                                players: gameStats.away_team.players.filter(p => p.player_id !== player.player_id)
+                                                                            }
+                                                                        });
+                                                                    }}
+                                                                    className="text-red-600 hover:text-red-800"
+                                                                >
+                                                                    ×
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Away Goalies Table */}
+                                {gameStats.away_team.goalies.length > 0 && (
+                                    <div>
+                                        <h4 className="font-semibold mb-2">Goalies</h4>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-sm">
+                                                <thead className="bg-gray-100">
+                                                    <tr>
+                                                        <th className="px-2 py-2 text-left">Goalie</th>
+                                                        <th className="px-2 py-2 text-center">#</th>
+                                                        <th className="px-2 py-2 text-center">Periods</th>
+                                                        <th className="px-2 py-2 text-center">Min</th>
+                                                        <th className="px-2 py-2 text-center">SOG</th>
+                                                        <th className="px-2 py-2 text-center">Saves</th>
+                                                        <th className="px-2 py-2 text-center">GA</th>
+                                                        <th className="px-2 py-2"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {gameStats.away_team.goalies.map((goalie) => (
+                                                        <tr key={goalie.player_id} className="border-b hover:bg-gray-50">
+                                                            <td className="px-2 py-2">{goalie.player_name}</td>
+                                                            <td className="px-2 py-2 text-center">{goalie.jersey_number || '-'}</td>
+                                                            <td className="px-2 py-2">
+                                                                <div className="flex gap-1 justify-center">
+                                                                    {[1,2,3,4].map(period => (
+                                                                        <button
+                                                                            key={period}
+                                                                            onClick={() => togglePeriod(goalie.player_id, period, 'away')}
+                                                                            className={`w-8 h-8 rounded ${
+                                                                                goalie.periods_played?.includes(period)
+                                                                                    ? 'bg-red-600 text-white'
+                                                                                    : 'bg-gray-200'
+                                                                            }`}
+                                                                        >
+                                                                            {period}
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-2 py-2">
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    value={goalie.minutes_played}
+                                                                    onChange={(e) => updateGoalieStat(goalie.player_id, 'minutes_played', parseInt(e.target.value) || 0, 'away')}
+                                                                    className="w-16 px-2 py-1 border rounded text-center"
+                                                                />
+                                                            </td>
+                                                            <td className="px-2 py-2">
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    value={goalie.shots_on_goal}
+                                                                    onChange={(e) => updateGoalieStat(goalie.player_id, 'shots_on_goal', parseInt(e.target.value) || 0, 'away')}
+                                                                    className="w-16 px-2 py-1 border rounded text-center"
+                                                                />
+                                                            </td>
+                                                            <td className="px-2 py-2">
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    value={goalie.saves}
+                                                                    onChange={(e) => updateGoalieStat(goalie.player_id, 'saves', parseInt(e.target.value) || 0, 'away')}
+                                                                    className="w-16 px-2 py-1 border rounded text-center"
+                                                                />
+                                                            </td>
+                                                            <td className="px-2 py-2">
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    value={goalie.goals_allowed}
+                                                                    onChange={(e) => updateGoalieStat(goalie.player_id, 'goals_allowed', parseInt(e.target.value) || 0, 'away')}
+                                                                    className="w-16 px-2 py-1 border rounded text-center"
+                                                                />
+                                                            </td>
+                                                            <td className="px-2 py-2">
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setGameStats({
+                                                                            ...gameStats,
+                                                                            away_team: {
+                                                                                ...gameStats.away_team,
+                                                                                goalies: gameStats.away_team.goalies.filter(g => g.player_id !== goalie.player_id)
+                                                                            }
+                                                                        });
+                                                                    }}
+                                                                    className="text-red-600 hover:text-red-800"
+                                                                >
+                                                                    ×
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {/* Actions */}
