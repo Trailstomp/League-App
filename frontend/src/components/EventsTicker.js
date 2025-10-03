@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { fixGoogleDriveUrl } from '../utils/imageUtils';
 
 const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick, onTeamClick }) => {
     const tickerRef = useRef(null);
