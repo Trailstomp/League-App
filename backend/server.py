@@ -5967,6 +5967,133 @@ async def _update_team_season_stats(team_id: str):
     except Exception as e:
         logger.error(f"Error updating team season stats: {e}")
 
+# ============================================
+# SEASON MANAGEMENT API ENDPOINTS
+# ============================================
+
+@api_router.get("/seasons")
+async def get_seasons(league_id: str = "main_league"):
+    """Get all seasons for a league"""
+    try:
+        seasons = await db.seasons.find({"league_id": league_id}).sort("start_date", -1).to_list(None)
+        
+        # Remove MongoDB _id
+        for season in seasons:
+            if "_id" in season:
+                del season["_id"]
+        
+        return {"seasons": seasons}
+    except Exception as e:
+        logger.error(f"Error getting seasons: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/seasons/active")
+async def get_active_season(league_id: str = "main_league"):
+    """Get the currently active season"""
+    try:
+        season = await db.seasons.find_one({"league_id": league_id, "is_active": True})
+        
+        if not season:
+            # If no active season, create a default one
+            default_season = {
+                "id": str(uuid.uuid4()),
+                "name": f"Season {datetime.now().year}",
+                "league_id": league_id,
+                "start_date": datetime.now(timezone.utc),
+                "end_date": datetime.now(timezone.utc) + timedelta(days=365),
+                "is_active": True,
+                "created_at": datetime.now(timezone.utc)
+            }
+            await db.seasons.insert_one(default_season)
+            season = default_season
+        
+        if "_id" in season:
+            del season["_id"]
+        
+        return {"season": season}
+    except Exception as e:
+        logger.error(f"Error getting active season: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/seasons")
+async def create_season(season: Season):
+    """Create a new season"""
+    try:
+        # If this is set as active, deactivate other seasons
+        if season.is_active:
+            await db.seasons.update_many(
+                {"league_id": season.league_id, "is_active": True},
+                {"$set": {"is_active": False}}
+            )
+        
+        season_dict = season.dict()
+        await db.seasons.insert_one(season_dict)
+        
+        return {"status": "success", "season_id": season.id}
+    except Exception as e:
+        logger.error(f"Error creating season: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/seasons/{season_id}/activate")
+async def activate_season(season_id: str):
+    """Set a season as the active season"""
+    try:
+        # Get the season to find its league
+        season = await db.seasons.find_one({"id": season_id})
+        if not season:
+            raise HTTPException(status_code=404, detail="Season not found")
+        
+        # Deactivate all other seasons in this league
+        await db.seasons.update_many(
+            {"league_id": season["league_id"], "is_active": True},
+            {"$set": {"is_active": False}}
+        )
+        
+        # Activate this season
+        await db.seasons.update_one(
+            {"id": season_id},
+            {"$set": {"is_active": True}}
+        )
+        
+        return {"status": "success", "message": f"Season {season['name']} is now active"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error activating season: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/seasons/{season_id}/summary")
+async def get_season_summary(season_id: str):
+    """Get summary statistics for a season"""
+    try:
+        # Get season info
+        season = await db.seasons.find_one({"id": season_id})
+        if not season:
+            raise HTTPException(status_code=404, detail="Season not found")
+        
+        # Get all games in this season
+        games = await db.game_stats.find({"season_id": season_id, "status": "final"}).to_list(None)
+        
+        total_goals = sum(game["home_team"]["goals_for"] + (game.get("away_team", {}).get("goals_for", 0) or 0) for game in games)
+        
+        # Get standings for this season
+        standings_data = await get_league_standings(season_id=season_id)
+        
+        if "_id" in season:
+            del season["_id"]
+        
+        return {
+            "season": season,
+            "total_games": len(games),
+            "total_goals": total_goals,
+            "top_teams": standings_data["standings"][:5] if standings_data["standings"] else []
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting season summary: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Include the API router in the main app (after all routes are defined)
 app.include_router(api_router)
 
