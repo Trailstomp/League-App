@@ -30,17 +30,7 @@ const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser }) =
         }
     };
 
-    const loadChannels = async () => {
-        try {
-            const response = await fetch(`${backendUrl}/api/groupme/channels?active_only=true`);
-            if (response.ok) {
-                const data = await response.json();
-                setChannels(data.channels || []);
-            }
-        } catch (err) {
-            console.error('Error loading channels:', err);
-        }
-    };
+    // Removed unused loadChannels function
 
     const sendEventNotification = async () => {
         try {
