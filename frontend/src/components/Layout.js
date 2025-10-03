@@ -201,7 +201,7 @@ const Layout = ({
                 {isMobileView && isMobileMenuOpen && (
                     <div 
                         className="fixed inset-0 bg-black bg-opacity-50 z-40"
-                        style={{top: '200px'}} // Position below header
+                        style={{top: '0'}} // Cover full screen
                         onClick={() => setIsMobileMenuOpen(false)}
                         onTouchStart={(e) => e.stopPropagation()}
                     />
