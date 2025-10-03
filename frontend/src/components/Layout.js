@@ -132,7 +132,8 @@ const Layout = ({
                         onEventClick={onEventClick}
                         onTeamClick={onTeamClick}
                     />
-                </div>
+                    </div>
+                )}
                 
                 {/* League Banner */}
                 <div 
