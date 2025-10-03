@@ -6281,6 +6281,146 @@ async def get_tournament_bracket(tournament_id: str):
         logger.error(f"Error getting tournament bracket: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ============================================
+# LEAGUE AND DIVISION MANAGEMENT API ENDPOINTS
+# ============================================
+
+@api_router.get("/leagues")
+async def get_leagues():
+    """Get all leagues"""
+    try:
+        leagues = await db.leagues.find().to_list(None)
+        
+        # Remove MongoDB _id
+        for league in leagues:
+            if "_id" in league:
+                del league["_id"]
+        
+        return {"leagues": leagues}
+    except Exception as e:
+        logger.error(f"Error getting leagues: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/leagues")
+async def create_league(league: League):
+    """Create a new league"""
+    try:
+        league_dict = league.dict()
+        await db.leagues.insert_one(league_dict)
+        return {"status": "success", "league_id": league.id}
+    except Exception as e:
+        logger.error(f"Error creating league: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/leagues/{league_id}/divisions")
+async def get_league_divisions(league_id: str):
+    """Get all divisions for a specific league"""
+    try:
+        divisions = await db.divisions.find({"league_id": league_id}).sort("level", 1).to_list(None)
+        
+        # Remove MongoDB _id
+        for division in divisions:
+            if "_id" in division:
+                del division["_id"]
+        
+        return {"divisions": divisions}
+    except Exception as e:
+        logger.error(f"Error getting divisions for league {league_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/leagues/{league_id}/divisions")
+async def create_division(league_id: str, division: Division):
+    """Create a new division in a league"""
+    try:
+        # Ensure division belongs to the specified league
+        division.league_id = league_id
+        
+        division_dict = division.dict()
+        await db.divisions.insert_one(division_dict)
+        return {"status": "success", "division_id": division.id}
+    except Exception as e:
+        logger.error(f"Error creating division: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/leagues/{league_id}/teams")
+async def get_league_teams(league_id: str):
+    """Get all teams in a specific league"""
+    try:
+        teams = await db.teams.find({"league_id": league_id}).to_list(None)
+        
+        # Remove MongoDB _id
+        for team in teams:
+            if "_id" in team:
+                del team["_id"]
+        
+        return {"teams": teams}
+    except Exception as e:
+        logger.error(f"Error getting teams for league {league_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/divisions/{division_id}/teams")
+async def get_division_teams(division_id: str):
+    """Get all teams in a specific division"""
+    try:
+        teams = await db.teams.find({"division_id": division_id}).to_list(None)
+        
+        # Remove MongoDB _id
+        for team in teams:
+            if "_id" in team:
+                del team["_id"]
+        
+        return {"teams": teams}
+    except Exception as e:
+        logger.error(f"Error getting teams for division {division_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/leagues/{league_id}/standings")
+async def get_league_standings_by_divisions(league_id: str, season_id: Optional[str] = None):
+    """Get league standings grouped by divisions"""
+    try:
+        # Get all teams in this league
+        teams = await db.teams.find({"league_id": league_id}).to_list(None)
+        
+        # Get all divisions in this league
+        divisions = await db.divisions.find({"league_id": league_id}).sort("level", 1).to_list(None)
+        
+        standings_by_division = {}
+        
+        for division in divisions:
+            division_teams = [t for t in teams if t.get("division_id") == division["id"]]
+            division_standings = []
+            
+            for team in division_teams:
+                team_stats = await get_team_season_stats(team["id"], season_id=season_id)
+                division_standings.append({
+                    "team_id": team["id"],
+                    "team_name": team["name"],
+                    "division": division["name"],
+                    **team_stats
+                })
+            
+            # Sort by points (descending), then goal diff, then goals for
+            division_standings.sort(key=lambda x: (x["points"], x["goal_diff"], x["goals_for"]), reverse=True)
+            
+            # Add rank within division
+            for i, team in enumerate(division_standings):
+                team["division_rank"] = i + 1
+            
+            standings_by_division[division["name"]] = {
+                "division_id": division["id"],
+                "division_name": division["name"],
+                "level": division.get("level", 1),
+                "teams": division_standings
+            }
+        
+        return {
+            "league_id": league_id,
+            "standings_by_division": standings_by_division
+        }
+    except Exception as e:
+        logger.error(f"Error getting league standings by divisions: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/seasons/{season_id}/summary")
 async def get_season_summary(season_id: str):
     """Get summary statistics for a season"""
