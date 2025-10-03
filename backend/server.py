@@ -5578,6 +5578,8 @@ async def create_recurring_event(event_data: Dict[str, Any]):
     try:
         from event_recurrence import generate_recurring_events
         
+        logger.info(f"📅 Creating recurring events with data: {event_data}")
+        
         recurrence_pattern = event_data.get('recurrence_pattern')
         if not recurrence_pattern:
             raise HTTPException(status_code=400, detail="recurrence_pattern is required")
@@ -5588,8 +5590,12 @@ async def create_recurring_event(event_data: Dict[str, Any]):
         if not base_event or not end_date:
             raise HTTPException(status_code=400, detail="event and end_date are required")
         
+        logger.info(f"📅 Base event: {base_event.get('title')}, End date: {end_date}")
+        
         # Generate instances
         instances = generate_recurring_events(base_event, recurrence_pattern, end_date)
+        
+        logger.info(f"📅 Generated {len(instances)} instances")
         
         # Get current league schedule
         league_doc = await db.league_data.find_one({"id": "main_league"})
@@ -5601,7 +5607,7 @@ async def create_recurring_event(event_data: Dict[str, Any]):
         current_schedule.extend(instances)
         
         league_doc["leagueSchedule"] = current_schedule
-        league_doc["lastUpdated"] = datetime.utcnow().isoformat()
+        league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # Save to database
         await db.league_data.replace_one(
@@ -5621,8 +5627,10 @@ async def create_recurring_event(event_data: Dict[str, Any]):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"❌ Error creating recurring event: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        import traceback
+        error_details = traceback.format_exc()
+        logger.error(f"❌ Error creating recurring event: {e}\n{error_details}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 # ============================================
 # STATS TRACKING API ENDPOINTS
