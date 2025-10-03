@@ -24,6 +24,10 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [users, setUsers] = useState(initialMockUsers);
   
+  // Stats entry state
+  const [showStatsEntry, setShowStatsEntry] = useState(false);
+  const [selectedEventForStats, setSelectedEventForStats] = useState(null);
+  
   const [teams, setTeams] = useState([]);
   const [players, setPlayers] = useState([]);
   const [events, setEvents] = useState([]);
