@@ -121,8 +121,10 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
 
         // Start scrolling after a brief delay
         const startScrolling = setTimeout(() => {
-            scroll();
-        }, 100);
+            if (tickerElement && tickerElement.scrollWidth > tickerElement.clientWidth) {
+                scroll();
+            }
+        }, 500);
 
         return () => {
             clearTimeout(startScrolling);
