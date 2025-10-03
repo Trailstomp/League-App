@@ -28,6 +28,14 @@ const ColorExtractor = ({ imageUrl, onColorsExtracted, isVisible = true }) => {
             const img = new Image();
             img.crossOrigin = 'anonymous';
             
+            // Check if it's a Google Drive URL that needs proxying
+            let finalImageUrl = imageUrl;
+            if (imageUrl.includes('drive.google.com') || imageUrl.includes('googleusercontent.com')) {
+                const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+                finalImageUrl = `${backendUrl}/api/proxy-image?url=${encodeURIComponent(imageUrl)}`;
+                console.log('🔄 Using proxy for Google Drive image:', finalImageUrl);
+            }
+            
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
