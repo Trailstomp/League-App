@@ -249,6 +249,125 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                 </div>
                             </div>
                         ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        
+                        {/* Teams without division */}
+                        {(() => {
+                            const noDivisionTeams = teams.filter(team => !team.division || (team.division !== 'Field' && team.division !== 'Box'));
+                            if (noDivisionTeams.length === 0) return null;
+                            
+                            return (
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-medium text-slate-700 border-b border-slate-200 pb-2">
+                                        Other Teams ({noDivisionTeams.length})
+                                    </h3>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                                        {noDivisionTeams.map(team => (
+                                            <div 
+                                                key={team.id} 
+                                                className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform hover:scale-105 duration-300 border-4 cursor-pointer group"
+                                                style={{ 
+                                                    borderColor: team.style?.primaryColor || '#2563eb'
+                                                }}
+                                                onClick={() => {
+                                                    console.log('🏆 Team card clicked:', team.name);
+                                                    console.log('🎨 Team colors for card:', team.style);
+                                                    if (onNavigate) {
+                                                        onNavigate('team', team.id);
+                                                    }
+                                                }}
+                                                title="Click for team details"
+                                            >
+                                                {/* Main Logo Area - Larger for better visibility */}
+                                                <div className="relative overflow-hidden" style={{ aspectRatio: '3/4', minHeight: '200px' }}>
+                                                    <div 
+                                                        className="w-full h-full flex items-center justify-center relative"
+                                                        style={{ 
+                                                            background: team.style?.cardBackgroundImage 
+                                                                ? `url(${team.style.cardBackgroundImage})`
+                                                                : `linear-gradient(135deg, ${team.style?.backgroundColor || '#f8fafc'} 0%, rgba(255,255,255,0.9) 100%)`,
+                                                            backgroundSize: 'cover',
+                                                            backgroundPosition: 'center'
+                                                        }}
+                                                    >
+                                                        {team.style?.cardBackgroundImage && (
+                                                            <div 
+                                                                className="absolute inset-0"
+                                                                style={{ 
+                                                                    backgroundColor: `rgba(255,255,255,${1 - (team.style?.cardBackgroundOpacity || 0.3)})`
+                                                                }}
+                                                            ></div>
+                                                        )}
+                                                        
+                                                        <div className="relative z-10">
+                                                            {team.style?.logoUrl ? (
+                                                                <img 
+                                                                    src={team.style.logoUrl} 
+                                                                    alt={team.name}
+                                                                    className="object-contain drop-shadow-2xl"
+                                                                    style={{ 
+                                                                        width: '240px',
+                                                                        height: '240px',
+                                                                        filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.4)) drop-shadow(0 4px 8px rgba(255,255,255,0.1))',
+                                                                        backgroundColor: 'transparent'
+                                                                    }}
+                                                                    onLoad={(e) => {
+                                                                        e.target.style.opacity = '1';
+                                                                        e.target.style.transition = 'opacity 0.3s ease';
+                                                                    }}
+                                                                    onError={(e) => {
+                                                                        console.warn(`Failed to load logo for team: ${team.name}`, team.style?.logoUrl);
+                                                                        e.target.style.display = 'none';
+                                                                        const fallback = e.target.parentElement.querySelector('.fallback-logo');
+                                                                        if (fallback) fallback.style.display = 'flex';
+                                                                    }}
+                                                                    loading="lazy"
+                                                                />
+                                                            ) : null}
+                                                            
+                                                            <div 
+                                                                className="fallback-logo rounded-2xl flex items-center justify-center relative"
+                                                                style={{ 
+                                                                    width: '240px', 
+                                                                    height: '240px',
+                                                                    background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
+                                                                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                                                                    display: team.style?.logoUrl ? 'none' : 'flex'
+                                                                }}
+                                                            >
+                                                                <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '6rem' }}>
+                                                                    {team.name.charAt(0)}
+                                                                </span>
+                                                                <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-20 pointer-events-none rounded-2xl"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="p-2 text-center" style={{ backgroundColor: team.style?.primaryColor || '#2563eb' }}>
+                                                    <h3 className="font-bold text-white drop-shadow-sm" style={{ fontSize: '0.9rem', lineHeight: '1.2' }}>
+                                                        {team.name}
+                                                    </h3>
+                                                    
+                                                    <div className="flex justify-center mt-1 space-x-1">
+                                                        {team.captain && (
+                                                            <span className="bg-yellow-500 text-white px-2 py-1 rounded font-bold">CAPTAIN</span>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    {team.motto && (
+                                                        <p className="text-slate-500 text-xs mt-2 italic text-center">"{team.motto}"</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })()}
                     </div>
                 ) : (
                     <div className="text-center py-8 text-slate-500">
