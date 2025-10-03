@@ -5,7 +5,7 @@ import EventDetailModal from '../scheduling/components/EventDetailModal';
 import SimpleEventForm from '../scheduling/components/SimpleEventForm';
 import EnhancedEventCardWithGroupMe from '../components/EnhancedEventCardWithGroupMe';
 
-const EventsPage = ({ teams, currentUser, events, setEvents }) => {
+const EventsPage = ({ teams, players = [], currentUser, events, setEvents, onEnterStats }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showEventModal, setShowEventModal] = useState(false);
     const [showAddForm, setShowAddForm] = useState(false);
