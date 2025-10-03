@@ -143,7 +143,7 @@ const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser, onE
 
                     {/* Admin Actions */}
                     {(isAdmin(currentUser) || isCoach(currentUser)) && (
-                        <div className="mt-3 flex space-x-2">
+                        <div className="mt-3 flex flex-wrap gap-2">
                             <button
                                 onClick={sendEventNotification}
                                 disabled={loading}
@@ -159,6 +159,15 @@ const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser, onE
                                 >
                                     <span>📋</span>
                                     <span>View RSVPs</span>
+                                </button>
+                            )}
+                            {onEnterStats && (event.type === 'game' || event.type === 'Game') && (
+                                <button
+                                    onClick={onEnterStats}
+                                    className="px-3 py-1 bg-purple-600 text-white text-xs rounded-full hover:bg-purple-700 transition-colors flex items-center space-x-1"
+                                >
+                                    <span>📊</span>
+                                    <span>Enter Stats</span>
                                 </button>
                             )}
                         </div>
