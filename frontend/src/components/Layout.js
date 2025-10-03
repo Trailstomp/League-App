@@ -261,13 +261,14 @@ const Layout = ({
                 >
                     <div className="flex flex-col">
                     {/* Mobile Navigation Button - Fixed at top left for mobile */}
-                    <button
-                        onClick={() => setIsMobileMenuOpen(true)}
-                        onTouchStart={(e) => {
-                            e.stopPropagation();
-                            setIsMobileMenuOpen(true);
-                        }}
-                        className="md:hidden fixed z-60 p-3 rounded-lg shadow-lg transition-colors mobile-nav-button touch-manipulation"
+                    {isMobileView && (
+                        <button
+                            onClick={() => setIsMobileMenuOpen(true)}
+                            onTouchStart={(e) => {
+                                e.stopPropagation();
+                                setIsMobileMenuOpen(true);
+                            }}
+                            className="fixed z-60 p-3 rounded-lg shadow-lg transition-colors mobile-nav-button touch-manipulation"
                         style={{
                             top: '210px', // Just below header with padding
                             left: '2vw', // 2% from left edge
