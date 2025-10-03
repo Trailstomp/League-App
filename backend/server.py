@@ -131,9 +131,20 @@ class TeamGameStats(BaseModel):
     players: List[PlayerGameStats] = []
     goalies: List[GoalieGameStats] = []
 
+class Season(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str  # "Fall 2024", "Spring 2025"
+    league_id: str = "main_league"  # Support multiple leagues
+    start_date: datetime
+    end_date: datetime
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
 class GameStats(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     event_id: str
+    season_id: str  # Link to season
+    league_id: str = "main_league"  # Link to league
     game_date: datetime
     status: str = "in_progress"  # in_progress, final, cancelled
     home_team: TeamGameStats
