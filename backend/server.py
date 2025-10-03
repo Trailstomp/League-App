@@ -526,6 +526,46 @@ async def get_news_items():
         logger.error(f"❌ Error fetching news items: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/proxy-image")
+async def proxy_image(url: str):
+    """Proxy images to avoid CORS issues for color extraction"""
+    try:
+        import urllib.request
+        import urllib.parse
+        
+        # Validate that it's a Google Drive URL for security
+        if "drive.google.com" not in url and "googleusercontent.com" not in url:
+            raise HTTPException(status_code=400, detail="Only Google Drive URLs are supported")
+        
+        # Decode URL if it's encoded
+        decoded_url = urllib.parse.unquote(url)
+        
+        # Fetch the image
+        request = urllib.request.Request(decoded_url)
+        request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+        
+        with urllib.request.urlopen(request) as response:
+            image_data = response.read()
+            content_type = response.headers.get('Content-Type', 'image/jpeg')
+        
+        # Return with proper CORS headers
+        from fastapi.responses import Response
+        
+        return Response(
+            content=image_data,
+            media_type=content_type,
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET",
+                "Access-Control-Allow-Headers": "*",
+                "Cache-Control": "public, max-age=3600"
+            }
+        )
+        
+    except Exception as e:
+        logger.error(f"❌ Error proxying image: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch image: {str(e)}")
+
 @api_router.post("/league-logo-upload")
 async def upload_league_logo(file: UploadFile = File(...)):
     """Upload league logo to Google Drive"""
