@@ -17,6 +17,19 @@ const Layout = ({
     onTeamClick
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isMobileView, setIsMobileView] = useState(false);
+    
+    // Check for mobile view on mount and resize
+    useEffect(() => {
+        const checkMobileView = () => {
+            setIsMobileView(window.innerWidth < 768);
+        };
+        
+        checkMobileView();
+        window.addEventListener('resize', checkMobileView);
+        
+        return () => window.removeEventListener('resize', checkMobileView);
+    }, []);
 
     // Prevent body scroll when mobile menu is open
     useEffect(() => {
