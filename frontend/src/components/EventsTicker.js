@@ -278,7 +278,22 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
                                         ) : event.teamIds && event.teamIds.length === 1 ? (
                                             <div className="mb-2">
                                                 <div className="flex items-center space-x-2">
-                                                    <div className="w-4 h-4 bg-slate-400 rounded-full flex-shrink-0"></div>
+                                                    {getTeamLogo(event.teamIds[0]) ? (
+                                                        <img 
+                                                            src={getTeamLogo(event.teamIds[0])} 
+                                                            alt="Team Logo"
+                                                            className="w-4 h-4 rounded-full object-cover flex-shrink-0"
+                                                            onError={(e) => {
+                                                                // Fallback to placeholder on error
+                                                                e.target.style.display = 'none';
+                                                                e.target.nextSibling.style.display = 'block';
+                                                            }}
+                                                        />
+                                                    ) : null}
+                                                    <div 
+                                                        className="w-4 h-4 bg-slate-400 rounded-full flex-shrink-0"
+                                                        style={{ display: getTeamLogo(event.teamIds[0]) ? 'none' : 'block' }}
+                                                    ></div>
                                                     <span className="text-xs text-slate-200">
                                                         {getTeamName(event.teamIds[0])}
                                                     </span>
