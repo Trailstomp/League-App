@@ -685,7 +685,7 @@ async def upload_league_background(file: UploadFile = File(...)):
         unique_filename = f"league_bg_{str(uuid.uuid4())[:8]}.{file_extension}"
         
         # Create "League Images" folder if it doesn't exist
-        league_folder_id = await create_main_folder(access_token, "League Images", main_folder_id)
+        league_folder_id = await create_organized_folder(access_token, main_folder_id, "League Images")
         
         # Upload to Google Drive
         upload_url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
