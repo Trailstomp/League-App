@@ -630,8 +630,7 @@ async def upload_league_logo(file: UploadFile = File(...)):
         file_data = response.json()
         file_id = file_data['id']
         
-        # Make file publicly accessible
-        make_file_public_result = await make_google_drive_file_public(file_id, access_token)
+        # File is uploaded and accessible via Google Drive
         
         # Generate public URL using thumbnail format
         photo_url = f"https://drive.google.com/thumbnail?id={file_id}&sz=w1000"
