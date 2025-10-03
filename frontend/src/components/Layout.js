@@ -250,7 +250,8 @@ const Layout = ({
                         websiteStyle={websiteStyle}
                         onMobileClose={() => setIsMobileMenuOpen(false)}
                     />
-                </div>
+                    </div>
+                )}
                 
                 {/* Main Content Area */}
                 <div 
