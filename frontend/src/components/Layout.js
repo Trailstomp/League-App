@@ -118,11 +118,12 @@ const Layout = ({
 
     return (
         <div className="min-h-screen" style={{...getBackgroundStyle()}}>
-            {/* Fixed Header Container - full width at top */}
+            {/* Fixed Header Container - ticker and banner to the right of navigation */}
             <div 
-                className="fixed top-0 left-0 right-0 z-50"
+                className="fixed top-0 right-0 z-50 transition-all duration-300"
                 style={{
-                    width: '100vw'
+                    left: isMobileView ? '0' : (isNavCollapsed ? '80px' : '20vw'),
+                    height: '200px' // Ticker (120px) + Banner (80px)
                 }}
             >
                 {/* Event Ticker */}
@@ -204,14 +205,12 @@ const Layout = ({
                 />
             )}
             
-            {/* Navigation - Fixed position for desktop, positioned below header */}
+            {/* Navigation - Fixed position from TOP, full height */}
             {!isMobileView && (
                 <div 
-                    className="fixed left-0 z-40 overflow-hidden transition-all duration-300"
+                    className="fixed left-0 top-0 z-60 overflow-hidden transition-all duration-300"
                     style={{
-                        top: '200px', // Below ticker (120px) + banner (80px)
-                        bottom: '0',
-                        height: 'calc(100vh - 200px)',
+                        height: '100vh',
                         width: isNavCollapsed ? '80px' : '20vw',
                         maxWidth: isNavCollapsed ? '80px' : '320px',
                         minWidth: isNavCollapsed ? '80px' : '240px'
@@ -231,18 +230,16 @@ const Layout = ({
                 </div>
             )}
             
-            {/* Mobile Navigation - Slide in from left, positioned below header */}
+            {/* Mobile Navigation - Full height from top */}
             {isMobileView && (
                 <div className={`
                     ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
-                    fixed left-0 z-40 bg-white shadow-lg
+                    fixed left-0 top-0 z-50 bg-white shadow-lg
                     transition-transform duration-300 ease-in-out
                     overflow-y-auto
                 `}
             style={{
-                top: '200px', // Below header
-                bottom: '0',
-                height: 'calc(100vh - 200px)',
+                height: '100vh',
                 width: '75vw',
                 maxWidth: '320px'
             }}
