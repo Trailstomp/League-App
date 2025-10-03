@@ -153,8 +153,10 @@ const Layout = ({
                 {/* Mobile Navigation Overlay */}
                 {isMobileMenuOpen && (
                     <div 
-                        className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+                        className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
                         style={{top: '200px'}} // Position below header
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        onTouchStart={(e) => e.stopPropagation()}
                     />
                 )}
                 
