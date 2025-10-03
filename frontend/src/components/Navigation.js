@@ -245,9 +245,15 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 </div>
             )}
             
-            {/* Header with Large Logo */}
-            <div className="p-6 border-b flex-shrink-0 relative" style={{borderColor: websiteStyle.navBorderColor || '#e2e8f0'}}>
-                <div className="flex items-center justify-between">
+            {/* Header with Large Logo - SAME HEIGHT AS TICKER + BANNER (200px) */}
+            <div 
+                className="flex-shrink-0 relative border-b" 
+                style={{
+                    height: '200px', // Match ticker (120px) + banner (80px)
+                    borderColor: websiteStyle.navBorderColor || '#e2e8f0'
+                }}
+            >
+                <div className="h-full flex flex-col items-center justify-center p-4">
                     {!isCollapsed && (
                         <div className="flex flex-col items-center w-full space-y-3">
                             {/* Large Logo */}
@@ -258,8 +264,8 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                         alt="League Logo" 
                                         className="object-contain drop-shadow-lg"
                                         style={{
-                                            width: '120px',
-                                            height: '120px',
+                                            width: '140px',
+                                            height: '140px',
                                             filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))'
                                         }}
                                     />
@@ -267,13 +273,13 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                     <div 
                                         className="flex items-center justify-center rounded-2xl"
                                         style={{
-                                            width: '120px',
-                                            height: '120px',
+                                            width: '140px',
+                                            height: '140px',
                                             background: `linear-gradient(135deg, ${websiteStyle.primaryColor || '#2563eb'} 0%, ${websiteStyle.accentColor || '#3b82f6'} 100%)`,
                                             boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
                                         }}
                                     >
-                                        <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '3rem' }}>
+                                        <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '4rem' }}>
                                             🥍
                                         </span>
                                     </div>
@@ -285,7 +291,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                 className="text-center font-bold leading-tight"
                                 style={{
                                     fontFamily: websiteStyle.navFont || 'Inter, sans-serif',
-                                    fontSize: '16px',
+                                    fontSize: '18px',
                                     color: websiteStyle.navTextColor || '#1f2937',
                                     wordWrap: 'break-word'
                                 }}
@@ -303,17 +309,17 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                     src={websiteStyle.navLogoUrl} 
                                     alt="Logo" 
                                     className="object-contain"
-                                    style={{ width: '32px', height: '32px' }}
+                                    style={{ width: '48px', height: '48px' }}
                                 />
                             ) : (
-                                <span className="text-2xl">🥍</span>
+                                <span className="text-4xl">🥍</span>
                             )}
                         </div>
                     )}
                 </div>
                 
                 {/* Toggle Button - positioned at bottom right of header */}
-                <div className="absolute top-4 right-4">
+                <div className="absolute bottom-4 right-4">
                     <button
                         onClick={() => setIsCollapsed(!isCollapsed)}
                         className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
@@ -333,8 +339,8 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                     </button>
                 </div>
                 
-                {!isCollapsed && currentUser ? (
-                    <div className="mt-2">
+                {!isCollapsed && currentUser && (
+                    <div className="absolute bottom-4 left-4 right-14">
                         <p className="text-sm text-slate-600 truncate">
                             Welcome, {currentUser.name}
                         </p>
@@ -342,11 +348,12 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                             {(currentUser.roles || [currentUser.role]).filter(Boolean).join(', ')}
                         </p>
                     </div>
-                ) : !isCollapsed ? (
-                    <p className="text-sm text-slate-500 mt-1 truncate">
+                )}
+                {!isCollapsed && !currentUser && (
+                    <p className="absolute bottom-4 left-4 text-sm text-slate-500 truncate">
                         Browsing as guest
                     </p>
-                ) : null}
+                )}
             </div>
 
             {/* Scrollable Content Area - Only scrolls when hovering over navigation */}
