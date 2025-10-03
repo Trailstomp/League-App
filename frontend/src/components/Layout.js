@@ -233,19 +233,19 @@ const Layout = ({
                     </div>
                 )}
                 
-                {/* Mobile Navigation - Slide in from left, full height */}
+                {/* Mobile Navigation - Slide in from left, positioned below header */}
                 {isMobileView && (
                     <div className={`
                         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
-                        fixed left-0 z-50 bg-white shadow-lg
+                        fixed left-0 z-40 bg-white shadow-lg
                         transition-transform duration-300 ease-in-out
                         overflow-y-auto
                     `}
                 style={{
-                    top: '0', // Start from very top
+                    top: '200px', // Below header
                     bottom: '0',
-                    height: '100vh', // Full viewport height
-                    width: '75vw', // 75% of viewport width on mobile
+                    height: 'calc(100vh - 200px)',
+                    width: '75vw',
                     maxWidth: '320px'
                 }}
                 onTouchStart={(e) => e.stopPropagation()}
