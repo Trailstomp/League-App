@@ -209,7 +209,7 @@ const Layout = ({
                 {/* Navigation - Fixed position for desktop, full height from top */}
                 {!isMobileView && (
                     <div 
-                        className="fixed left-0 z-60 overflow-hidden"
+                        className="fixed left-0 z-60 overflow-hidden transition-all duration-300"
                         style={{
                             top: '0', // Start from very top
                             bottom: '0',
