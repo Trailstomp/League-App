@@ -5157,8 +5157,8 @@ async def handle_rsvp_link_click(request: Request, event: str = None, choice: st
                     {"sender_id": gmid},
                     sort=[("created_at", -1)]
                 )
-                if recent_message and recent_message.get("name"):
-                    user_name = recent_message["name"]
+                if recent_message and recent_message.get("sender_name"):
+                    user_name = recent_message["sender_name"]
                 else:
                     user_name = f"Team Member #{gmid[-4:]}" if gmid else "Team Member"
             except:
