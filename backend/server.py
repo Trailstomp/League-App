@@ -366,7 +366,7 @@ async def get_active_galleries_internal():
 
 @api_router.post("/league-data/teams")
 async def update_teams(teams_data: List[Dict[str, Any]]):
-    """Update teams data in the league database"""
+    """Update teams data in the league database and sync with teams collection"""
     try:
         # Get the current league data
         league_doc = await db.league_data.find_one({"id": "main_league"})
@@ -389,13 +389,73 @@ async def update_teams(teams_data: List[Dict[str, Any]]):
             upsert=True
         )
         
+        # SYNC WITH TEAMS COLLECTION for new stats system
+        logger.info(f"🔄 Syncing {len(teams_data)} teams to teams collection...")
+        
+        # Clear existing teams and add new ones
+        await db.teams.delete_many({})
+        
+        teams_for_collection = []
+        for team_data in teams_data:
+            # Map team data to new structure
+            team_doc = {
+                "id": team_data.get("id", team_data.get("name", "").lower().replace(" ", "-")),
+                "name": team_data.get("name", "Unknown Team"),
+                "league_id": "main_league",
+                "division_id": None,  # Will be set based on division
+                "division": team_data.get("division", ""),
+                "color": team_data.get("color", "#3b82f6"),
+                "logo": team_data.get("logo", ""),
+                "active": team_data.get("active", True),
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            }
+            
+            # Map division names to division IDs
+            division_mapping = {
+                "Field": "field_division",
+                "Box": "box_division", 
+                "External": "external_division",
+                "Premier": "premier_division",
+                "Division 1": "division_1",
+                "Division 2": "division_2"
+            }
+            
+            if team_doc["division"] in division_mapping:
+                team_doc["division_id"] = division_mapping[team_doc["division"]]
+            
+            teams_for_collection.append(team_doc)
+        
+        if teams_for_collection:
+            await db.teams.insert_many(teams_for_collection)
+            logger.info(f"✅ Synced {len(teams_for_collection)} teams to teams collection")
+        
+        # Create divisions if they don't exist
+        existing_divisions = set([team["division"] for team in teams_data if team.get("division")])
+        for division_name in existing_divisions:
+            division_id = division_mapping.get(division_name, division_name.lower().replace(" ", "_") + "_division")
+            await db.divisions.update_one(
+                {"id": division_id},
+                {"$set": {
+                    "id": division_id,
+                    "name": division_name,
+                    "league_id": "main_league",
+                    "description": f"{division_name} teams",
+                    "level": 1,
+                    "is_active": True,
+                    "created_at": datetime.now(timezone.utc)
+                }},
+                upsert=True
+            )
+        
         logger.info(f"✅ Teams updated - {len(teams_data)} teams, modified: {result.modified_count}")
         
         return {
             "status": "success", 
-            "message": f"Successfully updated {len(teams_data)} teams",
+            "message": f"Successfully updated {len(teams_data)} teams and synced to collections",
             "modified": result.modified_count,
-            "upserted": result.upserted_id is not None
+            "upserted": result.upserted_id is not None,
+            "teams_synced": len(teams_for_collection)
         }
         
     except Exception as e:
