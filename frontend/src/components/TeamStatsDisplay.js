@@ -88,23 +88,25 @@ const TeamStatsDisplay = ({ teamId }) => {
             {/* Season Selector */}
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold text-gray-900">Team Statistics</h2>
-                <div className="flex items-center space-x-2">
-                    <label htmlFor="season-select" className="text-sm font-medium text-gray-700">
-                        Season:
-                    </label>
-                    <select
-                        id="season-select"
-                        value={selectedSeason || ''}
-                        onChange={(e) => setSelectedSeason(e.target.value)}
-                        className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                        {seasons.map(season => (
-                            <option key={season.id} value={season.id}>
-                                {season.name} {season.is_active ? '(Current)' : ''}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                {seasons.length > 0 && (
+                    <div className="flex items-center space-x-2">
+                        <label htmlFor="season-select" className="text-sm font-medium text-gray-700">
+                            Season:
+                        </label>
+                        <select
+                            id="season-select"
+                            value={selectedSeason || ''}
+                            onChange={(e) => setSelectedSeason(e.target.value)}
+                            className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            {seasons.map(season => (
+                                <option key={season.id} value={season.id}>
+                                    {season.name} {season.is_active ? '(Current)' : ''}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
             </div>
 
             {/* Tabs */}
