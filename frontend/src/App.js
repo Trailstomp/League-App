@@ -377,11 +377,16 @@ function App() {
         return (
           <EventsPage
             teams={teams}
+            players={players}
             currentUser={currentUser}
             websiteStyle={websiteStyle}
             setWebsiteStyle={setWebsiteStyle}
             events={events}
             setEvents={setEvents}
+            onEnterStats={(event) => {
+              setSelectedEventForStats(event);
+              setShowStatsEntry(true);
+            }}
           />
         );
       case 'standings':
