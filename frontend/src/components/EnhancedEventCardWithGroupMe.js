@@ -117,87 +117,115 @@ const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser, onE
     return (
         <>
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
-                {/* Event Header */}
-                <div className="p-4 border-b border-gray-100">
-                    <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                            <div className="flex items-center space-x-2 mb-2">
-                                <span className="text-xl">{getEventIcon(event.type)}</span>
-                                <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
-                            </div>
-                            <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                <div className="flex items-center">
-                                    <span className="mr-1">📅</span>
-                                    {formatDate(event.start_datetime)}
-                                </div>
-                                <div className="flex items-center">
-                                    <span className="mr-1">🕒</span>
-                                    {formatTime(event.start_datetime)}
-                                </div>
-                            </div>
-                        </div>
-                        <div className={`px-3 py-1 rounded-full text-xs font-medium border ${getEventTypeColor(event.type)}`}>
-                            {event.type || 'Event'}
+                {/* New Layout: Logo | Info | Teams */}
+                <div className="p-4 flex gap-4">
+                    {/* Left: Event Icon/Logo */}
+                    <div className="flex-shrink-0">
+                        <div className={`w-16 h-16 rounded-lg flex items-center justify-center text-3xl ${getEventTypeColor(event.type)} border-2`}>
+                            {getEventIcon(event.type)}
                         </div>
                     </div>
 
-                    {/* Admin Actions */}
-                    {(isAdmin(currentUser) || isCoach(currentUser)) && (
-                        <div className="mt-3 flex flex-wrap gap-2">
-                            <button
-                                onClick={sendEventNotification}
-                                disabled={loading}
-                                className="px-3 py-1 bg-blue-600 text-white text-xs rounded-full hover:bg-blue-700 transition-colors flex items-center space-x-1 disabled:opacity-50"
-                            >
-                                <span>📢</span>
-                                <span>{loading ? 'Sending...' : 'Send Notification'}</span>
-                            </button>
-                            {showRSVP && (
-                                <button
-                                    onClick={() => setShowRSVPModal(true)}
-                                    className="px-3 py-1 bg-green-600 text-white text-xs rounded-full hover:bg-green-700 transition-colors flex items-center space-x-1"
-                                >
-                                    <span>📋</span>
-                                    <span>View RSVPs</span>
-                                </button>
-                            )}
-                            {onEnterStats && (event.type === 'game' || event.type === 'Game') && (
-                                <button
-                                    onClick={onEnterStats}
-                                    className="px-3 py-1 bg-purple-600 text-white text-xs rounded-full hover:bg-purple-700 transition-colors flex items-center space-x-1"
-                                >
-                                    <span>📊</span>
-                                    <span>Enter Stats</span>
-                                </button>
+                    {/* Middle: Event Info */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between mb-2">
+                            <h3 className="text-lg font-semibold text-gray-900 truncate">{event.title}</h3>
+                            <span className={`ml-2 px-3 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${getEventTypeColor(event.type)}`}>
+                                {event.type || 'Event'}
+                            </span>
+                        </div>
+                        
+                        <div className="space-y-1 text-sm text-gray-600">
+                            <div className="flex items-center">
+                                <span className="mr-2">📅</span>
+                                {formatDate(event.start_datetime)}
+                                <span className="mx-2">•</span>
+                                <span className="mr-1">🕒</span>
+                                {formatTime(event.start_datetime)}
+                            </div>
+                            {event.location && (
+                                <div className="flex items-center">
+                                    <span className="mr-2">📍</span>
+                                    <span className="truncate">{event.location}</span>
+                                </div>
                             )}
                         </div>
-                    )}
+
+                        {event.description && (
+                            <div className="mt-2 text-sm text-gray-700 bg-gray-50 rounded p-2 line-clamp-2">
+                                {event.description}
+                            </div>
+                        )}
+
+                        {/* Admin Actions */}
+                        {(isAdmin(currentUser) || isCoach(currentUser)) && (
+                            <div className="mt-3 flex flex-wrap gap-2">
+                                <button
+                                    onClick={sendEventNotification}
+                                    disabled={loading}
+                                    className="px-3 py-1 bg-blue-600 text-white text-xs rounded-full hover:bg-blue-700 transition-colors flex items-center space-x-1 disabled:opacity-50"
+                                >
+                                    <span>📢</span>
+                                    <span>{loading ? 'Sending...' : 'Send Notification'}</span>
+                                </button>
+                                {showRSVP && (
+                                    <button
+                                        onClick={() => setShowRSVPModal(true)}
+                                        className="px-3 py-1 bg-green-600 text-white text-xs rounded-full hover:bg-green-700 transition-colors flex items-center space-x-1"
+                                    >
+                                        <span>📋</span>
+                                        <span>View RSVPs</span>
+                                    </button>
+                                )}
+                                {onEnterStats && (event.type === 'game' || event.type === 'Game') && (
+                                    <button
+                                        onClick={onEnterStats}
+                                        className="px-3 py-1 bg-purple-600 text-white text-xs rounded-full hover:bg-purple-700 transition-colors flex items-center space-x-1"
+                                    >
+                                        <span>📊</span>
+                                        <span>Enter Stats</span>
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Right: Teams Attending */}
+                    <div className="flex-shrink-0 w-32 border-l pl-4">
+                        <div className="text-xs font-semibold text-gray-500 uppercase mb-2">Teams</div>
+                        <div className="space-y-2">
+                            {event.teamIds && event.teamIds.length > 0 ? (
+                                event.teamIds.map((teamId, idx) => {
+                                    const teamName = event.teamNames?.[idx] || `Team ${idx + 1}`;
+                                    return (
+                                        <div key={teamId} className="flex items-center text-xs">
+                                            <div className={`w-2 h-2 rounded-full mr-2 ${idx === 0 ? 'bg-blue-500' : 'bg-red-500'}`}></div>
+                                            <span className="truncate text-gray-700">{teamName}</span>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <div className="text-xs text-gray-400 italic">No teams</div>
+                            )}
+                        </div>
+
+                        {/* Quick RSVP Count */}
+                        {showRSVP && (
+                            <div className="mt-3 pt-3 border-t">
+                                <div className="text-xs text-gray-500">RSVPs</div>
+                                <div className="flex items-center justify-between mt-1">
+                                    <span className="text-green-600 text-xs font-semibold">
+                                        {rsvpData?.accepted || 0} Yes
+                                    </span>
+                                    <span className="text-gray-400 text-xs">
+                                        {rsvpData?.total || 0} total
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
-
-                {/* Event Details */}
-                <div className="p-4">
-                    {event.location && (
-                        <div className="flex items-center text-sm text-gray-600 mb-2">
-                            <span className="mr-2">📍</span>
-                            {event.location}
-                        </div>
-                    )}
-                    
-                    {event.description && (
-                        <div className="text-sm text-gray-700 bg-gray-50 rounded p-3 mb-3">
-                            {event.description}
-                        </div>
-                    )}
-
-                    {/* Quick RSVP Status (for everyone) */}
-                    {showRSVP && (
-                        <div className="bg-blue-50 rounded-lg p-3">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-4 text-sm">
-                                    <div className="flex items-center text-blue-600">
-                                        <span className="mr-1">💬</span>
-                                        <span className="font-medium">RSVP via GroupMe</span>
-                                    </div>
+            </div>
                                 </div>
                                 <div className="text-xs text-blue-600">
                                     Reply with: <code className="bg-blue-100 px-1 rounded">/rsvp yes</code>
