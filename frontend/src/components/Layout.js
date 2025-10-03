@@ -215,9 +215,9 @@ const Layout = ({
                             top: '0', // Start from very top
                             bottom: '0',
                             height: '100vh', // Full viewport height
-                            width: '20vw', // 20% of viewport width
-                            maxWidth: '320px', // Increased max width
-                            minWidth: '240px' // Increased min width
+                            width: isNavCollapsed ? '80px' : '20vw',
+                            maxWidth: isNavCollapsed ? '80px' : '320px',
+                            minWidth: isNavCollapsed ? '80px' : '240px'
                         }}
                     >
                         <Navigation 
@@ -229,6 +229,7 @@ const Layout = ({
                             teams={teams}
                             websiteStyle={websiteStyle}
                             onMobileClose={() => setIsMobileMenuOpen(false)}
+                            onCollapseChange={setIsNavCollapsed}
                         />
                     </div>
                 )}
