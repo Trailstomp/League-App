@@ -31,15 +31,22 @@ const StandingsTable = ({ teams = [], onTeamClick }) => {
                 setSelectedSeason(activeSeason.id);
             } else if (data.seasons.length > 0) {
                 setSelectedSeason(data.seasons[0].id);
+            } else {
+                // No seasons exist yet, still load standings without filter
+                setSelectedSeason('all');
+                loadStandings();
             }
         } catch (error) {
             console.error('Error loading seasons:', error);
+            // On error, load standings without filter
+            setSelectedSeason('all');
+            loadStandings();
         }
     };
 
     const loadStandings = async () => {
         try {
-            const url = selectedSeason 
+            const url = (selectedSeason && selectedSeason !== 'all')
                 ? `${BACKEND_URL}/api/league/standings?season_id=${selectedSeason}`
                 : `${BACKEND_URL}/api/league/standings`;
             const response = await fetch(url);
