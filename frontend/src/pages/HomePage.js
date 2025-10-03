@@ -137,8 +137,8 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                 }}
                                 title="Click for team details"
                             >
-                                {/* Main Logo Area - 80% of card like player photo */}
-                                <div className="relative overflow-hidden" style={{ aspectRatio: '3/4', minHeight: '140px' }}>
+                                {/* Main Logo Area - Larger for better visibility */}
+                                <div className="relative overflow-hidden" style={{ aspectRatio: '3/4', minHeight: '200px' }}>
                                     <div 
                                         className="w-full h-full flex items-center justify-center relative"
                                         style={{ 
