@@ -10,6 +10,12 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         return team?.name || teamId;
     };
 
+    // Get team logo by ID
+    const getTeamLogo = (teamId) => {
+        const team = teams.find(t => t.id === teamId);
+        return team?.style?.logoUrl || null;
+    };
+
     // Filter events based on admin ticker settings
     const applyTickerFilters = (events) => {
         // First deduplicate by event ID
