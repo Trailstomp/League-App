@@ -5358,7 +5358,7 @@ async def get_event_rsvps(event_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.post("/events/{event_id}/send-notification")
-async def send_event_notification(event_id: str, notification_data: Dict[str, Any]):
+async def send_event_notification_v2(event_id: str, notification_data: Dict[str, Any]):
     """Send notification for an event to specified channels"""
     try:
         notification_type = notification_data.get('type', 'event_created')  # event_created, event_updated, event_cancelled, reminder_24h, reminder_1h
