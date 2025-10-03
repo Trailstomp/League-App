@@ -222,7 +222,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                     : 'none',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                height: '88vh' // Account for fixed header (ticker + banner = 12vh)
+                height: '100%' // Fill parent container
             }}
         >
             {/* Mobile Close Button */}
