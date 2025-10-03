@@ -32,15 +32,22 @@ const TeamStatsDisplay = ({ teamId }) => {
                 setSelectedSeason(activeSeason.id);
             } else if (data.seasons.length > 0) {
                 setSelectedSeason(data.seasons[0].id);
+            } else {
+                // No seasons exist yet, still load stats without season filter
+                setSelectedSeason('all');
+                loadStats();
             }
         } catch (error) {
             console.error('Error loading seasons:', error);
+            // On error, load stats without season filter
+            setSelectedSeason('all');
+            loadStats();
         }
     };
 
     const loadStats = async () => {
         try {
-            const seasonParam = selectedSeason ? `?season_id=${selectedSeason}` : '';
+            const seasonParam = (selectedSeason && selectedSeason !== 'all') ? `?season_id=${selectedSeason}` : '';
             const [teamResponse, playerResponse] = await Promise.all([
                 fetch(`${BACKEND_URL}/api/teams/${teamId}/season-stats${seasonParam}`),
                 fetch(`${BACKEND_URL}/api/teams/${teamId}/player-stats${seasonParam}`)
