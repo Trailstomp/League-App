@@ -186,10 +186,11 @@ const TeamGalleryDisplay = ({ teamId = null, pageType = 'league' }) => {
                                                                 fixedThumbnailUrl: fixGoogleDriveUrl(item.thumbnailUrl),
                                                                 fixedUrl: fixGoogleDriveUrl(item.url)
                                                             });
-                                                            // Try using the proxy URL as fallback
-                                                            if (item.googleDriveId) {
+                                                            // Try using the correct proxy URL as fallback
+                                                            if (item.googleDriveId && e.target.src.indexOf('/api/proxy-image') === -1) {
                                                                 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
-                                                                e.target.src = `${BACKEND_URL}/api/media/drive/${item.googleDriveId}?size=w300-h300-c`;
+                                                                const fallbackUrl = `${BACKEND_URL}/api/proxy-image?url=${encodeURIComponent(`https://drive.google.com/uc?id=${item.googleDriveId}`)}`;
+                                                                e.target.src = fallbackUrl;
                                                             }
                                                         }}
                                                     />
