@@ -6536,6 +6536,29 @@ async def get_league_standings_by_divisions(league_id: str, season_id: Optional[
         logger.error(f"Error getting league standings by divisions: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/test-proxy")
+async def test_proxy():
+    """Test if proxy endpoint exists and works"""
+    try:
+        test_url = "https://drive.google.com/uc?id=1YpDiOBNe8Twc1aFSF6rrUxounnnehWp6"
+        
+        # Test if we can access Google Drive directly
+        async with httpx.AsyncClient() as client:
+            response = await client.get(test_url, timeout=10)
+            return {
+                "status": "success",
+                "test_url": test_url,
+                "status_code": response.status_code,
+                "content_type": response.headers.get("content-type", "unknown"),
+                "can_access_google_drive": response.status_code == 200
+            }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+            "can_access_google_drive": False
+        }
+
 @api_router.post("/fix-gallery-urls")
 async def fix_gallery_urls():
     """Fix old gallery URLs that have wrong domain/endpoint"""
