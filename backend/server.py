@@ -320,6 +320,13 @@ async def get_dashboard_data():
                     "color": team.get("color", "#3b82f6"),
                     "logo": team.get("logo", ""),
                     "active": team.get("active", True),
+                    # Frontend expects style.logoUrl structure
+                    "style": {
+                        "logoUrl": team.get("logo", ""),
+                        "primaryColor": team.get("color", "#3b82f6"),
+                        "secondaryColor": team.get("secondary_color", ""),
+                        "accentColor": team.get("accent_color", "")
+                    },
                     # Preserve any additional fields from old format
                     "wins": team.get("wins", 0),
                     "losses": team.get("losses", 0),
