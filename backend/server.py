@@ -440,6 +440,11 @@ async def update_teams(teams_data: List[Dict[str, Any]]):
         teams_for_collection = []
         for team_data in teams_data:
             # Map team data to new structure
+            # Extract logo URL from style object if it exists
+            logo_url = team_data.get("logo", "")
+            if team_data.get("style") and team_data["style"].get("logoUrl"):
+                logo_url = team_data["style"]["logoUrl"]
+            
             team_doc = {
                 "id": team_data.get("id", team_data.get("name", "").lower().replace(" ", "-")),
                 "name": team_data.get("name", "Unknown Team"),
@@ -447,7 +452,7 @@ async def update_teams(teams_data: List[Dict[str, Any]]):
                 "division_id": None,  # Will be set based on division
                 "division": team_data.get("division", ""),
                 "color": team_data.get("color", "#3b82f6"),
-                "logo": team_data.get("logo", ""),
+                "logo": logo_url,
                 "active": team_data.get("active", True),
                 "created_at": datetime.now(timezone.utc),
                 "updated_at": datetime.now(timezone.utc)
