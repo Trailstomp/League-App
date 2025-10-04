@@ -6535,6 +6535,53 @@ async def get_league_standings_by_divisions(league_id: str, season_id: Optional[
         logger.error(f"Error getting league standings by divisions: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/fix-gallery-urls")
+async def fix_gallery_urls():
+    """Fix old gallery URLs that have wrong domain/endpoint"""
+    try:
+        fixed_count = 0
+        
+        # Get all galleries
+        galleries = await db.media_galleries.find().to_list(None)
+        
+        for gallery in galleries:
+            needs_update = False
+            media_items = gallery.get('mediaItems', [])
+            
+            for item in media_items:
+                # Fix thumbnailUrl if it has old domain/endpoint
+                if item.get('thumbnailUrl') and 'sports-connect-8.preview.emergentagent.com' in item['thumbnailUrl']:
+                    # Extract Google Drive file ID and create correct proxy URL
+                    if '/drive/' in item['thumbnailUrl'] and '?size=' in item['thumbnailUrl']:
+                        file_id = item['thumbnailUrl'].split('/drive/')[1].split('?')[0]
+                        item['thumbnailUrl'] = f"https://team-lax-portal.emergent.host/api/proxy-image?url={urllib.parse.quote(f'https://drive.google.com/uc?id={file_id}')}"
+                        needs_update = True
+                
+                # Fix url if it needs fixing
+                if item.get('url') and 'sports-connect-8.preview.emergentagent.com' in item['url']:
+                    if '/drive/' in item['url']:
+                        file_id = item['url'].split('/drive/')[1].split('?')[0]
+                        item['url'] = f"https://drive.google.com/uc?id={file_id}"
+                        needs_update = True
+            
+            # Update gallery if needed
+            if needs_update:
+                await db.media_galleries.update_one(
+                    {"_id": gallery["_id"]},
+                    {"$set": {"mediaItems": media_items}}
+                )
+                fixed_count += 1
+        
+        return {
+            "status": "success",
+            "message": f"Fixed URLs in {fixed_count} galleries",
+            "fixed_count": fixed_count
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fixing gallery URLs: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/seasons/{season_id}/summary")
 async def get_season_summary(season_id: str):
     """Get summary statistics for a season"""
