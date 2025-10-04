@@ -180,9 +180,17 @@ const TeamGalleryDisplay = ({ teamId = null, pageType = 'league' }) => {
                                                             alt: item.filename
                                                         })}
                                                         onError={(e) => {
-                                                            console.log(`Image failed, trying fallbacks for: ${item.filename}`);
+                                                            console.log(`Image failed to load: ${item.filename}`);
                                                             
-                                                            // Extract Google Drive ID from the URL
+                                                            // If proxy already failed, hide the image
+                                                            if (e.target.src.includes('/api/proxy-image')) {
+                                                                console.error(`Proxy failed for: ${item.filename}`);
+                                                                // Show a placeholder or hide
+                                                                e.target.style.display = 'none';
+                                                                return;
+                                                            }
+                                                            
+                                                            // Extract Google Drive ID and try proxy
                                                             let driveId = null;
                                                             if (item.url && item.url.includes('id=')) {
                                                                 driveId = item.url.split('id=')[1].split('&')[0];
@@ -191,25 +199,14 @@ const TeamGalleryDisplay = ({ teamId = null, pageType = 'league' }) => {
                                                             }
                                                             
                                                             if (driveId) {
-                                                                // Try direct Google Drive URL without proxy
-                                                                const directUrl = `https://drive.google.com/uc?id=${driveId}`;
-                                                                if (e.target.src !== directUrl) {
-                                                                    console.log(`Trying direct Google Drive URL: ${directUrl}`);
-                                                                    e.target.src = directUrl;
-                                                                    return;
-                                                                }
-                                                                
-                                                                // Try Google Drive thumbnail URL as last resort
-                                                                const thumbnailUrl = `https://drive.google.com/thumbnail?id=${driveId}&sz=w300`;
-                                                                if (e.target.src !== thumbnailUrl) {
-                                                                    console.log(`Trying Google Drive thumbnail: ${thumbnailUrl}`);
-                                                                    e.target.src = thumbnailUrl;
-                                                                    return;
-                                                                }
+                                                                const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+                                                                const proxyUrl = `${BACKEND_URL}/api/proxy-image?url=${encodeURIComponent(`https://drive.google.com/uc?id=${driveId}`)}`;
+                                                                console.log(`Trying proxy URL: ${proxyUrl}`);
+                                                                e.target.src = proxyUrl;
+                                                                return;
                                                             }
                                                             
-                                                            console.error(`All fallbacks failed for: ${item.filename}`);
-                                                            // Hide the image or show placeholder
+                                                            console.error(`No fallback available for: ${item.filename}`);
                                                             e.target.style.display = 'none';
                                                         }}
                                                     />
