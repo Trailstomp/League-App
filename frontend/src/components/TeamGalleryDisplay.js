@@ -180,18 +180,37 @@ const TeamGalleryDisplay = ({ teamId = null, pageType = 'league' }) => {
                                                             alt: item.filename
                                                         })}
                                                         onError={(e) => {
-                                                            console.error(`Failed to load image: ${item.filename}`, {
-                                                                thumbnailUrl: item.thumbnailUrl,
-                                                                url: item.url,
-                                                                fixedThumbnailUrl: fixGoogleDriveUrl(item.thumbnailUrl),
-                                                                fixedUrl: fixGoogleDriveUrl(item.url)
-                                                            });
-                                                            // Try using the correct proxy URL as fallback
-                                                            if (item.googleDriveId && e.target.src.indexOf('/api/proxy-image') === -1) {
-                                                                const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
-                                                                const fallbackUrl = `${BACKEND_URL}/api/proxy-image?url=${encodeURIComponent(`https://drive.google.com/uc?id=${item.googleDriveId}`)}`;
-                                                                e.target.src = fallbackUrl;
+                                                            console.log(`Image failed, trying fallbacks for: ${item.filename}`);
+                                                            
+                                                            // Extract Google Drive ID from the URL
+                                                            let driveId = null;
+                                                            if (item.url && item.url.includes('id=')) {
+                                                                driveId = item.url.split('id=')[1].split('&')[0];
+                                                            } else if (item.googleDriveId) {
+                                                                driveId = item.googleDriveId;
                                                             }
+                                                            
+                                                            if (driveId) {
+                                                                // Try direct Google Drive URL without proxy
+                                                                const directUrl = `https://drive.google.com/uc?id=${driveId}`;
+                                                                if (e.target.src !== directUrl) {
+                                                                    console.log(`Trying direct Google Drive URL: ${directUrl}`);
+                                                                    e.target.src = directUrl;
+                                                                    return;
+                                                                }
+                                                                
+                                                                // Try Google Drive thumbnail URL as last resort
+                                                                const thumbnailUrl = `https://drive.google.com/thumbnail?id=${driveId}&sz=w300`;
+                                                                if (e.target.src !== thumbnailUrl) {
+                                                                    console.log(`Trying Google Drive thumbnail: ${thumbnailUrl}`);
+                                                                    e.target.src = thumbnailUrl;
+                                                                    return;
+                                                                }
+                                                            }
+                                                            
+                                                            console.error(`All fallbacks failed for: ${item.filename}`);
+                                                            // Hide the image or show placeholder
+                                                            e.target.style.display = 'none';
                                                         }}
                                                     />
                                                 </div>
