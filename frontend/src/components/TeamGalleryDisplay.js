@@ -172,7 +172,7 @@ const TeamGalleryDisplay = ({ teamId = null, pageType = 'league' }) => {
                                             {gallery.mediaItems?.map(item => (
                                                 <div key={item.id} className="flex-shrink-0 w-32 h-32 bg-slate-100 rounded overflow-hidden group">
                                                     <img 
-                                                        src={fixGoogleDriveUrl(item.thumbnailUrl) || fixGoogleDriveUrl(item.url)} 
+                                                        src={fixGoogleDriveUrl(item.url)} 
                                                         alt={item.filename}
                                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform cursor-pointer"
                                                         onClick={() => setSelectedImage({
