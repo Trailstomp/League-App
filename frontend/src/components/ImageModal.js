@@ -31,7 +31,7 @@ const ImageModal = ({ imageUrl, imageAlt, onClose }) => {
                 
                 if (fileId) {
                     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
-                    const proxyUrl = `${BACKEND_URL}/api/media/drive/${fileId}?size=w800-h600`;
+                    const proxyUrl = `${BACKEND_URL}/api/proxy-image?url=${encodeURIComponent(`https://drive.google.com/uc?id=${fileId}`)}`;
                     console.log('Trying proxy URL as fallback:', proxyUrl);
                     setCurrentImageUrl(proxyUrl);
                     return;
