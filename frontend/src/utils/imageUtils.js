@@ -3,12 +3,14 @@
  */
 
 /**
- * Fix Google Drive URLs - try direct access first, proxy as fallback
+ * Fix Google Drive URLs using backend proxy to avoid CORS
  * @param {string} url - The original image URL
- * @returns {string} - The fixed URL (direct Google Drive or proxy)
+ * @returns {string} - The proxied URL
  */
 export const fixGoogleDriveUrl = (url) => {
     if (!url) return url;
+    
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
     
     // Extract Google Drive file ID from various URL formats
     let fileId = null;
@@ -17,9 +19,9 @@ export const fixGoogleDriveUrl = (url) => {
     if (url.includes('drive.google.com/file/d/') && url.includes('/view')) {
         fileId = url.split('/d/')[1].split('/view')[0];
     }
-    // Format: https://drive.google.com/uc?id={id} - already correct format
+    // Format: https://drive.google.com/uc?id={id}
     else if (url.includes('drive.google.com/uc?id=')) {
-        return url; // Return as-is, it's already in the right format
+        fileId = url.split('id=')[1].split('&')[0];
     }
     // Format: https://drive.google.com/thumbnail?id={id}
     else if (url.includes('drive.google.com/thumbnail?id=')) {
@@ -30,14 +32,20 @@ export const fixGoogleDriveUrl = (url) => {
         // Extract file ID from old proxy URLs
         fileId = url.split('/drive/')[1].split('?')[0];
     }
+    // Format: Already a proxy URL - return as-is
+    else if (url.includes('/api/proxy-image')) {
+        return url;
+    }
     // Format: https://lh3.googleusercontent.com/... (Google Drive thumbnails)
     else if (url.includes('googleusercontent.com')) {
-        return url; // Return as-is, these usually work directly
+        // Use proxy for consistency
+        return `${BACKEND_URL}/api/proxy-image?url=${encodeURIComponent(url)}`;
     }
     
-    // If we found a Google Drive file ID, return direct Google Drive URL
+    // If we found a Google Drive file ID, use proxy
     if (fileId) {
-        return `https://drive.google.com/uc?id=${fileId}`;
+        const driveUrl = `https://drive.google.com/uc?id=${fileId}`;
+        return `${BACKEND_URL}/api/proxy-image?url=${encodeURIComponent(driveUrl)}`;
     }
     
     return url;
