@@ -171,6 +171,7 @@ function App() {
       '/admin': 'admin',
       '/events': 'events',
       '/standings': 'standings',
+      '/tournaments': 'tournaments',
       '/chat': 'chat',
       '/league_contact': 'league_contact'
     };
