@@ -116,6 +116,13 @@ const TournamentPage = ({ events, teams, currentUser, onNavigate }) => {
         if (updates.score1 !== undefined && updates.score2 !== undefined && 
             updates.score1 !== null && updates.score2 !== null) {
             
+            console.log('🏆 Updating match scores:', { 
+                team1: match.team1?.name, 
+                score1: updates.score1, 
+                team2: match.team2?.name, 
+                score2: updates.score2 
+            });
+            
             if (updates.score1 > updates.score2) {
                 match.winner = match.team1;
                 match.loser = match.team2;
@@ -135,10 +142,24 @@ const TournamentPage = ({ events, teams, currentUser, onNavigate }) => {
         
         setBracketData(newBracketData);
         
+        // Update the selectedTournament data as well to persist changes
+        if (selectedTournament) {
+            const updatedTournament = { ...selectedTournament };
+            updatedTournament.bracket = newBracketData;
+            setSelectedTournament(updatedTournament);
+            
+            // Also update in the events array
+            const updatedEvents = events.map(event => 
+                event.id === selectedTournament.id ? updatedTournament : event
+            );
+            // Note: We would need to pass setEvents from parent component to update this
+        }
+        
         // Create game stats when match is completed with scores
         if (updates.score1 !== undefined && updates.score2 !== undefined && 
             updates.score1 !== null && updates.score2 !== null &&
             match.team1 && match.team2) {
+            console.log('🎯 Triggering game stats creation for completed match');
             createGameStatsFromBracket(match, selectedTournament.id);
         }
     };
