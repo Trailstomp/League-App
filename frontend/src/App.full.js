@@ -2003,6 +2003,55 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
         }
     };
     
+    // Create game statistics from bracket match data
+    const createGameStatsFromBracket = (match, eventId) => {
+        // Note: This function would need access to updateGameStats from useStatistics hook
+        // For now, we'll create the game stats structure that would be passed to updateGameStats
+        if (!match.team1 || !match.team2) return;
+        
+        const gameId = `${eventId}_${match.id}`;
+        const gameStats = {
+            gameId: gameId,
+            eventId: eventId,
+            date: event.date,
+            location: event.location,
+            type: 'tournament_match',
+            teamStats: {
+                [match.team1.id]: {
+                    teamId: match.team1.id,
+                    teamName: match.team1.name,
+                    score: match.score1 || 0,
+                    isHome: true,
+                    // Basic stats - can be expanded later
+                    saves: 0,
+                    shotsAgainst: 0,
+                    penalties: 0,
+                    faceoffWins: 0,
+                    faceoffAttempts: 0
+                },
+                [match.team2.id]: {
+                    teamId: match.team2.id,
+                    teamName: match.team2.name,
+                    score: match.score2 || 0,
+                    isHome: false,
+                    // Basic stats - can be expanded later
+                    saves: 0,
+                    shotsAgainst: 0,
+                    penalties: 0,
+                    faceoffWins: 0,
+                    faceoffAttempts: 0
+                }
+            },
+            playerStats: {}, // Can be expanded for individual player stats
+            gameNotes: `Tournament match: ${match.team1.name} vs ${match.team2.name}`,
+            lastUpdated: new Date().toISOString()
+        };
+        
+        console.log('🏆 Creating game stats from bracket match:', gameStats);
+        // TODO: Call updateGameStats(gameId, gameStats) when this component has access to it
+        // This would require passing updateGameStats as a prop to this component
+    };
+    
     const updateMatch = (roundIndex, matchIndex, updates) => {
         const newBracketData = { ...bracketData };
         const match = newBracketData.rounds[roundIndex].matches[matchIndex];
