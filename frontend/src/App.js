@@ -3,6 +3,7 @@ import Layout from './components/Layout';
 import { HomePage, AdminPage, EventsPage } from './pages';
 import TeamDetailPage from './pages/TeamDetailPage';
 import TeamAdminPage from './pages/TeamAdminPage';
+import TournamentPage from './pages/TournamentPage';
 import AuthModal, { initialMockUsers } from './components/AuthSystem';
 import OAuthCallback from './components/OAuthCallback';
 import { isAdmin, canEditEvent, canEditTeam } from './components/PermissionsSystem';
