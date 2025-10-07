@@ -320,6 +320,52 @@ const TournamentBracketsTab = ({
         }
     };
 
+    // Create game statistics from bracket match data
+    const createGameStatsFromBracket = (match) => {
+        if (!match.homeTeam || !match.awayTeam || !onUpdateGameStats) return;
+        
+        const gameId = `${event.id}_${match.id}`;
+        const gameStats = {
+            gameId: gameId,
+            eventId: event.id,
+            date: event.date,
+            location: event.location,
+            type: 'tournament_match',
+            teamStats: {
+                [match.homeTeam.id]: {
+                    teamId: match.homeTeam.id,
+                    teamName: match.homeTeam.name,
+                    score: match.score.home,
+                    isHome: true,
+                    // Basic stats - can be expanded later
+                    saves: 0,
+                    shotsAgainst: 0,
+                    penalties: 0,
+                    faceoffWins: 0,
+                    faceoffAttempts: 0
+                },
+                [match.awayTeam.id]: {
+                    teamId: match.awayTeam.id,
+                    teamName: match.awayTeam.name,
+                    score: match.score.away,
+                    isHome: false,
+                    // Basic stats - can be expanded later
+                    saves: 0,
+                    shotsAgainst: 0,
+                    penalties: 0,
+                    faceoffWins: 0,
+                    faceoffAttempts: 0
+                }
+            },
+            playerStats: {}, // Can be expanded for individual player stats
+            gameNotes: `Tournament match: ${match.homeTeam.name} vs ${match.awayTeam.name}`,
+            lastUpdated: new Date().toISOString()
+        };
+        
+        console.log('🏆 Creating game stats from bracket match:', gameStats);
+        onUpdateGameStats(gameId, gameStats);
+    };
+
     const handleMatchResult = (matchId, homeScore, awayScore) => {
         if (!tournament || !editMode || !userCanEdit) return;
 
@@ -340,6 +386,12 @@ const TournamentBracketsTab = ({
                 } else {
                     // Handle ties (might need overtime rules)
                     match.winner = match.homeTeam; // Default to home team for now
+                }
+
+                // Create game stats when match is completed with scores
+                if (match.homeTeam && match.awayTeam && 
+                    (match.score.home > 0 || match.score.away > 0)) {
+                    createGameStatsFromBracket(match);
                 }
 
                 // Advance winner to next round
