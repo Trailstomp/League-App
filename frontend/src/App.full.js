@@ -2091,6 +2091,13 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
         
         setBracketData(newBracketData);
         onUpdateEvent({ ...event, bracket: newBracketData });
+        
+        // Create game stats when match is completed with scores
+        if (updates.score1 !== undefined && updates.score2 !== undefined && 
+            updates.score1 !== null && updates.score2 !== null &&
+            match.team1 && match.team2) {
+            createGameStatsFromBracket(match, event.id);
+        }
     };
     
     const advanceTeams = (bracketData, completedMatch, roundIndex) => {
