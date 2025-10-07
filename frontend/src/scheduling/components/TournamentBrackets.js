@@ -189,7 +189,8 @@ const TournamentBracketsTab = ({
     editMode, 
     userCanEdit, 
     onUpdateTournament,
-    tournamentData = null 
+    tournamentData = null,
+    onUpdateGameStats = null
 }) => {
     const [tournament, setTournament] = useState(tournamentData);
     const [setupMode, setSetupMode] = useState(!tournamentData);
