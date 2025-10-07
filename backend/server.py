@@ -6618,6 +6618,101 @@ async def fix_gallery_urls():
         logger.error(f"Error fixing gallery URLs: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/debug/team-ids")
+async def debug_team_ids():
+    """Debug team ID mismatches between teams and game stats"""
+    try:
+        # Get teams from teams collection
+        teams = await db.teams.find().to_list(None)
+        team_info = []
+        for team in teams:
+            team_info.append({
+                "name": team.get("name"),
+                "id": team.get("id"),
+                "slug": team.get("name", "").lower().replace(" ", "-").replace("'", "")
+            })
+        
+        # Get unique team IDs from game stats
+        game_stats = await db.game_stats.find().to_list(None)
+        game_team_ids = set()
+        for game in game_stats:
+            home_id = game.get("home_team", {}).get("team_id")
+            away_id = game.get("away_team", {}).get("team_id")
+            if home_id:
+                game_team_ids.add(home_id)
+            if away_id:
+                game_team_ids.add(away_id)
+        
+        return {
+            "teams_collection": team_info,
+            "game_stats_team_ids": list(game_team_ids),
+            "mismatches": [
+                team_id for team_id in game_team_ids 
+                if not any(team["id"] == team_id for team in team_info)
+            ]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/fix/team-ids")
+async def fix_team_id_mismatches():
+    """Fix team ID mismatches in game stats"""
+    try:
+        # Get all teams to create name->id mapping
+        teams = await db.teams.find().to_list(None)
+        name_to_id = {}
+        id_to_name = {}
+        
+        for team in teams:
+            team_name = team.get("name", "")
+            team_id = team.get("id", "")
+            name_to_id[team_name] = team_id
+            id_to_name[team_id] = team_name
+            
+            # Also map slugified versions
+            slug = team_name.lower().replace(" ", "-").replace("'", "")
+            name_to_id[slug] = team_id
+        
+        # Fix game stats with wrong team IDs
+        game_stats = await db.game_stats.find().to_list(None)
+        fixed_count = 0
+        
+        for game in game_stats:
+            needs_update = False
+            
+            # Fix home team ID
+            home_team = game.get("home_team", {})
+            home_id = home_team.get("team_id", "")
+            if home_id and home_id in name_to_id and name_to_id[home_id] != home_id:
+                home_team["team_id"] = name_to_id[home_id]
+                needs_update = True
+            
+            # Fix away team ID  
+            away_team = game.get("away_team", {})
+            away_id = away_team.get("team_id", "")
+            if away_id and away_id in name_to_id and name_to_id[away_id] != away_id:
+                away_team["team_id"] = name_to_id[away_id]
+                needs_update = True
+            
+            if needs_update:
+                await db.game_stats.update_one(
+                    {"_id": game["_id"]},
+                    {"$set": {
+                        "home_team": home_team,
+                        "away_team": away_team
+                    }}
+                )
+                fixed_count += 1
+        
+        return {
+            "status": "success",
+            "fixed_count": fixed_count,
+            "team_mapping": name_to_id
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/seasons/{season_id}/summary")
 async def get_season_summary(season_id: str):
     """Get summary statistics for a season"""
