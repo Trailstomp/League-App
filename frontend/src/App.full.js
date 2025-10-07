@@ -2003,53 +2003,68 @@ const TournamentBracketTab = ({ event, teams, isAuthorized, onUpdateEvent }) => 
         }
     };
     
-    // Create game statistics from bracket match data
-    const createGameStatsFromBracket = (match, eventId) => {
-        // Note: This function would need access to updateGameStats from useStatistics hook
-        // For now, we'll create the game stats structure that would be passed to updateGameStats
+    // Create game statistics from bracket match data and save to backend
+    const createGameStatsFromBracket = async (match, eventId) => {
         if (!match.team1 || !match.team2) return;
         
-        const gameId = `${eventId}_${match.id}`;
-        const gameStats = {
-            gameId: gameId,
-            eventId: eventId,
-            date: event.date,
-            location: event.location,
-            type: 'tournament_match',
-            teamStats: {
-                [match.team1.id]: {
-                    teamId: match.team1.id,
-                    teamName: match.team1.name,
-                    score: match.score1 || 0,
-                    isHome: true,
-                    // Basic stats - can be expanded later
-                    saves: 0,
-                    shotsAgainst: 0,
-                    penalties: 0,
-                    faceoffWins: 0,
-                    faceoffAttempts: 0
+        try {
+            const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+            
+            // Create game stat entry for backend
+            const gameStatData = {
+                id: `${eventId}_${match.id}`,
+                event_id: eventId,
+                tournament_id: event.id,
+                tournament_match_id: match.id,
+                season_id: "2025", // Default season
+                status: "final",
+                date: event.date || new Date().toISOString().split('T')[0],
+                location: event.location || "Tournament Venue",
+                match_type: "tournament",
+                round_name: "Tournament Match",
+                home_team: {
+                    team_id: match.team1.id,
+                    goals_for: match.score1 || 0,
+                    goals_against: match.score2 || 0,
+                    players: [],
+                    goalies: []
                 },
-                [match.team2.id]: {
-                    teamId: match.team2.id,
-                    teamName: match.team2.name,
-                    score: match.score2 || 0,
-                    isHome: false,
-                    // Basic stats - can be expanded later
-                    saves: 0,
-                    shotsAgainst: 0,
-                    penalties: 0,
-                    faceoffWins: 0,
-                    faceoffAttempts: 0
-                }
-            },
-            playerStats: {}, // Can be expanded for individual player stats
-            gameNotes: `Tournament match: ${match.team1.name} vs ${match.team2.name}`,
-            lastUpdated: new Date().toISOString()
-        };
-        
-        console.log('🏆 Creating game stats from bracket match:', gameStats);
-        // TODO: Call updateGameStats(gameId, gameStats) when this component has access to it
-        // This would require passing updateGameStats as a prop to this component
+                away_team: {
+                    team_id: match.team2.id,
+                    goals_for: match.score2 || 0,
+                    goals_against: match.score1 || 0,
+                    players: [],
+                    goalies: []
+                },
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
+            
+            console.log('🏆 Saving bracket match to game stats:', gameStatData);
+            
+            // Save to backend
+            const response = await fetch(`${BACKEND_URL}/api/game-stats`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(gameStatData)
+            });
+            
+            if (response.ok) {
+                console.log('✅ Bracket match saved to game stats successfully');
+                // Show success message to user
+                alert(`Match result saved: ${match.team1.name} ${match.score1} - ${match.score2} ${match.team2.name}`);
+            } else {
+                const error = await response.text();
+                console.error('❌ Failed to save bracket match to game stats:', error);
+                alert('Failed to save match result to standings. Please try again.');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error saving bracket match to game stats:', error);
+            alert('Error saving match result. Please check your connection and try again.');
+        }
     };
     
     const updateMatch = (roundIndex, matchIndex, updates) => {
