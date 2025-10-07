@@ -6713,6 +6713,46 @@ async def fix_team_id_mismatches():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/game-stats")
+async def create_game_stats(game_stats: Dict[str, Any]):
+    """Create game statistics from tournament bracket or manual entry"""
+    try:
+        logger.info(f"📊 Creating game stats: {game_stats.get('event_id', 'unknown')}")
+        
+        # Validate required fields
+        required_fields = ['event_id', 'home_team', 'away_team']
+        for field in required_fields:
+            if field not in game_stats:
+                raise HTTPException(status_code=400, detail=f"Missing required field: {field}")
+        
+        # Add timestamp if not present
+        if 'created_at' not in game_stats:
+            game_stats['created_at'] = datetime.now(timezone.utc)
+        if 'updated_at' not in game_stats:
+            game_stats['updated_at'] = datetime.now(timezone.utc)
+        
+        # Generate ID if not present
+        if 'id' not in game_stats:
+            game_stats['id'] = str(uuid.uuid4())
+        
+        # Insert into database
+        result = await db.game_stats.insert_one(game_stats)
+        
+        logger.info(f"✅ Game stats created with ID: {game_stats['id']}")
+        
+        return {
+            "status": "success",
+            "message": "Game statistics created successfully",
+            "game_stat_id": game_stats['id'],
+            "inserted_id": str(result.inserted_id)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating game stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/seasons/{season_id}/summary")
 async def get_season_summary(season_id: str):
     """Get summary statistics for a season"""
