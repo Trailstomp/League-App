@@ -181,6 +181,7 @@ const EventDetailModal = ({
                             userCanEdit={userCanEdit}
                             onUpdateTournament={onUpdateTournament}
                             tournamentData={tournamentData}
+                            onUpdateGameStats={onUpdateGameStats}
                         />
                     )}
                 </div>
