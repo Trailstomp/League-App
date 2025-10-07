@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const TournamentPage = ({ events, teams, currentUser, onNavigate }) => {
+const TournamentPage = ({ events, teams, currentUser, onNavigate, setEvents }) => {
     const [tournaments, setTournaments] = useState([]);
     const [selectedTournament, setSelectedTournament] = useState(null);
     const [bracketData, setBracketData] = useState(null);
