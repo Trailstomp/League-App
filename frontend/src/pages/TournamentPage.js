@@ -149,10 +149,13 @@ const TournamentPage = ({ events, teams, currentUser, onNavigate, setEvents }) =
             setSelectedTournament(updatedTournament);
             
             // Also update in the events array
-            const updatedEvents = events.map(event => 
-                event.id === selectedTournament.id ? updatedTournament : event
-            );
-            // Note: We would need to pass setEvents from parent component to update this
+            if (setEvents) {
+                const updatedEvents = events.map(event => 
+                    event.id === selectedTournament.id ? updatedTournament : event
+                );
+                setEvents(updatedEvents);
+                console.log('✅ Updated tournament data in events array');
+            }
         }
         
         // Create game stats when match is completed with scores
