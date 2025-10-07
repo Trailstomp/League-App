@@ -9,7 +9,7 @@ MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 
 async def check_db():
     client = AsyncIOMotorClient(MONGO_URL)
-    db = client.lacrosse_league
+    db = client.mlbl_database
     
     # List all collections
     collections = await db.list_collection_names()
