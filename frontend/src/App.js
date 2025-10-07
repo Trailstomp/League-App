@@ -407,6 +407,7 @@ function App() {
             teams={teams}
             currentUser={currentUser}
             onNavigate={handleNavigate}
+            setEvents={setEvents}
           />
         );
       case 'live-game':
