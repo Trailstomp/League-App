@@ -11,7 +11,7 @@ import os
 # Database connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = AsyncIOMotorClient(MONGO_URL)
-db = client.lacrosse_league
+db = client.mlbl_database
 
 async def setup_tournament_data():
     """Add sample tournament events and teams to the system"""
