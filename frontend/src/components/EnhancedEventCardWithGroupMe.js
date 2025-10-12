@@ -263,19 +263,19 @@ const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser, onE
                                     </div>
                                     <div className="text-center p-3 bg-green-50 rounded-lg">
                                         <div className="text-2xl font-bold text-green-700">
-                                            {rsvpData.rsvp_summary.attending_count}
+                                            {rsvpData.summary.going}
                                         </div>
                                         <div className="text-sm text-green-600">Yes</div>
                                     </div>
                                     <div className="text-center p-3 bg-red-50 rounded-lg">
                                         <div className="text-2xl font-bold text-red-700">
-                                            {rsvpData.rsvp_summary.not_attending_count}
+                                            {rsvpData.summary.not_going}
                                         </div>
                                         <div className="text-sm text-red-600">No</div>
                                     </div>
                                     <div className="text-center p-3 bg-yellow-50 rounded-lg">
                                         <div className="text-2xl font-bold text-yellow-700">
-                                            {rsvpData.rsvp_summary.maybe_count}
+                                            {rsvpData.summary.maybe}
                                         </div>
                                         <div className="text-sm text-yellow-600">Maybe</div>
                                     </div>
