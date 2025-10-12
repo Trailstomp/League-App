@@ -303,17 +303,17 @@ const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser, onE
                                     )}
 
                                     {/* Not Attending */}
-                                    {rsvpData.rsvp_summary.not_attending.length > 0 && (
+                                    {rsvpData.details.not_going.length > 0 && (
                                         <div>
                                             <h4 className="font-medium text-red-700 mb-2 flex items-center">
                                                 <span className="mr-2">❌</span>
-                                                Not Attending ({rsvpData.rsvp_summary.not_attending.length})
+                                                Not Going ({rsvpData.details.not_going.length})
                                             </h4>
                                             <div className="bg-red-50 rounded-lg p-3">
                                                 <div className="flex flex-wrap gap-2">
-                                                    {rsvpData.rsvp_summary.not_attending.map((rsvp, index) => (
+                                                    {rsvpData.details.not_going.map((rsvp, index) => (
                                                         <span key={index} className="inline-flex items-center px-2 py-1 bg-red-100 text-red-800 text-sm rounded">
-                                                            {rsvp.user_name || rsvp.groupme_user_name || 'Unknown'}
+                                                            {rsvp.user_name || 'Unknown User'}
                                                         </span>
                                                     ))}
                                                 </div>
