@@ -219,10 +219,10 @@ const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser, onE
                                 <div className="text-xs text-gray-500">RSVPs</div>
                                 <div className="flex items-center justify-between mt-1">
                                     <span className="text-green-600 text-xs font-semibold">
-                                        {rsvpData?.accepted || 0} Yes
+                                        {rsvpData?.summary?.going || 0} Yes
                                     </span>
                                     <span className="text-gray-400 text-xs">
-                                        {rsvpData?.total || 0} total
+                                        {rsvpData?.summary?.total || 0} total
                                     </span>
                                 </div>
                             </div>
