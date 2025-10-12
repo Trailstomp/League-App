@@ -257,7 +257,7 @@ const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser, onE
                                 <div className="grid grid-cols-4 gap-4">
                                     <div className="text-center p-3 bg-gray-50 rounded-lg">
                                         <div className="text-2xl font-bold text-gray-900">
-                                            {rsvpData.rsvp_summary.total_responses}
+                                            {rsvpData.summary.total}
                                         </div>
                                         <div className="text-sm text-gray-600">Total</div>
                                     </div>
