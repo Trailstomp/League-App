@@ -309,24 +309,74 @@ const DatabaseAdminManager = () => {
                                                 </div>
                                                 
                                                 <div className="space-y-1">
+                                                    {/* Date Information */}
+                                                    <div className="flex items-center gap-2 text-sm">
+                                                        <span className="font-medium text-gray-700">📅 Date:</span>
+                                                        <span className="text-blue-600">
+                                                            {formatDate(doc.updated_at || doc.created_at || doc.timestamp)}
+                                                        </span>
+                                                        {(doc.updated_at || doc.created_at || doc.timestamp) && (
+                                                            <span className="text-xs text-gray-500">
+                                                                ({new Date(doc.updated_at || doc.created_at || doc.timestamp).toLocaleDateString()})
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Event ID */}
+                                                    {doc.event_id && (
+                                                        <p className="text-sm text-gray-600">
+                                                            <span className="font-medium">🎯 Event ID:</span> 
+                                                            <span className="font-mono text-purple-600 ml-1">{doc.event_id}</span>
+                                                        </p>
+                                                    )}
+
+                                                    {/* User Name */}
+                                                    {doc.user_name && (
+                                                        <p className="text-sm text-gray-600">
+                                                            <span className="font-medium">👤 User:</span> 
+                                                            <span className="text-indigo-600 ml-1">{doc.user_name}</span>
+                                                        </p>
+                                                    )}
+
+                                                    {/* Integration Name */}
                                                     {doc.integration_name && (
                                                         <p className="text-sm text-gray-600">
-                                                            <span className="font-medium">Integration:</span> {doc.integration_name}
+                                                            <span className="font-medium">🔌 Integration:</span> {doc.integration_name}
                                                         </p>
                                                     )}
+
+                                                    {/* Display Name */}
                                                     {(doc.display_name || doc.name) && (
                                                         <p className="text-sm text-gray-600">
-                                                            <span className="font-medium">Name:</span> {doc.display_name || doc.name}
+                                                            <span className="font-medium">📝 Name:</span> {doc.display_name || doc.name}
                                                         </p>
                                                     )}
+
+                                                    {/* Channel Type */}
                                                     {doc.channel_type && (
                                                         <p className="text-sm text-gray-600">
-                                                            <span className="font-medium">Type:</span> {doc.channel_type}
+                                                            <span className="font-medium">📡 Type:</span> {doc.channel_type}
                                                         </p>
                                                     )}
+
+                                                    {/* Response/Status */}
+                                                    {doc.response && (
+                                                        <p className="text-sm text-gray-600">
+                                                            <span className="font-medium">💬 Response:</span> 
+                                                            <span className={`ml-1 px-2 py-0.5 rounded text-xs ${
+                                                                doc.response === 'going' ? 'bg-green-100 text-green-800' : 
+                                                                doc.response === 'not_going' ? 'bg-red-100 text-red-800' : 
+                                                                'bg-yellow-100 text-yellow-800'
+                                                            }`}>
+                                                                {doc.response}
+                                                            </span>
+                                                        </p>
+                                                    )}
+
+                                                    {/* Active Status */}
                                                     {doc.is_active !== undefined && (
                                                         <p className="text-sm text-gray-600">
-                                                            <span className="font-medium">Active:</span> 
+                                                            <span className="font-medium">⚡ Active:</span> 
                                                             <span className={`ml-1 px-2 py-0.5 rounded text-xs ${
                                                                 doc.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                                                             }`}>
