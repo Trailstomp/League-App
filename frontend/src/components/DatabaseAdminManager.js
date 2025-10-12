@@ -249,9 +249,14 @@ const DatabaseAdminManager = () => {
                                     {selectedCollection ? `Documents: ${selectedCollection}` : 'Select a Collection'}
                                 </h3>
                                 {selectedCollection && (
-                                    <p className="text-sm text-gray-600 mt-1">
-                                        {documents.length} document{documents.length !== 1 ? 's' : ''} found
-                                    </p>
+                                    <div className="text-sm text-gray-600 mt-1">
+                                        <p>{documents.length} document{documents.length !== 1 ? 's' : ''} found</p>
+                                        {documents.length > 0 && (
+                                            <p className="text-xs text-gray-500">
+                                                Sorted by newest first • Last updated: {formatDate(documents[0]?.updated_at || documents[0]?.created_at || documents[0]?.timestamp)}
+                                            </p>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                             {selectedCollection && (
