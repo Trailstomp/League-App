@@ -335,11 +335,13 @@ const DatabaseAdminManager = () => {
                                                         </p>
                                                     )}
 
-                                                    {/* User Name */}
-                                                    {doc.User_name && (
+                                                    {/* User Name - Check multiple possible field names */}
+                                                    {(doc.User_name || doc.user_name || doc.sender_name || doc.groupme_user_name) && (
                                                         <p className="text-sm text-gray-600">
                                                             <span className="font-medium">👤 User:</span> 
-                                                            <span className="text-indigo-600 ml-1">{doc.User_name}</span>
+                                                            <span className="text-indigo-600 ml-1">
+                                                                {doc.User_name || doc.user_name || doc.sender_name || doc.groupme_user_name}
+                                                            </span>
                                                         </p>
                                                     )}
 
