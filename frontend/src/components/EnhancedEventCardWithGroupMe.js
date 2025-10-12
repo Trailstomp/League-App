@@ -15,6 +15,13 @@ const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser, onE
         }
     }, [showRSVPModal]);
 
+    // Load RSVP data on component mount to display counts on cards
+    useEffect(() => {
+        if (showRSVP && event.id) {
+            loadRSVPData();
+        }
+    }, [event.id, showRSVP]);
+
     const loadRSVPData = async () => {
         try {
             setLoading(true);
