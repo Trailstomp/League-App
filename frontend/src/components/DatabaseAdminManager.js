@@ -336,10 +336,10 @@ const DatabaseAdminManager = () => {
                                                     )}
 
                                                     {/* User Name */}
-                                                    {doc.user_name && (
+                                                    {doc.User_name && (
                                                         <p className="text-sm text-gray-600">
                                                             <span className="font-medium">👤 User:</span> 
-                                                            <span className="text-indigo-600 ml-1">{doc.user_name}</span>
+                                                            <span className="text-indigo-600 ml-1">{doc.User_name}</span>
                                                         </p>
                                                     )}
 
