@@ -155,181 +155,248 @@ const DatabaseAdminManager = () => {
     };
 
     return (
-        <div className="p-6 max-w-7xl mx-auto">
-            <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Database Administration</h2>
-                <p className="text-gray-600">View and manage your database collections and documents</p>
+        <div className="h-screen bg-gray-100 flex flex-col">
+            {/* Header */}
+            <div className="bg-white shadow-sm border-b px-6 py-4 flex-shrink-0">
+                <h1 className="text-3xl font-bold text-gray-800">Database Administration</h1>
+                
+                {/* Status Messages */}
+                {error && (
+                    <div className="mt-2 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+                        {error}
+                    </div>
+                )}
+                {success && (
+                    <div className="mt-2 p-3 bg-green-100 border border-green-400 text-green-700 rounded text-sm">
+                        {success}
+                    </div>
+                )}
+                {loading && (
+                    <div className="mt-2 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded text-sm">
+                        Loading...
+                    </div>
+                )}
             </div>
 
-            {error && (
-                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-700">{error}</p>
-                    <button 
-                        onClick={() => setError('')}
-                        className="mt-2 text-red-600 hover:text-red-800 text-sm"
-                    >
-                        Dismiss
-                    </button>
-                </div>
-            )}
-
-            {success && (
-                <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-green-700">{success}</p>
-                </div>
-            )}
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Collections Panel */}
-                <div className="lg:col-span-1">
-                    <div className="bg-white rounded-lg shadow border">
-                        <div className="p-4 border-b">
-                            <h3 className="text-lg font-semibold">Collections</h3>
-                            <button 
-                                onClick={fetchCollections}
-                                className="mt-2 text-blue-600 hover:text-blue-800 text-sm"
-                                disabled={loading}
-                            >
-                                🔄 Refresh Collections
-                            </button>
-                        </div>
-                        <div className="p-4">
-                            {loading && <p className="text-gray-500">Loading...</p>}
+            {/* Main Content Area */}
+            <div className="flex-1 flex overflow-hidden">
+                {/* Left Panel: Collections */}
+                <div className="w-80 bg-white border-r flex flex-col">
+                    <div className="p-4 border-b bg-gray-50 flex-shrink-0">
+                        <h2 className="text-lg font-semibold text-gray-800">Collections</h2>
+                        <p className="text-sm text-gray-600 mt-1">{collections.length} collections available</p>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-4">
+                        <div className="space-y-2">
                             {collections.map((collection) => (
                                 <button
                                     key={collection}
                                     onClick={() => fetchDocuments(collection)}
-                                    className={`w-full text-left p-3 rounded mb-2 transition-colors ${
+                                    className={`w-full text-left p-3 rounded-lg transition-colors ${
                                         selectedCollection === collection
-                                            ? 'bg-blue-100 border border-blue-300'
-                                            : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                                            ? 'bg-blue-100 border-2 border-blue-300 shadow-sm'
+                                            : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent hover:border-gray-200'
                                     }`}
                                 >
-                                    <div className="font-medium">{collection}</div>
+                                    <div className="font-medium text-gray-800">{collection}</div>
+                                    <div className="text-xs text-gray-500 mt-1">
+                                        {selectedCollection === collection ? 'Selected' : 'Click to view'}
+                                    </div>
                                 </button>
                             ))}
                         </div>
                     </div>
                 </div>
 
-                {/* Documents Panel */}
-                <div className="lg:col-span-2">
-                    {selectedCollection && (
-                        <div className="bg-white rounded-lg shadow border">
-                            <div className="p-4 border-b flex justify-between items-center">
-                                <h3 className="text-lg font-semibold">
-                                    Documents in: {selectedCollection}
+                {/* Middle Panel: Documents List */}
+                <div className="flex-1 bg-white border-r flex flex-col">
+                    <div className="p-4 border-b bg-gray-50 flex-shrink-0">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-800">
+                                    {selectedCollection ? `Documents: ${selectedCollection}` : 'Select a Collection'}
                                 </h3>
+                                {selectedCollection && (
+                                    <p className="text-sm text-gray-600 mt-1">
+                                        {documents.length} document{documents.length !== 1 ? 's' : ''} found
+                                    </p>
+                                )}
+                            </div>
+                            {selectedCollection && (
                                 <button
                                     onClick={createNewDocument}
-                                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium"
                                 >
                                     ➕ New Document
                                 </button>
+                            )}
+                        </div>
+                    </div>
+                    
+                    <div className="flex-1 overflow-y-auto p-4">
+                        {!selectedCollection ? (
+                            <div className="flex items-center justify-center h-full text-gray-500">
+                                <div className="text-center">
+                                    <div className="text-4xl mb-4">📁</div>
+                                    <p className="text-lg">Select a collection to view documents</p>
+                                </div>
                             </div>
-                            <div className="p-4">
-                                {documents.length === 0 ? (
-                                    <p className="text-gray-500">No documents found in this collection</p>
-                                ) : (
-                                    <div className="space-y-2">
-                                        {documents.map((doc) => (
-                                            <div 
-                                                key={doc._id || doc.id}
-                                                className="border border-gray-200 rounded p-3"
-                                            >
-                                                <div className="flex justify-between items-start">
-                                                    <div className="flex-1">
-                                                        <p className="font-medium text-sm">
-                                                            ID: {doc._id || doc.id}
+                        ) : documents.length === 0 ? (
+                            <div className="flex items-center justify-center h-full text-gray-500">
+                                <div className="text-center">
+                                    <div className="text-4xl mb-4">📄</div>
+                                    <p className="text-lg">No documents in this collection</p>
+                                    <button
+                                        onClick={createNewDocument}
+                                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    >
+                                        Create First Document
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {documents.map((doc, index) => (
+                                    <div 
+                                        key={doc._id || doc.id}
+                                        className={`border rounded-lg p-4 transition-colors hover:border-blue-300 ${
+                                            selectedDocument && (selectedDocument._id === doc._id || selectedDocument.id === doc.id)
+                                                ? 'border-blue-300 bg-blue-50'
+                                                : 'border-gray-200 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        <div className="flex justify-between items-start">
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                                                        #{index + 1}
+                                                    </span>
+                                                    <p className="font-mono text-sm text-gray-800 truncate">
+                                                        {doc._id || doc.id}
+                                                    </p>
+                                                </div>
+                                                
+                                                <div className="space-y-1">
+                                                    {doc.integration_name && (
+                                                        <p className="text-sm text-gray-600">
+                                                            <span className="font-medium">Integration:</span> {doc.integration_name}
                                                         </p>
-                                                        {doc.integration_name && (
-                                                            <p className="text-sm text-gray-600">
-                                                                Integration: {doc.integration_name}
-                                                            </p>
-                                                        )}
-                                                        {doc.display_name && (
-                                                            <p className="text-sm text-gray-600">
-                                                                Name: {doc.display_name}
-                                                            </p>
-                                                        )}
-                                                        {doc.name && (
-                                                            <p className="text-sm text-gray-600">
-                                                                Name: {doc.name}
-                                                            </p>
-                                                        )}
-                                                        {doc.channel_type && (
-                                                            <p className="text-sm text-gray-600">
-                                                                Type: {doc.channel_type}
-                                                            </p>
-                                                        )}
-                                                        {doc.is_active !== undefined && (
-                                                            <p className="text-sm text-gray-600">
-                                                                Active: {doc.is_active ? 'Yes' : 'No'}
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                    <div className="flex space-x-2">
-                                                        <button
-                                                            onClick={() => {
-                                                                setSelectedDocument(doc);
-                                                                setEditingDocument(JSON.stringify(doc, null, 2));
-                                                            }}
-                                                            className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
-                                                        >
-                                                            ✏️ Edit
-                                                        </button>
-                                                        <button
-                                                            onClick={() => deleteDocument(doc._id || doc.id)}
-                                                            className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
-                                                        >
-                                                            🗑️ Delete
-                                                        </button>
-                                                    </div>
+                                                    )}
+                                                    {(doc.display_name || doc.name) && (
+                                                        <p className="text-sm text-gray-600">
+                                                            <span className="font-medium">Name:</span> {doc.display_name || doc.name}
+                                                        </p>
+                                                    )}
+                                                    {doc.channel_type && (
+                                                        <p className="text-sm text-gray-600">
+                                                            <span className="font-medium">Type:</span> {doc.channel_type}
+                                                        </p>
+                                                    )}
+                                                    {doc.is_active !== undefined && (
+                                                        <p className="text-sm text-gray-600">
+                                                            <span className="font-medium">Active:</span> 
+                                                            <span className={`ml-1 px-2 py-0.5 rounded text-xs ${
+                                                                doc.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                                            }`}>
+                                                                {doc.is_active ? 'Yes' : 'No'}
+                                                            </span>
+                                                        </p>
+                                                    )}
                                                 </div>
                                             </div>
-                                        ))}
+                                            
+                                            <div className="flex space-x-2 ml-4 flex-shrink-0">
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedDocument(doc);
+                                                        setEditingDocument(JSON.stringify(doc, null, 2));
+                                                    }}
+                                                    className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 font-medium"
+                                                >
+                                                    ✏️ Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => deleteDocument(doc._id || doc.id)}
+                                                    className="px-3 py-1.5 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 font-medium"
+                                                >
+                                                    🗑️ Delete
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                )}
+                                ))}
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
+                </div>
 
-                    {/* Document Editor */}
-                    {editingDocument && (
-                        <div className="mt-6 bg-white rounded-lg shadow border">
-                            <div className="p-4 border-b">
-                                <h3 className="text-lg font-semibold">
-                                    {selectedDocument ? 'Edit Document' : 'Create New Document'}
-                                </h3>
+                {/* Right Panel: Document Editor */}
+                <div className="w-1/2 bg-white flex flex-col">
+                    <div className="p-4 border-b bg-gray-50 flex-shrink-0">
+                        <div className="flex justify-between items-center">
+                            <h3 className="text-lg font-semibold text-gray-800">
+                                {editingDocument ? (selectedDocument ? 'Edit Document' : 'Create New Document') : 'Document Editor'}
+                            </h3>
+                            {editingDocument && (
+                                <button
+                                    onClick={() => {
+                                        setEditingDocument(null);
+                                        setSelectedDocument(null);
+                                    }}
+                                    className="px-3 py-1.5 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm"
+                                >
+                                    ❌ Close
+                                </button>
+                            )}
+                        </div>
+                        {selectedDocument && (
+                            <p className="text-sm text-gray-600 mt-1 font-mono">
+                                ID: {selectedDocument._id || selectedDocument.id}
+                            </p>
+                        )}
+                    </div>
+                    
+                    <div className="flex-1 flex flex-col p-4">
+                        {!editingDocument ? (
+                            <div className="flex items-center justify-center h-full text-gray-500">
+                                <div className="text-center">
+                                    <div className="text-4xl mb-4">✏️</div>
+                                    <p className="text-lg">Select a document to edit</p>
+                                    <p className="text-sm mt-2">or create a new document</p>
+                                </div>
                             </div>
-                            <div className="p-4">
+                        ) : (
+                            <>
                                 <textarea
                                     value={editingDocument}
                                     onChange={(e) => setEditingDocument(e.target.value)}
-                                    className="w-full h-96 font-mono text-sm border border-gray-300 rounded p-3"
+                                    className="flex-1 font-mono text-sm border border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                                     placeholder="Enter JSON document..."
                                 />
-                                <div className="flex space-x-3 mt-4">
+                                <div className="flex space-x-3 mt-4 pt-4 border-t">
                                     <button
                                         onClick={saveDocument}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                        className="flex-1 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
                                         disabled={loading}
                                     >
                                         💾 Save Document
                                     </button>
                                     <button
                                         onClick={() => {
-                                            setEditingDocument(null);
-                                            setSelectedDocument(null);
+                                            if (selectedDocument) {
+                                                setEditingDocument(JSON.stringify(selectedDocument, null, 2));
+                                            } else {
+                                                setEditingDocument('');
+                                            }
                                         }}
-                                        className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                                        className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium"
                                     >
-                                        ❌ Cancel
+                                        🔄 Reset
                                     </button>
                                 </div>
-                            </div>
-                        </div>
-                    )}
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
