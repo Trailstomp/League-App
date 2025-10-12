@@ -18,13 +18,17 @@ const EnhancedEventCardWithGroupMe = ({ event, showRSVP = true, currentUser, onE
     const loadRSVPData = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${backendUrl}/api/groupme/events/${event.id}/rsvp-summary`);
+            console.log('📊 Loading RSVP data for event:', event.id);
+            const response = await fetch(`${backendUrl}/api/events/${event.id}/rsvps`);
             if (response.ok) {
                 const data = await response.json();
+                console.log('✅ RSVP data loaded:', data);
                 setRSVPData(data);
+            } else {
+                console.error('❌ Failed to load RSVP data:', response.status);
             }
         } catch (err) {
-            console.error('Error loading RSVP data:', err);
+            console.error('❌ Error loading RSVP data:', err);
         } finally {
             setLoading(false);
         }
