@@ -42,7 +42,13 @@ const DatabaseAdminManager = () => {
             const response = await fetch(`${backendUrl}/api/admin/collections/${collectionName}/documents`);
             if (response.ok) {
                 const data = await response.json();
-                setDocuments(data.documents);
+                // Sort documents by date (newest first)
+                const sortedDocuments = data.documents.sort((a, b) => {
+                    const dateA = new Date(a.updated_at || a.created_at || a.timestamp || 0);
+                    const dateB = new Date(b.updated_at || b.created_at || b.timestamp || 0);
+                    return dateB - dateA; // Newest first
+                });
+                setDocuments(sortedDocuments);
                 setSelectedCollection(collectionName);
                 setSelectedDocument(null);
                 setEditingDocument(null);
