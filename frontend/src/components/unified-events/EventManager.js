@@ -169,9 +169,26 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                     />
                 );
             
+            case 'scoring-selector':
+                return (
+                    <ScoringSelector
+                        event={selectedEvent}
+                        teams={teams}
+                        onLiveStats={(event) => {
+                            setSelectedEvent(event);
+                            setActiveView('live-stats');
+                        }}
+                        onQuickScore={(event) => {
+                            setSelectedEvent(event);
+                            setActiveView('quick-score');
+                        }}
+                        onCancel={() => setActiveView('list')}
+                    />
+                );
+            
             case 'live-stats':
                 return (
-                    <LiveStatsEntry
+                    <ImprovedLiveStatsEntry
                         event={selectedEvent}
                         teams={teams}
                         onSubmit={(statsData) => handleScoreSubmit(selectedEvent.id, statsData)}
