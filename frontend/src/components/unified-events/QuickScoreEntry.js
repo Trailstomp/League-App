@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const QuickScoreEntry = ({ event, onSubmit, onCancel }) => {
+const QuickScoreEntry = ({ event, teams, onSubmit, onCancel }) => {
     const [scores, setScores] = useState({
         home_team: { id: '', name: '', score: 0 },
         away_team: { id: '', name: '', score: 0 }
