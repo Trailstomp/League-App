@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import EventCreator from './EventCreator';
 import EventsList from './EventsList';
 import TournamentBracketBuilder from './TournamentBracketBuilder';
-import LiveStatsEntry from './LiveStatsEntry';
+import ScoringSelector from './ScoringSelector';
+import ImprovedLiveStatsEntry from './ImprovedLiveStatsEntry';
 import QuickScoreEntry from './QuickScoreEntry';
 
 const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavigate }) => {
