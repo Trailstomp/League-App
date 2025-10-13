@@ -254,6 +254,14 @@ const EventsList = ({
 
                                             {canManageEvent(event) && (
                                                 <div className="flex flex-col gap-2">
+                                                    {/* Edit Event Button */}
+                                                    <button
+                                                        onClick={() => onEventSelect ? onEventSelect(event) : null}
+                                                        className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+                                                    >
+                                                        ✏️ Edit Event
+                                                    </button>
+
                                                     {/* Tournament Management */}
                                                     {event.type === 'tournament' && (
                                                         <button
@@ -264,23 +272,24 @@ const EventsList = ({
                                                         </button>
                                                     )}
 
-                                                    {/* Scoring Options */}
-                                                    {(event.type === 'regular_game' || event.type === 'tournament') && 
-                                                     event.status !== 'completed' && (
-                                                        <>
-                                                            <button
-                                                                onClick={() => onEnterLiveStats(event)}
-                                                                className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
-                                                            >
-                                                                📊 Live Stats
-                                                            </button>
-                                                            <button
-                                                                onClick={() => onQuickScore(event)}
-                                                                className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-                                                            >
-                                                                ⚡ Quick Score
-                                                            </button>
-                                                        </>
+                                                    {/* Consolidated Scoring Button */}
+                                                    {(event.type === 'regular_game' || event.type === 'tournament') && (
+                                                        <button
+                                                            onClick={() => onEnterScoring ? onEnterScoring(event) : null}
+                                                            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                                                        >
+                                                            🎯 Enter Scores
+                                                        </button>
+                                                    )}
+
+                                                    {/* Live View for In-Progress Games */}
+                                                    {event.status === 'in_progress' && (
+                                                        <button
+                                                            onClick={() => onViewLive ? onViewLive(event) : null}
+                                                            className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+                                                        >
+                                                            📺 Live View
+                                                        </button>
                                                     )}
                                                 </div>
                                             )}
