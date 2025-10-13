@@ -220,13 +220,17 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                             setSelectedEvent(event);
                             setActiveView('tournament');
                         }}
-                        onEnterLiveStats={(event) => {
+                        onEnterScoring={(event) => {
                             setSelectedEvent(event);
-                            setActiveView('live-stats');
+                            setActiveView('scoring-selector');
                         }}
-                        onQuickScore={(event) => {
-                            setSelectedEvent(event);
-                            setActiveView('quick-score');
+                        onViewLive={(event) => {
+                            // TODO: Implement live spectator view
+                            console.log('Live view for:', event.title);
+                        }}
+                        onEventSelect={(event) => {
+                            // TODO: Implement event editing
+                            console.log('Edit event:', event.title);
                         }}
                         onRefresh={loadEvents}
                     />
