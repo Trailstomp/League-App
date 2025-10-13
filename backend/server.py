@@ -6785,6 +6785,207 @@ async def get_season_summary(season_id: str):
         logger.error(f"Error getting season summary: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ============= UNIFIED EVENTS SYSTEM API =============
+
+# Pydantic models for unified events
+class UnifiedEvent(BaseModel):
+    id: Optional[str] = None
+    type: str = "regular_game"  # regular_game, tournament, practice, social
+    title: str
+    description: Optional[str] = ""
+    date: str
+    time: str
+    location: str
+    teams: List[str] = []
+    status: str = "scheduled"  # scheduled, in_progress, completed, cancelled
+    rsvp_enabled: bool = True
+    groupme_integration: bool = False
+    auto_create_polls: bool = False
+    tournament_config: Optional[Dict[str, Any]] = None
+    bracket: Optional[Dict[str, Any]] = None
+    scores: Optional[Dict[str, Any]] = None
+    created_by: Optional[str] = None
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+
+class EventUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    date: Optional[str] = None
+    time: Optional[str] = None
+    location: Optional[str] = None
+    teams: Optional[List[str]] = None
+    status: Optional[str] = None
+    rsvp_enabled: Optional[bool] = None
+    groupme_integration: Optional[bool] = None
+    tournament_config: Optional[Dict[str, Any]] = None
+    bracket: Optional[Dict[str, Any]] = None
+    scores: Optional[Dict[str, Any]] = None
+
+@api_router.get("/unified-events")
+async def get_unified_events():
+    """Get all unified events"""
+    try:
+        events = await db.unified_events.find().sort("date", 1).to_list(None)
+        
+        # Remove MongoDB _id field
+        for event in events:
+            if "_id" in event:
+                del event["_id"]
+        
+        return {"events": events}
+        
+    except Exception as e:
+        logger.error(f"Error getting unified events: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/unified-events")
+async def create_unified_event(event: UnifiedEvent):
+    """Create a new unified event"""
+    try:
+        # Generate ID if not provided
+        if not event.id:
+            event.id = str(uuid.uuid4())
+        
+        # Set timestamps
+        now = datetime.now(timezone.utc).isoformat()
+        event.created_at = now
+        event.updated_at = now
+        
+        # Convert to dict for MongoDB
+        event_data = event.dict()
+        
+        # Check for duplicate event ID
+        existing = await db.unified_events.find_one({"id": event.id})
+        if existing:
+            raise HTTPException(status_code=400, detail="Event with this ID already exists")
+        
+        # Insert event
+        await db.unified_events.insert_one(event_data)
+        
+        # Create GroupMe integration if enabled
+        if event.groupme_integration and event.auto_create_polls:
+            try:
+                await _create_groupme_poll_for_event(event_data)
+            except Exception as e:
+                logger.warning(f"Failed to create GroupMe poll: {e}")
+        
+        # Remove MongoDB _id field for response
+        if "_id" in event_data:
+            del event_data["_id"]
+            
+        logger.info(f"Created unified event: {event.id}")
+        return event_data
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating unified event: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/unified-events/{event_id}")
+async def get_unified_event(event_id: str):
+    """Get a specific unified event"""
+    try:
+        event = await db.unified_events.find_one({"id": event_id})
+        
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Remove MongoDB _id field
+        if "_id" in event:
+            del event["_id"]
+            
+        return event
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting unified event: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.patch("/unified-events/{event_id}")
+async def update_unified_event(event_id: str, updates: EventUpdate):
+    """Update a unified event"""
+    try:
+        # Check if event exists
+        existing_event = await db.unified_events.find_one({"id": event_id})
+        if not existing_event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Prepare update data
+        update_data = {}
+        for field, value in updates.dict().items():
+            if value is not None:
+                update_data[field] = value
+        
+        # Add updated timestamp
+        update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+        
+        # Update event
+        await db.unified_events.update_one(
+            {"id": event_id},
+            {"$set": update_data}
+        )
+        
+        # Get updated event
+        updated_event = await db.unified_events.find_one({"id": event_id})
+        
+        # Remove MongoDB _id field
+        if "_id" in updated_event:
+            del updated_event["_id"]
+            
+        logger.info(f"Updated unified event: {event_id}")
+        return updated_event
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating unified event: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/unified-events/{event_id}")
+async def delete_unified_event(event_id: str):
+    """Delete a unified event"""
+    try:
+        # Check if event exists
+        existing_event = await db.unified_events.find_one({"id": event_id})
+        if not existing_event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Delete event
+        await db.unified_events.delete_one({"id": event_id})
+        
+        # Also delete related game stats if they exist
+        await db.game_stats.delete_many({"event_id": event_id})
+        
+        logger.info(f"Deleted unified event: {event_id}")
+        return {"message": "Event deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting unified event: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+async def _create_groupme_poll_for_event(event_data):
+    """Helper function to create GroupMe polls for events"""
+    try:
+        # This would integrate with existing GroupMe functionality
+        # For now, just log that it would create a poll
+        logger.info(f"Would create GroupMe poll for event: {event_data['title']}")
+        
+        # TODO: Integrate with existing GroupMe poll creation logic
+        # poll_data = {
+        #     "subject": f"RSVP for {event_data['title']}",
+        #     "options": ["Going", "Not Going", "Maybe"],
+        #     "expiration": event_data['date']
+        # }
+        
+    except Exception as e:
+        logger.error(f"Error creating GroupMe poll: {e}")
+        raise
+
 # Include the API router in the main app (after all routes are defined)
 app.include_router(api_router)
 
