@@ -375,20 +375,12 @@ function App() {
           />
         );
       case 'events':
-        console.log('🎯 Rendering EventsPage with', events.length, 'events');
+        console.log('🎯 Rendering Unified Events System');
         return (
-          <EventsPage
+          <UnifiedEventsPage
             teams={teams}
-            players={players}
             currentUser={currentUser}
-            websiteStyle={websiteStyle}
-            setWebsiteStyle={setWebsiteStyle}
-            events={events}
-            setEvents={setEvents}
-            onEnterStats={(event) => {
-              setSelectedEventForStats(event);
-              setShowStatsEntry(true);
-            }}
+            onNavigate={handleNavigate}
           />
         );
       case 'standings':
