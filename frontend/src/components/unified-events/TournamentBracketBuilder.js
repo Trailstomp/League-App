@@ -140,14 +140,24 @@ const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack }) => {
                     const nextMatchIndex = Math.floor(matchIndex / 2);
                     const isFirstTeam = matchIndex % 2 === 0;
 
+                    console.log('🏆 Auto-advancing winner:', match.winner.name, 'to next round');
+                    console.log('📍 Next match details:', { roundIndex: roundIndex + 1, matchIndex: nextMatchIndex, isFirstTeam });
+
                     if (nextRound.matches[nextMatchIndex]) {
                         if (isFirstTeam) {
-                            nextRound.matches[nextMatchIndex].team1 = match.winner;
+                            nextRound.matches[nextMatchIndex].team1 = { ...match.winner };
+                            console.log('✅ Set as team1 in next match');
                         } else {
-                            nextRound.matches[nextMatchIndex].team2 = match.winner;
+                            nextRound.matches[nextMatchIndex].team2 = { ...match.winner };
+                            console.log('✅ Set as team2 in next match');
                         }
                     }
                 }
+
+                // Auto-save bracket after score update
+                setTimeout(() => {
+                    saveBracket();
+                }, 100);
             }
 
             return { ...prev, rounds: newRounds };
