@@ -5,18 +5,27 @@ import TournamentBracketBuilder from './TournamentBracketBuilder';
 import LiveStatsEntry from './LiveStatsEntry';
 import QuickScoreEntry from './QuickScoreEntry';
 
-const EventManager = ({ teams, currentUser, onEventUpdate }) => {
-    const [events, setEvents] = useState([]);
+const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavigate }) => {
+    const [events, setEvents] = useState(initialEvents || []);
     const [activeView, setActiveView] = useState('list'); // list, create, tournament, live-stats, quick-score
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
-    // Load events on component mount
+    // Load events on component mount (only if no initial events provided)
     useEffect(() => {
-        loadEvents();
+        if (!initialEvents || initialEvents.length === 0) {
+            loadEvents();
+        }
     }, []);
+
+    // Update events when initialEvents changes
+    useEffect(() => {
+        if (initialEvents) {
+            setEvents(initialEvents);
+        }
+    }, [initialEvents]);
 
     const loadEvents = async () => {
         try {
