@@ -292,15 +292,14 @@ const EventsList = ({
                                         <div className="mt-4 pt-4 border-t flex items-center justify-between">
                                             <div className="flex items-center gap-4 text-sm">
                                                 <span className="text-gray-600">RSVP:</span>
-                                                <span className="text-green-600">✅ 12 Going</span>
-                                                <span className="text-red-600">❌ 3 Not Going</span>
-                                                <span className="text-yellow-600">❓ 5 Maybe</span>
+                                                <span className="text-blue-600">📝 Enabled</span>
+                                                {event.groupme_integration && (
+                                                    <span className="text-purple-600">📱 GroupMe</span>
+                                                )}
                                             </div>
-                                            {event.groupme_integration && (
-                                                <span className="text-xs text-gray-500 flex items-center gap-1">
-                                                    📱 GroupMe Integration
-                                                </span>
-                                            )}
+                                            <div className="text-xs text-gray-500">
+                                                Click event for details
+                                            </div>
                                         </div>
                                     )}
                                 </div>
