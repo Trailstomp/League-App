@@ -173,6 +173,7 @@ const EventManager = ({ teams, currentUser, onEventUpdate }) => {
                 return (
                     <QuickScoreEntry
                         event={selectedEvent}
+                        teams={teams}
                         onSubmit={(scoreData) => handleScoreSubmit(selectedEvent.id, scoreData)}
                         onCancel={() => setActiveView('list')}
                     />
