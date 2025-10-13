@@ -392,16 +392,6 @@ function App() {
             />
           </div>
         );
-      case 'tournaments':
-        // Redirect to unified events system
-        console.log('🔀 Redirecting tournaments to unified events system');
-        return (
-          <UnifiedEventsPage
-            teams={teams}
-            currentUser={currentUser}
-            onNavigate={handleNavigate}
-          />
-        );
       case 'live-game':
         return (
           <LiveGamePage 
