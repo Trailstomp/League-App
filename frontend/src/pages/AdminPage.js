@@ -145,7 +145,6 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
     // Admin tabs configuration
     const adminTabs = [
         { id: 'dashboard', label: 'Dashboard', icon: 'venue' },
-        { id: 'unified-events', label: 'Events Management', icon: 'calendar' },
         { id: 'seasons', label: 'Seasons & Leagues', icon: 'trophy' },
         { id: 'teams', label: 'Teams', icon: 'teams' },
         { id: 'players', label: 'Players', icon: 'players' },
