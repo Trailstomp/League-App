@@ -89,6 +89,82 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel }) => {
         });
     };
 
+    const generateTournamentBracket = (teamIds, config) => {
+        const teamList = teamIds.map((teamId, index) => ({
+            id: teamId,
+            name: getTeamName(teamId),
+            seed: index + 1
+        }));
+
+        const rounds = [];
+        let currentTeams = [...teamList];
+        let roundNumber = 1;
+
+        // Generate rounds for single elimination
+        while (currentTeams.length > 1) {
+            const matches = [];
+            const matchesInRound = Math.floor(currentTeams.length / 2);
+
+            for (let i = 0; i < matchesInRound; i++) {
+                const team1 = currentTeams[i * 2];
+                const team2 = currentTeams[i * 2 + 1];
+                
+                matches.push({
+                    id: `round${roundNumber}_match${i + 1}`,
+                    team1: team1 || null,
+                    team2: team2 || null,
+                    score1: null,
+                    score2: null,
+                    winner: null,
+                    status: 'pending'
+                });
+            }
+
+            rounds.push({
+                round: roundNumber,
+                name: getRoundName(roundNumber, countRounds(currentTeams.length)),
+                matches: matches
+            });
+
+            // Prepare for next round
+            currentTeams = new Array(matchesInRound).fill(null);
+            roundNumber++;
+        }
+
+        return {
+            format: config.format,
+            seeding_method: config.seeding_method,
+            teams: teamList,
+            rounds: rounds,
+            settings: {
+                auto_advance: config.auto_advance,
+                allow_editing: config.allow_bracket_editing
+            }
+        };
+    };
+
+    const countRounds = (teamCount) => {
+        let rounds = 0;
+        while (teamCount > 1) {
+            teamCount = Math.floor(teamCount / 2);
+            rounds++;
+        }
+        return rounds;
+    };
+
+    const getRoundName = (roundNumber, totalRounds) => {
+        const remaining = totalRounds - roundNumber + 1;
+        if (remaining === 1) return 'Final';
+        if (remaining === 2) return 'Semifinals';
+        if (remaining === 3) return 'Quarterfinals';
+        return `Round ${roundNumber}`;
+    };
+
+    const getTeamName = (teamId) => {
+        const team = teams?.find(t => t.id === teamId);
+        return team ? team.name : teamId;
+    };
+
     const validateForm = () => {
         const newErrors = {};
         
