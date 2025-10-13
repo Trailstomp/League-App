@@ -123,7 +123,7 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel }) => {
             const eventData = {
                 ...formData,
                 id: eventId,
-                created_by: currentUser?.id || 'admin',
+                created_by: String(currentUser?.id || 'admin'),
                 created_at: new Date().toISOString(),
                 status: 'scheduled' // scheduled, in_progress, completed, cancelled
             };
