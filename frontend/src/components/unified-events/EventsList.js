@@ -1,0 +1,316 @@
+import React, { useState } from 'react';
+
+const EventsList = ({ 
+    events, 
+    teams, 
+    currentUser, 
+    loading, 
+    onEventSelect, 
+    onEventUpdate,
+    onCreateEvent,
+    onManageTournament,
+    onEnterLiveStats,
+    onQuickScore,
+    onRefresh 
+}) => {
+    const [filter, setFilter] = useState('all'); // all, scheduled, in_progress, completed
+    const [sortBy, setSortBy] = useState('date'); // date, title, type
+
+    // Get team name by ID
+    const getTeamName = (teamId) => {
+        const team = teams.find(t => t.id === teamId);
+        return team ? team.name : teamId;
+    };
+
+    // Get team logo by ID
+    const getTeamLogo = (teamId) => {
+        const team = teams.find(t => t.id === teamId);
+        return team?.style?.logoUrl;
+    };
+
+    // Filter and sort events
+    const filteredEvents = events
+        .filter(event => {
+            if (filter === 'all') return true;
+            return event.status === filter;
+        })
+        .sort((a, b) => {
+            switch (sortBy) {
+                case 'date':
+                    return new Date(a.date) - new Date(b.date);
+                case 'title':
+                    return a.title.localeCompare(b.title);
+                case 'type':
+                    return a.type.localeCompare(b.type);
+                default:
+                    return 0;
+            }
+        });
+
+    const formatDate = (dateStr) => {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    };
+
+    const formatTime = (timeStr) => {
+        const [hours, minutes] = timeStr.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        return `${displayHour}:${minutes} ${ampm}`;
+    };
+
+    const getEventTypeIcon = (type) => {
+        switch (type) {
+            case 'regular_game': return '🏆';
+            case 'tournament': return '🏅';
+            case 'practice': return '🏃';
+            case 'social': return '🎉';
+            default: return '📅';
+        }
+    };
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'scheduled': return 'bg-blue-100 text-blue-800';
+            case 'in_progress': return 'bg-green-100 text-green-800';
+            case 'completed': return 'bg-gray-100 text-gray-800';
+            case 'cancelled': return 'bg-red-100 text-red-800';
+            default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+    const canManageEvent = (event) => {
+        // Allow admins or event creators to manage events
+        return currentUser?.role === 'admin' || event.created_by === currentUser?.id;
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="text-gray-600 mt-2">Loading events...</p>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="flex-1 flex flex-col">
+            {/* Filters and Controls */}
+            <div className="bg-white border-b px-6 py-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        {/* Status Filter */}
+                        <div className="flex items-center gap-2">
+                            <label className="text-sm font-medium text-gray-700">Status:</label>
+                            <select
+                                value={filter}
+                                onChange={(e) => setFilter(e.target.value)}
+                                className="px-3 py-1 border border-gray-300 rounded text-sm"
+                            >
+                                <option value="all">All Events</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+
+                        {/* Sort By */}
+                        <div className="flex items-center gap-2">
+                            <label className="text-sm font-medium text-gray-700">Sort by:</label>
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                className="px-3 py-1 border border-gray-300 rounded text-sm"
+                            >
+                                <option value="date">Date</option>
+                                <option value="title">Title</option>
+                                <option value="type">Type</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="text-sm text-gray-600">
+                        {filteredEvents.length} of {events.length} events
+                    </div>
+                </div>
+            </div>
+
+            {/* Events List */}
+            <div className="flex-1 overflow-y-auto p-6">
+                {filteredEvents.length === 0 ? (
+                    <div className="text-center py-12">
+                        <div className="text-4xl mb-4">📅</div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
+                        <p className="text-gray-600 mb-6">
+                            {filter === 'all' 
+                                ? 'Get started by creating your first event'
+                                : `No ${filter} events found. Try changing the filter.`
+                            }
+                        </p>
+                        {filter === 'all' && (
+                            <button
+                                onClick={onCreateEvent}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                            >
+                                Create First Event
+                            </button>
+                        )}
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        {filteredEvents.map(event => (
+                            <div
+                                key={event.id}
+                                className="bg-white rounded-lg shadow border hover:shadow-md transition-shadow"
+                            >
+                                <div className="p-6">
+                                    <div className="flex items-start justify-between">
+                                        {/* Event Info */}
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <span className="text-2xl">
+                                                    {getEventTypeIcon(event.type)}
+                                                </span>
+                                                <div>
+                                                    <h3 className="text-lg font-semibold text-gray-900">
+                                                        {event.title}
+                                                    </h3>
+                                                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                                                        <span>📅 {formatDate(event.date)}</span>
+                                                        <span>🕒 {formatTime(event.time)}</span>
+                                                        <span>📍 {event.location}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Description */}
+                                            {event.description && (
+                                                <p className="text-gray-600 mb-3 text-sm">
+                                                    {event.description}
+                                                </p>
+                                            )}
+
+                                            {/* Teams */}
+                                            {event.teams && event.teams.length > 0 && (
+                                                <div className="flex items-center gap-2 mb-3">
+                                                    <span className="text-sm font-medium text-gray-700">Teams:</span>
+                                                    <div className="flex items-center gap-2">
+                                                        {event.teams.slice(0, 4).map((teamId, index) => (
+                                                            <div key={teamId} className="flex items-center gap-1">
+                                                                {getTeamLogo(teamId) && (
+                                                                    <img
+                                                                        src={getTeamLogo(teamId)}
+                                                                        alt={getTeamName(teamId)}
+                                                                        className="w-6 h-6 object-cover rounded"
+                                                                    />
+                                                                )}
+                                                                <span className="text-sm text-gray-800">
+                                                                    {getTeamName(teamId)}
+                                                                </span>
+                                                                {index < Math.min(event.teams.length, 4) - 1 && 
+                                                                    event.type === 'regular_game' && (
+                                                                    <span className="text-gray-500 mx-1">vs</span>
+                                                                )}
+                                                                {index < Math.min(event.teams.length, 4) - 1 && 
+                                                                    event.type !== 'regular_game' && (
+                                                                    <span className="text-gray-500 mx-1">•</span>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                        {event.teams.length > 4 && (
+                                                            <span className="text-sm text-gray-600">
+                                                                +{event.teams.length - 4} more
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Scores (if completed) */}
+                                            {event.scores && (
+                                                <div className="flex items-center gap-4 mb-3">
+                                                    <span className="text-sm font-medium text-gray-700">Final Score:</span>
+                                                    <div className="text-lg font-semibold text-gray-900">
+                                                        {event.scores.home_team?.name} {event.scores.home_team?.score} - 
+                                                        {event.scores.away_team?.score} {event.scores.away_team?.name}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Status and Actions */}
+                                        <div className="flex flex-col items-end gap-3">
+                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)}`}>
+                                                {event.status.replace('_', ' ').toUpperCase()}
+                                            </span>
+
+                                            {canManageEvent(event) && (
+                                                <div className="flex flex-col gap-2">
+                                                    {/* Tournament Management */}
+                                                    {event.type === 'tournament' && (
+                                                        <button
+                                                            onClick={() => onManageTournament(event)}
+                                                            className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
+                                                        >
+                                                            🏅 Manage Bracket
+                                                        </button>
+                                                    )}
+
+                                                    {/* Scoring Options */}
+                                                    {(event.type === 'regular_game' || event.type === 'tournament') && 
+                                                     event.status !== 'completed' && (
+                                                        <>
+                                                            <button
+                                                                onClick={() => onEnterLiveStats(event)}
+                                                                className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+                                                            >
+                                                                📊 Live Stats
+                                                            </button>
+                                                            <button
+                                                                onClick={() => onQuickScore(event)}
+                                                                className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                                                            >
+                                                                ⚡ Quick Score
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* RSVP Info */}
+                                    {event.rsvp_enabled && (
+                                        <div className="mt-4 pt-4 border-t flex items-center justify-between">
+                                            <div className="flex items-center gap-4 text-sm">
+                                                <span className="text-gray-600">RSVP:</span>
+                                                <span className="text-green-600">✅ 12 Going</span>
+                                                <span className="text-red-600">❌ 3 Not Going</span>
+                                                <span className="text-yellow-600">❓ 5 Maybe</span>
+                                            </div>
+                                            {event.groupme_integration && (
+                                                <span className="text-xs text-gray-500 flex items-center gap-1">
+                                                    📱 GroupMe Integration
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default EventsList;
