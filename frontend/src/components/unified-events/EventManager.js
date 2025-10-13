@@ -8,7 +8,7 @@ import QuickScoreEntry from './QuickScoreEntry';
 
 const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavigate }) => {
     const [events, setEvents] = useState(initialEvents || []);
-    const [activeView, setActiveView] = useState('list'); // list, create, tournament, live-stats, quick-score
+    const [activeView, setActiveView] = useState('list'); // list, create, tournament, scoring-selector, live-stats, quick-score
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [loading, setLoading] = useState(false);
 
