@@ -30,9 +30,9 @@ const QuickScoreEntry = ({ event, onSubmit, onCancel }) => {
     }, [event]);
 
     const getTeamName = (teamId) => {
-        // This would typically come from props or context
-        // For now, return the ID if team data isn't available
-        return teamId;
+        // Get team name from teams prop
+        const team = teams?.find(t => t.id === teamId);
+        return team ? team.name : teamId;
     };
 
     const handleScoreChange = (team, value) => {
