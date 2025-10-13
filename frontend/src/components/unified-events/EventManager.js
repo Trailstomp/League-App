@@ -248,6 +248,7 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                             {activeView === 'list' && 'Events Management'}
                             {activeView === 'create' && 'Create New Event'}
                             {activeView === 'tournament' && 'Tournament Bracket'}
+                            {activeView === 'scoring-selector' && 'Choose Scoring Method'}
                             {activeView === 'live-stats' && 'Live Stats Entry'}
                             {activeView === 'quick-score' && 'Quick Score Entry'}
                         </h1>
