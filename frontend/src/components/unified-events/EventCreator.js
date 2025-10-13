@@ -120,12 +120,20 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel }) => {
             // Generate event ID
             const eventId = `${formData.type}_${Date.now()}`;
             
+            // Generate bracket for tournament events
+            let bracket = null;
+            if (formData.type === 'tournament' && formData.teams.length >= 4) {
+                bracket = generateTournamentBracket(formData.teams, formData.tournament_config);
+                console.log('🏆 Generated tournament bracket:', bracket);
+            }
+
             const eventData = {
                 ...formData,
                 id: eventId,
                 created_by: String(currentUser?.id || 'admin'),
                 created_at: new Date().toISOString(),
-                status: 'scheduled' // scheduled, in_progress, completed, cancelled
+                status: 'scheduled', // scheduled, in_progress, completed, cancelled
+                bracket: bracket
             };
             
             await onEventCreate(eventData);
