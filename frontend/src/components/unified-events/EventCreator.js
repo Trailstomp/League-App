@@ -249,6 +249,18 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
 
     return (
         <div className="flex-1 overflow-y-auto p-6">
+            {/* Header */}
+            <div className="max-w-4xl mx-auto mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">
+                    {editingEvent ? 'Edit Event' : 'Create New Event'}
+                </h2>
+                {editingEvent && (
+                    <p className="text-gray-600 mt-1">
+                        Editing: {editingEvent.title}
+                    </p>
+                )}
+            </div>
+            
             <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
                 {/* Event Type Selection */}
                 <div className="bg-white rounded-lg shadow p-6">
