@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const EventCreator = ({ teams, currentUser, onEventCreate, onCancel }) => {
+const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEvent }) => {
     const [formData, setFormData] = useState({
         type: 'regular_game', // regular_game, tournament, practice, social
         title: '',
