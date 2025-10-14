@@ -213,7 +213,6 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                         teams={teams}
                         currentUser={currentUser}
                         loading={loading}
-                        onEventSelect={setSelectedEvent}
                         onEventUpdate={handleEventUpdate}
                         onCreateEvent={() => setActiveView('create')}
                         onManageTournament={(event) => {
@@ -229,8 +228,8 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                             console.log('Live view for:', event.title);
                         }}
                         onEventSelect={(event) => {
-                            // TODO: Implement event editing
-                            console.log('Edit event:', event.title);
+                            setSelectedEvent(event);
+                            setActiveView('edit');
                         }}
                         onRefresh={loadEvents}
                     />
