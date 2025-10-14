@@ -23,6 +23,31 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
 
+    // Populate form when editing an existing event
+    useEffect(() => {
+        if (editingEvent) {
+            console.log('📝 Loading event for editing:', editingEvent);
+            setFormData({
+                type: editingEvent.type || 'regular_game',
+                title: editingEvent.title || '',
+                description: editingEvent.description || '',
+                date: editingEvent.date || '',
+                time: editingEvent.time || '',
+                location: editingEvent.location || '',
+                teams: editingEvent.teams || [],
+                rsvp_enabled: editingEvent.rsvp_enabled !== false,
+                groupme_integration: editingEvent.groupme_integration || false,
+                auto_create_polls: editingEvent.auto_create_polls || false,
+                tournament_config: editingEvent.tournament_config || {
+                    format: 'single_elimination',
+                    seeding_method: 'league_rankings',
+                    auto_advance: true,
+                    allow_bracket_editing: true
+                }
+            });
+        }
+    }, [editingEvent]);
+
     const eventTypes = [
         { value: 'regular_game', label: '🏆 Regular Game', desc: 'League game between two teams' },
         { value: 'tournament', label: '🏅 Tournament', desc: 'Multi-team bracket competition' },
