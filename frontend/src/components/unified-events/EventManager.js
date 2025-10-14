@@ -159,6 +159,21 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                     />
                 );
             
+            case 'edit':
+                return (
+                    <EventCreator
+                        teams={teams}
+                        currentUser={currentUser}
+                        onEventCreate={async (eventData) => {
+                            // Update existing event instead of creating new one
+                            await handleEventUpdate(selectedEvent.id, eventData);
+                            setActiveView('list');
+                        }}
+                        onCancel={() => setActiveView('list')}
+                        editingEvent={selectedEvent}
+                    />
+                );
+            
             case 'tournament':
                 return (
                     <TournamentBracketBuilder
