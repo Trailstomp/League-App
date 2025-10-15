@@ -9,8 +9,8 @@ const EventsList = ({
     onEventUpdate,
     onCreateEvent,
     onManageTournament,
-    onEnterLiveStats,
-    onQuickScore,
+    onEnterScoring,
+    onViewLive,
     onRefresh 
 }) => {
     const [filter, setFilter] = useState('all'); // all, scheduled, in_progress, completed
