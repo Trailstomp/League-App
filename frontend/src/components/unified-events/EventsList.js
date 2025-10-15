@@ -275,7 +275,14 @@ const EventsList = ({
                                                     {/* Consolidated Scoring Button */}
                                                     {(event.type === 'regular_game' || event.type === 'tournament') && (
                                                         <button
-                                                            onClick={() => onEnterScoring ? onEnterScoring(event) : null}
+                                                            onClick={() => {
+                                                                console.log('🎯 Enter Scores clicked, onEnterScoring:', typeof onEnterScoring);
+                                                                if (onEnterScoring) {
+                                                                    onEnterScoring(event);
+                                                                } else {
+                                                                    console.error('❌ onEnterScoring is undefined!');
+                                                                }
+                                                            }}
                                                             className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
                                                         >
                                                             🎯 Enter Scores
