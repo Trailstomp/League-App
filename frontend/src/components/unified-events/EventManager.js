@@ -222,6 +222,7 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                 );
             
             default:
+                console.log('🎯 EventManager rendering EventsList with onEnterScoring prop');
                 return (
                     <EventsList
                         events={events}
@@ -235,6 +236,7 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                             setActiveView('tournament');
                         }}
                         onEnterScoring={(event) => {
+                            console.log('🎯 onEnterScoring called in EventManager for:', event.title);
                             setSelectedEvent(event);
                             setActiveView('scoring-selector');
                         }}
