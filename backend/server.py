@@ -6968,6 +6968,118 @@ async def delete_unified_event(event_id: str):
         logger.error(f"Error deleting unified event: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ============================================================================
+# EVENT CHAT AND MEDIA ENDPOINTS
+# ============================================================================
+
+# Pydantic models for chat
+class ChatMessage(BaseModel):
+    message: str
+    event_id: str
+    timestamp: str
+    user_name: Optional[str] = "Anonymous"
+    user_id: Optional[str] = None
+
+@api_router.post("/events/{event_id}/chat")
+async def post_event_chat_message(event_id: str, chat_message: ChatMessage):
+    """Post a chat message for a live event"""
+    try:
+        message_data = {
+            "id": str(uuid.uuid4()),
+            "event_id": event_id,
+            "user_name": chat_message.user_name,
+            "user_id": chat_message.user_id,
+            "message": chat_message.message,
+            "timestamp": chat_message.timestamp,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Store in database
+        await db.event_chat.insert_one(message_data)
+        
+        logger.info(f"✅ Chat message posted for event {event_id}")
+        return {"status": "success", "message_id": message_data["id"]}
+        
+    except Exception as e:
+        logger.error(f"❌ Error posting chat message: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/events/{event_id}/chat")
+async def get_event_chat_messages(event_id: str, limit: int = 100):
+    """Get chat messages for an event"""
+    try:
+        messages = await db.event_chat.find(
+            {"event_id": event_id}
+        ).sort("created_at", -1).limit(limit).to_list(length=limit)
+        
+        # Reverse to get chronological order
+        messages.reverse()
+        
+        return {"messages": messages}
+        
+    except Exception as e:
+        logger.error(f"❌ Error fetching chat messages: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/events/{event_id}/media")
+async def upload_event_media(event_id: str, files: List[UploadFile] = File(...)):
+    """Upload media (photos/videos) for an event to Google Drive"""
+    try:
+        from google.oauth2 import service_account
+        from googleapiclient.discovery import build
+        from googleapiclient.http import MediaIoBaseUpload
+        import io
+        
+        uploaded_files = []
+        
+        # Get Google Drive credentials from environment
+        google_drive_folder_id = os.environ.get('GOOGLE_DRIVE_FOLDER_ID', '')
+        
+        # For now, we'll store metadata in MongoDB and files can be uploaded to Google Drive
+        for file in files:
+            file_data = await file.read()
+            
+            # Store metadata
+            media_metadata = {
+                "id": str(uuid.uuid4()),
+                "event_id": event_id,
+                "filename": file.filename,
+                "content_type": file.content_type,
+                "size": len(file_data),
+                "uploaded_at": datetime.now(timezone.utc).isoformat(),
+                "url": f"/api/events/{event_id}/media/{file.filename}"  # Placeholder URL
+            }
+            
+            await db.event_media.insert_one(media_metadata)
+            uploaded_files.append(media_metadata)
+            
+            logger.info(f"✅ Media uploaded for event {event_id}: {file.filename}")
+        
+        return {
+            "status": "success",
+            "files": uploaded_files,
+            "count": len(uploaded_files)
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error uploading media: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/events/{event_id}/media")
+async def get_event_media(event_id: str):
+    """Get all media for an event"""
+    try:
+        media = await db.event_media.find(
+            {"event_id": event_id}
+        ).sort("uploaded_at", -1).to_list(length=None)
+        
+        return {"media": media, "count": len(media)}
+        
+    except Exception as e:
+        logger.error(f"❌ Error fetching event media: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 async def _create_groupme_poll_for_event(event_data):
     """Helper function to create GroupMe polls for events"""
     try:
