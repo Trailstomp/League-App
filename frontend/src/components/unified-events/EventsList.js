@@ -289,8 +289,8 @@ const EventsList = ({
                                                         </button>
                                                     )}
 
-                                                    {/* Live View for In-Progress Games */}
-                                                    {event.status === 'in_progress' && (
+                                                    {/* Live View for In-Progress and Scheduled Games */}
+                                                    {(event.status === 'in_progress' || event.status === 'scheduled') && (
                                                         <button
                                                             onClick={() => onViewLive ? onViewLive(event) : null}
                                                             className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
