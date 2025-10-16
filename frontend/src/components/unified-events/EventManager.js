@@ -5,6 +5,7 @@ import TournamentBracketBuilder from './TournamentBracketBuilder';
 import ScoringSelector from './ScoringSelector';
 import EnhancedLiveStatsEntry from './EnhancedLiveStatsEntry';
 import QuickScoreEntry from './QuickScoreEntry';
+import LiveSpectatorView from '../../pages/LiveSpectatorView';
 
 const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavigate }) => {
     const [events, setEvents] = useState(initialEvents || []);
