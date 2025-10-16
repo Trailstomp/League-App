@@ -275,6 +275,18 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
         return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     };
 
+    const formatPlayerName = (name) => {
+        // Convert "First Last" to "Last, First"
+        if (!name) return '';
+        const parts = name.trim().split(' ');
+        if (parts.length >= 2) {
+            const lastName = parts[parts.length - 1];
+            const firstName = parts.slice(0, -1).join(' ');
+            return `${lastName}, ${firstName}`;
+        }
+        return name;
+    };
+
     const getBackgroundStyle = () => {
         if (liveData.home_team.banner || liveData.away_team.banner) {
             return {
