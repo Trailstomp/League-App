@@ -243,8 +243,8 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                             setActiveView('scoring-selector');
                         }}
                         onViewLive={(event) => {
-                            // TODO: Implement live spectator view
-                            console.log('Live view for:', event.title);
+                            setSelectedEvent(event);
+                            setShowSpectatorView(true);
                         }}
                         onEventSelect={(event) => {
                             setSelectedEvent(event);
