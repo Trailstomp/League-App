@@ -300,6 +300,15 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
             <div className="flex-1 overflow-hidden">
                 {renderActiveView()}
             </div>
+
+            {/* Live Spectator View Modal */}
+            {showSpectatorView && selectedEvent && (
+                <LiveSpectatorView
+                    event={selectedEvent}
+                    teams={teams}
+                    onClose={() => setShowSpectatorView(false)}
+                />
+            )}
         </div>
     );
 };
