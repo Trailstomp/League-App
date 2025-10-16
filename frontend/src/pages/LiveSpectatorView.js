@@ -86,11 +86,12 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
 
     const fetchLiveUpdates = async () => {
         try {
-            // Fetch event data
+            // Fetch event data for basic info
             const eventResponse = await fetch(`${backendUrl}/api/unified-events/${event.id}`);
             if (eventResponse.ok) {
                 const eventData = await eventResponse.json();
                 
+                // Update scores if available
                 if (eventData.scores) {
                     setLiveData(prev => ({
                         ...prev,
@@ -104,20 +105,50 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
                         }
                     }));
                 }
+            }
 
-                // Calculate team stats from player data if available
-                if (eventData.scores?.home_team?.players) {
-                    const homeStats = calculateTeamStats(eventData.scores.home_team.players);
-                    const awayStats = calculateTeamStats(eventData.scores.away_team.players);
+            // Fetch game stats for detailed player/team statistics
+            try {
+                const statsResponse = await fetch(`${backendUrl}/api/events/${event.id}/game-stats`);
+                if (statsResponse.ok) {
+                    const statsData = await statsResponse.json();
                     
-                    setLiveData(prev => ({
-                        ...prev,
-                        home_players: eventData.scores.home_team.players.slice(0, 5) || [],
-                        away_players: eventData.scores.away_team.players.slice(0, 5) || [],
-                        home_stats: homeStats,
-                        away_stats: awayStats
-                    }));
+                    if (statsData && Array.isArray(statsData) && statsData.length > 0) {
+                        // Use the most recent game stats entry
+                        const latestStats = statsData[statsData.length - 1];
+                        
+                        if (latestStats.home_team && latestStats.away_team) {
+                            const homeStats = calculateTeamStats(latestStats.home_team.players || []);
+                            const awayStats = calculateTeamStats(latestStats.away_team.players || []);
+                            
+                            setLiveData(prev => ({
+                                ...prev,
+                                home_team: { 
+                                    ...prev.home_team, 
+                                    score: latestStats.home_team.score || 0 
+                                },
+                                away_team: { 
+                                    ...prev.away_team, 
+                                    score: latestStats.away_team.score || 0 
+                                },
+                                home_players: (latestStats.home_team.players || [])
+                                    .filter(p => p.stats && (p.stats.goals > 0 || p.stats.assists > 0))
+                                    .sort((a, b) => (b.stats.goals || 0) - (a.stats.goals || 0))
+                                    .slice(0, 5),
+                                away_players: (latestStats.away_team.players || [])
+                                    .filter(p => p.stats && (p.stats.goals > 0 || p.stats.assists > 0))
+                                    .sort((a, b) => (b.stats.goals || 0) - (a.stats.goals || 0))
+                                    .slice(0, 5),
+                                home_stats: homeStats,
+                                away_stats: awayStats,
+                                time_remaining: latestStats.time_remaining || '15:00',
+                                current_period: latestStats.current_period || 1
+                            }));
+                        }
+                    }
                 }
+            } catch (statsError) {
+                console.log('No game stats yet, waiting for game to start...');
             }
         } catch (error) {
             console.error('Error fetching live updates:', error);
