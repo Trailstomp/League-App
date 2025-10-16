@@ -1,0 +1,819 @@
+import React, { useState, useEffect, useRef } from 'react';
+
+const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
+    const [gameState, setGameState] = useState({
+        home_team: { id: '', name: '', score: 0, players: [], logo: '' },
+        away_team: { id: '', name: '', score: 0, players: [], logo: '' },
+        goalies: { home: [], away: [] },
+        current_period: 1,
+        period_length: 15, // minutes
+        time_remaining: 15 * 60, // in seconds
+        is_running: false,
+        manual_time_input: false,
+        game_settings: {
+            periods: 4,
+            period_length_options: [10, 15, 20, 25, 30]
+        }
+    });
+
+    const [activeTab, setActiveTab] = useState('home_stats');
+    const [playerSort, setPlayerSort] = useState({
+        home: { column: 'number', direction: 'asc' },
+        away: { column: 'number', direction: 'asc' }
+    });
+    
+    const [manualTimeInputs, setManualTimeInputs] = useState({
+        minutes: '',
+        seconds: '',
+        period: ''
+    });
+
+    const timerRef = useRef(null);
+
+    // Enhanced player data with better structure
+    const getMockPlayers = (teamId, teamName) => {
+        const players = [
+            { id: '1', name: 'John Smith', number: '12', position: 'Attack', active: true },
+            { id: '2', name: 'Mike Johnson', number: '7', position: 'Midfield', active: true },
+            { id: '3', name: 'Dave Wilson', number: '23', position: 'Defense', active: true },
+            { id: '5', name: 'Chris Davis', number: '15', position: 'Attack', active: true },
+            { id: '6', name: 'Ryan Miller', number: '8', position: 'Midfield', active: false },
+            { id: '7', name: 'Alex Brown', number: '22', position: 'Defense', active: true },
+            { id: '8', name: 'Sam Wilson', number: '9', position: 'Midfield', active: true },
+            { id: '9', name: 'Jake Taylor', number: '11', position: 'Attack', active: false }
+        ];
+
+        const goalies = [
+            { id: '4', name: 'Tom Brown', number: '1', position: 'Goalie', active: true },
+            { id: '10', name: 'Matt Anderson', number: '30', position: 'Goalie', active: true }
+        ];
+
+        return { players, goalies };
+    };
+
+    // Timer functionality
+    useEffect(() => {
+        if (gameState.is_running && gameState.time_remaining > 0) {
+            timerRef.current = setInterval(() => {
+                setGameState(prev => {
+                    const newTime = prev.time_remaining - 1;
+                    
+                    if (newTime <= 0) {
+                        return {
+                            ...prev,
+                            time_remaining: 0,
+                            is_running: false
+                        };
+                    }
+                    
+                    return {
+                        ...prev,
+                        time_remaining: newTime
+                    };
+                });
+            }, 1000);
+        } else {
+            clearInterval(timerRef.current);
+        }
+
+        return () => clearInterval(timerRef.current);
+    }, [gameState.is_running, gameState.time_remaining]);
+
+    // Initialize teams and players
+    useEffect(() => {
+        if (event && event.teams && event.teams.length >= 2) {
+            const homeTeam = teams?.find(t => t.id === event.teams[0]);
+            const awayTeam = teams?.find(t => t.id === event.teams[1]);
+            
+            const homeData = getMockPlayers(event.teams[0], homeTeam?.name);
+            const awayData = getMockPlayers(event.teams[1], awayTeam?.name);
+
+            setGameState(prev => ({
+                ...prev,
+                home_team: {
+                    id: event.teams[0],
+                    name: homeTeam?.name || 'Home Team',
+                    logo: homeTeam?.style?.logoUrl || '',
+                    score: 0,
+                    players: homeData.players.map(p => ({
+                        ...p,
+                        stats: { goals: 0, assists: 0, shots: 0, penalties: 0 }
+                    }))
+                },
+                away_team: {
+                    id: event.teams[1],
+                    name: awayTeam?.name || 'Away Team',
+                    logo: awayTeam?.style?.logoUrl || '',
+                    score: 0,
+                    players: awayData.players.map(p => ({
+                        ...p,
+                        stats: { goals: 0, assists: 0, shots: 0, penalties: 0 }
+                    }))
+                },
+                goalies: {
+                    home: homeData.goalies.map(p => ({
+                        ...p,
+                        stats: { saves: 0, goals_against: 0, shots_faced: 0 }
+                    })),
+                    away: awayData.goalies.map(p => ({
+                        ...p,
+                        stats: { saves: 0, goals_against: 0, shots_faced: 0 }
+                    }))
+                }
+            }));
+        }
+    }, [event, teams]);
+
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const toggleTimer = () => {
+        setGameState(prev => ({
+            ...prev,
+            is_running: !prev.is_running
+        }));
+    };
+
+    const setManualTime = () => {
+        const minutes = parseInt(manualTimeInputs.minutes) || 0;
+        const seconds = parseInt(manualTimeInputs.seconds) || 0;
+        const period = parseInt(manualTimeInputs.period) || gameState.current_period;
+        
+        setGameState(prev => ({
+            ...prev,
+            time_remaining: (minutes * 60) + seconds,
+            current_period: Math.max(1, Math.min(period, prev.game_settings.periods)),
+            is_running: false,
+            manual_time_input: false
+        }));
+        
+        setManualTimeInputs({ minutes: '', seconds: '', period: '' });
+    };
+
+    // Enhanced stat adding with goalie integration
+    const addStat = (teamKey, playerId, statType) => {
+        setGameState(prev => {
+            const newState = { ...prev };
+            
+            // Update player stats
+            newState[teamKey] = {
+                ...prev[teamKey],
+                players: prev[teamKey].players.map(player => {
+                    if (player.id === playerId) {
+                        const newStats = { ...player.stats };
+                        newStats[statType] += 1;
+                        return { ...player, stats: newStats };
+                    }
+                    return player;
+                })
+            };
+
+            // Update team score for goals
+            if (statType === 'goals') {
+                newState[teamKey].score = prev[teamKey].score + 1;
+                
+                // Update opposing goalie's goals against
+                const opposingTeamKey = teamKey === 'home_team' ? 'away' : 'home';
+                newState.goalies = {
+                    ...prev.goalies,
+                    [opposingTeamKey]: prev.goalies[opposingTeamKey].map(goalie => 
+                        goalie.active ? {
+                            ...goalie,
+                            stats: {
+                                ...goalie.stats,
+                                goals_against: goalie.stats.goals_against + 1
+                            }
+                        } : goalie
+                    )
+                };
+            }
+
+            // Update opposing goalie's shots faced for shots
+            if (statType === 'shots') {
+                const opposingTeamKey = teamKey === 'home_team' ? 'away' : 'home';
+                newState.goalies = {
+                    ...prev.goalies,
+                    [opposingTeamKey]: prev.goalies[opposingTeamKey].map(goalie => 
+                        goalie.active ? {
+                            ...goalie,
+                            stats: {
+                                ...goalie.stats,
+                                shots_faced: goalie.stats.shots_faced + 1
+                            }
+                        } : goalie
+                    )
+                };
+            }
+
+            return newState;
+        });
+    };
+
+    const togglePlayerActive = (teamKey, playerId) => {
+        setGameState(prev => ({
+            ...prev,
+            [teamKey]: {
+                ...prev[teamKey],
+                players: prev[teamKey].players.map(player => 
+                    player.id === playerId 
+                        ? { ...player, active: !player.active }
+                        : player
+                )
+            }
+        }));
+    };
+
+    const toggleGoalieActive = (teamKey, goalieId) => {
+        setGameState(prev => ({
+            ...prev,
+            goalies: {
+                ...prev.goalies,
+                [teamKey]: prev.goalies[teamKey].map(goalie => 
+                    goalie.id === goalieId 
+                        ? { ...goalie, active: !goalie.active }
+                        : goalie
+                )
+            }
+        }));
+    };
+
+    const sortPlayers = (players, sortConfig) => {
+        return [...players].sort((a, b) => {
+            let aValue, bValue;
+            
+            switch (sortConfig.column) {
+                case 'number':
+                    aValue = parseInt(a.number) || 0;
+                    bValue = parseInt(b.number) || 0;
+                    break;
+                case 'name':
+                    aValue = a.name.toLowerCase();
+                    bValue = b.name.toLowerCase();
+                    break;
+                case 'position':
+                    aValue = a.position.toLowerCase();
+                    bValue = b.position.toLowerCase();
+                    break;
+                case 'goals':
+                case 'assists':
+                case 'shots':
+                case 'penalties':
+                    aValue = a.stats[sortConfig.column];
+                    bValue = b.stats[sortConfig.column];
+                    break;
+                default:
+                    return 0;
+            }
+            
+            if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+            if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+    };
+
+    const handleColumnSort = (teamKey, column) => {
+        const teamSortKey = teamKey === 'home_team' ? 'home' : 'away';
+        setPlayerSort(prev => ({
+            ...prev,
+            [teamSortKey]: {
+                column,
+                direction: prev[teamSortKey].column === column && prev[teamSortKey].direction === 'asc' ? 'desc' : 'asc'
+            }
+        }));
+    };
+
+    // Fixed sticky header with clock, scores, and goalies
+    const renderStickyHeader = () => (
+        <div className="bg-white border-b shadow-lg p-4 sticky top-0 z-20">
+            <div className="max-w-7xl mx-auto">
+                {/* Game Timer and Manual Controls */}
+                <div className="flex items-center justify-between mb-4">
+                    {/* Timer Display */}
+                    <div className="text-center bg-gray-900 text-white rounded-lg p-4 min-w-[200px]">
+                        <div className="text-3xl font-bold">{formatTime(gameState.time_remaining)}</div>
+                        <div className="text-sm">Period {gameState.current_period} of {gameState.game_settings.periods}</div>
+                    </div>
+
+                    {/* Timer Controls */}
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={toggleTimer}
+                            className={`px-4 py-2 rounded font-medium ${
+                                gameState.is_running 
+                                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                                    : 'bg-green-600 hover:bg-green-700 text-white'
+                            }`}
+                        >
+                            {gameState.is_running ? '⏸️ Pause' : '▶️ Start'}
+                        </button>
+                        
+                        <button
+                            onClick={() => setGameState(prev => ({ ...prev, manual_time_input: !prev.manual_time_input }))}
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium"
+                        >
+                            ⏰ Set Time
+                        </button>
+                    </div>
+
+                    {/* Period Length Selector */}
+                    <div className="text-center">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Period Length
+                        </label>
+                        <select
+                            value={gameState.period_length}
+                            onChange={(e) => {
+                                const minutes = parseInt(e.target.value);
+                                setGameState(prev => ({
+                                    ...prev,
+                                    period_length: minutes,
+                                    time_remaining: minutes * 60,
+                                    is_running: false
+                                }));
+                            }}
+                            className="px-3 py-2 border border-gray-300 rounded"
+                            disabled={gameState.is_running}
+                        >
+                            {gameState.game_settings.period_length_options.map(length => (
+                                <option key={length} value={length}>
+                                    {length} min
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                {/* Manual Time Input */}
+                {gameState.manual_time_input && (
+                    <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+                        <h4 className="font-semibold mb-3">Manual Time Entry</h4>
+                        <div className="flex items-center gap-3">
+                            <input
+                                type="number"
+                                placeholder="Min"
+                                value={manualTimeInputs.minutes}
+                                onChange={(e) => setManualTimeInputs(prev => ({ ...prev, minutes: e.target.value }))}
+                                className="w-20 px-3 py-2 border rounded"
+                                min="0"
+                                max="60"
+                            />
+                            <span>:</span>
+                            <input
+                                type="number"
+                                placeholder="Sec"
+                                value={manualTimeInputs.seconds}
+                                onChange={(e) => setManualTimeInputs(prev => ({ ...prev, seconds: e.target.value }))}
+                                className="w-20 px-3 py-2 border rounded"
+                                min="0"
+                                max="59"
+                            />
+                            <span className="mx-3">Period:</span>
+                            <input
+                                type="number"
+                                placeholder="Period"
+                                value={manualTimeInputs.period}
+                                onChange={(e) => setManualTimeInputs(prev => ({ ...prev, period: e.target.value }))}
+                                className="w-20 px-3 py-2 border rounded"
+                                min="1"
+                                max={gameState.game_settings.periods}
+                            />
+                            <button
+                                onClick={setManualTime}
+                                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                            >
+                                Set
+                            </button>
+                            <button
+                                onClick={() => setGameState(prev => ({ ...prev, manual_time_input: false }))}
+                                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Score Display */}
+                <div className="grid grid-cols-3 gap-4 text-center mb-4">
+                    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                        <div className="flex items-center justify-center gap-3 mb-2">
+                            {gameState.home_team.logo && (
+                                <img 
+                                    src={gameState.home_team.logo} 
+                                    alt={gameState.home_team.name}
+                                    className="w-8 h-8 object-cover rounded"
+                                />
+                            )}
+                            <div className="text-lg font-semibold text-blue-900">
+                                {gameState.home_team.name}
+                            </div>
+                        </div>
+                        <div className="text-4xl font-bold text-blue-600">
+                            {gameState.home_team.score}
+                        </div>
+                        <div className="text-sm text-blue-700 mt-2">HOME</div>
+                    </div>
+
+                    <div className="flex items-center justify-center text-2xl font-bold text-gray-400">
+                        VS
+                    </div>
+
+                    <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
+                        <div className="flex items-center justify-center gap-3 mb-2">
+                            {gameState.away_team.logo && (
+                                <img 
+                                    src={gameState.away_team.logo} 
+                                    alt={gameState.away_team.name}
+                                    className="w-8 h-8 object-cover rounded"
+                                />
+                            )}
+                            <div className="text-lg font-semibold text-red-900">
+                                {gameState.away_team.name}
+                            </div>
+                        </div>
+                        <div className="text-4xl font-bold text-red-600">
+                            {gameState.away_team.score}
+                        </div>
+                        <div className="text-sm text-red-700 mt-2">AWAY</div>
+                    </div>
+                </div>
+
+                {/* Goalies Section */}
+                <div className="grid grid-cols-2 gap-6">
+                    {/* Home Goalies */}
+                    <div>
+                        <h4 className="text-sm font-semibold text-blue-900 mb-2">🥅 {gameState.home_team.name} Goalies</h4>
+                        <div className="space-y-2">
+                            {gameState.goalies.home.map(goalie => (
+                                <div key={goalie.id} className={`flex items-center justify-between p-2 rounded ${
+                                    goalie.active ? 'bg-blue-50 border border-blue-200' : 'bg-gray-100'
+                                }`}>
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={goalie.active}
+                                            onChange={() => toggleGoalieActive('home', goalie.id)}
+                                            className="rounded"
+                                        />
+                                        <span className="font-mono text-sm">#{goalie.number}</span>
+                                        <span className="text-sm">{goalie.name}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-xs">
+                                        <span>Saves: {goalie.stats.saves}</span>
+                                        <span>GA: {goalie.stats.goals_against}</span>
+                                        <div className="flex gap-1">
+                                            <button
+                                                onClick={() => {
+                                                    setGameState(prev => ({
+                                                        ...prev,
+                                                        goalies: {
+                                                            ...prev.goalies,
+                                                            home: prev.goalies.home.map(g => 
+                                                                g.id === goalie.id ? { ...g, stats: { ...g.stats, saves: g.stats.saves + 1 } } : g
+                                                            )
+                                                        }
+                                                    }));
+                                                }}
+                                                className="w-5 h-5 bg-purple-100 text-purple-600 rounded text-xs hover:bg-purple-200"
+                                            >
+                                                +S
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Away Goalies */}
+                    <div>
+                        <h4 className="text-sm font-semibold text-red-900 mb-2">🥅 {gameState.away_team.name} Goalies</h4>
+                        <div className="space-y-2">
+                            {gameState.goalies.away.map(goalie => (
+                                <div key={goalie.id} className={`flex items-center justify-between p-2 rounded ${
+                                    goalie.active ? 'bg-red-50 border border-red-200' : 'bg-gray-100'
+                                }`}>
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={goalie.active}
+                                            onChange={() => toggleGoalieActive('away', goalie.id)}
+                                            className="rounded"
+                                        />
+                                        <span className="font-mono text-sm">#{goalie.number}</span>
+                                        <span className="text-sm">{goalie.name}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-xs">
+                                        <span>Saves: {goalie.stats.saves}</span>
+                                        <span>GA: {goalie.stats.goals_against}</span>
+                                        <div className="flex gap-1">
+                                            <button
+                                                onClick={() => {
+                                                    setGameState(prev => ({
+                                                        ...prev,
+                                                        goalies: {
+                                                            ...prev.goalies,
+                                                            away: prev.goalies.away.map(g => 
+                                                                g.id === goalie.id ? { ...g, stats: { ...g.stats, saves: g.stats.saves + 1 } } : g
+                                                            )
+                                                        }
+                                                    }));
+                                                }}
+                                                className="w-5 h-5 bg-purple-100 text-purple-600 rounded text-xs hover:bg-purple-200"
+                                            >
+                                                +S
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderPlayerStats = (teamKey, teamData) => {
+        const isHome = teamKey === 'home_team';
+        const sortConfig = isHome ? playerSort.home : playerSort.away;
+        const sortedPlayers = sortPlayers(teamData.players, sortConfig);
+        const activePlayers = sortedPlayers.filter(p => p.active);
+        const inactivePlayers = sortedPlayers.filter(p => !p.active);
+
+        const SortableHeader = ({ column, children }) => (
+            <th 
+                className="px-3 py-2 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
+                onClick={() => handleColumnSort(teamKey, column)}
+            >
+                <div className="flex items-center gap-1">
+                    {children}
+                    {sortConfig.column === column && (
+                        <span className="text-xs">
+                            {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                        </span>
+                    )}
+                </div>
+            </th>
+        );
+
+        const PlayerRow = ({ player, isInactive = false }) => (
+            <tr key={player.id} className={`${isInactive ? 'bg-gray-50 opacity-60' : 'hover:bg-gray-50'}`}>
+                <td className="px-3 py-2">
+                    <input
+                        type="checkbox"
+                        checked={player.active}
+                        onChange={() => togglePlayerActive(teamKey, player.id)}
+                        className="rounded"
+                    />
+                </td>
+                <td className="px-3 py-2 text-sm font-mono font-bold">{player.number}</td>
+                <td className="px-3 py-2 text-sm font-medium">{player.name}</td>
+                <td className="px-3 py-2 text-sm text-gray-600">{player.position}</td>
+                
+                {/* Stats with +/- buttons */}
+                {['goals', 'assists', 'shots', 'penalties'].map(statType => (
+                    <td key={statType} className="px-3 py-2 text-center">
+                        <div className="flex items-center justify-center gap-1">
+                            <button
+                                onClick={() => {
+                                    if (player.stats[statType] > 0) {
+                                        setGameState(prev => ({
+                                            ...prev,
+                                            [teamKey]: {
+                                                ...prev[teamKey],
+                                                players: prev[teamKey].players.map(p => 
+                                                    p.id === player.id 
+                                                        ? { ...p, stats: { ...p.stats, [statType]: p.stats[statType] - 1 } }
+                                                        : p
+                                                )
+                                            }
+                                        }));
+                                        
+                                        // Update team score for goals
+                                        if (statType === 'goals') {
+                                            setGameState(prev => ({
+                                                ...prev,
+                                                [teamKey]: {
+                                                    ...prev[teamKey],
+                                                    score: Math.max(0, prev[teamKey].score - 1)
+                                                }
+                                            }));
+                                        }
+                                    }
+                                }}
+                                className="w-6 h-6 bg-red-100 text-red-600 rounded text-xs hover:bg-red-200"
+                                disabled={player.stats[statType] <= 0}
+                            >
+                                -
+                            </button>
+                            <span className={`w-8 text-center font-medium ${
+                                statType === 'goals' ? 'text-green-600' :
+                                statType === 'assists' ? 'text-blue-600' :
+                                statType === 'shots' ? 'text-yellow-600' :
+                                'text-red-600'
+                            }`}>
+                                {player.stats[statType]}
+                            </span>
+                            <button
+                                onClick={() => addStat(teamKey, player.id, statType)}
+                                className={`w-6 h-6 rounded text-xs hover:opacity-80 ${
+                                    statType === 'goals' ? 'bg-green-100 text-green-600' :
+                                    statType === 'assists' ? 'bg-blue-100 text-blue-600' :
+                                    statType === 'shots' ? 'bg-yellow-100 text-yellow-600' :
+                                    'bg-red-100 text-red-600'
+                                }`}
+                            >
+                                +
+                            </button>
+                        </div>
+                    </td>
+                ))}
+            </tr>
+        );
+
+        return (
+            <div className="space-y-6">
+                {/* Active Players */}
+                <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-3">
+                        {teamData.logo && (
+                            <img 
+                                src={teamData.logo} 
+                                alt={teamData.name}
+                                className="w-6 h-6 object-cover rounded"
+                            />
+                        )}
+                        {teamData.name} - Active Players ({activePlayers.length})
+                    </h3>
+                    
+                    <div className="bg-white rounded-lg border overflow-hidden shadow-sm">
+                        <table className="w-full">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-3 py-2 text-left text-sm font-medium text-gray-700">Active</th>
+                                    <SortableHeader column="number"># ↕️</SortableHeader>
+                                    <SortableHeader column="name">Player ↕️</SortableHeader>
+                                    <SortableHeader column="position">Position ↕️</SortableHeader>
+                                    <SortableHeader column="goals">Goals ↕️</SortableHeader>
+                                    <SortableHeader column="assists">Assists ↕️</SortableHeader>
+                                    <SortableHeader column="shots">Shots ↕️</SortableHeader>
+                                    <SortableHeader column="penalties">Penalties ↕️</SortableHeader>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                                {activePlayers.map(player => <PlayerRow key={player.id} player={player} />)}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {/* Inactive Players */}
+                {inactivePlayers.length > 0 && (
+                    <div>
+                        <h4 className="text-md font-medium text-gray-600 mb-3">
+                            📋 Inactive Players / Didn't RSVP ({inactivePlayers.length})
+                        </h4>
+                        <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+                            <table className="w-full">
+                                <thead className="bg-gray-100">
+                                    <tr>
+                                        <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">Activate</th>
+                                        <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">#</th>
+                                        <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">Player</th>
+                                        <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">Position</th>
+                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Goals</th>
+                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Assists</th>
+                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Shots</th>
+                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Penalties</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                    {inactivePlayers.map(player => <PlayerRow key={player.id} player={player} isInactive={true} />)}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-50">
+            {/* Fixed Sticky Header */}
+            {renderStickyHeader()}
+
+            {/* Tab Navigation */}
+            <div className="bg-white border-b sticky" style={{ top: '280px', zIndex: 10 }}>
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="flex space-x-8">
+                        <button
+                            onClick={() => setActiveTab('home_stats')}
+                            className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                                activeTab === 'home_stats'
+                                    ? 'border-blue-500 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            🏠 {gameState.home_team.name} Stats
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('away_stats')}
+                            className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                                activeTab === 'away_stats'
+                                    ? 'border-red-500 text-red-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            ✈️ {gameState.away_team.name} Stats
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="p-6" style={{ paddingTop: '20px' }}>
+                <div className="max-w-7xl mx-auto">
+                    {activeTab === 'home_stats' && renderPlayerStats('home_team', gameState.home_team)}
+                    {activeTab === 'away_stats' && renderPlayerStats('away_team', gameState.away_team)}
+                </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="bg-white border-t px-6 py-4 sticky bottom-0">
+                <div className="max-w-7xl mx-auto flex justify-between items-center">
+                    <button
+                        onClick={onCancel}
+                        className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                    >
+                        ← Cancel
+                    </button>
+
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => {
+                                // Reset game but keep player active/inactive states
+                                setGameState(prev => ({
+                                    ...prev,
+                                    home_team: { 
+                                        ...prev.home_team, 
+                                        score: 0, 
+                                        players: prev.home_team.players.map(p => ({ 
+                                            ...p, 
+                                            stats: { goals: 0, assists: 0, shots: 0, penalties: 0 } 
+                                        })) 
+                                    },
+                                    away_team: { 
+                                        ...prev.away_team, 
+                                        score: 0, 
+                                        players: prev.away_team.players.map(p => ({ 
+                                            ...p, 
+                                            stats: { goals: 0, assists: 0, shots: 0, penalties: 0 } 
+                                        })) 
+                                    },
+                                    goalies: {
+                                        home: prev.goalies.home.map(g => ({ ...g, stats: { saves: 0, goals_against: 0, shots_faced: 0 } })),
+                                        away: prev.goalies.away.map(g => ({ ...g, stats: { saves: 0, goals_against: 0, shots_faced: 0 } }))
+                                    },
+                                    time_remaining: prev.period_length * 60,
+                                    current_period: 1,
+                                    is_running: false
+                                }));
+                            }}
+                            className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
+                        >
+                            🔄 Reset Game
+                        </button>
+                        
+                        <button
+                            onClick={() => {
+                                const gameData = {
+                                    home_team: gameState.home_team,
+                                    away_team: gameState.away_team,
+                                    goalies: gameState.goalies,
+                                    final_score: `${gameState.home_team.score}-${gameState.away_team.score}`,
+                                    winner: gameState.home_team.score > gameState.away_team.score ? gameState.home_team : gameState.away_team,
+                                    entry_type: 'enhanced_live_stats',
+                                    entry_time: new Date().toISOString(),
+                                    game_duration: gameState.current_period,
+                                    period_length: gameState.period_length,
+                                    detailed_stats: true
+                                };
+                                onSubmit(gameData);
+                            }}
+                            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                        >
+                            ✅ Save Game Stats
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default EnhancedLiveStatsEntry;
