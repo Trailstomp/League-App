@@ -7012,8 +7012,10 @@ async def get_event_chat_messages(event_id: str, limit: int = 100):
             {"event_id": event_id}
         ).sort("created_at", -1).limit(limit).to_list(length=limit)
         
-        # Reverse to get chronological order
+        # Reverse to get chronological order and remove MongoDB _id
         messages.reverse()
+        for msg in messages:
+            msg.pop('_id', None)
         
         return {"messages": messages}
         
