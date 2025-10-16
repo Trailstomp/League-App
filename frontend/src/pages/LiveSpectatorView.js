@@ -113,38 +113,41 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
                 if (statsResponse.ok) {
                     const statsData = await statsResponse.json();
                     
-                    if (statsData && Array.isArray(statsData) && statsData.length > 0) {
-                        // Use the most recent game stats entry
-                        const latestStats = statsData[statsData.length - 1];
+                    // Handle both old array format and new object format
+                    let latestStats = null;
+                    if (statsData.stats) {
+                        latestStats = statsData.stats;
+                    } else if (Array.isArray(statsData) && statsData.length > 0) {
+                        latestStats = statsData[statsData.length - 1];
+                    }
+                    
+                    if (latestStats && latestStats.home_team && latestStats.away_team) {
+                        const homeStats = calculateTeamStats(latestStats.home_team.players || []);
+                        const awayStats = calculateTeamStats(latestStats.away_team.players || []);
                         
-                        if (latestStats.home_team && latestStats.away_team) {
-                            const homeStats = calculateTeamStats(latestStats.home_team.players || []);
-                            const awayStats = calculateTeamStats(latestStats.away_team.players || []);
-                            
-                            setLiveData(prev => ({
-                                ...prev,
-                                home_team: { 
-                                    ...prev.home_team, 
-                                    score: latestStats.home_team.score || 0 
-                                },
-                                away_team: { 
-                                    ...prev.away_team, 
-                                    score: latestStats.away_team.score || 0 
-                                },
-                                home_players: (latestStats.home_team.players || [])
-                                    .filter(p => p.stats && (p.stats.goals > 0 || p.stats.assists > 0))
-                                    .sort((a, b) => (b.stats.goals || 0) - (a.stats.goals || 0))
-                                    .slice(0, 5),
-                                away_players: (latestStats.away_team.players || [])
-                                    .filter(p => p.stats && (p.stats.goals > 0 || p.stats.assists > 0))
-                                    .sort((a, b) => (b.stats.goals || 0) - (a.stats.goals || 0))
-                                    .slice(0, 5),
-                                home_stats: homeStats,
-                                away_stats: awayStats,
-                                time_remaining: latestStats.time_remaining || '15:00',
-                                current_period: latestStats.current_period || 1
-                            }));
-                        }
+                        setLiveData(prev => ({
+                            ...prev,
+                            home_team: { 
+                                ...prev.home_team, 
+                                score: latestStats.home_team.score || 0 
+                            },
+                            away_team: { 
+                                ...prev.away_team, 
+                                score: latestStats.away_team.score || 0 
+                            },
+                            home_players: (latestStats.home_team.players || [])
+                                .filter(p => p.stats && (p.stats.goals > 0 || p.stats.assists > 0))
+                                .sort((a, b) => (b.stats.goals || 0) - (a.stats.goals || 0))
+                                .slice(0, 5),
+                            away_players: (latestStats.away_team.players || [])
+                                .filter(p => p.stats && (p.stats.goals > 0 || p.stats.assists > 0))
+                                .sort((a, b) => (b.stats.goals || 0) - (a.stats.goals || 0))
+                                .slice(0, 5),
+                            home_stats: homeStats,
+                            away_stats: awayStats,
+                            time_remaining: latestStats.time_remaining || '15:00',
+                            current_period: latestStats.current_period || 1
+                        }));
                     }
                 }
             } catch (statsError) {
