@@ -442,7 +442,7 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
                                         </h5>
                                         {liveData.home_players.map((player, idx) => (
                                             <div key={idx} className="bg-gray-50 rounded p-2 mb-2 text-sm">
-                                                <div className="font-medium">#{player.number} {player.name}</div>
+                                                <div className="font-medium">#{player.number} {formatPlayerName(player.name)}</div>
                                                 <div className="text-xs text-gray-600">
                                                     G:{player.stats?.goals || 0} A:{player.stats?.assists || 0}
                                                 </div>
