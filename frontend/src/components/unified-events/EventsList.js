@@ -252,54 +252,58 @@ const EventsList = ({
                                                 {event.status.replace('_', ' ').toUpperCase()}
                                             </span>
 
-                                            {canManageEvent(event) && (
-                                                <div className="flex flex-col gap-2">
-                                                    {/* Edit Event Button */}
+                                            <div className="flex flex-col gap-2">
+                                                {/* Live View for All Users - Always visible for scheduled/in-progress games */}
+                                                {(event.type === 'regular_game' || event.type === 'tournament') && 
+                                                 (event.status === 'in_progress' || event.status === 'scheduled') && (
                                                     <button
-                                                        onClick={() => onEventSelect ? onEventSelect(event) : null}
-                                                        className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+                                                        onClick={() => onViewLive ? onViewLive(event) : null}
+                                                        className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 font-medium"
                                                     >
-                                                        ✏️ Edit Event
+                                                        📺 Live View
                                                     </button>
+                                                )}
 
-                                                    {/* Tournament Management */}
-                                                    {event.type === 'tournament' && (
+                                                {/* Admin-only controls */}
+                                                {canManageEvent(event) && (
+                                                    <>
+                                                        {/* Edit Event Button */}
                                                         <button
-                                                            onClick={() => onManageTournament(event)}
-                                                            className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
+                                                            onClick={() => onEventSelect ? onEventSelect(event) : null}
+                                                            className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
                                                         >
-                                                            🏅 Manage Bracket
+                                                            ✏️ Edit Event
                                                         </button>
-                                                    )}
 
-                                                    {/* Consolidated Scoring Button */}
-                                                    {(event.type === 'regular_game' || event.type === 'tournament') && (
-                                                        <button
-                                                            onClick={() => {
-                                                                console.log('🎯 Enter Scores clicked, onEnterScoring:', typeof onEnterScoring);
-                                                                if (onEnterScoring) {
-                                                                    onEnterScoring(event);
-                                                                } else {
-                                                                    console.error('❌ onEnterScoring is undefined!');
-                                                                }
-                                                            }}
-                                                            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-                                                        >
-                                                            🎯 Enter Scores
-                                                        </button>
-                                                    )}
+                                                        {/* Tournament Management */}
+                                                        {event.type === 'tournament' && (
+                                                            <button
+                                                                onClick={() => onManageTournament(event)}
+                                                                className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
+                                                            >
+                                                                🏅 Manage Bracket
+                                                            </button>
+                                                        )}
 
-                                                    {/* Live View for In-Progress and Scheduled Games */}
-                                                    {(event.status === 'in_progress' || event.status === 'scheduled') && (
-                                                        <button
-                                                            onClick={() => onViewLive ? onViewLive(event) : null}
-                                                            className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
-                                                        >
-                                                            📺 Live View
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            )}
+                                                        {/* Consolidated Scoring Button */}
+                                                        {(event.type === 'regular_game' || event.type === 'tournament') && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    console.log('🎯 Enter Scores clicked, onEnterScoring:', typeof onEnterScoring);
+                                                                    if (onEnterScoring) {
+                                                                        onEnterScoring(event);
+                                                                    } else {
+                                                                        console.error('❌ onEnterScoring is undefined!');
+                                                                    }
+                                                                }}
+                                                                className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                                                            >
+                                                                🎯 Enter Scores
+                                                            </button>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
 
