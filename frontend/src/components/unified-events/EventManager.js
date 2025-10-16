@@ -203,7 +203,7 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
             
             case 'live-stats':
                 return (
-                    <ImprovedLiveStatsEntry
+                    <EnhancedLiveStatsEntry
                         event={selectedEvent}
                         teams={teams}
                         onSubmit={(statsData) => handleScoreSubmit(selectedEvent.id, statsData)}
