@@ -7075,6 +7075,10 @@ async def get_event_media(event_id: str):
             {"event_id": event_id}
         ).sort("uploaded_at", -1).to_list(length=None)
         
+        # Remove MongoDB _id
+        for item in media:
+            item.pop('_id', None)
+        
         return {"media": media, "count": len(media)}
         
     except Exception as e:
