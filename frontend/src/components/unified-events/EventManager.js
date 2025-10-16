@@ -8,9 +8,10 @@ import QuickScoreEntry from './QuickScoreEntry';
 
 const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavigate }) => {
     const [events, setEvents] = useState(initialEvents || []);
-    const [activeView, setActiveView] = useState('list'); // list, create, tournament, scoring-selector, live-stats, quick-score
+    const [activeView, setActiveView] = useState('list'); // list, create, tournament, scoring-selector, live-stats, quick-score, spectator-view
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [showSpectatorView, setShowSpectatorView] = useState(false);
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
