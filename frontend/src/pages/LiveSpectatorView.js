@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 
 const LiveSpectatorView = ({ event, teams, onClose }) => {
     const [liveData, setLiveData] = useState({
-        home_team: { name: '', logo: '', score: 0 },
-        away_team: { name: '', logo: '', score: 0 },
+        home_team: { name: '', logo: '', score: 0, color: '#3b82f6', banner: null },
+        away_team: { name: '', logo: '', score: 0, color: '#ef4444', banner: null },
         time_remaining: '15:00',
         current_period: 1,
-        top_players: []
+        top_players: [],
+        home_stats: { goals: 0, shots: 0, penalties: 0 },
+        away_stats: { goals: 0, shots: 0, penalties: 0 }
     });
 
     const [chat, setChat] = useState({
