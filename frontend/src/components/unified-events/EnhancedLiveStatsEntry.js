@@ -28,7 +28,12 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         period: ''
     });
 
+    const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+    const [lastSaved, setLastSaved] = useState(null);
+
     const timerRef = useRef(null);
+    const autoSaveRef = useRef(null);
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
     // Enhanced player data with better structure
     const getMockPlayers = (teamId, teamName) => {
