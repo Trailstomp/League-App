@@ -435,11 +435,27 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                         </button>
                         
                         <button
+                            onClick={() => {
+                                console.log('🔘 Manual save button clicked');
+                                autoSaveGameStats();
+                            }}
+                            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded font-medium"
+                        >
+                            💾 Save Now
+                        </button>
+                        
+                        <button
                             onClick={() => setGameState(prev => ({ ...prev, manual_time_input: !prev.manual_time_input }))}
                             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium"
                         >
                             ⏰ Set Time
                         </button>
+                        
+                        {lastSaved && (
+                            <span className="text-xs text-gray-600">
+                                Last saved: {Math.round((new Date() - lastSaved) / 1000)}s ago
+                            </span>
+                        )}
                     </div>
 
                     {/* Period Length Selector */}
