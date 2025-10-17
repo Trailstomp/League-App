@@ -35,13 +35,43 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
     });
     
     const [showTimeEditor, setShowTimeEditor] = useState(false);
+    
+    const [penalties, setPenalties] = useState({
+        home: [],
+        away: []
+    });
+    
+    const [showPenaltyModal, setShowPenaltyModal] = useState(false);
+    const [selectedPlayerForPenalty, setSelectedPlayerForPenalty] = useState(null);
+    const [penaltyInput, setPenaltyInput] = useState({
+        type: '',
+        duration: 2,
+        customType: ''
+    });
 
     const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
     const [lastSaved, setLastSaved] = useState(null);
 
     const timerRef = useRef(null);
     const autoSaveRef = useRef(null);
+    const penaltyTimersRef = useRef([]);
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+    
+    // Common penalty types
+    const penaltyTypes = [
+        'Tripping',
+        'Slashing',
+        'High Stick',
+        'Cross Check',
+        'Holding',
+        'Interference',
+        'Roughing',
+        'Unsportsmanlike Conduct',
+        'Illegal Equipment',
+        'Too Many Players',
+        'Delay of Game',
+        'Other (specify)'
+    ];
 
     // Enhanced player data with better structure
     const getMockPlayers = (teamId, teamName) => {
