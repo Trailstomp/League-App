@@ -663,6 +663,97 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         </div>
     );
 
+    // Time Editor Dialog
+    const renderTimeEditor = () => {
+        if (!showTimeEditor) return null;
+
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                    <h3 className="text-lg font-semibold mb-4">Edit Game Time</h3>
+                    
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Minutes
+                                </label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="60"
+                                    value={manualTimeInputs.minutes}
+                                    onChange={(e) => setManualTimeInputs(prev => ({
+                                        ...prev,
+                                        minutes: e.target.value
+                                    }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="15"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Seconds
+                                </label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="59"
+                                    value={manualTimeInputs.seconds}
+                                    onChange={(e) => setManualTimeInputs(prev => ({
+                                        ...prev,
+                                        seconds: e.target.value
+                                    }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="00"
+                                />
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Period
+                            </label>
+                            <input
+                                type="number"
+                                min="1"
+                                max={gameState.game_settings.periods}
+                                value={manualTimeInputs.period}
+                                onChange={(e) => setManualTimeInputs(prev => ({
+                                    ...prev,
+                                    period: e.target.value
+                                }))}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder={gameState.current_period.toString()}
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="flex justify-end gap-3 mt-6">
+                        <button
+                            onClick={() => {
+                                setShowTimeEditor(false);
+                                setManualTimeInputs({ minutes: '', seconds: '', period: '' });
+                            }}
+                            className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={() => {
+                                setManualTime();
+                                setShowTimeEditor(false);
+                            }}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                        >
+                            Apply
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     const renderPlayerStats = (teamKey, teamData) => {
         const isHome = teamKey === 'home_team';
         const sortConfig = isHome ? playerSort.home : playerSort.away;
