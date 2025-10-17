@@ -440,12 +440,23 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
 
                 {/* Top Row: Timer and Period side by side */}
                 <div className="flex items-center justify-center gap-8 mb-3">
-                    {/* Timer Display */}
-                    <div className={`px-6 py-3 rounded-lg border-4 ${
-                        gameState.is_running 
-                            ? 'bg-green-100 border-green-500' 
-                            : 'bg-red-100 border-red-500'
-                    }`}>
+                    {/* Timer Display - Clickable */}
+                    <div 
+                        className={`px-6 py-3 rounded-lg border-4 cursor-pointer hover:opacity-80 transition ${
+                            gameState.is_running 
+                                ? 'bg-green-100 border-green-500' 
+                                : 'bg-red-100 border-red-500'
+                        }`}
+                        onClick={() => {
+                            setManualTimeInputs({
+                                minutes: Math.floor(gameState.time_remaining / 60).toString(),
+                                seconds: (gameState.time_remaining % 60).toString(),
+                                period: gameState.current_period.toString()
+                            });
+                            setShowTimeEditor(true);
+                        }}
+                        title="Click to edit time"
+                    >
                         <div className="text-5xl font-bold font-mono">
                             {formatTime(gameState.time_remaining)}
                         </div>
