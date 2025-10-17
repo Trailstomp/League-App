@@ -431,8 +431,13 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
     const renderStickyHeader = () => (
         <div className="bg-white border-b-2 border-gray-200 shadow-md sticky top-0 z-50">
             <div className="max-w-7xl mx-auto p-4">
+                {/* Event Name */}
+                <div className="text-center mb-3">
+                    <h2 className="text-2xl font-bold text-gray-800">{event?.title || 'Live Game Scoring'}</h2>
+                </div>
+
                 {/* Top Row: Timer and Period side by side */}
-                <div className="flex items-center justify-center gap-6 mb-3">
+                <div className="flex items-center justify-center gap-8 mb-3">
                     {/* Timer Display */}
                     <div className={`px-6 py-3 rounded-lg border-4 ${
                         gameState.is_running 
@@ -446,8 +451,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
 
                     {/* Period Display with Controls */}
                     <div className="text-center">
-                        <div className="flex items-center justify-center gap-2">
-                            <span className="text-sm font-medium text-gray-600">Period</span>
+                        <div className="flex items-center justify-center gap-3">
+                            <span className="text-lg font-medium text-gray-600">Period</span>
                             <div className="flex flex-col items-center">
                                 <button
                                     onClick={() => {
@@ -459,11 +464,11 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                                         }));
                                     }}
                                     disabled={gameState.current_period >= gameState.game_settings.periods}
-                                    className="leading-none text-lg text-blue-600 hover:text-blue-800 disabled:opacity-30 disabled:cursor-not-allowed"
+                                    className="leading-none text-2xl text-blue-600 hover:text-blue-800 disabled:opacity-30 disabled:cursor-not-allowed"
                                 >
                                     ▲
                                 </button>
-                                <span className="text-4xl font-bold">{gameState.current_period}</span>
+                                <span className="text-6xl font-bold text-gray-800">{gameState.current_period}</span>
                                 <button
                                     onClick={() => {
                                         setGameState(prev => ({ 
@@ -474,12 +479,12 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                                         }));
                                     }}
                                     disabled={gameState.current_period <= 1}
-                                    className="leading-none text-lg text-blue-600 hover:text-blue-800 disabled:opacity-30 disabled:cursor-not-allowed"
+                                    className="leading-none text-2xl text-blue-600 hover:text-blue-800 disabled:opacity-30 disabled:cursor-not-allowed"
                                 >
                                     ▼
                                 </button>
                             </div>
-                            <span className="text-sm text-gray-600">of {gameState.game_settings.periods}</span>
+                            <span className="text-lg text-gray-600">of {gameState.game_settings.periods}</span>
                         </div>
                     </div>
                 </div>
