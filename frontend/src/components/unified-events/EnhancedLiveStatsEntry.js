@@ -164,10 +164,18 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
             autoSaveGameStats();
             
             // Then save every 10 seconds
-            autoSaveRef.current = setInterval(() => {
+            const intervalId = setInterval(() => {
                 console.log('⏰ 10 seconds elapsed, triggering auto-save...');
                 autoSaveGameStats();
             }, 10000);
+            
+            // Store in ref so cleanup can access it
+            autoSaveRef.current = intervalId;
+            
+            return () => {
+                console.log('🧹 Cleaning up auto-save interval');
+                clearInterval(intervalId);
+            };
         } else {
             console.log('⚠️ Auto-save NOT started. Reason:', {
                 autoSaveEnabled,
@@ -176,11 +184,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
             });
             clearInterval(autoSaveRef.current);
         }
-
-        return () => {
-            console.log('🧹 Cleaning up auto-save interval');
-            clearInterval(autoSaveRef.current);
-        };
     }, [autoSaveEnabled, gameState.is_running, event?.id]);
 
     // Initialize teams and players
