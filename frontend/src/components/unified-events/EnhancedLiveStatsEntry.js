@@ -90,14 +90,14 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         return () => clearInterval(timerRef.current);
     }, [gameState.is_running, gameState.time_remaining]);
 
-    // Auto-save functionality for live updates
-    const autoSaveGameStats = async () => {
+    // Auto-save functionality for live updates - wrapped in useCallback to always have latest gameState
+    const autoSaveGameStats = React.useCallback(async () => {
         if (!event?.id) {
             console.log('⚠️ Auto-save skipped: No event ID');
             return;
         }
         
-        console.log('💾 Auto-saving game stats for event:', event.id);
+        console.log('💾 Auto-saving game stats for event:', event.id, 'Current scores:', gameState.home_team.score, '-', gameState.away_team.score);
         
         try {
             const gameData = {
@@ -151,7 +151,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         } catch (error) {
             console.error('❌ Auto-save error:', error);
         }
-    };
+    }, [event, gameState, backendUrl]);
 
     // Setup auto-save interval when timer is running
     useEffect(() => {
