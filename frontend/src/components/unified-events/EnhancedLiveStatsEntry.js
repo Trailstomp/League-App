@@ -836,14 +836,14 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                         <table className="w-full">
                             <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-3 py-2 text-left text-sm font-medium text-gray-700">Active</th>
-                                    <SortableHeader column="number"># ↕️</SortableHeader>
-                                    <SortableHeader column="name">Player ↕️</SortableHeader>
-                                    <SortableHeader column="position">Position ↕️</SortableHeader>
-                                    <SortableHeader column="goals">Goals ↕️</SortableHeader>
-                                    <SortableHeader column="assists">Assists ↕️</SortableHeader>
-                                    <SortableHeader column="shots">Shots ↕️</SortableHeader>
-                                    <SortableHeader column="penalties">Penalties ↕️</SortableHeader>
+                                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">✓</th>
+                                    <SortableHeader column="number">#</SortableHeader>
+                                    <SortableHeader column="name">Player</SortableHeader>
+                                    <SortableHeader column="position">Pos</SortableHeader>
+                                    <SortableHeader column="shots">Shots</SortableHeader>
+                                    <SortableHeader column="goals">Goals</SortableHeader>
+                                    <SortableHeader column="assists">Assists</SortableHeader>
+                                    <SortableHeader column="penalties">PIM</SortableHeader>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
