@@ -33,6 +33,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         seconds: '',
         period: ''
     });
+    
+    const [showTimeEditor, setShowTimeEditor] = useState(false);
 
     const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
     const [lastSaved, setLastSaved] = useState(null);
