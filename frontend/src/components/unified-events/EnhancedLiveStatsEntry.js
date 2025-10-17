@@ -689,6 +689,91 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                                 selectedPlayerForPenalty.name,
                                 selectedPlayerForPenalty.number
                             )}
+
+    // Render Active Penalties Box
+    const renderActivePenalties = () => {
+        const homePenalties = penalties.home || [];
+        const awayPenalties = penalties.away || [];
+        const totalPenalties = homePenalties.length + awayPenalties.length;
+        
+        if (totalPenalties === 0) return null;
+        
+        // Determine Man Up / Penalty Kill status
+        const homeManDown = homePenalties.length > awayPenalties.length;
+        const awayManDown = awayPenalties.length > homePenalties.length;
+        
+        return (
+            <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-4">
+                <h3 className="text-lg font-bold mb-3 text-gray-800">⚠️ Active Penalties</h3>
+                
+                {/* Man Up / Penalty Kill Indicators */}
+                {(homeManDown || awayManDown) && (
+                    <div className="flex justify-between mb-3 font-bold text-sm">
+                        <div className={homeManDown ? 'text-red-600' : 'text-green-600'}>
+                            {gameState.home_team.name}: {homeManDown ? '🛡️ PENALTY KILL' : '⚡ MAN UP'}
+                        </div>
+                        <div className={awayManDown ? 'text-red-600' : 'text-green-600'}>
+                            {gameState.away_team.name}: {awayManDown ? '🛡️ PENALTY KILL' : '⚡ MAN UP'}
+                        </div>
+                    </div>
+                )}
+                
+                {/* Penalties List */}
+                <div className="space-y-2">
+                    {homePenalties.map(penalty => (
+                        <div 
+                            key={penalty.id} 
+                            className={`p-2 rounded ${
+                                penalty.timeRemaining <= 10 ? 'bg-red-200 animate-pulse' : 'bg-white'
+                            } border border-gray-300`}
+                        >
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <span className="font-bold">{gameState.home_team.name}</span>
+                                    <span className="mx-2">-</span>
+                                    <span>#{penalty.playerNumber} {penalty.playerName}</span>
+                                </div>
+                                <div className="text-right">
+                                    <div className={`text-xl font-bold font-mono ${
+                                        penalty.timeRemaining <= 10 ? 'text-red-600' : 'text-gray-800'
+                                    }`}>
+                                        {formatTime(penalty.timeRemaining)}
+                                    </div>
+                                    <div className="text-xs text-gray-600">{penalty.type}</div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                    
+                    {awayPenalties.map(penalty => (
+                        <div 
+                            key={penalty.id} 
+                            className={`p-2 rounded ${
+                                penalty.timeRemaining <= 10 ? 'bg-red-200 animate-pulse' : 'bg-white'
+                            } border border-gray-300`}
+                        >
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <span className="font-bold">{gameState.away_team.name}</span>
+                                    <span className="mx-2">-</span>
+                                    <span>#{penalty.playerNumber} {penalty.playerName}</span>
+                                </div>
+                                <div className="text-right">
+                                    <div className={`text-xl font-bold font-mono ${
+                                        penalty.timeRemaining <= 10 ? 'text-red-600' : 'text-gray-800'
+                                    }`}>
+                                        {formatTime(penalty.timeRemaining)}
+                                    </div>
+                                    <div className="text-xs text-gray-600">{penalty.type}</div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
                             disabled={!penaltyInput.type || (penaltyInput.type === 'Other (specify)' && !penaltyInput.customType)}
                             className="flex-1 px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
