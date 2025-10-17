@@ -1022,6 +1022,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                                     <SortableHeader column="number">#</SortableHeader>
                                     <SortableHeader column="name">Player</SortableHeader>
                                     <SortableHeader column="position">Pos</SortableHeader>
+                                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-700">Pen</th>
                                     <SortableHeader column="shots">Shots</SortableHeader>
                                     <SortableHeader column="goals">Goals</SortableHeader>
                                     <SortableHeader column="assists">Assists</SortableHeader>
