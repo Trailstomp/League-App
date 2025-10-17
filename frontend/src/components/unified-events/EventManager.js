@@ -125,7 +125,8 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                 status: 'completed'
             });
 
-            // Create game stats record
+            // Create game stats record in game_stats collection
+            console.log('📊 Saving to game_stats collection...');
             const statsResponse = await fetch(`${backendUrl}/api/game-stats`, {
                 method: 'POST',
                 headers: {
@@ -139,13 +140,17 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
             });
 
             if (statsResponse.ok) {
-                console.log('✅ Game stats created successfully');
+                const result = await statsResponse.json();
+                console.log('✅ Game stats saved successfully:', result);
+            } else {
+                const error = await statsResponse.text();
+                console.error('❌ Failed to save game stats:', statsResponse.status, error);
             }
 
             setActiveView('list');
         } catch (error) {
             console.error('❌ Error submitting scores:', error);
-            throw error;
+            alert('Error saving scores: ' + error.message);
         }
     };
 
