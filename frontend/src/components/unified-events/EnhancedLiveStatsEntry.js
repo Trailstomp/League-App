@@ -891,6 +891,20 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                 <td className="px-2 py-1 text-sm font-medium">{player.name}</td>
                 <td className="px-2 py-1 text-xs text-gray-600">{player.position}</td>
                 
+                {/* Penalty Indicator + Button */}
+                <td className="px-2 py-1 text-center">
+                    <button
+                        onClick={() => {
+                            setSelectedPlayerForPenalty({ ...player, teamKey });
+                            setShowPenaltyModal(true);
+                        }}
+                        className="px-2 py-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs font-bold rounded"
+                        title="Assign Penalty"
+                    >
+                        ⚠️ PEN
+                    </button>
+                </td>
+                
                 {/* Stats with +/- buttons - REORDERED: Shots, Goals, Assists, Penalties */}
                 {['shots', 'goals', 'assists', 'penalties'].map(statType => (
                     <td key={statType} className="px-2 py-1 text-center">
