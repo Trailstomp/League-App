@@ -424,10 +424,39 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
             <div className="max-w-7xl mx-auto">
                 {/* Game Timer and Manual Controls */}
                 <div className="flex items-center justify-between mb-4">
-                    {/* Timer Display */}
-                    <div className="text-center bg-gray-900 text-white rounded-lg p-4 min-w-[200px]">
-                        <div className="text-3xl font-bold">{formatTime(gameState.time_remaining)}</div>
-                        <div className="text-sm">Period {gameState.current_period} of {gameState.game_settings.periods}</div>
+                    {/* Timer and Score Display - COMPACT */}
+                    <div className="text-center">
+                        {/* Editable Clock */}
+                        <div 
+                            className="text-5xl font-bold cursor-pointer hover:bg-black hover:bg-opacity-10 rounded px-3 inline-block"
+                            onClick={() => setGameState(prev => ({ ...prev, manual_time_input: !prev.manual_time_input }))}
+                            title="Click to edit time"
+                        >
+                            {formatTime(gameState.time_remaining)}
+                        </div>
+                        
+                        {/* Period with up/down arrows */}
+                        <div className="flex items-center justify-center gap-2 mt-1">
+                            <span className="text-sm font-medium">Period</span>
+                            <div className="flex flex-col">
+                                <button
+                                    onClick={() => nextPeriod()}
+                                    disabled={gameState.current_period >= gameState.game_settings.periods}
+                                    className="leading-none text-sm hover:bg-white hover:bg-opacity-20 rounded px-1 disabled:opacity-30"
+                                >
+                                    ▲
+                                </button>
+                                <span className="text-xl font-bold">{gameState.current_period}</span>
+                                <button
+                                    onClick={() => setGameState(prev => ({ ...prev, current_period: Math.max(1, prev.current_period - 1) }))}
+                                    disabled={gameState.current_period <= 1}
+                                    className="leading-none text-sm hover:bg-white hover:bg-opacity-20 rounded px-1 disabled:opacity-30"
+                                >
+                                    ▼
+                                </button>
+                            </div>
+                            <span className="text-sm">of {gameState.game_settings.periods}</span>
+                        </div>
                     </div>
 
                     {/* Timer Controls */}
