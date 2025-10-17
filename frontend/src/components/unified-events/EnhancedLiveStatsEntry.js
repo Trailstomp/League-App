@@ -184,7 +184,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
             });
             clearInterval(autoSaveRef.current);
         }
-    }, [autoSaveEnabled, gameState.is_running, event?.id]);
+    }, [autoSaveEnabled, gameState.is_running, event?.id, autoSaveGameStats]);
 
     // Initialize teams and players
     useEffect(() => {
