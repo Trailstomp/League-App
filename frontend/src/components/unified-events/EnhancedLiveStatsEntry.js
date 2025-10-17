@@ -1375,9 +1375,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
             
             {/* Penalty Assignment Modal */}
             {renderPenaltyModal()}
-            
-            {/* Active Penalties Display */}
-            {renderActivePenalties()}
         </div>
     );
 };
