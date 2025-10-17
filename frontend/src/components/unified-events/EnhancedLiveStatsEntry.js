@@ -252,6 +252,15 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         }
     };
 
+    const nextPeriod = () => {
+        setGameState(prev => ({
+            ...prev,
+            current_period: Math.min(prev.current_period + 1, prev.game_settings.periods),
+            time_remaining: prev.period_length * 60,
+            is_running: false
+        }));
+    };
+
     const updateEventStatus = async (eventId, status) => {
         try {
             const response = await fetch(`${backendUrl}/api/unified-events/${eventId}`, {
