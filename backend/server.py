@@ -6715,9 +6715,10 @@ async def fix_team_id_mismatches():
 
 @api_router.post("/game-stats")
 async def create_game_stats(game_stats: Dict[str, Any]):
-    """Create game statistics from tournament bracket or manual entry"""
+    """Create or update game statistics from tournament bracket or manual entry"""
     try:
-        logger.info(f"📊 Creating game stats: {game_stats.get('event_id', 'unknown')}")
+        event_id = game_stats.get('event_id')
+        logger.info(f"📊 Creating/updating game stats for event: {event_id}")
         
         # Validate required fields
         required_fields = ['event_id', 'home_team', 'away_team']
@@ -6725,32 +6726,50 @@ async def create_game_stats(game_stats: Dict[str, Any]):
             if field not in game_stats:
                 raise HTTPException(status_code=400, detail=f"Missing required field: {field}")
         
-        # Add timestamp if not present
+        # Add/update timestamps
+        current_time = datetime.now(timezone.utc)
         if 'created_at' not in game_stats:
-            game_stats['created_at'] = datetime.now(timezone.utc)
-        if 'updated_at' not in game_stats:
-            game_stats['updated_at'] = datetime.now(timezone.utc)
+            game_stats['created_at'] = current_time
+        game_stats['updated_at'] = current_time
         
         # Generate ID if not present
         if 'id' not in game_stats:
             game_stats['id'] = str(uuid.uuid4())
         
-        # Insert into database
-        result = await db.game_stats.insert_one(game_stats)
+        # UPSERT: Update if exists, insert if not
+        existing_stats = await db.game_stats.find_one({"event_id": event_id})
         
-        logger.info(f"✅ Game stats created with ID: {game_stats['id']}")
-        
-        return {
-            "status": "success",
-            "message": "Game statistics created successfully",
-            "game_stat_id": game_stats['id'],
-            "inserted_id": str(result.inserted_id)
-        }
+        if existing_stats:
+            # Update existing record
+            logger.info(f"📝 Updating existing game stats for event: {event_id}")
+            await db.game_stats.update_one(
+                {"event_id": event_id},
+                {"$set": game_stats}
+            )
+            logger.info(f"✅ Game stats updated for event: {event_id}")
+            return {
+                "status": "success",
+                "message": "Game statistics updated successfully",
+                "game_stat_id": game_stats['id'],
+                "action": "updated"
+            }
+        else:
+            # Insert new record
+            logger.info(f"➕ Creating new game stats for event: {event_id}")
+            result = await db.game_stats.insert_one(game_stats)
+            logger.info(f"✅ Game stats created with ID: {game_stats['id']}")
+            return {
+                "status": "success",
+                "message": "Game statistics created successfully",
+                "game_stat_id": game_stats['id'],
+                "inserted_id": str(result.inserted_id),
+                "action": "created"
+            }
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error creating game stats: {e}")
+        logger.error(f"❌ Error creating/updating game stats: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/seasons/{season_id}/summary")
