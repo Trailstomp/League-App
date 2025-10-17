@@ -94,14 +94,18 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
     };
 
     const fetchLiveUpdates = async () => {
+        console.log('📊 Fetching live updates for event:', event.id);
         try {
             // Fetch event data for basic info
             const eventResponse = await fetch(`${backendUrl}/api/unified-events/${event.id}`);
+            console.log('📥 Event response status:', eventResponse.status);
             if (eventResponse.ok) {
                 const eventData = await eventResponse.json();
+                console.log('📥 Event data:', eventData);
                 
                 // Update scores if available
                 if (eventData.scores) {
+                    console.log('📊 Updating scores from event data');
                     setLiveData(prev => ({
                         ...prev,
                         home_team: { 
@@ -118,21 +122,29 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
 
             // Fetch game stats for detailed player/team statistics
             try {
+                console.log('📊 Fetching game stats from:', `${backendUrl}/api/events/${event.id}/game-stats`);
                 const statsResponse = await fetch(`${backendUrl}/api/events/${event.id}/game-stats`);
+                console.log('📥 Stats response status:', statsResponse.status);
                 if (statsResponse.ok) {
                     const statsData = await statsResponse.json();
+                    console.log('📥 Stats data received:', statsData);
                     
                     // Handle both old array format and new object format
                     let latestStats = null;
                     if (statsData.stats) {
                         latestStats = statsData.stats;
+                        console.log('✅ Using stats from stats.stats');
                     } else if (Array.isArray(statsData) && statsData.length > 0) {
                         latestStats = statsData[statsData.length - 1];
+                        console.log('✅ Using stats from array');
                     }
                     
                     if (latestStats && latestStats.home_team && latestStats.away_team) {
+                        console.log('✅ Found valid stats, updating live data');
                         const homeStats = calculateTeamStats(latestStats.home_team.players || []);
                         const awayStats = calculateTeamStats(latestStats.away_team.players || []);
+                        
+                        console.log('📊 Home stats:', homeStats, 'Away stats:', awayStats);
                         
                         setLiveData(prev => ({
                             ...prev,
@@ -157,13 +169,15 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
                             time_remaining: latestStats.time_remaining || '15:00',
                             current_period: latestStats.current_period || 1
                         }));
+                    } else {
+                        console.log('⚠️ No valid stats found in response');
                     }
                 }
             } catch (statsError) {
-                console.log('No game stats yet, waiting for game to start...');
+                console.log('⚠️ No game stats yet, waiting for game to start...', statsError);
             }
         } catch (error) {
-            console.error('Error fetching live updates:', error);
+            console.error('❌ Error fetching live updates:', error);
         }
     };
 
