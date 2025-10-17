@@ -670,28 +670,61 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                             <button
                                 onClick={() => {
                                     if (player.stats[statType] > 0) {
-                                        setGameState(prev => ({
-                                            ...prev,
-                                            [teamKey]: {
+                                        setGameState(prev => {
+                                            const newState = { ...prev };
+                                            
+                                            // Decrement player stat
+                                            newState[teamKey] = {
                                                 ...prev[teamKey],
                                                 players: prev[teamKey].players.map(p => 
                                                     p.id === player.id 
                                                         ? { ...p, stats: { ...p.stats, [statType]: p.stats[statType] - 1 } }
                                                         : p
                                                 )
-                                            }
-                                        }));
-                                        
-                                        // Update team score for goals
-                                        if (statType === 'goals') {
-                                            setGameState(prev => ({
-                                                ...prev,
-                                                [teamKey]: {
-                                                    ...prev[teamKey],
+                                            };
+                                            
+                                            // Update team score for goals
+                                            if (statType === 'goals') {
+                                                newState[teamKey] = {
+                                                    ...newState[teamKey],
                                                     score: Math.max(0, prev[teamKey].score - 1)
-                                                }
-                                            }));
-                                        }
+                                                };
+                                                
+                                                // Decrement opposing goalie's goals_against
+                                                const opposingTeamKey = teamKey === 'home_team' ? 'away' : 'home';
+                                                newState.goalies = {
+                                                    ...prev.goalies,
+                                                    [opposingTeamKey]: prev.goalies[opposingTeamKey].map(goalie => 
+                                                        goalie.active && goalie.stats.goals_against > 0 ? {
+                                                            ...goalie,
+                                                            stats: {
+                                                                ...goalie.stats,
+                                                                goals_against: goalie.stats.goals_against - 1
+                                                            }
+                                                        } : goalie
+                                                    )
+                                                };
+                                            }
+                                            
+                                            // Decrement opposing goalie's shots_faced for shots
+                                            if (statType === 'shots') {
+                                                const opposingTeamKey = teamKey === 'home_team' ? 'away' : 'home';
+                                                newState.goalies = {
+                                                    ...prev.goalies,
+                                                    [opposingTeamKey]: prev.goalies[opposingTeamKey].map(goalie => 
+                                                        goalie.active && goalie.stats.shots_faced > 0 ? {
+                                                            ...goalie,
+                                                            stats: {
+                                                                ...goalie.stats,
+                                                                shots_faced: goalie.stats.shots_faced - 1
+                                                            }
+                                                        } : goalie
+                                                    )
+                                                };
+                                            }
+                                            
+                                            return newState;
+                                        });
                                     }
                                 }}
                                 className="w-6 h-6 bg-red-100 text-red-600 rounded text-xs hover:bg-red-200"
