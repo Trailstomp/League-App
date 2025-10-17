@@ -710,8 +710,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         );
 
         const PlayerRow = ({ player, isInactive = false }) => (
-            <tr key={player.id} className={`${isInactive ? 'bg-gray-50 opacity-60' : 'hover:bg-gray-50'}`}>
-                <td className="px-3 py-2">
+            <tr key={player.id} className={`${isInactive ? 'bg-gray-50 opacity-60' : 'hover:bg-blue-50'}`}>
+                <td className="px-2 py-1">
                     <input
                         type="checkbox"
                         checked={player.active}
@@ -719,9 +719,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                         className="rounded"
                     />
                 </td>
-                <td className="px-3 py-2 text-sm font-mono font-bold">{player.number}</td>
-                <td className="px-3 py-2 text-sm font-medium">{player.name}</td>
-                <td className="px-3 py-2 text-sm text-gray-600">{player.position}</td>
+                <td className="px-2 py-1 text-sm font-mono font-bold">{player.number}</td>
+                <td className="px-2 py-1 text-sm font-medium">{player.name}</td>
+                <td className="px-2 py-1 text-xs text-gray-600">{player.position}</td>
                 
                 {/* Stats with +/- buttons - REORDERED: Shots, Goals, Assists, Penalties */}
                 {['shots', 'goals', 'assists', 'penalties'].map(statType => (
