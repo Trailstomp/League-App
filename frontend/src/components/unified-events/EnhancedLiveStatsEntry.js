@@ -429,113 +429,129 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
 
     // Fixed sticky header with clock, scores, and goalies
     const renderStickyHeader = () => (
-        <div className="bg-white border-b shadow-lg p-4 sticky top-0 z-20">
-            <div className="max-w-7xl mx-auto">
-                {/* Game Timer and Manual Controls */}
-                <div className="flex items-center justify-between mb-4">
-                    {/* Timer and Score Display - COMPACT */}
-                    <div className="text-center">
-                        {/* Editable Clock */}
-                        <div 
-                            className="text-5xl font-bold cursor-pointer hover:bg-black hover:bg-opacity-10 rounded px-3 inline-block"
-                            onClick={() => setGameState(prev => ({ ...prev, manual_time_input: !prev.manual_time_input }))}
-                            title="Click to edit time"
-                        >
+        <div className="bg-white border-b-2 border-gray-200 shadow-md sticky top-0 z-50">
+            <div className="max-w-7xl mx-auto p-4">
+                {/* Top Row: Timer and Period side by side */}
+                <div className="flex items-center justify-center gap-6 mb-3">
+                    {/* Timer Display */}
+                    <div className={`px-6 py-3 rounded-lg border-4 ${
+                        gameState.is_running 
+                            ? 'bg-green-100 border-green-500' 
+                            : 'bg-red-100 border-red-500'
+                    }`}>
+                        <div className="text-5xl font-bold font-mono">
                             {formatTime(gameState.time_remaining)}
                         </div>
-                        
-                        {/* Period with up/down arrows */}
-                        <div className="flex items-center justify-center gap-2 mt-1">
-                            <span className="text-sm font-medium">Period</span>
-                            <div className="flex flex-col">
+                    </div>
+
+                    {/* Period Display with Controls */}
+                    <div className="text-center">
+                        <div className="flex items-center justify-center gap-2">
+                            <span className="text-sm font-medium text-gray-600">Period</span>
+                            <div className="flex flex-col items-center">
                                 <button
-                                    onClick={() => nextPeriod()}
+                                    onClick={() => {
+                                        setGameState(prev => ({
+                                            ...prev,
+                                            current_period: Math.min(prev.current_period + 1, prev.game_settings.periods),
+                                            time_remaining: prev.period_length * 60,
+                                            is_running: false
+                                        }));
+                                    }}
                                     disabled={gameState.current_period >= gameState.game_settings.periods}
-                                    className="leading-none text-sm hover:bg-white hover:bg-opacity-20 rounded px-1 disabled:opacity-30"
+                                    className="leading-none text-lg text-blue-600 hover:text-blue-800 disabled:opacity-30 disabled:cursor-not-allowed"
                                 >
                                     ▲
                                 </button>
-                                <span className="text-xl font-bold">{gameState.current_period}</span>
+                                <span className="text-4xl font-bold">{gameState.current_period}</span>
                                 <button
-                                    onClick={() => setGameState(prev => ({ ...prev, current_period: Math.max(1, prev.current_period - 1) }))}
+                                    onClick={() => {
+                                        setGameState(prev => ({ 
+                                            ...prev, 
+                                            current_period: Math.max(1, prev.current_period - 1),
+                                            time_remaining: prev.period_length * 60,
+                                            is_running: false
+                                        }));
+                                    }}
                                     disabled={gameState.current_period <= 1}
-                                    className="leading-none text-sm hover:bg-white hover:bg-opacity-20 rounded px-1 disabled:opacity-30"
+                                    className="leading-none text-lg text-blue-600 hover:text-blue-800 disabled:opacity-30 disabled:cursor-not-allowed"
                                 >
                                     ▼
                                 </button>
                             </div>
-                            <span className="text-sm">of {gameState.game_settings.periods}</span>
+                            <span className="text-sm text-gray-600">of {gameState.game_settings.periods}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Control Buttons Row */}
+                <div className="flex items-center justify-center gap-3">
+                    <button
+                        onClick={toggleTimer}
+                        className={`px-6 py-2 rounded-lg font-bold text-white text-lg ${
+                            gameState.is_running 
+                                ? 'bg-red-600 hover:bg-red-700' 
+                                : 'bg-green-600 hover:bg-green-700'
+                        }`}
+                    >
+                        {gameState.is_running ? '⏸️ Pause' : '▶️ Start'}
+                    </button>
+                    
+                    <button
+                        onClick={() => {
+                            console.log('🔘 Manual save button clicked');
+                            autoSaveGameStats();
+                        }}
+                        className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-bold"
+                    >
+                        💾 Save Now
+                    </button>
+                    
+                    {lastSaved && (
+                        <span className="text-xs text-gray-600">
+                            Last saved: {Math.round((new Date() - lastSaved) / 1000)}s ago
+                        </span>
+                    )}
+                </div>
+
+                {/* Scoreboard */}
+                <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                    {/* Home Team Score */}
+                    <div className="flex items-center gap-3">
+                        {gameState.home_team.logo && (
+                            <img 
+                                src={gameState.home_team.logo} 
+                                alt={gameState.home_team.name}
+                                className="w-12 h-12 object-cover rounded-lg"
+                            />
+                        )}
+                        <div>
+                            <div className="text-lg font-semibold text-gray-700">{gameState.home_team.name}</div>
+                            <div className="text-4xl font-bold text-blue-600">{gameState.home_team.score}</div>
                         </div>
                     </div>
 
-                    {/* Timer Controls */}
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={toggleTimer}
-                            className={`px-4 py-2 rounded font-medium ${
-                                gameState.is_running 
-                                    ? 'bg-red-600 hover:bg-red-700 text-white' 
-                                    : 'bg-green-600 hover:bg-green-700 text-white'
-                            }`}
-                        >
-                            {gameState.is_running ? '⏸️ Pause' : '▶️ Start'}
-                        </button>
-                        
-                        <button
-                            onClick={() => {
-                                console.log('🔘 Manual save button clicked');
-                                autoSaveGameStats();
-                            }}
-                            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded font-medium"
-                        >
-                            💾 Save Now
-                        </button>
-                        
-                        <button
-                            onClick={() => setGameState(prev => ({ ...prev, manual_time_input: !prev.manual_time_input }))}
-                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium"
-                        >
-                            ⏰ Set Time
-                        </button>
-                        
-                        {lastSaved && (
-                            <span className="text-xs text-gray-600">
-                                Last saved: {Math.round((new Date() - lastSaved) / 1000)}s ago
-                            </span>
-                        )}
-                    </div>
+                    <div className="text-2xl font-bold text-gray-400">-</div>
 
-                    {/* Period Length Selector */}
-                    <div className="text-center">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Period Length
-                        </label>
-                        <select
-                            value={gameState.period_length}
-                            onChange={(e) => {
-                                const minutes = parseInt(e.target.value);
-                                setGameState(prev => ({
-                                    ...prev,
-                                    period_length: minutes,
-                                    time_remaining: minutes * 60,
-                                    is_running: false
-                                }));
-                            }}
-                            className="px-3 py-2 border border-gray-300 rounded"
-                            disabled={gameState.is_running}
-                        >
-                            {gameState.game_settings.period_length_options.map(length => (
-                                <option key={length} value={length}>
-                                    {length} min
-                                </option>
-                            ))}
-                        </select>
+                    {/* Away Team Score */}
+                    <div className="flex items-center gap-3">
+                        <div className="text-right">
+                            <div className="text-lg font-semibold text-gray-700">{gameState.away_team.name}</div>
+                            <div className="text-4xl font-bold text-red-600">{gameState.away_team.score}</div>
+                        </div>
+                        {gameState.away_team.logo && (
+                            <img 
+                                src={gameState.away_team.logo} 
+                                alt={gameState.away_team.name}
+                                className="w-12 h-12 object-cover rounded-lg"
+                            />
+                        )}
                     </div>
                 </div>
 
                 {/* Manual Time Input */}
                 {gameState.manual_time_input && (
-                    <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+                    <div className="mt-4 p-4 bg-blue-50 rounded-lg">
                         <h4 className="font-semibold mb-3">Manual Time Entry</h4>
                         <div className="flex items-center gap-3">
                             <input
@@ -583,53 +599,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                     </div>
                 )}
 
-                {/* Score Display */}
-                <div className="grid grid-cols-3 gap-4 text-center mb-4">
-                    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                        <div className="flex items-center justify-center gap-3 mb-2">
-                            {gameState.home_team.logo && (
-                                <img 
-                                    src={gameState.home_team.logo} 
-                                    alt={gameState.home_team.name}
-                                    className="w-8 h-8 object-cover rounded"
-                                />
-                            )}
-                            <div className="text-lg font-semibold text-blue-900">
-                                {gameState.home_team.name}
-                            </div>
-                        </div>
-                        <div className="text-4xl font-bold text-blue-600">
-                            {gameState.home_team.score}
-                        </div>
-                        <div className="text-sm text-blue-700 mt-2">HOME</div>
-                    </div>
-
-                    <div className="flex items-center justify-center text-2xl font-bold text-gray-400">
-                        VS
-                    </div>
-
-                    <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
-                        <div className="flex items-center justify-center gap-3 mb-2">
-                            {gameState.away_team.logo && (
-                                <img 
-                                    src={gameState.away_team.logo} 
-                                    alt={gameState.away_team.name}
-                                    className="w-8 h-8 object-cover rounded"
-                                />
-                            )}
-                            <div className="text-lg font-semibold text-red-900">
-                                {gameState.away_team.name}
-                            </div>
-                        </div>
-                        <div className="text-4xl font-bold text-red-600">
-                            {gameState.away_team.score}
-                        </div>
-                        <div className="text-sm text-red-700 mt-2">AWAY</div>
-                    </div>
-                </div>
-
                 {/* Goalies Section */}
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-6 mt-4 pt-4 border-t">
                     {/* Home Goalies */}
                     <div>
                         <h4 className="text-sm font-semibold text-blue-900 mb-2">🥅 {gameState.home_team.name} Goalies</h4>
