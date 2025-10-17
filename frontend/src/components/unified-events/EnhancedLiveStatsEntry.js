@@ -1290,6 +1290,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
             {/* Main Content */}
             <div className="p-6" style={{ paddingTop: '20px' }}>
                 <div className="max-w-7xl mx-auto">
+                    {/* Active Penalties Display */}
+                    {renderActivePenalties()}
+                    
                     {activeTab === 'home_stats' && renderPlayerStats('home_team', gameState.home_team)}
                     {activeTab === 'away_stats' && renderPlayerStats('away_team', gameState.away_team)}
                 </div>
