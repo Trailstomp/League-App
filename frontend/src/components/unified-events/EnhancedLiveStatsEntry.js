@@ -549,56 +549,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                     </div>
                 </div>
 
-                {/* Manual Time Input */}
-                {gameState.manual_time_input && (
-                    <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                        <h4 className="font-semibold mb-3">Manual Time Entry</h4>
-                        <div className="flex items-center gap-3">
-                            <input
-                                type="number"
-                                placeholder="Min"
-                                value={manualTimeInputs.minutes}
-                                onChange={(e) => setManualTimeInputs(prev => ({ ...prev, minutes: e.target.value }))}
-                                className="w-20 px-3 py-2 border rounded"
-                                min="0"
-                                max="60"
-                            />
-                            <span>:</span>
-                            <input
-                                type="number"
-                                placeholder="Sec"
-                                value={manualTimeInputs.seconds}
-                                onChange={(e) => setManualTimeInputs(prev => ({ ...prev, seconds: e.target.value }))}
-                                className="w-20 px-3 py-2 border rounded"
-                                min="0"
-                                max="59"
-                            />
-                            <span className="mx-3">Period:</span>
-                            <input
-                                type="number"
-                                placeholder="Period"
-                                value={manualTimeInputs.period}
-                                onChange={(e) => setManualTimeInputs(prev => ({ ...prev, period: e.target.value }))}
-                                className="w-20 px-3 py-2 border rounded"
-                                min="1"
-                                max={gameState.game_settings.periods}
-                            />
-                            <button
-                                onClick={setManualTime}
-                                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                            >
-                                Set
-                            </button>
-                            <button
-                                onClick={() => setGameState(prev => ({ ...prev, manual_time_input: false }))}
-                                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                )}
-
                 {/* Goalies Section */}
                 <div className="grid grid-cols-2 gap-6 mt-4 pt-4 border-t">
                     {/* Home Goalies */}
