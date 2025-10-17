@@ -86,7 +86,12 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
 
     // Auto-save functionality for live updates
     const autoSaveGameStats = async () => {
-        if (!event?.id) return;
+        if (!event?.id) {
+            console.log('⚠️ Auto-save skipped: No event ID');
+            return;
+        }
+        
+        console.log('💾 Auto-saving game stats for event:', event.id);
         
         try {
             const gameData = {
@@ -102,6 +107,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                 created_at: new Date().toISOString()
             };
 
+            console.log('💾 Sending auto-save data:', gameData);
+
             const response = await fetch(`${backendUrl}/api/game-stats`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -109,8 +116,12 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
             });
 
             if (response.ok) {
+                const result = await response.json();
                 setLastSaved(new Date());
-                console.log('✅ Auto-saved game stats');
+                console.log('✅ Auto-saved successfully:', result);
+            } else {
+                const error = await response.text();
+                console.error('❌ Auto-save failed:', response.status, error);
             }
         } catch (error) {
             console.error('❌ Auto-save error:', error);
