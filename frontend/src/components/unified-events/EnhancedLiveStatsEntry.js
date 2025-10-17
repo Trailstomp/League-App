@@ -795,6 +795,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                                     home_team: gameState.home_team,
                                     away_team: gameState.away_team,
                                     goalies: gameState.goalies,
+                                    time_remaining: formatTime(gameState.time_remaining),
+                                    current_period: gameState.current_period,
                                     final_score: `${gameState.home_team.score}-${gameState.away_team.score}`,
                                     winner: gameState.home_team.score > gameState.away_team.score ? gameState.home_team : gameState.away_team,
                                     entry_type: 'enhanced_live_stats',
