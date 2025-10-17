@@ -84,6 +84,53 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         return () => clearInterval(timerRef.current);
     }, [gameState.is_running, gameState.time_remaining]);
 
+    // Auto-save functionality for live updates
+    const autoSaveGameStats = async () => {
+        if (!event?.id) return;
+        
+        try {
+            const gameData = {
+                event_id: event.id,
+                home_team: gameState.home_team,
+                away_team: gameState.away_team,
+                goalies: gameState.goalies,
+                time_remaining: formatTime(gameState.time_remaining),
+                current_period: gameState.current_period,
+                period_length: gameState.period_length,
+                detailed_stats: true,
+                entry_type: 'enhanced_live_stats_autosave',
+                created_at: new Date().toISOString()
+            };
+
+            const response = await fetch(`${backendUrl}/api/game-stats`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(gameData)
+            });
+
+            if (response.ok) {
+                setLastSaved(new Date());
+                console.log('✅ Auto-saved game stats');
+            }
+        } catch (error) {
+            console.error('❌ Auto-save error:', error);
+        }
+    };
+
+    // Setup auto-save interval when timer is running
+    useEffect(() => {
+        if (autoSaveEnabled && gameState.is_running) {
+            // Auto-save every 10 seconds
+            autoSaveRef.current = setInterval(() => {
+                autoSaveGameStats();
+            }, 10000);
+        } else {
+            clearInterval(autoSaveRef.current);
+        }
+
+        return () => clearInterval(autoSaveRef.current);
+    }, [autoSaveEnabled, gameState.is_running, gameState]);
+
     // Initialize teams and players
     useEffect(() => {
         if (event && event.teams && event.teams.length >= 2) {
