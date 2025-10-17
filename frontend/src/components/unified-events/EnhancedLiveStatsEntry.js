@@ -149,17 +149,33 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
 
     // Setup auto-save interval when timer is running
     useEffect(() => {
-        if (autoSaveEnabled && gameState.is_running) {
-            // Auto-save every 10 seconds
+        console.log('🔧 Auto-save useEffect triggered. Enabled:', autoSaveEnabled, 'Running:', gameState.is_running, 'Event ID:', event?.id);
+        
+        if (autoSaveEnabled && gameState.is_running && event?.id) {
+            console.log('✅ Starting auto-save interval (every 10 seconds)');
+            
+            // Immediate first save
+            autoSaveGameStats();
+            
+            // Then save every 10 seconds
             autoSaveRef.current = setInterval(() => {
+                console.log('⏰ 10 seconds elapsed, triggering auto-save...');
                 autoSaveGameStats();
             }, 10000);
         } else {
+            console.log('⚠️ Auto-save NOT started. Reason:', {
+                autoSaveEnabled,
+                timerRunning: gameState.is_running,
+                hasEventId: !!event?.id
+            });
             clearInterval(autoSaveRef.current);
         }
 
-        return () => clearInterval(autoSaveRef.current);
-    }, [autoSaveEnabled, gameState.is_running, gameState]);
+        return () => {
+            console.log('🧹 Cleaning up auto-save interval');
+            clearInterval(autoSaveRef.current);
+        };
+    }, [autoSaveEnabled, gameState.is_running, event?.id]);
 
     // Initialize teams and players
     useEffect(() => {
