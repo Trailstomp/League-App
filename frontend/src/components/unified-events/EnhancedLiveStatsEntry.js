@@ -107,21 +107,40 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                 created_at: new Date().toISOString()
             };
 
-            console.log('💾 Sending auto-save data:', gameData);
+            console.log('💾 Sending auto-save data to game_stats');
 
-            const response = await fetch(`${backendUrl}/api/game-stats`, {
+            // Save to game_stats collection
+            const statsResponse = await fetch(`${backendUrl}/api/game-stats`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(gameData)
             });
 
-            if (response.ok) {
-                const result = await response.json();
+            if (!statsResponse.ok) {
+                const error = await statsResponse.text();
+                console.error('❌ Auto-save to game_stats failed:', statsResponse.status, error);
+                return;
+            }
+
+            console.log('✅ Saved to game_stats');
+
+            // ALSO update unified_events.scores so Live View sees the update immediately
+            console.log('💾 Updating unified_events.scores');
+            const eventUpdateResponse = await fetch(`${backendUrl}/api/unified-events/${event.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    scores: gameData,
+                    status: 'in_progress'
+                })
+            });
+
+            if (eventUpdateResponse.ok) {
                 setLastSaved(new Date());
-                console.log('✅ Auto-saved successfully:', result);
+                console.log('✅ Auto-saved to BOTH game_stats AND unified_events.scores');
             } else {
-                const error = await response.text();
-                console.error('❌ Auto-save failed:', response.status, error);
+                const error = await eventUpdateResponse.text();
+                console.error('❌ Failed to update unified_events.scores:', error);
             }
         } catch (error) {
             console.error('❌ Auto-save error:', error);
