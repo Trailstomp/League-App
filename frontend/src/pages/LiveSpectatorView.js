@@ -62,12 +62,21 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
 
     // Poll for live updates every 3 seconds
     useEffect(() => {
+        console.log('🔄 Setting up polling for event:', event.id);
+        
         const pollInterval = setInterval(() => {
+            console.log('📡 Polling for updates, event ID:', event.id);
             fetchLiveUpdates();
         }, 3000);
 
-        return () => clearInterval(pollInterval);
-    }, [event]);
+        // Initial fetch
+        fetchLiveUpdates();
+
+        return () => {
+            console.log('🛑 Cleaning up polling for event:', event.id);
+            clearInterval(pollInterval);
+        };
+    }, [event.id]); // Changed to event.id to avoid recreating on every event object change
 
     const loadChatMessages = async () => {
         try {
