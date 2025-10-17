@@ -382,12 +382,18 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
                     <div className="relative z-10">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-2xl font-bold">🔴 LIVE: {event.title}</h2>
-                            <button
-                                onClick={onClose}
-                                className="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg font-medium transition"
-                            >
-                                ✕ Close
-                            </button>
+                            {/* Close button and Debug Info */}
+                            <div className="flex items-center gap-4">
+                                <div className="text-sm bg-black bg-opacity-20 px-3 py-1 rounded">
+                                    Polling: {liveData.home_team.score}-{liveData.away_team.score}
+                                </div>
+                                <button
+                                    onClick={onClose}
+                                    className="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg font-medium transition"
+                                >
+                                    ✕ Close
+                                </button>
+                            </div>
                         </div>
 
                         {/* Live Scoreboard */}
