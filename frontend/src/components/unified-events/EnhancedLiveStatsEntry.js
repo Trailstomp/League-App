@@ -1064,6 +1064,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                     </div>
                 </div>
             </div>
+
+            {/* Time Editor Dialog */}
+            {renderTimeEditor()}
         </div>
     );
 };
