@@ -425,6 +425,51 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         }));
     };
 
+    // Assign penalty to player
+    const assignPenalty = (teamKey, playerId, playerName, playerNumber) => {
+        const penaltyType = penaltyInput.type === 'Other (specify)' ? penaltyInput.customType : penaltyInput.type;
+        const duration = parseInt(penaltyInput.duration) || 2;
+        
+        const team = teamKey.split('_')[0]; // 'home_team' -> 'home'
+        
+        const newPenalty = {
+            id: Date.now().toString(),
+            playerId,
+            playerName,
+            playerNumber,
+            team: teamKey,
+            type: penaltyType,
+            duration: duration,
+            timeRemaining: duration * 60, // Convert minutes to seconds
+            startTime: Date.now()
+        };
+        
+        // Add penalty to list
+        setPenalties(prev => ({
+            ...prev,
+            [team]: [...prev[team], newPenalty]
+        }));
+        
+        // Add penalty minutes to player stats
+        setGameState(prev => ({
+            ...prev,
+            [teamKey]: {
+                ...prev[teamKey],
+                players: prev[teamKey].players.map(p =>
+                    p.id === playerId
+                        ? { ...p, stats: { ...p.stats, penalties: (p.stats.penalties || 0) + duration } }
+                        : p
+                )
+            }
+        }));
+        
+        // Close modal and reset
+        setShowPenaltyModal(false);
+        setSelectedPlayerForPenalty(null);
+        setPenaltyInput({ type: '', duration: 2, customType: '' });
+    };
+
+
     const toggleGoalieActive = (teamKey, goalieId) => {
         setGameState(prev => ({
             ...prev,
