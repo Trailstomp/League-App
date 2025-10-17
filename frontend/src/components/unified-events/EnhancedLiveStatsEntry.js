@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
+    console.log('🎮 EnhancedLiveStatsEntry mounted with:', {
+        event: event,
+        eventId: event?.id,
+        eventTitle: event?.title,
+        teamsCount: teams?.length
+    });
     const [gameState, setGameState] = useState({
         home_team: { id: '', name: '', score: 0, players: [], logo: '' },
         away_team: { id: '', name: '', score: 0, players: [], logo: '' },
