@@ -194,10 +194,36 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
     };
 
     const toggleTimer = () => {
+        const newIsRunning = !gameState.is_running;
+        
         setGameState(prev => ({
             ...prev,
-            is_running: !prev.is_running
+            is_running: newIsRunning
         }));
+
+        // Update event status to in_progress when starting
+        if (newIsRunning && event?.id) {
+            console.log('🎬 Game started, updating event status to in_progress');
+            updateEventStatus(event.id, 'in_progress');
+        }
+    };
+
+    const updateEventStatus = async (eventId, status) => {
+        try {
+            const response = await fetch(`${backendUrl}/api/unified-events/${eventId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+            
+            if (response.ok) {
+                console.log('✅ Event status updated to:', status);
+            } else {
+                console.error('❌ Failed to update event status');
+            }
+        } catch (error) {
+            console.error('❌ Error updating event status:', error);
+        }
     };
 
     const setManualTime = () => {
