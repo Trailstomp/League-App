@@ -114,6 +114,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                         time_remaining: newTime
                     };
                 });
+                
+                // Also update penalty timers when game clock is running
+                updatePenaltyTimers();
             }, 1000);
         } else {
             clearInterval(timerRef.current);
@@ -121,6 +124,28 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
 
         return () => clearInterval(timerRef.current);
     }, [gameState.is_running, gameState.time_remaining]);
+    
+    // Update penalty timers (decrements by 1 second)
+    const updatePenaltyTimers = () => {
+        setPenalties(prev => {
+            const updateTeamPenalties = (teamPenalties) => {
+                return teamPenalties.map(penalty => {
+                    if (penalty.timeRemaining > 0) {
+                        return {
+                            ...penalty,
+                            timeRemaining: penalty.timeRemaining - 1
+                        };
+                    }
+                    return penalty;
+                }).filter(penalty => penalty.timeRemaining > 0); // Remove expired penalties
+            };
+            
+            return {
+                home: updateTeamPenalties(prev.home),
+                away: updateTeamPenalties(prev.away)
+            };
+        });
+    };
 
     // Auto-save functionality for live updates - wrapped in useCallback to always have latest gameState
     const autoSaveGameStats = React.useCallback(async () => {
