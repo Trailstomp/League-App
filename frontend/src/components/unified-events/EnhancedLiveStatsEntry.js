@@ -723,9 +723,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                 <td className="px-3 py-2 text-sm font-medium">{player.name}</td>
                 <td className="px-3 py-2 text-sm text-gray-600">{player.position}</td>
                 
-                {/* Stats with +/- buttons */}
-                {['goals', 'assists', 'shots', 'penalties'].map(statType => (
-                    <td key={statType} className="px-3 py-2 text-center">
+                {/* Stats with +/- buttons - REORDERED: Shots, Goals, Assists, Penalties */}
+                {['shots', 'goals', 'assists', 'penalties'].map(statType => (
+                    <td key={statType} className="px-2 py-1 text-center">
                         <div className="flex items-center justify-center gap-1">
                             <button
                                 onClick={() => {
@@ -787,12 +787,12 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                                         });
                                     }
                                 }}
-                                className="w-6 h-6 bg-red-100 text-red-600 rounded text-xs hover:bg-red-200"
+                                className="w-8 h-8 bg-red-100 text-red-600 rounded text-sm font-bold hover:bg-red-200"
                                 disabled={player.stats[statType] <= 0}
                             >
-                                -
+                                −
                             </button>
-                            <span className={`w-8 text-center font-medium ${
+                            <span className={`w-10 text-center font-bold text-base ${
                                 statType === 'goals' ? 'text-green-600' :
                                 statType === 'assists' ? 'text-blue-600' :
                                 statType === 'shots' ? 'text-yellow-600' :
@@ -802,7 +802,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                             </span>
                             <button
                                 onClick={() => addStat(teamKey, player.id, statType)}
-                                className={`w-6 h-6 rounded text-xs hover:opacity-80 ${
+                                className={`w-8 h-8 rounded text-sm font-bold hover:opacity-80 ${
                                     statType === 'goals' ? 'bg-green-100 text-green-600' :
                                     statType === 'assists' ? 'bg-blue-100 text-blue-600' :
                                     statType === 'shots' ? 'bg-yellow-100 text-yellow-600' :
