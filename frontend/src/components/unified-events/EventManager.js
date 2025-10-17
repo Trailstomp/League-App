@@ -209,6 +209,7 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                 );
             
             case 'live-stats':
+                console.log('📋 Rendering EnhancedLiveStatsEntry with selectedEvent:', selectedEvent);
                 return (
                     <EnhancedLiveStatsEntry
                         event={selectedEvent}
