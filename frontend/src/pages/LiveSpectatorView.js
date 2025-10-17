@@ -96,33 +96,52 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
     const fetchLiveUpdates = async () => {
         console.log('📊 Fetching live updates for event:', event.id);
         try {
-            // Fetch event data for basic info
+            // Fetch event data which has the most recent scores in unified_events.scores
             const eventResponse = await fetch(`${backendUrl}/api/unified-events/${event.id}`);
             console.log('📥 Event response status:', eventResponse.status);
             if (eventResponse.ok) {
                 const eventData = await eventResponse.json();
-                console.log('📥 Event data:', eventData);
+                console.log('📥 Event data received:', eventData);
                 
-                // Update scores if available
-                if (eventData.scores) {
-                    console.log('📊 Updating scores from event data');
+                // PRIMARY SOURCE: unified_events.scores (most up-to-date)
+                if (eventData.scores && eventData.scores.home_team && eventData.scores.away_team) {
+                    console.log('✅ Using scores from unified_events.scores');
+                    
+                    const homeStats = calculateTeamStats(eventData.scores.home_team.players || []);
+                    const awayStats = calculateTeamStats(eventData.scores.away_team.players || []);
+                    
                     setLiveData(prev => ({
                         ...prev,
                         home_team: { 
                             ...prev.home_team, 
-                            score: eventData.scores.home_team?.score || 0 
+                            score: eventData.scores.home_team.score || 0 
                         },
                         away_team: { 
                             ...prev.away_team, 
-                            score: eventData.scores.away_team?.score || 0 
-                        }
+                            score: eventData.scores.away_team.score || 0 
+                        },
+                        home_players: (eventData.scores.home_team.players || [])
+                            .filter(p => p.stats && (p.stats.goals > 0 || p.stats.assists > 0))
+                            .sort((a, b) => (b.stats.goals || 0) - (a.stats.goals || 0))
+                            .slice(0, 5),
+                        away_players: (eventData.scores.away_team.players || [])
+                            .filter(p => p.stats && (p.stats.goals > 0 || p.stats.assists > 0))
+                            .sort((a, b) => (b.stats.goals || 0) - (a.stats.goals || 0))
+                            .slice(0, 5),
+                        home_stats: homeStats,
+                        away_stats: awayStats,
+                        time_remaining: eventData.scores.time_remaining || '15:00',
+                        current_period: eventData.scores.current_period || 1
                     }));
+                    
+                    console.log('✅ Live data updated from unified_events');
+                    return; // Exit early, we got the data we need
                 }
             }
 
-            // Fetch game stats for detailed player/team statistics
+            // FALLBACK: Try game_stats collection (legacy/backup)
             try {
-                console.log('📊 Fetching game stats from:', `${backendUrl}/api/events/${event.id}/game-stats`);
+                console.log('📊 Fallback: Fetching from game_stats collection');
                 const statsResponse = await fetch(`${backendUrl}/api/events/${event.id}/game-stats`);
                 console.log('📥 Stats response status:', statsResponse.status);
                 if (statsResponse.ok) {
@@ -140,7 +159,7 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
                     }
                     
                     if (latestStats && latestStats.home_team && latestStats.away_team) {
-                        console.log('✅ Found valid stats, updating live data');
+                        console.log('✅ Found valid stats from game_stats, updating live data');
                         const homeStats = calculateTeamStats(latestStats.home_team.players || []);
                         const awayStats = calculateTeamStats(latestStats.away_team.players || []);
                         
@@ -170,11 +189,11 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
                             current_period: latestStats.current_period || 1
                         }));
                     } else {
-                        console.log('⚠️ No valid stats found in response');
+                        console.log('⚠️ No valid stats found in game_stats response');
                     }
                 }
             } catch (statsError) {
-                console.log('⚠️ No game stats yet, waiting for game to start...', statsError);
+                console.log('⚠️ No game stats in game_stats collection:', statsError);
             }
         } catch (error) {
             console.error('❌ Error fetching live updates:', error);
