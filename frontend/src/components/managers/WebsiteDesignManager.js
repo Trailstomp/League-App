@@ -1186,6 +1186,167 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         </div>
     );
 
+    // Live View Settings Section
+    const renderLiveViewSection = () => (
+        <div className="space-y-6">
+            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                <h3 className="text-lg font-semibold text-green-800 mb-2">Live View & Scoring Styling</h3>
+                <p className="text-green-600 text-sm">Customize how live game views and score entry pages look. Team banners and colors will be applied automatically.</p>
+            </div>
+
+            {/* Background Type Selection */}
+            <div>
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Background Style</h4>
+                <p className="text-sm text-slate-600 mb-3">Choose how the split banner should display for home/away teams</p>
+                <div className="grid grid-cols-3 gap-3">
+                    <button
+                        onClick={() => updateStyle({ liveViewBackgroundType: 'banners' })}
+                        className={`p-4 rounded-lg border-2 transition-colors ${
+                            editingStyle.liveViewBackgroundType === 'banners'
+                                ? 'border-blue-600 bg-blue-50' 
+                                : 'border-slate-300 hover:border-slate-400'
+                        }`}
+                    >
+                        <div className="text-center">
+                            <div className="text-2xl mb-2">🖼️</div>
+                            <div className="font-medium">Team Banners</div>
+                            <div className="text-xs text-slate-600 mt-1">Use team banner images</div>
+                        </div>
+                    </button>
+                    
+                    <button
+                        onClick={() => updateStyle({ liveViewBackgroundType: 'solid' })}
+                        className={`p-4 rounded-lg border-2 transition-colors ${
+                            editingStyle.liveViewBackgroundType === 'solid'
+                                ? 'border-blue-600 bg-blue-50' 
+                                : 'border-slate-300 hover:border-slate-400'
+                        }`}
+                    >
+                        <div className="text-center">
+                            <div className="text-2xl mb-2">🎨</div>
+                            <div className="font-medium">Solid Colors</div>
+                            <div className="text-xs text-slate-600 mt-1">Use team colors only</div>
+                        </div>
+                    </button>
+                    
+                    <button
+                        onClick={() => updateStyle({ liveViewBackgroundType: 'gradient' })}
+                        className={`p-4 rounded-lg border-2 transition-colors ${
+                            editingStyle.liveViewBackgroundType === 'gradient'
+                                ? 'border-blue-600 bg-blue-50' 
+                                : 'border-slate-300 hover:border-slate-400'
+                        }`}
+                    >
+                        <div className="text-center">
+                            <div className="text-2xl mb-2">🌈</div>
+                            <div className="font-medium">Gradient</div>
+                            <div className="text-xs text-slate-600 mt-1">Team color gradient</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            {/* Banner Opacity Control */}
+            {editingStyle.liveViewBackgroundType === 'banners' && (
+                <div>
+                    <h4 className="text-md font-semibold text-slate-800 mb-4">Banner Overlay Opacity</h4>
+                    <p className="text-sm text-slate-600 mb-3">Control how transparent the team banners appear (lower = more visible)</p>
+                    <div className="space-y-3">
+                        <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.05"
+                            value={editingStyle.liveViewBannerOpacity || 0.3}
+                            onChange={(e) => updateStyle({ liveViewBannerOpacity: parseFloat(e.target.value) })}
+                            className="w-full"
+                        />
+                        <div className="flex justify-between text-sm text-slate-600">
+                            <span>More Visible (0)</span>
+                            <span className="font-medium text-blue-600">{((editingStyle.liveViewBannerOpacity || 0.3) * 100).toFixed(0)}%</span>
+                            <span>More Subtle (100)</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Team Fonts Toggle */}
+            <div>
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Typography</h4>
+                <div className="flex items-center space-x-3 p-4 bg-slate-50 rounded-lg">
+                    <input
+                        type="checkbox"
+                        id="liveViewUseTeamFonts"
+                        checked={editingStyle.liveViewUseTeamFonts !== false}
+                        onChange={(e) => updateStyle({ liveViewUseTeamFonts: e.target.checked })}
+                        className="w-5 h-5 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                    />
+                    <label htmlFor="liveViewUseTeamFonts" className="flex-1 cursor-pointer">
+                        <div className="font-medium text-slate-800">Use Team-Specific Fonts</div>
+                        <div className="text-sm text-slate-600">Apply each team's font settings to their respective sections</div>
+                    </label>
+                </div>
+            </div>
+
+            {/* Preview Examples */}
+            <div>
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Preview</h4>
+                <div className="border-2 border-slate-300 rounded-lg overflow-hidden">
+                    <div className="flex h-32">
+                        {/* Home Team Side */}
+                        <div 
+                            className="flex-1 flex items-center justify-center relative overflow-hidden"
+                            style={{
+                                background: editingStyle.liveViewBackgroundType === 'banners' 
+                                    ? `linear-gradient(rgba(59, 130, 246, ${editingStyle.liveViewBannerOpacity || 0.3}), rgba(59, 130, 246, ${editingStyle.liveViewBannerOpacity || 0.3})), url('https://via.placeholder.com/400x200/3b82f6/ffffff?text=Home+Banner')`
+                                    : editingStyle.liveViewBackgroundType === 'gradient'
+                                    ? 'linear-gradient(to right, #3b82f6, #1e40af)'
+                                    : '#3b82f6',
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center'
+                            }}
+                        >
+                            <div className="text-white text-center z-10">
+                                <div className="text-xs mb-1">Home Team</div>
+                                <div className="text-3xl font-bold">0</div>
+                            </div>
+                        </div>
+                        
+                        {/* Center Clock */}
+                        <div className="flex items-center justify-center bg-black bg-opacity-30 px-8 z-20">
+                            <div className="text-white text-center">
+                                <div className="text-4xl font-bold font-mono">15:00</div>
+                                <div className="text-xs mt-1">Period 1</div>
+                            </div>
+                        </div>
+                        
+                        {/* Away Team Side */}
+                        <div 
+                            className="flex-1 flex items-center justify-center relative overflow-hidden"
+                            style={{
+                                background: editingStyle.liveViewBackgroundType === 'banners' 
+                                    ? `linear-gradient(rgba(239, 68, 68, ${editingStyle.liveViewBannerOpacity || 0.3}), rgba(239, 68, 68, ${editingStyle.liveViewBannerOpacity || 0.3})), url('https://via.placeholder.com/400x200/ef4444/ffffff?text=Away+Banner')`
+                                    : editingStyle.liveViewBackgroundType === 'gradient'
+                                    ? 'linear-gradient(to left, #ef4444, #dc2626)'
+                                    : '#ef4444',
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center'
+                            }}
+                        >
+                            <div className="text-white text-center z-10">
+                                <div className="text-xs mb-1">Away Team</div>
+                                <div className="text-3xl font-bold">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p className="text-xs text-slate-500 mt-2 text-center">
+                    💡 This preview shows how the split banner will look. Team banners and colors will be applied automatically from team settings.
+                </p>
+            </div>
+        </div>
+    );
+
     // Event Ticker Section
     const renderTickerSection = () => (
         <div className="space-y-6">
