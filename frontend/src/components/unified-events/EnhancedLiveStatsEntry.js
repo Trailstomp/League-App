@@ -477,6 +477,71 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         setPenaltyInput({ type: '', duration: 2, customType: '' });
     };
 
+    // Live Chat Functions
+    const loadChatMessages = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/api/events/${event.id}/chat`);
+            if (response.ok) {
+                const data = await response.json();
+                setChat(prev => ({
+                    ...prev,
+                    messages: data.messages || []
+                }));
+            }
+        } catch (error) {
+            console.error('Error loading chat:', error);
+        }
+    };
+
+    const handleSendMessage = async () => {
+        if (chat.newMessage.trim()) {
+            const newMsg = {
+                id: Date.now(),
+                user_name: 'Scorer',
+                message: chat.newMessage,
+                timestamp: new Date().toISOString(),
+                type: 'user'
+            };
+
+            // Optimistically add message
+            setChat(prev => ({
+                ...prev,
+                messages: [...prev.messages, newMsg],
+                newMessage: ''
+            }));
+
+            try {
+                await fetch(`${backendUrl}/api/events/${event.id}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: chat.newMessage,
+                        event_id: event.id,
+                        timestamp: new Date().toISOString(),
+                        user_name: 'Scorer'
+                    })
+                });
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
+        }
+    };
+
+    // Load chat messages on mount
+    useEffect(() => {
+        if (event?.id) {
+            loadChatMessages();
+            
+            // Poll for new messages every 5 seconds
+            const chatInterval = setInterval(loadChatMessages, 5000);
+            return () => clearInterval(chatInterval);
+        }
+    }, [event?.id]);
+
+    // Auto-scroll chat to bottom
+    useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [chat.messages]);
 
     const toggleGoalieActive = (teamKey, goalieId) => {
         setGameState(prev => ({
