@@ -4,8 +4,8 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
     console.log('🎬 LiveSpectatorView RENDERING with event:', event?.id, event?.title);
     
     const [liveData, setLiveData] = useState({
-        home_team: { name: '', logo: '', score: 0, color: '#3b82f6', banner: null },
-        away_team: { name: '', logo: '', score: 0, color: '#ef4444', banner: null },
+        home_team: { name: '', logo: '', score: 0, color: '#3b82f6', banner: null, font: 'Inter, sans-serif' },
+        away_team: { name: '', logo: '', score: 0, color: '#ef4444', banner: null, font: 'Inter, sans-serif' },
         time_remaining: '15:00',
         current_period: 1,
         home_players: [],
@@ -14,6 +14,12 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
         away_stats: { goals: 0, shots: 0, assists: 0, penalties: 0 },
         penalties: { home: [], away: [] },
         gameEvents: []
+    });
+
+    const [liveViewSettings, setLiveViewSettings] = useState({
+        backgroundType: 'banners',
+        bannerOpacity: 0.3,
+        useTeamFonts: true
     });
 
     const [chat, setChat] = useState({
@@ -30,7 +36,29 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
     const chatEndRef = useRef(null);
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
-    // Initialize game data with team colors
+    // Fetch website style settings for live view
+    useEffect(() => {
+        const fetchWebsiteStyle = async () => {
+            try {
+                const response = await fetch(`${backendUrl}/api/league-data`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.websiteStyle) {
+                        setLiveViewSettings({
+                            backgroundType: data.websiteStyle.liveViewBackgroundType || 'banners',
+                            bannerOpacity: data.websiteStyle.liveViewBannerOpacity || 0.3,
+                            useTeamFonts: data.websiteStyle.liveViewUseTeamFonts !== false
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching website style:', error);
+            }
+        };
+        fetchWebsiteStyle();
+    }, [backendUrl]);
+
+    // Initialize game data with team colors and fonts
     useEffect(() => {
         if (event && teams) {
             const homeTeam = teams.find(t => t.id === event.teams?.[0]);
@@ -43,6 +71,7 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
                     logo: homeTeam?.style?.logoUrl || null,
                     color: homeTeam?.style?.primaryColor || '#3b82f6',
                     banner: homeTeam?.style?.bannerUrl || null,
+                    font: homeTeam?.style?.font || 'Inter, sans-serif',
                     score: 0
                 },
                 away_team: {
@@ -50,6 +79,7 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
                     logo: awayTeam?.style?.logoUrl || null,
                     color: awayTeam?.style?.accentColor || awayTeam?.style?.primaryColor || '#ef4444',
                     banner: awayTeam?.style?.bannerUrl || null,
+                    font: awayTeam?.style?.font || 'Inter, sans-serif',
                     score: 0
                 }
             }));
