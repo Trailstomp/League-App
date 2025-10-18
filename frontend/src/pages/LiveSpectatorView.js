@@ -537,6 +537,9 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
                     <div className="w-2/3 p-6 overflow-y-auto border-r">
                         <h3 className="text-2xl font-bold mb-4">📊 Live Game Stats</h3>
                         
+                        {/* Active Penalties */}
+                        {renderActivePenalties()}
+                        
                         {/* Team Stats Comparison */}
                         <div className="grid grid-cols-2 gap-4 mb-6">
                             {/* Home Team Stats */}
