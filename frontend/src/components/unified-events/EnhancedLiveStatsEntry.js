@@ -180,6 +180,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                 away_team: gameState.away_team,
                 goalies: gameState.goalies,
                 penalties: penalties, // Include active penalties for live view
+                gameEvents: gameEvents, // Include game narration events
                 time_remaining: formatTime(gameState.time_remaining),
                 current_period: gameState.current_period,
                 period_length: gameState.period_length,
