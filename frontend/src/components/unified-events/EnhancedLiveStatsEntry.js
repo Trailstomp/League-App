@@ -416,12 +416,13 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
 
     // Enhanced stat adding with goalie integration
     const addStat = (teamKey, playerId, statType) => {
+        // Get player and team info BEFORE state update
+        const player = gameState[teamKey].players.find(p => p.id === playerId);
+        const teamName = gameState[teamKey].name;
+        
+        // Update game state
         setGameState(prev => {
             const newState = { ...prev };
-            
-            // Find the player
-            const player = prev[teamKey].players.find(p => p.id === playerId);
-            const teamName = prev[teamKey].name;
             
             // Update player stats
             newState[teamKey] = {
@@ -436,24 +437,12 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                 })
             };
 
-            // Add game event narration
-            if (player) {
-                if (statType === 'goals') {
-                    addGameEvent(`🚨 GOAL! ${teamName} - #${player.number} ${player.name} scores!`, 'goal');
-                } else if (statType === 'shots') {
-                    addGameEvent(`🏒 ${teamName} - #${player.number} ${player.name} takes a shot`, 'shot');
-                } else if (statType === 'assists') {
-                    addGameEvent(`🎯 ${teamName} - #${player.number} ${player.name} with an assist`, 'assist');
-                }
-            }
-
             // Update team score for goals
             if (statType === 'goals') {
                 newState[teamKey].score = prev[teamKey].score + 1;
                 
                 // Update opposing goalie's goals against
                 const opposingTeamKey = teamKey === 'home_team' ? 'away' : 'home';
-                const opposingTeamName = prev[opposingTeamKey].name;
                 newState.goalies = {
                     ...prev.goalies,
                     [opposingTeamKey]: prev.goalies[opposingTeamKey].map(goalie => 
@@ -466,18 +455,11 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                         } : goalie
                     )
                 };
-                
-                // Add save event for goalie
-                const activeGoalie = prev.goalies[opposingTeamKey].find(g => g.active);
-                if (activeGoalie) {
-                    addGameEvent(`🥅 ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} - Goal against`, 'goal_against');
-                }
             }
 
             // Update opposing goalie's shots faced for shots
             if (statType === 'shots') {
                 const opposingTeamKey = teamKey === 'home_team' ? 'away' : 'home';
-                const opposingTeamName = prev[opposingTeamKey].name;
                 newState.goalies = {
                     ...prev.goalies,
                     [opposingTeamKey]: prev.goalies[opposingTeamKey].map(goalie => 
@@ -490,16 +472,35 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                         } : goalie
                     )
                 };
-                
-                // Check if this was a save (shot but not a goal from previous stats)
-                const activeGoalie = prev.goalies[opposingTeamKey].find(g => g.active);
-                if (activeGoalie) {
-                    addGameEvent(`🛡️ ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} faces a shot`, 'save');
-                }
             }
 
             return newState;
         });
+
+        // Add game event narration AFTER state update (separate state)
+        if (player) {
+            if (statType === 'goals') {
+                const opposingTeamKey = teamKey === 'home_team' ? 'away' : 'home';
+                const opposingTeamName = gameState[opposingTeamKey].name;
+                const activeGoalie = gameState.goalies[opposingTeamKey].find(g => g.active);
+                
+                addGameEvent(`🚨 GOAL! ${teamName} - #${player.number} ${player.name} scores!`, 'goal');
+                if (activeGoalie) {
+                    addGameEvent(`🥅 ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} - Goal against`, 'goal_against');
+                }
+            } else if (statType === 'shots') {
+                const opposingTeamKey = teamKey === 'home_team' ? 'away' : 'home';
+                const opposingTeamName = gameState[opposingTeamKey].name;
+                const activeGoalie = gameState.goalies[opposingTeamKey].find(g => g.active);
+                
+                addGameEvent(`🏒 ${teamName} - #${player.number} ${player.name} takes a shot`, 'shot');
+                if (activeGoalie) {
+                    addGameEvent(`🛡️ ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} faces a shot`, 'save');
+                }
+            } else if (statType === 'assists') {
+                addGameEvent(`🎯 ${teamName} - #${player.number} ${player.name} with an assist`, 'assist');
+            }
+        }
     };
 
     const togglePlayerActive = (teamKey, playerId) => {
