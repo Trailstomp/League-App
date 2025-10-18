@@ -11,7 +11,9 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
         home_players: [],
         away_players: [],
         home_stats: { goals: 0, shots: 0, assists: 0, penalties: 0 },
-        away_stats: { goals: 0, shots: 0, assists: 0, penalties: 0 }
+        away_stats: { goals: 0, shots: 0, assists: 0, penalties: 0 },
+        penalties: { home: [], away: [] },
+        gameEvents: []
     });
 
     const [chat, setChat] = useState({
