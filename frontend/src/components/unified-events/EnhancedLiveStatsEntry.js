@@ -521,6 +521,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         const duration = parseInt(penaltyInput.duration) || 2;
         
         const team = teamKey.split('_')[0]; // 'home_team' -> 'home'
+        const teamName = gameState[teamKey].name;
         
         const newPenalty = {
             id: Date.now().toString(),
@@ -552,6 +553,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                 )
             }
         }));
+        
+        // Add game event
+        const totalTime = Math.floor((duration * 60 + 90) / 60); // Convert back to display minutes
+        addGameEvent(`⚠️ PENALTY! ${teamName} - #${playerNumber} ${playerName} - ${penaltyType} (${totalTime}:30)`, 'penalty');
         
         // Close modal and reset
         setShowPenaltyModal(false);
