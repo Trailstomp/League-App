@@ -58,6 +58,13 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         newMessage: ''
     });
 
+    // Live View Settings State
+    const [liveViewSettings, setLiveViewSettings] = useState({
+        backgroundType: 'banners',
+        bannerOpacity: 0.3,
+        useTeamFonts: true
+    });
+
     const timerRef = useRef(null);
     const autoSaveRef = useRef(null);
     const penaltyTimersRef = useRef([]);
