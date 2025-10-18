@@ -46,6 +46,11 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         menuFont: websiteStyle.menuFont || 'Inter, sans-serif',
         menuFontSize: websiteStyle.menuFontSize || '16px',
         
+        // Live View Settings - with websiteStyle fallbacks
+        liveViewBackgroundType: websiteStyle.liveViewBackgroundType || 'banners',
+        liveViewBannerOpacity: websiteStyle.liveViewBannerOpacity || 0.3,
+        liveViewUseTeamFonts: websiteStyle.liveViewUseTeamFonts !== undefined ? websiteStyle.liveViewUseTeamFonts : true,
+        
         // Theme colors - with websiteStyle fallbacks
         primaryColor: websiteStyle.primaryColor || '#1e40af',
         accentColor: websiteStyle.accentColor || '#3b82f6',
