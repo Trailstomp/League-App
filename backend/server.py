@@ -661,6 +661,44 @@ async def update_website_style(style_data: Dict[str, Any]):
         logger.error(f"❌ Error updating website style: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/league-data/liveViewSettings")
+async def update_live_view_settings(settings_data: Dict[str, Any]):
+    """Update live view styling settings in the league database"""
+    try:
+        # Get the current league data
+        league_doc = await db.league_data.find_one({"id": "main_league"})
+        if not league_doc:
+            # Create new league data if it doesn't exist
+            league_doc = {
+                "id": "main_league",
+                "liveViewSettings": {},
+                "lastUpdated": datetime.utcnow().isoformat()
+            }
+        
+        # Update the liveViewSettings field
+        league_doc["liveViewSettings"] = settings_data
+        league_doc["lastUpdated"] = datetime.utcnow().isoformat()
+        
+        # Save back to database
+        result = await db.league_data.replace_one(
+            {"id": "main_league"},
+            league_doc,
+            upsert=True
+        )
+        
+        logger.info(f"✅ Live view settings updated - {len(settings_data)} settings, modified: {result.modified_count}")
+        
+        return {
+            "status": "success", 
+            "message": f"Successfully updated live view settings with {len(settings_data)} settings",
+            "modified": result.modified_count,
+            "upserted": result.upserted_id is not None
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error updating live view settings: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/league-data/newsItems")
 async def update_news_items(news_data: List[Dict[str, Any]]):
     """Update news items data in the league database"""
