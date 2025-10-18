@@ -166,7 +166,8 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
                         away_stats: awayStats,
                         time_remaining: eventData.scores.time_remaining || '15:00',
                         current_period: eventData.scores.current_period || 1,
-                        penalties: eventData.scores.penalties || { home: [], away: [] } // Extract penalties
+                        penalties: eventData.scores.penalties || { home: [], away: [] }, // Extract penalties
+                        gameEvents: eventData.scores.gameEvents || [] // Extract game events
                     }));
                     
                     console.log('✅ Live data updated from unified_events');
