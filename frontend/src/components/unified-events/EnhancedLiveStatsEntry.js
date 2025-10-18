@@ -1455,6 +1455,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                     
                     {activeTab === 'home_stats' && renderPlayerStats('home_team', gameState.home_team)}
                     {activeTab === 'away_stats' && renderPlayerStats('away_team', gameState.away_team)}
+                    {activeTab === 'live_chat' && renderLiveChat()}
                 </div>
             </div>
 
