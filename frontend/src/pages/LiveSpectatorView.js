@@ -476,86 +476,92 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
     return (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-lg shadow-2xl max-w-7xl w-full h-[95vh] flex flex-col">
-                {/* Header with Team Colors/Banners */}
-                <div 
-                    className="text-white p-6 rounded-t-lg flex-shrink-0 relative overflow-hidden"
-                    style={getBackgroundStyle()}
-                >
-                    {/* Team Banners as Background */}
-                    {liveData.home_team.banner && (
+                {/* Header with Split Team Banners */}
+                <div className="rounded-t-lg flex-shrink-0 relative overflow-hidden">
+                    <div className="flex relative">
+                        {/* Home Team Side - Left 50% */}
                         <div 
-                            className="absolute left-0 top-0 bottom-0 w-1/2 opacity-20"
+                            className="flex-1 relative overflow-hidden"
                             style={{
-                                backgroundImage: `url(${liveData.home_team.banner})`,
+                                background: liveViewSettings.backgroundType === 'banners' && liveData.home_team.banner
+                                    ? `linear-gradient(rgba(0, 0, 0, ${liveViewSettings.bannerOpacity}), rgba(0, 0, 0, ${liveViewSettings.bannerOpacity})), url(${liveData.home_team.banner})`
+                                    : liveViewSettings.backgroundType === 'gradient'
+                                    ? `linear-gradient(to right, ${liveData.home_team.color}, ${liveData.home_team.color}dd)`
+                                    : liveData.home_team.color,
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center'
                             }}
-                        />
-                    )}
-                    {liveData.away_team.banner && (
-                        <div 
-                            className="absolute right-0 top-0 bottom-0 w-1/2 opacity-20"
-                            style={{
-                                backgroundImage: `url(${liveData.away_team.banner})`,
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center'
-                            }}
-                        />
-                    )}
+                        >
+                            <div className="p-6 text-white relative z-10">
+                                <div className="flex items-center gap-4">
+                                    {liveData.home_team.logo && (
+                                        <img 
+                                            src={liveData.home_team.logo} 
+                                            alt={liveData.home_team.name}
+                                            className="w-16 h-16 object-cover rounded-lg border-4 border-white shadow-lg"
+                                        />
+                                    )}
+                                    <div style={{ fontFamily: liveViewSettings.useTeamFonts ? liveData.home_team.font : 'Inter, sans-serif' }}>
+                                        <div className="text-xl font-bold">{liveData.home_team.name}</div>
+                                        <div className="text-5xl font-bold text-white drop-shadow-lg">{liveData.home_team.score}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div className="relative z-10">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-2xl font-bold">🔴 LIVE: {event.title}</h2>
-                            {/* Close button and Debug Info */}
+                        {/* Center Clock - Floating Over Both Sides */}
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30">
+                            <div className="text-center px-8 py-3 bg-black bg-opacity-60 backdrop-blur-sm rounded-lg border-2 border-white shadow-2xl">
+                                <div className="text-5xl font-bold text-white font-mono">{liveData.time_remaining}</div>
+                                <div className="text-sm text-white mt-1">Period {liveData.current_period}</div>
+                            </div>
+                        </div>
+
+                        {/* Away Team Side - Right 50% */}
+                        <div 
+                            className="flex-1 relative overflow-hidden"
+                            style={{
+                                background: liveViewSettings.backgroundType === 'banners' && liveData.away_team.banner
+                                    ? `linear-gradient(rgba(0, 0, 0, ${liveViewSettings.bannerOpacity}), rgba(0, 0, 0, ${liveViewSettings.bannerOpacity})), url(${liveData.away_team.banner})`
+                                    : liveViewSettings.backgroundType === 'gradient'
+                                    ? `linear-gradient(to left, ${liveData.away_team.color}, ${liveData.away_team.color}dd)`
+                                    : liveData.away_team.color,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center'
+                            }}
+                        >
+                            <div className="p-6 text-white relative z-10">
+                                <div className="flex items-center gap-4 justify-end">
+                                    <div className="text-right" style={{ fontFamily: liveViewSettings.useTeamFonts ? liveData.away_team.font : 'Inter, sans-serif' }}>
+                                        <div className="text-xl font-bold">{liveData.away_team.name}</div>
+                                        <div className="text-5xl font-bold text-white drop-shadow-lg">{liveData.away_team.score}</div>
+                                    </div>
+                                    {liveData.away_team.logo && (
+                                        <img 
+                                            src={liveData.away_team.logo} 
+                                            alt={liveData.away_team.name}
+                                            className="w-16 h-16 object-cover rounded-lg border-4 border-white shadow-lg"
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Top Bar with Title and Close Button */}
+                    <div className="absolute top-0 left-0 right-0 z-20 px-6 py-2 bg-gradient-to-b from-black/50 to-transparent">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-lg font-bold text-white drop-shadow-lg">🔴 LIVE: {event.title}</h2>
                             <div className="flex items-center gap-4">
-                                <div className="text-sm bg-black bg-opacity-20 px-3 py-1 rounded">
+                                <div className="text-xs bg-black bg-opacity-40 px-3 py-1 rounded text-white">
                                     Polling: {liveData.home_team.score}-{liveData.away_team.score}
                                 </div>
                                 <button
                                     onClick={onClose}
-                                    className="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg font-medium transition"
+                                    className="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg font-medium transition text-white text-sm"
                                 >
                                     ✕ Close
                                 </button>
-                            </div>
-                        </div>
-
-                        {/* Live Scoreboard */}
-                        <div className="flex items-center justify-between">
-                            {/* Home Team */}
-                            <div className="flex items-center gap-4 flex-1">
-                                {liveData.home_team.logo && (
-                                    <img 
-                                        src={liveData.home_team.logo} 
-                                        alt={liveData.home_team.name}
-                                        className="w-16 h-16 object-cover rounded-lg border-4 border-white shadow-lg"
-                                    />
-                                )}
-                                <div>
-                                    <div className="text-xl font-bold">{liveData.home_team.name}</div>
-                                    <div className="text-5xl font-bold text-white drop-shadow-lg">{liveData.home_team.score}</div>
-                                </div>
-                            </div>
-
-                            {/* Timer */}
-                            <div className="text-center px-8 bg-black bg-opacity-30 rounded-lg py-3">
-                                <div className="text-5xl font-bold">{liveData.time_remaining}</div>
-                                <div className="text-sm mt-1">Period {liveData.current_period}</div>
-                            </div>
-
-                            {/* Away Team */}
-                            <div className="flex items-center gap-4 flex-1 justify-end">
-                                <div className="text-right">
-                                    <div className="text-xl font-bold">{liveData.away_team.name}</div>
-                                    <div className="text-5xl font-bold text-white drop-shadow-lg">{liveData.away_team.score}</div>
-                                </div>
-                                {liveData.away_team.logo && (
-                                    <img 
-                                        src={liveData.away_team.logo} 
-                                        alt={liveData.away_team.name}
-                                        className="w-16 h-16 object-cover rounded-lg border-4 border-white shadow-lg"
-                                    />
-                                )}
                             </div>
                         </div>
                     </div>
