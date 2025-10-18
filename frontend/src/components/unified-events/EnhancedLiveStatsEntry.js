@@ -258,6 +258,28 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         }
     }, [autoSaveEnabled, gameState.is_running, event?.id, autoSaveGameStats]);
 
+    // Fetch website style settings for live view
+    useEffect(() => {
+        const fetchWebsiteStyle = async () => {
+            try {
+                const response = await fetch(`${backendUrl}/api/league-data`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.websiteStyle) {
+                        setLiveViewSettings({
+                            backgroundType: data.websiteStyle.liveViewBackgroundType || 'banners',
+                            bannerOpacity: data.websiteStyle.liveViewBannerOpacity || 0.3,
+                            useTeamFonts: data.websiteStyle.liveViewUseTeamFonts !== false
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching website style:', error);
+            }
+        };
+        fetchWebsiteStyle();
+    }, [backendUrl]);
+
     // Initialize teams and players
     useEffect(() => {
         if (event && event.teams && event.teams.length >= 2) {
@@ -273,6 +295,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                     id: event.teams[0],
                     name: homeTeam?.name || 'Home Team',
                     logo: homeTeam?.style?.logoUrl || '',
+                    color: homeTeam?.style?.primaryColor || '#3b82f6',
+                    banner: homeTeam?.style?.bannerUrl || null,
+                    font: homeTeam?.style?.font || 'Inter, sans-serif',
                     score: 0,
                     players: homeData.players.map(p => ({
                         ...p,
@@ -283,6 +308,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                     id: event.teams[1],
                     name: awayTeam?.name || 'Away Team',
                     logo: awayTeam?.style?.logoUrl || '',
+                    color: awayTeam?.style?.accentColor || awayTeam?.style?.primaryColor || '#ef4444',
+                    banner: awayTeam?.style?.bannerUrl || null,
+                    font: awayTeam?.style?.font || 'Inter, sans-serif',
                     score: 0,
                     players: awayData.players.map(p => ({
                         ...p,
