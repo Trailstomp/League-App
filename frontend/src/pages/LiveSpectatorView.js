@@ -485,11 +485,16 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
                         <div 
                             className="flex-1 relative overflow-hidden"
                             style={{
-                                background: liveViewSettings.backgroundType === 'banners' && liveData.home_team.banner
+                                backgroundColor: liveViewSettings.backgroundType === 'banners' && liveData.home_team.banner
+                                    ? 'transparent'
+                                    : liveViewSettings.backgroundType === 'gradient'
+                                    ? 'transparent'
+                                    : liveData.home_team.color,
+                                backgroundImage: liveViewSettings.backgroundType === 'banners' && liveData.home_team.banner
                                     ? `linear-gradient(rgba(0, 0, 0, ${liveViewSettings.bannerOpacity}), rgba(0, 0, 0, ${liveViewSettings.bannerOpacity})), url(${liveData.home_team.banner})`
                                     : liveViewSettings.backgroundType === 'gradient'
                                     ? `linear-gradient(to right, ${liveData.home_team.color}, ${liveData.home_team.color}dd)`
-                                    : liveData.home_team.color,
+                                    : 'none',
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center'
                             }}
