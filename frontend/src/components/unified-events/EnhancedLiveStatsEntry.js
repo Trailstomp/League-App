@@ -340,6 +340,21 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
+    // Add game event for narration
+    const addGameEvent = (eventText, eventType = 'action') => {
+        const newEvent = {
+            id: Date.now(),
+            time: formatTime(gameState.time_remaining),
+            period: gameState.current_period,
+            text: eventText,
+            type: eventType,
+            timestamp: new Date().toISOString()
+        };
+        
+        setGameEvents(prev => [newEvent, ...prev]); // Add to beginning for newest first
+        console.log('📝 Game Event:', eventText);
+    };
+
     const toggleTimer = () => {
         const newIsRunning = !gameState.is_running;
         
