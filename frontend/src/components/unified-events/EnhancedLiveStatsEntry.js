@@ -1326,6 +1326,84 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         );
     };
 
+    // Render Live Chat
+    const renderLiveChat = () => {
+        const formatChatTime = (timestamp) => {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        };
+
+        return (
+            <div className="bg-white rounded-lg shadow-md h-[calc(100vh-450px)]">
+                <div className="flex flex-col h-full">
+                    <div className="p-4 border-b bg-gray-50">
+                        <h3 className="text-xl font-bold flex items-center gap-2">
+                            💬 Live Chat
+                            <span className="text-sm font-normal text-gray-500">
+                                ({chat.messages.length} messages)
+                            </span>
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                            Chat with spectators and other scorers in real-time
+                        </p>
+                    </div>
+                    
+                    {/* Messages */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+                        {chat.messages.length === 0 ? (
+                            <div className="text-center py-12 text-gray-500">
+                                <div className="text-4xl mb-2">💬</div>
+                                <p>No messages yet. Start the conversation!</p>
+                            </div>
+                        ) : (
+                            chat.messages.map(msg => (
+                                <div
+                                    key={msg.id}
+                                    className={`flex ${msg.type === 'system' ? 'justify-center' : 'justify-start'}`}
+                                >
+                                    <div className={`max-w-[85%] px-4 py-2 rounded-lg ${
+                                        msg.type === 'system'
+                                            ? 'bg-blue-100 text-blue-800 text-sm'
+                                            : 'bg-white shadow border'
+                                    }`}>
+                                        <div className="font-semibold text-sm text-gray-700">{msg.user_name}</div>
+                                        <div className="text-sm mt-1">{msg.message}</div>
+                                        <div className="text-xs text-gray-500 mt-1">{formatChatTime(msg.timestamp)}</div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                        <div ref={chatEndRef} />
+                    </div>
+
+                    {/* Message Input */}
+                    <div className="p-4 border-t bg-white">
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={chat.newMessage}
+                                onChange={(e) => setChat(prev => ({ ...prev, newMessage: e.target.value }))}
+                                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                                placeholder="Type a message..."
+                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            />
+                            <button
+                                onClick={handleSendMessage}
+                                disabled={!chat.newMessage.trim()}
+                                className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Send
+                            </button>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">
+                            💡 Tip: Chat is synced with the Live Spectator View
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Fixed Sticky Header */}
