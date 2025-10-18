@@ -223,7 +223,8 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
                             away_stats: awayStats,
                             time_remaining: latestStats.time_remaining || '15:00',
                             current_period: latestStats.current_period || 1,
-                            penalties: latestStats.penalties || { home: [], away: [] } // Extract penalties from fallback
+                            penalties: latestStats.penalties || { home: [], away: [] }, // Extract penalties from fallback
+                            gameEvents: latestStats.gameEvents || [] // Extract game events from fallback
                         }));
                     } else {
                         console.log('⚠️ No valid stats found in game_stats response');
