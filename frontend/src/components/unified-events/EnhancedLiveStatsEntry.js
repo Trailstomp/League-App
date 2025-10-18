@@ -480,18 +480,20 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         // Add game event narration AFTER state update (separate state)
         if (player) {
             if (statType === 'goals') {
-                const opposingTeamKey = teamKey === 'home_team' ? 'away' : 'home';
+                const opposingTeamKey = teamKey === 'home_team' ? 'away_team' : 'home_team';
                 const opposingTeamName = gameState[opposingTeamKey].name;
-                const activeGoalie = gameState.goalies[opposingTeamKey].find(g => g.active);
+                const opposingGoalieKey = teamKey === 'home_team' ? 'away' : 'home';
+                const activeGoalie = gameState.goalies[opposingGoalieKey].find(g => g.active);
                 
                 addGameEvent(`🚨 GOAL! ${teamName} - #${player.number} ${player.name} scores!`, 'goal');
                 if (activeGoalie) {
                     addGameEvent(`🥅 ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} - Goal against`, 'goal_against');
                 }
             } else if (statType === 'shots') {
-                const opposingTeamKey = teamKey === 'home_team' ? 'away' : 'home';
+                const opposingTeamKey = teamKey === 'home_team' ? 'away_team' : 'home_team';
                 const opposingTeamName = gameState[opposingTeamKey].name;
-                const activeGoalie = gameState.goalies[opposingTeamKey].find(g => g.active);
+                const opposingGoalieKey = teamKey === 'home_team' ? 'away' : 'home';
+                const activeGoalie = gameState.goalies[opposingGoalieKey].find(g => g.active);
                 
                 addGameEvent(`🏒 ${teamName} - #${player.number} ${player.name} takes a shot`, 'shot');
                 if (activeGoalie) {
