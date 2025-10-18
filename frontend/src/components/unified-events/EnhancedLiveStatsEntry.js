@@ -52,9 +52,16 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
     const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
     const [lastSaved, setLastSaved] = useState(null);
 
+    // Live Chat State
+    const [chat, setChat] = useState({
+        messages: [],
+        newMessage: ''
+    });
+
     const timerRef = useRef(null);
     const autoSaveRef = useRef(null);
     const penaltyTimersRef = useRef([]);
+    const chatEndRef = useRef(null);
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
     
     // Common penalty types
