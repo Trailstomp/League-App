@@ -58,6 +58,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         newMessage: ''
     });
 
+    // Game Events State (for narration)
+    const [gameEvents, setGameEvents] = useState([]);
+
     // Live View Settings State
     const [liveViewSettings, setLiveViewSettings] = useState({
         backgroundType: 'banners',
