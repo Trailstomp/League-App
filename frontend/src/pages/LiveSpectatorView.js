@@ -631,6 +631,38 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
                             </div>
                         </div>
 
+                        {/* Game Events / Narration */}
+                        {liveData.gameEvents && liveData.gameEvents.length > 0 && (
+                            <div className="mt-6">
+                                <h4 className="text-lg font-bold mb-3">📋 Game Events</h4>
+                                <div className="bg-gray-50 rounded-lg border-2 border-gray-200 p-4 max-h-96 overflow-y-auto">
+                                    <div className="space-y-2">
+                                        {liveData.gameEvents.map((evt, idx) => (
+                                            <div 
+                                                key={idx} 
+                                                className={`p-3 rounded border-l-4 ${
+                                                    evt.type === 'goal' ? 'bg-green-50 border-green-500' :
+                                                    evt.type === 'penalty' ? 'bg-yellow-50 border-yellow-500' :
+                                                    evt.type === 'shot' ? 'bg-blue-50 border-blue-400' :
+                                                    'bg-white border-gray-300'
+                                                }`}
+                                            >
+                                                <div className="flex items-start justify-between gap-3">
+                                                    <div className="flex-1">
+                                                        <div className="font-medium text-sm">{evt.text}</div>
+                                                    </div>
+                                                    <div className="text-xs text-gray-600 whitespace-nowrap">
+                                                        <div className="font-mono font-bold">{evt.time}</div>
+                                                        <div>P{evt.period}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Top Players */}
                         {(liveData.home_players.length > 0 || liveData.away_players.length > 0) && (
                             <div>
