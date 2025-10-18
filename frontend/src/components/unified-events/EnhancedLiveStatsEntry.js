@@ -884,11 +884,16 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                 <div 
                     className="flex-1 relative overflow-hidden"
                     style={{
-                        background: liveViewSettings.backgroundType === 'banners' && gameState.home_team.banner
+                        backgroundColor: liveViewSettings.backgroundType === 'banners' && gameState.home_team.banner
+                            ? 'transparent'
+                            : liveViewSettings.backgroundType === 'gradient'
+                            ? 'transparent'
+                            : gameState.home_team.color || '#3b82f6',
+                        backgroundImage: liveViewSettings.backgroundType === 'banners' && gameState.home_team.banner
                             ? `linear-gradient(rgba(0, 0, 0, ${liveViewSettings.bannerOpacity}), rgba(0, 0, 0, ${liveViewSettings.bannerOpacity})), url(${gameState.home_team.banner})`
                             : liveViewSettings.backgroundType === 'gradient'
                             ? `linear-gradient(to right, ${gameState.home_team.color}, ${gameState.home_team.color}dd)`
-                            : gameState.home_team.color || '#3b82f6',
+                            : 'none',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center'
                     }}
