@@ -162,6 +162,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                 home_team: gameState.home_team,
                 away_team: gameState.away_team,
                 goalies: gameState.goalies,
+                penalties: penalties, // Include active penalties for live view
                 time_remaining: formatTime(gameState.time_remaining),
                 current_period: gameState.current_period,
                 period_length: gameState.period_length,
@@ -208,7 +209,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         } catch (error) {
             console.error('❌ Auto-save error:', error);
         }
-    }, [event, gameState, backendUrl]);
+    }, [event, gameState, penalties, backendUrl]);
 
     // Setup auto-save interval when timer is running
     useEffect(() => {
