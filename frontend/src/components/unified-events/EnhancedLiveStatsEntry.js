@@ -529,6 +529,191 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         }));
     };
 
+    // Render Penalty Assignment Modal
+    const renderPenaltyModal = () => {
+        if (!showPenaltyModal || !selectedPlayerForPenalty) return null;
+        
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
+                    <h3 className="text-xl font-bold mb-4">Assign Penalty</h3>
+                    
+                    <div className="mb-4 p-3 bg-gray-100 rounded">
+                        <div className="font-bold">#{selectedPlayerForPenalty.number} {selectedPlayerForPenalty.name}</div>
+                        <div className="text-sm text-gray-600">{selectedPlayerForPenalty.position}</div>
+                    </div>
+                    
+                    {/* Penalty Type */}
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium mb-2">Penalty Type</label>
+                        <select
+                            value={penaltyInput.type}
+                            onChange={(e) => setPenaltyInput(prev => ({ ...prev, type: e.target.value }))}
+                            className="w-full px-3 py-2 border rounded"
+                        >
+                            <option value="">Select penalty type...</option>
+                            {penaltyTypes.map(type => (
+                                <option key={type} value={type}>{type}</option>
+                            ))}
+                        </select>
+                    </div>
+                    
+                    {/* Custom Type (if Other selected) */}
+                    {penaltyInput.type === 'Other (specify)' && (
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium mb-2">Specify Penalty</label>
+                            <input
+                                type="text"
+                                value={penaltyInput.customType}
+                                onChange={(e) => setPenaltyInput(prev => ({ ...prev, customType: e.target.value }))}
+                                className="w-full px-3 py-2 border rounded"
+                                placeholder="Enter penalty type..."
+                            />
+                        </div>
+                    )}
+                    
+                    {/* Duration */}
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium mb-2">Duration (minutes)</label>
+                        <div className="flex gap-2">
+                            {[2, 4, 5, 10].map(mins => (
+                                <button
+                                    key={mins}
+                                    onClick={() => setPenaltyInput(prev => ({ ...prev, duration: mins }))}
+                                    className={`flex-1 px-3 py-2 rounded font-medium ${
+                                        penaltyInput.duration === mins
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                    }`}
+                                >
+                                    {mins} min
+                                </button>
+                            ))}
+                        </div>
+                        <input
+                            type="number"
+                            value={penaltyInput.duration}
+                            onChange={(e) => setPenaltyInput(prev => ({ ...prev, duration: parseInt(e.target.value) || 2 }))}
+                            className="w-full px-3 py-2 border rounded mt-2"
+                            min="1"
+                            max="20"
+                        />
+                    </div>
+                    
+                    {/* Buttons */}
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => {
+                                setShowPenaltyModal(false);
+                                setSelectedPlayerForPenalty(null);
+                                setPenaltyInput({ type: '', duration: 2, customType: '' });
+                            }}
+                            className="flex-1 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={() => assignPenalty(
+                                selectedPlayerForPenalty.teamKey,
+                                selectedPlayerForPenalty.id,
+                                selectedPlayerForPenalty.name,
+                                selectedPlayerForPenalty.number
+                            )}
+                            disabled={!penaltyInput.type || (penaltyInput.type === 'Other (specify)' && !penaltyInput.customType)}
+                            className="flex-1 px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Assign Penalty
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    // Render Active Penalties Box
+    const renderActivePenalties = () => {
+        const homePenalties = penalties.home || [];
+        const awayPenalties = penalties.away || [];
+        const totalPenalties = homePenalties.length + awayPenalties.length;
+        
+        if (totalPenalties === 0) return null;
+        
+        // Determine Man Up / Penalty Kill status
+        const homeManDown = homePenalties.length > awayPenalties.length;
+        const awayManDown = awayPenalties.length > homePenalties.length;
+        
+        return (
+            <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-4">
+                <h3 className="text-lg font-bold mb-3 text-gray-800">⚠️ Active Penalties</h3>
+                
+                {/* Man Up / Penalty Kill Indicators */}
+                {(homeManDown || awayManDown) && (
+                    <div className="flex justify-between mb-3 font-bold text-sm">
+                        <div className={homeManDown ? 'text-red-600' : 'text-green-600'}>
+                            {gameState.home_team.name}: {homeManDown ? '🛡️ PENALTY KILL' : '⚡ MAN UP'}
+                        </div>
+                        <div className={awayManDown ? 'text-red-600' : 'text-green-600'}>
+                            {gameState.away_team.name}: {awayManDown ? '🛡️ PENALTY KILL' : '⚡ MAN UP'}
+                        </div>
+                    </div>
+                )}
+                
+                {/* Penalties List */}
+                <div className="space-y-2">
+                    {homePenalties.map(penalty => (
+                        <div 
+                            key={penalty.id} 
+                            className={`p-2 rounded ${
+                                penalty.timeRemaining <= 10 ? 'bg-red-200 animate-pulse' : 'bg-white'
+                            } border border-gray-300`}
+                        >
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <span className="font-bold">{gameState.home_team.name}</span>
+                                    <span className="mx-2">-</span>
+                                    <span>#{penalty.playerNumber} {penalty.playerName}</span>
+                                </div>
+                                <div className="text-right">
+                                    <div className={`text-xl font-bold font-mono ${
+                                        penalty.timeRemaining <= 10 ? 'text-red-600' : 'text-gray-800'
+                                    }`}>
+                                        {formatTime(penalty.timeRemaining)}
+                                    </div>
+                                    <div className="text-xs text-gray-600">{penalty.type}</div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                    
+                    {awayPenalties.map(penalty => (
+                        <div 
+                            key={penalty.id} 
+                            className={`p-2 rounded ${
+                                penalty.timeRemaining <= 10 ? 'bg-red-200 animate-pulse' : 'bg-white'
+                            } border border-gray-300`}
+                        >
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <span className="font-bold">{gameState.away_team.name}</span>
+                                    <span className="mx-2">-</span>
+                                    <span>#{penalty.playerNumber} {penalty.playerName}</span>
+                                </div>
+                                <div className="text-right">
+                                    <div className={`text-xl font-bold font-mono ${
+                                        penalty.timeRemaining <= 10 ? 'text-red-600' : 'text-gray-800'
+                                    }`}>
+                                        {formatTime(penalty.timeRemaining)}
+                                    </div>
+                                    <div className="text-xs text-gray-600">{penalty.type}</div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
     // Fixed sticky header with clock, scores, and goalies
     const renderStickyHeader = () => (
         <div className="bg-white border-b-2 border-gray-200 shadow-md sticky top-0 z-50">
