@@ -441,7 +441,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
             team: teamKey,
             type: penaltyType,
             duration: duration,
-            timeRemaining: duration * 60, // Convert minutes to seconds
+            timeRemaining: duration * 60 + 90, // Convert minutes to seconds and add 1:30
             startTime: Date.now()
         };
         
