@@ -366,6 +366,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         const newEvent = {
             id: Date.now(),
             time: formatTime(gameState.time_remaining),
+            timeInSeconds: gameState.time_remaining, // Add seconds for sorting
             period: gameState.current_period,
             text: eventText,
             type: eventType,
