@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack }) => {
+const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack, onLiveView }) => {
     const [bracketData, setBracketData] = useState({
         format: 'single_elimination',
         seeding_method: 'league_rankings',
