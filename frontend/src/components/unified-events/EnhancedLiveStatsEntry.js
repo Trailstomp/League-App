@@ -2007,11 +2007,14 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Fixed Sticky Header */}
+            {/* Fixed Header */}
             {renderStickyHeader()}
 
+            {/* Add padding to account for fixed header - approximate height */}
+            <div className="h-[180px] md:h-[280px]"></div>
+
             {/* Tab Navigation */}
-            <div className="bg-white border-b sticky" style={{ top: '280px', zIndex: 10 }}>
+            <div className="bg-white border-b sticky top-0 z-40">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex space-x-8">
                         <button
