@@ -614,7 +614,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
     // Assign penalty to player
     const assignPenalty = (teamKey, playerId, playerName, playerNumber) => {
         const penaltyType = penaltyInput.type === 'Other (specify)' ? penaltyInput.customType : penaltyInput.type;
-        const duration = parseInt(penaltyInput.duration) || 2;
+        const duration = parseFloat(penaltyInput.duration) || 2; // Allow decimal for 1.5 minutes
         
         const team = teamKey.split('_')[0]; // 'home_team' -> 'home'
         const teamName = gameState[teamKey].name;
@@ -627,33 +627,34 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
             team: teamKey,
             type: penaltyType,
             duration: duration,
-            timeRemaining: duration * 60 + 90, // Convert minutes to seconds and add 1:30
+            timeRemaining: duration * 60, // Convert minutes to seconds (no extra 90 seconds)
             startTime: Date.now()
         };
-        
-        // Add penalty to list
+
         setPenalties(prev => ({
             ...prev,
             [team]: [...prev[team], newPenalty]
         }));
-        
-        // Add penalty minutes to player stats
+
+        // Update player's penalty minutes
         setGameState(prev => ({
             ...prev,
             [teamKey]: {
                 ...prev[teamKey],
                 players: prev[teamKey].players.map(p =>
                     p.id === playerId
-                        ? { ...p, stats: { ...p.stats, penalties: (p.stats.penalties || 0) + duration } }
+                        ? { ...p, stats: { ...p.stats, penalties: p.stats.penalties + duration } }
                         : p
                 )
             }
         }));
-        
+
         // Add game event
-        const totalTime = Math.floor((duration * 60 + 90) / 60); // Convert back to display minutes
-        addGameEvent(`⚠️ PENALTY! ${teamName} - #${playerNumber} ${playerName} - ${penaltyType} (${totalTime}:30)`, 'penalty');
-        
+        const minutes = Math.floor(duration);
+        const seconds = Math.round((duration - minutes) * 60);
+        const timeDisplay = seconds > 0 ? `${minutes}:${seconds < 10 ? '0' : ''}${seconds}` : `${minutes}:00`;
+        addGameEvent(`⚠️ PENALTY! ${teamName} - #${playerNumber} ${playerName} - ${penaltyType} (${timeDisplay})`, 'penalty');
+
         // Close modal and reset
         setShowPenaltyModal(false);
         setSelectedPlayerForPenalty(null);
