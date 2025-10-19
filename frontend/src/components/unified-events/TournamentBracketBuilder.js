@@ -345,8 +345,8 @@ const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack, onLiveView }
                                 </button>
                                 <button
                                     onClick={() => {
-                                        if (window.onTournamentLiveView) {
-                                            window.onTournamentLiveView(match, roundIndex, matchIndex);
+                                        if (onLiveView) {
+                                            onLiveView(match, roundIndex, matchIndex);
                                         }
                                     }}
                                     className="flex-1 px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700"
