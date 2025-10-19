@@ -1680,6 +1680,16 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                             ✈️ {gameState.away_team.name} Stats
                         </button>
                         <button
+                            onClick={() => setActiveTab('game_events')}
+                            className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                                activeTab === 'game_events'
+                                    ? 'border-purple-500 text-purple-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            📋 Game Events ({gameEvents.length})
+                        </button>
+                        <button
                             onClick={() => setActiveTab('live_chat')}
                             className={`py-4 px-2 border-b-2 font-medium text-sm ${
                                 activeTab === 'live_chat'
