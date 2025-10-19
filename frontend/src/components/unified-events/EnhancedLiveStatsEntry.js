@@ -1383,31 +1383,48 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                 {/* Only show stat buttons for ACTIVE players */}
                 {!isInactive ? (
                     <>
-                        {/* Shot Buttons - Three types */}
-                        <td className="px-2 py-1">
-                            <div className="flex flex-col gap-1">
-                                <button
-                                    onClick={() => addShotStat(teamKey, player.id, 'miss')}
-                                    className="px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded"
-                                    title="Shot - Miss (no shot on goal)"
-                                >
-                                    ❌ Miss
-                                </button>
-                                <button
-                                    onClick={() => addShotStat(teamKey, player.id, 'saved')}
-                                    className="px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded"
-                                    title="Shot - Saved by goalie"
-                                >
-                                    ✋ Saved
-                                </button>
-                                <button
-                                    onClick={() => addShotStat(teamKey, player.id, 'goal')}
-                                    className="px-2 py-1 bg-green-100 hover:bg-green-200 text-green-700 text-xs font-medium rounded"
-                                    title="Shot - Goal!"
-                                >
-                                    🚨 Goal
-                                </button>
-                            </div>
+                        {/* Shot Button with Dropdown */}
+                        <td className="px-2 py-1 relative">
+                            <button
+                                onClick={() => setShowShotMenu(showShotMenu === player.id ? null : player.id)}
+                                className="px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-bold rounded flex items-center gap-1"
+                            >
+                                🏒 Shot
+                                <span className="text-xs">▼</span>
+                            </button>
+                            
+                            {/* Dropdown Menu */}
+                            {showShotMenu === player.id && (
+                                <div className="absolute left-0 top-full mt-1 bg-white border-2 border-gray-300 rounded-lg shadow-xl z-50 min-w-[140px]">
+                                    <button
+                                        onClick={() => {
+                                            addShotStat(teamKey, player.id, 'miss');
+                                            setShowShotMenu(null);
+                                        }}
+                                        className="w-full px-3 py-2 hover:bg-gray-100 text-left text-sm flex items-center gap-2 border-b"
+                                    >
+                                        <span>❌</span> Miss
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            addShotStat(teamKey, player.id, 'saved');
+                                            setShowShotMenu(null);
+                                        }}
+                                        className="w-full px-3 py-2 hover:bg-blue-50 text-left text-sm flex items-center gap-2 border-b"
+                                    >
+                                        <span>✋</span> Saved
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            addShotStat(teamKey, player.id, 'goal');
+                                            setShowShotMenu(null);
+                                        }}
+                                        className="w-full px-3 py-2 hover:bg-green-50 text-left text-sm flex items-center gap-2"
+                                    >
+                                        <span>🚨</span> Goal
+                                    </button>
+                                </div>
+                            )}
                         </td>
                         
                         {/* Shots Display */}
