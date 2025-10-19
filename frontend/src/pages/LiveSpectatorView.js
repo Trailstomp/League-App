@@ -404,12 +404,12 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
         const awayManDown = awayPenalties.length > homePenalties.length;
         
         return (
-            <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-4">
-                <h3 className="text-lg font-bold mb-3 text-gray-800">⚠️ Active Penalties</h3>
+            <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-3 md:p-4 mb-3 md:mb-4">
+                <h3 className="text-base md:text-lg font-bold mb-2 md:mb-3 text-gray-800">⚠️ Active Penalties</h3>
                 
-                {/* Man Up / Penalty Kill Indicators */}
+                {/* Man Up / Penalty Kill Indicators - Mobile Responsive */}
                 {(homeManDown || awayManDown) && (
-                    <div className="flex justify-between mb-3 font-bold text-sm">
+                    <div className="flex flex-col md:flex-row md:justify-between mb-2 md:mb-3 font-bold text-xs md:text-sm gap-1 md:gap-0">
                         <div className={homeManDown ? 'text-red-600' : 'text-green-600'}>
                             {liveData.home_team.name}: {homeManDown ? '🛡️ PENALTY KILL' : '⚡ MAN UP'}
                         </div>
@@ -419,7 +419,7 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                     </div>
                 )}
                 
-                {/* Penalties List */}
+                {/* Penalties List - Mobile Responsive */}
                 <div className="space-y-2">
                     {homePenalties.map(penalty => (
                         <div 
@@ -428,14 +428,14 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                                 penalty.timeRemaining <= 10 ? 'bg-red-200 animate-pulse' : 'bg-white'
                             } border border-gray-300`}
                         >
-                            <div className="flex items-center justify-between">
-                                <div>
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1 md:gap-0">
+                                <div className="text-sm md:text-base">
                                     <span className="font-bold">{liveData.home_team.name}</span>
-                                    <span className="mx-2">-</span>
-                                    <span>#{penalty.playerNumber} {penalty.playerName}</span>
+                                    <span className="mx-1 md:mx-2">-</span>
+                                    <span className="text-sm">#{penalty.playerNumber} {penalty.playerName}</span>
                                 </div>
-                                <div className="text-right">
-                                    <div className={`text-xl font-bold font-mono ${
+                                <div className="text-left md:text-right">
+                                    <div className={`text-lg md:text-xl font-bold font-mono ${
                                         penalty.timeRemaining <= 10 ? 'text-red-600' : 'text-gray-800'
                                     }`}>
                                         {formatTimeSeconds(penalty.timeRemaining)}
@@ -453,14 +453,14 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                                 penalty.timeRemaining <= 10 ? 'bg-red-200 animate-pulse' : 'bg-white'
                             } border border-gray-300`}
                         >
-                            <div className="flex items-center justify-between">
-                                <div>
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1 md:gap-0">
+                                <div className="text-sm md:text-base">
                                     <span className="font-bold">{liveData.away_team.name}</span>
-                                    <span className="mx-2">-</span>
-                                    <span>#{penalty.playerNumber} {penalty.playerName}</span>
+                                    <span className="mx-1 md:mx-2">-</span>
+                                    <span className="text-sm">#{penalty.playerNumber} {penalty.playerName}</span>
                                 </div>
-                                <div className="text-right">
-                                    <div className={`text-xl font-bold font-mono ${
+                                <div className="text-left md:text-right">
+                                    <div className={`text-lg md:text-xl font-bold font-mono ${
                                         penalty.timeRemaining <= 10 ? 'text-red-600' : 'text-gray-800'
                                     }`}>
                                         {formatTimeSeconds(penalty.timeRemaining)}
