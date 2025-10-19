@@ -177,21 +177,38 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
     // Update penalty timers (decrements by 1 second)
     const updatePenaltyTimers = () => {
         setPenalties(prev => {
-            const updateTeamPenalties = (teamPenalties) => {
-                return teamPenalties.map(penalty => {
+            const updateTeamPenalties = (teamPenalties, teamKey) => {
+                const expiredPenalties = [];
+                
+                const updatedPenalties = teamPenalties.map(penalty => {
                     if (penalty.timeRemaining > 0) {
+                        const newTimeRemaining = penalty.timeRemaining - 1;
+                        
+                        // Check if penalty just expired
+                        if (newTimeRemaining === 0) {
+                            expiredPenalties.push(penalty);
+                        }
+                        
                         return {
                             ...penalty,
-                            timeRemaining: penalty.timeRemaining - 1
+                            timeRemaining: newTimeRemaining
                         };
                     }
                     return penalty;
                 }).filter(penalty => penalty.timeRemaining > 0); // Remove expired penalties
+                
+                // Log expiration events
+                expiredPenalties.forEach(penalty => {
+                    const teamName = teamKey === 'home' ? gameState.home_team.name : gameState.away_team.name;
+                    addGameEvent(`✅ Penalty expired - ${teamName} - #${penalty.playerNumber} ${penalty.playerName} back on ice`, 'penalty_end');
+                });
+                
+                return updatedPenalties;
             };
             
             return {
-                home: updateTeamPenalties(prev.home),
-                away: updateTeamPenalties(prev.away)
+                home: updateTeamPenalties(prev.home, 'home'),
+                away: updateTeamPenalties(prev.away, 'away')
             };
         });
     };
