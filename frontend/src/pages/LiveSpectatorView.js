@@ -773,8 +773,8 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                         </div>
                     </div>
 
-                    {/* Right Side - Live Chat */}
-                    <div className="w-1/3 flex flex-col bg-gray-50">
+                    {/* Right Side - Live Chat - Mobile: Hidden by default with toggle button */}
+                    <div className="hidden md:flex md:w-1/3 flex-col bg-gray-50">
                         <div className="p-4 border-b bg-white">
                             <h3 className="text-xl font-bold">💬 Live Chat</h3>
                         </div>
