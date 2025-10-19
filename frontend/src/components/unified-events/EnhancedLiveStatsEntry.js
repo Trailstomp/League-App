@@ -832,28 +832,30 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                     {/* Duration */}
                     <div className="mb-4">
                         <label className="block text-sm font-medium mb-2">Duration (minutes)</label>
-                        <div className="flex gap-2">
-                            {[2, 4, 5, 10].map(mins => (
+                        <div className="grid grid-cols-5 gap-2">
+                            {[1.5, 2, 4, 5, 10].map(mins => (
                                 <button
                                     key={mins}
                                     onClick={() => setPenaltyInput(prev => ({ ...prev, duration: mins }))}
-                                    className={`flex-1 px-3 py-2 rounded font-medium ${
+                                    className={`px-3 py-2 rounded font-medium text-sm ${
                                         penaltyInput.duration === mins
                                             ? 'bg-blue-600 text-white'
                                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                     }`}
                                 >
-                                    {mins} min
+                                    {mins === 1.5 ? '1:30' : `${mins} min`}
                                 </button>
                             ))}
                         </div>
                         <input
                             type="number"
+                            step="0.5"
                             value={penaltyInput.duration}
-                            onChange={(e) => setPenaltyInput(prev => ({ ...prev, duration: parseInt(e.target.value) || 2 }))}
+                            onChange={(e) => setPenaltyInput(prev => ({ ...prev, duration: parseFloat(e.target.value) || 2 }))}
                             className="w-full px-3 py-2 border rounded mt-2"
-                            min="1"
+                            min="0.5"
                             max="20"
+                            placeholder="Or enter custom duration..."
                         />
                     </div>
                     
