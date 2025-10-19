@@ -1360,114 +1360,134 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                     />
                 </td>
                 <td className="px-2 py-1 text-sm font-mono font-bold">{player.number}</td>
-                <td className="px-2 py-1 text-sm font-medium">{player.name}</td>
-                <td className="px-2 py-1 text-xs text-gray-600">{player.position}</td>
                 
-                {/* Penalty Indicator + Button */}
-                <td className="px-2 py-1 text-center">
-                    <button
-                        onClick={() => {
-                            setSelectedPlayerForPenalty({ ...player, teamKey });
-                            setShowPenaltyModal(true);
-                        }}
-                        className="px-2 py-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs font-bold rounded"
-                        title="Assign Penalty"
-                    >
-                        ⚠️ PEN
-                    </button>
+                {/* Player Name with Photo */}
+                <td className="px-2 py-1">
+                    <div className="flex items-center gap-2">
+                        {teamData.logo && (
+                            <img 
+                                src={teamData.logo} 
+                                alt={teamData.name}
+                                className="w-6 h-6 object-cover rounded-full border border-gray-300"
+                            />
+                        )}
+                        <span className="text-sm font-medium">{formatPlayerName(player.name)}</span>
+                    </div>
                 </td>
                 
-                {/* Stats with +/- buttons - REORDERED: Shots, Goals, Assists, Penalties */}
-                {['shots', 'goals', 'assists', 'penalties'].map(statType => (
-                    <td key={statType} className="px-2 py-1 text-center">
-                        <div className="flex items-center justify-center gap-1">
+                <td className="px-2 py-1 text-xs text-gray-600">{player.position}</td>
+                
+                {/* Only show stat buttons for ACTIVE players */}
+                {!isInactive ? (
+                    <>
+                        {/* Shot Buttons - Three types */}
+                        <td className="px-2 py-1">
+                            <div className="flex flex-col gap-1">
+                                <button
+                                    onClick={() => addShotStat(teamKey, player.id, 'miss')}
+                                    className="px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded"
+                                    title="Shot - Miss (no shot on goal)"
+                                >
+                                    ❌ Miss
+                                </button>
+                                <button
+                                    onClick={() => addShotStat(teamKey, player.id, 'saved')}
+                                    className="px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded"
+                                    title="Shot - Saved by goalie"
+                                >
+                                    ✋ Saved
+                                </button>
+                                <button
+                                    onClick={() => addShotStat(teamKey, player.id, 'goal')}
+                                    className="px-2 py-1 bg-green-100 hover:bg-green-200 text-green-700 text-xs font-medium rounded"
+                                    title="Shot - Goal!"
+                                >
+                                    🚨 Goal
+                                </button>
+                            </div>
+                        </td>
+                        
+                        {/* Shots Display */}
+                        <td className="px-2 py-1 text-center">
+                            <span className="font-bold text-base text-yellow-600">
+                                {player.stats.shots}
+                            </span>
+                        </td>
+                        
+                        {/* Goals Display */}
+                        <td className="px-2 py-1 text-center">
+                            <span className="font-bold text-base text-green-600">
+                                {player.stats.goals}
+                            </span>
+                        </td>
+                        
+                        {/* Assists with +/- buttons */}
+                        <td className="px-2 py-1 text-center">
+                            <div className="flex items-center justify-center gap-1">
+                                <button
+                                    onClick={() => {
+                                        if (player.stats.assists > 0) {
+                                            setGameState(prev => ({
+                                                ...prev,
+                                                [teamKey]: {
+                                                    ...prev[teamKey],
+                                                    players: prev[teamKey].players.map(p => 
+                                                        p.id === player.id 
+                                                            ? { ...p, stats: { ...p.stats, assists: p.stats.assists - 1 } }
+                                                            : p
+                                                    )
+                                                }
+                                            }));
+                                        }
+                                    }}
+                                    className="w-8 h-8 bg-red-100 text-red-600 rounded text-sm font-bold hover:bg-red-200"
+                                    disabled={player.stats.assists <= 0}
+                                >
+                                    −
+                                </button>
+                                <span className="w-10 text-center font-bold text-base text-blue-600">
+                                    {player.stats.assists}
+                                </span>
+                                <button
+                                    onClick={() => addStat(teamKey, player.id, 'assists')}
+                                    className="w-8 h-8 bg-blue-100 text-blue-600 rounded text-sm font-bold hover:opacity-80"
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </td>
+                        
+                        {/* Penalty Button - MOVED after assists */}
+                        <td className="px-2 py-1 text-center">
                             <button
                                 onClick={() => {
-                                    if (player.stats[statType] > 0) {
-                                        setGameState(prev => {
-                                            const newState = { ...prev };
-                                            
-                                            // Decrement player stat
-                                            newState[teamKey] = {
-                                                ...prev[teamKey],
-                                                players: prev[teamKey].players.map(p => 
-                                                    p.id === player.id 
-                                                        ? { ...p, stats: { ...p.stats, [statType]: p.stats[statType] - 1 } }
-                                                        : p
-                                                )
-                                            };
-                                            
-                                            // Update team score for goals
-                                            if (statType === 'goals') {
-                                                newState[teamKey] = {
-                                                    ...newState[teamKey],
-                                                    score: Math.max(0, prev[teamKey].score - 1)
-                                                };
-                                                
-                                                // Decrement opposing goalie's goals_against
-                                                const opposingTeamKey = teamKey === 'home_team' ? 'away' : 'home';
-                                                newState.goalies = {
-                                                    ...prev.goalies,
-                                                    [opposingTeamKey]: prev.goalies[opposingTeamKey].map(goalie => 
-                                                        goalie.active && goalie.stats.goals_against > 0 ? {
-                                                            ...goalie,
-                                                            stats: {
-                                                                ...goalie.stats,
-                                                                goals_against: goalie.stats.goals_against - 1
-                                                            }
-                                                        } : goalie
-                                                    )
-                                                };
-                                            }
-                                            
-                                            // Decrement opposing goalie's shots_faced for shots
-                                            if (statType === 'shots') {
-                                                const opposingTeamKey = teamKey === 'home_team' ? 'away' : 'home';
-                                                newState.goalies = {
-                                                    ...prev.goalies,
-                                                    [opposingTeamKey]: prev.goalies[opposingTeamKey].map(goalie => 
-                                                        goalie.active && goalie.stats.shots_faced > 0 ? {
-                                                            ...goalie,
-                                                            stats: {
-                                                                ...goalie.stats,
-                                                                shots_faced: goalie.stats.shots_faced - 1
-                                                            }
-                                                        } : goalie
-                                                    )
-                                                };
-                                            }
-                                            
-                                            return newState;
-                                        });
-                                    }
+                                    setSelectedPlayerForPenalty({ ...player, teamKey });
+                                    setShowPenaltyModal(true);
                                 }}
-                                className="w-8 h-8 bg-red-100 text-red-600 rounded text-sm font-bold hover:bg-red-200"
-                                disabled={player.stats[statType] <= 0}
+                                className="px-2 py-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs font-bold rounded"
+                                title="Assign Penalty"
                             >
-                                −
+                                ⚠️ PEN
                             </button>
-                            <span className={`w-10 text-center font-bold text-base ${
-                                statType === 'goals' ? 'text-green-600' :
-                                statType === 'assists' ? 'text-blue-600' :
-                                statType === 'shots' ? 'text-yellow-600' :
-                                'text-red-600'
-                            }`}>
-                                {player.stats[statType]}
+                        </td>
+                        
+                        {/* Penalty Minutes Display */}
+                        <td className="px-2 py-1 text-center">
+                            <span className="font-bold text-base text-red-600">
+                                {player.stats.penalties}
                             </span>
-                            <button
-                                onClick={() => addStat(teamKey, player.id, statType)}
-                                className={`w-8 h-8 rounded text-sm font-bold hover:opacity-80 ${
-                                    statType === 'goals' ? 'bg-green-100 text-green-600' :
-                                    statType === 'assists' ? 'bg-blue-100 text-blue-600' :
-                                    statType === 'shots' ? 'bg-yellow-100 text-yellow-600' :
-                                    'bg-red-100 text-red-600'
-                                }`}
-                            >
-                                +
-                            </button>
-                        </div>
-                    </td>
-                ))}
+                        </td>
+                    </>
+                ) : (
+                    /* Inactive players - just show stats, no buttons */
+                    <>
+                        <td className="px-2 py-1 text-center text-sm">{player.stats.shots || 0}</td>
+                        <td className="px-2 py-1 text-center text-sm">{player.stats.goals || 0}</td>
+                        <td className="px-2 py-1 text-center text-sm">{player.stats.assists || 0}</td>
+                        <td className="px-2 py-1 text-center text-sm">-</td>
+                        <td className="px-2 py-1 text-center text-sm">{player.stats.penalties || 0}</td>
+                    </>
+                )}
             </tr>
         );
 
