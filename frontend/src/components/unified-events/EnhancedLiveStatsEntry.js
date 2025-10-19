@@ -1257,6 +1257,23 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                         💾 Save Now
                     </button>
                     
+                    {/* Timeout Buttons */}
+                    <button
+                        onClick={() => callTimeout('home')}
+                        className="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium text-sm"
+                        title={`${gameState.home_team.name} Timeout (${timeouts.home} used)`}
+                    >
+                        ⏸️ {gameState.home_team.name} TO ({timeouts.home})
+                    </button>
+                    
+                    <button
+                        onClick={() => callTimeout('away')}
+                        className="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium text-sm"
+                        title={`${gameState.away_team.name} Timeout (${timeouts.away} used)`}
+                    >
+                        ⏸️ {gameState.away_team.name} TO ({timeouts.away})
+                    </button>
+                    
                     {lastSaved && (
                         <span className="text-xs text-gray-600">
                             Last saved: {Math.round((new Date() - lastSaved) / 1000)}s ago
