@@ -2055,8 +2055,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         </button>
                     </div>
                 </div>
-            </div>
-
+            
             {/* Main Content */}
             <div className="p-6" style={{ paddingTop: '20px' }}>
                 <div className="max-w-7xl mx-auto">
