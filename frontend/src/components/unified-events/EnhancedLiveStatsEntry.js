@@ -1423,7 +1423,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             </details>
         </div>
     );
-                {/* Home Team Side - Left 50% */}
                 <div 
                     className="flex-1 relative overflow-hidden"
                     style={{
