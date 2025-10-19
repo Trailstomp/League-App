@@ -62,6 +62,11 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
     const [gameEvents, setGameEvents] = useState([]);
     const [gameStarted, setGameStarted] = useState(false); // Track if game has started
     
+    // Game Events Editing State
+    const [editingEvent, setEditingEvent] = useState(null);
+    const [editText, setEditText] = useState('');
+    const [editTime, setEditTime] = useState('');
+    
     // Shot type selector state
     const [showShotMenu, setShowShotMenu] = useState(null); // stores player id when menu is open
     
