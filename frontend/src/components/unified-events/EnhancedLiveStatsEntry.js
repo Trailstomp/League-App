@@ -726,9 +726,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
     const handleSendMessage = async () => {
         if (chat.newMessage.trim()) {
+            const userName = currentUser?.name || currentUser?.user_name || 'Scorer';
             const newMsg = {
                 id: Date.now(),
-                user_name: 'Scorer',
+                user_name: userName,
                 message: chat.newMessage,
                 timestamp: new Date().toISOString(),
                 type: 'user'
@@ -749,7 +750,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         message: chat.newMessage,
                         event_id: event.id,
                         timestamp: new Date().toISOString(),
-                        user_name: 'Scorer'
+                        user_name: userName
                     })
                 });
             } catch (error) {
