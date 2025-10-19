@@ -2012,23 +2012,23 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         </button>
                     </div>
                     
-                    <div className="bg-white rounded-lg border overflow-hidden shadow-sm">
-                        <table className="w-full">
+                    <div className="overflow-x-auto -mx-2 md:mx-0">
+                        <table className="min-w-full bg-white border rounded-lg text-xs md:text-sm">
                             <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-700">✓</th>
+                                    <th className="px-1 md:px-2 py-1 text-left text-xs font-medium text-gray-700">✓</th>
                                     <SortableHeader column="number">#</SortableHeader>
                                     <SortableHeader column="name">Player</SortableHeader>
-                                    <SortableHeader column="position">Pos</SortableHeader>
-                                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-700">Shot Action</th>
-                                    <SortableHeader column="shots">Shots</SortableHeader>
-                                    <SortableHeader column="goals">Goals</SortableHeader>
-                                    <SortableHeader column="assists">Assists</SortableHeader>
-                                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-700">Pen</th>
+                                    <th className="hidden md:table-cell px-2 py-1 text-center text-xs font-medium text-gray-700">Pos</th>
+                                    <th className="px-1 md:px-2 py-1 text-center text-xs font-medium text-gray-700">Shot</th>
+                                    <SortableHeader column="shots">S</SortableHeader>
+                                    <SortableHeader column="goals">G</SortableHeader>
+                                    <SortableHeader column="assists">A</SortableHeader>
+                                    <th className="px-1 md:px-2 py-1 text-center text-xs font-medium text-gray-700">Pen</th>
                                     <SortableHeader column="penalties">PIM</SortableHeader>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200">
+                            <tbody>
                                 {activePlayers.map(player => <PlayerRow key={player.id} player={player} />)}
                             </tbody>
                         </table>
