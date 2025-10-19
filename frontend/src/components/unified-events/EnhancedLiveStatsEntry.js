@@ -951,23 +951,55 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                     {homePenalties.map(penalty => (
                         <div 
                             key={penalty.id} 
-                            className={`p-2 rounded ${
+                            className={`p-3 rounded ${
                                 penalty.timeRemaining <= 10 ? 'bg-red-200 animate-pulse' : 'bg-white'
                             } border border-gray-300`}
                         >
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <span className="font-bold">{gameState.home_team.name}</span>
-                                    <span className="mx-2">-</span>
-                                    <span>#{penalty.playerNumber} {penalty.playerName}</span>
-                                </div>
-                                <div className="text-right">
-                                    <div className={`text-xl font-bold font-mono ${
-                                        penalty.timeRemaining <= 10 ? 'text-red-600' : 'text-gray-800'
-                                    }`}>
-                                        {formatTime(penalty.timeRemaining)}
+                            <div className="flex items-center justify-between gap-3">
+                                <div className="flex-1">
+                                    <div>
+                                        <span className="font-bold">{gameState.home_team.name}</span>
+                                        <span className="mx-2">-</span>
+                                        <span>#{penalty.playerNumber} {penalty.playerName}</span>
                                     </div>
-                                    <div className="text-xs text-gray-600">{penalty.type}</div>
+                                    <div className="text-xs text-gray-600 mt-1">{penalty.type}</div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="text-right">
+                                        <div className={`text-xl font-bold font-mono ${
+                                            penalty.timeRemaining <= 10 ? 'text-red-600' : 'text-gray-800'
+                                        }`}>
+                                            {formatTime(penalty.timeRemaining)}
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                        <button
+                                            onClick={() => {
+                                                const newTime = prompt('Edit penalty time (in seconds):', penalty.timeRemaining);
+                                                if (newTime && !isNaN(parseInt(newTime))) {
+                                                    setPenalties(prev => ({
+                                                        ...prev,
+                                                        home: prev.home.map(p => 
+                                                            p.id === penalty.id 
+                                                                ? { ...p, timeRemaining: parseInt(newTime) }
+                                                                : p
+                                                        )
+                                                    }));
+                                                }
+                                            }}
+                                            className="px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs rounded"
+                                            title="Edit time"
+                                        >
+                                            ✏️
+                                        </button>
+                                        <button
+                                            onClick={() => cancelPenalty(penalty.id, 'home')}
+                                            className="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 text-xs rounded"
+                                            title="Cancel penalty"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -976,23 +1008,55 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                     {awayPenalties.map(penalty => (
                         <div 
                             key={penalty.id} 
-                            className={`p-2 rounded ${
+                            className={`p-3 rounded ${
                                 penalty.timeRemaining <= 10 ? 'bg-red-200 animate-pulse' : 'bg-white'
                             } border border-gray-300`}
                         >
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <span className="font-bold">{gameState.away_team.name}</span>
-                                    <span className="mx-2">-</span>
-                                    <span>#{penalty.playerNumber} {penalty.playerName}</span>
-                                </div>
-                                <div className="text-right">
-                                    <div className={`text-xl font-bold font-mono ${
-                                        penalty.timeRemaining <= 10 ? 'text-red-600' : 'text-gray-800'
-                                    }`}>
-                                        {formatTime(penalty.timeRemaining)}
+                            <div className="flex items-center justify-between gap-3">
+                                <div className="flex-1">
+                                    <div>
+                                        <span className="font-bold">{gameState.away_team.name}</span>
+                                        <span className="mx-2">-</span>
+                                        <span>#{penalty.playerNumber} {penalty.playerName}</span>
                                     </div>
-                                    <div className="text-xs text-gray-600">{penalty.type}</div>
+                                    <div className="text-xs text-gray-600 mt-1">{penalty.type}</div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="text-right">
+                                        <div className={`text-xl font-bold font-mono ${
+                                            penalty.timeRemaining <= 10 ? 'text-red-600' : 'text-gray-800'
+                                        }`}>
+                                            {formatTime(penalty.timeRemaining)}
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                        <button
+                                            onClick={() => {
+                                                const newTime = prompt('Edit penalty time (in seconds):', penalty.timeRemaining);
+                                                if (newTime && !isNaN(parseInt(newTime))) {
+                                                    setPenalties(prev => ({
+                                                        ...prev,
+                                                        away: prev.away.map(p => 
+                                                            p.id === penalty.id 
+                                                                ? { ...p, timeRemaining: parseInt(newTime) }
+                                                                : p
+                                                        )
+                                                    }));
+                                                }
+                                            }}
+                                            className="px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs rounded"
+                                            title="Edit time"
+                                        >
+                                            ✏️
+                                        </button>
+                                        <button
+                                            onClick={() => cancelPenalty(penalty.id, 'away')}
+                                            className="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 text-xs rounded"
+                                            title="Cancel penalty"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
