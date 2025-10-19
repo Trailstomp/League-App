@@ -1572,6 +1572,84 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         );
     };
 
+    // Render Game Events with editing capability
+    const renderGameEvents = () => {
+        // Sort by period (desc) then by timeInSeconds (desc) - newest first
+        const sortedEvents = [...gameEvents].sort((a, b) => {
+            if (b.period !== a.period) return b.period - a.period;
+            return b.timeInSeconds - a.timeInSeconds;
+        });
+
+        return (
+            <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold">📋 Game Events Timeline</h3>
+                    <span className="text-sm text-gray-600">{sortedEvents.length} events recorded</span>
+                </div>
+                
+                {sortedEvents.length === 0 ? (
+                    <div className="text-center py-12 text-gray-500">
+                        <div className="text-4xl mb-2">📋</div>
+                        <p>No events yet. Start tracking game actions!</p>
+                    </div>
+                ) : (
+                    <div className="space-y-2 max-h-[calc(100vh-450px)] overflow-y-auto">
+                        {sortedEvents.map((evt) => (
+                            <div 
+                                key={evt.id} 
+                                className={`p-3 rounded-lg border-l-4 ${
+                                    evt.type === 'goal' ? 'bg-green-50 border-green-500' :
+                                    evt.type === 'penalty' ? 'bg-yellow-50 border-yellow-500' :
+                                    evt.type === 'shot' ? 'bg-blue-50 border-blue-400' :
+                                    evt.type === 'save' ? 'bg-cyan-50 border-cyan-400' :
+                                    evt.type === 'shot_miss' ? 'bg-gray-50 border-gray-400' :
+                                    'bg-white border-gray-300'
+                                }`}
+                            >
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="flex-1">
+                                        <div className="font-medium text-sm">{evt.text}</div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="text-xs text-gray-600 text-right">
+                                            <div className="font-mono font-bold">{evt.time}</div>
+                                            <div>Period {evt.period}</div>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                const newText = prompt('Edit event description:', evt.text);
+                                                if (newText && newText.trim()) {
+                                                    setGameEvents(prev => prev.map(e => 
+                                                        e.id === evt.id ? { ...e, text: newText.trim() } : e
+                                                    ));
+                                                }
+                                            }}
+                                            className="px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs rounded"
+                                            title="Edit event"
+                                        >
+                                            ✏️
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                if (window.confirm('Delete this event?')) {
+                                                    setGameEvents(prev => prev.filter(e => e.id !== evt.id));
+                                                }
+                                            }}
+                                            className="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 text-xs rounded"
+                                            title="Delete event"
+                                        >
+                                            🗑️
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     // Render Live Chat
     const renderLiveChat = () => {
         const formatChatTime = (timestamp) => {
