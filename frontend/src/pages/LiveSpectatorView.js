@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const LiveSpectatorView = ({ event, teams, onClose }) => {
+const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
     console.log('🎬 LiveSpectatorView RENDERING with event:', event?.id, event?.title);
     
     const [liveData, setLiveData] = useState({
