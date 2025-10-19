@@ -420,6 +420,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
     // Call timeout
     const callTimeout = (team) => {
         const teamName = team === 'home' ? gameState.home_team.name : gameState.away_team.name;
+        
+        // Pause the game timer
+        setGameState(prev => ({ ...prev, is_running: false }));
+        
         setTimeouts(prev => ({
             ...prev,
             [team]: prev[team] + 1
