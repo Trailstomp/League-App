@@ -64,6 +64,12 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
     // Shot type selector state
     const [showShotMenu, setShowShotMenu] = useState(null); // stores player id when menu is open
     
+    // Timeout tracking
+    const [timeouts, setTimeouts] = useState({
+        home: 0,
+        away: 0
+    });
+    
     // Manual player addition state
     const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
     const [addPlayerTeam, setAddPlayerTeam] = useState(null);
