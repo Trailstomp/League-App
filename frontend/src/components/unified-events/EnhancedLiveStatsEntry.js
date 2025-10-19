@@ -1222,6 +1222,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                                 time_remaining: prev.period_length * 60,
                                 is_running: false
                             }));
+                            
+                            // Add period change event
+                            const newPeriod = Math.min(gameState.current_period + 1, gameState.game_settings.periods);
+                            addGameEvent(`🔔 Period ${gameState.current_period} ended. Starting Period ${newPeriod}`, 'period_change');
                         }}
                         disabled={gameState.current_period >= gameState.game_settings.periods}
                         className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
