@@ -439,6 +439,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
             [team]: prev[team] + 1
         }));
         addGameEvent(`⏸️ TIMEOUT called by ${teamName} (Timeout #${timeouts[team] + 1})`, 'timeout');
+        addGameEvent(`⏸️ GAME PAUSED for timeout`, 'game_pause');
     };
 
     const nextPeriod = () => {
