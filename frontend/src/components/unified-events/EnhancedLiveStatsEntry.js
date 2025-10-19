@@ -351,6 +351,16 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
+    // Format player name as "Last, First"
+    const formatPlayerName = (name) => {
+        if (!name) return '';
+        const parts = name.trim().split(' ');
+        if (parts.length === 1) return name;
+        const lastName = parts[parts.length - 1];
+        const firstName = parts.slice(0, -1).join(' ');
+        return `${lastName}, ${firstName}`;
+    };
+
     // Add game event for narration
     const addGameEvent = (eventText, eventType = 'action') => {
         const newEvent = {
