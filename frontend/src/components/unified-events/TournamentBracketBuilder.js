@@ -332,16 +332,29 @@ const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack }) => {
                                 </button>
                             </>
                         ) : (
-                            <button
-                                onClick={() => {
-                                    setTempScore1(match.score1 || '');
-                                    setTempScore2(match.score2 || '');
-                                    setEditingScores(true);
-                                }}
-                                className="flex-1 px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
-                            >
-                                ✏️ Enter Score
-                            </button>
+                            <>
+                                <button
+                                    onClick={() => {
+                                        setTempScore1(match.score1 || '');
+                                        setTempScore2(match.score2 || '');
+                                        setEditingScores(true);
+                                    }}
+                                    className="flex-1 px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                                >
+                                    ✏️ Enter Score
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        if (window.onTournamentLiveView) {
+                                            window.onTournamentLiveView(match, roundIndex, matchIndex);
+                                        }
+                                    }}
+                                    className="flex-1 px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700"
+                                    title="Watch this match live"
+                                >
+                                    🔴 Live View
+                                </button>
+                            </>
                         )}
                     </div>
                 )}
