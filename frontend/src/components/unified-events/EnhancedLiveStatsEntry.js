@@ -1134,8 +1134,292 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
     // Fixed sticky header with split team banners, clock, scores, and goalies
     const renderStickyHeader = () => (
         <div className="sticky top-0 z-50 shadow-md bg-white">
-            {/* Split Banner Header */}
-            <div className="flex relative">
+            {/* Split Banner Header - Responsive */}
+            <div className="flex flex-col md:flex-row relative">
+                {/* Home Team Side */}
+                <div 
+                    className="flex-1 relative overflow-hidden"
+                    style={{
+                        backgroundColor: liveViewSettings.backgroundType === 'banners' && gameState.home_team.banner
+                            ? 'transparent'
+                            : liveViewSettings.backgroundType === 'gradient'
+                            ? 'transparent'
+                            : gameState.home_team.color || '#3b82f6',
+                        backgroundImage: liveViewSettings.backgroundType === 'banners' && gameState.home_team.banner
+                            ? `linear-gradient(rgba(0, 0, 0, ${liveViewSettings.bannerOpacity}), rgba(0, 0, 0, ${liveViewSettings.bannerOpacity})), url(${gameState.home_team.banner})`
+                            : liveViewSettings.backgroundType === 'gradient'
+                            ? `linear-gradient(to right, ${gameState.home_team.color}, ${gameState.home_team.color}dd)`
+                            : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                    }}
+                >
+                    <div className="p-2 md:p-4 text-white relative z-10">
+                        <div className="flex items-center gap-2 md:gap-3 justify-center md:justify-start">
+                            {gameState.home_team.logo && (
+                                <img 
+                                    src={gameState.home_team.logo} 
+                                    alt={gameState.home_team.name}
+                                    className="w-8 h-8 md:w-12 md:h-12 object-cover rounded-lg border-2 border-white shadow-lg"
+                                />
+                            )}
+                            <div style={{ fontFamily: liveViewSettings.useTeamFonts ? gameState.home_team.font : 'Inter, sans-serif' }}>
+                                <div className="text-xs md:text-sm font-medium">{gameState.home_team.name}</div>
+                                <div className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg">{gameState.home_team.score}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Center Clock & Period - Absolute on desktop, separate row on mobile */}
+                <div className="md:absolute md:left-1/2 md:top-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 z-30 bg-black bg-opacity-60 backdrop-blur-sm">
+                    <div className="flex flex-col items-center gap-1 p-2 md:gap-2 md:p-3">
+                        {/* Timer - Clickable */}
+                        <div 
+                            className={`px-3 py-1 md:px-6 md:py-2 rounded-lg border-2 cursor-pointer hover:opacity-90 transition ${
+                                gameState.is_running 
+                                    ? 'bg-green-600 border-green-400' 
+                                    : 'bg-red-600 border-red-400'
+                            }`}
+                            onClick={() => {
+                                setManualTimeInputs({
+                                    minutes: Math.floor(gameState.time_remaining / 60).toString(),
+                                    seconds: (gameState.time_remaining % 60).toString(),
+                                    period: gameState.current_period.toString()
+                                });
+                                setShowTimeEditor(true);
+                            }}
+                            title="Click to edit time"
+                        >
+                            <div className="text-xl md:text-3xl font-bold text-white font-mono">
+                                {formatTime(gameState.time_remaining)}
+                            </div>
+                        </div>
+                        {/* Period */}
+                        <div className="px-2 py-0.5 md:px-4 md:py-1 rounded text-white text-xs md:text-sm font-medium">
+                            Period {gameState.current_period} of {gameState.game_settings.periods}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Away Team Side */}
+                <div 
+                    className="flex-1 relative overflow-hidden"
+                    style={{
+                        backgroundColor: liveViewSettings.backgroundType === 'banners' && gameState.away_team.banner
+                            ? 'transparent'
+                            : liveViewSettings.backgroundType === 'gradient'
+                            ? 'transparent'
+                            : gameState.away_team.color || '#ef4444',
+                        backgroundImage: liveViewSettings.backgroundType === 'banners' && gameState.away_team.banner
+                            ? `linear-gradient(rgba(0, 0, 0, ${liveViewSettings.bannerOpacity}), rgba(0, 0, 0, ${liveViewSettings.bannerOpacity})), url(${gameState.away_team.banner})`
+                            : liveViewSettings.backgroundType === 'gradient'
+                            ? `linear-gradient(to left, ${gameState.away_team.color}, ${gameState.away_team.color}dd)`
+                            : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                    }}
+                >
+                    <div className="p-2 md:p-4 text-white relative z-10">
+                        <div className="flex items-center gap-2 md:gap-3 justify-center md:justify-end">
+                            <div className="text-right md:order-1" style={{ fontFamily: liveViewSettings.useTeamFonts ? gameState.away_team.font : 'Inter, sans-serif' }}>
+                                <div className="text-xs md:text-sm font-medium">{gameState.away_team.name}</div>
+                                <div className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg">{gameState.away_team.score}</div>
+                            </div>
+                            {gameState.away_team.logo && (
+                                <img 
+                                    src={gameState.away_team.logo} 
+                                    alt={gameState.away_team.name}
+                                    className="w-8 h-8 md:w-12 md:h-12 object-cover rounded-lg border-2 border-white shadow-lg md:order-2"
+                                />
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Event Title Bar */}
+            <div className="bg-white px-2 md:px-4 py-1 md:py-2 border-b border-gray-200">
+                <div className="text-center">
+                    <h2 className="text-sm md:text-lg font-bold text-gray-800">{event?.title || 'Live Game Scoring'}</h2>
+                </div>
+            </div>
+
+            {/* Control Buttons Bar - Responsive */}
+            <div className="bg-gray-50 px-2 md:px-4 py-2 md:py-3 border-b border-gray-200">
+                <div className="flex items-center justify-center gap-1 md:gap-3 flex-wrap">
+                    <button
+                        onClick={toggleTimer}
+                        className={`px-3 md:px-6 py-1.5 md:py-2 rounded-lg font-bold text-white text-xs md:text-base ${
+                            gameState.is_running 
+                                ? 'bg-red-600 hover:bg-red-700' 
+                                : 'bg-green-600 hover:bg-green-700'
+                        }`}
+                    >
+                        {gameState.is_running ? '⏸️ Pause' : '▶️ Start'}
+                    </button>
+                    
+                    <button
+                        onClick={() => {
+                            setGameState(prev => ({
+                                ...prev,
+                                current_period: Math.min(prev.current_period + 1, prev.game_settings.periods),
+                                time_remaining: prev.period_length * 60,
+                                is_running: false
+                            }));
+                            
+                            const newPeriod = Math.min(gameState.current_period + 1, gameState.game_settings.periods);
+                            addGameEvent(`🔔 Period ${gameState.current_period} ended. Starting Period ${newPeriod}`, 'period_change');
+                        }}
+                        disabled={gameState.current_period >= gameState.game_settings.periods}
+                        className="px-2 md:px-4 py-1.5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-xs md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        ⏭️ Next
+                    </button>
+                    
+                    <button
+                        onClick={() => callTimeout('home')}
+                        className="px-2 md:px-3 py-1.5 md:py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium text-xs md:text-sm"
+                    >
+                        ⏸️ {gameState.home_team.name.substring(0, 4)} TO ({timeouts.home})
+                    </button>
+                    
+                    <button
+                        onClick={() => callTimeout('away')}
+                        className="px-2 md:px-3 py-1.5 md:py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium text-xs md:text-sm"
+                    >
+                        ⏸️ {gameState.away_team.name.substring(0, 4)} TO ({timeouts.away})
+                    </button>
+                    
+                    <button
+                        onClick={() => {
+                            setManualTimeInputs({
+                                minutes: Math.floor(gameState.time_remaining / 60).toString(),
+                                seconds: (gameState.time_remaining % 60).toString(),
+                                period: gameState.current_period.toString()
+                            });
+                            setShowTimeEditor(true);
+                        }}
+                        className="hidden md:block px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium"
+                    >
+                        🕒 Edit Time
+                    </button>
+                    
+                    <button
+                        onClick={() => {
+                            console.log('🔘 Manual save button clicked');
+                            autoSaveGameStats();
+                        }}
+                        className="px-3 md:px-4 py-1.5 md:py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium text-xs md:text-base"
+                    >
+                        💾 Save
+                    </button>
+                    
+                    {lastSaved && (
+                        <span className="hidden md:inline text-xs text-gray-600">
+                            Last saved: {Math.round((new Date() - lastSaved) / 1000)}s ago
+                        </span>
+                    )}
+                </div>
+            </div>
+
+            {/* Goalies Section - Collapsible on mobile */}
+            <details className="bg-white border-b border-gray-200" open>
+                <summary className="md:hidden px-4 py-2 cursor-pointer font-medium text-sm bg-gray-50">
+                    🥅 Goalies
+                </summary>
+                <div className="px-2 md:px-4 py-2 md:py-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
+                        {/* Home Goalies */}
+                        <div>
+                            <h4 className="text-xs md:text-sm font-semibold text-gray-700 mb-2">🥅 {gameState.home_team.name} Goalies</h4>
+                            <div className="space-y-1 md:space-y-2">
+                                {gameState.goalies.home.map(goalie => (
+                                    <div key={goalie.id} className={`flex items-center justify-between p-1.5 md:p-2 rounded text-xs md:text-sm ${
+                                        goalie.active ? 'bg-blue-50 border border-blue-200' : 'bg-gray-100'
+                                    }`}>
+                                        <div className="flex items-center gap-1 md:gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={goalie.active}
+                                                onChange={() => toggleGoalieActive('home', goalie.id)}
+                                                className="rounded"
+                                            />
+                                            <span className="font-mono text-xs">#{goalie.number}</span>
+                                            <span className="text-xs">{goalie.name}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1 md:gap-2 text-xs">
+                                            <span>S: {goalie.stats.saves}</span>
+                                            <span>GA: {goalie.stats.goals_against}</span>
+                                            <button
+                                                onClick={() => {
+                                                    setGameState(prev => ({
+                                                        ...prev,
+                                                        goalies: {
+                                                            ...prev.goalies,
+                                                            home: prev.goalies.home.map(g => 
+                                                                g.id === goalie.id ? { ...g, stats: { ...g.stats, saves: g.stats.saves + 1 } } : g
+                                                            )
+                                                        }
+                                                    }));
+                                                }}
+                                                className="w-6 h-6 bg-purple-100 text-purple-600 rounded text-xs hover:bg-purple-200 font-bold"
+                                            >
+                                                +S
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Away Goalies */}
+                        <div>
+                            <h4 className="text-xs md:text-sm font-semibold text-gray-700 mb-2">🥅 {gameState.away_team.name} Goalies</h4>
+                            <div className="space-y-1 md:space-y-2">
+                                {gameState.goalies.away.map(goalie => (
+                                    <div key={goalie.id} className={`flex items-center justify-between p-1.5 md:p-2 rounded text-xs md:text-sm ${
+                                        goalie.active ? 'bg-red-50 border border-red-200' : 'bg-gray-100'
+                                    }`}>
+                                        <div className="flex items-center gap-1 md:gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={goalie.active}
+                                                onChange={() => toggleGoalieActive('away', goalie.id)}
+                                                className="rounded"
+                                            />
+                                            <span className="font-mono text-xs">#{goalie.number}</span>
+                                            <span className="text-xs">{goalie.name}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1 md:gap-2 text-xs">
+                                            <span>S: {goalie.stats.saves}</span>
+                                            <span>GA: {goalie.stats.goals_against}</span>
+                                            <button
+                                                onClick={() => {
+                                                    setGameState(prev => ({
+                                                        ...prev,
+                                                        goalies: {
+                                                            ...prev.goalies,
+                                                            away: prev.goalies.away.map(g => 
+                                                                g.id === goalie.id ? { ...g, stats: { ...g.stats, saves: g.stats.saves + 1 } } : g
+                                                            )
+                                                        }
+                                                    }));
+                                                }}
+                                                className="w-6 h-6 bg-purple-100 text-purple-600 rounded text-xs hover:bg-purple-200 font-bold"
+                                            >
+                                                +S
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </div>
+    );
                 {/* Home Team Side - Left 50% */}
                 <div 
                     className="flex-1 relative overflow-hidden"
