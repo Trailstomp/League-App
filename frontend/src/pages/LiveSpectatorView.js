@@ -476,12 +476,12 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg shadow-2xl max-w-7xl w-full h-[95vh] flex flex-col">
-                {/* Header with Split Team Banners */}
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 flex items-center justify-center p-2 md:p-4">
+            <div className="bg-white rounded-lg shadow-2xl max-w-7xl w-full h-[98vh] md:h-[95vh] flex flex-col">
+                {/* Header with Split Team Banners - Mobile Responsive */}
                 <div className="rounded-t-lg flex-shrink-0 relative overflow-hidden">
-                    <div className="flex relative">
-                        {/* Home Team Side - Left 50% */}
+                    <div className="flex flex-col md:flex-row relative">
+                        {/* Home Team Side - Mobile: Top Row, Desktop: Left 50% */}
                         <div 
                             className="flex-1 relative overflow-hidden"
                             style={{
@@ -499,32 +499,32 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                                 backgroundPosition: 'center'
                             }}
                         >
-                            <div className="p-6 text-white relative z-10">
-                                <div className="flex items-center gap-4">
+                            <div className="p-3 md:p-6 text-white relative z-10">
+                                <div className="flex items-center gap-2 md:gap-4 justify-center md:justify-start">
                                     {liveData.home_team.logo && (
                                         <img 
                                             src={liveData.home_team.logo} 
                                             alt={liveData.home_team.name}
-                                            className="w-16 h-16 object-cover rounded-lg border-4 border-white shadow-lg"
+                                            className="w-10 h-10 md:w-16 md:h-16 object-cover rounded-lg border-2 md:border-4 border-white shadow-lg"
                                         />
                                     )}
                                     <div style={{ fontFamily: liveViewSettings.useTeamFonts ? liveData.home_team.font : 'Inter, sans-serif' }}>
-                                        <div className="text-xl font-bold">{liveData.home_team.name}</div>
-                                        <div className="text-5xl font-bold text-white drop-shadow-lg">{liveData.home_team.score}</div>
+                                        <div className="text-sm md:text-xl font-bold">{liveData.home_team.name}</div>
+                                        <div className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg">{liveData.home_team.score}</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Center Clock - Floating Over Both Sides */}
-                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30">
-                            <div className="text-center px-8 py-3 bg-black bg-opacity-60 backdrop-blur-sm rounded-lg border-2 border-white shadow-2xl">
-                                <div className="text-5xl font-bold text-white font-mono">{liveData.time_remaining}</div>
-                                <div className="text-sm text-white mt-1">Period {liveData.current_period}</div>
+                        {/* Center Clock - Mobile: Separate Row, Desktop: Floating Over Both Sides */}
+                        <div className="md:absolute md:left-1/2 md:top-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 z-30 flex justify-center py-2 md:py-0 bg-black bg-opacity-60 md:bg-opacity-0">
+                            <div className="text-center px-4 md:px-8 py-2 md:py-3 md:bg-black md:bg-opacity-60 backdrop-blur-sm md:rounded-lg md:border-2 md:border-white md:shadow-2xl">
+                                <div className="text-2xl md:text-5xl font-bold text-white font-mono">{liveData.time_remaining}</div>
+                                <div className="text-xs md:text-sm text-white mt-0 md:mt-1">Period {liveData.current_period}</div>
                             </div>
                         </div>
 
-                        {/* Away Team Side - Right 50% */}
+                        {/* Away Team Side - Mobile: Bottom Row, Desktop: Right 50% */}
                         <div 
                             className="flex-1 relative overflow-hidden"
                             style={{
@@ -542,17 +542,17 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                                 backgroundPosition: 'center'
                             }}
                         >
-                            <div className="p-6 text-white relative z-10">
-                                <div className="flex items-center gap-4 justify-end">
-                                    <div className="text-right" style={{ fontFamily: liveViewSettings.useTeamFonts ? liveData.away_team.font : 'Inter, sans-serif' }}>
-                                        <div className="text-xl font-bold">{liveData.away_team.name}</div>
-                                        <div className="text-5xl font-bold text-white drop-shadow-lg">{liveData.away_team.score}</div>
+                            <div className="p-3 md:p-6 text-white relative z-10">
+                                <div className="flex items-center gap-2 md:gap-4 justify-center md:justify-end">
+                                    <div className="text-center md:text-right md:order-1" style={{ fontFamily: liveViewSettings.useTeamFonts ? liveData.away_team.font : 'Inter, sans-serif' }}>
+                                        <div className="text-sm md:text-xl font-bold">{liveData.away_team.name}</div>
+                                        <div className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg">{liveData.away_team.score}</div>
                                     </div>
                                     {liveData.away_team.logo && (
                                         <img 
                                             src={liveData.away_team.logo} 
                                             alt={liveData.away_team.name}
-                                            className="w-16 h-16 object-cover rounded-lg border-4 border-white shadow-lg"
+                                            className="w-10 h-10 md:w-16 md:h-16 object-cover rounded-lg border-2 md:border-4 border-white shadow-lg md:order-2"
                                         />
                                     )}
                                 </div>
@@ -560,23 +560,23 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                         </div>
                     </div>
 
-                    {/* Top Bar with Title and Close Button */}
-                    <div className="absolute top-0 left-0 right-0 z-20 px-6 py-3 bg-gradient-to-b from-black/70 to-transparent">
+                    {/* Top Bar with Title and Close Button - Mobile Responsive */}
+                    <div className="absolute top-0 left-0 right-0 z-20 px-2 md:px-6 py-2 md:py-3 bg-gradient-to-b from-black/70 to-transparent">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-sm font-bold text-white drop-shadow-lg">
+                            <h2 className="text-xs md:text-sm font-bold text-white drop-shadow-lg">
                                 {tournamentMatch ? (
                                     <>🔴 LIVE: {event.title} - Round {tournamentMatch.roundIndex + 1}</>
                                 ) : (
                                     <>🔴 LIVE: {event.title}</>
                                 )}
                             </h2>
-                            <div className="flex items-center gap-4">
-                                <div className="text-xs bg-black bg-opacity-40 px-3 py-1 rounded text-white">
+                            <div className="flex items-center gap-2 md:gap-4">
+                                <div className="hidden md:block text-xs bg-black bg-opacity-40 px-3 py-1 rounded text-white">
                                     Polling: {liveData.home_team.score}-{liveData.away_team.score}
                                 </div>
                                 <button
                                     onClick={onClose}
-                                    className="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg font-medium transition text-white text-sm"
+                                    className="px-2 md:px-4 py-1 md:py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg font-medium transition text-white text-xs md:text-sm"
                                 >
                                     ✕ Close
                                 </button>
