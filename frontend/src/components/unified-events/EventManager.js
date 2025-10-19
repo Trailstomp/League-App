@@ -189,6 +189,17 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                         teams={teams}
                         onUpdate={(updates) => handleEventUpdate(selectedEvent.id, updates)}
                         onBack={() => setActiveView('list')}
+                        onLiveView={(match, roundIndex, matchIndex) => {
+                            console.log('🔴 Opening live view for tournament match:', match);
+                            setTournamentMatch({
+                                match,
+                                roundIndex,
+                                matchIndex,
+                                team1: teams.find(t => t.id === match.team1?.id),
+                                team2: teams.find(t => t.id === match.team2?.id)
+                            });
+                            setShowSpectatorView(true);
+                        }}
                     />
                 );
             
