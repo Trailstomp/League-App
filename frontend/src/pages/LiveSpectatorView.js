@@ -647,13 +647,21 @@ const LiveSpectatorView = ({ event, teams, onClose }) => {
                                 <h4 className="text-lg font-bold mb-3">📋 Game Events</h4>
                                 <div className="bg-gray-50 rounded-lg border-2 border-gray-200 p-4 max-h-96 overflow-y-auto">
                                     <div className="space-y-2">
-                                        {liveData.gameEvents.map((evt, idx) => (
+                                        {liveData.gameEvents
+                                            .sort((a, b) => {
+                                                // Sort by period (desc) then by timeInSeconds (desc)
+                                                if (b.period !== a.period) return b.period - a.period;
+                                                return (b.timeInSeconds || 0) - (a.timeInSeconds || 0);
+                                            })
+                                            .map((evt, idx) => (
                                             <div 
                                                 key={idx} 
                                                 className={`p-3 rounded border-l-4 ${
                                                     evt.type === 'goal' ? 'bg-green-50 border-green-500' :
                                                     evt.type === 'penalty' ? 'bg-yellow-50 border-yellow-500' :
                                                     evt.type === 'shot' ? 'bg-blue-50 border-blue-400' :
+                                                    evt.type === 'save' ? 'bg-cyan-50 border-cyan-400' :
+                                                    evt.type === 'shot_miss' ? 'bg-gray-50 border-gray-400' :
                                                     'bg-white border-gray-300'
                                                 }`}
                                             >
