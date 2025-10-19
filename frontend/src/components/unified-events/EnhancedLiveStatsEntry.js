@@ -1501,6 +1501,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                 ) : (
                     /* Inactive players - just show stats, no buttons */
                     <>
+                        <td className="px-2 py-1 text-center text-sm text-gray-400">-</td>
                         <td className="px-2 py-1 text-center text-sm">{player.stats.shots || 0}</td>
                         <td className="px-2 py-1 text-center text-sm">{player.stats.goals || 0}</td>
                         <td className="px-2 py-1 text-center text-sm">{player.stats.assists || 0}</td>
