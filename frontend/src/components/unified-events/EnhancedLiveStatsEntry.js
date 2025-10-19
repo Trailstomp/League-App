@@ -1871,6 +1871,91 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
             
             {/* Penalty Assignment Modal */}
             {renderPenaltyModal()}
+            
+            {/* Add Player Modal */}
+            {showAddPlayerModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                        <h3 className="text-xl font-bold mb-4">➕ Add Player Manually</h3>
+                        
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Jersey Number *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newPlayerInput.number}
+                                    onChange={(e) => setNewPlayerInput(prev => ({ ...prev, number: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="00"
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    First Name *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newPlayerInput.firstName}
+                                    onChange={(e) => setNewPlayerInput(prev => ({ ...prev, firstName: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="John"
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Last Name *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newPlayerInput.lastName}
+                                    onChange={(e) => setNewPlayerInput(prev => ({ ...prev, lastName: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Doe"
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Position
+                                </label>
+                                <select
+                                    value={newPlayerInput.position}
+                                    onChange={(e) => setNewPlayerInput(prev => ({ ...prev, position: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="Forward">Forward</option>
+                                    <option value="Defense">Defense</option>
+                                    <option value="Center">Center</option>
+                                    <option value="Wing">Wing</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div className="flex justify-end gap-3 mt-6">
+                            <button
+                                onClick={() => {
+                                    setShowAddPlayerModal(false);
+                                    setAddPlayerTeam(null);
+                                    setNewPlayerInput({ number: '', firstName: '', lastName: '', position: 'Forward' });
+                                }}
+                                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={addManualPlayer}
+                                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                            >
+                                Add Player
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
