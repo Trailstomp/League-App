@@ -387,18 +387,32 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
     };
 
     const toggleTimer = () => {
-        const newIsRunning = !gameState.is_running;
-        
-        setGameState(prev => ({
-            ...prev,
-            is_running: newIsRunning
-        }));
+        setGameState(prev => {
+            const newIsRunning = !prev.is_running;
+            
+            // Add game start event on first timer start
+            if (newIsRunning && prev.time_remaining === prev.period_length * 60 && prev.current_period === 1) {
+                addGameEvent(`🏁 GAME START - ${gameState.home_team.name} vs ${gameState.away_team.name}`, 'game_start');
+            }
+            
+            return { ...prev, is_running: newIsRunning };
+        });
 
         // Update event status to in_progress when starting
-        if (newIsRunning && event?.id) {
+        if (!gameState.is_running && event?.id) {
             console.log('🎬 Game started, updating event status to in_progress');
             updateEventStatus(event.id, 'in_progress');
         }
+    };
+
+    // Call timeout
+    const callTimeout = (team) => {
+        const teamName = team === 'home' ? gameState.home_team.name : gameState.away_team.name;
+        setTimeouts(prev => ({
+            ...prev,
+            [team]: prev[team] + 1
+        }));
+        addGameEvent(`⏸️ TIMEOUT called by ${teamName} (Timeout #${timeouts[team] + 1})`, 'timeout');
     };
 
     const nextPeriod = () => {
