@@ -1809,10 +1809,30 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                                                     ));
                                                 }
                                             }}
-                                            className="px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs rounded"
-                                            title="Edit event"
+                                            className="px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs rounded"
+                                            title="Edit event text"
                                         >
                                             ✏️
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                const newTime = prompt('Edit time (MM:SS format):', evt.time);
+                                                if (newTime && /^\d{1,2}:\d{2}$/.test(newTime)) {
+                                                    const [mins, secs] = newTime.split(':').map(Number);
+                                                    const timeInSeconds = mins * 60 + secs;
+                                                    setGameEvents(prev => prev.map(e => 
+                                                        e.id === evt.id 
+                                                            ? { ...e, time: newTime, timeInSeconds: timeInSeconds } 
+                                                            : e
+                                                    ));
+                                                } else if (newTime) {
+                                                    alert('Invalid time format. Use MM:SS (e.g., 12:30)');
+                                                }
+                                            }}
+                                            className="px-2 py-1 bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs rounded"
+                                            title="Edit time"
+                                        >
+                                            🕒
                                         </button>
                                         <button
                                             onClick={() => {
