@@ -585,63 +585,63 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                     </div>
                 </div>
 
-                {/* Main Content Area - Split View */}
-                <div className="flex-1 flex overflow-hidden">
-                    {/* Left Side - Stats */}
-                    <div className="w-2/3 p-6 overflow-y-auto border-r">
-                        <h3 className="text-2xl font-bold mb-4">📊 Live Game Stats</h3>
+                {/* Main Content Area - Split View - Mobile Responsive */}
+                <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+                    {/* Left Side - Stats - Mobile: Full Width w/ Scroll, Desktop: 2/3 Width */}
+                    <div className="w-full md:w-2/3 p-3 md:p-6 overflow-y-auto md:border-r">
+                        <h3 className="text-lg md:text-2xl font-bold mb-3 md:mb-4">📊 Live Game Stats</h3>
                         
                         {/* Active Penalties */}
                         {renderActivePenalties()}
                         
-                        {/* Team Stats Comparison */}
-                        <div className="grid grid-cols-2 gap-4 mb-6">
+                        {/* Team Stats Comparison - Mobile: Stack, Desktop: Side by Side */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">
                             {/* Home Team Stats */}
-                            <div className="bg-blue-50 rounded-lg p-4 border-2" style={{ borderColor: liveData.home_team.color }}>
-                                <h4 className="font-bold text-lg mb-3" style={{ color: liveData.home_team.color }}>
+                            <div className="bg-blue-50 rounded-lg p-3 md:p-4 border-2" style={{ borderColor: liveData.home_team.color }}>
+                                <h4 className="font-bold text-base md:text-lg mb-2 md:mb-3" style={{ color: liveData.home_team.color }}>
                                     {liveData.home_team.name}
                                 </h4>
-                                <div className="space-y-2">
+                                <div className="space-y-1 md:space-y-2">
                                     <div className="flex justify-between">
-                                        <span className="font-medium">Goals:</span>
-                                        <span className="text-xl font-bold">{liveData.home_stats.goals}</span>
+                                        <span className="font-medium text-sm md:text-base">Goals:</span>
+                                        <span className="text-lg md:text-xl font-bold">{liveData.home_stats.goals}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-medium">Shots:</span>
-                                        <span className="text-xl font-bold">{liveData.home_stats.shots}</span>
+                                        <span className="font-medium text-sm md:text-base">Shots:</span>
+                                        <span className="text-lg md:text-xl font-bold">{liveData.home_stats.shots}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-medium">Assists:</span>
-                                        <span className="text-xl font-bold">{liveData.home_stats.assists}</span>
+                                        <span className="font-medium text-sm md:text-base">Assists:</span>
+                                        <span className="text-lg md:text-xl font-bold">{liveData.home_stats.assists}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-medium">Penalties:</span>
-                                        <span className="text-xl font-bold">{liveData.home_stats.penalties}</span>
+                                        <span className="font-medium text-sm md:text-base">Penalties:</span>
+                                        <span className="text-lg md:text-xl font-bold">{liveData.home_stats.penalties}</span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Away Team Stats */}
-                            <div className="bg-red-50 rounded-lg p-4 border-2" style={{ borderColor: liveData.away_team.color }}>
-                                <h4 className="font-bold text-lg mb-3" style={{ color: liveData.away_team.color }}>
+                            <div className="bg-red-50 rounded-lg p-3 md:p-4 border-2" style={{ borderColor: liveData.away_team.color }}>
+                                <h4 className="font-bold text-base md:text-lg mb-2 md:mb-3" style={{ color: liveData.away_team.color }}>
                                     {liveData.away_team.name}
                                 </h4>
-                                <div className="space-y-2">
+                                <div className="space-y-1 md:space-y-2">
                                     <div className="flex justify-between">
-                                        <span className="font-medium">Goals:</span>
-                                        <span className="text-xl font-bold">{liveData.away_stats.goals}</span>
+                                        <span className="font-medium text-sm md:text-base">Goals:</span>
+                                        <span className="text-lg md:text-xl font-bold">{liveData.away_stats.goals}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-medium">Shots:</span>
-                                        <span className="text-xl font-bold">{liveData.away_stats.shots}</span>
+                                        <span className="font-medium text-sm md:text-base">Shots:</span>
+                                        <span className="text-lg md:text-xl font-bold">{liveData.away_stats.shots}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-medium">Assists:</span>
-                                        <span className="text-xl font-bold">{liveData.away_stats.assists}</span>
+                                        <span className="font-medium text-sm md:text-base">Assists:</span>
+                                        <span className="text-lg md:text-xl font-bold">{liveData.away_stats.assists}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-medium">Penalties:</span>
-                                        <span className="text-xl font-bold">{liveData.away_stats.penalties}</span>
+                                        <span className="font-medium text-sm md:text-base">Penalties:</span>
+                                        <span className="text-lg md:text-xl font-bold">{liveData.away_stats.penalties}</span>
                                     </div>
                                 </div>
                             </div>
