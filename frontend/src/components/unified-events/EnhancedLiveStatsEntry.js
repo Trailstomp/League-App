@@ -1714,6 +1714,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                                 {activePlayers.map(player => <PlayerRow key={player.id} player={player} />)}
                             </tbody>
                         </table>
+                        {/* Buffer space at bottom to prevent dropdown cutoff */}
+                        <div className="h-32"></div>
                     </div>
                 </div>
 
