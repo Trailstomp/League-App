@@ -403,9 +403,18 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         setGameState(prev => {
             const newIsRunning = !prev.is_running;
             
-            // Add game start event on first timer start
-            if (newIsRunning && prev.time_remaining === prev.period_length * 60 && prev.current_period === 1) {
+            // Add game start event on first timer start (only once)
+            if (newIsRunning && !gameStarted && prev.time_remaining === prev.period_length * 60 && prev.current_period === 1) {
                 addGameEvent(`🏁 GAME START - ${gameState.home_team.name} vs ${gameState.away_team.name}`, 'game_start');
+                setGameStarted(true);
+            }
+            // Add resume event when resuming after pause
+            else if (newIsRunning && prev.is_running === false && gameStarted) {
+                addGameEvent(`▶️ GAME RESUMED - Play continues`, 'game_resume');
+            }
+            // Add pause event when pausing
+            else if (!newIsRunning && prev.is_running === true) {
+                addGameEvent(`⏸️ GAME PAUSED`, 'game_pause');
             }
             
             return { ...prev, is_running: newIsRunning };
