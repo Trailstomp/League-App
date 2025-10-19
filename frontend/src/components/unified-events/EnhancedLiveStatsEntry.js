@@ -1530,15 +1530,15 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                                 <span className="text-xs">▼</span>
                             </button>
                             
-                            {/* Dropdown Menu */}
+                            {/* Dropdown Menu - Opens upward if near bottom */}
                             {showShotMenu === player.id && (
-                                <div className="absolute left-0 top-full mt-1 bg-white border-2 border-gray-300 rounded-lg shadow-xl z-50 min-w-[140px]">
+                                <div className="absolute left-0 bottom-full mb-1 bg-white border-2 border-gray-300 rounded-lg shadow-xl z-50 min-w-[140px]">
                                     <button
                                         onClick={() => {
                                             addShotStat(teamKey, player.id, 'miss');
                                             setShowShotMenu(null);
                                         }}
-                                        className="w-full px-3 py-2 hover:bg-gray-100 text-left text-sm flex items-center gap-2 border-b"
+                                        className="w-full px-3 py-2 hover:bg-gray-100 text-left text-sm flex items-center gap-2 border-b rounded-t-lg"
                                     >
                                         <span>❌</span> Miss
                                     </button>
@@ -1556,7 +1556,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                                             addShotStat(teamKey, player.id, 'goal');
                                             setShowShotMenu(null);
                                         }}
-                                        className="w-full px-3 py-2 hover:bg-green-50 text-left text-sm flex items-center gap-2"
+                                        className="w-full px-3 py-2 hover:bg-green-50 text-left text-sm flex items-center gap-2 rounded-b-lg"
                                     >
                                         <span>🚨</span> Goal
                                     </button>
