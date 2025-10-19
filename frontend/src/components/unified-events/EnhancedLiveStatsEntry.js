@@ -60,6 +60,16 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
 
     // Game Events State (for narration)
     const [gameEvents, setGameEvents] = useState([]);
+    
+    // Manual player addition state
+    const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
+    const [addPlayerTeam, setAddPlayerTeam] = useState(null);
+    const [newPlayerInput, setNewPlayerInput] = useState({
+        number: '',
+        firstName: '',
+        lastName: '',
+        position: 'Forward'
+    });
 
     // Live View Settings State
     const [liveViewSettings, setLiveViewSettings] = useState({
