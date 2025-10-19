@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
+const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel }) => {
     console.log('🎮 EnhancedLiveStatsEntry mounted with:', {
         event: event,
         eventId: event?.id,
