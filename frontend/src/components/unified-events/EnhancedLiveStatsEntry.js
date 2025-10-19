@@ -1545,11 +1545,12 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
                             {/* Dropdown Menu - Smart positioning */}
                             {showShotMenu === player.id && (
                                 <div 
-                                    className="absolute left-0 bg-white border-2 border-gray-300 rounded-lg shadow-xl z-50 min-w-[140px]"
+                                    className="absolute left-0 bg-white border-2 border-gray-300 rounded-lg shadow-xl min-w-[140px]"
                                     style={{
                                         bottom: 'auto',
                                         top: '100%',
-                                        marginTop: '4px'
+                                        marginTop: '4px',
+                                        zIndex: 9999
                                     }}
                                 >
                                     <button
