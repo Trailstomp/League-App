@@ -13,6 +13,7 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [loading, setLoading] = useState(false);
     const [showSpectatorView, setShowSpectatorView] = useState(false);
+    const [tournamentMatch, setTournamentMatch] = useState(null); // For tournament match live view
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
