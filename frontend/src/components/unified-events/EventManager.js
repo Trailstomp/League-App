@@ -226,6 +226,7 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                     <EnhancedLiveStatsEntry
                         event={selectedEvent}
                         teams={teams}
+                        currentUser={currentUser}
                         onSubmit={(statsData) => handleScoreSubmit(selectedEvent.id, statsData)}
                         onCancel={() => setActiveView('list')}
                     />
