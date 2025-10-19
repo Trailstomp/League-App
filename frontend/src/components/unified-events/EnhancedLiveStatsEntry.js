@@ -1786,13 +1786,39 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         );
     };
 
-    // Render Game Events with editing capability
+    // Render Game Events with inline editing
     const renderGameEvents = () => {
+        const [editingEvent, setEditingEvent] = useState(null);
+        const [editText, setEditText] = useState('');
+        const [editTime, setEditTime] = useState('');
+
         // Sort by period (desc) then by timeInSeconds (desc) - newest first
         const sortedEvents = [...gameEvents].sort((a, b) => {
             if (b.period !== a.period) return b.period - a.period;
             return b.timeInSeconds - a.timeInSeconds;
         });
+
+        const handleSaveEdit = (evt) => {
+            // Validate time format
+            if (editTime && !/^\d{1,2}:\d{2}$/.test(editTime)) {
+                alert('Invalid time format. Use MM:SS (e.g., 12:30)');
+                return;
+            }
+
+            const updates = { text: editText };
+            
+            if (editTime !== evt.time) {
+                const [mins, secs] = editTime.split(':').map(Number);
+                updates.time = editTime;
+                updates.timeInSeconds = mins * 60 + secs;
+            }
+
+            setGameEvents(prev => prev.map(e => 
+                e.id === evt.id ? { ...e, ...updates } : e
+            ));
+            
+            setEditingEvent(null);
+        };
 
         return (
             <div className="bg-white rounded-lg shadow-md p-6">
@@ -1814,72 +1840,83 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                                 className={`p-3 rounded-lg border-l-4 ${
                                     evt.type === 'goal' ? 'bg-green-50 border-green-500' :
                                     evt.type === 'penalty' ? 'bg-yellow-50 border-yellow-500' :
+                                    evt.type === 'penalty_end' ? 'bg-blue-50 border-blue-400' :
                                     evt.type === 'shot' ? 'bg-blue-50 border-blue-400' :
                                     evt.type === 'save' ? 'bg-cyan-50 border-cyan-400' :
                                     evt.type === 'shot_miss' ? 'bg-gray-50 border-gray-400' :
                                     'bg-white border-gray-300'
                                 }`}
                             >
-                                <div className="flex items-start justify-between gap-3">
-                                    <div className="flex-1">
-                                        <div className="font-medium text-sm">{evt.text}</div>
+                                {editingEvent === evt.id ? (
+                                    // Edit Mode
+                                    <div className="space-y-2">
+                                        <input
+                                            type="text"
+                                            value={editText}
+                                            onChange={(e) => setEditText(e.target.value)}
+                                            className="w-full px-2 py-1 border rounded text-sm"
+                                            placeholder="Event description"
+                                        />
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={editTime}
+                                                onChange={(e) => setEditTime(e.target.value)}
+                                                className="w-20 px-2 py-1 border rounded text-sm font-mono"
+                                                placeholder="MM:SS"
+                                            />
+                                            <span className="text-xs text-gray-600">P{evt.period}</span>
+                                            <button
+                                                onClick={() => handleSaveEdit(evt)}
+                                                className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded"
+                                            >
+                                                ✓ Save
+                                            </button>
+                                            <button
+                                                onClick={() => setEditingEvent(null)}
+                                                className="px-3 py-1 bg-gray-400 hover:bg-gray-500 text-white text-xs rounded"
+                                            >
+                                                ✕ Cancel
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    if (window.confirm('Delete this event?')) {
+                                                        setGameEvents(prev => prev.filter(e => e.id !== evt.id));
+                                                        setEditingEvent(null);
+                                                    }
+                                                }}
+                                                className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded ml-auto"
+                                            >
+                                                🗑️ Delete
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="text-xs text-gray-600 text-right">
+                                ) : (
+                                    // View Mode
+                                    <div 
+                                        className="flex items-start justify-between gap-3 cursor-pointer hover:bg-black hover:bg-opacity-5 p-1 rounded"
+                                        onClick={() => {
+                                            setEditingEvent(evt.id);
+                                            setEditText(evt.text);
+                                            setEditTime(evt.time);
+                                        }}
+                                    >
+                                        <div className="flex-1">
+                                            <div className="font-medium text-sm">{evt.text}</div>
+                                        </div>
+                                        <div className="text-xs text-gray-600 text-right whitespace-nowrap">
                                             <div className="font-mono font-bold">{evt.time}</div>
                                             <div>Period {evt.period}</div>
                                         </div>
-                                        <button
-                                            onClick={() => {
-                                                const newText = prompt('Edit event description:', evt.text);
-                                                if (newText && newText.trim()) {
-                                                    setGameEvents(prev => prev.map(e => 
-                                                        e.id === evt.id ? { ...e, text: newText.trim() } : e
-                                                    ));
-                                                }
-                                            }}
-                                            className="px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs rounded"
-                                            title="Edit event text"
-                                        >
-                                            ✏️
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                const newTime = prompt('Edit time (MM:SS format):', evt.time);
-                                                if (newTime && /^\d{1,2}:\d{2}$/.test(newTime)) {
-                                                    const [mins, secs] = newTime.split(':').map(Number);
-                                                    const timeInSeconds = mins * 60 + secs;
-                                                    setGameEvents(prev => prev.map(e => 
-                                                        e.id === evt.id 
-                                                            ? { ...e, time: newTime, timeInSeconds: timeInSeconds } 
-                                                            : e
-                                                    ));
-                                                } else if (newTime) {
-                                                    alert('Invalid time format. Use MM:SS (e.g., 12:30)');
-                                                }
-                                            }}
-                                            className="px-2 py-1 bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs rounded"
-                                            title="Edit time"
-                                        >
-                                            🕒
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                if (window.confirm('Delete this event?')) {
-                                                    setGameEvents(prev => prev.filter(e => e.id !== evt.id));
-                                                }
-                                            }}
-                                            className="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 text-xs rounded"
-                                            title="Delete event"
-                                        >
-                                            🗑️
-                                        </button>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         ))}
                     </div>
                 )}
+                <p className="text-xs text-gray-500 mt-3 text-center">
+                    💡 Click any event to edit
+                </p>
             </div>
         );
     };
