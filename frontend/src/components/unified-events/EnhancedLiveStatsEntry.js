@@ -576,6 +576,38 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         }));
     };
 
+    // Add manual player
+    const addManualPlayer = () => {
+        if (!newPlayerInput.number || !newPlayerInput.firstName || !newPlayerInput.lastName) {
+            alert('Please fill in all required fields');
+            return;
+        }
+
+        const newPlayer = {
+            id: `manual_${Date.now()}`,
+            number: newPlayerInput.number,
+            name: `${newPlayerInput.firstName} ${newPlayerInput.lastName}`,
+            position: newPlayerInput.position,
+            active: true,
+            stats: { goals: 0, assists: 0, shots: 0, penalties: 0 }
+        };
+
+        setGameState(prev => ({
+            ...prev,
+            [addPlayerTeam]: {
+                ...prev[addPlayerTeam],
+                players: [...prev[addPlayerTeam].players, newPlayer]
+            }
+        }));
+
+        // Reset and close
+        setNewPlayerInput({ number: '', firstName: '', lastName: '', position: 'Forward' });
+        setShowAddPlayerModal(false);
+        setAddPlayerTeam(null);
+        
+        addGameEvent(`➕ Player added: #${newPlayer.number} ${newPlayer.name}`, 'admin');
+    };
+
     // Assign penalty to player
     const assignPenalty = (teamKey, playerId, playerName, playerNumber) => {
         const penaltyType = penaltyInput.type === 'Other (specify)' ? penaltyInput.customType : penaltyInput.type;
