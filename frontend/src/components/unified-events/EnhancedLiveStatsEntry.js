@@ -64,6 +64,18 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
     // Shot type selector state
     const [showShotMenu, setShowShotMenu] = useState(null); // stores player id when menu is open
     
+    // Close shot menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (showShotMenu && !event.target.closest('.shot-button-container')) {
+                setShowShotMenu(null);
+            }
+        };
+        
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [showShotMenu]);
+    
     // Timeout tracking
     const [timeouts, setTimeouts] = useState({
         home: 0,
