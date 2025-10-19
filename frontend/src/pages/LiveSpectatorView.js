@@ -563,7 +563,13 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                     {/* Top Bar with Title and Close Button */}
                     <div className="absolute top-0 left-0 right-0 z-20 px-6 py-3 bg-gradient-to-b from-black/70 to-transparent">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-sm font-bold text-white drop-shadow-lg">🔴 LIVE: {event.title}</h2>
+                            <h2 className="text-sm font-bold text-white drop-shadow-lg">
+                                {tournamentMatch ? (
+                                    <>🔴 LIVE: {event.title} - Round {tournamentMatch.roundIndex + 1}</>
+                                ) : (
+                                    <>🔴 LIVE: {event.title}</>
+                                )}
+                            </h2>
                             <div className="flex items-center gap-4">
                                 <div className="text-xs bg-black bg-opacity-40 px-3 py-1 rounded text-white">
                                     Polling: {liveData.home_team.score}-{liveData.away_team.score}
