@@ -1495,16 +1495,27 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
             <div className="space-y-6">
                 {/* Active Players */}
                 <div>
-                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-3">
-                        {teamData.logo && (
-                            <img 
-                                src={teamData.logo} 
-                                alt={teamData.name}
-                                className="w-6 h-6 object-cover rounded"
-                            />
-                        )}
-                        {teamData.name} - Active Players ({activePlayers.length})
-                    </h3>
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold flex items-center gap-3">
+                            {teamData.logo && (
+                                <img 
+                                    src={teamData.logo} 
+                                    alt={teamData.name}
+                                    className="w-6 h-6 object-cover rounded"
+                                />
+                            )}
+                            {teamData.name} - Active Players ({activePlayers.length})
+                        </h3>
+                        <button
+                            onClick={() => {
+                                setAddPlayerTeam(teamKey);
+                                setShowAddPlayerModal(true);
+                            }}
+                            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm"
+                        >
+                            ➕ Add Player
+                        </button>
+                    </div>
                     
                     <div className="bg-white rounded-lg border overflow-hidden shadow-sm">
                         <table className="w-full">
