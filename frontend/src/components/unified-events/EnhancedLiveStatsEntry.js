@@ -889,6 +889,35 @@ const EnhancedLiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
         );
     };
 
+    // Cancel penalty with reason
+    const cancelPenalty = (penaltyId, team) => {
+        const reasons = [
+            'Opposing team scored',
+            'Period ended',
+            'Scorer error',
+            'Other'
+        ];
+        
+        const reason = window.prompt(`Why cancel this penalty?\n\n${reasons.map((r, i) => `${i + 1}. ${r}`).join('\n')}\n\nEnter number (1-4):`);
+        
+        if (reason) {
+            const reasonIndex = parseInt(reason) - 1;
+            const reasonText = reasons[reasonIndex] || reasons[3];
+            
+            // Find penalty info before removing
+            const penalty = penalties[team].find(p => p.id === penaltyId);
+            if (penalty) {
+                addGameEvent(`✅ Penalty cancelled - #${penalty.playerNumber} ${penalty.playerName} - Reason: ${reasonText}`, 'admin');
+            }
+            
+            // Remove penalty
+            setPenalties(prev => ({
+                ...prev,
+                [team]: prev[team].filter(p => p.id !== penaltyId)
+            }));
+        }
+    };
+
     // Render Active Penalties Box
     const renderActivePenalties = () => {
         const homePenalties = penalties.home || [];
