@@ -325,8 +325,12 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
             {showSpectatorView && selectedEvent && (
                 <LiveSpectatorView
                     event={selectedEvent}
-                    teams={teams}
-                    onClose={() => setShowSpectatorView(false)}
+                    teams={tournamentMatch ? [tournamentMatch.team1, tournamentMatch.team2] : teams}
+                    onClose={() => {
+                        setShowSpectatorView(false);
+                        setTournamentMatch(null);
+                    }}
+                    tournamentMatch={tournamentMatch}
                 />
             )}
         </div>
