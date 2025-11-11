@@ -89,10 +89,17 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
     });
     
     // New Shot Recording Workflow State
-    const [pendingShot, setPendingShot] = useState(null); // { team, timestamp, period, timeInSeconds }
+    const [pendingShot, setPendingShot] = useState(null);
     const [showShotModal, setShowShotModal] = useState(false);
-    const [shotType, setShotType] = useState(null); // 'miss', 'save', 'goal'
+    const [shotType, setShotType] = useState(null);
     const [selectedPlayer, setSelectedPlayer] = useState(null);
+    
+    // New Penalty Recording Workflow State
+    const [pendingPenalty, setPendingPenalty] = useState(null);
+    const [showPenaltyModal, setShowPenaltyModal] = useState(false);
+    const [penaltyType, setPenaltyType] = useState('');
+    const [penaltyDuration, setPenaltyDuration] = useState(120);
+    const [selectedPenaltyPlayer, setSelectedPenaltyPlayer] = useState(null);
     
     // Manual player addition state
     const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
