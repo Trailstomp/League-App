@@ -1406,8 +1406,11 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 </div>
             </div>
 
-            {/* Game Controls Bar - Mobile visible, Desktop in center */}
-            <div className="md:hidden bg-gray-100 px-2 py-2 flex items-center justify-center gap-2">
+            {/* Game Controls Bar - Mobile: shows score and clock */}
+            <div className="md:hidden bg-gray-100 px-2 py-2 flex items-center justify-center gap-3">
+                <div className="text-2xl font-bold" style={{ color: gameState.home_team.color || '#3b82f6' }}>
+                    {gameState.home_team.score}
+                </div>
                 <div 
                     className={`px-3 py-1 rounded border cursor-pointer ${
                         gameState.is_running ? 'bg-green-600 border-green-400 text-white' : 'bg-red-600 border-red-400 text-white'
@@ -1422,6 +1425,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                     }}
                 >
                     <div className="text-lg font-bold font-mono">{formatTime(gameState.time_remaining)}</div>
+                </div>
+                <div className="text-2xl font-bold" style={{ color: gameState.away_team.color || '#ef4444' }}>
+                    {gameState.away_team.score}
                 </div>
                 <div className="bg-black bg-opacity-60 px-2 py-1 rounded text-white text-xs">
                     P{gameState.current_period}
