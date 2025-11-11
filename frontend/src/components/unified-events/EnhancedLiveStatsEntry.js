@@ -2028,7 +2028,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         </button>
                     </div>
 
-        const PlayerRow = ({ player, isInactive = false }) => (
+        const PlayerRow = ({ player, isInactive = false }) => {
+            return (
             <tr key={player.id} className={`${isInactive ? 'bg-gray-50 opacity-60' : 'hover:bg-blue-50'}`}>
                 <td className="px-2 py-1">
                     <input
