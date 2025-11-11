@@ -88,6 +88,12 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         away: 0
     });
     
+    // New Shot Recording Workflow State
+    const [pendingShot, setPendingShot] = useState(null); // { team, timestamp, period, timeInSeconds }
+    const [showShotModal, setShowShotModal] = useState(false);
+    const [shotType, setShotType] = useState(null); // 'miss', 'save', 'goal'
+    const [selectedPlayer, setSelectedPlayer] = useState(null);
+    
     // Manual player addition state
     const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
     const [addPlayerTeam, setAddPlayerTeam] = useState(null);
