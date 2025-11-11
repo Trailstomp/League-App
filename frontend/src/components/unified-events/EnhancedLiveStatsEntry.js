@@ -1506,36 +1506,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         </div>
     );
 
-                {/* Center Clock & Period - Absolute on desktop, separate row on mobile */}
-                <div className="md:absolute md:left-1/2 md:top-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 z-30 bg-black bg-opacity-60 backdrop-blur-sm">
-                    <div className="flex flex-col items-center gap-1 p-2 md:gap-2 md:p-3">
-                        {/* Timer - Clickable */}
-                        <div 
-                            className={`px-3 py-1 md:px-6 md:py-2 rounded-lg border-2 cursor-pointer hover:opacity-90 transition ${
-                                gameState.is_running 
-                                    ? 'bg-green-600 border-green-400' 
-                                    : 'bg-red-600 border-red-400'
-                            }`}
-                            onClick={() => {
-                                setManualTimeInputs({
-                                    minutes: Math.floor(gameState.time_remaining / 60).toString(),
-                                    seconds: (gameState.time_remaining % 60).toString(),
-                                    period: gameState.current_period.toString()
-                                });
-                                setShowTimeEditor(true);
-                            }}
-                            title="Click to edit time"
-                        >
-                            <div className="text-xl md:text-3xl font-bold text-white font-mono">
-                                {formatTime(gameState.time_remaining)}
-                            </div>
-                        </div>
-                        {/* Period */}
-                        <div className="px-2 py-0.5 md:px-4 md:py-1 rounded text-white text-xs md:text-sm font-medium">
-                            Period {gameState.current_period} of {gameState.game_settings.periods}
-                        </div>
-                    </div>
-                </div>
+ 
 
                 {/* Away Team Side */}
                 <div 
