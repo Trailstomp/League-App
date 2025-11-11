@@ -761,6 +761,95 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         setSelectedPlayer(null);
     };
 
+    // NEW PENALTY RECORDING WORKFLOW
+    const handlePenaltyTaken = (team) => {
+        const penaltyData = {
+            team: team,
+            timestamp: new Date().toISOString(),
+            period: gameState.current_period,
+            timeRemaining: gameState.time_remaining,
+            timeInSeconds: gameState.time_remaining
+        };
+        
+        setPendingPenalty(penaltyData);
+        setPenaltyType('');
+        setPenaltyDuration(120); // Default 2 minutes
+        setSelectedPenaltyPlayer(null);
+        setShowPenaltyModal(true);
+        
+        console.log('⚠️ Penalty captured at:', penaltyData);
+    };
+
+    const completePenaltyRecording = () => {
+        if (!pendingPenalty || !penaltyType || !penaltyDuration) {
+            alert('Please select penalty type and duration');
+            return;
+        }
+
+        const teamKey = pendingPenalty.team;
+        const player = selectedPenaltyPlayer ? gameState[teamKey].players.find(p => p.id === selectedPenaltyPlayer) : null;
+        const teamName = gameState[teamKey].name;
+        
+        console.log('⚠️ Recording penalty:', { type: penaltyType, duration: penaltyDuration, player: player?.name || 'Unknown', team: teamName });
+        
+        // Create penalty object
+        const newPenalty = {
+            id: Date.now(),
+            playerId: selectedPenaltyPlayer || null,
+            playerName: player ? player.name : 'Unknown Player',
+            playerNumber: player ? player.number : '??',
+            type: penaltyType,
+            startTime: gameState.time_remaining,
+            duration: penaltyDuration,
+            timeRemaining: penaltyDuration,
+            period: gameState.current_period
+        };
+
+        // Update game state
+        setGameState(prev => {
+            const newState = { ...prev };
+            
+            // Add penalty to team
+            const penaltyKey = teamKey === 'home_team' ? 'home_penalties' : 'away_penalties';
+            newState[penaltyKey] = [...(prev[penaltyKey] || []), newPenalty];
+            
+            // Update player stats if player selected
+            if (selectedPenaltyPlayer && player) {
+                newState[teamKey] = {
+                    ...prev[teamKey],
+                    players: prev[teamKey].players.map(p => 
+                        p.id === selectedPenaltyPlayer ? {
+                            ...p,
+                            stats: { ...p.stats, penalties: p.stats.penalties + 1 }
+                        } : p
+                    )
+                };
+            }
+            
+            return newState;
+        });
+
+        // Add game event
+        const playerInfo = player ? `#${player.number} ${player.name}` : 'Unknown player';
+        const durationText = penaltyDuration === 90 ? '1:30' : `${Math.floor(penaltyDuration / 60)}:00`;
+        addGameEvent(`⚠️ ${teamName} - ${playerInfo} - ${penaltyType} penalty (${durationText})`, 'penalty');
+
+        // Close modal and reset
+        setShowPenaltyModal(false);
+        setPendingPenalty(null);
+        setPenaltyType('');
+        setPenaltyDuration(120);
+        setSelectedPenaltyPlayer(null);
+    };
+
+    const cancelPenaltyRecording = () => {
+        setShowPenaltyModal(false);
+        setPendingPenalty(null);
+        setPenaltyType('');
+        setPenaltyDuration(120);
+        setSelectedPenaltyPlayer(null);
+    };
+
     // Enhanced stat adding with shot types (miss, saved, goal)
     const addShotStat = (teamKey, playerId, shotType) => {
         // shotType: 'miss', 'saved', 'goal'
