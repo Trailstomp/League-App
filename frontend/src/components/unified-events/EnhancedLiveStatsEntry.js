@@ -2377,6 +2377,112 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                     </div>
                 </div>
             )}
+
+            {/* Shot Recording Modal */}
+            {showShotModal && pendingShot && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                        <h3 className="text-xl font-bold mb-4">🏒 Record Shot</h3>
+                        
+                        <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+                            <div className="text-sm text-gray-600">Team:</div>
+                            <div className="font-bold">{gameState[pendingShot.team].name}</div>
+                            <div className="text-xs text-gray-500 mt-1">
+                                Period {pendingShot.period} - {formatTime(pendingShot.timeRemaining)}
+                            </div>
+                        </div>
+
+                        {/* Step 1: Select Shot Type */}
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                1. What happened? *
+                            </label>
+                            <div className="grid grid-cols-3 gap-2">
+                                <button
+                                    onClick={() => setShotType('miss')}
+                                    className={`p-3 rounded-lg border-2 font-medium transition ${
+                                        shotType === 'miss'
+                                            ? 'border-gray-600 bg-gray-100 text-gray-800'
+                                            : 'border-gray-300 hover:border-gray-400'
+                                    }`}
+                                >
+                                    ❌ Miss
+                                </button>
+                                <button
+                                    onClick={() => setShotType('save')}
+                                    className={`p-3 rounded-lg border-2 font-medium transition ${
+                                        shotType === 'save'
+                                            ? 'border-blue-600 bg-blue-100 text-blue-800'
+                                            : 'border-gray-300 hover:border-gray-400'
+                                    }`}
+                                >
+                                    ✋ Save
+                                </button>
+                                <button
+                                    onClick={() => setShotType('goal')}
+                                    className={`p-3 rounded-lg border-2 font-medium transition ${
+                                        shotType === 'goal'
+                                            ? 'border-green-600 bg-green-100 text-green-800'
+                                            : 'border-gray-300 hover:border-gray-400'
+                                    }`}
+                                >
+                                    🚨 Goal
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Step 2: Select Player */}
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                2. Which player? *
+                            </label>
+                            <div className="max-h-60 overflow-y-auto border rounded-lg">
+                                {gameState[pendingShot.team].players
+                                    .filter(p => p.active)
+                                    .sort((a, b) => parseInt(a.number) - parseInt(b.number))
+                                    .map(player => (
+                                        <button
+                                            key={player.id}
+                                            onClick={() => setSelectedPlayer(player.id)}
+                                            className={`w-full p-3 text-left border-b hover:bg-gray-50 transition ${
+                                                selectedPlayer === player.id
+                                                    ? 'bg-blue-50 border-l-4 border-l-blue-600'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <span className="font-mono font-bold mr-2">#{player.number}</span>
+                                                    <span className="font-medium">{formatPlayerName(player.name)}</span>
+                                                </div>
+                                                {selectedPlayer === player.id && (
+                                                    <span className="text-blue-600">✓</span>
+                                                )}
+                                            </div>
+                                        </button>
+                                    ))}
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-3">
+                            <button
+                                onClick={cancelShotRecording}
+                                className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={completeShotRecording}
+                                disabled={!shotType || !selectedPlayer}
+                                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Record Shot
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             </div>
         </div>
     );
