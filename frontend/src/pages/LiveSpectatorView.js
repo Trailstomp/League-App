@@ -653,35 +653,62 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                                 <h4 className="text-lg font-bold mb-3">📋 Game Events</h4>
                                 <div className="bg-gray-50 rounded-lg border-2 border-gray-200 p-4 max-h-96 overflow-y-auto">
                                     <div className="space-y-2">
-                                        {liveData.gameEvents
-                                            .sort((a, b) => {
-                                                // Sort by period (desc) then by timeInSeconds (desc)
+                                        {(() => {
+                                            // Group events by timestamp (time + period)
+                                            const sortedEvents = liveData.gameEvents.sort((a, b) => {
                                                 if (b.period !== a.period) return b.period - a.period;
                                                 return (b.timeInSeconds || 0) - (a.timeInSeconds || 0);
-                                            })
-                                            .map((evt, idx) => (
-                                            <div 
-                                                key={idx} 
-                                                className={`p-3 rounded border-l-4 ${
-                                                    evt.type === 'goal' ? 'bg-green-50 border-green-500' :
-                                                    evt.type === 'penalty' ? 'bg-yellow-50 border-yellow-500' :
-                                                    evt.type === 'shot' ? 'bg-blue-50 border-blue-400' :
-                                                    evt.type === 'save' ? 'bg-cyan-50 border-cyan-400' :
-                                                    evt.type === 'shot_miss' ? 'bg-gray-50 border-gray-400' :
-                                                    'bg-white border-gray-300'
-                                                }`}
-                                            >
-                                                <div className="flex items-start justify-between gap-3">
-                                                    <div className="flex-1">
-                                                        <div className="font-medium text-sm">{evt.text}</div>
+                                            });
+
+                                            const groupedEvents = [];
+                                            const eventMap = new Map();
+
+                                            sortedEvents.forEach(evt => {
+                                                const key = `${evt.period}-${evt.time}`;
+                                                if (!eventMap.has(key)) {
+                                                    eventMap.set(key, {
+                                                        time: evt.time,
+                                                        period: evt.period,
+                                                        events: []
+                                                    });
+                                                    groupedEvents.push(eventMap.get(key));
+                                                }
+                                                eventMap.get(key).events.push(evt);
+                                            });
+
+                                            return groupedEvents.map((group, idx) => {
+                                                // Determine primary event type for styling (prioritize goals)
+                                                const hasGoal = group.events.some(e => e.type === 'goal');
+                                                const hasPenalty = group.events.some(e => e.type === 'penalty');
+                                                const hasShot = group.events.some(e => e.type === 'shot');
+                                                
+                                                const borderColor = hasGoal ? 'border-green-500 bg-green-50' :
+                                                                   hasPenalty ? 'border-yellow-500 bg-yellow-50' :
+                                                                   hasShot ? 'border-blue-400 bg-blue-50' :
+                                                                   'border-gray-300 bg-white';
+
+                                                return (
+                                                    <div 
+                                                        key={idx} 
+                                                        className={`p-3 rounded border-l-4 ${borderColor}`}
+                                                    >
+                                                        <div className="flex items-start justify-between gap-3">
+                                                            <div className="flex-1 space-y-1">
+                                                                {group.events.map((evt, evtIdx) => (
+                                                                    <div key={evtIdx} className="font-medium text-sm">
+                                                                        {evt.text}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                            <div className="text-xs text-gray-600 whitespace-nowrap">
+                                                                <div className="font-mono font-bold">{group.time}</div>
+                                                                <div>P{group.period}</div>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div className="text-xs text-gray-600 whitespace-nowrap">
-                                                        <div className="font-mono font-bold">{evt.time}</div>
-                                                        <div>P{evt.period}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
+                                                );
+                                            });
+                                        })()}
                                     </div>
                                 </div>
                             </div>
