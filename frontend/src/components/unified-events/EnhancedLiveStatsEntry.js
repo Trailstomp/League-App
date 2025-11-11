@@ -1437,22 +1437,25 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             {/* Quick Action Buttons Row */}
             <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-300">
                 <div className="grid grid-cols-3 gap-1 md:gap-2 p-1 md:p-2 max-w-7xl mx-auto">
-                    {/* Home Team Buttons - Left */}
-                    <div className="grid grid-cols-2 gap-1">
-                        <button
-                            onClick={() => handleShotTaken('home_team')}
-                            className="p-2 md:p-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg font-bold text-xs md:text-sm shadow-md transform active:scale-95 transition"
-                        >
-                            <div className="text-xl md:text-2xl">🏒</div>
-                            <div className="text-xs hidden md:block">Shot</div>
-                        </button>
-                        <button
-                            onClick={() => handlePenaltyTaken('home_team')}
-                            className="p-2 md:p-3 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white rounded-lg font-bold text-xs md:text-sm shadow-md transform active:scale-95 transition"
-                        >
-                            <div className="text-xl md:text-2xl">⚠️</div>
-                            <div className="text-xs hidden md:block">Penalty</div>
-                        </button>
+                    {/* Home Team Buttons - Left with clear label */}
+                    <div className="space-y-1">
+                        <div className="text-xs md:text-sm font-bold text-center text-blue-700 mb-1">{gameState.home_team.name}</div>
+                        <div className="grid grid-cols-2 gap-1">
+                            <button
+                                onClick={() => handleShotTaken('home_team')}
+                                className="p-2 md:p-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg font-bold text-xs md:text-sm shadow-md transform active:scale-95 transition"
+                            >
+                                <div className="text-xl md:text-2xl">🏒</div>
+                                <div className="text-xs">Shot</div>
+                            </button>
+                            <button
+                                onClick={() => handlePenaltyTaken('home_team')}
+                                className="p-2 md:p-3 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white rounded-lg font-bold text-xs md:text-sm shadow-md transform active:scale-95 transition"
+                            >
+                                <div className="text-xl md:text-2xl">⚠️</div>
+                                <div className="text-xs">Penalty</div>
+                            </button>
+                        </div>
                     </div>
 
                     {/* Center Game Controls */}
