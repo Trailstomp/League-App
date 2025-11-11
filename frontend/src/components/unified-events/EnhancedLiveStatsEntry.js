@@ -2743,7 +2743,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         {/* Step 2: Select Player */}
                         <div className="mb-4 md:mb-6">
                             <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-                                2. Which player? *
+                                2. Which player? (Optional)
                             </label>
                             <div className="max-h-48 md:max-h-60 overflow-y-auto border rounded-lg">
                                 {gameState[pendingShot.team].players
