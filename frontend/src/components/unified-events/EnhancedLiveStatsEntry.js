@@ -1882,6 +1882,84 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         );
     };
 
+    // NEW QUICK ENTRY VIEW WITH BIG BUTTONS
+    const renderQuickEntry = () => {
+        return (
+            <div className="space-y-4">
+                <h2 className="text-xl md:text-2xl font-bold mb-4">⚡ Quick Event Entry</h2>
+                
+                {/* Shot Buttons - Big and Touch Friendly */}
+                <div>
+                    <h3 className="text-base md:text-lg font-semibold mb-3 text-gray-700">🏒 Record Shot</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                        <button
+                            onClick={() => handleShotTaken('home_team')}
+                            className="p-6 md:p-8 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-bold text-lg md:text-2xl shadow-lg transform active:scale-95 transition"
+                        >
+                            <div className="text-4xl md:text-5xl mb-2">🏒</div>
+                            <div>{gameState.home_team.name}</div>
+                            <div className="text-sm md:text-base font-normal mt-1">Record Shot</div>
+                        </button>
+                        <button
+                            onClick={() => handleShotTaken('away_team')}
+                            className="p-6 md:p-8 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl font-bold text-lg md:text-2xl shadow-lg transform active:scale-95 transition"
+                        >
+                            <div className="text-4xl md:text-5xl mb-2">🏒</div>
+                            <div>{gameState.away_team.name}</div>
+                            <div className="text-sm md:text-base font-normal mt-1">Record Shot</div>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Penalty Buttons - Big and Touch Friendly */}
+                <div>
+                    <h3 className="text-base md:text-lg font-semibold mb-3 text-gray-700">⚠️ Record Penalty</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                        <button
+                            onClick={() => handlePenaltyTaken('home_team')}
+                            className="p-6 md:p-8 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white rounded-xl font-bold text-lg md:text-2xl shadow-lg transform active:scale-95 transition"
+                        >
+                            <div className="text-4xl md:text-5xl mb-2">⚠️</div>
+                            <div>{gameState.home_team.name}</div>
+                            <div className="text-sm md:text-base font-normal mt-1">Record Penalty</div>
+                        </button>
+                        <button
+                            onClick={() => handlePenaltyTaken('away_team')}
+                            className="p-6 md:p-8 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-xl font-bold text-lg md:text-2xl shadow-lg transform active:scale-95 transition"
+                        >
+                            <div className="text-4xl md:text-5xl mb-2">⚠️</div>
+                            <div>{gameState.away_team.name}</div>
+                            <div className="text-sm md:text-base font-normal mt-1">Record Penalty</div>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Quick Stats Summary */}
+                <div className="mt-6 pt-6 border-t">
+                    <h3 className="text-base md:text-lg font-semibold mb-3 text-gray-700">📊 Current Stats</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+                            <div className="font-bold text-blue-800">{gameState.home_team.name}</div>
+                            <div className="text-sm mt-2 space-y-1">
+                                <div>Goals: {gameState.home_team.score}</div>
+                                <div>Shots: {gameState.home_team.players.reduce((sum, p) => sum + p.stats.shots, 0)}</div>
+                                <div>Penalties: {(gameState.home_penalties || []).length}</div>
+                            </div>
+                        </div>
+                        <div className="bg-red-50 p-4 rounded-lg border-2 border-red-200">
+                            <div className="font-bold text-red-800">{gameState.away_team.name}</div>
+                            <div className="text-sm mt-2 space-y-1">
+                                <div>Goals: {gameState.away_team.score}</div>
+                                <div>Shots: {gameState.away_team.players.reduce((sum, p) => sum + p.stats.shots, 0)}</div>
+                                <div>Penalties: {(gameState.away_penalties || []).length}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     const renderPlayerStats = (teamKey, teamData) => {
         const isHome = teamKey === 'home_team';
         const sortConfig = isHome ? playerSort.home : playerSort.away;
