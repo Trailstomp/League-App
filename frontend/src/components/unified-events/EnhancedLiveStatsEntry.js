@@ -2410,9 +2410,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             {/* Time Editor Dialog */}
             {renderTimeEditor()}
             
-            {/* Penalty Assignment Modal */}
-            {renderPenaltyModal()}
-            
             {/* Add Player Modal */}
             {showAddPlayerModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
