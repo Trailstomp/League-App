@@ -1968,6 +1968,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         const sortedPlayers = sortPlayers(teamData.players, sortConfig);
         const activePlayers = sortedPlayers.filter(p => p.active);
         const inactivePlayers = sortedPlayers.filter(p => !p.active);
+        const goaliesKey = isHome ? 'home' : 'away';
 
         const SortableHeader = ({ column, children }) => (
             <th 
@@ -1985,7 +1986,35 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             </th>
         );
 
-        const PlayerRow = ({ player, isInactive = false }) => (
+        return (
+            <div className="space-y-6">
+                {/* Goalies Section at Top */}
+                <div className={`${isHome ? 'bg-blue-50' : 'bg-red-50'} p-4 md:p-6 rounded-xl border-2 ${isHome ? 'border-blue-300' : 'border-red-300'}`}>
+                    <h3 className="text-lg md:text-xl font-bold mb-4 text-gray-900">🥅 Active Goalies</h3>
+                    <div className="space-y-2">
+                        {gameState.goalies[goaliesKey].map(goalie => (
+                            <label key={goalie.id} className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition ${
+                                goalie.active 
+                                    ? `${isHome ? 'bg-blue-100 border-2 border-blue-500' : 'bg-red-100 border-2 border-red-500'}` 
+                                    : 'bg-white border border-gray-300 hover:bg-gray-50'
+                            }`}>
+                                <input
+                                    type="checkbox"
+                                    checked={goalie.active}
+                                    onChange={() => toggleGoalieActive(goaliesKey, goalie.id)}
+                                    className="w-5 h-5 rounded"
+                                />
+                                <div className="flex-1">
+                                    <div className="font-bold text-sm md:text-base">#{goalie.number} {goalie.name}</div>
+                                    <div className="text-xs text-gray-600">Saves: {goalie.stats.saves} | Goals Against: {goalie.stats.goals_against}</div>
+                                </div>
+                            </label>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Players Table */}
+                <div>
             <tr key={player.id} className={`${isInactive ? 'bg-gray-50 opacity-60' : 'hover:bg-blue-50'}`}>
                 <td className="px-2 py-1">
                     <input
