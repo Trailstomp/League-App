@@ -1499,22 +1499,25 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         </div>
                     </div>
 
-                    {/* Away Team Buttons - Right */}
-                    <div className="grid grid-cols-2 gap-1">
-                        <button
-                            onClick={() => handleShotTaken('away_team')}
-                            className="p-2 md:p-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg font-bold text-xs md:text-sm shadow-md transform active:scale-95 transition"
-                        >
-                            <div className="text-xl md:text-2xl">🏒</div>
-                            <div className="text-xs hidden md:block">Shot</div>
-                        </button>
-                        <button
-                            onClick={() => handlePenaltyTaken('away_team')}
-                            className="p-2 md:p-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-lg font-bold text-xs md:text-sm shadow-md transform active:scale-95 transition"
-                        >
-                            <div className="text-xl md:text-2xl">⚠️</div>
-                            <div className="text-xs hidden md:block">Penalty</div>
-                        </button>
+                    {/* Away Team Buttons - Right with clear label */}
+                    <div className="space-y-1">
+                        <div className="text-xs md:text-sm font-bold text-center text-red-700 mb-1">{gameState.away_team.name}</div>
+                        <div className="grid grid-cols-2 gap-1">
+                            <button
+                                onClick={() => handleShotTaken('away_team')}
+                                className="p-2 md:p-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg font-bold text-xs md:text-sm shadow-md transform active:scale-95 transition"
+                            >
+                                <div className="text-xl md:text-2xl">🏒</div>
+                                <div className="text-xs">Shot</div>
+                            </button>
+                            <button
+                                onClick={() => handlePenaltyTaken('away_team')}
+                                className="p-2 md:p-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-lg font-bold text-xs md:text-sm shadow-md transform active:scale-95 transition"
+                            >
+                                <div className="text-xl md:text-2xl">⚠️</div>
+                                <div className="text-xs">Penalty</div>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
