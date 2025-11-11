@@ -1829,11 +1829,42 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 updates.timeInSeconds = mins * 60 + secs;
             }
 
+            // Handle player change
+            if (editPlayerId && editPlayerId !== evt.playerId && evt.teamKey) {
+                const teamPlayers = gameState[evt.teamKey === 'home' ? 'home_team' : 'away_team'].players;
+                const newPlayer = teamPlayers.find(p => p.id === editPlayerId);
+                
+                if (newPlayer) {
+                    updates.playerId = editPlayerId;
+                    updates.playerInfo = { number: newPlayer.number, name: newPlayer.name };
+                    
+                    // Reconstruct event text with new player
+                    const teamName = gameState[evt.teamKey === 'home' ? 'home_team' : 'away_team'].name;
+                    const playerInfo = `#${newPlayer.number} ${newPlayer.name}`;
+                    
+                    if (evt.type === 'goal') {
+                        updates.text = `🚨 GOAL! ${teamName} - ${playerInfo} scores!`;
+                    } else if (evt.type === 'shot') {
+                        updates.text = `🏒 ${teamName} - ${playerInfo} - Shot on goal`;
+                    } else if (evt.type === 'shot_miss') {
+                        updates.text = `❌ ${teamName} - ${playerInfo} - Shot misses`;
+                    } else if (evt.type === 'penalty') {
+                        // Extract penalty type and duration from original text
+                        const penaltyMatch = evt.text.match(/- (.+) penalty \((.+)\)/);
+                        if (penaltyMatch) {
+                            const [_, penaltyTypeText, durationText] = penaltyMatch;
+                            updates.text = `⚠️ ${teamName} - ${playerInfo} - ${penaltyTypeText} penalty (${durationText})`;
+                        }
+                    }
+                }
+            }
+
             setGameEvents(prev => prev.map(e => 
                 e.id === evt.id ? { ...e, ...updates } : e
             ));
             
             setEditingEvent(null);
+            setEditPlayerId(null);
         };
 
         return (
