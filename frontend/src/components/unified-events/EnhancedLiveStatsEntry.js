@@ -1389,17 +1389,16 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         backgroundPosition: 'center'
                     }}
                 >
-                    <div className="p-2 md:p-4 text-white relative z-10">
+                    <div className="p-2 md:p-3 text-white relative z-10">
                         <div className="flex items-center gap-2 md:gap-3 justify-center md:justify-end">
                             <div className="text-center md:text-right md:order-1" style={{ fontFamily: liveViewSettings.useTeamFonts ? gameState.away_team.font : 'Inter, sans-serif' }}>
-                                <div className="text-xs md:text-sm font-medium">{gameState.away_team.name}</div>
-                                <div className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg">{gameState.away_team.score}</div>
+                                <div className="text-base md:text-xl font-bold">{gameState.away_team.name}</div>
                             </div>
                             {gameState.away_team.logo && (
                                 <img 
                                     src={gameState.away_team.logo} 
                                     alt={gameState.away_team.name}
-                                    className="w-8 h-8 md:w-12 md:h-12 object-cover rounded-lg border-2 border-white shadow-lg md:order-2"
+                                    className="w-8 h-8 md:w-10 md:h-10 object-cover rounded-lg border-2 border-white shadow-lg md:order-2"
                                 />
                             )}
                         </div>
