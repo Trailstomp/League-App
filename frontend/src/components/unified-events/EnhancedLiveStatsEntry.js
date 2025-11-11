@@ -1622,7 +1622,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             </th>
         );
 
-        return (
+        const PlayerRow = ({ player, isInactive = false }) => (
+            <tr key={player.id} className={`${isInactive ? 'bg-gray-50 opacity-60' : 'hover:bg-blue-50'}`}>
             <div className="space-y-6">
                 {/* Goalies Section at Top */}
                 <div className={`${isHome ? 'bg-blue-50' : 'bg-red-50'} p-4 md:p-6 rounded-xl border-2 ${isHome ? 'border-blue-300' : 'border-red-300'}`}>
