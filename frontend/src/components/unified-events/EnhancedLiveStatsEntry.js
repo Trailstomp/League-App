@@ -1434,7 +1434,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 </div>
             </div>
 
-            {/* Quick Action Buttons Row */}
+            {/* Quick Action Buttons Row - Clearer team labels */}
             <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-300">
                 <div className="grid grid-cols-3 gap-1 md:gap-2 p-1 md:p-2 max-w-7xl mx-auto">
                     {/* Home Team Buttons - Left with clear label */}
