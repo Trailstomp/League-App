@@ -1508,13 +1508,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
  
 
-            {/* Event Title Bar */}
-            <div className="bg-white px-2 md:px-4 py-1 md:py-2 border-b border-gray-200">
-                <div className="text-center">
-                    <h2 className="text-sm md:text-lg font-bold text-gray-800">{event?.title || 'Live Game Scoring'}</h2>
-                </div>
-            </div>
-
             {/* Control Buttons Bar - Responsive */}
             <div className="bg-gray-50 px-2 md:px-4 py-2 md:py-3 border-b border-gray-200">
                 <div className="flex items-center justify-center gap-1 md:gap-3 flex-wrap">
