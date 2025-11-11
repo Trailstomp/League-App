@@ -2195,7 +2195,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                     </>
                 )}
             </tr>
-        );
+            );
+        };
 
         return (
             <div className="space-y-6">
