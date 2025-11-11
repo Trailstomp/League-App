@@ -2493,9 +2493,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                             <button
                                 onClick={completeShotRecording}
                                 disabled={!shotType || !selectedPlayer}
-                                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex-1 px-3 md:px-4 py-2 text-sm md:text-base bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                             >
-                                Record Shot
+                                ✓ Record Shot
                             </button>
                         </div>
                     </div>
