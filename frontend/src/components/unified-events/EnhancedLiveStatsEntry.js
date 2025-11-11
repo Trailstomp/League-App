@@ -1624,6 +1624,26 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
         const PlayerRow = ({ player, isInactive = false }) => (
             <tr key={player.id} className={`${isInactive ? 'bg-gray-50 opacity-60' : 'hover:bg-blue-50'}`}>
+                <td className="px-2 py-1">
+                    <input
+                        type="checkbox"
+                        checked={player.active}
+                        onChange={() => togglePlayerActive(teamKey, player.id)}
+                        className="rounded"
+                    />
+                </td>
+                <td className="px-2 py-1 text-sm font-mono font-bold">{player.number}</td>
+                <td className="px-2 py-1">
+                    <span className="text-sm font-medium">{formatPlayerName(player.name)}</span>
+                </td>
+                <td className="px-2 py-1 text-sm text-center">{player.stats.shots || 0}</td>
+                <td className="px-2 py-1 text-center text-sm text-green-600">{player.stats.goals}</td>
+                <td className="px-2 py-1 text-center text-sm">{player.stats.assists || 0}</td>
+                <td className="px-2 py-1 text-center text-sm">{player.stats.penalties || 0}</td>
+            </tr>
+        );
+
+        return (
             <div className="space-y-6">
                 {/* Goalies Section at Top */}
                 <div className={`${isHome ? 'bg-blue-50' : 'bg-red-50'} p-4 md:p-6 rounded-xl border-2 ${isHome ? 'border-blue-300' : 'border-red-300'}`}>
