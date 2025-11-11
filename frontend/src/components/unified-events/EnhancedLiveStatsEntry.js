@@ -2108,16 +2108,11 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                                 }`}
                             >
                                 {editingEvent === evt.id ? (
-                                    // Edit Mode
+                                    // Edit Mode - Time editing only, keep event text consistent
                                     <div className="space-y-2">
-                                        <input
-                                            type="text"
-                                            value={editText}
-                                            onChange={(e) => setEditText(e.target.value)}
-                                            className="w-full px-2 py-1 border rounded text-sm"
-                                            placeholder="Event description"
-                                        />
+                                        <div className="text-sm font-medium text-gray-700">{evt.text}</div>
                                         <div className="flex items-center gap-2">
+                                            <label className="text-xs text-gray-600">Time:</label>
                                             <input
                                                 type="text"
                                                 value={editTime}
@@ -2125,7 +2120,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                                                 className="w-20 px-2 py-1 border rounded text-sm font-mono"
                                                 placeholder="MM:SS"
                                             />
-                                            <span className="text-xs text-gray-600">P{evt.period}</span>
+                                            <span className="text-xs text-gray-600">Period {evt.period}</span>
                                             <button
                                                 onClick={() => handleSaveEdit(evt)}
                                                 className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded"
