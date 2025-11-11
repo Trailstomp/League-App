@@ -157,6 +157,11 @@ function App() {
       setCurrentPage('quick-rsvp');
     }
     
+    // Check for live scoring URLs
+    if (path.startsWith('/live-scoring/')) {
+      setCurrentPage('live-scoring');
+    }
+    
     // Check for RSVP page URLs - redirect to backend
     if (path.startsWith('/rsvp/')) {
       const eventId = path.split('/rsvp/')[1];
