@@ -1508,45 +1508,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
  
 
-                {/* Away Team Side */}
-                <div 
-                    className="flex-1 relative overflow-hidden"
-                    style={{
-                        backgroundColor: liveViewSettings.backgroundType === 'banners' && gameState.away_team.banner
-                            ? 'transparent'
-                            : liveViewSettings.backgroundType === 'gradient'
-                            ? 'transparent'
-                            : gameState.away_team.color || '#ef4444',
-                        backgroundImage: liveViewSettings.backgroundType === 'banners' && gameState.away_team.banner
-                            ? `linear-gradient(rgba(0, 0, 0, ${liveViewSettings.bannerOpacity}), rgba(0, 0, 0, ${liveViewSettings.bannerOpacity})), url(${gameState.away_team.banner})`
-                            : liveViewSettings.backgroundType === 'gradient'
-                            ? `linear-gradient(to left, ${gameState.away_team.color}, ${gameState.away_team.color}dd)`
-                            : 'none',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center'
-                    }}
-                >
-                    <div className="p-2 md:p-4 text-white relative z-10">
-                        <div className="flex items-center gap-2 md:gap-3 justify-center md:justify-end">
-                            <div className="text-right md:order-1" style={{ fontFamily: liveViewSettings.useTeamFonts ? gameState.away_team.font : 'Inter, sans-serif' }}>
-                                <div className="text-xs md:text-sm font-medium">{gameState.away_team.name}</div>
-                                <div className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg">{gameState.away_team.score}</div>
-                            </div>
-                            {gameState.away_team.logo && (
-                                <img 
-                                    src={gameState.away_team.logo} 
-                                    alt={gameState.away_team.name}
-                                    className="w-8 h-8 md:w-12 md:h-12 object-cover rounded-lg border-2 border-white shadow-lg md:order-2"
-                                />
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Remaining sections wrapped */}
-            <div>
-
             {/* Event Title Bar */}
             <div className="bg-white px-2 md:px-4 py-1 md:py-2 border-b border-gray-200">
                 <div className="text-center">
