@@ -2443,62 +2443,16 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Fixed Header */}
+            {/* Fixed Header with integrated buttons */}
             {renderStickyHeader()}
 
-            {/* Add padding to account for fixed header */}
-            <div className="h-[180px] md:h-[280px]"></div>
-
-            {/* Sticky Quick Action Buttons - Always Visible */}
-            <div className="sticky top-0 z-40 bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-300 shadow-md">
-                <div className="max-w-7xl mx-auto px-2 md:px-4 py-3 md:py-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
-                        <button
-                            onClick={() => handleShotTaken('home_team')}
-                            className="p-3 md:p-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg font-bold text-sm md:text-base shadow-md transform active:scale-95 transition"
-                        >
-                            <div className="text-2xl md:text-3xl">🏒</div>
-                            <div className="text-xs md:text-sm mt-1">{gameState.home_team.name.substring(0, 10)}</div>
-                        </button>
-                        <button
-                            onClick={() => handleShotTaken('away_team')}
-                            className="p-3 md:p-4 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg font-bold text-sm md:text-base shadow-md transform active:scale-95 transition"
-                        >
-                            <div className="text-2xl md:text-3xl">🏒</div>
-                            <div className="text-xs md:text-sm mt-1">{gameState.away_team.name.substring(0, 10)}</div>
-                        </button>
-                        <button
-                            onClick={() => handlePenaltyTaken('home_team')}
-                            className="p-3 md:p-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white rounded-lg font-bold text-sm md:text-base shadow-md transform active:scale-95 transition"
-                        >
-                            <div className="text-2xl md:text-3xl">⚠️</div>
-                            <div className="text-xs md:text-sm mt-1">{gameState.home_team.name.substring(0, 10)}</div>
-                        </button>
-                        <button
-                            onClick={() => handlePenaltyTaken('away_team')}
-                            className="p-3 md:p-4 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-lg font-bold text-sm md:text-base shadow-md transform active:scale-95 transition"
-                        >
-                            <div className="text-2xl md:text-3xl">⚠️</div>
-                            <div className="text-xs md:text-sm mt-1">{gameState.away_team.name.substring(0, 10)}</div>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            {/* Add padding to account for fixed header - increased for button row */}
+            <div className="h-[220px] md:h-[280px]"></div>
 
             {/* Tab Navigation */}
-            <div className="bg-white border-b sticky top-[88px] md:top-[104px] z-30">
+            <div className="bg-white border-b sticky top-0 z-30">
                 <div className="max-w-7xl mx-auto px-2 md:px-4">
                     <div className="flex space-x-2 md:space-x-6 overflow-x-auto">
-                        <button
-                            onClick={() => setActiveTab('quick_entry')}
-                            className={`py-3 md:py-4 px-3 md:px-4 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${
-                                activeTab === 'quick_entry'
-                                    ? 'border-green-500 text-green-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                            }`}
-                        >
-                            ⚡ Quick Entry
-                        </button>
                         <button
                             onClick={() => setActiveTab('home_stats')}
                             className={`py-3 md:py-4 px-3 md:px-4 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${
@@ -2549,7 +2503,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                     {/* Active Penalties Display */}
                     {renderActivePenalties()}
                     
-                    {activeTab === 'quick_entry' && renderQuickEntry()}
                     {activeTab === 'home_stats' && renderPlayerStats('home_team', gameState.home_team)}
                     {activeTab === 'away_stats' && renderPlayerStats('away_team', gameState.away_team)}
                     {activeTab === 'game_events' && renderGameEvents()}
