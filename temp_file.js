@@ -1505,3 +1505,1092 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             {/* Goalies Section - REMOVED - Now in team tabs */}
         </div>
     );
+    // Time Editor Dialog
+    const renderTimeEditor = () => {
+        if (!showTimeEditor) return null;
+
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                    <h3 className="text-lg font-semibold mb-4">Edit Game Time</h3>
+                    
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Minutes
+                                </label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="60"
+                                    value={manualTimeInputs.minutes}
+                                    onChange={(e) => setManualTimeInputs(prev => ({
+                                        ...prev,
+                                        minutes: e.target.value
+                                    }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="15"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Seconds
+                                </label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="59"
+                                    value={manualTimeInputs.seconds}
+                                    onChange={(e) => setManualTimeInputs(prev => ({
+                                        ...prev,
+                                        seconds: e.target.value
+                                    }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="00"
+                                />
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Period
+                            </label>
+                            <input
+                                type="number"
+                                min="1"
+                                max={gameState.game_settings.periods}
+                                value={manualTimeInputs.period}
+                                onChange={(e) => setManualTimeInputs(prev => ({
+                                    ...prev,
+                                    period: e.target.value
+                                }))}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder={gameState.current_period.toString()}
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="flex justify-end gap-3 mt-6">
+                        <button
+                            onClick={() => {
+                                setShowTimeEditor(false);
+                                setManualTimeInputs({ minutes: '', seconds: '', period: '' });
+                            }}
+                            className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={() => {
+                                setManualTime();
+                                setShowTimeEditor(false);
+                            }}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                        >
+                            Apply
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    // NEW QUICK ENTRY VIEW WITH BIG BUTTONS
+    const renderPlayerStats = (teamKey, teamData) => {
+        const isHome = teamKey === 'home_team';
+        const sortConfig = isHome ? playerSort.home : playerSort.away;
+        const sortedPlayers = sortPlayers(teamData.players, sortConfig);
+        const activePlayers = sortedPlayers.filter(p => p.active);
+        const inactivePlayers = sortedPlayers.filter(p => !p.active);
+        const goaliesKey = isHome ? 'home' : 'away';
+
+        const SortableHeader = ({ column, children }) => (
+            <th 
+                className="px-3 py-2 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
+                onClick={() => handleColumnSort(teamKey, column)}
+            >
+                <div className="flex items-center gap-1">
+                    {children}
+                    {sortConfig.column === column && (
+                        <span className="text-xs">
+                            {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                        </span>
+                    )}
+                </div>
+            </th>
+        );
+
+        return (
+            <div className="space-y-6">
+                {/* Goalies Section at Top */}
+                <div className={`${isHome ? 'bg-blue-50' : 'bg-red-50'} p-4 md:p-6 rounded-xl border-2 ${isHome ? 'border-blue-300' : 'border-red-300'}`}>
+                    <h3 className="text-lg md:text-xl font-bold mb-4 text-gray-900">🥅 Active Goalies</h3>
+                    <div className="space-y-2">
+                        {gameState.goalies[goaliesKey].map(goalie => (
+                            <label key={goalie.id} className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition ${
+                                goalie.active 
+                                    ? `${isHome ? 'bg-blue-100 border-2 border-blue-500' : 'bg-red-100 border-2 border-red-500'}` 
+                                    : 'bg-white border border-gray-300 hover:bg-gray-50'
+                            }`}>
+                                <input
+                                    type="checkbox"
+                                    checked={goalie.active}
+                                    onChange={() => toggleGoalieActive(goaliesKey, goalie.id)}
+                                    className="w-5 h-5 rounded"
+                                />
+                                <div className="flex-1">
+                                    <div className="font-bold text-sm md:text-base">#{goalie.number} {goalie.name}</div>
+                                    <div className="text-xs text-gray-600">Saves: {goalie.stats.saves} | Goals Against: {goalie.stats.goals_against}</div>
+                                </div>
+                            </label>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Players Table */}
+                <div>
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg md:text-xl font-bold text-gray-900">👥 Players</h3>
+                        <button
+                            onClick={() => {
+                                setShowAddPlayerModal(true);
+                                setAddPlayerTeam(teamKey);
+                            }}
+                            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm"
+                        >
+                            ➕ Add Player
+                        </button>
+                    </div>
+
+        const PlayerRow = ({ player, isInactive = false }) => {
+            return (
+            <tr key={player.id} className={`${isInactive ? 'bg-gray-50 opacity-60' : 'hover:bg-blue-50'}`}>
+                <td className="px-2 py-1">
+                    <input
+                        type="checkbox"
+                        checked={player.active}
+                        onChange={() => togglePlayerActive(teamKey, player.id)}
+                        className="rounded"
+                    />
+                </td>
+                <td className="px-2 py-1 text-sm font-mono font-bold">{player.number}</td>
+                
+                {/* Player Name with Photo */}
+                <td className="px-2 py-1">
+                    <div className="flex items-center gap-2">
+                        {teamData.logo && (
+                            <img 
+                                src={teamData.logo} 
+                                alt={teamData.name}
+                                className="w-6 h-6 object-cover rounded-full border border-gray-300"
+                            />
+                        )}
+                        <span className="text-sm font-medium">{formatPlayerName(player.name)}</span>
+                    </div>
+                </td>
+                
+                <td className="px-2 py-1 text-xs text-gray-600">{player.position}</td>
+                
+                {/* Only show stat buttons for ACTIVE players */}
+                {!isInactive ? (
+                    <>
+                        {/* Shot Button with Dropdown */}
+                        <td className="px-2 py-1 relative shot-button-container">
+                            <button
+                                onClick={() => setShowShotMenu(showShotMenu === player.id ? null : player.id)}
+                                className="px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-bold rounded flex items-center gap-1"
+                            >
+                                🏒 Shot
+                                <span className="text-xs">▼</span>
+                            </button>
+                            
+                            {/* Dropdown Menu - Smart positioning */}
+                            {showShotMenu === player.id && (
+                                <div 
+                                    className="absolute left-0 bg-white border-2 border-gray-300 rounded-lg shadow-xl min-w-[140px]"
+                                    style={{
+                                        bottom: 'auto',
+                                        top: '100%',
+                                        marginTop: '4px',
+                                        zIndex: 9999
+                                    }}
+                                >
+                                    <button
+                                        onClick={() => {
+                                            addShotStat(teamKey, player.id, 'miss');
+                                            setShowShotMenu(null);
+                                        }}
+                                        className="w-full px-3 py-2 hover:bg-gray-100 text-left text-sm flex items-center gap-2 border-b rounded-t-lg"
+                                    >
+                                        <span>❌</span> Miss
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            addShotStat(teamKey, player.id, 'saved');
+                                            setShowShotMenu(null);
+                                        }}
+                                        className="w-full px-3 py-2 hover:bg-blue-50 text-left text-sm flex items-center gap-2 border-b"
+                                    >
+                                        <span>✋</span> Saved
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            addShotStat(teamKey, player.id, 'goal');
+                                            setShowShotMenu(null);
+                                        }}
+                                        className="w-full px-3 py-2 hover:bg-green-50 text-left text-sm flex items-center gap-2 rounded-b-lg"
+                                    >
+                                        <span>🚨</span> Goal
+                                    </button>
+                                </div>
+                            )}
+                        </td>
+                        
+                        {/* Shots Display */}
+                        <td className="px-2 py-1 text-center">
+                            <span className="font-bold text-base text-yellow-600">
+                                {player.stats.shots}
+                            </span>
+                        </td>
+                        
+                        {/* Goals Display */}
+                        <td className="px-2 py-1 text-center">
+                            <span className="font-bold text-base text-green-600">
+                                {player.stats.goals}
+                            </span>
+                        </td>
+                        
+                        {/* Assists with +/- buttons */}
+                        <td className="px-2 py-1 text-center">
+                            <div className="flex items-center justify-center gap-1">
+                                <button
+                                    onClick={() => {
+                                        if (player.stats.assists > 0) {
+                                            setGameState(prev => ({
+                                                ...prev,
+                                                [teamKey]: {
+                                                    ...prev[teamKey],
+                                                    players: prev[teamKey].players.map(p => 
+                                                        p.id === player.id 
+                                                            ? { ...p, stats: { ...p.stats, assists: p.stats.assists - 1 } }
+                                                            : p
+                                                    )
+                                                }
+                                            }));
+                                        }
+                                    }}
+                                    className="w-8 h-8 bg-red-100 text-red-600 rounded text-sm font-bold hover:bg-red-200"
+                                    disabled={player.stats.assists <= 0}
+                                >
+                                    −
+                                </button>
+                                <span className="w-10 text-center font-bold text-base text-blue-600">
+                                    {player.stats.assists}
+                                </span>
+                                <button
+                                    onClick={() => addStat(teamKey, player.id, 'assists')}
+                                    className="w-8 h-8 bg-blue-100 text-blue-600 rounded text-sm font-bold hover:opacity-80"
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </td>
+                        
+                        {/* Penalty Button - MOVED after assists */}
+                        <td className="px-2 py-1 text-center">
+                            <button
+                                onClick={() => {
+                                    setSelectedPlayerForPenalty({ ...player, teamKey });
+                                    setShowPenaltyModal(true);
+                                }}
+                                className="px-2 py-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs font-bold rounded"
+                                title="Assign Penalty"
+                            >
+                                ⚠️ PEN
+                            </button>
+                        </td>
+                        
+                        {/* Penalty Minutes Display */}
+                        <td className="px-2 py-1 text-center">
+                            <span className="font-bold text-base text-red-600">
+                                {player.stats.penalties}
+                            </span>
+                        </td>
+                    </>
+                ) : (
+                    /* Inactive players - just show stats, no buttons */
+                    <>
+                        <td className="px-2 py-1 text-center text-sm text-gray-400">-</td>
+                        <td className="px-2 py-1 text-center text-sm">{player.stats.shots || 0}</td>
+                        <td className="px-2 py-1 text-center text-sm">{player.stats.goals || 0}</td>
+                        <td className="px-2 py-1 text-center text-sm">{player.stats.assists || 0}</td>
+                        <td className="px-2 py-1 text-center text-sm">-</td>
+                        <td className="px-2 py-1 text-center text-sm">{player.stats.penalties || 0}</td>
+                    </>
+                )}
+            </tr>
+            );
+        };
+
+        return (
+            <div className="space-y-6">
+                {/* Active Players */}
+                <div>
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold flex items-center gap-3">
+                            {teamData.logo && (
+                                <img 
+                                    src={teamData.logo} 
+                                    alt={teamData.name}
+                                    className="w-6 h-6 object-cover rounded"
+                                />
+                            )}
+                            {teamData.name} - Active Players ({activePlayers.length})
+                        </h3>
+                        <button
+                            onClick={() => {
+                                setAddPlayerTeam(teamKey);
+                                setShowAddPlayerModal(true);
+                            }}
+                            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm"
+                        >
+                            ➕ Add Player
+                        </button>
+                    </div>
+                    
+                    <div className="overflow-x-auto -mx-2 md:mx-0">
+                        <table className="min-w-full bg-white border rounded-lg text-xs md:text-sm">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-1 md:px-2 py-1 text-left text-xs font-medium text-gray-700">✓</th>
+                                    <SortableHeader column="number">#</SortableHeader>
+                                    <SortableHeader column="name">Player</SortableHeader>
+                                    <th className="hidden md:table-cell px-2 py-1 text-center text-xs font-medium text-gray-700">Pos</th>
+                                    <th className="px-1 md:px-2 py-1 text-center text-xs font-medium text-gray-700">Shot</th>
+                                    <SortableHeader column="shots">S</SortableHeader>
+                                    <SortableHeader column="goals">G</SortableHeader>
+                                    <SortableHeader column="assists">A</SortableHeader>
+                                    <th className="px-1 md:px-2 py-1 text-center text-xs font-medium text-gray-700">Pen</th>
+                                    <SortableHeader column="penalties">PIM</SortableHeader>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {activePlayers.map(player => <PlayerRow key={player.id} player={player} />)}
+                            </tbody>
+                        </table>
+                        {/* Buffer space at bottom to prevent dropdown cutoff */}
+                        <div className="h-32"></div>
+                    </div>
+                </div>
+
+                {/* Inactive Players */}
+                {inactivePlayers.length > 0 && (
+                    <div>
+                        <h4 className="text-md font-medium text-gray-600 mb-3">
+                            📋 Inactive Players / Didn't RSVP ({inactivePlayers.length})
+                        </h4>
+                        <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+                            <table className="w-full">
+                                <thead className="bg-gray-100">
+                                    <tr>
+                                        <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">Activate</th>
+                                        <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">#</th>
+                                        <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">Player</th>
+                                        <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">Position</th>
+                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Action</th>
+                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Shots</th>
+                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Goals</th>
+                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Assists</th>
+                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Pen</th>
+                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">PIM</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                    {inactivePlayers.map(player => <PlayerRow key={player.id} player={player} isInactive={true} />)}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    // Render Game Events with inline editing
+    const renderGameEvents = () => {
+        // Sort by period (desc) then by timeInSeconds (desc) - newest first
+        const sortedEvents = [...gameEvents].sort((a, b) => {
+            if (b.period !== a.period) return b.period - a.period;
+            return b.timeInSeconds - a.timeInSeconds;
+        });
+
+        const handleSaveEdit = (evt) => {
+            // Validate time format
+            if (editTime && !/^\d{1,2}:\d{2}$/.test(editTime)) {
+                alert('Invalid time format. Use MM:SS (e.g., 12:30)');
+                return;
+            }
+
+            const updates = {};
+            
+            if (editTime !== evt.time) {
+                const [mins, secs] = editTime.split(':').map(Number);
+                updates.time = editTime;
+                updates.timeInSeconds = mins * 60 + secs;
+            }
+
+            setGameEvents(prev => prev.map(e => 
+                e.id === evt.id ? { ...e, ...updates } : e
+            ));
+            
+            setEditingEvent(null);
+        };
+
+        return (
+            <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold">📋 Game Events Timeline</h3>
+                    <span className="text-sm text-gray-600">{sortedEvents.length} events recorded</span>
+                </div>
+                
+                {sortedEvents.length === 0 ? (
+                    <div className="text-center py-12 text-gray-500">
+                        <div className="text-4xl mb-2">📋</div>
+                        <p>No events yet. Start tracking game actions!</p>
+                    </div>
+                ) : (
+                    <div className="space-y-2 max-h-[calc(100vh-450px)] overflow-y-auto">
+                        {sortedEvents.map((evt) => (
+                            <div 
+                                key={evt.id} 
+                                className={`p-3 rounded-lg border-l-4 ${
+                                    evt.type === 'goal' ? 'bg-green-50 border-green-500' :
+                                    evt.type === 'penalty' ? 'bg-yellow-50 border-yellow-500' :
+                                    evt.type === 'penalty_end' ? 'bg-blue-50 border-blue-400' :
+                                    evt.type === 'shot' ? 'bg-blue-50 border-blue-400' :
+                                    evt.type === 'save' ? 'bg-cyan-50 border-cyan-400' :
+                                    evt.type === 'shot_miss' ? 'bg-gray-50 border-gray-400' :
+                                    'bg-white border-gray-300'
+                                }`}
+                            >
+                                {editingEvent === evt.id ? (
+                                    // Edit Mode - Time editing only, keep event text consistent
+                                    <div className="space-y-2">
+                                        <div className="text-sm font-medium text-gray-700">{evt.text}</div>
+                                        <div className="flex items-center gap-2">
+                                            <label className="text-xs text-gray-600">Time:</label>
+                                            <input
+                                                type="text"
+                                                value={editTime}
+                                                onChange={(e) => setEditTime(e.target.value)}
+                                                className="w-20 px-2 py-1 border rounded text-sm font-mono"
+                                                placeholder="MM:SS"
+                                            />
+                                            <span className="text-xs text-gray-600">Period {evt.period}</span>
+                                            <button
+                                                onClick={() => handleSaveEdit(evt)}
+                                                className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded"
+                                            >
+                                                ✓ Save
+                                            </button>
+                                            <button
+                                                onClick={() => setEditingEvent(null)}
+                                                className="px-3 py-1 bg-gray-400 hover:bg-gray-500 text-white text-xs rounded"
+                                            >
+                                                ✕ Cancel
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    if (window.confirm('Delete this event?')) {
+                                                        setGameEvents(prev => prev.filter(e => e.id !== evt.id));
+                                                        setEditingEvent(null);
+                                                    }
+                                                }}
+                                                className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded ml-auto"
+                                            >
+                                                🗑️ Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    // View Mode
+                                    <div 
+                                        className="flex items-start justify-between gap-3 cursor-pointer hover:bg-black hover:bg-opacity-5 p-1 rounded"
+                                        onClick={() => {
+                                            setEditingEvent(evt.id);
+                                            setEditText(evt.text);
+                                            setEditTime(evt.time);
+                                        }}
+                                    >
+                                        <div className="flex-1">
+                                            <div className="font-medium text-sm">{evt.text}</div>
+                                        </div>
+                                        <div className="text-xs text-gray-600 text-right whitespace-nowrap">
+                                            <div className="font-mono font-bold">{evt.time}</div>
+                                            <div>Period {evt.period}</div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+                <p className="text-xs text-gray-500 mt-3 text-center">
+                    💡 Click any event to edit
+                </p>
+            </div>
+        );
+    };
+
+    // Render Live Chat
+    const renderLiveChat = () => {
+        const formatChatTime = (timestamp) => {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        };
+
+        return (
+            <div className="bg-white rounded-lg shadow-md h-[calc(100vh-450px)]">
+                <div className="flex flex-col h-full">
+                    <div className="p-4 border-b bg-gray-50">
+                        <h3 className="text-xl font-bold flex items-center gap-2">
+                            💬 Live Chat
+                            <span className="text-sm font-normal text-gray-500">
+                                ({chat.messages.length} messages)
+                            </span>
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                            Chat with spectators and other scorers in real-time
+                        </p>
+                    </div>
+                    
+                    {/* Messages */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+                        {chat.messages.length === 0 ? (
+                            <div className="text-center py-12 text-gray-500">
+                                <div className="text-4xl mb-2">💬</div>
+                                <p>No messages yet. Start the conversation!</p>
+                            </div>
+                        ) : (
+                            chat.messages.map(msg => (
+                                <div
+                                    key={msg.id}
+                                    className={`flex ${msg.type === 'system' ? 'justify-center' : 'justify-start'}`}
+                                >
+                                    <div className={`max-w-[85%] px-4 py-2 rounded-lg ${
+                                        msg.type === 'system'
+                                            ? 'bg-blue-100 text-blue-800 text-sm'
+                                            : 'bg-white shadow border'
+                                    }`}>
+                                        <div className="font-semibold text-sm text-gray-700">{msg.user_name}</div>
+                                        <div className="text-sm mt-1">{msg.message}</div>
+                                        <div className="text-xs text-gray-500 mt-1">{formatChatTime(msg.timestamp)}</div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                        <div ref={chatEndRef} />
+                    </div>
+
+                    {/* Message Input */}
+                    <div className="p-4 border-t bg-white">
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={chat.newMessage}
+                                onChange={(e) => setChat(prev => ({ ...prev, newMessage: e.target.value }))}
+                                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                                placeholder="Type a message..."
+                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            />
+                            <button
+                                onClick={handleSendMessage}
+                                disabled={!chat.newMessage.trim()}
+                                className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Send
+                            </button>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">
+                            💡 Tip: Chat is synced with the Live Spectator View
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-50">
+            {/* Fixed Header with integrated buttons */}
+            {renderStickyHeader()}
+
+            {/* Add padding to account for fixed header - increased for button row */}
+            <div className="h-[220px] md:h-[280px]"></div>
+
+            {/* Tab Navigation */}
+            <div className="bg-white border-b sticky top-0 z-30">
+                <div className="max-w-7xl mx-auto px-2 md:px-4">
+                    <div className="flex space-x-2 md:space-x-6 overflow-x-auto">
+                        <button
+                            onClick={() => setActiveTab('home_stats')}
+                            className={`py-3 md:py-4 px-3 md:px-4 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${
+                                activeTab === 'home_stats'
+                                    ? 'border-blue-500 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            🏠 {gameState.home_team.name}
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('away_stats')}
+                            className={`py-3 md:py-4 px-3 md:px-4 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${
+                                activeTab === 'away_stats'
+                                    ? 'border-red-500 text-red-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            ✈️ {gameState.away_team.name}
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('game_events')}
+                            className={`py-3 md:py-4 px-3 md:px-4 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${
+                                activeTab === 'game_events'
+                                    ? 'border-purple-500 text-purple-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            📋 Events ({gameEvents.length})
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('live_chat')}
+                            className={`py-3 md:py-4 px-3 md:px-4 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${
+                                activeTab === 'live_chat'
+                                    ? 'border-green-500 text-green-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            💬 Chat
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            {/* Main Content */}
+            <div className="p-3 md:p-6" style={{ paddingTop: '20px' }}>
+                <div className="max-w-7xl mx-auto">
+                    {/* Active Penalties Display */}
+                    {renderActivePenalties()}
+                    
+                    {activeTab === 'home_stats' && renderPlayerStats('home_team', gameState.home_team)}
+                    {activeTab === 'away_stats' && renderPlayerStats('away_team', gameState.away_team)}
+                    {activeTab === 'game_events' && renderGameEvents()}
+                    {activeTab === 'live_chat' && renderLiveChat()}
+                </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="bg-white border-t px-6 py-4 sticky bottom-0">
+                <div className="max-w-7xl mx-auto flex justify-between items-center">
+                    <button
+                        onClick={onCancel}
+                        className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                    >
+                        ← Cancel
+                    </button>
+
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => {
+                                // Reset game but keep player active/inactive states
+                                setGameState(prev => ({
+                                    ...prev,
+                                    home_team: { 
+                                        ...prev.home_team, 
+                                        score: 0, 
+                                        players: prev.home_team.players.map(p => ({ 
+                                            ...p, 
+                                            stats: { goals: 0, assists: 0, shots: 0, penalties: 0 } 
+                                        })) 
+                                    },
+                                    away_team: { 
+                                        ...prev.away_team, 
+                                        score: 0, 
+                                        players: prev.away_team.players.map(p => ({ 
+                                            ...p, 
+                                            stats: { goals: 0, assists: 0, shots: 0, penalties: 0 } 
+                                        })) 
+                                    },
+                                    goalies: {
+                                        home: prev.goalies.home.map(g => ({ ...g, stats: { saves: 0, goals_against: 0, shots_faced: 0 } })),
+                                        away: prev.goalies.away.map(g => ({ ...g, stats: { saves: 0, goals_against: 0, shots_faced: 0 } }))
+                                    },
+                                    time_remaining: prev.period_length * 60,
+                                    current_period: 1,
+                                    is_running: false
+                                }));
+                            }}
+                            className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
+                        >
+                            🔄 Reset Game
+                        </button>
+                        
+                        <button
+                            onClick={() => {
+                                const gameData = {
+                                    home_team: gameState.home_team,
+                                    away_team: gameState.away_team,
+                                    goalies: gameState.goalies,
+                                    time_remaining: formatTime(gameState.time_remaining),
+                                    current_period: gameState.current_period,
+                                    final_score: `${gameState.home_team.score}-${gameState.away_team.score}`,
+                                    winner: gameState.home_team.score > gameState.away_team.score ? gameState.home_team : gameState.away_team,
+                                    entry_type: 'enhanced_live_stats',
+                                    entry_time: new Date().toISOString(),
+                                    game_duration: gameState.current_period,
+                                    period_length: gameState.period_length,
+                                    detailed_stats: true
+                                };
+                                onSubmit(gameData);
+                            }}
+                            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                        >
+                            ✅ Save Game Stats
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Time Editor Dialog */}
+            {renderTimeEditor()}
+            
+            {/* Add Player Modal */}
+            {showAddPlayerModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                        <h3 className="text-xl font-bold mb-4">➕ Add Player Manually</h3>
+                        
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Jersey Number *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newPlayerInput.number}
+                                    onChange={(e) => setNewPlayerInput(prev => ({ ...prev, number: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="00"
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    First Name *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newPlayerInput.firstName}
+                                    onChange={(e) => setNewPlayerInput(prev => ({ ...prev, firstName: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="John"
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Last Name *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newPlayerInput.lastName}
+                                    onChange={(e) => setNewPlayerInput(prev => ({ ...prev, lastName: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Doe"
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Position
+                                </label>
+                                <select
+                                    value={newPlayerInput.position}
+                                    onChange={(e) => setNewPlayerInput(prev => ({ ...prev, position: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="Forward">Forward</option>
+                                    <option value="Defense">Defense</option>
+                                    <option value="Center">Center</option>
+                                    <option value="Wing">Wing</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div className="flex justify-end gap-3 mt-6">
+                            <button
+                                onClick={() => {
+                                    setShowAddPlayerModal(false);
+                                    setAddPlayerTeam(null);
+                                    setNewPlayerInput({ number: '', firstName: '', lastName: '', position: 'Forward' });
+                                }}
+                                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={addManualPlayer}
+                                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                            >
+                                Add Player
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Shot Recording Modal - Improved positioning and scrollability */}
+            {showShotModal && pendingShot && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4 overflow-y-auto">
+                    <div className="bg-white rounded-lg p-4 md:p-6 max-w-md w-full my-auto max-h-[90vh] overflow-y-auto">
+                        <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4">🏒 Record Shot</h3>
+                        
+                        <div className="mb-3 md:mb-4 p-2 md:p-3 bg-blue-50 rounded-lg">
+                            <div className="text-xs md:text-sm text-gray-600">Team:</div>
+                            <div className="font-bold text-sm md:text-base">{gameState[pendingShot.team].name}</div>
+                            <div className="text-xs text-gray-500 mt-1">
+                                Period {pendingShot.period} - {formatTime(pendingShot.timeRemaining)}
+                            </div>
+                        </div>
+
+                        {/* Step 1: Select Shot Type */}
+                        <div className="mb-3 md:mb-4">
+                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                                1. What happened? *
+                            </label>
+                            <div className="grid grid-cols-3 gap-2">
+                                <button
+                                    onClick={() => setShotType('miss')}
+                                    className={`p-2 md:p-3 rounded-lg border-2 font-medium transition text-sm md:text-base ${
+                                        shotType === 'miss'
+                                            ? 'border-gray-600 bg-gray-100 text-gray-800'
+                                            : 'border-gray-300 hover:border-gray-400'
+                                    }`}
+                                >
+                                    ❌ Miss
+                                </button>
+                                <button
+                                    onClick={() => setShotType('save')}
+                                    className={`p-2 md:p-3 rounded-lg border-2 font-medium transition text-sm md:text-base ${
+                                        shotType === 'save'
+                                            ? 'border-blue-600 bg-blue-100 text-blue-800'
+                                            : 'border-gray-300 hover:border-gray-400'
+                                    }`}
+                                >
+                                    ✋ Save
+                                </button>
+                                <button
+                                    onClick={() => setShotType('goal')}
+                                    className={`p-2 md:p-3 rounded-lg border-2 font-medium transition text-sm md:text-base ${
+                                        shotType === 'goal'
+                                            ? 'border-green-600 bg-green-100 text-green-800'
+                                            : 'border-gray-300 hover:border-gray-400'
+                                    }`}
+                                >
+                                    🚨 Goal
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Step 2: Select Player */}
+                        <div className="mb-4 md:mb-6">
+                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                                2. Which player? (Optional)
+                            </label>
+                            <div className="max-h-48 md:max-h-60 overflow-y-auto border rounded-lg">
+                                {gameState[pendingShot.team].players
+                                    .filter(p => p.active)
+                                    .sort((a, b) => parseInt(a.number) - parseInt(b.number))
+                                    .map(player => (
+                                        <button
+                                            key={player.id}
+                                            onClick={() => setSelectedPlayer(player.id)}
+                                            className={`w-full p-2 md:p-3 text-left border-b hover:bg-gray-50 transition ${
+                                                selectedPlayer === player.id
+                                                    ? 'bg-blue-50 border-l-4 border-l-blue-600'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <div className="text-sm md:text-base">
+                                                    <span className="font-mono font-bold mr-2">#{player.number}</span>
+                                                    <span className="font-medium">{formatPlayerName(player.name)}</span>
+                                                </div>
+                                                {selectedPlayer === player.id && (
+                                                    <span className="text-blue-600">✓</span>
+                                                )}
+                                            </div>
+                                        </button>
+                                    ))}
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 md:gap-3">
+                            <button
+                                onClick={cancelShotRecording}
+                                className="flex-1 px-3 md:px-4 py-2 text-sm md:text-base text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={completeShotRecording}
+                                disabled={!shotType}
+                                className="flex-1 px-3 md:px-4 py-2 text-sm md:text-base bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                            >
+                                ✓ Record Shot
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Penalty Recording Modal */}
+            {showPenaltyModal && pendingPenalty && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4 overflow-y-auto">
+                    <div className="bg-white rounded-lg p-4 md:p-6 max-w-md w-full my-auto max-h-[90vh] overflow-y-auto">
+                        <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4">⚠️ Record Penalty</h3>
+                        
+                        <div className="mb-3 md:mb-4 p-2 md:p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                            <div className="text-xs md:text-sm text-gray-600">Team:</div>
+                            <div className="font-bold text-sm md:text-base">{gameState[pendingPenalty.team].name}</div>
+                            <div className="text-xs text-gray-500 mt-1">
+                                Period {pendingPenalty.period} - {formatTime(pendingPenalty.timeRemaining)}
+                            </div>
+                        </div>
+
+                        {/* Step 1: Select Penalty Type */}
+                        <div className="mb-3 md:mb-4">
+                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                                1. Penalty Type *
+                            </label>
+                            <select
+                                value={penaltyType}
+                                onChange={(e) => setPenaltyType(e.target.value)}
+                                className="w-full p-2 md:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                            >
+                                <option value="">Select penalty type...</option>
+                                <option value="Tripping">Tripping</option>
+                                <option value="Hooking">Hooking</option>
+                                <option value="Slashing">Slashing</option>
+                                <option value="High-Sticking">High-Sticking</option>
+                                <option value="Cross-Checking">Cross-Checking</option>
+                                <option value="Interference">Interference</option>
+                                <option value="Roughing">Roughing</option>
+                                <option value="Holding">Holding</option>
+                                <option value="Elbowing">Elbowing</option>
+                                <option value="Charging">Charging</option>
+                                <option value="Boarding">Boarding</option>
+                                <option value="Too Many Men">Too Many Men</option>
+                                <option value="Delay of Game">Delay of Game</option>
+                                <option value="Unsportsmanlike Conduct">Unsportsmanlike Conduct</option>
+                            </select>
+                        </div>
+
+                        {/* Step 2: Select Duration */}
+                        <div className="mb-3 md:mb-4">
+                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                                2. Duration *
+                            </label>
+                            <div className="grid grid-cols-3 gap-2">
+                                <button
+                                    onClick={() => setPenaltyDuration(90)}
+                                    className={`p-2 md:p-3 rounded-lg border-2 font-medium transition text-sm md:text-base ${
+                                        penaltyDuration === 90
+                                            ? 'border-yellow-600 bg-yellow-100 text-yellow-800'
+                                            : 'border-gray-300 hover:border-gray-400'
+                                    }`}
+                                >
+                                    1:30
+                                </button>
+                                <button
+                                    onClick={() => setPenaltyDuration(120)}
+                                    className={`p-2 md:p-3 rounded-lg border-2 font-medium transition text-sm md:text-base ${
+                                        penaltyDuration === 120
+                                            ? 'border-yellow-600 bg-yellow-100 text-yellow-800'
+                                            : 'border-gray-300 hover:border-gray-400'
+                                    }`}
+                                >
+                                    2:00
+                                </button>
+                                <button
+                                    onClick={() => setPenaltyDuration(240)}
+                                    className={`p-2 md:p-3 rounded-lg border-2 font-medium transition text-sm md:text-base ${
+                                        penaltyDuration === 240
+                                            ? 'border-yellow-600 bg-yellow-100 text-yellow-800'
+                                            : 'border-gray-300 hover:border-gray-400'
+                                    }`}
+                                >
+                                    4:00
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Step 3: Select Player (Optional) */}
+                        <div className="mb-4 md:mb-6">
+                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                                3. Which player? (Optional)
+                            </label>
+                            <div className="max-h-48 md:max-h-60 overflow-y-auto border rounded-lg">
+                                {gameState[pendingPenalty.team].players
+                                    .filter(p => p.active)
+                                    .sort((a, b) => parseInt(a.number) - parseInt(b.number))
+                                    .map(player => (
+                                        <button
+                                            key={player.id}
+                                            onClick={() => setSelectedPenaltyPlayer(player.id)}
+                                            className={`w-full p-2 md:p-3 text-left border-b hover:bg-gray-50 transition ${
+                                                selectedPenaltyPlayer === player.id
+                                                    ? 'bg-yellow-50 border-l-4 border-l-yellow-600'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <div className="text-sm md:text-base">
+                                                    <span className="font-mono font-bold mr-2">#{player.number}</span>
+                                                    <span className="font-medium">{formatPlayerName(player.name)}</span>
+                                                </div>
+                                                {selectedPenaltyPlayer === player.id && (
+                                                    <span className="text-yellow-600">✓</span>
+                                                )}
+                                            </div>
+                                        </button>
+                                    ))}
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 md:gap-3">
+                            <button
+                                onClick={cancelPenaltyRecording}
+                                className="flex-1 px-3 md:px-4 py-2 text-sm md:text-base text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={completePenaltyRecording}
+                                disabled={!penaltyType || !penaltyDuration}
+                                className="flex-1 px-3 md:px-4 py-2 text-sm md:text-base bg-yellow-600 text-white rounded-md hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                            >
+                                ✓ Record Penalty
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default EnhancedLiveStatsEntry;
