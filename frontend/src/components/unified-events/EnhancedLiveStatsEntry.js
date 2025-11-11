@@ -66,6 +66,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
     const [editingEvent, setEditingEvent] = useState(null);
     const [editText, setEditText] = useState('');
     const [editTime, setEditTime] = useState('');
+    const [editPlayerId, setEditPlayerId] = useState(null);
     
     // Shot type selector state
     const [showShotMenu, setShowShotMenu] = useState(null); // stores player id when menu is open
