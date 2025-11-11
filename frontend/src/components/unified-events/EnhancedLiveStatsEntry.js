@@ -2376,57 +2376,69 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
             {/* Tab Navigation */}
             <div className="bg-white border-b sticky top-0 z-40">
-                <div className="max-w-7xl mx-auto px-4">
-                    <div className="flex space-x-8">
+                <div className="max-w-7xl mx-auto px-2 md:px-4">
+                    <div className="flex space-x-2 md:space-x-6 overflow-x-auto">
+                        <button
+                            onClick={() => setActiveTab('quick_entry')}
+                            className={`py-3 md:py-4 px-3 md:px-4 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${
+                                activeTab === 'quick_entry'
+                                    ? 'border-green-500 text-green-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            ⚡ Quick Entry
+                        </button>
                         <button
                             onClick={() => setActiveTab('home_stats')}
-                            className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                            className={`py-3 md:py-4 px-3 md:px-4 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${
                                 activeTab === 'home_stats'
                                     ? 'border-blue-500 text-blue-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
                         >
-                            🏠 {gameState.home_team.name} Stats
+                            🏠 {gameState.home_team.name}
                         </button>
                         <button
                             onClick={() => setActiveTab('away_stats')}
-                            className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                            className={`py-3 md:py-4 px-3 md:px-4 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${
                                 activeTab === 'away_stats'
                                     ? 'border-red-500 text-red-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
                         >
-                            ✈️ {gameState.away_team.name} Stats
+                            ✈️ {gameState.away_team.name}
                         </button>
                         <button
                             onClick={() => setActiveTab('game_events')}
-                            className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                            className={`py-3 md:py-4 px-3 md:px-4 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${
                                 activeTab === 'game_events'
                                     ? 'border-purple-500 text-purple-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
                         >
-                            📋 Game Events ({gameEvents.length})
+                            📋 Events ({gameEvents.length})
                         </button>
                         <button
                             onClick={() => setActiveTab('live_chat')}
-                            className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                            className={`py-3 md:py-4 px-3 md:px-4 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${
                                 activeTab === 'live_chat'
                                     ? 'border-green-500 text-green-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
                         >
-                            💬 Live Chat
+                            💬 Chat
                         </button>
                     </div>
                 </div>
+            </div>
             
             {/* Main Content */}
-            <div className="p-6" style={{ paddingTop: '20px' }}>
+            <div className="p-3 md:p-6" style={{ paddingTop: '20px' }}>
                 <div className="max-w-7xl mx-auto">
                     {/* Active Penalties Display */}
                     {renderActivePenalties()}
                     
+                    {activeTab === 'quick_entry' && renderQuickEntry()}
                     {activeTab === 'home_stats' && renderPlayerStats('home_team', gameState.home_team)}
                     {activeTab === 'away_stats' && renderPlayerStats('away_team', gameState.away_team)}
                     {activeTab === 'game_events' && renderGameEvents()}
