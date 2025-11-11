@@ -1329,31 +1329,44 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                     </div>
                 </div>
 
-                {/* Center Clock & Game Controls - Floating */}
+                {/* Center Clock & Scores - Floating */}
                 <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 hidden md:block">
-                    <div className="flex flex-col items-center gap-2">
-                        <div 
-                            className={`px-4 py-2 rounded-lg border-2 cursor-pointer hover:opacity-90 transition backdrop-blur-sm ${
-                                gameState.is_running 
-                                    ? 'bg-green-600 border-green-400' 
-                                    : 'bg-red-600 border-red-400'
-                            }`}
-                            onClick={() => {
-                                setManualTimeInputs({
-                                    minutes: Math.floor(gameState.time_remaining / 60).toString(),
-                                    seconds: (gameState.time_remaining % 60).toString(),
-                                    period: gameState.current_period.toString()
-                                });
-                                setShowTimeEditor(true);
-                            }}
-                            title="Click to edit time"
-                        >
-                            <div className="text-2xl font-bold text-white font-mono">
-                                {formatTime(gameState.time_remaining)}
+                    <div className="flex items-center gap-4">
+                        {/* Home Score */}
+                        <div className="text-4xl font-bold text-white drop-shadow-lg" style={{ color: gameState.home_team.color || '#3b82f6' }}>
+                            {gameState.home_team.score}
+                        </div>
+                        
+                        {/* Clock */}
+                        <div className="flex flex-col items-center gap-1">
+                            <div 
+                                className={`px-4 py-2 rounded-lg border-2 cursor-pointer hover:opacity-90 transition backdrop-blur-sm ${
+                                    gameState.is_running 
+                                        ? 'bg-green-600 border-green-400' 
+                                        : 'bg-red-600 border-red-400'
+                                }`}
+                                onClick={() => {
+                                    setManualTimeInputs({
+                                        minutes: Math.floor(gameState.time_remaining / 60).toString(),
+                                        seconds: (gameState.time_remaining % 60).toString(),
+                                        period: gameState.current_period.toString()
+                                    });
+                                    setShowTimeEditor(true);
+                                }}
+                                title="Click to edit time"
+                            >
+                                <div className="text-2xl font-bold text-white font-mono">
+                                    {formatTime(gameState.time_remaining)}
+                                </div>
+                            </div>
+                            <div className="bg-black bg-opacity-60 backdrop-blur-sm px-3 py-1 rounded text-white text-xs font-medium">
+                                Period {gameState.current_period}
                             </div>
                         </div>
-                        <div className="bg-black bg-opacity-60 backdrop-blur-sm px-3 py-1 rounded text-white text-xs font-medium">
-                            Period {gameState.current_period} of {gameState.game_settings.periods}
+                        
+                        {/* Away Score */}
+                        <div className="text-4xl font-bold text-white drop-shadow-lg" style={{ color: gameState.away_team.color || '#ef4444' }}>
+                            {gameState.away_team.score}
                         </div>
                     </div>
                 </div>
