@@ -41,13 +41,12 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         away: []
     });
     
+    // Penalty Modal State (updated for new workflow)
     const [showPenaltyModal, setShowPenaltyModal] = useState(false);
-    const [selectedPlayerForPenalty, setSelectedPlayerForPenalty] = useState(null);
-    const [penaltyInput, setPenaltyInput] = useState({
-        type: '',
-        duration: 2,
-        customType: ''
-    });
+    const [pendingPenalty, setPendingPenalty] = useState(null);
+    const [penaltyType, setPenaltyType] = useState('');
+    const [penaltyDuration, setPenaltyDuration] = useState(120);
+    const [selectedPenaltyPlayer, setSelectedPenaltyPlayer] = useState(null);
 
     const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
     const [lastSaved, setLastSaved] = useState(null);
