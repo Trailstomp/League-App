@@ -442,7 +442,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
     };
 
     // Add game event for narration
-    const addGameEvent = (eventText, eventType = 'action') => {
+    const addGameEvent = (eventText, eventType = 'action', playerId = null, teamKey = null, playerInfo = null) => {
         const newEvent = {
             id: Date.now(),
             time: formatTime(gameState.time_remaining),
@@ -450,7 +450,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             period: gameState.current_period,
             text: eventText,
             type: eventType,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            playerId: playerId, // Store player ID for editing
+            teamKey: teamKey, // Store team (home/away) for player dropdown
+            playerInfo: playerInfo // Store player info {number, name} for display
         };
         
         setGameEvents(prev => [newEvent, ...prev]); // Add to beginning for newest first
