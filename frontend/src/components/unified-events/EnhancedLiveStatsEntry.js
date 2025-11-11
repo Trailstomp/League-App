@@ -1952,8 +1952,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             {/* Fixed Header with integrated buttons */}
             {renderStickyHeader()}
 
-            {/* Add padding to account for fixed header - increased for button row */}
-            <div className="h-[220px] md:h-[280px]"></div>
+            {/* Reduced padding for tighter layout */}
+            <div className="h-[140px] md:h-[180px]"></div>
 
             {/* Tab Navigation */}
             <div className="bg-white border-b sticky top-0 z-30">
