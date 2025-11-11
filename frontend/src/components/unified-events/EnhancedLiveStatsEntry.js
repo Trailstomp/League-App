@@ -2065,7 +2065,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 return;
             }
 
-            const updates = { text: editText };
+            const updates = {};
             
             if (editTime !== evt.time) {
                 const [mins, secs] = editTime.split(':').map(Number);
