@@ -1972,6 +1972,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                                             setEditingEvent(evt.id);
                                             setEditText(evt.text);
                                             setEditTime(evt.time);
+                                            setEditPlayerId(evt.playerId);
                                         }}
                                     >
                                         <div className="flex-1">
