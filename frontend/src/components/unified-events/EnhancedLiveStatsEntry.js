@@ -186,6 +186,35 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         return () => clearInterval(timerRef.current);
     }, [gameState.is_running, gameState.time_remaining]);
     
+    // Load timer state from localStorage on mount
+    useEffect(() => {
+        if (!event?.id) return;
+        
+        const savedState = timerService.getTimerState(event.id);
+        if (savedState) {
+            console.log('⏰ Restoring timer state from localStorage:', savedState);
+            setGameState(prev => ({
+                ...prev,
+                time_remaining: savedState.time_remaining,
+                current_period: savedState.current_period,
+                is_running: savedState.is_running,
+                period_length: savedState.period_length || prev.period_length
+            }));
+        }
+    }, [event?.id]);
+    
+    // Save timer state to localStorage whenever it changes
+    useEffect(() => {
+        if (!event?.id) return;
+        
+        timerService.saveTimerState(event.id, {
+            time_remaining: gameState.time_remaining,
+            current_period: gameState.current_period,
+            is_running: gameState.is_running,
+            period_length: gameState.period_length
+        });
+    }, [event?.id, gameState.time_remaining, gameState.current_period, gameState.is_running, gameState.period_length]);
+    
     // Update penalty timers (decrements by 1 second)
     const updatePenaltyTimers = () => {
         setPenalties(prev => {
