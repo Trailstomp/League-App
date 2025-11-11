@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import timerService from '../../services/timerPersistence';
 
 const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel }) => {
     console.log('🎮 EnhancedLiveStatsEntry mounted with:', {
