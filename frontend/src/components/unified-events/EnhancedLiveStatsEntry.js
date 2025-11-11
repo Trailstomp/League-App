@@ -1462,7 +1462,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                     <div className="flex flex-col gap-1">
                         <button
                             onClick={toggleTimer}
-                            className={`px-2 py-1 md:px-4 md:py-2 rounded-lg font-bold text-white text-xs md:text-sm ${
+                            className={`px-2 py-2 md:px-4 md:py-2 rounded-lg font-bold text-white text-xs md:text-sm ${
                                 gameState.is_running 
                                     ? 'bg-red-600 hover:bg-red-700' 
                                     : 'bg-green-600 hover:bg-green-700'
