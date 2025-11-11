@@ -2396,29 +2396,29 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 </div>
             )}
 
-            {/* Shot Recording Modal */}
+            {/* Shot Recording Modal - Improved positioning and scrollability */}
             {showShotModal && pendingShot && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                        <h3 className="text-xl font-bold mb-4">🏒 Record Shot</h3>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4 overflow-y-auto">
+                    <div className="bg-white rounded-lg p-4 md:p-6 max-w-md w-full my-auto max-h-[90vh] overflow-y-auto">
+                        <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4">🏒 Record Shot</h3>
                         
-                        <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-                            <div className="text-sm text-gray-600">Team:</div>
-                            <div className="font-bold">{gameState[pendingShot.team].name}</div>
+                        <div className="mb-3 md:mb-4 p-2 md:p-3 bg-blue-50 rounded-lg">
+                            <div className="text-xs md:text-sm text-gray-600">Team:</div>
+                            <div className="font-bold text-sm md:text-base">{gameState[pendingShot.team].name}</div>
                             <div className="text-xs text-gray-500 mt-1">
                                 Period {pendingShot.period} - {formatTime(pendingShot.timeRemaining)}
                             </div>
                         </div>
 
                         {/* Step 1: Select Shot Type */}
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <div className="mb-3 md:mb-4">
+                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                                 1. What happened? *
                             </label>
                             <div className="grid grid-cols-3 gap-2">
                                 <button
                                     onClick={() => setShotType('miss')}
-                                    className={`p-3 rounded-lg border-2 font-medium transition ${
+                                    className={`p-2 md:p-3 rounded-lg border-2 font-medium transition text-sm md:text-base ${
                                         shotType === 'miss'
                                             ? 'border-gray-600 bg-gray-100 text-gray-800'
                                             : 'border-gray-300 hover:border-gray-400'
@@ -2428,7 +2428,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                                 </button>
                                 <button
                                     onClick={() => setShotType('save')}
-                                    className={`p-3 rounded-lg border-2 font-medium transition ${
+                                    className={`p-2 md:p-3 rounded-lg border-2 font-medium transition text-sm md:text-base ${
                                         shotType === 'save'
                                             ? 'border-blue-600 bg-blue-100 text-blue-800'
                                             : 'border-gray-300 hover:border-gray-400'
@@ -2438,7 +2438,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                                 </button>
                                 <button
                                     onClick={() => setShotType('goal')}
-                                    className={`p-3 rounded-lg border-2 font-medium transition ${
+                                    className={`p-2 md:p-3 rounded-lg border-2 font-medium transition text-sm md:text-base ${
                                         shotType === 'goal'
                                             ? 'border-green-600 bg-green-100 text-green-800'
                                             : 'border-gray-300 hover:border-gray-400'
