@@ -1491,10 +1491,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 </div>
             </div>
 
-            {/* Goalies Section - Collapsible on mobile */}
-            <details className="bg-white border-b border-gray-200" open>
-                <summary className="md:hidden px-4 py-2 cursor-pointer font-medium text-sm bg-gray-50">
-                    🥅 Goalies
+            {/* Goalies Section - Collapsed by default to save space */}
+            <details className="bg-white border-b border-gray-200">
+                <summary className="px-4 py-2 cursor-pointer font-medium text-sm bg-gray-50 hover:bg-gray-100">
+                    🥅 Goalies (Click to expand)
                 </summary>
                 <div className="px-2 md:px-4 py-2 md:py-3">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
