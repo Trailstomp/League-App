@@ -2015,6 +2015,20 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
                 {/* Players Table */}
                 <div>
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg md:text-xl font-bold text-gray-900">👥 Players</h3>
+                        <button
+                            onClick={() => {
+                                setShowAddPlayerModal(true);
+                                setAddPlayerTeam(teamKey);
+                            }}
+                            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm"
+                        >
+                            ➕ Add Player
+                        </button>
+                    </div>
+
+        const PlayerRow = ({ player, isInactive = false }) => (
             <tr key={player.id} className={`${isInactive ? 'bg-gray-50 opacity-60' : 'hover:bg-blue-50'}`}>
                 <td className="px-2 py-1">
                     <input
