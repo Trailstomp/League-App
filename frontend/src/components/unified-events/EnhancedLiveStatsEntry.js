@@ -1409,6 +1409,24 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         {gameState.is_running ? '⏸️ Pause' : '▶️ Start'}
                     </button>
                     
+                    {/* SHOT TAKEN BUTTONS - NEW */}
+                    <div className="flex gap-1 md:gap-2">
+                        <button
+                            onClick={() => handleShotTaken('home_team')}
+                            className="px-3 md:px-5 py-1.5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-xs md:text-base shadow-lg border-2 border-blue-400"
+                            title={`Record shot for ${gameState.home_team.name}`}
+                        >
+                            🏒 {gameState.home_team.name.substring(0, 4)} Shot
+                        </button>
+                        <button
+                            onClick={() => handleShotTaken('away_team')}
+                            className="px-3 md:px-5 py-1.5 md:py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xs md:text-base shadow-lg border-2 border-red-400"
+                            title={`Record shot for ${gameState.away_team.name}`}
+                        >
+                            🏒 {gameState.away_team.name.substring(0, 4)} Shot
+                        </button>
+                    </div>
+                    
                     <button
                         onClick={() => {
                             setGameState(prev => ({
