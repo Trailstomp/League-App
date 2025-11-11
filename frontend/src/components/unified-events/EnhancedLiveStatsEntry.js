@@ -1665,15 +1665,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         </button>
                     </div>
 
-        const PlayerRow = ({ player, isInactive = false }) => {
-            return (
-            <tr key={player.id} className={`${isInactive ? 'bg-gray-50 opacity-60' : 'hover:bg-blue-50'}`}>
-                <td className="px-2 py-1">
-                    <input
-                        type="checkbox"
-                        checked={player.active}
-                        onChange={() => togglePlayerActive(teamKey, player.id)}
-                        className="rounded"
+                    <div className="overflow-x-auto">
                     />
                 </td>
                 <td className="px-2 py-1 text-sm font-mono font-bold">{player.number}</td>
