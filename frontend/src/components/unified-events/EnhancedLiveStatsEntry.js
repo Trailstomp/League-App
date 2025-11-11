@@ -678,18 +678,23 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         
         if (shotType === 'miss') {
             const playerInfo = player ? `#${player.number} ${player.name}` : 'Unknown player';
-            addGameEvent(`❌ ${teamName} - ${playerInfo} - Shot misses`, 'shot_miss');
+            const playerData = player ? { number: player.number, name: player.name } : null;
+            addGameEvent(`❌ ${teamName} - ${playerInfo} - Shot misses`, 'shot_miss', player?.id, teamKey, playerData);
         } else if (shotType === 'save') {
             const playerInfo = player ? `#${player.number} ${player.name}` : 'Unknown player';
-            addGameEvent(`🏒 ${teamName} - ${playerInfo} - Shot on goal`, 'shot');
+            const playerData = player ? { number: player.number, name: player.name } : null;
+            addGameEvent(`🏒 ${teamName} - ${playerInfo} - Shot on goal`, 'shot', player?.id, teamKey, playerData);
             if (activeGoalie) {
-                addGameEvent(`✋ ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} - SAVE!`, 'save');
+                const goalieData = { number: activeGoalie.number, name: activeGoalie.name };
+                addGameEvent(`✋ ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} - SAVE!`, 'save', activeGoalie.id, opposingGoalieKey, goalieData);
             }
         } else if (shotType === 'goal') {
             const playerInfo = player ? `#${player.number} ${player.name}` : 'Unknown player';
-            addGameEvent(`🚨 GOAL! ${teamName} - ${playerInfo} scores!`, 'goal');
+            const playerData = player ? { number: player.number, name: player.name } : null;
+            addGameEvent(`🚨 GOAL! ${teamName} - ${playerInfo} scores!`, 'goal', player?.id, teamKey, playerData);
             if (activeGoalie) {
-                addGameEvent(`🥅 ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} - Goal against`, 'goal_against');
+                const goalieData = { number: activeGoalie.number, name: activeGoalie.name };
+                addGameEvent(`🥅 ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} - Goal against`, 'goal_against', activeGoalie.id, opposingGoalieKey, goalieData);
             }
         }
 
