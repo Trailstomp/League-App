@@ -1505,17 +1505,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             {/* Goalies Section - REMOVED - Now in team tabs */}
         </div>
     );
-                                    alt={gameState.home_team.name}
-                                    className="w-8 h-8 md:w-12 md:h-12 object-cover rounded-lg border-2 border-white shadow-lg"
-                                />
-                            )}
-                            <div style={{ fontFamily: liveViewSettings.useTeamFonts ? gameState.home_team.font : 'Inter, sans-serif' }}>
-                                <div className="text-xs md:text-sm font-medium">{gameState.home_team.name}</div>
-                                <div className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg">{gameState.home_team.score}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 {/* Center Clock & Period - Absolute on desktop, separate row on mobile */}
                 <div className="md:absolute md:left-1/2 md:top-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 z-30 bg-black bg-opacity-60 backdrop-blur-sm">
