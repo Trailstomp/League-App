@@ -2792,6 +2792,140 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                     </div>
                 </div>
             )}
+
+            {/* Penalty Recording Modal */}
+            {showPenaltyModal && pendingPenalty && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4 overflow-y-auto">
+                    <div className="bg-white rounded-lg p-4 md:p-6 max-w-md w-full my-auto max-h-[90vh] overflow-y-auto">
+                        <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4">⚠️ Record Penalty</h3>
+                        
+                        <div className="mb-3 md:mb-4 p-2 md:p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                            <div className="text-xs md:text-sm text-gray-600">Team:</div>
+                            <div className="font-bold text-sm md:text-base">{gameState[pendingPenalty.team].name}</div>
+                            <div className="text-xs text-gray-500 mt-1">
+                                Period {pendingPenalty.period} - {formatTime(pendingPenalty.timeRemaining)}
+                            </div>
+                        </div>
+
+                        {/* Step 1: Select Penalty Type */}
+                        <div className="mb-3 md:mb-4">
+                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                                1. Penalty Type *
+                            </label>
+                            <select
+                                value={penaltyType}
+                                onChange={(e) => setPenaltyType(e.target.value)}
+                                className="w-full p-2 md:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                            >
+                                <option value="">Select penalty type...</option>
+                                <option value="Tripping">Tripping</option>
+                                <option value="Hooking">Hooking</option>
+                                <option value="Slashing">Slashing</option>
+                                <option value="High-Sticking">High-Sticking</option>
+                                <option value="Cross-Checking">Cross-Checking</option>
+                                <option value="Interference">Interference</option>
+                                <option value="Roughing">Roughing</option>
+                                <option value="Holding">Holding</option>
+                                <option value="Elbowing">Elbowing</option>
+                                <option value="Charging">Charging</option>
+                                <option value="Boarding">Boarding</option>
+                                <option value="Too Many Men">Too Many Men</option>
+                                <option value="Delay of Game">Delay of Game</option>
+                                <option value="Unsportsmanlike Conduct">Unsportsmanlike Conduct</option>
+                            </select>
+                        </div>
+
+                        {/* Step 2: Select Duration */}
+                        <div className="mb-3 md:mb-4">
+                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                                2. Duration *
+                            </label>
+                            <div className="grid grid-cols-3 gap-2">
+                                <button
+                                    onClick={() => setPenaltyDuration(90)}
+                                    className={`p-2 md:p-3 rounded-lg border-2 font-medium transition text-sm md:text-base ${
+                                        penaltyDuration === 90
+                                            ? 'border-yellow-600 bg-yellow-100 text-yellow-800'
+                                            : 'border-gray-300 hover:border-gray-400'
+                                    }`}
+                                >
+                                    1:30
+                                </button>
+                                <button
+                                    onClick={() => setPenaltyDuration(120)}
+                                    className={`p-2 md:p-3 rounded-lg border-2 font-medium transition text-sm md:text-base ${
+                                        penaltyDuration === 120
+                                            ? 'border-yellow-600 bg-yellow-100 text-yellow-800'
+                                            : 'border-gray-300 hover:border-gray-400'
+                                    }`}
+                                >
+                                    2:00
+                                </button>
+                                <button
+                                    onClick={() => setPenaltyDuration(240)}
+                                    className={`p-2 md:p-3 rounded-lg border-2 font-medium transition text-sm md:text-base ${
+                                        penaltyDuration === 240
+                                            ? 'border-yellow-600 bg-yellow-100 text-yellow-800'
+                                            : 'border-gray-300 hover:border-gray-400'
+                                    }`}
+                                >
+                                    4:00
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Step 3: Select Player (Optional) */}
+                        <div className="mb-4 md:mb-6">
+                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                                3. Which player? (Optional)
+                            </label>
+                            <div className="max-h-48 md:max-h-60 overflow-y-auto border rounded-lg">
+                                {gameState[pendingPenalty.team].players
+                                    .filter(p => p.active)
+                                    .sort((a, b) => parseInt(a.number) - parseInt(b.number))
+                                    .map(player => (
+                                        <button
+                                            key={player.id}
+                                            onClick={() => setSelectedPenaltyPlayer(player.id)}
+                                            className={`w-full p-2 md:p-3 text-left border-b hover:bg-gray-50 transition ${
+                                                selectedPenaltyPlayer === player.id
+                                                    ? 'bg-yellow-50 border-l-4 border-l-yellow-600'
+                                                    : ''
+                                            }`}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <div className="text-sm md:text-base">
+                                                    <span className="font-mono font-bold mr-2">#{player.number}</span>
+                                                    <span className="font-medium">{formatPlayerName(player.name)}</span>
+                                                </div>
+                                                {selectedPenaltyPlayer === player.id && (
+                                                    <span className="text-yellow-600">✓</span>
+                                                )}
+                                            </div>
+                                        </button>
+                                    ))}
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 md:gap-3">
+                            <button
+                                onClick={cancelPenaltyRecording}
+                                className="flex-1 px-3 md:px-4 py-2 text-sm md:text-base text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={completePenaltyRecording}
+                                disabled={!penaltyType || !penaltyDuration}
+                                className="flex-1 px-3 md:px-4 py-2 text-sm md:text-base bg-yellow-600 text-white rounded-md hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                            >
+                                ✓ Record Penalty
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             </div>
         </div>
     );
