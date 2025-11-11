@@ -22,7 +22,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         }
     });
 
-    const [activeTab, setActiveTab] = useState('home_stats');
+    const [activeTab, setActiveTab] = useState('quick_entry');
     const [playerSort, setPlayerSort] = useState({
         home: { column: 'number', direction: 'asc' },
         away: { column: 'number', direction: 'asc' }
