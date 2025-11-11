@@ -2839,7 +2839,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                     </div>
                 </div>
             )}
-            </div>
         </div>
     );
 };
