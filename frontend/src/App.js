@@ -444,6 +444,39 @@ function App() {
             teamId={selectedTeam?.id || currentUser.team_id}
           />
         );
+      case 'live-scoring':
+        // Extract event ID from URL
+        const eventId = window.location.pathname.split('/live-scoring/')[1];
+        const scoringEvent = events.find(e => e.id === eventId);
+        
+        if (!scoringEvent) {
+          return (
+            <div className="text-center py-16">
+              <h2 className="text-2xl font-bold text-slate-800 mb-4">Event Not Found</h2>
+              <p className="text-slate-600">The requested event could not be found.</p>
+            </div>
+          );
+        }
+        
+        // Import EnhancedLiveStatsEntry dynamically
+        const EnhancedLiveStatsEntry = require('./components/unified-events/EnhancedLiveStatsEntry').default;
+        
+        return (
+          <div className="min-h-screen bg-gray-50">
+            <EnhancedLiveStatsEntry
+              event={scoringEvent}
+              teams={teams}
+              currentUser={currentUser}
+              onSubmit={async (statsData) => {
+                // Save stats and stay on page
+                console.log('Saving stats:', statsData);
+              }}
+              onCancel={() => {
+                window.close(); // Close tab if opened in new tab
+              }}
+            />
+          </div>
+        );
       default:
         console.log('🔄 Rendering default (HomePage)');
         return <HomePage teams={teams} currentUser={currentUser} />;
