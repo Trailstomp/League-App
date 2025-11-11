@@ -2450,11 +2450,11 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         </div>
 
                         {/* Step 2: Select Player */}
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <div className="mb-4 md:mb-6">
+                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                                 2. Which player? *
                             </label>
-                            <div className="max-h-60 overflow-y-auto border rounded-lg">
+                            <div className="max-h-48 md:max-h-60 overflow-y-auto border rounded-lg">
                                 {gameState[pendingShot.team].players
                                     .filter(p => p.active)
                                     .sort((a, b) => parseInt(a.number) - parseInt(b.number))
@@ -2462,14 +2462,14 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                                         <button
                                             key={player.id}
                                             onClick={() => setSelectedPlayer(player.id)}
-                                            className={`w-full p-3 text-left border-b hover:bg-gray-50 transition ${
+                                            className={`w-full p-2 md:p-3 text-left border-b hover:bg-gray-50 transition ${
                                                 selectedPlayer === player.id
                                                     ? 'bg-blue-50 border-l-4 border-l-blue-600'
                                                     : ''
                                             }`}
                                         >
                                             <div className="flex items-center justify-between">
-                                                <div>
+                                                <div className="text-sm md:text-base">
                                                     <span className="font-mono font-bold mr-2">#{player.number}</span>
                                                     <span className="font-medium">{formatPlayerName(player.name)}</span>
                                                 </div>
@@ -2483,10 +2483,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex gap-3">
+                        <div className="flex gap-2 md:gap-3">
                             <button
                                 onClick={cancelShotRecording}
-                                className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                                className="flex-1 px-3 md:px-4 py-2 text-sm md:text-base text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
                             >
                                 Cancel
                             </button>
