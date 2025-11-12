@@ -616,6 +616,30 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         console.log('📝 Game Event:', eventText);
     };
 
+    // Shot clock controls
+    const restartShotClock = () => {
+        setShotClock(prev => ({
+            ...prev,
+            time: prev.defaultTime,
+            isRunning: gameState.is_running // Start if game is running
+        }));
+    };
+
+    const toggleShotClock = () => {
+        setShotClock(prev => ({
+            ...prev,
+            isRunning: !prev.isRunning
+        }));
+    };
+
+    const adjustShotClockTime = (seconds) => {
+        setShotClock(prev => ({
+            ...prev,
+            defaultTime: seconds,
+            time: seconds
+        }));
+    };
+
     const toggleTimer = () => {
         setGameState(prev => {
             const newIsRunning = !prev.is_running;
