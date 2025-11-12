@@ -862,10 +862,15 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
         // Add penalty to penalties state (for active penalties display)
         const team = teamKey === 'home_team' ? 'home' : 'away';
-        setPenalties(prev => ({
-            ...prev,
-            [team]: [...prev[team], newPenalty]
-        }));
+        console.log('🔧 Adding penalty to team:', team, 'Penalty:', newPenalty);
+        setPenalties(prev => {
+            const updated = {
+                ...prev,
+                [team]: [...prev[team], newPenalty]
+            };
+            console.log('🔧 Updated penalties state:', updated);
+            return updated;
+        });
 
         // Update player stats if player selected
         if (selectedPenaltyPlayer && player) {
