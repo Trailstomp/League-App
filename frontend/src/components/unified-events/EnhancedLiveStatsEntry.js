@@ -1561,7 +1561,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         </div>
                         
                         {/* Clock */}
-                        <div className="flex flex-col items-center gap-1">
+                        <div className="flex flex-col items-center gap-2">
+                            {/* Game Clock */}
                             <div 
                                 className={`px-4 py-2 rounded-lg border-2 cursor-pointer hover:opacity-90 transition backdrop-blur-sm ${
                                     gameState.is_running 
@@ -1585,6 +1586,44 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                             <div className="bg-black bg-opacity-60 backdrop-blur-sm px-3 py-1 rounded text-white text-xs font-medium">
                                 Period {gameState.current_period}
                             </div>
+                            
+                            {/* Shot Clock */}
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={restartShotClock}
+                                    className="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium"
+                                    title="Restart shot clock (1-click)"
+                                >
+                                    🔄
+                                </button>
+                                <div 
+                                    className={`px-3 py-1 rounded-lg border-2 font-mono font-bold text-lg transition-all ${
+                                        shotClock.time === 0 ? 'bg-red-600 border-red-400 text-white animate-pulse' :
+                                        shotClock.time <= 10 ? 'bg-yellow-400 border-yellow-600 text-gray-900 animate-pulse' :
+                                        'bg-gray-800 border-gray-600 text-white'
+                                    }`}
+                                >
+                                    {shotClock.time}
+                                </div>
+                                <select
+                                    value={shotClock.defaultTime}
+                                    onChange={(e) => adjustShotClockTime(parseInt(e.target.value))}
+                                    className="px-1 py-1 bg-gray-700 text-white rounded text-xs"
+                                    title="Shot clock duration"
+                                >
+                                    <option value={15}>15s</option>
+                                    <option value={20}>20s</option>
+                                    <option value={24}>24s</option>
+                                    <option value={30}>30s</option>
+                                    <option value={35}>35s</option>
+                                    <option value={45}>45s</option>
+                                </select>
+                            </div>
+                            
+                            {/* Hidden audio element for buzzer */}
+                            <audio ref={shotClockAudioRef} preload="auto">
+                                <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSw=" type="audio/wav"/>
+                            </audio>
                         </div>
                         
                         {/* Away Score */}
