@@ -197,6 +197,48 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         return () => clearInterval(timerRef.current);
     }, [gameState.is_running, gameState.time_remaining]);
     
+    // Shot Clock functionality - syncs with game clock
+    useEffect(() => {
+        // Shot clock runs only when game clock is running and shot clock is active
+        if (gameState.is_running && shotClock.isRunning && shotClock.time > 0) {
+            shotClockRef.current = setInterval(() => {
+                setShotClock(prev => {
+                    const newTime = prev.time - 1;
+                    
+                    // Play buzzer sound at 0
+                    if (newTime === 0 && shotClockAudioRef.current) {
+                        shotClockAudioRef.current.play().catch(e => console.log('Audio play failed:', e));
+                    }
+                    
+                    if (newTime <= 0) {
+                        return {
+                            ...prev,
+                            time: 0,
+                            isRunning: false
+                        };
+                    }
+                    
+                    return {
+                        ...prev,
+                        time: newTime
+                    };
+                });
+            }, 1000);
+        } else {
+            clearInterval(shotClockRef.current);
+        }
+
+        return () => clearInterval(shotClockRef.current);
+    }, [gameState.is_running, shotClock.isRunning, shotClock.time]);
+    
+    // Sync shot clock with game clock - pause when game pauses
+    useEffect(() => {
+        if (!gameState.is_running && shotClock.isRunning) {
+            // Game stopped, pause shot clock too
+            setShotClock(prev => ({ ...prev, isRunning: false }));
+        }
+    }, [gameState.is_running, shotClock.isRunning]);
+    
     // Load timer state from localStorage on mount
     useEffect(() => {
         if (!event?.id) return;
