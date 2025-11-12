@@ -887,7 +887,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         const playerInfo = player ? `#${player.number} ${player.name}` : 'Unknown player';
         const playerData = player ? { number: player.number, name: player.name } : null;
         const durationText = penaltyDuration === 90 ? '1:30' : `${Math.floor(penaltyDuration / 60)}:00`;
-        addGameEvent(`⚠️ ${teamName} - ${playerInfo} - ${penaltyType} penalty (${durationText})`, 'penalty', player?.id, pendingPenalty?.teamKey, playerData);
+        addGameEvent(`⚠️ ${teamName} - ${playerInfo} - ${penaltyType} penalty (${durationText})`, 'penalty', player?.id, teamKey, playerData);
 
         // Close modal and reset
         setShowPenaltyModal(false);
