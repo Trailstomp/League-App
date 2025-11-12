@@ -95,7 +95,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         isRunning: false,
         defaultTime: 30
     });
-    const shotClockRef = useRef(null);
     
     // New Shot Recording Workflow State
     const [pendingShot, setPendingShot] = useState(null);
