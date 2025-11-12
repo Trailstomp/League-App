@@ -860,17 +860,18 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             period: gameState.current_period
         };
 
-        // Update game state
-        setGameState(prev => {
-            const newState = { ...prev };
-            
-            // Add penalty to team
-            const penaltyKey = teamKey === 'home_team' ? 'home_penalties' : 'away_penalties';
-            newState[penaltyKey] = [...(prev[penaltyKey] || []), newPenalty];
-            
-            // Update player stats if player selected
-            if (selectedPenaltyPlayer && player) {
-                newState[teamKey] = {
+        // Add penalty to penalties state (for active penalties display)
+        const team = teamKey === 'home_team' ? 'home' : 'away';
+        setPenalties(prev => ({
+            ...prev,
+            [team]: [...prev[team], newPenalty]
+        }));
+
+        // Update player stats if player selected
+        if (selectedPenaltyPlayer && player) {
+            setGameState(prev => ({
+                ...prev,
+                [teamKey]: {
                     ...prev[teamKey],
                     players: prev[teamKey].players.map(p => 
                         p.id === selectedPenaltyPlayer ? {
@@ -878,11 +879,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                             stats: { ...p.stats, penalties: p.stats.penalties + 1 }
                         } : p
                     )
-                };
-            }
-            
-            return newState;
-        });
+                }
+            }));
+        }
 
         // Add game event
         const playerInfo = player ? `#${player.number} ${player.name}` : 'Unknown player';
