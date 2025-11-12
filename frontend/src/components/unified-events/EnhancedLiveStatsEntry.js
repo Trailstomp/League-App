@@ -125,6 +125,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
     const autoSaveRef = useRef(null);
     const penaltyTimersRef = useRef([]);
     const chatEndRef = useRef(null);
+    const shotClockRef = useRef(null);
+    const shotClockAudioRef = useRef(null);
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
     
     // Common penalty types
