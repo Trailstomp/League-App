@@ -230,13 +230,14 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         return () => clearInterval(shotClockRef.current);
     }, [gameState.is_running, shotClock.isRunning, shotClock.time]);
     
-    // Sync shot clock with game clock - pause when game pauses
+    // Sync shot clock with game clock - start/stop together
     useEffect(() => {
-        if (!gameState.is_running && shotClock.isRunning) {
-            // Game stopped, pause shot clock too
-            setShotClock(prev => ({ ...prev, isRunning: false }));
-        }
-    }, [gameState.is_running, shotClock.isRunning]);
+        // Automatically sync shot clock with game clock
+        setShotClock(prev => ({
+            ...prev,
+            isRunning: gameState.is_running
+        }));
+    }, [gameState.is_running]);
     
     // Load timer state from localStorage on mount
     useEffect(() => {
