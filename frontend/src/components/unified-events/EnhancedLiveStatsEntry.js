@@ -621,15 +621,19 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         setShotClock(prev => ({
             ...prev,
             time: prev.defaultTime,
-            isRunning: gameState.is_running // Start if game is running
+            isRunning: gameState.is_running // Sync with game clock
         }));
     };
 
-    const toggleShotClock = () => {
-        setShotClock(prev => ({
-            ...prev,
-            isRunning: !prev.isRunning
-        }));
+    const setShotClockManualTime = () => {
+        const input = prompt('Enter shot clock time (seconds):', shotClock.time);
+        if (input && !isNaN(parseInt(input))) {
+            const seconds = Math.max(0, parseInt(input));
+            setShotClock(prev => ({
+                ...prev,
+                time: seconds
+            }));
+        }
     };
 
     const adjustShotClockTime = (seconds) => {
