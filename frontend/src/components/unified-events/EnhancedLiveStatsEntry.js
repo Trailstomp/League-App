@@ -2775,7 +2775,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             )}
             
             {/* Hidden audio element for shot clock buzzer */}
-            <audio ref={shotClockAudioRef} preload="auto">
+            <audio ref={shotClockAudioRef} preload="auto" loop>
                 <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzOR1/PMeSw=" type="audio/wav"/>
             </audio>
         </div>
