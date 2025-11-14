@@ -1710,16 +1710,20 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                             <button
                                 onClick={restartShotClock}
                                 className="p-1 md:p-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium"
-                                title="Restart shot clock"
+                                title="Reset shot clock"
                             >
                                 🔄
                             </button>
                             <div 
-                                className={`px-2 py-1 md:px-3 md:py-1 rounded-lg border-2 font-mono font-bold text-sm md:text-base transition-all ${
-                                    shotClock.time === 0 ? 'bg-red-600 border-red-400 text-white animate-pulse' :
+                                onClick={setShotClockManualTime}
+                                className={`px-2 py-1 md:px-3 md:py-1 rounded-lg border-2 font-mono font-bold text-sm md:text-base transition-all cursor-pointer ${
+                                    shotClockBuzzing ? 'bg-red-600 border-yellow-400 text-white animate-pulse' :
+                                    shotClock.time === 0 ? 'bg-red-600 border-red-400 text-white' :
+                                    shotClock.time <= 5 ? 'bg-red-500 border-red-400 text-white animate-pulse' :
                                     shotClock.time <= 10 ? 'bg-yellow-400 border-yellow-600 text-gray-900 animate-pulse' :
                                     'bg-gray-800 border-gray-600 text-white'
                                 }`}
+                                title="Click to set custom time"
                             >
                                 {shotClock.time}
                             </div>
@@ -1727,7 +1731,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                                 value={shotClock.defaultTime}
                                 onChange={(e) => adjustShotClockTime(parseInt(e.target.value))}
                                 className="px-1 py-1 bg-gray-700 text-white rounded text-xs"
-                                title="Shot clock duration"
+                                title="Default shot clock time"
                             >
                                 <option value={15}>15s</option>
                                 <option value={20}>20s</option>
