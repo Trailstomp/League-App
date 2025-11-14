@@ -208,11 +208,16 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                     // Play buzzer sound at 0 and start 2-second buzzing
                     if (newTime === 0 && shotClockAudioRef.current) {
                         setShotClockBuzzing(true);
+                        shotClockAudioRef.current.currentTime = 0;
                         shotClockAudioRef.current.play().catch(e => console.log('Audio play failed:', e));
                         
                         // Stop buzzing after 2 seconds
                         setTimeout(() => {
                             setShotClockBuzzing(false);
+                            if (shotClockAudioRef.current) {
+                                shotClockAudioRef.current.pause();
+                                shotClockAudioRef.current.currentTime = 0;
+                            }
                         }, 2000);
                     }
                     
