@@ -441,11 +441,17 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                             const lastUpdate = new Date(savedData.last_update_timestamp).getTime();
                             const elapsedSeconds = Math.floor((now - lastUpdate) / 1000);
                             
-                            // Update time remaining
+                            // Update game time remaining
                             const newTimeRemaining = Math.max(0, savedData.time_remaining - elapsedSeconds);
                             savedData.time_remaining = newTimeRemaining;
                             
-                            console.log(`⏰ Time recalculated: ${elapsedSeconds}s elapsed, new time: ${newTimeRemaining}s`);
+                            // Update shot clock time remaining
+                            if (savedData.shot_clock && savedData.shot_clock.isRunning) {
+                                const newShotClockTime = Math.max(0, savedData.shot_clock.timeRemaining - elapsedSeconds);
+                                savedData.shot_clock.timeRemaining = newShotClockTime;
+                            }
+                            
+                            console.log(`⏰ Time recalculated: ${elapsedSeconds}s elapsed, game time: ${newTimeRemaining}s, shot clock: ${savedData.shot_clock?.timeRemaining}s`);
                         }
                         
                         // Restore game state
