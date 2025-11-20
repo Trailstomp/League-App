@@ -70,11 +70,11 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
     // Team shot modal state
     const [showTeamShotModal, setShowTeamShotModal] = useState(false);
     const [teamShotModalTeam, setTeamShotModalTeam] = useState(null); // 'home_team' or 'away_team'
+    const [stopClockOnGoal, setStopClockOnGoal] = useState(false); // Persistent setting
     const [teamShotInput, setTeamShotInput] = useState({
         playerId: 'unknown',
         shotType: '',
-        timestamp: '',
-        stopClock: false
+        timestamp: ''
     });
     
     // Event editing state
