@@ -1935,15 +1935,19 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                     )}
                 </div>
 
-                {/* Team-Specific Controls Row - Split in Half */}
-                <div className="grid grid-cols-2 divide-x divide-gray-300">
-                    {/* Home Team Section */}
-                    <div className="px-2 md:px-4 py-2 bg-blue-50">
-                        <div className="text-center mb-2">
-                            <span className="text-xs md:text-sm font-bold text-blue-800">{gameState.home_team.name}</span>
+                {/* Redesigned Layout: Score | Buttons | Shot Clock | Buttons | Score */}
+                <div className="px-2 md:px-4 py-3 bg-gray-50">
+                    <div className="flex items-center justify-between gap-2 max-w-7xl mx-auto">
+                        {/* Home Team: Score (Left) */}
+                        <div className="flex-1 flex justify-center">
+                            <div className="text-center">
+                                <div className="text-xs md:text-sm font-bold text-blue-800">{gameState.home_team.name}</div>
+                                <div className="text-3xl md:text-5xl font-bold text-blue-600">{gameState.home_team.score}</div>
+                            </div>
                         </div>
-                        {/* Horizontal Square Buttons - Compact */}
-                        <div className="flex gap-1 mb-1 justify-center">
+
+                        {/* Home Team: Action Buttons */}
+                        <div className="flex gap-1">
                             <button
                                 onClick={() => openTeamShotModal('home_team')}
                                 className="w-12 h-12 md:w-14 md:h-14 bg-yellow-500 hover:bg-yellow-600 text-white rounded font-medium flex flex-col items-center justify-center p-0.5"
@@ -1969,25 +1973,26 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                                 <span className="text-[7px] md:text-[8px]">TO({timeouts.home})</span>
                             </button>
                         </div>
-                        {/* Stop clock checkbox */}
-                        <label className="flex items-center gap-1 px-1 py-0.5 cursor-pointer text-[9px] md:text-[10px] text-gray-700 hover:bg-blue-100 rounded justify-center">
-                            <input
-                                type="checkbox"
-                                checked={stopClockOnGoal}
-                                onChange={(e) => setStopClockOnGoal(e.target.checked)}
-                                className="rounded w-3 h-3"
-                            />
-                            <span>⏸️ Stop clock</span>
-                        </label>
-                    </div>
 
-                    {/* Away Team Section */}
-                    <div className="px-2 md:px-4 py-2 bg-red-50">
-                        <div className="text-center mb-2">
-                            <span className="text-xs md:text-sm font-bold text-red-800">{gameState.away_team.name}</span>
+                        {/* Center: Shot Clock */}
+                        <div className="flex flex-col items-center px-2 md:px-4">
+                            <div className="text-[8px] md:text-[10px] font-bold text-gray-600 mb-0.5">SHOT CLOCK</div>
+                            <div className="text-2xl md:text-4xl font-bold font-mono bg-white text-gray-800 px-3 py-1 rounded border-2 border-gray-300">
+                                30
+                            </div>
+                            <label className="flex items-center gap-1 mt-1 cursor-pointer text-[8px] md:text-[9px] text-gray-700">
+                                <input
+                                    type="checkbox"
+                                    checked={stopClockOnGoal}
+                                    onChange={(e) => setStopClockOnGoal(e.target.checked)}
+                                    className="rounded w-2.5 h-2.5"
+                                />
+                                <span>⏸️ Stop</span>
+                            </label>
                         </div>
-                        {/* Horizontal Square Buttons - Compact */}
-                        <div className="flex gap-1 mb-1 justify-center">
+
+                        {/* Away Team: Action Buttons */}
+                        <div className="flex gap-1">
                             <button
                                 onClick={() => openTeamShotModal('away_team')}
                                 className="w-12 h-12 md:w-14 md:h-14 bg-yellow-500 hover:bg-yellow-600 text-white rounded font-medium flex flex-col items-center justify-center p-0.5"
@@ -2013,16 +2018,14 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                                 <span className="text-[7px] md:text-[8px]">TO({timeouts.away})</span>
                             </button>
                         </div>
-                        {/* Stop clock checkbox */}
-                        <label className="flex items-center gap-1 px-1 py-0.5 cursor-pointer text-[9px] md:text-[10px] text-gray-700 hover:bg-red-100 rounded justify-center">
-                            <input
-                                type="checkbox"
-                                checked={stopClockOnGoal}
-                                onChange={(e) => setStopClockOnGoal(e.target.checked)}
-                                className="rounded w-3 h-3"
-                            />
-                            <span>⏸️ Stop clock</span>
-                        </label>
+
+                        {/* Away Team: Score (Right) */}
+                        <div className="flex-1 flex justify-center">
+                            <div className="text-center">
+                                <div className="text-xs md:text-sm font-bold text-red-800">{gameState.away_team.name}</div>
+                                <div className="text-3xl md:text-5xl font-bold text-red-600">{gameState.away_team.score}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
