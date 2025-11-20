@@ -2311,10 +2311,17 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
     // Render Game Events with inline editing
     const renderGameEvents = () => {
-        // Sort by period (desc) then by timeInSeconds (desc) - newest first
+        // Sort by period and time - based on user preference
         const sortedEvents = [...gameEvents].sort((a, b) => {
-            if (b.period !== a.period) return b.period - a.period;
-            return b.timeInSeconds - a.timeInSeconds;
+            if (eventSortOrder === 'newest') {
+                // Newest first: higher period first, then higher time
+                if (b.period !== a.period) return b.period - a.period;
+                return b.timeInSeconds - a.timeInSeconds;
+            } else {
+                // Oldest first: lower period first, then lower time
+                if (a.period !== b.period) return a.period - b.period;
+                return a.timeInSeconds - b.timeInSeconds;
+            }
         });
 
         // Filter events based on selected filter
