@@ -2003,12 +2003,18 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 {/* Player Name with Photo */}
                 <td className="px-2 py-1">
                     <div className="flex items-center gap-2">
-                        {teamData.logo && (
+                        {player.photo ? (
                             <img 
-                                src={teamData.logo} 
-                                alt={teamData.name}
-                                className="w-6 h-6 object-cover rounded-full border border-gray-300"
+                                src={player.photo} 
+                                alt={player.name}
+                                className="w-8 h-8 object-cover rounded-full border border-gray-300"
                             />
+                        ) : (
+                            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center border border-gray-300">
+                                <span className="text-xs font-bold text-gray-500">
+                                    {player.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+                                </span>
+                            </div>
                         )}
                         <span className="text-sm font-medium">{formatPlayerName(player.name)}</span>
                     </div>
