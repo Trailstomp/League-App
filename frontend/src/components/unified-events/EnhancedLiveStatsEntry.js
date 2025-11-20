@@ -718,6 +718,16 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         setShowPenaltyModal(true);
     };
 
+
+    // Reset shot clock
+    const resetShotClock = () => {
+        setShotClock(prev => ({
+            ...prev,
+            timeRemaining: prev.duration,
+            isRunning: gameState.is_running
+        }));
+    };
+
     // Reset shot clock
     const resetShotClock = () => {
         setShotClock(prev => ({
