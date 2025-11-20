@@ -1341,7 +1341,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
         const teamKey = teamShotModalTeam;
         const teamName = gameState[teamKey].name;
-        const teamPlayers = gameState[teamKey].players.filter(p => p.active);
+        const teamPlayers = gameState[teamKey].players
+            .filter(p => p.active)
+            .sort((a, b) => parseInt(a.number) - parseInt(b.number)); // Sort by number
 
         return (
             <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
