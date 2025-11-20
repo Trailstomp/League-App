@@ -1870,9 +1870,61 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                     </div>
                 </div>
 
+                {/* Goalies Section */}
+                <div className="mt-6">
+                    <h4 className="text-md font-semibold text-gray-700 mb-3">🥅 Goalies</h4>
+                    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                        <div className="divide-y divide-gray-200">
+                            {gameState.goalies[isHome ? 'home' : 'away'].map(goalie => (
+                                <div key={goalie.id} className={`flex items-center justify-between p-3 ${
+                                    goalie.active ? (isHome ? 'bg-blue-50' : 'bg-red-50') : 'bg-gray-50'
+                                }`}>
+                                    <div className="flex items-center gap-3">
+                                        <input
+                                            type="checkbox"
+                                            checked={goalie.active}
+                                            onChange={() => toggleGoalieActive(isHome ? 'home' : 'away', goalie.id)}
+                                            className="rounded"
+                                        />
+                                        <span className="font-mono font-bold text-sm">#{goalie.number}</span>
+                                        <span className="font-medium">{goalie.name}</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <div className="text-sm">
+                                            <span className="font-semibold">Saves:</span> {goalie.stats.saves}
+                                        </div>
+                                        <div className="text-sm">
+                                            <span className="font-semibold">GA:</span> {goalie.stats.goals_against}
+                                        </div>
+                                        <div className="text-sm">
+                                            <span className="font-semibold">SF:</span> {goalie.stats.shots_faced}
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                setGameState(prev => ({
+                                                    ...prev,
+                                                    goalies: {
+                                                        ...prev.goalies,
+                                                        [isHome ? 'home' : 'away']: prev.goalies[isHome ? 'home' : 'away'].map(g => 
+                                                            g.id === goalie.id ? { ...g, stats: { ...g.stats, saves: g.stats.saves + 1, shots_faced: g.stats.shots_faced + 1 } } : g
+                                                        )
+                                                    }
+                                                }));
+                                            }}
+                                            className="px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 font-medium text-sm"
+                                        >
+                                            +Save
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
                 {/* Inactive Players */}
                 {inactivePlayers.length > 0 && (
-                    <div>
+                    <div className="mt-6">
                         <h4 className="text-md font-medium text-gray-600 mb-3">
                             📋 Inactive Players / Didn't RSVP ({inactivePlayers.length})
                         </h4>
