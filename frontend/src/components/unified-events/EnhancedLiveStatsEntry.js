@@ -1496,7 +1496,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         <button
                             onClick={() => {
                                 setShowTeamShotModal(false);
-                                setTeamShotInput({ playerId: 'unknown', shotType: '', timestamp: '', stopClock: false });
+                                setTeamShotInput({ playerId: 'unknown', shotType: '', timestamp: '' });
                             }}
                             className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
                         >
