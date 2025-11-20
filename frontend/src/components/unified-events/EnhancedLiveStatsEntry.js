@@ -722,6 +722,89 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
     // Add assists and other stats
     const addStat = (teamKey, playerId, statType) => {
         const player = gameState[teamKey].players.find(p => p.id === playerId);
+
+    // Handle shot event editing (updates actual game stats)
+    const handleShotEventEdit = (originalEvent) => {
+        const oldMetadata = originalEvent.metadata || {};
+        const newPlayerId = editEventInput.playerId;
+        const newShotType = editEventInput.shotType;
+        const oldPlayerId = oldMetadata.playerId;
+        const oldShotType = oldMetadata.shotType;
+        const teamKey = editEventInput.teamKey || oldMetadata.teamKey;
+
+        if (!teamKey || !newShotType) {
+            alert('Missing shot details');
+            return;
+        }
+
+        // Reverse old stats if there was a known player
+        if (oldPlayerId && oldPlayerId !== 'unknown') {
+            const oldPlayer = gameState[teamKey].players.find(p => p.id === oldPlayerId);
+            if (oldPlayer) {
+                setGameState(prev => {
+                    const newState = { ...prev };
+                    newState[teamKey] = {
+                        ...prev[teamKey],
+                        players: prev[teamKey].players.map(p => {
+                            if (p.id === oldPlayerId) {
+                                const newStats = { ...p.stats };
+                                // Reverse old shot stats
+                                if (oldShotType === 'saved' || oldShotType === 'goal') {
+                                    newStats.shots = Math.max(0, newStats.shots - 1);
+                                }
+                                if (oldShotType === 'goal') {
+                                    newStats.goals = Math.max(0, newStats.goals - 1);
+                                    newState[teamKey].score = Math.max(0, prev[teamKey].score - 1);
+                                }
+                                return { ...p, stats: newStats };
+                            }
+                            return p;
+                        })
+                    };
+                    return newState;
+                });
+            }
+        }
+
+        // Apply new stats
+        if (newPlayerId !== 'unknown') {
+            addShotStat(teamKey, newPlayerId, newShotType);
+        } else {
+            // Unknown player shot
+            submitTeamShot(); // This will handle the unknown player shot
+        }
+
+        // Update event with new metadata
+        const newText = generateShotEventText(teamKey, newPlayerId, newShotType);
+        setGameEvents(prev => prev.map(e => 
+            e.id === originalEvent.id ? { 
+                ...e, 
+                text: newText,
+                metadata: { ...oldMetadata, playerId: newPlayerId, shotType: newShotType }
+            } : e
+        ));
+
+        setEditingEvent(null);
+    };
+
+    // Generate shot event text
+    const generateShotEventText = (teamKey, playerId, shotType) => {
+        const teamName = gameState[teamKey].name;
+        if (playerId === 'unknown') {
+            if (shotType === 'miss') return `❌ ${teamName} - Unknown Player - Shot misses`;
+            if (shotType === 'saved') return `🥍 ${teamName} - Unknown Player - Shot on goal`;
+            if (shotType === 'goal') return `🚨 GOAL! ${teamName} - Unknown Player scores!`;
+        } else {
+            const player = gameState[teamKey].players.find(p => p.id === playerId);
+            if (player) {
+                if (shotType === 'miss') return `❌ ${teamName} - #${player.number} ${player.name} - Shot misses`;
+                if (shotType === 'saved') return `🥍 ${teamName} - #${player.number} ${player.name} - Shot on goal`;
+                if (shotType === 'goal') return `🚨 GOAL! ${teamName} - #${player.number} ${player.name} scores!`;
+            }
+        }
+        return 'Shot event';
+    };
+
         const teamName = gameState[teamKey].name;
         
         setGameState(prev => {
