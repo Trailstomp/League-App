@@ -135,6 +135,30 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         }
     }, [shotClock.isRunning, shotClock.timeRemaining]);
 
+    // Shot Clock - Horn sound at 0
+    useEffect(() => {
+        if (shotClock.timeRemaining === 0 && shotClock.isRunning) {
+            // Play horn sound for 4 seconds
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 400; // Horn frequency
+            oscillator.type = 'square';
+            gainNode.gain.value = 0.3;
+            
+            oscillator.start();
+            setTimeout(() => {
+                oscillator.stop();
+                audioContext.close();
+            }, 4000); // 4 seconds
+        }
+    }, [shotClock.timeRemaining, shotClock.isRunning]);
+
+
     
     // Timeout tracking
     const [timeouts, setTimeouts] = useState({
