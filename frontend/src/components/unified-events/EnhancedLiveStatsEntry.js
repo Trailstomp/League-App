@@ -637,7 +637,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         setTeamShotInput({
             playerId: 'unknown',
             shotType: '',
-            timestamp: formatTime(gameState.time_remaining)
+            timestamp: formatTime(gameState.time_remaining),
+            stopClock: false
         });
         setShowTeamShotModal(true);
     };
