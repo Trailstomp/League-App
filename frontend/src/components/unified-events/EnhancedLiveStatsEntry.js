@@ -2154,20 +2154,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                             </div>
                         </td>
                         
-                        {/* Penalty Button - MOVED after assists */}
-                        <td className="px-2 py-1 text-center">
-                            <button
-                                onClick={() => {
-                                    setSelectedPlayerForPenalty({ ...player, teamKey });
-                                    setShowPenaltyModal(true);
-                                }}
-                                className="px-2 py-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs font-bold rounded"
-                                title="Assign Penalty"
-                            >
-                                ⚠️ PEN
-                            </button>
-                        </td>
-                        
                         {/* Penalty Minutes Display */}
                         <td className="px-2 py-1 text-center">
                             <span className="font-bold text-base text-red-600">
