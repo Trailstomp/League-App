@@ -2011,9 +2011,19 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         {/* Center: Shot Clock */}
                         <div className="flex flex-col items-center px-2 md:px-4">
                             <div className="text-[8px] md:text-[10px] font-bold text-gray-600 mb-0.5">SHOT CLOCK</div>
-                            <div className="text-2xl md:text-4xl font-bold font-mono bg-white text-gray-800 px-3 py-1 rounded border-2 border-gray-300">
-                                30
-                            </div>
+                            <button
+                                onClick={resetShotClock}
+                                className={`text-2xl md:text-4xl font-bold font-mono px-3 py-1 rounded border-2 cursor-pointer transition-all ${
+                                    shotClock.timeRemaining === 0
+                                        ? 'bg-red-600 text-white border-red-700 animate-pulse'
+                                        : shotClock.timeRemaining <= 10
+                                        ? 'bg-yellow-400 text-gray-900 border-yellow-500 animate-pulse'
+                                        : 'bg-white text-gray-800 border-gray-300 hover:border-blue-500'
+                                }`}
+                                title="Click to reset shot clock"
+                            >
+                                {shotClock.timeRemaining}
+                            </button>
                             <label className="flex items-center gap-1 mt-1 cursor-pointer text-[8px] md:text-[9px] text-gray-700">
                                 <input
                                     type="checkbox"
