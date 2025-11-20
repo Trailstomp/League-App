@@ -915,15 +915,37 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         const [mins, secs] = editTime.split(':').map(Number);
         const newTimeInSeconds = mins * 60 + secs;
 
-        setGameEvents(prev => prev.map(e => 
-            e.id === originalEvent.id ? { 
-                ...e, 
-                text: newText,
-                time: editTime,
-                timeInSeconds: newTimeInSeconds,
-                metadata: { ...oldMetadata, playerId: newPlayerId, shotType: newShotType, teamKey }
-            } : e
-        ));
+        // Remove any related save/goal_against events that were created immediately after this shot
+        // (This handles old events that had separate lines for saves/goals)
+        setGameEvents(prev => {
+            const updatedEvents = prev.map(e => 
+                e.id === originalEvent.id ? { 
+                    ...e, 
+                    text: newText,
+                    time: editTime,
+                    timeInSeconds: newTimeInSeconds,
+                    metadata: { ...oldMetadata, playerId: newPlayerId, shotType: newShotType, teamKey }
+                } : e
+            );
+            
+            // Find and remove any save/goal_against events that occurred right after this shot
+            // (within 1 second and same period)
+            const shotEventIndex = updatedEvents.findIndex(e => e.id === originalEvent.id);
+            if (shotEventIndex !== -1) {
+                const shotEvent = updatedEvents[shotEventIndex];
+                // Filter out related goalie events that are adjacent to this shot
+                return updatedEvents.filter((e, index) => {
+                    if ((e.type === 'save' || e.type === 'goal_against') && 
+                        e.period === shotEvent.period &&
+                        Math.abs(index - shotEventIndex) <= 2) {
+                        return false; // Remove this event
+                    }
+                    return true; // Keep this event
+                });
+            }
+            
+            return updatedEvents;
+        });
 
         setEditingEvent(null);
     };
