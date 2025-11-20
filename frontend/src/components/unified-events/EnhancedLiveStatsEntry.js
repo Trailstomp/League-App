@@ -464,7 +464,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         
                         // Restore penalties if saved
                         if (savedData.active_penalties) {
-                            setActivePenalties(savedData.active_penalties);
+                            setPenalties(savedData.active_penalties);
                         }
                         
                         // Restore shot clock
