@@ -2362,7 +2362,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                                                         className="w-full px-2 py-1 border rounded text-sm"
                                                     >
                                                         <option value="unknown">Unknown Player</option>
-                                                        {gameState[evt.metadata.teamKey]?.players.filter(p => p.active).map(player => (
+                                                        {gameState[evt.metadata.teamKey]?.players
+                                                            .filter(p => p.active)
+                                                            .sort((a, b) => parseInt(a.number) - parseInt(b.number))
+                                                            .map(player => (
                                                             <option key={player.id} value={player.id}>
                                                                 #{player.number} {player.name}
                                                             </option>
