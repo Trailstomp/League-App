@@ -71,7 +71,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
     const [teamShotInput, setTeamShotInput] = useState({
         playerId: 'unknown',
         shotType: '',
-        timestamp: ''
+        timestamp: '',
+        stopClock: false
     });
     
     // Event editing state
