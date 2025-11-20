@@ -1546,7 +1546,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
     // Fixed sticky header with split team banners, clock, scores, and goalies
     const renderStickyHeader = () => (
-        <div className="sticky top-0 z-50 shadow-md bg-white">
+        <div className="fixed top-0 left-0 right-0 z-50 shadow-md bg-white">
             {/* Split Banner Header - Responsive */}
             <div className="flex flex-col md:flex-row relative">
                 {/* Home Team Side */}
