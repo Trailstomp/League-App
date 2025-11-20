@@ -111,6 +111,30 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [showShotMenu]);
+
+    // Shot Clock - Sync with game clock
+    useEffect(() => {
+        if (gameState.is_running && !shotClock.isRunning) {
+            setShotClock(prev => ({ ...prev, isRunning: true }));
+        } else if (!gameState.is_running && shotClock.isRunning) {
+            setShotClock(prev => ({ ...prev, isRunning: false }));
+        }
+    }, [gameState.is_running]);
+
+    // Shot Clock - Countdown
+    useEffect(() => {
+        if (shotClock.isRunning && shotClock.timeRemaining > 0) {
+            const timer = setInterval(() => {
+                setShotClock(prev => ({
+                    ...prev,
+                    timeRemaining: Math.max(0, prev.timeRemaining - 1)
+                }));
+            }, 1000);
+            
+            return () => clearInterval(timer);
+        }
+    }, [shotClock.isRunning, shotClock.timeRemaining]);
+
     
     // Timeout tracking
     const [timeouts, setTimeouts] = useState({
