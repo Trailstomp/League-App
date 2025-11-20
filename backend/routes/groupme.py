@@ -115,7 +115,7 @@ async def create_channel(
     
     # Create bot
     bot_name = f"{channel_data.name} League Bot"
-    callback_url = f"{os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')}/api/groupme/webhook"
+    callback_url = f"{os.environ['BACKEND_URL']}/api/groupme/webhook"
     
     bot_response = await service.create_bot(channel_data.groupme_group_id, bot_name, callback_url)
     
