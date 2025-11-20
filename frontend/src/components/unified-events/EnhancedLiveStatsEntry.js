@@ -724,12 +724,25 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         const playerId = teamShotInput.playerId;
         const shotType = teamShotInput.shotType;
 
-        // Stop the clock if it's a goal and stopClockOnGoal is enabled
-        if (shotType === 'goal' && stopClockOnGoal && gameState.is_running) {
-            setGameState(prev => ({
+        // Handle shot clock based on shot type
+        if (shotType === 'saved') {
+            // Reset shot clock on save
+            resetShotClock();
+        } else if (shotType === 'goal') {
+            // On goal: pause and reset shot clock
+            setShotClock(prev => ({
                 ...prev,
-                is_running: false
+                timeRemaining: prev.duration,
+                isRunning: false
             }));
+            
+            // Stop game clock if stopClockOnGoal is enabled
+            if (stopClockOnGoal && gameState.is_running) {
+                setGameState(prev => ({
+                    ...prev,
+                    is_running: false
+                }));
+            }
         }
 
         if (playerId === 'unknown') {
