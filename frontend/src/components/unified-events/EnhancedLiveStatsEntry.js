@@ -2356,9 +2356,18 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
         return (
             <div className="bg-white rounded-lg shadow-md p-6">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                     <h3 className="text-xl font-bold">📋 Game Events Timeline</h3>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-wrap">
+                        {/* Sort Order Toggle */}
+                        <button
+                            onClick={() => setEventSortOrder(prev => prev === 'newest' ? 'oldest' : 'newest')}
+                            className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50 flex items-center gap-2"
+                            title="Toggle sort order"
+                        >
+                            {eventSortOrder === 'newest' ? '⬇️ Newest First' : '⬆️ Oldest First'}
+                        </button>
+                        
                         <label className="text-sm font-medium text-gray-600">Filter:</label>
                         <select
                             value={eventFilter}
