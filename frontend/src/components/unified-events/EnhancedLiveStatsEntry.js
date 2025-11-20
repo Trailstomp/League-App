@@ -1577,6 +1577,91 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 </div>
             </div>
         );
+
+    // Render Shot Clock Settings Modal
+    const renderShotClockSettings = () => {
+        if (!showShotClockSettings) return null;
+        
+        const [tempDuration, setTempDuration] = React.useState(shotClock.duration.toString());
+        
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
+                    <h3 className="text-xl font-bold mb-4">⚙️ Shot Clock Settings</h3>
+                    
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium mb-2">Shot Clock Duration (seconds)</label>
+                        
+                        {/* Quick Select Buttons */}
+                        <div className="grid grid-cols-4 gap-2 mb-3">
+                            {[15, 20, 30, 45].map(duration => (
+                                <button
+                                    key={duration}
+                                    onClick={() => setTempDuration(duration.toString())}
+                                    className={`px-3 py-2 rounded border-2 font-medium ${
+                                        parseInt(tempDuration) === duration
+                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                            : 'border-gray-300 hover:bg-gray-50'
+                                    }`}
+                                >
+                                    {duration}s
+                                </button>
+                            ))}
+                        </div>
+                        
+                        {/* Custom Input */}
+                        <input
+                            type="number"
+                            value={tempDuration}
+                            onChange={(e) => setTempDuration(e.target.value)}
+                            className="w-full px-3 py-2 border rounded"
+                            min="1"
+                            max="300"
+                            placeholder="Custom duration in seconds..."
+                        />
+                        <p className="text-xs text-gray-600 mt-1">
+                            Set the duration for the shot clock (1-300 seconds)
+                        </p>
+                    </div>
+                    
+                    <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm">
+                        <div className="font-medium mb-1">Shot Clock Behavior:</div>
+                        <ul className="list-disc list-inside text-gray-700 space-y-1">
+                            <li>Syncs with game clock (starts/stops together)</li>
+                            <li>Auto-resets on saved shots</li>
+                            <li>Pauses and resets on goals</li>
+                            <li>Manual reset available anytime</li>
+                        </ul>
+                    </div>
+                    
+                    {/* Buttons */}
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => setShowShotClockSettings(false)}
+                            className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={() => {
+                                const duration = parseInt(tempDuration);
+                                if (duration > 0 && duration <= 300) {
+                                    updateShotClockDuration(duration);
+                                    setShowShotClockSettings(false);
+                                } else {
+                                    alert('Please enter a duration between 1 and 300 seconds');
+                                }
+                            }}
+                            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        >
+                            Apply Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     };
 
 
