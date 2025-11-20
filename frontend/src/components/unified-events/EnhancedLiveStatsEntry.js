@@ -603,14 +603,14 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             const activeGoalie = gameState.goalies[opposingGoalieKey].find(g => g.active);
             
             if (shotType === 'miss') {
-                addGameEvent(`❌ ${teamName} - #${player.number} ${player.name} - Shot misses`, 'shot_miss');
+                addGameEvent(`❌ ${teamName} - #${player.number} ${player.name} - Shot misses`, 'shot_miss', { teamKey, playerId, shotType, timestamp: formatTime(gameState.time_remaining) });
             } else if (shotType === 'saved') {
-                addGameEvent(`🏒 ${teamName} - #${player.number} ${player.name} - Shot on goal`, 'shot');
+                addGameEvent(`🥍 ${teamName} - #${player.number} ${player.name} - Shot on goal`, 'shot', { teamKey, playerId, shotType, timestamp: formatTime(gameState.time_remaining) });
                 if (activeGoalie) {
                     addGameEvent(`✋ ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} - SAVE!`, 'save');
                 }
             } else if (shotType === 'goal') {
-                addGameEvent(`🚨 GOAL! ${teamName} - #${player.number} ${player.name} scores!`, 'goal');
+                addGameEvent(`🚨 GOAL! ${teamName} - #${player.number} ${player.name} scores!`, 'goal', { teamKey, playerId, shotType, timestamp: formatTime(gameState.time_remaining) });
                 if (activeGoalie) {
                     addGameEvent(`🥅 ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} - Goal against`, 'goal_against');
                 }
