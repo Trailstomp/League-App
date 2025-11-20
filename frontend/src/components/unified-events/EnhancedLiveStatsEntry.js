@@ -722,6 +722,31 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
     // Add assists and other stats
     const addStat = (teamKey, playerId, statType) => {
         const player = gameState[teamKey].players.find(p => p.id === playerId);
+        const teamName = gameState[teamKey].name;
+        
+        setGameState(prev => {
+            const newState = { ...prev };
+            
+            newState[teamKey] = {
+                ...prev[teamKey],
+                players: prev[teamKey].players.map(p => {
+                    if (p.id === playerId) {
+                        const newStats = { ...p.stats };
+                        newStats[statType] += 1;
+                        return { ...p, stats: newStats };
+                    }
+                    return p;
+                })
+            };
+
+            return newState;
+        });
+
+        // Add game event for assists
+        if (player && statType === 'assists') {
+            addGameEvent(`🎯 ${teamName} - #${player.number} ${player.name} with an assist`, 'assist');
+        }
+    };
 
     // Handle shot event editing (updates actual game stats)
     const handleShotEventEdit = (originalEvent) => {
@@ -770,8 +795,52 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         if (newPlayerId !== 'unknown') {
             addShotStat(teamKey, newPlayerId, newShotType);
         } else {
-            // Unknown player shot
-            submitTeamShot(); // This will handle the unknown player shot
+            // Unknown player shot - handle manually without calling submitTeamShot
+            const opposingTeamKey = teamKey === 'home_team' ? 'away' : 'home';
+            const opposingGoalieKey = teamKey === 'home_team' ? 'away' : 'home';
+
+            setGameState(prev => {
+                const newState = { ...prev };
+
+                // Update team score for goals
+                if (newShotType === 'goal') {
+                    newState[teamKey].score = prev[teamKey].score + 1;
+
+                    // Update opposing goalie's goals against
+                    newState.goalies = {
+                        ...prev.goalies,
+                        [opposingGoalieKey]: prev.goalies[opposingGoalieKey].map(goalie => 
+                            goalie.active ? {
+                                ...goalie,
+                                stats: {
+                                    ...goalie.stats,
+                                    shots_faced: goalie.stats.shots_faced + 1,
+                                    goals_against: goalie.stats.goals_against + 1
+                                }
+                            } : goalie
+                        )
+                    };
+                }
+
+                // Update opposing goalie's shots faced and saves for saved shots
+                if (newShotType === 'saved') {
+                    newState.goalies = {
+                        ...prev.goalies,
+                        [opposingGoalieKey]: prev.goalies[opposingGoalieKey].map(goalie => 
+                            goalie.active ? {
+                                ...goalie,
+                                stats: {
+                                    ...goalie.stats,
+                                    shots_faced: goalie.stats.shots_faced + 1,
+                                    saves: goalie.stats.saves + 1
+                                }
+                            } : goalie
+                        )
+                    };
+                }
+
+                return newState;
+            });
         }
 
         // Update event with new metadata
@@ -803,32 +872,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             }
         }
         return 'Shot event';
-    };
-
-        const teamName = gameState[teamKey].name;
-        
-        setGameState(prev => {
-            const newState = { ...prev };
-            
-            newState[teamKey] = {
-                ...prev[teamKey],
-                players: prev[teamKey].players.map(p => {
-                    if (p.id === playerId) {
-                        const newStats = { ...p.stats };
-                        newStats[statType] += 1;
-                        return { ...p, stats: newStats };
-                    }
-                    return p;
-                })
-            };
-
-            return newState;
-        });
-
-        // Add game event for assists
-        if (player && statType === 'assists') {
-            addGameEvent(`🎯 ${teamName} - #${player.number} ${player.name} with an assist`, 'assist');
-        }
     };
 
     const togglePlayerActive = (teamKey, playerId) => {
