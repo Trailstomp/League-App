@@ -728,15 +728,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         }));
     };
 
-    // Reset shot clock
-    const resetShotClock = () => {
-        setShotClock(prev => ({
-            ...prev,
-            timeRemaining: prev.duration,
-            isRunning: gameState.is_running
-        }));
-    };
-
     // Update shot clock duration
     const updateShotClockDuration = (newDuration) => {
         setShotClock(prev => ({
