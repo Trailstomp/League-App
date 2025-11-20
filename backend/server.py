@@ -5900,6 +5900,142 @@ async def get_game_stats(event_id: str):
         logger.error(f"Error retrieving game stats: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# Backend Timer Management Endpoints
+@api_router.post("/events/{event_id}/timer/start")
+async def start_game_timer(event_id: str):
+    """Start or resume the game timer"""
+    try:
+        # Get current game stats
+        stats = await db.game_stats.find_one({"event_id": event_id})
+        
+        if not stats:
+            raise HTTPException(status_code=404, detail="Game stats not found")
+        
+        # Update the timer state
+        stats["is_running"] = True
+        stats["last_update_timestamp"] = datetime.now(timezone.utc).isoformat()
+        
+        # Save to database
+        await db.game_stats.update_one(
+            {"event_id": event_id},
+            {"$set": {
+                "is_running": True,
+                "last_update_timestamp": stats["last_update_timestamp"]
+            }}
+        )
+        
+        # Also update unified_events
+        await db.unified_events.update_one(
+            {"id": event_id},
+            {"$set": {
+                "scores.is_running": True,
+                "scores.last_update_timestamp": stats["last_update_timestamp"]
+            }}
+        )
+        
+        return {"status": "success", "is_running": True, "timestamp": stats["last_update_timestamp"]}
+    
+    except Exception as e:
+        logger.error(f"Error starting game timer: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/events/{event_id}/timer/pause")
+async def pause_game_timer(event_id: str):
+    """Pause the game timer"""
+    try:
+        # Get current game stats
+        stats = await db.game_stats.find_one({"event_id": event_id})
+        
+        if not stats:
+            raise HTTPException(status_code=404, detail="Game stats not found")
+        
+        # Calculate elapsed time since last update
+        if stats.get("is_running") and stats.get("last_update_timestamp"):
+            last_update = datetime.fromisoformat(stats["last_update_timestamp"].replace('Z', '+00:00'))
+            now = datetime.now(timezone.utc)
+            elapsed_seconds = int((now - last_update).total_seconds())
+            
+            # Update time remaining
+            current_time = stats.get("time_remaining", 900)
+            if isinstance(current_time, str):
+                # Parse MM:SS format
+                parts = current_time.split(':')
+                current_time = int(parts[0]) * 60 + int(parts[1])
+            
+            new_time_remaining = max(0, current_time - elapsed_seconds)
+            stats["time_remaining"] = new_time_remaining
+        else:
+            new_time_remaining = stats.get("time_remaining", 900)
+            if isinstance(new_time_remaining, str):
+                parts = new_time_remaining.split(':')
+                new_time_remaining = int(parts[0]) * 60 + int(parts[1])
+        
+        # Update the timer state
+        stats["is_running"] = False
+        stats["last_update_timestamp"] = datetime.now(timezone.utc).isoformat()
+        
+        # Save to database
+        await db.game_stats.update_one(
+            {"event_id": event_id},
+            {"$set": {
+                "is_running": False,
+                "time_remaining": new_time_remaining,
+                "last_update_timestamp": stats["last_update_timestamp"]
+            }}
+        )
+        
+        # Also update unified_events
+        await db.unified_events.update_one(
+            {"id": event_id},
+            {"$set": {
+                "scores.is_running": False,
+                "scores.time_remaining": new_time_remaining,
+                "scores.last_update_timestamp": stats["last_update_timestamp"]
+            }}
+        )
+        
+        return {"status": "success", "is_running": False, "time_remaining": new_time_remaining, "timestamp": stats["last_update_timestamp"]}
+    
+    except Exception as e:
+        logger.error(f"Error pausing game timer: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/events/{event_id}/timer/state")
+async def get_game_timer_state(event_id: str):
+    """Get the current state of the game timer"""
+    try:
+        # Get current game stats
+        stats = await db.game_stats.find_one({"event_id": event_id})
+        
+        if not stats:
+            return {"status": "not_found", "is_running": False, "time_remaining": 900}
+        
+        # Calculate current time if timer is running
+        time_remaining = stats.get("time_remaining", 900)
+        if isinstance(time_remaining, str):
+            parts = time_remaining.split(':')
+            time_remaining = int(parts[0]) * 60 + int(parts[1])
+        
+        if stats.get("is_running") and stats.get("last_update_timestamp"):
+            last_update = datetime.fromisoformat(stats["last_update_timestamp"].replace('Z', '+00:00'))
+            now = datetime.now(timezone.utc)
+            elapsed_seconds = int((now - last_update).total_seconds())
+            time_remaining = max(0, time_remaining - elapsed_seconds)
+        
+        return {
+            "status": "success",
+            "is_running": stats.get("is_running", False),
+            "time_remaining": time_remaining,
+            "current_period": stats.get("current_period", 1),
+            "period_length": stats.get("period_length", 15),
+            "last_update_timestamp": stats.get("last_update_timestamp")
+        }
+    
+    except Exception as e:
+        logger.error(f"Error getting game timer state: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.get("/teams/{team_id}/season-stats")
 async def get_team_season_stats(team_id: str, season_id: Optional[str] = None):
     """Get aggregated season stats for a team"""
