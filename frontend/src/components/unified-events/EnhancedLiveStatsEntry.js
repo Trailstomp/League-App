@@ -134,14 +134,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             }, 1000);
             
             return () => clearInterval(timer);
-
-    // Sync temp shot clock duration when modal opens
-    useEffect(() => {
-        if (showShotClockSettings) {
-            setTempShotClockDuration(shotClock.duration.toString());
-        }
-    }, [showShotClockSettings, shotClock.duration]);
-
         }
     }, [shotClock.isRunning, shotClock.timeRemaining]);
 
@@ -1587,8 +1579,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 </div>
             </div>
         );
-    };
 
+    // Shot clock settings temp state
+    const [tempShotClockDuration, setTempShotClockDuration] = useState(shotClock.duration.toString());
+    
     // Render Shot Clock Settings Modal
     const renderShotClockSettings = () => {
         if (!showShotClockSettings) return null;
