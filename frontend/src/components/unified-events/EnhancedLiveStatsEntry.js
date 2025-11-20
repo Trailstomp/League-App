@@ -1238,9 +1238,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 </div>
             </div>
 
-            {/* Remaining sections wrapped */}
-            <div>
-
             {/* Event Title Bar */}
             <div className="bg-white px-2 md:px-4 py-1 md:py-2 border-b border-gray-200">
                 <div className="text-center">
@@ -1703,7 +1700,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         </div>
                     </div>
                 </div>
-            </details>
             </div>
         </div>
     );
@@ -2515,7 +2511,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                     </div>
                 </div>
             )}
-            </div>
         </div>
     );
 };
