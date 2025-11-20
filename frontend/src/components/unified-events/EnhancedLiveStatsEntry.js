@@ -1588,9 +1588,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             </div>
         );
 
-    // Shot clock settings temp state
-    const [tempShotClockDuration, setTempShotClockDuration] = useState(shotClock.duration.toString());
-    
     // Render Shot Clock Settings Modal
     const renderShotClockSettings = () => {
         if (!showShotClockSettings) return null;
