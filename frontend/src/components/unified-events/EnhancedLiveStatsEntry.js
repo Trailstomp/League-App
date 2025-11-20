@@ -416,6 +416,62 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         fetchWebsiteStyle();
     }, [backendUrl]);
 
+    // Load saved game state on mount and recalculate time if game was running
+    useEffect(() => {
+        const loadSavedGameState = async () => {
+            if (!event?.id) return;
+            
+            try {
+                const response = await fetch(`${backendUrl}/api/events/${event.id}/game-stats`);
+                if (response.ok) {
+                    const savedData = await response.json();
+                    
+                    if (savedData && savedData.home_team) {
+                        console.log('📥 Loading saved game state:', savedData);
+                        
+                        // If game was running, calculate elapsed time
+                        if (savedData.is_running && savedData.last_update_timestamp) {
+                            const now = Date.now();
+                            const lastUpdate = new Date(savedData.last_update_timestamp).getTime();
+                            const elapsedSeconds = Math.floor((now - lastUpdate) / 1000);
+                            
+                            // Update time remaining
+                            const newTimeRemaining = Math.max(0, savedData.time_remaining - elapsedSeconds);
+                            savedData.time_remaining = newTimeRemaining;
+                            
+                            console.log(`⏰ Time recalculated: ${elapsedSeconds}s elapsed, new time: ${newTimeRemaining}s`);
+                        }
+                        
+                        // Restore game state
+                        setGameState(savedData);
+                        
+                        // Restore game events if saved
+                        if (savedData.game_events) {
+                            setGameEvents(savedData.game_events);
+                        }
+                        
+                        // Restore penalties if saved
+                        if (savedData.active_penalties) {
+                            setActivePenalties(savedData.active_penalties);
+                        }
+                        
+                        // Restore shot clock
+                        if (savedData.shot_clock) {
+                            setShotClock(savedData.shot_clock);
+                        }
+                        
+                        console.log('✅ Game state restored successfully');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading saved game state:', error);
+            }
+        };
+        
+        loadSavedGameState();
+    }, [event?.id, backendUrl]);
+
+
     // Initialize teams and players
     useEffect(() => {
         if (event && event.teams && event.teams.length >= 2) {
