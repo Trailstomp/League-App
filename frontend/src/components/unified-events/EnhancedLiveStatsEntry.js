@@ -1070,6 +1070,119 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         );
     };
 
+    // Render Team Shot Modal
+    const renderTeamShotModal = () => {
+        if (!showTeamShotModal || !teamShotModalTeam) return null;
+
+        const teamKey = teamShotModalTeam;
+        const teamName = gameState[teamKey].name;
+        const teamPlayers = gameState[teamKey].players.filter(p => p.active);
+
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
+                    <h3 className="text-xl font-bold mb-4">Record Shot - {teamName}</h3>
+                    
+                    {/* Player Selection */}
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium mb-2">Player</label>
+                        <select
+                            value={teamShotInput.playerId}
+                            onChange={(e) => setTeamShotInput(prev => ({ ...prev, playerId: e.target.value }))}
+                            className="w-full px-3 py-2 border rounded"
+                        >
+                            <option value="unknown">Unknown Player</option>
+                            {teamPlayers.map(player => (
+                                <option key={player.id} value={player.id}>
+                                    #{player.number} {player.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Shot Type Selection */}
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium mb-2">Shot Type</label>
+                        <div className="space-y-2">
+                            <button
+                                onClick={() => setTeamShotInput(prev => ({ ...prev, shotType: 'miss' }))}
+                                className={`w-full px-4 py-3 rounded-lg border-2 flex items-center gap-3 ${
+                                    teamShotInput.shotType === 'miss'
+                                        ? 'border-red-500 bg-red-50'
+                                        : 'border-gray-300 hover:bg-gray-50'
+                                }`}
+                            >
+                                <span className="text-2xl">❌</span>
+                                <div className="text-left">
+                                    <div className="font-bold">Miss</div>
+                                    <div className="text-xs text-gray-600">Shot misses the goal</div>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => setTeamShotInput(prev => ({ ...prev, shotType: 'saved' }))}
+                                className={`w-full px-4 py-3 rounded-lg border-2 flex items-center gap-3 ${
+                                    teamShotInput.shotType === 'saved'
+                                        ? 'border-blue-500 bg-blue-50'
+                                        : 'border-gray-300 hover:bg-gray-50'
+                                }`}
+                            >
+                                <span className="text-2xl">✋</span>
+                                <div className="text-left">
+                                    <div className="font-bold">Saved</div>
+                                    <div className="text-xs text-gray-600">Shot on goal - saved by goalie</div>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => setTeamShotInput(prev => ({ ...prev, shotType: 'goal' }))}
+                                className={`w-full px-4 py-3 rounded-lg border-2 flex items-center gap-3 ${
+                                    teamShotInput.shotType === 'goal'
+                                        ? 'border-green-500 bg-green-50'
+                                        : 'border-gray-300 hover:bg-gray-50'
+                                }`}
+                            >
+                                <span className="text-2xl">🚨</span>
+                                <div className="text-left">
+                                    <div className="font-bold">Goal</div>
+                                    <div className="text-xs text-gray-600">Shot scores!</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Timestamp Display */}
+                    <div className="mb-4 p-3 bg-gray-100 rounded text-center">
+                        <div className="text-sm text-gray-600">Time</div>
+                        <div className="font-mono font-bold text-lg">{teamShotInput.timestamp}</div>
+                        <div className="text-xs text-gray-500">Period {gameState.current_period}</div>
+                    </div>
+
+                    {/* Buttons */}
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => {
+                                setShowTeamShotModal(false);
+                                setTeamShotInput({ playerId: 'unknown', shotType: '', timestamp: '' });
+                            }}
+                            className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={submitTeamShot}
+                            disabled={!teamShotInput.shotType}
+                            className="flex-1 px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Record Shot
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+
     // Cancel penalty with reason
     const cancelPenalty = (penaltyId, team) => {
         const reasons = [
