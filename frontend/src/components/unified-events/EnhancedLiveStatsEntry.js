@@ -1825,6 +1825,36 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         <div className="px-2 py-0.5 md:px-4 md:py-1 rounded text-white text-xs md:text-sm font-medium">
                             Period {gameState.current_period} of {gameState.game_settings.periods}
                         </div>
+                        
+                        {/* Shot Clock */}
+                        <div className="mt-2 flex flex-col items-center gap-1">
+                            <div className="text-xs text-white font-medium">SHOT CLOCK</div>
+                            <div className={`text-lg md:text-2xl font-bold font-mono px-3 py-1 rounded ${
+                                shotClock.timeRemaining <= 5 
+                                    ? 'bg-red-600 text-white animate-pulse' 
+                                    : shotClock.timeRemaining <= 10
+                                    ? 'bg-yellow-500 text-white'
+                                    : 'bg-white text-gray-800'
+                            }`}>
+                                {shotClock.timeRemaining}
+                            </div>
+                            <div className="flex gap-1">
+                                <button
+                                    onClick={resetShotClock}
+                                    className="px-2 py-1 bg-white text-gray-800 rounded text-xs font-medium hover:bg-gray-200"
+                                    title="Reset shot clock"
+                                >
+                                    🔄 Reset
+                                </button>
+                                <button
+                                    onClick={() => setShowShotClockSettings(true)}
+                                    className="px-2 py-1 bg-white text-gray-800 rounded text-xs font-medium hover:bg-gray-200"
+                                    title="Shot clock settings"
+                                >
+                                    ⚙️
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
