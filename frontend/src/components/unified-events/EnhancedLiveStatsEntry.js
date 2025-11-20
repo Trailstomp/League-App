@@ -90,6 +90,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
     
     // Event filtering state
     const [eventFilter, setEventFilter] = useState('all');
+    const [eventSortOrder, setEventSortOrder] = useState('newest'); // 'newest' or 'oldest'
     
     // Close shot menu when clicking outside
     useEffect(() => {
