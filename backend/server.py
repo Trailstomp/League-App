@@ -30,6 +30,13 @@ from googleapiclient.errors import HttpError
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
+# Initialize logger
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(levelname)s:%(name)s:%(message)s'
+)
+
 # Backend URL for proxy endpoints
 BACKEND_URL = os.environ['BACKEND_URL']
 
