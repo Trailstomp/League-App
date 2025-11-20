@@ -2319,9 +2319,20 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         <div className="text-4xl mb-2">📋</div>
                         <p>No events yet. Start tracking game actions!</p>
                     </div>
+                ) : filteredEvents.length === 0 ? (
+                    <div className="text-center py-12 text-gray-500">
+                        <div className="text-4xl mb-2">🔍</div>
+                        <p>No events match the selected filter.</p>
+                        <button 
+                            onClick={() => setEventFilter('all')}
+                            className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        >
+                            Show All Events
+                        </button>
+                    </div>
                 ) : (
                     <div className="space-y-2 max-h-[calc(100vh-450px)] overflow-y-auto">
-                        {sortedEvents.map((evt) => (
+                        {filteredEvents.map((evt) => (
                             <div 
                                 key={evt.id} 
                                 className={`p-3 rounded-lg border-l-4 ${
