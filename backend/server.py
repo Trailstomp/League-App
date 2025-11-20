@@ -31,7 +31,7 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # Backend URL for proxy endpoints
-BACKEND_URL = os.environ.get('BACKEND_URL', 'https://shotclock-sync.preview.emergentagent.com')
+BACKEND_URL = os.environ['BACKEND_URL']
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
