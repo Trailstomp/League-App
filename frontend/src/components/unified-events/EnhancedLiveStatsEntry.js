@@ -605,19 +605,28 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             const opposingGoalieKey = teamKey === 'home_team' ? 'away' : 'home';
             const activeGoalie = gameState.goalies[opposingGoalieKey].find(g => g.active);
             
+            // Create single consolidated event with goalie info
+            let eventText = '';
+            let eventType = '';
+            
             if (shotType === 'miss') {
-                addGameEvent(`❌ ${teamName} - #${player.number} ${player.name} - Shot misses`, 'shot_miss', { teamKey, playerId, shotType, timestamp: formatTime(gameState.time_remaining) });
+                eventText = `❌ ${teamName} - #${player.number} ${player.name} - Shot misses`;
+                eventType = 'shot_miss';
             } else if (shotType === 'saved') {
-                addGameEvent(`🥍 ${teamName} - #${player.number} ${player.name} - Shot on goal`, 'shot', { teamKey, playerId, shotType, timestamp: formatTime(gameState.time_remaining) });
+                eventText = `✋ ${teamName} - #${player.number} ${player.name} - Shot on goal`;
                 if (activeGoalie) {
-                    addGameEvent(`✋ ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} - SAVE!`, 'save');
+                    eventText += ` - SAVED by ${opposingTeamName} Goalie #${activeGoalie.number} ${activeGoalie.name}`;
                 }
+                eventType = 'shot';
             } else if (shotType === 'goal') {
-                addGameEvent(`🚨 GOAL! ${teamName} - #${player.number} ${player.name} scores!`, 'goal', { teamKey, playerId, shotType, timestamp: formatTime(gameState.time_remaining) });
+                eventText = `🚨 GOAL! ${teamName} - #${player.number} ${player.name} scores!`;
                 if (activeGoalie) {
-                    addGameEvent(`🥅 ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} - Goal against`, 'goal_against');
+                    eventText += ` (Against ${opposingTeamName} Goalie #${activeGoalie.number} ${activeGoalie.name})`;
                 }
+                eventType = 'goal';
             }
+            
+            addGameEvent(eventText, eventType, { teamKey, playerId, shotType, timestamp: formatTime(gameState.time_remaining) });
         }
     };
 
