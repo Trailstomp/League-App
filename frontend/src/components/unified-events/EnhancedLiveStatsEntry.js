@@ -43,7 +43,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
     
     const [showPenaltyModal, setShowPenaltyModal] = useState(false);
     const [selectedPlayerForPenalty, setSelectedPlayerForPenalty] = useState(null);
+    const [penaltyTeam, setPenaltyTeam] = useState(null); // 'home_team' or 'away_team' for team-based penalty
     const [penaltyInput, setPenaltyInput] = useState({
+        playerId: '',
         type: '',
         duration: 2,
         customType: ''
