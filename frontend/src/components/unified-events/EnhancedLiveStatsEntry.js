@@ -313,9 +313,15 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 goalies: gameState.goalies,
                 penalties: penalties, // Include active penalties for live view
                 gameEvents: gameEvents, // Include game narration events
-                time_remaining: formatTime(gameState.time_remaining),
+                time_remaining: gameState.time_remaining, // Store as number for recalculation
                 current_period: gameState.current_period,
                 period_length: gameState.period_length,
+                is_running: gameState.is_running, // Save running state
+                game_settings: gameState.game_settings,
+                last_update_timestamp: new Date().toISOString(), // Timestamp for time recalculation
+                active_penalties: activePenalties, // Save active penalties
+                shot_clock: shotClock, // Save shot clock state
+                game_events: gameEvents, // Save all game events
                 detailed_stats: true,
                 entry_type: 'enhanced_live_stats_autosave',
                 created_at: new Date().toISOString()
