@@ -35,8 +35,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         isRunning: false
     });
     const [showShotClockSettings, setShowShotClockSettings] = useState(false);
-    const [tempShotClockDuration, setTempShotClockDuration] = useState(shotClock.duration.toString());
-
     
     const [manualTimeInputs, setManualTimeInputs] = useState({
         minutes: '',
@@ -1579,92 +1577,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 </div>
             </div>
         );
-
-    // Shot clock settings temp state
-    const [tempShotClockDuration, setTempShotClockDuration] = useState(shotClock.duration.toString());
-    
-    // Render Shot Clock Settings Modal
-    const renderShotClockSettings = () => {
-        if (!showShotClockSettings) return null;
-        
-        return (
-            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-                <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
-                    <h3 className="text-xl font-bold mb-4">⚙️ Shot Clock Settings</h3>
-                    
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium mb-2">Shot Clock Duration (seconds)</label>
-                        
-                        {/* Quick Select Buttons */}
-                        <div className="grid grid-cols-4 gap-2 mb-3">
-                            {[15, 20, 30, 45].map(duration => (
-                                <button
-                                    key={duration}
-                                    onClick={() => setTempShotClockDuration(duration.toString())}
-                                    className={`px-3 py-2 rounded border-2 font-medium ${
-                                        parseInt(tempShotClockDuration) === duration
-                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                            : 'border-gray-300 hover:bg-gray-50'
-                                    }`}
-                                >
-                                    {duration}s
-                                </button>
-                            ))}
-                        </div>
-                        
-                        {/* Custom Input */}
-                        <input
-                            type="number"
-                            value={tempShotClockDuration}
-                            onChange={(e) => setTempShotClockDuration(e.target.value)}
-                            className="w-full px-3 py-2 border rounded"
-                            min="1"
-                            max="300"
-                            placeholder="Custom duration in seconds..."
-                        />
-                        <p className="text-xs text-gray-600 mt-1">
-                            Set the duration for the shot clock (1-300 seconds)
-                        </p>
-                    </div>
-                    
-                    <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm">
-                        <div className="font-medium mb-1">Shot Clock Behavior:</div>
-                        <ul className="list-disc list-inside text-gray-700 space-y-1">
-                            <li>Syncs with game clock (starts/stops together)</li>
-                            <li>Auto-resets on saved shots</li>
-                            <li>Pauses and resets on goals</li>
-                            <li>Manual reset available anytime</li>
-                        </ul>
-                    </div>
-                    
-                    {/* Buttons */}
-                    <div className="flex gap-3">
-                        <button
-                            onClick={() => setShowShotClockSettings(false)}
-                            className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={() => {
-                                const duration = parseInt(tempShotClockDuration);
-                                if (duration > 0 && duration <= 300) {
-                                    updateShotClockDuration(duration);
-                                    setShowShotClockSettings(false);
-                                } else {
-                                    alert('Please enter a duration between 1 and 300 seconds');
-                                }
-                            }}
-                            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                        >
-                            Apply Settings
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
     };
 
 
@@ -1912,36 +1824,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         {/* Period */}
                         <div className="px-2 py-0.5 md:px-4 md:py-1 rounded text-white text-xs md:text-sm font-medium">
                             Period {gameState.current_period} of {gameState.game_settings.periods}
-                        </div>
-                        
-                        {/* Shot Clock */}
-                        <div className="mt-2 flex flex-col items-center gap-1">
-                            <div className="text-xs text-white font-medium">SHOT CLOCK</div>
-                            <div className={`text-lg md:text-2xl font-bold font-mono px-3 py-1 rounded ${
-                                shotClock.timeRemaining <= 5 
-                                    ? 'bg-red-600 text-white animate-pulse' 
-                                    : shotClock.timeRemaining <= 10
-                                    ? 'bg-yellow-500 text-white'
-                                    : 'bg-white text-gray-800'
-                            }`}>
-                                {shotClock.timeRemaining}
-                            </div>
-                            <div className="flex gap-1">
-                                <button
-                                    onClick={resetShotClock}
-                                    className="px-2 py-1 bg-white text-gray-800 rounded text-xs font-medium hover:bg-gray-200"
-                                    title="Reset shot clock"
-                                >
-                                    🔄 Reset
-                                </button>
-                                <button
-                                    onClick={() => setShowShotClockSettings(true)}
-                                    className="px-2 py-1 bg-white text-gray-800 rounded text-xs font-medium hover:bg-gray-200"
-                                    title="Shot clock settings"
-                                >
-                                    ⚙️
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -2996,9 +2878,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             
             {/* Team Shot Modal */}
             {renderTeamShotModal()}
-            
-            {/* Shot Clock Settings Modal */}
-            {renderShotClockSettings()}
             
             {/* Add Player Modal */}
             {showAddPlayerModal && (
