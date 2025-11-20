@@ -928,22 +928,50 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         setEditingEvent(null);
     };
 
-    // Generate shot event text
+    // Generate consolidated shot event text with goalie info
     const generateShotEventText = (teamKey, playerId, shotType) => {
         const teamName = gameState[teamKey].name;
+        const opposingTeamKey = teamKey === 'home_team' ? 'away_team' : 'home_team';
+        const opposingTeamName = gameState[opposingTeamKey].name;
+        const opposingGoalieKey = teamKey === 'home_team' ? 'away' : 'home';
+        const activeGoalie = gameState.goalies[opposingGoalieKey].find(g => g.active);
+        
+        let eventText = '';
+        
         if (playerId === 'unknown') {
-            if (shotType === 'miss') return `❌ ${teamName} - Unknown Player - Shot misses`;
-            if (shotType === 'saved') return `🥍 ${teamName} - Unknown Player - Shot on goal`;
-            if (shotType === 'goal') return `🚨 GOAL! ${teamName} - Unknown Player scores!`;
+            if (shotType === 'miss') {
+                eventText = `❌ ${teamName} - Unknown Player - Shot misses`;
+            } else if (shotType === 'saved') {
+                eventText = `✋ ${teamName} - Unknown Player - Shot on goal`;
+                if (activeGoalie) {
+                    eventText += ` - SAVED by ${opposingTeamName} Goalie #${activeGoalie.number} ${activeGoalie.name}`;
+                }
+            } else if (shotType === 'goal') {
+                eventText = `🚨 GOAL! ${teamName} - Unknown Player scores!`;
+                if (activeGoalie) {
+                    eventText += ` (Against ${opposingTeamName} Goalie #${activeGoalie.number} ${activeGoalie.name})`;
+                }
+            }
         } else {
             const player = gameState[teamKey].players.find(p => p.id === playerId);
             if (player) {
-                if (shotType === 'miss') return `❌ ${teamName} - #${player.number} ${player.name} - Shot misses`;
-                if (shotType === 'saved') return `🥍 ${teamName} - #${player.number} ${player.name} - Shot on goal`;
-                if (shotType === 'goal') return `🚨 GOAL! ${teamName} - #${player.number} ${player.name} scores!`;
+                if (shotType === 'miss') {
+                    eventText = `❌ ${teamName} - #${player.number} ${player.name} - Shot misses`;
+                } else if (shotType === 'saved') {
+                    eventText = `✋ ${teamName} - #${player.number} ${player.name} - Shot on goal`;
+                    if (activeGoalie) {
+                        eventText += ` - SAVED by ${opposingTeamName} Goalie #${activeGoalie.number} ${activeGoalie.name}`;
+                    }
+                } else if (shotType === 'goal') {
+                    eventText = `🚨 GOAL! ${teamName} - #${player.number} ${player.name} scores!`;
+                    if (activeGoalie) {
+                        eventText += ` (Against ${opposingTeamName} Goalie #${activeGoalie.number} ${activeGoalie.name})`;
+                    }
+                }
             }
         }
-        return 'Shot event';
+        
+        return eventText || 'Shot event';
     };
 
     const togglePlayerActive = (teamKey, playerId) => {
