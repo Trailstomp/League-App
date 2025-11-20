@@ -1357,21 +1357,41 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                             onClick={() => {
                                 setShowPenaltyModal(false);
                                 setSelectedPlayerForPenalty(null);
-                                setPenaltyInput({ type: '', duration: 2, customType: '' });
+                                setPenaltyTeam(null);
+                                setPenaltyInput({ playerId: '', type: '', duration: 2, customType: '' });
                             }}
                             className="flex-1 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
                         >
                             Cancel
                         </button>
                         <button
-                            onClick={() => assignPenalty(
-                                selectedPlayerForPenalty.teamKey,
-                                selectedPlayerForPenalty.id,
-                                selectedPlayerForPenalty.name,
-                                selectedPlayerForPenalty.number
-                            )}
-                            disabled={!penaltyInput.type || (penaltyInput.type === 'Other (specify)' && !penaltyInput.customType)}
-                            className="flex-1 px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            onClick={() => {
+                                if (isTeamMode) {
+                                    // Team mode: get player from dropdown
+                                    if (!penaltyInput.playerId) {
+                                        alert('Please select a player');
+                                        return;
+                                    }
+                                    const player = teamPlayers.find(p => p.id === penaltyInput.playerId);
+                                    if (player) {
+                                        assignPenalty(penaltyTeam, player.id, player.name, player.number);
+                                    }
+                                } else if (selectedPlayerForPenalty) {
+                                    // Player mode: use selected player
+                                    assignPenalty(
+                                        selectedPlayerForPenalty.teamKey,
+                                        selectedPlayerForPenalty.id,
+                                        selectedPlayerForPenalty.name,
+                                        selectedPlayerForPenalty.number
+                                    );
+                                }
+                            }}
+                            disabled={
+                                (isTeamMode && !penaltyInput.playerId) ||
+                                !penaltyInput.type || 
+                                (penaltyInput.type === 'Other (specify)' && !penaltyInput.customType)
+                            }
+                            className="flex-1 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Assign Penalty
                         </button>
