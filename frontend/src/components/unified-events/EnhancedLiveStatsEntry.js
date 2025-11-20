@@ -1970,14 +1970,14 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                             </button>
                         </div>
                         {/* Stop clock checkbox */}
-                        <label className="flex items-center gap-2 px-2 py-1 cursor-pointer text-xs text-gray-700 hover:bg-blue-100 rounded justify-center">
+                        <label className="flex items-center gap-1 px-1 py-0.5 cursor-pointer text-[9px] md:text-[10px] text-gray-700 hover:bg-blue-100 rounded justify-center">
                             <input
                                 type="checkbox"
                                 checked={stopClockOnGoal}
                                 onChange={(e) => setStopClockOnGoal(e.target.checked)}
-                                className="rounded"
+                                className="rounded w-3 h-3"
                             />
-                            <span>⏸️ Stop clock on goal</span>
+                            <span>⏸️ Stop clock</span>
                         </label>
                     </div>
 
