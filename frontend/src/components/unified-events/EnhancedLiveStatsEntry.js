@@ -2168,7 +2168,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         <td className="px-2 py-1 text-center text-sm">{player.stats.shots || 0}</td>
                         <td className="px-2 py-1 text-center text-sm">{player.stats.goals || 0}</td>
                         <td className="px-2 py-1 text-center text-sm">{player.stats.assists || 0}</td>
-                        <td className="px-2 py-1 text-center text-sm">-</td>
                         <td className="px-2 py-1 text-center text-sm">{player.stats.penalties || 0}</td>
                     </>
                 )}
