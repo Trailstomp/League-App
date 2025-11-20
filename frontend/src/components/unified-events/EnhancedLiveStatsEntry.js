@@ -762,51 +762,104 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             return;
         }
 
-        // Reverse old stats if there was a known player
-        if (oldPlayerId && oldPlayerId !== 'unknown') {
-            const oldPlayer = gameState[teamKey].players.find(p => p.id === oldPlayerId);
-            if (oldPlayer) {
-                setGameState(prev => {
-                    const newState = { ...prev };
+        const opposingTeamKey = teamKey === 'home_team' ? 'away_team' : 'home_team';
+        const opposingGoalieKey = teamKey === 'home_team' ? 'away' : 'home';
+
+        // Reverse old stats completely
+        setGameState(prev => {
+            const newState = { ...prev };
+
+            // Reverse old player stats
+            if (oldPlayerId && oldPlayerId !== 'unknown') {
+                newState[teamKey] = {
+                    ...prev[teamKey],
+                    players: prev[teamKey].players.map(p => {
+                        if (p.id === oldPlayerId) {
+                            const newStats = { ...p.stats };
+                            if (oldShotType === 'saved' || oldShotType === 'goal') {
+                                newStats.shots = Math.max(0, newStats.shots - 1);
+                            }
+                            if (oldShotType === 'goal') {
+                                newStats.goals = Math.max(0, newStats.goals - 1);
+                            }
+                            return { ...p, stats: newStats };
+                        }
+                        return p;
+                    })
+                };
+            }
+
+            // Reverse old team score
+            if (oldShotType === 'goal') {
+                newState[teamKey].score = Math.max(0, prev[teamKey].score - 1);
+            }
+
+            // Reverse old goalie stats
+            if (oldShotType === 'goal') {
+                newState.goalies = {
+                    ...prev.goalies,
+                    [opposingGoalieKey]: prev.goalies[opposingGoalieKey].map(goalie => 
+                        goalie.active ? {
+                            ...goalie,
+                            stats: {
+                                ...goalie.stats,
+                                shots_faced: Math.max(0, goalie.stats.shots_faced - 1),
+                                goals_against: Math.max(0, goalie.stats.goals_against - 1)
+                            }
+                        } : goalie
+                    )
+                };
+            } else if (oldShotType === 'saved') {
+                newState.goalies = {
+                    ...prev.goalies,
+                    [opposingGoalieKey]: prev.goalies[opposingGoalieKey].map(goalie => 
+                        goalie.active ? {
+                            ...goalie,
+                            stats: {
+                                ...goalie.stats,
+                                shots_faced: Math.max(0, goalie.stats.shots_faced - 1),
+                                saves: Math.max(0, goalie.stats.saves - 1)
+                            }
+                        } : goalie
+                    )
+                };
+            }
+
+            return newState;
+        });
+
+        // Apply new stats (without creating a new event)
+        setTimeout(() => {
+            setGameState(prev => {
+                const newState = { ...prev };
+
+                // Apply new player stats
+                if (newPlayerId !== 'unknown') {
                     newState[teamKey] = {
                         ...prev[teamKey],
                         players: prev[teamKey].players.map(p => {
-                            if (p.id === oldPlayerId) {
+                            if (p.id === newPlayerId) {
                                 const newStats = { ...p.stats };
-                                // Reverse old shot stats
-                                if (oldShotType === 'saved' || oldShotType === 'goal') {
-                                    newStats.shots = Math.max(0, newStats.shots - 1);
+                                if (newShotType === 'saved' || newShotType === 'goal') {
+                                    newStats.shots += 1;
                                 }
-                                if (oldShotType === 'goal') {
-                                    newStats.goals = Math.max(0, newStats.goals - 1);
-                                    newState[teamKey].score = Math.max(0, prev[teamKey].score - 1);
+                                if (newShotType === 'goal') {
+                                    newStats.goals += 1;
                                 }
                                 return { ...p, stats: newStats };
                             }
                             return p;
                         })
                     };
-                    return newState;
-                });
-            }
-        }
+                }
 
-        // Apply new stats
-        if (newPlayerId !== 'unknown') {
-            addShotStat(teamKey, newPlayerId, newShotType);
-        } else {
-            // Unknown player shot - handle manually without calling submitTeamShot
-            const opposingTeamKey = teamKey === 'home_team' ? 'away' : 'home';
-            const opposingGoalieKey = teamKey === 'home_team' ? 'away' : 'home';
-
-            setGameState(prev => {
-                const newState = { ...prev };
-
-                // Update team score for goals
+                // Apply new team score
                 if (newShotType === 'goal') {
                     newState[teamKey].score = prev[teamKey].score + 1;
+                }
 
-                    // Update opposing goalie's goals against
+                // Apply new goalie stats
+                if (newShotType === 'goal') {
                     newState.goalies = {
                         ...prev.goalies,
                         [opposingGoalieKey]: prev.goalies[opposingGoalieKey].map(goalie => 
@@ -820,10 +873,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                             } : goalie
                         )
                     };
-                }
-
-                // Update opposing goalie's shots faced and saves for saved shots
-                if (newShotType === 'saved') {
+                } else if (newShotType === 'saved') {
                     newState.goalies = {
                         ...prev.goalies,
                         [opposingGoalieKey]: prev.goalies[opposingGoalieKey].map(goalie => 
@@ -841,15 +891,20 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
                 return newState;
             });
-        }
+        }, 50);
 
-        // Update event with new metadata
+        // Update event with new metadata and text (keep original time unless user changed it)
         const newText = generateShotEventText(teamKey, newPlayerId, newShotType);
+        const [mins, secs] = editTime.split(':').map(Number);
+        const newTimeInSeconds = mins * 60 + secs;
+
         setGameEvents(prev => prev.map(e => 
             e.id === originalEvent.id ? { 
                 ...e, 
                 text: newText,
-                metadata: { ...oldMetadata, playerId: newPlayerId, shotType: newShotType }
+                time: editTime,
+                timeInSeconds: newTimeInSeconds,
+                metadata: { ...oldMetadata, playerId: newPlayerId, shotType: newShotType, teamKey }
             } : e
         ));
 
