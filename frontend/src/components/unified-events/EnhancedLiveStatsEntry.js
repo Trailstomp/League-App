@@ -365,7 +365,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         } catch (error) {
             console.error('❌ Auto-save error:', error);
         }
-    }, [event, gameState, penalties, backendUrl]);
+    }, [event, gameState, penalties, gameEvents, activePenalties, shotClock, backendUrl]);
 
     // Setup auto-save interval when timer is running
     useEffect(() => {
