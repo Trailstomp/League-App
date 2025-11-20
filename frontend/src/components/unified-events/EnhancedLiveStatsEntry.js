@@ -2245,6 +2245,11 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             return b.timeInSeconds - a.timeInSeconds;
         });
 
+        // Filter events based on selected filter
+        const filteredEvents = eventFilter === 'all' 
+            ? sortedEvents 
+            : sortedEvents.filter(evt => evt.type === eventFilter);
+
         const handleSaveEdit = (evt) => {
             // Validate time format
             if (editTime && !/^\d{1,2}:\d{2}$/.test(editTime)) {
@@ -2267,11 +2272,46 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
             setEditingEvent(null);
         };
 
+        // Get unique event types for the filter
+        const eventTypes = [...new Set(gameEvents.map(e => e.type))].sort();
+
         return (
             <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-bold">📋 Game Events Timeline</h3>
-                    <span className="text-sm text-gray-600">{sortedEvents.length} events recorded</span>
+                    <div className="flex items-center gap-3">
+                        <label className="text-sm font-medium text-gray-600">Filter:</label>
+                        <select
+                            value={eventFilter}
+                            onChange={(e) => setEventFilter(e.target.value)}
+                            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="all">All Events ({sortedEvents.length})</option>
+                            {eventTypes.map(type => {
+                                const count = sortedEvents.filter(e => e.type === type).length;
+                                const label = type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                                const icon = 
+                                    type === 'goal' ? '🚨' :
+                                    type === 'shot' ? '🥍' :
+                                    type === 'shot_miss' ? '❌' :
+                                    type === 'save' ? '✋' :
+                                    type === 'penalty' ? '⚠️' :
+                                    type === 'penalty_end' ? '✅' :
+                                    type === 'assist' ? '🎯' :
+                                    type === 'period_change' ? '🔔' :
+                                    type === 'game_start' ? '🏁' :
+                                    '📌';
+                                return (
+                                    <option key={type} value={type}>
+                                        {icon} {label} ({count})
+                                    </option>
+                                );
+                            })}
+                        </select>
+                        <span className="text-sm text-gray-600">
+                            {filteredEvents.length} of {sortedEvents.length} shown
+                        </span>
+                    </div>
                 </div>
                 
                 {sortedEvents.length === 0 ? (
