@@ -1986,35 +1986,43 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         <div className="text-center mb-2">
                             <span className="text-xs md:text-sm font-bold text-red-800">{gameState.away_team.name}</span>
                         </div>
-                        <div className="flex flex-col gap-1 md:gap-2">
+                        {/* Horizontal Square Buttons */}
+                        <div className="flex gap-1 md:gap-2 mb-2">
                             <button
                                 onClick={() => openTeamShotModal('away_team')}
-                                className="w-full px-2 md:px-3 py-1.5 md:py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-medium text-xs md:text-sm flex items-center justify-center gap-1"
+                                className="flex-1 aspect-square bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-medium text-xs md:text-sm flex flex-col items-center justify-center p-1"
+                                title="Record Shot"
                             >
-                                🥍 Record Shot
+                                <span className="text-lg md:text-2xl">🥍</span>
+                                <span className="text-[8px] md:text-xs">Shot</span>
                             </button>
-                            <label className="flex items-center gap-2 px-2 py-1 cursor-pointer text-xs text-gray-700 hover:bg-red-100 rounded">
-                                <input
-                                    type="checkbox"
-                                    checked={stopClockOnGoal}
-                                    onChange={(e) => setStopClockOnGoal(e.target.checked)}
-                                    className="rounded"
-                                />
-                                <span>⏸️ Stop clock on goal</span>
-                            </label>
                             <button
                                 onClick={() => openTeamPenaltyModal('away_team')}
-                                className="w-full px-2 md:px-3 py-1.5 md:py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium text-xs md:text-sm flex items-center justify-center gap-1"
+                                className="flex-1 aspect-square bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium text-xs md:text-sm flex flex-col items-center justify-center p-1"
+                                title="Record Penalty"
                             >
-                                ⚠️ Record Penalty
+                                <span className="text-lg md:text-2xl">⚠️</span>
+                                <span className="text-[8px] md:text-xs">Penalty</span>
                             </button>
                             <button
                                 onClick={() => callTimeout('away')}
-                                className="w-full px-2 md:px-3 py-1.5 md:py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium text-xs md:text-sm"
+                                className="flex-1 aspect-square bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium text-xs md:text-sm flex flex-col items-center justify-center p-1"
+                                title={`Timeout (${timeouts.away} remaining)`}
                             >
-                                ⏸️ Timeout ({timeouts.away})
+                                <span className="text-lg md:text-2xl">⏸️</span>
+                                <span className="text-[8px] md:text-xs">TO ({timeouts.away})</span>
                             </button>
                         </div>
+                        {/* Stop clock checkbox */}
+                        <label className="flex items-center gap-2 px-2 py-1 cursor-pointer text-xs text-gray-700 hover:bg-red-100 rounded justify-center">
+                            <input
+                                type="checkbox"
+                                checked={stopClockOnGoal}
+                                onChange={(e) => setStopClockOnGoal(e.target.checked)}
+                                className="rounded"
+                            />
+                            <span>⏸️ Stop clock on goal</span>
+                        </label>
                     </div>
                 </div>
             </div>
