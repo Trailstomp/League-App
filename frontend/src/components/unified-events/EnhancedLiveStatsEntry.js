@@ -652,6 +652,15 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         const teamKey = teamShotModalTeam;
         const playerId = teamShotInput.playerId;
         const shotType = teamShotInput.shotType;
+        const stopClock = teamShotInput.stopClock;
+
+        // Stop the clock if it's a goal and stopClock is checked
+        if (shotType === 'goal' && stopClock && gameState.is_running) {
+            setGameState(prev => ({
+                ...prev,
+                is_running: false
+            }));
+        }
 
         if (playerId === 'unknown') {
             // Handle unknown player shot
