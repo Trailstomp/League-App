@@ -648,6 +648,20 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         setShowTeamShotModal(true);
     };
 
+
+    // Open team penalty modal
+    const openTeamPenaltyModal = (team) => {
+        setPenaltyTeam(team);
+        setPenaltyInput({
+            playerId: '',
+            type: '',
+            duration: 2,
+            customType: ''
+        });
+        setSelectedPlayerForPenalty(null); // Clear old player-specific selection
+        setShowPenaltyModal(true);
+    };
+
     // Handle team shot submission (with unknown player support)
     const submitTeamShot = () => {
         if (!teamShotInput.shotType) {
