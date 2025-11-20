@@ -86,6 +86,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         timestamp: ''
     });
     
+    // Event filtering state
+    const [eventFilter, setEventFilter] = useState('all');
+    
     // Close shot menu when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
