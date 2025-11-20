@@ -1587,6 +1587,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 </div>
             </div>
         );
+    };
 
     // Render Shot Clock Settings Modal
     const renderShotClockSettings = () => {
