@@ -319,7 +319,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 is_running: gameState.is_running, // Save running state
                 game_settings: gameState.game_settings,
                 last_update_timestamp: new Date().toISOString(), // Timestamp for time recalculation
-                active_penalties: activePenalties, // Save active penalties
+                active_penalties: penalties, // Save active penalties
                 shot_clock: shotClock, // Save shot clock state
                 game_events: gameEvents, // Save all game events
                 detailed_stats: true,
