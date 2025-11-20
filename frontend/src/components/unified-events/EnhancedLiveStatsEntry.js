@@ -65,6 +65,23 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
     // Shot type selector state
     const [showShotMenu, setShowShotMenu] = useState(null); // stores player id when menu is open
     
+    // Team shot modal state
+    const [showTeamShotModal, setShowTeamShotModal] = useState(false);
+    const [teamShotModalTeam, setTeamShotModalTeam] = useState(null); // 'home_team' or 'away_team'
+    const [teamShotInput, setTeamShotInput] = useState({
+        playerId: 'unknown',
+        shotType: '',
+        timestamp: ''
+    });
+    
+    // Event editing state
+    const [editingEvent, setEditingEvent] = useState(null);
+    const [editEventInput, setEditEventInput] = useState({
+        playerId: '',
+        shotType: '',
+        timestamp: ''
+    });
+    
     // Close shot menu when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
