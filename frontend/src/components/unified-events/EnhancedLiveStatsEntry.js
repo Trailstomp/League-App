@@ -1119,7 +1119,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         // Close modal and reset
         setShowPenaltyModal(false);
         setSelectedPlayerForPenalty(null);
-        setPenaltyInput({ type: '', duration: 2, customType: '' });
+        setPenaltyTeam(null);
+        setPenaltyInput({ playerId: '', type: '', duration: 2, customType: '' });
     };
 
     // Live Chat Functions
