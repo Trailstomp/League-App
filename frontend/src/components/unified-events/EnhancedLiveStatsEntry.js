@@ -35,6 +35,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         isRunning: false
     });
     const [showShotClockSettings, setShowShotClockSettings] = useState(false);
+    const [tempShotClockDuration, setTempShotClockDuration] = useState(shotClock.duration.toString());
+
     
     const [manualTimeInputs, setManualTimeInputs] = useState({
         minutes: '',
