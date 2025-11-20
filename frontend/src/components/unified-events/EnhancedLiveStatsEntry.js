@@ -1999,10 +1999,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
     // Render Game Events with inline editing
     const renderGameEvents = () => {
-        const [editingEvent, setEditingEvent] = useState(null);
-        const [editText, setEditText] = useState('');
-        const [editTime, setEditTime] = useState('');
-
         // Sort by period (desc) then by timeInSeconds (desc) - newest first
         const sortedEvents = [...gameEvents].sort((a, b) => {
             if (b.period !== a.period) return b.period - a.period;
