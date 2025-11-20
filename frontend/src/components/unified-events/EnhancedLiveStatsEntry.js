@@ -1645,7 +1645,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         </button>
                         <button
                             onClick={() => {
-                                const duration = parseInt(tempDuration);
+                                const duration = parseInt(tempShotClockDuration);
                                 if (duration > 0 && duration <= 300) {
                                     updateShotClockDuration(duration);
                                     setShowShotClockSettings(false);
