@@ -2220,6 +2220,15 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                                             setEditingEvent(evt.id);
                                             setEditText(evt.text);
                                             setEditTime(evt.time);
+                                            // If it's a shot event, populate the shot editing fields
+                                            if (evt.metadata && evt.metadata.shotType) {
+                                                setEditEventInput({
+                                                    playerId: evt.metadata.playerId || 'unknown',
+                                                    shotType: evt.metadata.shotType || 'miss',
+                                                    teamKey: evt.metadata.teamKey || '',
+                                                    timestamp: evt.time
+                                                });
+                                            }
                                         }}
                                     >
                                         <div className="flex-1">
