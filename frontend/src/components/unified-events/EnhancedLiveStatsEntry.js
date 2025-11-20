@@ -2852,7 +2852,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 </div>
             </div>
         );
-    };
+    }; // renderLiveChat end
 
     return (
         <div className="min-h-screen bg-gray-50">
