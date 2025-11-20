@@ -28,6 +28,14 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         away: { column: 'number', direction: 'asc' }
     });
     
+    // Shot Clock State
+    const [shotClock, setShotClock] = useState({
+        duration: 30, // seconds
+        timeRemaining: 30,
+        isRunning: false
+    });
+    const [showShotClockSettings, setShowShotClockSettings] = useState(false);
+    
     const [manualTimeInputs, setManualTimeInputs] = useState({
         minutes: '',
         seconds: '',
