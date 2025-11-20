@@ -617,6 +617,104 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         }
     };
 
+    // Open team shot modal
+    const openTeamShotModal = (team) => {
+        setTeamShotModalTeam(team);
+        setTeamShotInput({
+            playerId: 'unknown',
+            shotType: '',
+            timestamp: formatTime(gameState.time_remaining)
+        });
+        setShowTeamShotModal(true);
+    };
+
+    // Handle team shot submission (with unknown player support)
+    const submitTeamShot = () => {
+        if (!teamShotInput.shotType) {
+            alert('Please select a shot type');
+            return;
+        }
+
+        const teamKey = teamShotModalTeam;
+        const playerId = teamShotInput.playerId;
+        const shotType = teamShotInput.shotType;
+
+        if (playerId === 'unknown') {
+            // Handle unknown player shot
+            const teamName = gameState[teamKey].name;
+            const opposingTeamKey = teamKey === 'home_team' ? 'away_team' : 'home_team';
+            const opposingTeamName = gameState[opposingTeamKey].name;
+            const opposingGoalieKey = teamKey === 'home_team' ? 'away' : 'home';
+            const activeGoalie = gameState.goalies[opposingGoalieKey].find(g => g.active);
+
+            setGameState(prev => {
+                const newState = { ...prev };
+
+                // Update team score for goals
+                if (shotType === 'goal') {
+                    newState[teamKey].score = prev[teamKey].score + 1;
+
+                    // Update opposing goalie's goals against
+                    newState.goalies = {
+                        ...prev.goalies,
+                        [opposingGoalieKey]: prev.goalies[opposingGoalieKey].map(goalie => 
+                            goalie.active ? {
+                                ...goalie,
+                                stats: {
+                                    ...goalie.stats,
+                                    shots_faced: goalie.stats.shots_faced + 1,
+                                    goals_against: goalie.stats.goals_against + 1
+                                }
+                            } : goalie
+                        )
+                    };
+                }
+
+                // Update opposing goalie's shots faced and saves for saved shots
+                if (shotType === 'saved') {
+                    newState.goalies = {
+                        ...prev.goalies,
+                        [opposingGoalieKey]: prev.goalies[opposingGoalieKey].map(goalie => 
+                            goalie.active ? {
+                                ...goalie,
+                                stats: {
+                                    ...goalie.stats,
+                                    shots_faced: goalie.stats.shots_faced + 1,
+                                    saves: goalie.stats.saves + 1
+                                }
+                            } : goalie
+                        )
+                    };
+                }
+
+                return newState;
+            });
+
+            // Add game event narration for unknown player
+            if (shotType === 'miss') {
+                addGameEvent(`❌ ${teamName} - Unknown Player - Shot misses`, 'shot_miss', { teamKey, playerId: 'unknown', shotType, timestamp: teamShotInput.timestamp });
+            } else if (shotType === 'saved') {
+                addGameEvent(`🥍 ${teamName} - Unknown Player - Shot on goal`, 'shot', { teamKey, playerId: 'unknown', shotType, timestamp: teamShotInput.timestamp });
+                if (activeGoalie) {
+                    addGameEvent(`✋ ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} - SAVE!`, 'save');
+                }
+            } else if (shotType === 'goal') {
+                addGameEvent(`🚨 GOAL! ${teamName} - Unknown Player scores!`, 'goal', { teamKey, playerId: 'unknown', shotType, timestamp: teamShotInput.timestamp });
+                if (activeGoalie) {
+                    addGameEvent(`🥅 ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} - Goal against`, 'goal_against');
+                }
+            }
+        } else {
+            // Handle known player shot using existing function
+            addShotStat(teamKey, playerId, shotType);
+        }
+
+        // Close modal
+        setShowTeamShotModal(false);
+        setTeamShotInput({ playerId: 'unknown', shotType: '', timestamp: '' });
+    };
+
+
     // Add assists and other stats
     const addStat = (teamKey, playerId, statType) => {
         const player = gameState[teamKey].players.find(p => p.id === playerId);
