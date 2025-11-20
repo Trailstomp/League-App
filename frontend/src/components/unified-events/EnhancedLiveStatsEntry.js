@@ -1250,17 +1250,47 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
 
     // Render Penalty Assignment Modal
     const renderPenaltyModal = () => {
-        if (!showPenaltyModal || !selectedPlayerForPenalty) return null;
+        if (!showPenaltyModal) return null;
+        
+        // Team-based penalty mode (from top buttons)
+        const isTeamMode = penaltyTeam && !selectedPlayerForPenalty;
+        const teamName = isTeamMode ? gameState[penaltyTeam].name : null;
+        const teamPlayers = isTeamMode 
+            ? gameState[penaltyTeam].players
+                .filter(p => p.active)
+                .sort((a, b) => parseInt(a.number) - parseInt(b.number))
+            : [];
         
         return (
             <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
                 <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
-                    <h3 className="text-xl font-bold mb-4">Assign Penalty</h3>
+                    <h3 className="text-xl font-bold mb-4">
+                        {isTeamMode ? `Record Penalty - ${teamName}` : 'Assign Penalty'}
+                    </h3>
                     
-                    <div className="mb-4 p-3 bg-gray-100 rounded">
-                        <div className="font-bold">#{selectedPlayerForPenalty.number} {selectedPlayerForPenalty.name}</div>
-                        <div className="text-sm text-gray-600">{selectedPlayerForPenalty.position}</div>
-                    </div>
+                    {/* Player Selection (for team mode) or Display (for player mode) */}
+                    {isTeamMode ? (
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium mb-2">Player</label>
+                            <select
+                                value={penaltyInput.playerId}
+                                onChange={(e) => setPenaltyInput(prev => ({ ...prev, playerId: e.target.value }))}
+                                className="w-full px-3 py-2 border rounded"
+                            >
+                                <option value="">Select player...</option>
+                                {teamPlayers.map(player => (
+                                    <option key={player.id} value={player.id}>
+                                        #{player.number} {player.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    ) : selectedPlayerForPenalty ? (
+                        <div className="mb-4 p-3 bg-gray-100 rounded">
+                            <div className="font-bold">#{selectedPlayerForPenalty.number} {selectedPlayerForPenalty.name}</div>
+                            <div className="text-sm text-gray-600">{selectedPlayerForPenalty.position}</div>
+                        </div>
+                    ) : null}
                     
                     {/* Penalty Type */}
                     <div className="mb-4">
