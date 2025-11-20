@@ -703,20 +703,28 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 return newState;
             });
 
-            // Add game event narration for unknown player
+            // Add consolidated game event for unknown player
+            let eventText = '';
+            let eventType = '';
+            
             if (shotType === 'miss') {
-                addGameEvent(`❌ ${teamName} - Unknown Player - Shot misses`, 'shot_miss', { teamKey, playerId: 'unknown', shotType, timestamp: teamShotInput.timestamp });
+                eventText = `❌ ${teamName} - Unknown Player - Shot misses`;
+                eventType = 'shot_miss';
             } else if (shotType === 'saved') {
-                addGameEvent(`🥍 ${teamName} - Unknown Player - Shot on goal`, 'shot', { teamKey, playerId: 'unknown', shotType, timestamp: teamShotInput.timestamp });
+                eventText = `✋ ${teamName} - Unknown Player - Shot on goal`;
                 if (activeGoalie) {
-                    addGameEvent(`✋ ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} - SAVE!`, 'save');
+                    eventText += ` - SAVED by ${opposingTeamName} Goalie #${activeGoalie.number} ${activeGoalie.name}`;
                 }
+                eventType = 'shot';
             } else if (shotType === 'goal') {
-                addGameEvent(`🚨 GOAL! ${teamName} - Unknown Player scores!`, 'goal', { teamKey, playerId: 'unknown', shotType, timestamp: teamShotInput.timestamp });
+                eventText = `🚨 GOAL! ${teamName} - Unknown Player scores!`;
                 if (activeGoalie) {
-                    addGameEvent(`🥅 ${opposingTeamName} - Goalie #${activeGoalie.number} ${activeGoalie.name} - Goal against`, 'goal_against');
+                    eventText += ` (Against ${opposingTeamName} Goalie #${activeGoalie.number} ${activeGoalie.name})`;
                 }
+                eventType = 'goal';
             }
+            
+            addGameEvent(eventText, eventType, { teamKey, playerId: 'unknown', shotType, timestamp: teamShotInput.timestamp });
         } else {
             // Handle known player shot using existing function
             addShotStat(teamKey, playerId, shotType);
