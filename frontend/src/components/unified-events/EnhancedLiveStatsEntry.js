@@ -2096,49 +2096,122 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                                 }`}
                             >
                                 {editingEvent === evt.id ? (
-                                    // Edit Mode
-                                    <div className="space-y-2">
-                                        <input
-                                            type="text"
-                                            value={editText}
-                                            onChange={(e) => setEditText(e.target.value)}
-                                            className="w-full px-2 py-1 border rounded text-sm"
-                                            placeholder="Event description"
-                                        />
-                                        <div className="flex items-center gap-2">
+                                    // Edit Mode - Check if it's a shot event
+                                    evt.metadata && evt.metadata.shotType ? (
+                                        // Shot Event Edit Mode with Dropdowns
+                                        <div className="space-y-3">
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {/* Player Dropdown */}
+                                                <div>
+                                                    <label className="block text-xs font-medium mb-1">Player</label>
+                                                    <select
+                                                        value={editEventInput.playerId}
+                                                        onChange={(e) => setEditEventInput(prev => ({ ...prev, playerId: e.target.value }))}
+                                                        className="w-full px-2 py-1 border rounded text-sm"
+                                                    >
+                                                        <option value="unknown">Unknown Player</option>
+                                                        {gameState[evt.metadata.teamKey]?.players.filter(p => p.active).map(player => (
+                                                            <option key={player.id} value={player.id}>
+                                                                #{player.number} {player.name}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+
+                                                {/* Shot Type Dropdown */}
+                                                <div>
+                                                    <label className="block text-xs font-medium mb-1">Shot Type</label>
+                                                    <select
+                                                        value={editEventInput.shotType}
+                                                        onChange={(e) => setEditEventInput(prev => ({ ...prev, shotType: e.target.value }))}
+                                                        className="w-full px-2 py-1 border rounded text-sm"
+                                                    >
+                                                        <option value="miss">❌ Miss</option>
+                                                        <option value="saved">✋ Saved</option>
+                                                        <option value="goal">🚨 Goal</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="text"
+                                                    value={editTime}
+                                                    onChange={(e) => setEditTime(e.target.value)}
+                                                    className="w-20 px-2 py-1 border rounded text-sm font-mono"
+                                                    placeholder="MM:SS"
+                                                />
+                                                <span className="text-xs text-gray-600">P{evt.period}</span>
+                                                <button
+                                                    onClick={() => handleShotEventEdit(evt)}
+                                                    className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded"
+                                                >
+                                                    ✓ Save
+                                                </button>
+                                                <button
+                                                    onClick={() => setEditingEvent(null)}
+                                                    className="px-3 py-1 bg-gray-400 hover:bg-gray-500 text-white text-xs rounded"
+                                                >
+                                                    ✕ Cancel
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        if (window.confirm('Delete this event?')) {
+                                                            setGameEvents(prev => prev.filter(e => e.id !== evt.id));
+                                                            setEditingEvent(null);
+                                                        }
+                                                    }}
+                                                    className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded ml-auto"
+                                                >
+                                                    🗑️ Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        // Regular Event Edit Mode (Text Only)
+                                        <div className="space-y-2">
                                             <input
                                                 type="text"
-                                                value={editTime}
-                                                onChange={(e) => setEditTime(e.target.value)}
-                                                className="w-20 px-2 py-1 border rounded text-sm font-mono"
-                                                placeholder="MM:SS"
+                                                value={editText}
+                                                onChange={(e) => setEditText(e.target.value)}
+                                                className="w-full px-2 py-1 border rounded text-sm"
+                                                placeholder="Event description"
                                             />
-                                            <span className="text-xs text-gray-600">P{evt.period}</span>
-                                            <button
-                                                onClick={() => handleSaveEdit(evt)}
-                                                className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded"
-                                            >
-                                                ✓ Save
-                                            </button>
-                                            <button
-                                                onClick={() => setEditingEvent(null)}
-                                                className="px-3 py-1 bg-gray-400 hover:bg-gray-500 text-white text-xs rounded"
-                                            >
-                                                ✕ Cancel
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    if (window.confirm('Delete this event?')) {
-                                                        setGameEvents(prev => prev.filter(e => e.id !== evt.id));
-                                                        setEditingEvent(null);
-                                                    }
-                                                }}
-                                                className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded ml-auto"
-                                            >
-                                                🗑️ Delete
-                                            </button>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="text"
+                                                    value={editTime}
+                                                    onChange={(e) => setEditTime(e.target.value)}
+                                                    className="w-20 px-2 py-1 border rounded text-sm font-mono"
+                                                    placeholder="MM:SS"
+                                                />
+                                                <span className="text-xs text-gray-600">P{evt.period}</span>
+                                                <button
+                                                    onClick={() => handleSaveEdit(evt)}
+                                                    className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded"
+                                                >
+                                                    ✓ Save
+                                                </button>
+                                                <button
+                                                    onClick={() => setEditingEvent(null)}
+                                                    className="px-3 py-1 bg-gray-400 hover:bg-gray-500 text-white text-xs rounded"
+                                                >
+                                                    ✕ Cancel
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        if (window.confirm('Delete this event?')) {
+                                                            setGameEvents(prev => prev.filter(e => e.id !== evt.id));
+                                                            setEditingEvent(null);
+                                                        }
+                                                    }}
+                                                    className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded ml-auto"
+                                                >
+                                                    🗑️ Delete
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
+                                    )
                                 ) : (
                                     // View Mode
                                     <div 
