@@ -1573,24 +1573,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
                     <h3 className="text-xl font-bold mb-4">Record Shot - {teamName}</h3>
                     
-                    {/* Player Selection */}
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium mb-2">Player</label>
-                        <select
-                            value={teamShotInput.playerId}
-                            onChange={(e) => setTeamShotInput(prev => ({ ...prev, playerId: e.target.value }))}
-                            className="w-full px-3 py-2 border rounded"
-                        >
-                            <option value="unknown">Unknown Player</option>
-                            {teamPlayers.map(player => (
-                                <option key={player.id} value={player.id}>
-                                    #{player.number} {player.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Shot Type Selection */}
+                    {/* Shot Type Selection - MOVED TO TOP */}
                     <div className="mb-4">
                         <label className="block text-sm font-medium mb-2">Shot Type</label>
                         <div className="space-y-2">
@@ -1625,7 +1608,14 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                             </button>
 
                             <button
-                                onClick={() => setTeamShotInput(prev => ({ ...prev, shotType: 'goal' }))}
+                                onClick={() => {
+                                    setTeamShotInput(prev => ({ ...prev, shotType: 'goal' }));
+                                    // Pause game timer immediately when goal is clicked
+                                    if (gameState.is_running) {
+                                        setGameState(prev => ({ ...prev, is_running: false }));
+                                        addGameEvent('⏸️ GAME PAUSED (Goal scored)', 'game_pause');
+                                    }
+                                }}
                                 className={`w-full px-4 py-3 rounded-lg border-2 flex items-center gap-3 ${
                                     teamShotInput.shotType === 'goal'
                                         ? 'border-green-500 bg-green-50'
@@ -1635,10 +1625,27 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                                 <span className="text-2xl">🚨</span>
                                 <div className="text-left flex-1">
                                     <div className="font-bold">Goal</div>
-                                    <div className="text-xs text-gray-600">Shot scores!</div>
+                                    <div className="text-xs text-gray-600">Shot scores! (Stops game clock)</div>
                                 </div>
                             </button>
                         </div>
+                    </div>
+                    
+                    {/* Player Selection - MOVED TO BOTTOM */}
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium mb-2">Player</label>
+                        <select
+                            value={teamShotInput.playerId}
+                            onChange={(e) => setTeamShotInput(prev => ({ ...prev, playerId: e.target.value }))}
+                            className="w-full px-3 py-2 border rounded"
+                        >
+                            <option value="unknown">Unknown Player</option>
+                            {teamPlayers.map(player => (
+                                <option key={player.id} value={player.id}>
+                                    #{player.number} {player.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     {/* Timestamp Display */}
