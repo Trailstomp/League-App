@@ -829,8 +829,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 isRunning: false
             }));
             
-            // Stop game clock if stopClockOnGoal is enabled
-            if (stopClockOnGoal && gameState.is_running) {
+            // Game timer already paused when goal button was clicked in modal
+            // This just ensures it stays paused
+            if (gameState.is_running) {
                 setGameState(prev => ({
                     ...prev,
                     is_running: false
