@@ -1942,31 +1942,31 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         <div className="text-center mb-2">
                             <span className="text-xs md:text-sm font-bold text-blue-800">{gameState.home_team.name}</span>
                         </div>
-                        {/* Horizontal Square Buttons */}
-                        <div className="flex gap-1 md:gap-2 mb-2">
+                        {/* Horizontal Square Buttons - Compact */}
+                        <div className="flex gap-1 mb-1 justify-center">
                             <button
                                 onClick={() => openTeamShotModal('home_team')}
-                                className="flex-1 aspect-square bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-medium text-xs md:text-sm flex flex-col items-center justify-center p-1"
+                                className="w-12 h-12 md:w-14 md:h-14 bg-yellow-500 hover:bg-yellow-600 text-white rounded font-medium flex flex-col items-center justify-center p-0.5"
                                 title="Record Shot"
                             >
-                                <span className="text-lg md:text-2xl">🥍</span>
-                                <span className="text-[8px] md:text-xs">Shot</span>
+                                <span className="text-base md:text-lg">🥍</span>
+                                <span className="text-[7px] md:text-[8px]">Shot</span>
                             </button>
                             <button
                                 onClick={() => openTeamPenaltyModal('home_team')}
-                                className="flex-1 aspect-square bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium text-xs md:text-sm flex flex-col items-center justify-center p-1"
+                                className="w-12 h-12 md:w-14 md:h-14 bg-red-500 hover:bg-red-600 text-white rounded font-medium flex flex-col items-center justify-center p-0.5"
                                 title="Record Penalty"
                             >
-                                <span className="text-lg md:text-2xl">⚠️</span>
-                                <span className="text-[8px] md:text-xs">Penalty</span>
+                                <span className="text-base md:text-lg">⚠️</span>
+                                <span className="text-[7px] md:text-[8px]">Pen</span>
                             </button>
                             <button
                                 onClick={() => callTimeout('home')}
-                                className="flex-1 aspect-square bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium text-xs md:text-sm flex flex-col items-center justify-center p-1"
+                                className="w-12 h-12 md:w-14 md:h-14 bg-orange-500 hover:bg-orange-600 text-white rounded font-medium flex flex-col items-center justify-center p-0.5"
                                 title={`Timeout (${timeouts.home} remaining)`}
                             >
-                                <span className="text-lg md:text-2xl">⏸️</span>
-                                <span className="text-[8px] md:text-xs">TO ({timeouts.home})</span>
+                                <span className="text-base md:text-lg">⏸️</span>
+                                <span className="text-[7px] md:text-[8px]">TO({timeouts.home})</span>
                             </button>
                         </div>
                         {/* Stop clock checkbox */}
