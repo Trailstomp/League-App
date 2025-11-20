@@ -1361,9 +1361,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                 </div>
             </div>
 
-            {/* Control Buttons Bar - Responsive */}
-            <div className="bg-gray-50 px-2 md:px-4 py-2 md:py-3 border-b border-gray-200">
-                <div className="flex items-center justify-center gap-1 md:gap-3 flex-wrap">
+            {/* Control Buttons Bar - Split into Team Sections */}
+            <div className="bg-gray-50 border-b border-gray-200">
+                {/* Global Controls Row */}
+                <div className="flex items-center justify-center gap-1 md:gap-3 px-2 md:px-4 py-2 border-b border-gray-300">
                     <button
                         onClick={toggleTimer}
                         className={`px-3 md:px-6 py-1.5 md:py-2 rounded-lg font-bold text-white text-xs md:text-base ${
@@ -1390,21 +1391,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         disabled={gameState.current_period >= gameState.game_settings.periods}
                         className="px-2 md:px-4 py-1.5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-xs md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        ⏭️ Next
-                    </button>
-                    
-                    <button
-                        onClick={() => callTimeout('home')}
-                        className="px-2 md:px-3 py-1.5 md:py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium text-xs md:text-sm"
-                    >
-                        ⏸️ {gameState.home_team.name.substring(0, 4)} TO ({timeouts.home})
-                    </button>
-                    
-                    <button
-                        onClick={() => callTimeout('away')}
-                        className="px-2 md:px-3 py-1.5 md:py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium text-xs md:text-sm"
-                    >
-                        ⏸️ {gameState.away_team.name.substring(0, 4)} TO ({timeouts.away})
+                        ⏭️ Next Period
                     </button>
                     
                     <button
@@ -1436,6 +1423,51 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                             Last saved: {Math.round((new Date() - lastSaved) / 1000)}s ago
                         </span>
                     )}
+                </div>
+
+                {/* Team-Specific Controls Row - Split in Half */}
+                <div className="grid grid-cols-2 divide-x divide-gray-300">
+                    {/* Home Team Section */}
+                    <div className="px-2 md:px-4 py-2 bg-blue-50">
+                        <div className="text-center mb-2">
+                            <span className="text-xs md:text-sm font-bold text-blue-800">{gameState.home_team.name}</span>
+                        </div>
+                        <div className="flex flex-col gap-1 md:gap-2">
+                            <button
+                                onClick={() => openTeamShotModal('home_team')}
+                                className="w-full px-2 md:px-3 py-1.5 md:py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-medium text-xs md:text-sm flex items-center justify-center gap-1"
+                            >
+                                🥍 Record Shot
+                            </button>
+                            <button
+                                onClick={() => callTimeout('home')}
+                                className="w-full px-2 md:px-3 py-1.5 md:py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium text-xs md:text-sm"
+                            >
+                                ⏸️ Timeout ({timeouts.home})
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Away Team Section */}
+                    <div className="px-2 md:px-4 py-2 bg-red-50">
+                        <div className="text-center mb-2">
+                            <span className="text-xs md:text-sm font-bold text-red-800">{gameState.away_team.name}</span>
+                        </div>
+                        <div className="flex flex-col gap-1 md:gap-2">
+                            <button
+                                onClick={() => openTeamShotModal('away_team')}
+                                className="w-full px-2 md:px-3 py-1.5 md:py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-medium text-xs md:text-sm flex items-center justify-center gap-1"
+                            >
+                                🥍 Record Shot
+                            </button>
+                            <button
+                                onClick={() => callTimeout('away')}
+                                className="w-full px-2 md:px-3 py-1.5 md:py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium text-xs md:text-sm"
+                            >
+                                ⏸️ Timeout ({timeouts.away})
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
