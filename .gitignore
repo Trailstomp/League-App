@@ -36,8 +36,6 @@ dist/
 dist
 
 # Environment files and secrets
-*.env
-*.env.*
 *token.json*
 *credentials.json*
 hosting_investigation_results.json
