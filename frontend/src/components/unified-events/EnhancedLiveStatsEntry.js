@@ -1484,26 +1484,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         </div>
                     </div>
 
-                    {/* Stop Clock Checkbox (only visible when Goal is selected) */}
-                    {teamShotInput.shotType === 'goal' && (
-                        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={teamShotInput.stopClock}
-                                    onChange={(e) => setTeamShotInput(prev => ({ ...prev, stopClock: e.target.checked }))}
-                                    className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
-                                />
-                                <span className="text-sm font-medium text-gray-700">
-                                    ⏸️ Stop clock when goal is scored
-                                </span>
-                            </label>
-                            <p className="text-xs text-gray-600 mt-1 ml-6">
-                                Clock will pause immediately after recording this goal
-                            </p>
-                        </div>
-                    )}
-
                     {/* Timestamp Display */}
                     <div className="mb-4 p-3 bg-gray-100 rounded text-center">
                         <div className="text-sm text-gray-600">Time</div>
