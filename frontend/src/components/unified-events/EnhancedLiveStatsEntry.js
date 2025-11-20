@@ -1856,6 +1856,12 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                                 🥍 Record Shot
                             </button>
                             <button
+                                onClick={() => openTeamPenaltyModal('home_team')}
+                                className="w-full px-2 md:px-3 py-1.5 md:py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium text-xs md:text-sm flex items-center justify-center gap-1"
+                            >
+                                ⚠️ Record Penalty
+                            </button>
+                            <button
                                 onClick={() => callTimeout('home')}
                                 className="w-full px-2 md:px-3 py-1.5 md:py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium text-xs md:text-sm"
                             >
