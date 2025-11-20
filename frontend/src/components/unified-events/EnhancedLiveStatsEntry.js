@@ -1598,9 +1598,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                             {[15, 20, 30, 45].map(duration => (
                                 <button
                                     key={duration}
-                                    onClick={() => setTempDuration(duration.toString())}
+                                    onClick={() => setTempShotClockDuration(duration.toString())}
                                     className={`px-3 py-2 rounded border-2 font-medium ${
-                                        parseInt(tempDuration) === duration
+                                        parseInt(tempShotClockDuration) === duration
                                             ? 'border-blue-500 bg-blue-50 text-blue-700'
                                             : 'border-gray-300 hover:bg-gray-50'
                                     }`}
@@ -1613,8 +1613,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         {/* Custom Input */}
                         <input
                             type="number"
-                            value={tempDuration}
-                            onChange={(e) => setTempDuration(e.target.value)}
+                            value={tempShotClockDuration}
+                            onChange={(e) => setTempShotClockDuration(e.target.value)}
                             className="w-full px-3 py-2 border rounded"
                             min="1"
                             max="300"
