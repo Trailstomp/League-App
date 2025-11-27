@@ -3790,7 +3790,7 @@ async def _send_groupme_message_with_rsvp(bot_id: str, text: str, event_id: str,
     
     try:
         # Get the base URL from environment or use a default
-        base_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://shotclock-sync.preview.emergentagent.com')
+        base_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://gametime-tracker-2.preview.emergentagent.com')
         
         # Create single RSVP link that opens page with buttons
         rsvp_options = (
