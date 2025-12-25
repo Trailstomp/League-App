@@ -475,6 +475,34 @@ const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack, onLiveView, 
                 </div>
             </div>
 
+            {/* Tab Navigation */}
+            <div className="bg-white border-b">
+                <div className="px-6">
+                    <div className="flex gap-8">
+                        <button
+                            onClick={() => setActiveTab('bracket')}
+                            className={`py-3 px-2 border-b-2 font-medium text-sm ${
+                                activeTab === 'bracket'
+                                    ? 'border-blue-500 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            🏆 Bracket View
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('games-list')}
+                            className={`py-3 px-2 border-b-2 font-medium text-sm ${
+                                activeTab === 'games-list'
+                                    ? 'border-blue-500 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            📋 Games List
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             {/* Bracket Display */}
             <div className="flex-1 overflow-auto p-6">
                 {bracketData.rounds.length === 0 ? (
