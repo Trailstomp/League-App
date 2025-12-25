@@ -288,6 +288,48 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                     />
                 );
             
+            case 'tournament-match-scoring':
+                console.log('📋 Rendering EnhancedLiveStatsEntry for tournament match:', selectedMatch);
+                return (
+                    <EnhancedLiveStatsEntry
+                        event={selectedMatch.event}
+                        teams={teams}
+                        currentUser={currentUser}
+                        onSubmit={async (statsData) => {
+                            // Save stats for this specific match
+                            await handleScoreSubmit(selectedMatch.event.id, statsData);
+                            
+                            // Update the bracket with the scores
+                            const updatedBracket = { ...selectedEvent.bracket };
+                            const match = updatedBracket.rounds[selectedMatch.roundIndex].matches[selectedMatch.matchIndex];
+                            
+                            // Extract scores from statsData
+                            if (statsData.home_team && statsData.away_team) {
+                                match.score1 = statsData.home_team.score;
+                                match.score2 = statsData.away_team.score;
+                                
+                                // Determine winner
+                                if (match.score1 > match.score2) {
+                                    match.winner = match.team1;
+                                    match.status = 'completed';
+                                } else if (match.score2 > match.score1) {
+                                    match.winner = match.team2;
+                                    match.status = 'completed';
+                                } else {
+                                    match.status = 'tied';
+                                }
+                            }
+                            
+                            // Save updated bracket
+                            await handleEventUpdate(selectedEvent.id, { bracket: updatedBracket });
+                            
+                            // Return to tournament bracket view
+                            setActiveView('tournament');
+                        }}
+                        onCancel={() => setActiveView('tournament')}
+                    />
+                );
+            
             default:
                 console.log('🎯 EventManager rendering EventsList with onEnterScoring prop');
                 return (
