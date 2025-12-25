@@ -16,6 +16,7 @@ import DatabaseAdminManager from '../components/DatabaseAdminManager';
 import GroupMeEventsManager from '../components/GroupMeEventsManager';
 import EventManager from '../components/unified-events/EventManager';
 import GoogleCommunicationSettings from '../components/managers/GoogleCommunicationSettings';
+import GoogleReauthorization from '../components/managers/GoogleReauthorization';
 
 const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, currentUser, websiteStyle, setWebsiteStyle, events, setEvents }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
