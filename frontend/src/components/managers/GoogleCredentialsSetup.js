@@ -47,25 +47,37 @@ const GoogleCredentialsSetup = () => {
                 return;
             }
 
+            console.log('🔄 Saving credentials to:', `${backendUrl}/api/google-credentials/save`);
+            console.log('📤 Payload:', { 
+                clientId: credentials.clientId.substring(0, 20) + '...', 
+                clientSecret: '***',
+                folderId: credentials.folderId 
+            });
+
             const response = await fetch(`${backendUrl}/api/google-credentials/save`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(credentials)
             });
 
+            console.log('📥 Response status:', response.status);
+
             if (response.ok) {
-                setMessage('✅ Credentials saved! Now go to "Google Re-Authorization" to complete setup.');
+                const result = await response.json();
+                console.log('✅ Save successful:', result);
+                setMessage('✅ Credentials saved! Now go to "Re-Authorization" section below.');
                 await checkExistingConfig();
                 setTimeout(() => {
                     setMessage('');
                 }, 5000);
             } else {
                 const error = await response.json();
+                console.error('❌ Save failed:', error);
                 setMessage(`❌ Failed to save: ${error.detail || 'Unknown error'}`);
             }
         } catch (error) {
-            console.error('Error saving credentials:', error);
-            setMessage('❌ Error saving credentials');
+            console.error('❌ Error saving credentials:', error);
+            setMessage(`❌ Error saving credentials: ${error.message}`);
         } finally {
             setSaving(false);
         }
