@@ -217,6 +217,33 @@ const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack, onLiveView, 
         }
     };
 
+    // Helper function to get all matches as a flat list
+    const getAllMatches = () => {
+        const matches = [];
+        bracketData.rounds.forEach((round, roundIndex) => {
+            round.matches.forEach((match, matchIndex) => {
+                matches.push({
+                    ...match,
+                    roundIndex,
+                    matchIndex,
+                    roundName: round.name
+                });
+            });
+        });
+        return matches;
+    };
+
+    // Helper function to get match status display
+    const getMatchStatusDisplay = (match) => {
+        if (match.status === 'completed') {
+            return { text: 'Completed', color: 'bg-green-100 text-green-800' };
+        } else if (match.score1 !== null || match.score2 !== null) {
+            return { text: 'In Progress', color: 'bg-blue-100 text-blue-800' };
+        } else {
+            return { text: 'Pending', color: 'bg-gray-100 text-gray-800' };
+        }
+    };
+
     const MatchCard = ({ match, roundIndex, matchIndex }) => {
         const [editingScores, setEditingScores] = useState(false);
         const [tempScore1, setTempScore1] = useState(match.score1 || '');
