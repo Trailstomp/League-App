@@ -7304,6 +7304,262 @@ async def _create_groupme_poll_for_event(event_data):
         logger.error(f"Error creating GroupMe poll: {e}")
         raise
 
+
+# ============================================================================
+# GOOGLE CALENDAR & GMAIL INTEGRATION
+# ============================================================================
+
+@api_router.get("/google-communication/status")
+async def get_google_communication_status():
+    """Check if Google communication is configured"""
+    try:
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        
+        if not league_data:
+            return {"configured": False, "services": {"calendar": False, "gmail": False}}
+        
+        google_config = league_data.get("googleDrive", {})
+        has_credentials = bool(google_config.get("refreshToken"))
+        
+        # Check communication preferences
+        comm_settings = league_data.get("communicationSettings", {})
+        
+        return {
+            "configured": has_credentials,
+            "services": {
+                "calendar": comm_settings.get("useGoogleCalendar", False),
+                "gmail": comm_settings.get("useGmail", False),
+                "groupme": comm_settings.get("useGroupMe", True)
+            },
+            "sender_email": comm_settings.get("senderEmail", "admin@mlbl.org")
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error checking Google status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/google-communication/settings")
+async def update_google_communication_settings(settings: Dict[str, Any]):
+    """Update Google communication settings"""
+    try:
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        
+        if not league_data:
+            raise HTTPException(status_code=404, detail="League data not found")
+        
+        # Update communication settings
+        await db.league_data.update_one(
+            {"id": "main_league"},
+            {"$set": {"communicationSettings": settings}}
+        )
+        
+        logger.info(f"✅ Updated Google communication settings")
+        
+        return {"status": "success", "settings": settings}
+        
+    except Exception as e:
+        logger.error(f"❌ Error updating settings: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/events/{event_id}/send-google-notifications")
+async def send_google_event_notifications(event_id: str, options: Dict[str, Any] = None):
+    """Send event notifications via Google Calendar and/or Gmail"""
+    try:
+        options = options or {}
+        
+        # Get event details
+        event = await db.unified_events.find_one({"id": event_id})
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Get Google credentials and settings
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        if not league_data:
+            raise HTTPException(status_code=404, detail="League data not found")
+        
+        google_config = league_data.get("googleDrive", {})
+        if not google_config.get("refreshToken"):
+            raise HTTPException(status_code=400, detail="Google not configured")
+        
+        comm_settings = league_data.get("communicationSettings", {})
+        
+        # Get user emails (from teams in event)
+        user_emails = []
+        if event.get("teams"):
+            # Get emails from team rosters
+            for team_id in event["teams"]:
+                team_data = await db.teams.find_one({"id": team_id}, {"_id": 0})
+                if team_data and team_data.get("players"):
+                    for player in team_data["players"]:
+                        if player.get("email"):
+                            user_emails.append(player["email"])
+        
+        # Add any manually specified emails
+        if options.get("additional_emails"):
+            user_emails.extend(options["additional_emails"])
+        
+        user_emails = list(set(user_emails))  # Deduplicate
+        
+        if not user_emails:
+            logger.warning(f"⚠️ No email addresses found for event {event_id}")
+            return {
+                "status": "no_recipients",
+                "message": "No email addresses found for this event"
+            }
+        
+        results = {}
+        
+        # Send Google Calendar invite
+        if comm_settings.get("useGoogleCalendar", False):
+            try:
+                from services.google_calendar_service import GoogleCalendarService
+                
+                calendar_service = GoogleCalendarService(google_config)
+                
+                # Calculate end time (add 2 hours to start)
+                start_datetime = f"{event['date']}T{event['time']}:00"
+                from datetime import datetime, timedelta
+                start = datetime.fromisoformat(start_datetime)
+                end = start + timedelta(hours=2)
+                end_datetime = end.isoformat()
+                
+                # Create calendar event
+                calendar_result = await calendar_service.create_event(
+                    title=event["title"],
+                    description=event.get("description", ""),
+                    start_datetime=start_datetime,
+                    end_datetime=end_datetime,
+                    location=event.get("location", ""),
+                    attendees=user_emails,
+                    timezone="America/New_York"
+                )
+                
+                # Save Google event ID to database
+                await db.unified_events.update_one(
+                    {"id": event_id},
+                    {"$set": {"google_event_id": calendar_result["google_event_id"]}}
+                )
+                
+                results["calendar"] = calendar_result
+                logger.info(f"✅ Calendar invite sent for event {event_id}")
+                
+            except Exception as e:
+                logger.error(f"❌ Calendar error: {e}")
+                results["calendar"] = {"status": "error", "error": str(e)}
+        
+        # Send Gmail notification
+        if comm_settings.get("useGmail", False):
+            try:
+                from services.gmail_service import GmailService
+                
+                sender_email = comm_settings.get("senderEmail", "admin@mlbl.org")
+                gmail_service = GmailService(google_config, sender_email)
+                
+                # Get team logos
+                team_logos = []
+                if event.get("teams"):
+                    for team_id in event["teams"][:2]:  # Max 2 logos
+                        team = await db.teams.find_one({"id": team_id}, {"_id": 0})
+                        if team and team.get("style", {}).get("logoUrl"):
+                            team_logos.append(team["style"]["logoUrl"])
+                
+                # Build RSVP link
+                frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
+                rsvp_link = f"{frontend_url}/events/{event_id}"
+                
+                gmail_result = await gmail_service.send_event_notification(
+                    to_emails=user_emails,
+                    event_title=event["title"],
+                    event_date=event["date"],
+                    event_time=event["time"],
+                    event_location=event.get("location", ""),
+                    event_description=event.get("description", ""),
+                    rsvp_link=rsvp_link,
+                    calendar_link=results.get("calendar", {}).get("html_link", ""),
+                    team_logos=team_logos
+                )
+                
+                results["gmail"] = gmail_result
+                logger.info(f"✅ Gmail notifications sent for event {event_id}")
+                
+            except Exception as e:
+                logger.error(f"❌ Gmail error: {e}")
+                results["gmail"] = {"status": "error", "error": str(e)}
+        
+        return {
+            "status": "success",
+            "event_id": event_id,
+            "recipients_count": len(user_emails),
+            "results": results
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error sending Google notifications: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/events/{event_id}/sync-google-rsvps")
+async def sync_google_rsvps(event_id: str):
+    """Sync RSVP responses from Google Calendar to local database"""
+    try:
+        # Get event
+        event = await db.unified_events.find_one({"id": event_id})
+        if not event or not event.get("google_event_id"):
+            raise HTTPException(status_code=404, detail="Event or Google event ID not found")
+        
+        # Get Google credentials
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        google_config = league_data.get("googleDrive", {})
+        
+        from services.google_calendar_service import GoogleCalendarService
+        calendar_service = GoogleCalendarService(google_config)
+        
+        # Get RSVP responses from Google
+        responses = await calendar_service.get_rsvp_responses(event["google_event_id"])
+        
+        # Update local RSVPs
+        for response in responses:
+            email = response["email"]
+            status = response["response_status"]
+            
+            # Map Google status to our status
+            local_status = {
+                "accepted": "going",
+                "declined": "not_going",
+                "tentative": "maybe",
+                "needsAction": "pending"
+            }.get(status, "pending")
+            
+            # Update or create RSVP
+            await db.event_rsvps.update_one(
+                {"event_id": event_id, "user_email": email},
+                {
+                    "$set": {
+                        "response": local_status,
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                        "source": "google_calendar"
+                    }
+                },
+                upsert=True
+            )
+        
+        logger.info(f"✅ Synced {len(responses)} RSVPs from Google Calendar")
+        
+        return {
+            "status": "success",
+            "synced_count": len(responses),
+            "responses": responses
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error syncing Google RSVPs: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Include the API router in the main app (after all routes are defined)
 app.include_router(api_router)
 
