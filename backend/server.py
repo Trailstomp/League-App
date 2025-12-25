@@ -7306,6 +7306,87 @@ async def _create_groupme_poll_for_event(event_data):
 
 
 # ============================================================================
+# GOOGLE CREDENTIALS SETUP
+# ============================================================================
+
+@api_router.get("/google-credentials/status")
+async def get_google_credentials_status():
+    """Check if Google credentials are configured"""
+    try:
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        
+        if not league_data or not league_data.get("googleDrive"):
+            return {"configured": False}
+        
+        google_config = league_data.get("googleDrive", {})
+        
+        return {
+            "configured": True,
+            "clientId": google_config.get("clientId", ""),
+            "folderId": google_config.get("folderId", ""),
+            "hasRefreshToken": bool(google_config.get("refreshToken"))
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error checking credentials status: {e}")
+        return {"configured": False}
+
+
+@api_router.post("/google-credentials/save")
+async def save_google_credentials(credentials: Dict[str, Any]):
+    """Save Google OAuth credentials"""
+    try:
+        client_id = credentials.get("clientId", "").strip()
+        client_secret = credentials.get("clientSecret", "").strip()
+        folder_id = credentials.get("folderId", "").strip()
+        
+        if not client_id or not client_secret:
+            raise HTTPException(status_code=400, detail="Client ID and Client Secret are required")
+        
+        # Get or create league data
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        
+        if not league_data:
+            # Create new league data
+            league_data = {
+                "id": "main_league",
+                "googleDrive": {
+                    "clientId": client_id,
+                    "clientSecret": client_secret,
+                    "folderId": folder_id,
+                    "configuredAt": datetime.now(timezone.utc).isoformat()
+                }
+            }
+            await db.league_data.insert_one(league_data)
+        else:
+            # Update existing
+            update_data = {
+                "googleDrive.clientId": client_id,
+                "googleDrive.clientSecret": client_secret,
+                "googleDrive.folderId": folder_id,
+                "googleDrive.configuredAt": datetime.now(timezone.utc).isoformat()
+            }
+            
+            await db.league_data.update_one(
+                {"id": "main_league"},
+                {"$set": update_data}
+            )
+        
+        logger.info(f"✅ Google credentials saved successfully")
+        
+        return {
+            "status": "success",
+            "message": "Credentials saved. Please proceed to Re-Authorization."
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error saving credentials: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
 # GOOGLE RE-AUTHORIZATION
 # ============================================================================
 
