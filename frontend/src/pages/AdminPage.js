@@ -154,6 +154,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         { id: 'users', label: 'Users & Security', icon: 'admin' },
         { id: 'roles', label: 'Roles & Permissions', icon: 'settings' },
         { id: 'communications', label: 'Communications', icon: 'email' },
+        { id: 'google-communication', label: 'Google Integration', icon: 'email' },
         { id: 'api-integrations', label: 'API Integrations', icon: 'settings' },
         { id: 'groupme-events', label: 'GroupMe Events', icon: 'settings' },
         { id: 'database-admin', label: 'Database Admin', icon: 'settings' },
