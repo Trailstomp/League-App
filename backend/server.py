@@ -7306,6 +7306,192 @@ async def _create_groupme_poll_for_event(event_data):
 
 
 # ============================================================================
+# GOOGLE RE-AUTHORIZATION
+# ============================================================================
+
+@api_router.get("/google-reauth/status")
+async def get_google_reauth_status():
+    """Check if Google needs re-authorization for new scopes"""
+    try:
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        
+        if not league_data:
+            return {"status": "not_configured", "config": None}
+        
+        google_config = league_data.get("googleDrive", {})
+        
+        if not google_config.get("refreshToken"):
+            return {"status": "not_configured", "config": None}
+        
+        # Check if we have the new scopes by attempting to use them
+        # For now, assume needs_reauth until we successfully use Calendar/Gmail
+        comm_settings = league_data.get("communicationSettings", {})
+        
+        # If either Calendar or Gmail is enabled, assume it's been authorized
+        if comm_settings.get("useGoogleCalendar") or comm_settings.get("useGmail"):
+            status = "ready"
+        else:
+            status = "needs_reauth"
+        
+        return {
+            "status": status,
+            "config": {
+                "clientId": google_config.get("clientId", ""),
+                "hasRefreshToken": bool(google_config.get("refreshToken"))
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error checking reauth status: {e}")
+        return {"status": "error", "config": None}
+
+
+@api_router.get("/google-reauth/start")
+async def start_google_reauthorization():
+    """Generate OAuth URL for re-authorization with new scopes"""
+    try:
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        
+        if not league_data:
+            raise HTTPException(status_code=404, detail="League data not found")
+        
+        google_config = league_data.get("googleDrive", {})
+        client_id = google_config.get("clientId")
+        
+        if not client_id:
+            raise HTTPException(status_code=400, detail="Google client ID not configured")
+        
+        # Get the backend URL for redirect
+        backend_url = os.environ.get('BACKEND_URL', 'http://localhost:8001')
+        redirect_uri = f"{backend_url}/api/google-reauth/callback"
+        
+        # Build authorization URL with all required scopes
+        scopes = [
+            "https://www.googleapis.com/auth/drive.file",
+            "https://www.googleapis.com/auth/calendar.events",
+            "https://www.googleapis.com/auth/gmail.send"
+        ]
+        
+        scope_string = " ".join(scopes)
+        
+        auth_url = (
+            f"https://accounts.google.com/o/oauth2/v2/auth?"
+            f"client_id={client_id}&"
+            f"redirect_uri={redirect_uri}&"
+            f"response_type=code&"
+            f"scope={scope_string}&"
+            f"access_type=offline&"
+            f"prompt=consent"  # Force consent to get new refresh token
+        )
+        
+        logger.info(f"✅ Generated OAuth URL for re-authorization")
+        
+        return {"auth_url": auth_url}
+        
+    except Exception as e:
+        logger.error(f"❌ Error generating auth URL: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/google-reauth/callback")
+async def google_reauth_callback(code: str = None, error: str = None):
+    """Handle OAuth callback and exchange code for tokens"""
+    try:
+        if error:
+            logger.error(f"❌ OAuth error: {error}")
+            return HTMLResponse(f"""
+                <html>
+                    <body style="font-family: Arial; padding: 50px; text-align: center;">
+                        <h2>❌ Authorization Failed</h2>
+                        <p>Error: {error}</p>
+                        <p>You can close this window and try again.</p>
+                    </body>
+                </html>
+            """)
+        
+        if not code:
+            raise HTTPException(status_code=400, detail="No authorization code received")
+        
+        # Get Google credentials
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        google_config = league_data.get("googleDrive", {})
+        
+        client_id = google_config.get("clientId")
+        client_secret = google_config.get("clientSecret")
+        backend_url = os.environ.get('BACKEND_URL', 'http://localhost:8001')
+        redirect_uri = f"{backend_url}/api/google-reauth/callback"
+        
+        # Exchange code for tokens
+        token_data = {
+            'code': code,
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'redirect_uri': redirect_uri,
+            'grant_type': 'authorization_code'
+        }
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                'https://oauth2.googleapis.com/token',
+                data=token_data,
+                timeout=15
+            )
+            
+            if response.status_code != 200:
+                error_data = response.json()
+                logger.error(f"❌ Token exchange failed: {error_data}")
+                raise HTTPException(status_code=400, detail=f"Token exchange failed: {error_data}")
+            
+            tokens = response.json()
+            refresh_token = tokens.get('refresh_token')
+            access_token = tokens.get('access_token')
+            
+            if not refresh_token:
+                # Sometimes Google doesn't return a new refresh token
+                # In that case, we keep the old one but update the access token
+                logger.warning("⚠️ No new refresh token received, keeping existing one")
+                refresh_token = google_config.get("refreshToken")
+            
+            # Update the refresh token in database
+            await db.league_data.update_one(
+                {"id": "main_league"},
+                {"$set": {
+                    "googleDrive.refreshToken": refresh_token,
+                    "googleDrive.lastAuthorized": datetime.now(timezone.utc).isoformat()
+                }}
+            )
+            
+            logger.info(f"✅ Successfully re-authorized Google with new scopes")
+            
+            return HTMLResponse("""
+                <html>
+                    <body style="font-family: Arial; padding: 50px; text-align: center;">
+                        <h2 style="color: green;">✅ Authorization Successful!</h2>
+                        <p>Google Calendar and Gmail are now authorized.</p>
+                        <p>You can close this window and return to the admin page.</p>
+                        <script>
+                            setTimeout(function() {
+                                window.close();
+                            }, 3000);
+                        </script>
+                    </body>
+                </html>
+            """)
+        
+    except Exception as e:
+        logger.error(f"❌ Error in OAuth callback: {e}")
+        return HTMLResponse(f"""
+            <html>
+                <body style="font-family: Arial; padding: 50px; text-align: center;">
+                    <h2>❌ Error</h2>
+                    <p>{str(e)}</p>
+                    <p>You can close this window and try again.</p>
+                </body>
+            </html>
+        """)
+
+
+# ============================================================================
 # GOOGLE CALENDAR & GMAIL INTEGRATION
 # ============================================================================
 
