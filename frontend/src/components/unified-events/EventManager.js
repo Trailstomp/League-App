@@ -18,6 +18,33 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
+    // Helper function to generate unique match event ID
+    const generateMatchEventId = (tournamentId, matchId) => {
+        return `${tournamentId}_match_${matchId}`;
+    };
+
+    // Helper function to create a synthetic event for a tournament match
+    const createMatchEvent = (tournament, match) => {
+        const matchEventId = generateMatchEventId(tournament.id, match.id);
+        
+        return {
+            id: matchEventId,
+            type: 'tournament_match',
+            title: `${match.team1?.name || 'TBD'} vs ${match.team2?.name || 'TBD'}`,
+            description: `${tournament.title} - ${match.roundName || 'Match'}`,
+            date: tournament.date,
+            time: tournament.time,
+            location: tournament.location,
+            teams: [match.team1?.id, match.team2?.id].filter(Boolean),
+            status: match.status === 'completed' ? 'completed' : 'in_progress',
+            tournament_id: tournament.id,
+            match_id: match.id,
+            round_index: match.roundIndex,
+            match_index: match.matchIndex
+        };
+    };
+
+
     // Load events on component mount (only if no initial events provided)
     useEffect(() => {
         if (!initialEvents || initialEvents.length === 0) {
