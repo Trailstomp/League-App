@@ -191,12 +191,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <UserManager users={users} setUsers={setUsers} teams={teams} />;
             case 'roles':
                 return <RoleManager users={users} setUsers={setUsers} />;
-            case 'google-setup':
-                return <GoogleCredentialsSetup />;
-            case 'google-reauth':
-                return <GoogleReauthorization />;
-            case 'google-communication':
-                return <GoogleCommunicationSettings />;
+            case 'google-integration':
+                return <GoogleManagement />;
             case 'website':
                 return <WebsiteDesignManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} teams={teams} events={events} />;
             case 'api':
