@@ -228,6 +228,24 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                             });
                             setShowSpectatorView(true);
                         }}
+                        onLiveScore={(match, roundIndex, matchIndex) => {
+                            console.log('📊 Opening live scoring for tournament match:', match);
+                            // Add round name to match
+                            const enrichedMatch = {
+                                ...match,
+                                roundIndex,
+                                matchIndex,
+                                roundName: selectedEvent.bracket?.rounds?.[roundIndex]?.name || `Round ${roundIndex + 1}`
+                            };
+                            const matchEvent = createMatchEvent(selectedEvent, enrichedMatch);
+                            setSelectedMatch({
+                                event: matchEvent,
+                                originalMatch: match,
+                                roundIndex,
+                                matchIndex
+                            });
+                            setActiveView('tournament-match-scoring');
+                        }}
                     />
                 );
             
