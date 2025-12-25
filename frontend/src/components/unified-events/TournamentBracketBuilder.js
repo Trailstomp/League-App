@@ -316,9 +316,9 @@ const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack, onLiveView, 
 
                 {/* Match Actions */}
                 {match.team1 && match.team2 && (
-                    <div className="mt-4 pt-3 border-t flex gap-2">
+                    <div className="mt-4 pt-3 border-t space-y-2">
                         {editingScores ? (
-                            <>
+                            <div className="flex gap-2">
                                 <button
                                     onClick={handleSaveScores}
                                     className="flex-1 px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700"
@@ -331,26 +331,39 @@ const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack, onLiveView, 
                                 >
                                     ❌
                                 </button>
-                            </>
+                            </div>
                         ) : (
                             <>
-                                <button
-                                    onClick={() => {
-                                        setTempScore1(match.score1 || '');
-                                        setTempScore2(match.score2 || '');
-                                        setEditingScores(true);
-                                    }}
-                                    className="flex-1 px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
-                                >
-                                    ✏️ Enter Score
-                                </button>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => {
+                                            setTempScore1(match.score1 || '');
+                                            setTempScore2(match.score2 || '');
+                                            setEditingScores(true);
+                                        }}
+                                        className="flex-1 px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                                    >
+                                        ✏️ Quick Score
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            if (onLiveScore) {
+                                                onLiveScore(match, roundIndex, matchIndex);
+                                            }
+                                        }}
+                                        className="flex-1 px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700"
+                                        title="Enter detailed live stats"
+                                    >
+                                        📊 Live Score
+                                    </button>
+                                </div>
                                 <button
                                     onClick={() => {
                                         if (onLiveView) {
                                             onLiveView(match, roundIndex, matchIndex);
                                         }
                                     }}
-                                    className="flex-1 px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700"
+                                    className="w-full px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700"
                                     title="Watch this match live"
                                 >
                                     🔴 Live View
