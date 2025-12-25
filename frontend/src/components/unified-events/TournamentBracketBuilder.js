@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack, onLiveView }) => {
+const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack, onLiveView, onLiveScore }) => {
     const [bracketData, setBracketData] = useState({
         format: 'single_elimination',
         seeding_method: 'league_rankings',
@@ -15,6 +15,7 @@ const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack, onLiveView }
     const [selectedMatch, setSelectedMatch] = useState(null);
     const [showAddTeam, setShowAddTeam] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [activeTab, setActiveTab] = useState('bracket'); // 'bracket' or 'games-list'
 
     // Initialize bracket data from event
     useEffect(() => {
