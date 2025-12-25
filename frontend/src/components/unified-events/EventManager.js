@@ -385,6 +385,7 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                             {activeView === 'scoring-selector' && 'Choose Scoring Method'}
                             {activeView === 'live-stats' && 'Live Stats Entry'}
                             {activeView === 'quick-score' && 'Quick Score Entry'}
+                            {activeView === 'tournament-match-scoring' && `Match Scoring: ${selectedMatch?.event?.title || ''}`}
                         </h1>
                         <p className="text-sm text-gray-600 mt-1">
                             Unified event management with scoring, tournaments, and RSVP integration
