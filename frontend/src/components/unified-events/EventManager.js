@@ -347,7 +347,13 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                         onEnterScoring={(event) => {
                             console.log('🎯 onEnterScoring called in EventManager for:', event.title);
                             setSelectedEvent(event);
-                            setActiveView('scoring-selector');
+                            
+                            // For tournaments, go directly to bracket view instead of scoring selector
+                            if (event.type === 'tournament') {
+                                setActiveView('tournament');
+                            } else {
+                                setActiveView('scoring-selector');
+                            }
                         }}
                         onViewLive={(event) => {
                             console.log('📺 Live View clicked for event:', event.title, event.id);
