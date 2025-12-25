@@ -9,8 +9,9 @@ import LiveSpectatorView from '../../pages/LiveSpectatorView';
 
 const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavigate }) => {
     const [events, setEvents] = useState(initialEvents || []);
-    const [activeView, setActiveView] = useState('list'); // list, create, tournament, scoring-selector, live-stats, quick-score, spectator-view
+    const [activeView, setActiveView] = useState('list'); // list, create, tournament, scoring-selector, live-stats, quick-score, spectator-view, tournament-match-scoring
     const [selectedEvent, setSelectedEvent] = useState(null);
+    const [selectedMatch, setSelectedMatch] = useState(null); // For tournament match scoring
     const [loading, setLoading] = useState(false);
     const [showSpectatorView, setShowSpectatorView] = useState(false);
     const [tournamentMatch, setTournamentMatch] = useState(null); // For tournament match live view
