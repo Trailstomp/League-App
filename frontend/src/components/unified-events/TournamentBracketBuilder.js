@@ -503,7 +503,7 @@ const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack, onLiveView, 
                 </div>
             </div>
 
-            {/* Bracket Display */}
+            {/* Content Area */}
             <div className="flex-1 overflow-auto p-6">
                 {bracketData.rounds.length === 0 ? (
                     <div className="text-center py-12">
@@ -519,28 +519,162 @@ const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack, onLiveView, 
                         </button>
                     </div>
                 ) : (
-                    <div className="space-y-8">
-                        {bracketData.rounds.map((round, roundIndex) => (
-                            <div key={round.round} className="space-y-4">
-                                <h3 className="text-lg font-semibold text-center text-gray-800">
-                                    {round.name}
-                                </h3>
-                                
-                                <div className="grid gap-4" style={{
-                                    gridTemplateColumns: `repeat(${Math.min(round.matches.length, 4)}, 1fr)`
-                                }}>
-                                    {round.matches.map((match, matchIndex) => (
-                                        <MatchCard
-                                            key={match.id}
-                                            match={match}
-                                            roundIndex={roundIndex}
-                                            matchIndex={matchIndex}
-                                        />
-                                    ))}
+                    <>
+                        {/* Bracket View */}
+                        {activeTab === 'bracket' && (
+                            <div className="space-y-8">
+                                {bracketData.rounds.map((round, roundIndex) => (
+                                    <div key={round.round} className="space-y-4">
+                                        <h3 className="text-lg font-semibold text-center text-gray-800">
+                                            {round.name}
+                                        </h3>
+                                        
+                                        <div className="grid gap-4" style={{
+                                            gridTemplateColumns: `repeat(${Math.min(round.matches.length, 4)}, 1fr)`
+                                        }}>
+                                            {round.matches.map((match, matchIndex) => (
+                                                <MatchCard
+                                                    key={match.id}
+                                                    match={match}
+                                                    roundIndex={roundIndex}
+                                                    matchIndex={matchIndex}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Games List View */}
+                        {activeTab === 'games-list' && (
+                            <div className="max-w-6xl mx-auto">
+                                <div className="bg-white rounded-lg shadow overflow-hidden">
+                                    <table className="min-w-full divide-y divide-gray-200">
+                                        <thead className="bg-gray-50">
+                                            <tr>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Round
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Match
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Teams
+                                                </th>
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Score
+                                                </th>
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Status
+                                                </th>
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Actions
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                            {getAllMatches().map((match) => {
+                                                const status = getMatchStatusDisplay(match);
+                                                return (
+                                                    <tr key={match.id} className="hover:bg-gray-50">
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                            {match.roundName}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                            {match.id}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-sm text-gray-900">
+                                                            <div className="space-y-1">
+                                                                <div className="flex items-center gap-2">
+                                                                    {match.team1 ? (
+                                                                        <>
+                                                                            {getTeamLogo(match.team1.id) && (
+                                                                                <img
+                                                                                    src={getTeamLogo(match.team1.id)}
+                                                                                    alt={match.team1.name}
+                                                                                    className="w-5 h-5 object-cover rounded"
+                                                                                />
+                                                                            )}
+                                                                            <span className={match.winner?.id === match.team1.id ? 'font-semibold text-green-600' : ''}>
+                                                                                {match.team1.name}
+                                                                            </span>
+                                                                        </>
+                                                                    ) : (
+                                                                        <span className="text-gray-400 italic">TBD</span>
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    {match.team2 ? (
+                                                                        <>
+                                                                            {getTeamLogo(match.team2.id) && (
+                                                                                <img
+                                                                                    src={getTeamLogo(match.team2.id)}
+                                                                                    alt={match.team2.name}
+                                                                                    className="w-5 h-5 object-cover rounded"
+                                                                                />
+                                                                            )}
+                                                                            <span className={match.winner?.id === match.team2.id ? 'font-semibold text-green-600' : ''}>
+                                                                                {match.team2.name}
+                                                                            </span>
+                                                                        </>
+                                                                    ) : (
+                                                                        <span className="text-gray-400 italic">TBD</span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-semibold text-gray-900">
+                                                            {match.score1 !== null && match.score2 !== null ? (
+                                                                `${match.score1} - ${match.score2}`
+                                                            ) : (
+                                                                <span className="text-gray-400">-</span>
+                                                            )}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${status.color}`}>
+                                                                {status.text}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
+                                                            {match.team1 && match.team2 ? (
+                                                                <div className="flex justify-center gap-2">
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            if (onLiveScore) {
+                                                                                onLiveScore(match, match.roundIndex, match.matchIndex);
+                                                                            }
+                                                                        }}
+                                                                        className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700"
+                                                                        title="Enter detailed live stats"
+                                                                    >
+                                                                        📊 Live Score
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            if (onLiveView) {
+                                                                                onLiveView(match, match.roundIndex, match.matchIndex);
+                                                                            }
+                                                                        }}
+                                                                        className="px-3 py-1 bg-purple-600 text-white text-xs rounded hover:bg-purple-700"
+                                                                        title="Watch this match live"
+                                                                    >
+                                                                        🔴 Live
+                                                                    </button>
+                                                                </div>
+                                                            ) : (
+                                                                <span className="text-gray-400 text-xs">Teams pending</span>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                        ))}
-                    </div>
+                        )}
+                    </>
                 )}
             </div>
 
