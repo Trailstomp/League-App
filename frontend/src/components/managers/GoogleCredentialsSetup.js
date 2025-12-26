@@ -193,6 +193,39 @@ const GoogleCredentialsSetup = () => {
                     </p>
                 </div>
 
+                {/* Refresh Token (Manual Entry) */}
+                <div className="border-t pt-6 mt-6">
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                        <h4 className="font-semibold text-yellow-900 mb-2">🔑 Manual Refresh Token Entry</h4>
+                        <p className="text-sm text-yellow-800">
+                            If you're having trouble with automatic authorization, you can get a refresh token from <a href="https://developers.google.com/oauthplayground" target="_blank" rel="noopener noreferrer" className="underline font-semibold">Google OAuth Playground</a> and paste it here.
+                        </p>
+                    </div>
+                    
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Refresh Token <span className="text-gray-400">(Optional - via OAuth Playground)</span>
+                    </label>
+                    <div className="relative">
+                        <input
+                            type={showSecret ? "text" : "password"}
+                            value={credentials.refreshToken}
+                            onChange={(e) => setCredentials(prev => ({ ...prev, refreshToken: e.target.value }))}
+                            placeholder="1//0abc123def456ghi789..."
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm pr-24"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowSecret(!showSecret)}
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 px-3 py-1 text-xs text-gray-600 hover:text-gray-800"
+                        >
+                            {showSecret ? '👁️ Hide' : '👁️ Show'}
+                        </button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                        Get this from OAuth Playground (see instructions below)
+                    </p>
+                </div>
+
                 {/* Folder ID (Optional) */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
