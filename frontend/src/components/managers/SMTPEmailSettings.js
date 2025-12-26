@@ -45,9 +45,12 @@ const SMTPEmailSettings = () => {
     };
 
     const handleTest = async () => {
+        console.log('🧪 TEST BUTTON CLICKED!');
         try {
             setTesting(true);
             setTestResult(null);
+
+            console.log('🔄 Testing SMTP connection...');
 
             const response = await fetch(`${backendUrl}/api/smtp-config/test`, {
                 method: 'POST',
@@ -56,15 +59,70 @@ const SMTPEmailSettings = () => {
             });
 
             const result = await response.json();
+            console.log('📥 Test result:', result);
             setTestResult(result);
 
         } catch (error) {
+            console.error('❌ Test error:', error);
             setTestResult({
                 status: 'error',
                 message: 'Network error testing connection'
             });
         } finally {
             setTesting(false);
+        }
+    };
+
+    const handleSendTestEmail = async () => {
+        console.log('📧 SEND TEST EMAIL CLICKED!');
+        try {
+            setSendingTest(true);
+            setTestResult(null);
+
+            if (!config.email || !config.password) {
+                alert('Please enter email and password first');
+                setSendingTest(false);
+                return;
+            }
+
+            console.log('📤 Sending test email with current config...');
+
+            // Save config first
+            const saveResponse = await fetch(`${backendUrl}/api/smtp-config/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            });
+
+            if (!saveResponse.ok) {
+                throw new Error('Failed to save config');
+            }
+
+            console.log('✅ Config saved, now sending test email...');
+
+            // Send test email to the configured email address
+            const testResponse = await fetch(`${backendUrl}/api/smtp-config/send-test-email`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ to_email: config.email })
+            });
+
+            const result = await testResponse.json();
+            console.log('📧 Test email result:', result);
+
+            setTestResult({
+                status: 'success',
+                message: `✅ Test email sent to ${config.email}! Check your inbox.`
+            });
+
+        } catch (error) {
+            console.error('❌ Send test error:', error);
+            setTestResult({
+                status: 'error',
+                message: `Failed to send test email: ${error.message}`
+            });
+        } finally {
+            setSendingTest(false);
         }
     };
 
