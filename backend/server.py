@@ -7306,6 +7306,200 @@ async def _create_groupme_poll_for_event(event_data):
 
 
 # ============================================================================
+# SMTP EMAIL CONFIGURATION
+# ============================================================================
+
+@api_router.get("/smtp-config/status")
+async def get_smtp_config_status():
+    """Check if SMTP is configured"""
+    try:
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        
+        if not league_data or not league_data.get("smtpConfig"):
+            return {"configured": False}
+        
+        smtp_config = league_data.get("smtpConfig", {})
+        
+        return {
+            "configured": True,
+            "email": smtp_config.get("email", ""),
+            "sender_name": smtp_config.get("sender_name", ""),
+            "host": smtp_config.get("host", ""),
+            "port": smtp_config.get("port", 587)
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error checking SMTP status: {e}")
+        return {"configured": False}
+
+
+@api_router.post("/smtp-config/save")
+async def save_smtp_config(config: Dict[str, Any]):
+    """Save SMTP configuration"""
+    try:
+        email = config.get("email", "").strip()
+        password = config.get("password", "").strip()
+        sender_name = config.get("sender_name", "").strip()
+        
+        if not email or not password:
+            raise HTTPException(status_code=400, detail="Email and password are required")
+        
+        # Auto-detect SMTP settings
+        email_domain = email.split('@')[1] if '@' in email else ''
+        smtp_configs = {
+            'gmail.com': {'host': 'smtp.gmail.com', 'port': 587},
+            'mlbl.org': {'host': 'smtp.gmail.com', 'port': 587},  # Google Workspace
+            'outlook.com': {'host': 'smtp-mail.outlook.com', 'port': 587},
+            'yahoo.com': {'host': 'smtp.mail.yahoo.com', 'port': 587}
+        }
+        
+        auto_config = smtp_configs.get(email_domain, {'host': 'smtp.gmail.com', 'port': 587})
+        
+        smtp_config = {
+            "email": email,
+            "password": password,
+            "sender_name": sender_name or "League Admin",
+            "host": config.get("host") or auto_config['host'],
+            "port": config.get("port") or auto_config['port'],
+            "tls": True,
+            "configuredAt": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Update database
+        await db.league_data.update_one(
+            {"id": "main_league"},
+            {"$set": {"smtpConfig": smtp_config}},
+            upsert=True
+        )
+        
+        logger.info(f"✅ SMTP config saved for {email}")
+        
+        return {
+            "status": "success",
+            "message": "SMTP configuration saved successfully!"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error saving SMTP config: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/smtp-config/test")
+async def test_smtp_connection(config: Dict[str, Any]):
+    """Test SMTP connection"""
+    try:
+        from services.smtp_email_service import SMTPEmailService
+        
+        smtp_service = SMTPEmailService(config)
+        result = smtp_service.test_connection()
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"❌ Error testing SMTP: {e}")
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
+
+@api_router.post("/events/{event_id}/send-email-notifications")
+async def send_email_event_notifications(event_id: str, options: Dict[str, Any] = None):
+    """Send event notifications via SMTP email"""
+    try:
+        options = options or {}
+        
+        # Get event
+        event = await db.unified_events.find_one({"id": event_id})
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Get SMTP config
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        if not league_data or not league_data.get("smtpConfig"):
+            raise HTTPException(status_code=400, detail="SMTP not configured")
+        
+        smtp_config = league_data["smtpConfig"]
+        
+        # Get user emails from teams
+        user_emails = []
+        if event.get("teams"):
+            for team_id in event["teams"]:
+                team_data = await db.teams.find_one({"id": team_id}, {"_id": 0})
+                if team_data and team_data.get("players"):
+                    for player in team_data["players"]:
+                        if player.get("email"):
+                            user_emails.append(player["email"])
+        
+        # Add additional emails if provided
+        if options.get("additional_emails"):
+            user_emails.extend(options["additional_emails"])
+        
+        user_emails = list(set(user_emails))  # Deduplicate
+        
+        if not user_emails:
+            return {
+                "status": "no_recipients",
+                "message": "No email addresses found"
+            }
+        
+        # Get team logos
+        team_logos = []
+        if event.get("teams"):
+            for team_id in event["teams"][:2]:
+                team = await db.teams.find_one({"id": team_id}, {"_id": 0})
+                if team and team.get("style", {}).get("logoUrl"):
+                    team_logos.append(team["style"]["logoUrl"])
+        
+        # Generate calendar file
+        from services.smtp_email_service import SMTPEmailService
+        calendar_content = SMTPEmailService.generate_ics_calendar_event(
+            event_title=event["title"],
+            event_date=event["date"],
+            event_time=event["time"],
+            event_location=event.get("location", ""),
+            event_description=event.get("description", ""),
+            duration_hours=2,
+            organizer_email=smtp_config["email"]
+        )
+        
+        # Build RSVP link
+        frontend_url = os.environ.get('FRONTEND_URL', 'https://team-lax-portal.emergent.host')
+        rsvp_link = f"{frontend_url}/#/events/{event_id}"
+        
+        # Send emails
+        smtp_service = SMTPEmailService(smtp_config)
+        result = smtp_service.send_event_notification(
+            to_emails=user_emails,
+            event_title=event["title"],
+            event_date=event["date"],
+            event_time=event["time"],
+            event_location=event.get("location", ""),
+            event_description=event.get("description", ""),
+            rsvp_link=rsvp_link,
+            team_logos=team_logos,
+            calendar_event=calendar_content
+        )
+        
+        logger.info(f"✅ Email notifications sent for event {event_id}")
+        
+        return {
+            "status": "success",
+            "event_id": event_id,
+            "recipients_count": len(user_emails),
+            "result": result
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error sending email notifications: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
 # GOOGLE CREDENTIALS SETUP
 # ============================================================================
 
