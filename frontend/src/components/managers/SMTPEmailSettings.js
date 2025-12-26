@@ -14,6 +14,7 @@ const SMTPEmailSettings = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [message, setMessage] = useState('');
     const [testResult, setTestResult] = useState(null);
+    const [sendingTest, setSendingTest] = useState(false);
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
