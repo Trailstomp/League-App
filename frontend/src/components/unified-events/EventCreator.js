@@ -520,12 +520,24 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                                 <label className="flex items-center gap-3">
                                     <input
                                         type="checkbox"
+                                        checked={formData.email_notifications}
+                                        onChange={(e) => handleInputChange('email_notifications', e.target.checked)}
+                                        className="rounded"
+                                    />
+                                    <span className="text-sm font-medium text-gray-700">
+                                        📧 Send Email Notifications
+                                    </span>
+                                </label>
+
+                                <label className="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
                                         checked={formData.groupme_integration}
                                         onChange={(e) => handleInputChange('groupme_integration', e.target.checked)}
                                         className="rounded"
                                     />
                                     <span className="text-sm font-medium text-gray-700">
-                                        Integrate with GroupMe
+                                        💬 Integrate with GroupMe
                                     </span>
                                 </label>
 
