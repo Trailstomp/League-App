@@ -7148,10 +7148,10 @@ async def update_unified_event(event_id: str, updates: EventUpdate):
         if update_data.get("email_notifications", False):
             try:
                 logger.info(f"📧 Email notifications enabled for updated event {event_id}, sending...")
-                import asyncio
-                asyncio.create_task(send_email_event_notifications(event_id, {}))
+                await send_email_event_notifications(event_id, {})
+                logger.info(f"✅ Email notifications sent for updated event {event_id}")
             except Exception as e:
-                logger.warning(f"Failed to send email notifications: {e}")
+                logger.error(f"❌ Failed to send email notifications: {e}")
         
         # Remove MongoDB _id field
         if "_id" in updated_event:
