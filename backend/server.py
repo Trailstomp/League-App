@@ -7415,6 +7415,61 @@ async def test_smtp_connection(config: Dict[str, Any]):
         }
 
 
+@api_router.post("/smtp-config/send-test-email")
+async def send_test_email(data: Dict[str, Any]):
+    """Send a test email to verify SMTP configuration"""
+    try:
+        to_email = data.get("to_email")
+        
+        if not to_email:
+            raise HTTPException(status_code=400, detail="to_email is required")
+        
+        # Get SMTP config
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        if not league_data or not league_data.get("smtpConfig"):
+            raise HTTPException(status_code=400, detail="SMTP not configured")
+        
+        smtp_config = league_data["smtpConfig"]
+        
+        from services.smtp_email_service import SMTPEmailService
+        smtp_service = SMTPEmailService(smtp_config)
+        
+        # Send simple test email
+        result = smtp_service.send_event_notification(
+            to_emails=[to_email],
+            event_title="Test Event - Email System Check",
+            event_date="2025-01-15",
+            event_time="19:00",
+            event_location="Test Location",
+            event_description="This is a test email to verify your SMTP configuration is working correctly.",
+            rsvp_link="https://team-lax-portal.emergent.host",
+            team_logos=[],
+            calendar_event=SMTPEmailService.generate_ics_calendar_event(
+                event_title="Test Event",
+                event_date="2025-01-15",
+                event_time="19:00",
+                event_location="Test Location",
+                event_description="Test event",
+                duration_hours=2,
+                organizer_email=smtp_config["email"]
+            )
+        )
+        
+        logger.info(f"✅ Test email sent to {to_email}")
+        
+        return {
+            "status": "success",
+            "message": f"Test email sent to {to_email}",
+            "result": result
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error sending test email: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.post("/events/{event_id}/send-email-notifications")
 async def send_email_event_notifications(event_id: str, options: Dict[str, Any] = None):
     """Send event notifications via SMTP email"""
