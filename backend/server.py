@@ -7338,6 +7338,7 @@ async def save_google_credentials(credentials: Dict[str, Any]):
     try:
         client_id = credentials.get("clientId", "").strip()
         client_secret = credentials.get("clientSecret", "").strip()
+        refresh_token = credentials.get("refreshToken", "").strip()
         folder_id = credentials.get("folderId", "").strip()
         
         if not client_id or not client_secret:
@@ -7345,6 +7346,18 @@ async def save_google_credentials(credentials: Dict[str, Any]):
         
         # Get or create league data
         league_data = await db.league_data.find_one({"id": "main_league"})
+        
+        update_data = {
+            "googleDrive.clientId": client_id,
+            "googleDrive.clientSecret": client_secret,
+            "googleDrive.folderId": folder_id,
+            "googleDrive.configuredAt": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Add refresh token if provided
+        if refresh_token:
+            update_data["googleDrive.refreshToken"] = refresh_token
+            logger.info(f"✅ Refresh token provided - Google fully configured!")
         
         if not league_data:
             # Create new league data
@@ -7357,16 +7370,12 @@ async def save_google_credentials(credentials: Dict[str, Any]):
                     "configuredAt": datetime.now(timezone.utc).isoformat()
                 }
             }
+            if refresh_token:
+                league_data["googleDrive"]["refreshToken"] = refresh_token
+            
             await db.league_data.insert_one(league_data)
         else:
             # Update existing
-            update_data = {
-                "googleDrive.clientId": client_id,
-                "googleDrive.clientSecret": client_secret,
-                "googleDrive.folderId": folder_id,
-                "googleDrive.configuredAt": datetime.now(timezone.utc).isoformat()
-            }
-            
             await db.league_data.update_one(
                 {"id": "main_league"},
                 {"$set": update_data}
@@ -7374,9 +7383,16 @@ async def save_google_credentials(credentials: Dict[str, Any]):
         
         logger.info(f"✅ Google credentials saved successfully")
         
+        message = "Credentials saved."
+        if refresh_token:
+            message += " Google is now fully configured!"
+        else:
+            message += " Use OAuth Playground to get refresh token."
+        
         return {
             "status": "success",
-            "message": "Credentials saved. Please proceed to Re-Authorization."
+            "message": message,
+            "hasRefreshToken": bool(refresh_token)
         }
         
     except HTTPException:
