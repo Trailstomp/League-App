@@ -15,6 +15,32 @@ const EventsList = ({
 }) => {
     const [filter, setFilter] = useState('all'); // all, scheduled, in_progress, completed
     const [sortBy, setSortBy] = useState('date'); // date, title, type
+    const [sendingNotifications, setSendingNotifications] = useState({});
+
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+
+    const handleSendNotifications = async (eventId) => {
+        try {
+            setSendingNotifications(prev => ({ ...prev, [eventId]: true }));
+            
+            const response = await fetch(`${backendUrl}/api/events/${eventId}/send-email-notifications`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            });
+
+            if (response.ok) {
+                alert('✅ Notifications sent successfully!');
+            } else {
+                const error = await response.json();
+                alert(`❌ Failed to send: ${error.detail}`);
+            }
+        } catch (error) {
+            alert('❌ Error sending notifications');
+        } finally {
+            setSendingNotifications(prev => ({ ...prev, [eventId]: false }));
+        }
+    };
 
     // Get team name by ID
     const getTeamName = (teamId) => {
