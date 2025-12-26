@@ -7401,24 +7401,38 @@ async def get_google_reauth_status():
         
         google_config = league_data.get("googleDrive", {})
         
-        if not google_config.get("refreshToken"):
+        # Check if credentials exist
+        has_client_id = bool(google_config.get("clientId"))
+        has_refresh_token = bool(google_config.get("refreshToken"))
+        
+        if not has_client_id:
             return {"status": "not_configured", "config": None}
         
-        # Check if we have the new scopes by attempting to use them
-        # For now, assume needs_reauth until we successfully use Calendar/Gmail
+        # If we have credentials but no refresh token, need to authorize
+        if has_client_id and not has_refresh_token:
+            return {
+                "status": "needs_reauth",
+                "config": {
+                    "clientId": google_config.get("clientId", ""),
+                    "hasRefreshToken": False
+                }
+            }
+        
+        # If we have refresh token, check if communication settings indicate it's being used
         comm_settings = league_data.get("communicationSettings", {})
         
-        # If either Calendar or Gmail is enabled, assume it's been authorized
+        # If either Calendar or Gmail is enabled, assume it's been authorized properly
         if comm_settings.get("useGoogleCalendar") or comm_settings.get("useGmail"):
             status = "ready"
         else:
-            status = "needs_reauth"
+            # Has token but services not enabled yet - still ready
+            status = "ready"
         
         return {
             "status": status,
             "config": {
                 "clientId": google_config.get("clientId", ""),
-                "hasRefreshToken": bool(google_config.get("refreshToken"))
+                "hasRefreshToken": True
             }
         }
         
