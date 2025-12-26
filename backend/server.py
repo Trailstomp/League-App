@@ -7000,6 +7000,7 @@ class UnifiedEvent(BaseModel):
     status: str = "scheduled"  # scheduled, in_progress, completed, cancelled
     rsvp_enabled: bool = True
     groupme_integration: bool = False
+    email_notifications: bool = False
     auto_create_polls: bool = False
     tournament_config: Optional[Dict[str, Any]] = None
     bracket: Optional[Dict[str, Any]] = None
