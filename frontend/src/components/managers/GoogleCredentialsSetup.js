@@ -55,6 +55,8 @@ const GoogleCredentialsSetup = () => {
                 setSaving(false);
                 return;
             }
+            
+            // Note: refreshToken is optional - can be added later via OAuth Playground
 
             console.log('🔄 Saving credentials to:', `${backendUrl}/api/google-credentials/save`);
             console.log('📤 Payload:', { 
