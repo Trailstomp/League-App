@@ -68,15 +68,26 @@ const SMTPEmailSettings = () => {
     };
 
     const handleSave = async () => {
+        console.log('🔘 SAVE BUTTON CLICKED!'); // First log
         try {
             setSaving(true);
             setMessage('');
 
+            console.log('📝 Starting save process...'); // Second log
+
             if (!config.email || !config.password) {
+                console.log('❌ Validation failed:', { hasEmail: !!config.email, hasPassword: !!config.password });
                 setMessage('❌ Email and password are required');
                 setSaving(false);
                 return;
             }
+
+            console.log('🔄 Sending to backend:', `${backendUrl}/api/smtp-config/save`);
+            console.log('📤 Config (password hidden):', { 
+                email: config.email, 
+                sender_name: config.sender_name,
+                has_password: !!config.password 
+            });
 
             const response = await fetch(`${backendUrl}/api/smtp-config/save`, {
                 method: 'POST',
@@ -84,18 +95,25 @@ const SMTPEmailSettings = () => {
                 body: JSON.stringify(config)
             });
 
+            console.log('📥 Response status:', response.status);
+
             if (response.ok) {
+                const result = await response.json();
+                console.log('✅ Save successful:', result);
                 setMessage('✅ SMTP settings saved successfully!');
                 await loadConfig();
                 setTimeout(() => setMessage(''), 5000);
             } else {
                 const error = await response.json();
+                console.error('❌ Save failed:', error);
                 setMessage(`❌ Failed to save: ${error.detail}`);
             }
         } catch (error) {
-            setMessage('❌ Error saving settings');
+            console.error('❌ Exception during save:', error);
+            setMessage(`❌ Error saving settings: ${error.message}`);
         } finally {
             setSaving(false);
+            console.log('🏁 Save process complete');
         }
     };
 
