@@ -14,8 +14,11 @@ const GoogleReauthorization = () => {
 
     const checkStatus = async () => {
         try {
+            console.log('🔍 Checking Google reauth status...');
             const response = await fetch(`${backendUrl}/api/google-reauth/status`);
             const data = await response.json();
+            
+            console.log('📥 Reauth status:', data);
             
             setConfig(data.config);
             setStatus(data.status);
@@ -24,6 +27,8 @@ const GoogleReauthorization = () => {
                 setMessage('⚠️ New scopes need authorization. Click the button below to re-authorize.');
             } else if (data.status === 'ready') {
                 setMessage('✅ Google is fully configured with all required scopes!');
+            } else if (data.status === 'not_configured') {
+                setMessage('❌ Google credentials not set. Please go to "Setup Credentials" section first.');
             } else {
                 setMessage('❌ Google OAuth is not configured. Please set up credentials first.');
             }
