@@ -31,6 +31,7 @@ const GoogleCredentialsSetup = () => {
                 setCredentials({
                     clientId: data.clientId || '',
                     clientSecret: '', // Don't display secret for security
+                    refreshToken: '', // Don't display token for security
                     folderId: data.folderId || ''
                 });
                 setMessage('✅ Credentials already configured. Update them below if needed.');
