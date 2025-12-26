@@ -4,6 +4,7 @@ const GoogleCredentialsSetup = () => {
     const [credentials, setCredentials] = useState({
         clientId: '',
         clientSecret: '',
+        refreshToken: '',
         folderId: ''
     });
     const [existingConfig, setExistingConfig] = useState(null);
