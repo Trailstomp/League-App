@@ -19,19 +19,26 @@ const GoogleCredentialsSetup = () => {
 
     const checkExistingConfig = async () => {
         try {
+            console.log('🔍 Checking existing config...');
             const response = await fetch(`${backendUrl}/api/google-credentials/status`);
             const data = await response.json();
+            
+            console.log('📥 Config status:', data);
             
             if (data.configured) {
                 setExistingConfig(data);
                 setCredentials({
                     clientId: data.clientId || '',
-                    clientSecret: '', // Don't display secret
+                    clientSecret: '', // Don't display secret for security
                     folderId: data.folderId || ''
                 });
+                setMessage('✅ Credentials already configured. Update them below if needed.');
+            } else {
+                setMessage('');
             }
         } catch (error) {
             console.error('Error checking config:', error);
+            setMessage('⚠️ Could not load existing configuration');
         }
     };
 
