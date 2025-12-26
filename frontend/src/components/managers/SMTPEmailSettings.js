@@ -323,6 +323,13 @@ const SMTPEmailSettings = () => {
                     {testing ? 'Testing...' : '🧪 Test Connection'}
                 </button>
                 <button
+                    onClick={handleSendTestEmail}
+                    disabled={sendingTest || !config.email || !config.password}
+                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 font-medium"
+                >
+                    {sendingTest ? 'Sending...' : '📧 Send Test Email'}
+                </button>
+                <button
                     onClick={handleSave}
                     disabled={saving || !config.email || !config.password}
                     className="flex-1 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 font-medium"
