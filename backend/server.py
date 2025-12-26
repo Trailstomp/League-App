@@ -7019,6 +7019,7 @@ class EventUpdate(BaseModel):
     status: Optional[str] = None
     rsvp_enabled: Optional[bool] = None
     groupme_integration: Optional[bool] = None
+    email_notifications: Optional[bool] = None
     tournament_config: Optional[Dict[str, Any]] = None
     bracket: Optional[Dict[str, Any]] = None
     scores: Optional[Dict[str, Any]] = None
