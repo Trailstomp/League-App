@@ -72,11 +72,17 @@ const GoogleCredentialsSetup = () => {
             if (response.ok) {
                 const result = await response.json();
                 console.log('✅ Save successful:', result);
-                setMessage('✅ Credentials saved! Now go to "Re-Authorization" section below.');
-                await checkExistingConfig();
+                setMessage('✅ Credentials saved! Click "Re-Authorization" button above to continue.');
+                
+                // Force reload the config
+                setTimeout(async () => {
+                    await checkExistingConfig();
+                }, 500);
+                
+                // Keep message for longer
                 setTimeout(() => {
                     setMessage('');
-                }, 5000);
+                }, 8000);
             } else {
                 const error = await response.json();
                 console.error('❌ Save failed:', error);
