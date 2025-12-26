@@ -327,6 +327,15 @@ const EventsList = ({
                                                                 🎯 Enter Scores
                                                             </button>
                                                         )}
+                                                        
+                                                        {/* Send Notifications Button */}
+                                                        <button
+                                                            onClick={() => handleSendNotifications(event.id)}
+                                                            disabled={sendingNotifications[event.id]}
+                                                            className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                                                        >
+                                                            {sendingNotifications[event.id] ? '⏳ Sending...' : '📧 Send Notifications'}
+                                                        </button>
                                                     </>
                                                 )}
                                             </div>
