@@ -38,6 +38,7 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                 teams: editingEvent.teams || [],
                 rsvp_enabled: editingEvent.rsvp_enabled !== false,
                 groupme_integration: editingEvent.groupme_integration || false,
+                email_notifications: editingEvent.email_notifications !== false,
                 auto_create_polls: editingEvent.auto_create_polls || false,
                 tournament_config: editingEvent.tournament_config || {
                     format: 'single_elimination',
