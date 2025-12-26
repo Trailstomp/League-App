@@ -7070,6 +7070,16 @@ async def create_unified_event(event: UnifiedEvent):
             except Exception as e:
                 logger.warning(f"Failed to create GroupMe poll: {e}")
         
+        # Send email notifications if enabled
+        if event_data.get("email_notifications", False):
+            try:
+                logger.info(f"📧 Email notifications enabled for event {event.id}, sending...")
+                # Call the send email endpoint in background
+                import asyncio
+                asyncio.create_task(send_email_event_notifications(event.id, {}))
+            except Exception as e:
+                logger.warning(f"Failed to send email notifications: {e}")
+        
         # Remove MongoDB _id field for response
         if "_id" in event_data:
             del event_data["_id"]
