@@ -11,6 +11,7 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
         teams: [], // For regular games (max 2), tournaments (multiple)
         rsvp_enabled: true,
         groupme_integration: true,
+        email_notifications: true,
         auto_create_polls: false,
         tournament_config: {
             format: 'single_elimination', // single_elimination, double_elimination
