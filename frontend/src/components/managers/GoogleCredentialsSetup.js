@@ -283,6 +283,36 @@ const GoogleCredentialsSetup = () => {
                 </p>
             </div>
 
+            {/* OAuth Playground Instructions */}
+            <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6">
+                <h3 className="font-semibold text-purple-900 mb-3 flex items-center">
+                    <span className="text-2xl mr-2">🎮</span>
+                    How to Get Refresh Token (OAuth Playground)
+                </h3>
+                <ol className="list-decimal list-inside space-y-2 text-sm text-purple-800">
+                    <li>
+                        Open: <a href="https://developers.google.com/oauthplayground" target="_blank" rel="noopener noreferrer" className="underline font-semibold text-blue-600">OAuth Playground</a> (in new tab)
+                    </li>
+                    <li>Click the <strong>⚙️ gear icon</strong> (top-right)</li>
+                    <li>Check: <strong>"Use your own OAuth credentials"</strong></li>
+                    <li>Paste your <strong>Client ID</strong> and <strong>Client Secret</strong> (from above)</li>
+                    <li>Click <strong>"Close"</strong></li>
+                    <li>On the left, select these scopes:
+                        <ul className="list-disc list-inside ml-6 mt-1 space-y-1">
+                            <li><code className="bg-white px-1 rounded">calendar.events</code> (Calendar API v3)</li>
+                            <li><code className="bg-white px-1 rounded">gmail.send</code> (Gmail API v1)</li>
+                            <li><code className="bg-white px-1 rounded">drive.file</code> (Drive API v3)</li>
+                        </ul>
+                    </li>
+                    <li>Click <strong>"Authorize APIs"</strong> button</li>
+                    <li>Sign in with <strong>admin@mlbl.org</strong></li>
+                    <li>Click <strong>"Allow"</strong></li>
+                    <li>Click <strong>"Exchange authorization code for tokens"</strong> button</li>
+                    <li>Copy the <strong>"Refresh token"</strong> (starts with <code className="bg-white px-1 rounded">1//</code>)</li>
+                    <li>Paste it in the field above and click Save!</li>
+                </ol>
+            </div>
+
             {/* Save Button */}
             <div className="flex items-center justify-between">
                 <div>
