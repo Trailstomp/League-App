@@ -220,6 +220,8 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
         try {
             setLoading(true);
             
+            console.log('📋 Form data before submit:', JSON.stringify(formData, null, 2));
+            
             // Generate event ID
             const eventId = `${formData.type}_${Date.now()}`;
             
@@ -238,6 +240,8 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                 status: 'scheduled', // scheduled, in_progress, completed, cancelled
                 bracket: bracket
             };
+            
+            console.log('📤 Final event data to send:', JSON.stringify(eventData, null, 2));
             
             await onEventCreate(eventData);
             
