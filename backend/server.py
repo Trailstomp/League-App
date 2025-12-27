@@ -7367,6 +7367,255 @@ async def _create_groupme_poll_for_event(event_data):
 
 
 # ============================================================================
+# USER MANAGEMENT & REGISTRATION
+# ============================================================================
+
+@api_router.post("/users/register")
+async def register_user(user_data: UserRegistration):
+    """Public user registration endpoint"""
+    try:
+        import hashlib
+        
+        # Check if email already exists
+        existing = await db.users.find_one({"email": user_data.email})
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Hash password (simple hash for now - should use bcrypt in production)
+        password_hash = hashlib.sha256(user_data.password.encode()).hexdigest()
+        
+        # Determine status based on requested role
+        if user_data.requestedRole == "guest":
+            status = "guest"
+            role = "guest"
+            approved_at = datetime.now(timezone.utc).isoformat()
+        else:
+            status = "pending"
+            role = "guest"  # Stays guest until approved
+            approved_at = None
+        
+        # Get team name if team selected
+        team_name = None
+        if user_data.requestedTeam:
+            team = await db.teams.find_one({"id": user_data.requestedTeam}, {"_id": 0})
+            team_name = team.get("name") if team else None
+        
+        # Create user
+        user = {
+            "id": str(uuid.uuid4()),
+            "name": user_data.name,
+            "email": user_data.email,
+            "password": password_hash,
+            "role": role,
+            "teamId": user_data.requestedTeam if status != "pending" else None,
+            "teamName": team_name if status != "pending" else None,
+            "status": status,
+            "requestedRole": user_data.requestedRole,
+            "requestedTeam": user_data.requestedTeam,
+            "phone": user_data.phone or "",
+            "notificationPreferences": {
+                "email": True,
+                "sms": False,
+                "groupme": True
+            },
+            "createdAt": datetime.now(timezone.utc).isoformat(),
+            "approvedAt": approved_at,
+            "approvedBy": None
+        }
+        
+        await db.users.insert_one(user)
+        
+        # Remove password from response
+        user.pop("password")
+        user.pop("_id", None)
+        
+        logger.info(f"✅ User registered: {user['email']} as {status}")
+        
+        return {
+            "status": "success",
+            "user": user,
+            "message": "Guest account created" if status == "guest" else "Registration submitted for approval"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error registering user: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/users")
+async def get_users(status: str = None, role: str = None, teamId: str = None):
+    """Get all users with optional filters"""
+    try:
+        query = {}
+        if status:
+            query["status"] = status
+        if role:
+            query["role"] = role
+        if teamId:
+            query["teamId"] = teamId
+        
+        users = await db.users.find(query, {"_id": 0, "password": 0}).to_list(1000)
+        
+        return {"users": users, "count": len(users)}
+        
+    except Exception as e:
+        logger.error(f"❌ Error getting users: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/users/{user_id}/approve")
+async def approve_user(user_id: str, approval_data: Dict[str, Any]):
+    """Approve a pending user"""
+    try:
+        approved_role = approval_data.get("role")
+        team_id = approval_data.get("teamId")
+        approved_by = approval_data.get("approvedBy", "admin")
+        
+        # Get team name
+        team_name = None
+        if team_id:
+            team = await db.teams.find_one({"id": team_id}, {"_id": 0})
+            team_name = team.get("name") if team else None
+        
+        # Update user
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": {
+                "status": "active",
+                "role": approved_role,
+                "teamId": team_id,
+                "teamName": team_name,
+                "approvedAt": datetime.now(timezone.utc).isoformat(),
+                "approvedBy": approved_by
+            }}
+        )
+        
+        logger.info(f"✅ User approved: {user_id} as {approved_role}")
+        
+        return {"status": "success", "message": "User approved"}
+        
+    except Exception as e:
+        logger.error(f"❌ Error approving user: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/users/{user_id}/reject")
+async def reject_user(user_id: str):
+    """Reject a pending user"""
+    try:
+        await db.users.delete_one({"id": user_id})
+        
+        logger.info(f"✅ User rejected: {user_id}")
+        
+        return {"status": "success", "message": "User rejected"}
+        
+    except Exception as e:
+        logger.error(f"❌ Error rejecting user: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.patch("/users/{user_id}")
+async def update_user(user_id: str, updates: UserUpdate):
+    """Update user details"""
+    try:
+        update_data = {}
+        for field, value in updates.dict().items():
+            if value is not None:
+                update_data[field] = value
+        
+        # Get team name if team is being updated
+        if "teamId" in update_data and update_data["teamId"]:
+            team = await db.teams.find_one({"id": update_data["teamId"]}, {"_id": 0})
+            update_data["teamName"] = team.get("name") if team else None
+        
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": update_data}
+        )
+        
+        logger.info(f"✅ User updated: {user_id}")
+        
+        return {"status": "success", "message": "User updated"}
+        
+    except Exception as e:
+        logger.error(f"❌ Error updating user: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.delete("/users/{user_id}")
+async def delete_user(user_id: str):
+    """Delete a user"""
+    try:
+        await db.users.delete_one({"id": user_id})
+        
+        logger.info(f"✅ User deleted: {user_id}")
+        
+        return {"status": "success", "message": "User deleted"}
+        
+    except Exception as e:
+        logger.error(f"❌ Error deleting user: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/users/create")
+async def create_user_admin(user_data: Dict[str, Any]):
+    """Admin endpoint to create users directly"""
+    try:
+        import hashlib
+        
+        # Check if email exists
+        existing = await db.users.find_one({"email": user_data["email"]})
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already exists")
+        
+        # Hash password
+        password_hash = hashlib.sha256(user_data["password"].encode()).hexdigest()
+        
+        # Get team name
+        team_name = None
+        if user_data.get("teamId"):
+            team = await db.teams.find_one({"id": user_data["teamId"]}, {"_id": 0})
+            team_name = team.get("name") if team else None
+        
+        user = {
+            "id": str(uuid.uuid4()),
+            "name": user_data["name"],
+            "email": user_data["email"],
+            "password": password_hash,
+            "role": user_data.get("role", "player"),
+            "teamId": user_data.get("teamId"),
+            "teamName": team_name,
+            "status": "active",
+            "phone": user_data.get("phone", ""),
+            "notificationPreferences": user_data.get("notificationPreferences", {
+                "email": True,
+                "sms": False,
+                "groupme": True
+            }),
+            "createdAt": datetime.now(timezone.utc).isoformat(),
+            "approvedAt": datetime.now(timezone.utc).isoformat(),
+            "approvedBy": user_data.get("createdBy", "admin")
+        }
+        
+        await db.users.insert_one(user)
+        
+        user.pop("password")
+        user.pop("_id", None)
+        
+        logger.info(f"✅ Admin created user: {user['email']}")
+        
+        return {"status": "success", "user": user}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error creating user: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
 # SMTP EMAIL CONFIGURATION
 # ============================================================================
 
