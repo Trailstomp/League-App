@@ -70,6 +70,45 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+# User Models
+class User(BaseModel):
+    id: Optional[str] = None
+    name: str
+    email: str
+    password: str  # Will be hashed
+    role: str = "guest"  # guest, player, coach, admin
+    teamId: Optional[str] = None
+    teamName: Optional[str] = None
+    status: str = "guest"  # guest, pending, active, inactive
+    requestedRole: Optional[str] = None
+    requestedTeam: Optional[str] = None
+    phone: Optional[str] = None
+    notificationPreferences: Dict[str, bool] = {
+        "email": True,
+        "sms": False,
+        "groupme": True
+    }
+    createdAt: Optional[str] = None
+    approvedAt: Optional[str] = None
+    approvedBy: Optional[str] = None
+
+class UserRegistration(BaseModel):
+    name: str
+    email: str
+    password: str
+    requestedRole: str  # guest, player, coach
+    requestedTeam: Optional[str] = None
+    phone: Optional[str] = None
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    role: Optional[str] = None
+    teamId: Optional[str] = None
+    status: Optional[str] = None
+    phone: Optional[str] = None
+    notificationPreferences: Optional[Dict[str, bool]] = None
+
 # League and Division Models
 class League(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
