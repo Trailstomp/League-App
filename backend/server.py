@@ -7788,15 +7788,32 @@ async def send_email_event_notifications(event_id: str, options: Dict[str, Any] 
         
         smtp_config = league_data["smtpConfig"]
         
-        # Get user emails from teams
+        # Get user emails based on event teams
         user_emails = []
+        
         if event.get("teams"):
-            for team_id in event["teams"]:
-                team_data = await db.teams.find_one({"id": team_id}, {"_id": 0})
-                if team_data and team_data.get("players"):
-                    for player in team_data["players"]:
-                        if player.get("email"):
-                            user_emails.append(player["email"])
+            # Get all active users from the teams in this event
+            users_cursor = db.users.find({
+                "teamId": {"$in": event["teams"]},
+                "status": {"$in": ["active", "guest"]},
+                "notificationPreferences.email": True
+            }, {"_id": 0})
+            
+            users = await users_cursor.to_list(1000)
+            user_emails = [u["email"] for u in users if u.get("email")]
+            
+            logger.info(f"📧 Found {len(user_emails)} users to notify for teams: {event['teams']}")
+        
+        # If no users found from teams, try getting all active users (for league-wide events)
+        if not user_emails and not event.get("teams"):
+            users_cursor = db.users.find({
+                "status": {"$in": ["active", "guest"]},
+                "notificationPreferences.email": True
+            }, {"_id": 0})
+            
+            users = await users_cursor.to_list(1000)
+            user_emails = [u["email"] for u in users if u.get("email")]
+            logger.info(f"📧 League-wide event - found {len(user_emails)} users to notify")
         
         # Add additional emails if provided
         if options.get("additional_emails"):
@@ -7805,9 +7822,10 @@ async def send_email_event_notifications(event_id: str, options: Dict[str, Any] 
         user_emails = list(set(user_emails))  # Deduplicate
         
         if not user_emails:
+            logger.warning(f"⚠️ No email addresses found for event {event_id}")
             return {
                 "status": "no_recipients",
-                "message": "No email addresses found"
+                "message": "No email addresses found for this event. Make sure users are assigned to the event's teams."
             }
         
         # Get team logos
@@ -7848,7 +7866,7 @@ async def send_email_event_notifications(event_id: str, options: Dict[str, Any] 
             calendar_event=calendar_content
         )
         
-        logger.info(f"✅ Email notifications sent for event {event_id}")
+        logger.info(f"✅ Email notifications sent for event {event_id} - {result['sent_count']} sent, {result['failed_count']} failed")
         
         return {
             "status": "success",
