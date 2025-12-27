@@ -327,6 +327,8 @@ function App() {
   const renderPage = () => {
     console.log('🔄 Rendering page:', currentPage);
     switch (currentPage) {
+      case 'register':
+        return <RegistrationPage />;
       case 'home':
         return <HomePage teams={teams} currentUser={currentUser} events={events} setEvents={setEvents} websiteStyle={websiteStyle} onNavigate={handleNavigate} />;
       case 'admin':
