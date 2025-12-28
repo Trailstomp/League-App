@@ -20,6 +20,42 @@ main .bg-gray-50 {
   background-color: var(--card-bg, rgba(248, 250, 252, 0.9));
 }
 
+/* Typography Custom Properties */
+main {
+  font-family: var(--content-font, 'Inter, sans-serif');
+  color: var(--content-text-color, #374151);
+}
+
+/* Card Typography */
+main .bg-white,
+main .bg-white\/90,
+main .bg-slate-50,
+main .bg-gray-50,
+main [class*="rounded-lg"][class*="shadow"],
+main [class*="rounded-lg"][class*="border"] {
+  font-family: var(--card-font, inherit);
+  color: var(--card-text-color, #374151);
+}
+
+/* Card Headings */
+main h1, main h2, main h3, main h4, main h5, main h6,
+main .text-slate-800,
+main .text-gray-800,
+main .text-gray-900,
+main .text-slate-900 {
+  color: var(--card-heading-color, #1f2937) !important;
+}
+
+/* Ensure text colors apply to common text classes */
+main .text-slate-600,
+main .text-gray-600 {
+  color: var(--card-text-color, #374151);
+}
+
+main p, main span, main div {
+  color: inherit;
+}
+
 /* Base mobile breakpoints */
 @media (max-width: 640px) {
   /* Force proper viewport scaling */
