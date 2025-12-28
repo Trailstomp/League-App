@@ -346,16 +346,45 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Time *
                             </label>
-                            <input
-                                type="time"
+                            <select
                                 value={formData.time}
                                 onChange={(e) => handleInputChange('time', e.target.value)}
                                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                     errors.time ? 'border-red-500' : 'border-gray-300'
                                 }`}
-                            />
+                            >
+                                <option value="">Select time...</option>
+                                {Array.from({ length: 96 }, (_, i) => {
+                                    const hours = Math.floor(i / 4);
+                                    const minutes = (i % 4) * 15;
+                                    const timeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                                    const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+                                    const ampm = hours < 12 ? 'AM' : 'PM';
+                                    return (
+                                        <option key={timeStr} value={timeStr}>
+                                            {displayHours}:{minutes.toString().padStart(2, '0')} {ampm}
+                                        </option>
+                                    );
+                                })}
+                            </select>
                             {errors.time && <p className="text-red-500 text-sm mt-1">{errors.time}</p>}
                         </div>
+                    </div>
+
+                    <div className="mt-6">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Event Image URL
+                        </label>
+                        <input
+                            type="url"
+                            value={formData.imageUrl}
+                            onChange={(e) => handleInputChange('imageUrl', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="https://example.com/event-image.jpg (optional)"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                            Optional: Add an image URL to display in notifications and event details
+                        </p>
                     </div>
 
                     <div className="mt-6">
@@ -380,8 +409,54 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                         {formData.type === 'tournament' && ' (Select 4 or more teams)'}
                     </h3>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {teams.map(team => {
+                    {/* Group teams by type */}
+                    {['box', 'field', 'outside'].map(teamType => {
+                        const teamsByType = teams.filter(t => (t.type || 'field') === teamType);
+                        if (teamsByType.length === 0) return null;
+                        
+                        return (
+                            <div key={teamType} className="mb-6">
+                                <h4 className="text-sm font-semibold text-gray-700 mb-3 uppercase">{teamType} Teams</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                    {teamsByType.map(team => {
+                                        const isSelected = formData.teams.includes(team.id);
+                                        return (
+                                            <div
+                                                key={team.id}
+                                                className={`cursor-pointer p-3 rounded-lg border-2 transition-colors ${
+                                                    isSelected
+                                                        ? 'border-blue-500 bg-blue-50'
+                                                        : 'border-gray-200 hover:border-gray-300'
+                                                }`}
+                                                onClick={() => handleTeamSelection(team.id)}
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    {team.style?.logoUrl && (
+                                                        <img
+                                                            src={team.style.logoUrl}
+                                                            alt={team.name}
+                                                            className="w-8 h-8 object-cover rounded"
+                                                        />
+                                                    )}
+                                                    <div>
+                                                        <div className="font-medium text-gray-900">{team.name}</div>
+                                                        <div className="text-xs text-gray-500">{team.division}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        );
+                    })}
+                    
+                    {/* Fallback if no teams or ungrouped teams */}
+                    {teams.filter(t => !['box', 'field', 'outside'].includes(t.type || 'field')).length > 0 && (
+                        <div className="mb-6">
+                            <h4 className="text-sm font-semibold text-gray-700 mb-3">OTHER TEAMS</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {teams.filter(t => !['box', 'field', 'outside'].includes(t.type || 'field')).map(team => {
                             const isSelected = formData.teams.includes(team.id);
                             return (
                                 <div
