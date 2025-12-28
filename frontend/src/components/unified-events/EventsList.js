@@ -18,8 +18,28 @@ const EventsList = ({
     const [sortBy, setSortBy] = useState('date'); // date, title, type
     const [sendingNotifications, setSendingNotifications] = useState({});
     const [viewingRSVPs, setViewingRSVPs] = useState(null);
+    const [changingStatus, setChangingStatus] = useState(null);
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+
+    const handleStatusChange = async (eventId, newStatus) => {
+        try {
+            const response = await fetch(`${backendUrl}/api/unified-events/${eventId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            if (response.ok) {
+                setChangingStatus(null);
+                if (onRefresh) onRefresh();
+            } else {
+                alert('Failed to update status');
+            }
+        } catch (error) {
+            alert('Error updating status');
+        }
+    };
 
     const handleSendNotifications = async (eventId) => {
         try {
