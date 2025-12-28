@@ -231,18 +231,18 @@ const UserManager = ({ teams = [] }) => {
             )}
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="bg-white rounded-lg shadow-sm border p-4">
-                    <div className="text-2xl font-bold text-blue-600">{activeUsers.length}</div>
-                    <div className="text-sm text-gray-600">Active Users</div>
+                    <div className="text-2xl md:text-3xl font-bold text-blue-600">{activeUsers.length}</div>
+                    <div className="text-xs md:text-sm text-gray-600">Active Users</div>
                 </div>
                 <div className="bg-white rounded-lg shadow-sm border p-4">
-                    <div className="text-2xl font-bold text-yellow-600">{pendingUsers.length}</div>
-                    <div className="text-sm text-gray-600">Pending Approval</div>
+                    <div className="text-2xl md:text-3xl font-bold text-yellow-600">{pendingUsers.length}</div>
+                    <div className="text-xs md:text-sm text-gray-600">Pending Approval</div>
                 </div>
-                <div className="bg-white rounded-lg shadow-sm border p-4">
-                    <div className="text-2xl font-bold text-purple-600">{users.filter(u => u.role === 'coach').length}</div>
-                    <div className="text-sm text-gray-600">Coaches</div>
+                <div className="bg-white rounded-lg shadow-sm border p-4 col-span-2 md:col-span-1">
+                    <div className="text-2xl md:text-3xl font-bold text-purple-600">{users.filter(u => u.role === 'coach').length}</div>
+                    <div className="text-xs md:text-sm text-gray-600">Coaches</div>
                 </div>
             </div>
 
