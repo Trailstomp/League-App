@@ -103,7 +103,8 @@ class SMTPEmailService:
                         event_location=event_location,
                         event_description=event_description,
                         rsvp_link=personalized_rsvp_link,
-                        team_logos=team_logos
+                        team_logos=team_logos,
+                        event_image_url=event_image_url
                     )
                     
                     # Attach HTML
