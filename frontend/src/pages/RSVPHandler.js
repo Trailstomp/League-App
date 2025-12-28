@@ -262,7 +262,7 @@ const RSVPHandler = () => {
                                                             : 'bg-red-100 text-red-700 hover:bg-red-200'
                                                     }`}
                                                 >
-                                                    ❌ Can't Go
+                                                    ❌ Cannot Go
                                                 </button>
                                             </div>
                                         </div>
@@ -303,7 +303,7 @@ const RSVPHandler = () => {
                                             <div className="text-2xl font-bold text-red-600">
                                                 {rsvpList.summary?.not_going || 0}
                                             </div>
-                                            <div className="text-sm text-red-700">Can't Go</div>
+                                            <div className="text-sm text-red-700">Cannot Go</div>
                                         </div>
                                     </div>
 
@@ -362,7 +362,7 @@ const RSVPHandler = () => {
                                             {rsvpList.details.not_going?.length > 0 && (
                                                 <div>
                                                     <h4 className="text-sm font-medium text-red-700 mb-2">
-                                                        ❌ Can't Go ({rsvpList.details.not_going.length})
+                                                        ❌ Cannot Go ({rsvpList.details.not_going.length})
                                                     </h4>
                                                     <div className="flex flex-wrap gap-2">
                                                         {rsvpList.details.not_going.map((rsvp, idx) => (
