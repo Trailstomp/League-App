@@ -38,6 +38,11 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         mainFont: websiteStyle.mainFont || 'Inter, sans-serif',
         mainFontSize: websiteStyle.mainFontSize || '16px',
         
+        // Content Area Zone (the "white" area) - with websiteStyle fallbacks
+        contentBackgroundType: websiteStyle.contentBackgroundType || 'color',
+        contentBackgroundColor: websiteStyle.contentBackgroundColor || '#ffffff',
+        contentBackgroundImage: websiteStyle.contentBackgroundImage || '',
+        
         // Menu Zone - with websiteStyle fallbacks
         menuBackgroundType: websiteStyle.menuBackgroundType || 'color',
         menuBackgroundColor: websiteStyle.menuBackgroundColor || '#ffffff',
