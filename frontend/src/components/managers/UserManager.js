@@ -58,7 +58,7 @@ const UserManager = ({ teams = [] }) => {
             if (response.ok) {
                 setMessage('✅ User created successfully!');
                 setShowCreateModal(false);
-                setNewUser({ name: '', email: '', password: '', role: 'player', teamId: '', phone: '' });
+                setNewUser({ name: '', email: '', password: '', role: 'player', teamId: '', phone: '', playerNumber: '', position: '', jerseySize: '', emergencyContact: '' });
                 await loadUsers();
                 setTimeout(() => setMessage(''), 3000);
             } else {
