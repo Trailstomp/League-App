@@ -36,6 +36,7 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                 date: editingEvent.date || '',
                 time: editingEvent.time || '',
                 location: editingEvent.location || '',
+                imageUrl: editingEvent.imageUrl || '',
                 teams: editingEvent.teams || [],
                 rsvp_enabled: editingEvent.rsvp_enabled !== false,
                 groupme_integration: editingEvent.groupme_integration || false,
