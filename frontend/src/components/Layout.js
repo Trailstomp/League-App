@@ -101,7 +101,7 @@ const Layout = ({
         setIsMobileMenuOpen(false);
     };
 
-    // Get dynamic background style
+    // Get dynamic background style for the outer container
     const getBackgroundStyle = () => {
         const style = {};
         
@@ -112,6 +112,24 @@ const Layout = ({
             style.backgroundColor = 'rgba(248, 250, 252, 0.9)'; // Fallback with opacity
         } else {
             style.backgroundColor = websiteStyle.mainBackgroundColor || '#f8fafc';
+        }
+        
+        return style;
+    };
+
+    // Get content area background style (the "white" area user mentioned)
+    const getContentBackgroundStyle = () => {
+        const style = {};
+        
+        if (websiteStyle.contentBackgroundType === 'image' && websiteStyle.contentBackgroundImage) {
+            style.backgroundImage = `url(${websiteStyle.contentBackgroundImage})`;
+            style.backgroundSize = 'cover';
+            style.backgroundPosition = 'center';
+            style.backgroundAttachment = 'fixed';
+        } else if (websiteStyle.contentBackgroundColor) {
+            style.backgroundColor = websiteStyle.contentBackgroundColor;
+        } else {
+            style.backgroundColor = '#ffffff'; // Default white
         }
         
         return style;
