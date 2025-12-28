@@ -96,31 +96,31 @@ const EventRSVPDashboard = ({ eventId, eventTitle }) => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-4 gap-4">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <div className="text-3xl font-bold text-green-600">{stats.going}</div>
-                    <div className="text-sm text-gray-600">✅ Going</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 md:p-4">
+                    <div className="text-2xl md:text-3xl font-bold text-green-600">{stats.going}</div>
+                    <div className="text-xs md:text-sm text-gray-600">✅ Going</div>
                     <div className="text-xs text-gray-500 mt-1">{stats.total > 0 ? Math.round((stats.going / stats.total) * 100) : 0}%</div>
                 </div>
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <div className="text-3xl font-bold text-yellow-600">{stats.maybe}</div>
-                    <div className="text-sm text-gray-600">❓ Maybe</div>
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 md:p-4">
+                    <div className="text-2xl md:text-3xl font-bold text-yellow-600">{stats.maybe}</div>
+                    <div className="text-xs md:text-sm text-gray-600">❓ Maybe</div>
                     <div className="text-xs text-gray-500 mt-1">{stats.total > 0 ? Math.round((stats.maybe / stats.total) * 100) : 0}%</div>
                 </div>
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <div className="text-3xl font-bold text-red-600">{stats.not_going}</div>
-                    <div className="text-sm text-gray-600">❌ Can't Make It</div>
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3 md:p-4">
+                    <div className="text-2xl md:text-3xl font-bold text-red-600">{stats.not_going}</div>
+                    <div className="text-xs md:text-sm text-gray-600">❌ Can't Make It</div>
                     <div className="text-xs text-gray-500 mt-1">{stats.total > 0 ? Math.round((stats.not_going / stats.total) * 100) : 0}%</div>
                 </div>
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <div className="text-3xl font-bold text-gray-600">{stats.pending}</div>
-                    <div className="text-sm text-gray-600">⏳ No Response</div>
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 md:p-4">
+                    <div className="text-2xl md:text-3xl font-bold text-gray-600">{stats.pending}</div>
+                    <div className="text-xs md:text-sm text-gray-600">⏳ No Response</div>
                     <div className="text-xs text-gray-500 mt-1">{stats.total > 0 ? Math.round((stats.pending / stats.total) * 100) : 0}%</div>
                 </div>
             </div>
 
             {/* Response Lists */}
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 {/* Going */}
                 <div className="bg-white rounded-lg shadow-sm border p-4">
                     <h4 className="font-semibold text-green-600 mb-3 flex items-center">
