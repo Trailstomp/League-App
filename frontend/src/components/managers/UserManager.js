@@ -13,7 +13,11 @@ const UserManager = ({ teams = [] }) => {
         password: '',
         role: 'player',
         teamId: '',
-        phone: ''
+        phone: '',
+        playerNumber: '',
+        position: '',
+        jerseySize: '',
+        emergencyContact: ''
     });
     const [message, setMessage] = useState('');
 
