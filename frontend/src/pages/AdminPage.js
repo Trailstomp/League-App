@@ -210,13 +210,13 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
     return (
         <div className="space-y-6">
             {/* Admin Header */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm p-6">
                 <h1 className="text-3xl font-bold text-slate-800 mb-2">Admin Portal</h1>
                 <p className="text-slate-600">Manage your lacrosse league</p>
             </div>
 
             {/* Admin Tabs */}
-            <div className="bg-white rounded-lg shadow-sm border">
+            <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm">
                 <div className="border-b px-6 py-4 overflow-x-auto admin-tabs-container">
                     <div className="flex flex-nowrap gap-2 min-w-max md:flex-wrap md:min-w-0">
                         {adminTabs.map(tab => (
