@@ -137,43 +137,92 @@ const Layout = ({
 
     return (
         <div className="min-h-screen" style={{...getBackgroundStyle()}}>
-            {/* Fixed Header Container - ticker and banner to the right of navigation */}
-            <div 
-                className="fixed top-0 right-0 z-50 transition-all duration-300"
-                style={{
-                    left: isMobileView ? '0' : (isNavCollapsed ? '80px' : '320px'), // Use actual nav maxWidth
-                    height: '200px' // Ticker (120px) + Banner (80px)
-                }}
-            >
-                {/* Event Ticker */}
+            {/* Desktop Header - ticker and banner */}
+            {!isMobileView && (
                 <div 
-                    className="w-full bg-slate-800 text-white shadow-sm" 
-                    style={{ 
-                        height: '120px',
-                        display: 'block',
-                        position: 'relative',
-                        zIndex: 100,
-                        overflow: 'hidden'
+                    className="fixed top-0 right-0 z-50 transition-all duration-300"
+                    style={{
+                        left: isNavCollapsed ? '80px' : '320px',
+                        height: '200px' // Ticker (120px) + Banner (80px)
                     }}
                 >
-                    <EventsTicker 
-                        events={events}
-                        teams={teams}
-                        websiteStyle={websiteStyle}
-                        onEventClick={onEventClick}
-                        onTeamClick={onTeamClick}
-                    />
+                    {/* Event Ticker */}
+                    <div 
+                        className="w-full bg-slate-800 text-white shadow-sm" 
+                        style={{ 
+                            height: '120px',
+                            display: 'block',
+                            position: 'relative',
+                            zIndex: 100,
+                            overflow: 'hidden'
+                        }}
+                    >
+                        <EventsTicker 
+                            events={events}
+                            teams={teams}
+                            websiteStyle={websiteStyle}
+                            onEventClick={onEventClick}
+                            onTeamClick={onTeamClick}
+                        />
+                    </div>
+                    
+                    {/* League Banner */}
+                    <div 
+                        className="w-full px-4 py-3 border-b shadow-sm flex items-center"
+                        style={{
+                            height: '80px',
+                            display: 'block',
+                            position: 'relative',
+                            zIndex: 99,
+                            backgroundColor: websiteStyle.bannerBackgroundType === 'image' ? 'transparent' : (websiteStyle.bannerBackgroundColor || '#ffffff'),
+                            backgroundImage: websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage 
+                                ? `url(${websiteStyle.bannerBackgroundImage})` 
+                                : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}
+                    >
+                        {/* Overlay for image banners */}
+                        {websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage && (
+                            <div className="absolute inset-0 bg-black bg-opacity-30 z-0"></div>
+                        )}
+                        
+                        <div className="flex items-center justify-between relative z-10 max-w-7xl mx-auto w-full">
+                            <div className="flex items-center space-x-4">
+                                <div className="text-3xl">🥍</div>
+                                <div>
+                                    <h1 
+                                        className="text-xl md:text-2xl font-bold"
+                                        style={{
+                                            fontFamily: websiteStyle.bannerFont || 'Inter, sans-serif',
+                                            color: websiteStyle.bannerTextColor || '#1f2937'
+                                        }}
+                                    >
+                                        {websiteStyle.bannerTitle || 'Lacrosse League'}
+                                    </h1>
+                                    <p 
+                                        className="text-sm hidden md:block"
+                                        style={{
+                                            fontFamily: websiteStyle.bannerFont || 'Inter, sans-serif',
+                                            color: websiteStyle.bannerTextColor || '#6b7280'
+                                        }}
+                                    >
+                                        {websiteStyle.bannerSubtitle || 'Manage your league with style and efficiency'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-                {/* League Banner */}
+            )}
+
+            {/* Mobile Header - Simplified with logo and league name */}
+            {isMobileView && (
                 <div 
-                    className="w-full px-4 py-3 border-b shadow-sm flex items-center"
+                    className="fixed top-0 left-0 right-0 z-50 shadow-md"
                     style={{
-                        height: '80px',
-                        display: 'block',
-                        position: 'relative',
-                        zIndex: 99,
-                        backgroundColor: websiteStyle.bannerBackgroundType === 'image' ? 'transparent' : (websiteStyle.bannerBackgroundColor || '#ffffff'),
+                        height: '70px',
+                        backgroundColor: websiteStyle.bannerBackgroundType === 'image' ? 'transparent' : (websiteStyle.bannerBackgroundColor || websiteStyle.primaryColor || '#1e40af'),
                         backgroundImage: websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage 
                             ? `url(${websiteStyle.bannerBackgroundImage})` 
                             : 'none',
@@ -181,38 +230,51 @@ const Layout = ({
                         backgroundPosition: 'center'
                     }}
                 >
-                    {/* Overlay for image banners */}
+                    {/* Overlay for image backgrounds */}
                     {websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage && (
-                        <div className="absolute inset-0 bg-black bg-opacity-30 z-0"></div>
+                        <div className="absolute inset-0 bg-black bg-opacity-40 z-0"></div>
                     )}
                     
-                    <div className="flex items-center justify-between relative z-10 max-w-7xl mx-auto w-full">
-                        <div className="flex items-center space-x-4">
-                            <div className="text-3xl">🥍</div>
-                            <div>
-                                <h1 
-                                    className="text-xl md:text-2xl font-bold"
-                                    style={{
-                                        fontFamily: websiteStyle.bannerFont || 'Inter, sans-serif',
-                                        color: websiteStyle.bannerTextColor || '#1f2937'
-                                    }}
-                                >
-                                    {websiteStyle.bannerTitle || 'Lacrosse League'}
-                                </h1>
-                                <p 
-                                    className="text-sm hidden md:block"
-                                    style={{
-                                        fontFamily: websiteStyle.bannerFont || 'Inter, sans-serif',
-                                        color: websiteStyle.bannerTextColor || '#6b7280'
-                                    }}
-                                >
-                                    {websiteStyle.bannerSubtitle || 'Manage your league with style and efficiency'}
-                                </p>
-                            </div>
+                    <div className="flex items-center justify-between h-full px-4 relative z-10">
+                        {/* Logo and League Name */}
+                        <div className="flex items-center space-x-3">
+                            {websiteStyle.navLogoUrl ? (
+                                <img 
+                                    src={websiteStyle.navLogoUrl} 
+                                    alt="Logo" 
+                                    className="w-10 h-10 object-contain rounded-lg"
+                                />
+                            ) : (
+                                <span className="text-2xl">🥍</span>
+                            )}
+                            <h1 
+                                className="text-lg font-bold truncate max-w-[200px]"
+                                style={{
+                                    fontFamily: websiteStyle.bannerFont || 'Inter, sans-serif',
+                                    color: websiteStyle.bannerTextColor || '#ffffff'
+                                }}
+                            >
+                                {websiteStyle.navLeagueName || websiteStyle.bannerTitle || 'League'}
+                            </h1>
                         </div>
+                        
+                        {/* Menu Button for full navigation */}
+                        <button
+                            onClick={() => setIsMobileMenuOpen(true)}
+                            className="p-2 rounded-lg transition-colors"
+                            style={{
+                                backgroundColor: 'rgba(255,255,255,0.2)',
+                                color: websiteStyle.bannerTextColor || '#ffffff'
+                            }}
+                            aria-label="Open menu"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Mobile Navigation Overlay */}
             {isMobileView && isMobileMenuOpen && (
