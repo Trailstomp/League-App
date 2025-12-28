@@ -327,6 +327,12 @@ function App() {
   // Simple page renderer
   const renderPage = () => {
     console.log('🔄 Rendering page:', currentPage);
+    
+    // Check if URL has RSVP parameters
+    if (window.location.hash.includes('/events/') && window.location.search.includes('response=')) {
+      return <RSVPHandler />;
+    }
+    
     switch (currentPage) {
       case 'register':
         return <RegistrationPage />;
