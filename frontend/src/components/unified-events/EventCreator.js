@@ -8,6 +8,7 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
         date: '',
         time: '',
         location: '',
+        imageUrl: '',
         teams: [], // For regular games (max 2), tournaments (multiple)
         rsvp_enabled: true,
         groupme_integration: true,
