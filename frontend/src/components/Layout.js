@@ -349,31 +349,6 @@ const Layout = ({
                 }}
             >
                 <div className="flex flex-col h-full">
-                    {/* Mobile Hamburger Menu Button - only show if NOT using bottom nav */}
-                    {isMobileView && !websiteStyle.useBottomNavOnMobile && (
-                        <button
-                            onClick={() => setIsMobileMenuOpen(true)}
-                            onTouchStart={(e) => {
-                                e.stopPropagation();
-                                setIsMobileMenuOpen(true);
-                            }}
-                            className="fixed z-60 p-4 rounded-lg shadow-2xl transition-all duration-200 hover:scale-110 mobile-nav-button touch-manipulation"
-                        style={{
-                            top: '90px', // Below mobile header
-                            left: '16px', // Fixed position from left
-                            backgroundColor: websiteStyle.primaryColor || '#3b82f6',
-                            color: '#ffffff',
-                            border: '3px solid #ffffff',
-                            boxShadow: '0 8px 24px rgba(0,0,0,0.3), 0 0 0 4px rgba(59, 130, 246, 0.2)'
-                        }}
-                        aria-label="Open navigation menu"
-                    >
-                            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                        </button>
-                    )}
-
                     {/* Main Content Container with customizable background */}
                     <main 
                         className="flex-1 overflow-x-hidden w-full"
