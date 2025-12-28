@@ -328,8 +328,14 @@ function App() {
   const renderPage = () => {
     console.log('🔄 Rendering page:', currentPage);
     
-    // Check if URL has RSVP parameters
-    if (window.location.hash.includes('/events/') && window.location.search.includes('response=')) {
+    // Check if URL has RSVP parameters (both hash and query string formats)
+    const hasRSVPParams = window.location.search.includes('response=') || 
+                          window.location.hash.includes('response=');
+    const hasEventsPath = window.location.pathname.includes('/events/') || 
+                          window.location.hash.includes('/events/');
+    
+    if (hasRSVPParams && hasEventsPath) {
+      console.log('📬 RSVP detected, rendering RSVPHandler');
       return <RSVPHandler />;
     }
     
