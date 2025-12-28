@@ -102,3 +102,96 @@ input, select, textarea {
     margin-top: 1.5rem !important;
   }
 }
+
+/* Bottom Navigation Bar Styles */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Mobile content padding to avoid bottom nav overlap */
+@media (max-width: 767px) {
+  .main-content-area {
+    padding-bottom: 80px !important;
+  }
+  
+  /* Compact cards on mobile */
+  .team-card, .event-card {
+    padding: 0.75rem !important;
+  }
+  
+  /* Smaller team logos on mobile */
+  .team-logo-large {
+    width: 60px !important;
+    height: 60px !important;
+  }
+  
+  /* Mobile-friendly table rows */
+  tr {
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  /* Full width buttons on mobile */
+  .btn-mobile-full {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* Hide decorative elements */
+  .decoration-mobile-hide {
+    display: none !important;
+  }
+  
+  /* Compact header on mobile */
+  .mobile-header {
+    height: 70px !important;
+    padding: 0.5rem 1rem !important;
+  }
+  
+  /* Better touch targets for navigation */
+  nav button {
+    padding: 0.75rem 1rem !important;
+  }
+}
+
+/* Ensure bottom nav doesn't overlap content */
+@media (max-width: 767px) {
+  main {
+    margin-bottom: 80px;
+  }
+}
+
+/* Fix z-index for modals over bottom nav */
+.modal-overlay {
+  z-index: 60 !important;
+}
+
+/* Mobile team grid */
+@media (max-width: 640px) {
+  .team-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
+  }
+}
+
+/* Smooth transitions for mobile navigation */
+.bottom-nav-transition {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Hide bottom nav when scrolling down, show when scrolling up */
+.bottom-nav-hidden {
+  transform: translateY(100%);
+}
+
+/* Mobile-first event cards */
+@media (max-width: 640px) {
+  .event-list-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+  
+  .event-date-badge {
+    font-size: 0.75rem !important;
+  }
+}
