@@ -150,20 +150,20 @@ const EventsList = ({
     }
 
     return (
-        <div className="flex-1 flex flex-col">
-            {/* Filters and Controls */}
-            <div className="bg-white border-b px-6 py-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+        <div className="flex-1 flex flex-col" style={{ backgroundColor: 'inherit' }}>
+            {/* Filters and Controls - Mobile Optimized */}
+            <div className="bg-white/90 backdrop-blur-sm border-b px-4 py-3 sm:px-6 sm:py-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 sm:justify-between">
+                    <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
                         {/* Status Filter */}
                         <div className="flex items-center gap-2">
-                            <label className="text-sm font-medium text-gray-700">Status:</label>
+                            <label className="text-xs sm:text-sm font-medium text-gray-700">Status:</label>
                             <select
                                 value={filter}
                                 onChange={(e) => setFilter(e.target.value)}
-                                className="px-3 py-1 border border-gray-300 rounded text-sm"
+                                className="px-2 py-1 sm:px-3 border border-gray-300 rounded text-xs sm:text-sm"
                             >
-                                <option value="all">All Events</option>
+                                <option value="all">All</option>
                                 <option value="scheduled">Scheduled</option>
                                 <option value="in_progress">In Progress</option>
                                 <option value="completed">Completed</option>
@@ -172,11 +172,11 @@ const EventsList = ({
 
                         {/* Sort By */}
                         <div className="flex items-center gap-2">
-                            <label className="text-sm font-medium text-gray-700">Sort by:</label>
+                            <label className="text-xs sm:text-sm font-medium text-gray-700">Sort:</label>
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
-                                className="px-3 py-1 border border-gray-300 rounded text-sm"
+                                className="px-2 py-1 sm:px-3 border border-gray-300 rounded text-xs sm:text-sm"
                             >
                                 <option value="date">Date</option>
                                 <option value="title">Title</option>
@@ -185,14 +185,14 @@ const EventsList = ({
                         </div>
                     </div>
 
-                    <div className="text-sm text-gray-600">
+                    <div className="text-xs sm:text-sm text-gray-600">
                         {filteredEvents.length} of {events.length} events
                     </div>
                 </div>
             </div>
 
-            {/* Events List */}
-            <div className="flex-1 overflow-y-auto p-6">
+            {/* Events List - Mobile Optimized Cards */}
+            <div className="flex-1 overflow-y-auto p-3 sm:p-6">
                 {filteredEvents.length === 0 ? (
                     <div className="text-center py-12">
                         <div className="text-4xl mb-4">📅</div>
@@ -213,105 +213,34 @@ const EventsList = ({
                         )}
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                         {filteredEvents.map(event => (
                             <div
                                 key={event.id}
-                                className="bg-white rounded-lg shadow border hover:shadow-md transition-shadow"
+                                className="bg-white/90 backdrop-blur-sm rounded-lg shadow border hover:shadow-md transition-shadow"
                             >
-                                <div className="p-6">
-                                    <div className="flex items-start justify-between">
-                                        {/* Event Info */}
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <span className="text-2xl">
-                                                    {getEventTypeIcon(event.type)}
-                                                </span>
-                                                <div>
-                                                    <h3 className="text-lg font-semibold text-gray-900">
-                                                        {event.title}
-                                                    </h3>
-                                                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                                                        <span>📅 {formatDate(event.date)}</span>
-                                                        <span>🕒 {formatTime(event.time)}</span>
-                                                        <span>📍 {event.location}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Description */}
-                                            {event.description && (
-                                                <p className="text-gray-600 mb-3 text-sm">
-                                                    {event.description}
-                                                </p>
-                                            )}
-
-                                            {/* Teams */}
-                                            {event.teams && event.teams.length > 0 && (
-                                                <div className="flex items-center gap-2 mb-3">
-                                                    <span className="text-sm font-medium text-gray-700">Teams:</span>
-                                                    <div className="flex items-center gap-2">
-                                                        {event.teams.slice(0, 4).map((teamId, index) => (
-                                                            <div key={teamId} className="flex items-center gap-1">
-                                                                {getTeamLogo(teamId) && (
-                                                                    <img
-                                                                        src={getTeamLogo(teamId)}
-                                                                        alt={getTeamName(teamId)}
-                                                                        className="w-6 h-6 object-cover rounded"
-                                                                    />
-                                                                )}
-                                                                <span className="text-sm text-gray-800">
-                                                                    {getTeamName(teamId)}
-                                                                </span>
-                                                                {index < Math.min(event.teams.length, 4) - 1 && 
-                                                                    event.type === 'regular_game' && (
-                                                                    <span className="text-gray-500 mx-1">vs</span>
-                                                                )}
-                                                                {index < Math.min(event.teams.length, 4) - 1 && 
-                                                                    event.type !== 'regular_game' && (
-                                                                    <span className="text-gray-500 mx-1">•</span>
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                        {event.teams.length > 4 && (
-                                                            <span className="text-sm text-gray-600">
-                                                                +{event.teams.length - 4} more
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {/* Scores (if completed) */}
-                                            {event.scores && (
-                                                <div className="flex items-center gap-4 mb-3">
-                                                    <span className="text-sm font-medium text-gray-700">Final Score:</span>
-                                                    <div className="text-lg font-semibold text-gray-900">
-                                                        {event.scores.home_team?.name} {event.scores.home_team?.score} - 
-                                                        {event.scores.away_team?.score} {event.scores.away_team?.name}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Status and Actions */}
-                                        <div className="flex flex-col items-end gap-3">
+                                {/* Mobile-first Card Layout */}
+                                <div className="p-3 sm:p-6">
+                                    {/* Header Row - Status Badge and Type Icon */}
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xl sm:text-2xl">
+                                                {getEventTypeIcon(event.type)}
+                                            </span>
                                             <div className="relative">
                                                 <button
                                                     onClick={() => setChangingStatus(event.id === changingStatus ? null : event.id)}
-                                                    className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)} cursor-pointer hover:opacity-80`}
+                                                    className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)} cursor-pointer hover:opacity-80`}
                                                 >
-                                                    <span className="hidden sm:inline">{event.status.replace('_', ' ').toUpperCase()}</span>
-                                                    <span className="sm:hidden">{event.status.replace('_', ' ').substring(0, 3).toUpperCase()}</span>
-                                                    {' '}▼
+                                                    {event.status.replace('_', ' ').toUpperCase()} ▼
                                                 </button>
                                                 {changingStatus === event.id && (
-                                                    <div className="absolute right-0 mt-1 bg-white rounded-lg shadow-lg border z-10 py-1 min-w-[150px]">
+                                                    <div className="absolute left-0 mt-1 bg-white rounded-lg shadow-lg border z-10 py-1 min-w-[120px]">
                                                         {['scheduled', 'in_progress', 'completed', 'cancelled'].map(status => (
                                                             <button
                                                                 key={status}
                                                                 onClick={() => handleStatusChange(event.id, status)}
-                                                                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+                                                                className="w-full text-left px-3 py-2 hover:bg-gray-100 text-xs sm:text-sm"
                                                             >
                                                                 {status.replace('_', ' ')}
                                                             </button>
@@ -319,105 +248,114 @@ const EventsList = ({
                                                     </div>
                                                 )}
                                             </div>
-
-                                            <div className="flex flex-col gap-2 w-full">
-                                                {/* Live View for All Users - Always visible for scheduled/in-progress games */}
-                                                {(event.type === 'regular_game' || event.type === 'tournament') && 
-                                                 (event.status === 'in_progress' || event.status === 'scheduled') && (
-                                                    <button
-                                                        onClick={() => onViewLive ? onViewLive(event) : null}
-                                                        className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 font-medium w-full sm:w-auto"
-                                                    >
-                                                        <span className="hidden sm:inline">📺 Live View</span>
-                                                        <span className="sm:hidden">📺 Live</span>
-                                                    </button>
-                                                )}
-
-                                                {/* Admin-only controls */}
-                                                {canManageEvent(event) && (
-                                                    <>
-                                                        {/* Edit Event Button */}
-                                                        <button
-                                                            onClick={() => onEventSelect ? onEventSelect(event) : null}
-                                                            className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 w-full sm:w-auto"
-                                                        >
-                                                            <span className="hidden sm:inline">✏️ Edit Event</span>
-                                                            <span className="sm:hidden">✏️ Edit</span>
-                                                        </button>
-
-                                                        {/* Tournament Management */}
-                                                        {event.type === 'tournament' && (
-                                                            <button
-                                                                onClick={() => onManageTournament(event)}
-                                                                className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700 w-full sm:w-auto"
-                                                            >
-                                                                <span className="hidden sm:inline">🏅 Manage Bracket</span>
-                                                                <span className="sm:hidden">🏅 Bracket</span>
-                                                            </button>
-                                                        )}
-
-                                                        {/* Consolidated Scoring Button */}
-                                                        {(event.type === 'regular_game' || event.type === 'tournament') && (
-                                                            <button
-                                                                onClick={() => {
-                                                                    console.log('🎯 Enter Scores clicked, onEnterScoring:', typeof onEnterScoring);
-                                                                    if (onEnterScoring) {
-                                                                        onEnterScoring(event);
-                                                                    } else {
-                                                                        console.error('❌ onEnterScoring is undefined!');
-                                                                    }
-                                                                }}
-                                                                className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 w-full sm:w-auto"
-                                                            >
-                                                                <span className="hidden sm:inline">🎯 Enter Scores</span>
-                                                                <span className="sm:hidden">🎯 Score</span>
-                                                            </button>
-                                                        )}
-                                                        
-                                                        {/* Send Notifications Button */}
-                                                        <button
-                                                            onClick={() => handleSendNotifications(event.id)}
-                                                            disabled={sendingNotifications[event.id]}
-                                                            className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 w-full sm:w-auto"
-                                                        >
-                                                            {sendingNotifications[event.id] ? '⏳ ...' : (
-                                                                <>
-                                                                    <span className="hidden sm:inline">📧 Send Notifications</span>
-                                                                    <span className="sm:hidden">📧 Send</span>
-                                                                </>
-                                                            )}
-                                                        </button>
-                                                        
-                                                        {/* View RSVPs Button */}
-                                                        {event.rsvp_enabled && (
-                                                            <button
-                                                                onClick={() => setViewingRSVPs(event)}
-                                                                className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700 w-full sm:w-auto"
-                                                            >
-                                                                <span className="hidden sm:inline">📊 View RSVPs</span>
-                                                                <span className="sm:hidden">📊 RSVP</span>
-                                                            </button>
-                                                        )}
-                                                    </>
-                                                )}
-                                            </div>
                                         </div>
+                                        
+                                        {/* Quick Action - Live View */}
+                                        {(event.type === 'regular_game' || event.type === 'tournament') && 
+                                         (event.status === 'in_progress' || event.status === 'scheduled') && (
+                                            <button
+                                                onClick={() => onViewLive ? onViewLive(event) : null}
+                                                className="px-2 py-1 text-xs sm:px-3 sm:text-sm bg-green-600 text-white rounded hover:bg-green-700 font-medium"
+                                            >
+                                                📺 Live
+                                            </button>
+                                        )}
                                     </div>
 
-                                    {/* RSVP Info */}
-                                    {event.rsvp_enabled && (
-                                        <div className="mt-4 pt-4 border-t flex items-center justify-between">
-                                            <div className="flex items-center gap-4 text-sm">
-                                                <span className="text-gray-600">RSVP:</span>
-                                                <span className="text-blue-600">📝 Enabled</span>
-                                                {event.groupme_integration && (
-                                                    <span className="text-purple-600">📱 GroupMe</span>
-                                                )}
-                                            </div>
-                                            <div className="text-xs text-gray-500">
-                                                Click event for details
+                                    {/* Event Title */}
+                                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+                                        {event.title}
+                                    </h3>
+
+                                    {/* Event Details - Stacked on Mobile */}
+                                    <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs sm:text-sm text-gray-600 mb-3">
+                                        <span>📅 {formatDate(event.date)}</span>
+                                        <span>🕒 {formatTime(event.time)}</span>
+                                        <span className="truncate max-w-[150px] sm:max-w-none">📍 {event.location}</span>
+                                    </div>
+
+                                    {/* Teams - Compact on Mobile */}
+                                    {event.teams && event.teams.length > 0 && (
+                                        <div className="flex flex-wrap items-center gap-1 mb-3">
+                                            {event.teams.slice(0, 3).map((teamId, index) => (
+                                                <div key={teamId} className="flex items-center gap-1 bg-gray-100 rounded px-2 py-1">
+                                                    {getTeamLogo(teamId) && (
+                                                        <img
+                                                            src={getTeamLogo(teamId)}
+                                                            alt={getTeamName(teamId)}
+                                                            className="w-4 h-4 sm:w-5 sm:h-5 object-cover rounded"
+                                                        />
+                                                    )}
+                                                    <span className="text-xs sm:text-sm text-gray-800 truncate max-w-[80px]">
+                                                        {getTeamName(teamId)}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                            {event.teams.length > 3 && (
+                                                <span className="text-xs text-gray-500 px-2">
+                                                    +{event.teams.length - 3}
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Scores (if completed) */}
+                                    {event.scores && (
+                                        <div className="bg-gray-50 rounded p-2 mb-3">
+                                            <div className="text-sm sm:text-base font-semibold text-gray-900 text-center">
+                                                {event.scores.home_team?.name} {event.scores.home_team?.score} - {event.scores.away_team?.score} {event.scores.away_team?.name}
                                             </div>
                                         </div>
+                                    )}
+
+                                    {/* Admin Actions - Grid on Mobile */}
+                                    {canManageEvent(event) && (
+                                        <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 pt-3 border-t">
+                                            <button
+                                                onClick={() => onEventSelect ? onEventSelect(event) : null}
+                                                className="px-2 py-1.5 text-xs sm:px-3 sm:text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+                                            >
+                                                ✏️ Edit
+                                            </button>
+
+                                            {event.type === 'tournament' && (
+                                                <button
+                                                    onClick={() => onManageTournament(event)}
+                                                    className="px-2 py-1.5 text-xs sm:px-3 sm:text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
+                                                >
+                                                    🏅 Bracket
+                                                </button>
+                                            )}
+
+                                            {(event.type === 'regular_game' || event.type === 'tournament') && (
+                                                <button
+                                                    onClick={() => {
+                                                        if (onEnterScoring) onEnterScoring(event);
+                                                    }}
+                                                    className="px-2 py-1.5 text-xs sm:px-3 sm:text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                                                >
+                                                    🎯 Score
+                                                </button>
+                                            )}
+                                            
+                                            <button
+                                                onClick={() => handleSendNotifications(event.id)}
+                                                disabled={sendingNotifications[event.id]}
+                                                className="px-2 py-1.5 text-xs sm:px-3 sm:text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                                            >
+                                                {sendingNotifications[event.id] ? '⏳...' : '📧 Notify'}
+                                            </button>
+                                            
+                                            {event.rsvp_enabled && (
+                                                <button
+                                                    onClick={() => setViewingRSVPs(event)}
+                                                    className="px-2 py-1.5 text-xs sm:px-3 sm:text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
+                                                >
+                                                    📊 RSVPs
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
                                     )}
                                 </div>
                             </div>
