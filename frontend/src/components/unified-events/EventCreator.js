@@ -492,7 +492,6 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                             </div>
                         </div>
                     )}
-                    </div>
                     
                     {errors.teams && <p className="text-red-500 text-sm mt-2">{errors.teams}</p>}
                     
