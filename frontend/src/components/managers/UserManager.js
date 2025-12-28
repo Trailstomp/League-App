@@ -526,6 +526,60 @@ const UserManager = ({ teams = [] }) => {
                                     ))}
                                 </select>
                             </div>
+                            
+                            {/* Player Attributes (for players) */}
+                            {(newUser.role === 'player' || newUser.role === 'coach') && (
+                                <>
+                                    <div className="col-span-2 border-t pt-4">
+                                        <h4 className="font-medium text-gray-700 mb-3">Player Details</h4>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Jersey #</label>
+                                        <input
+                                            type="text"
+                                            value={newUser.playerNumber}
+                                            onChange={(e) => setNewUser(prev => ({ ...prev, playerNumber: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                            placeholder="12"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Position</label>
+                                        <input
+                                            type="text"
+                                            value={newUser.position}
+                                            onChange={(e) => setNewUser(prev => ({ ...prev, position: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                            placeholder="Attack, Defense, Midfield, Goalie"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Jersey Size</label>
+                                        <select
+                                            value={newUser.jerseySize}
+                                            onChange={(e) => setNewUser(prev => ({ ...prev, jerseySize: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                        >
+                                            <option value="">Select size</option>
+                                            <option value="S">Small</option>
+                                            <option value="M">Medium</option>
+                                            <option value="L">Large</option>
+                                            <option value="XL">XL</option>
+                                            <option value="XXL">XXL</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
+                                        <input
+                                            type="text"
+                                            value={newUser.emergencyContact}
+                                            onChange={(e) => setNewUser(prev => ({ ...prev, emergencyContact: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                            placeholder="Contact name & phone"
+                                        />
+                                    </div>
+                                </>
+                            )}
                         </div>
                         <div className="flex gap-3 mt-6">
                             <button
