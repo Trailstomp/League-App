@@ -331,7 +331,19 @@ const UserManager = ({ teams = [] }) => {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-600">{user.phone || '-'}</div>
+                                                    <div className="text-sm font-mono text-gray-900">
+                                                        {user.playerNumber || '-'}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                                        user.status === 'active' ? 'bg-green-100 text-green-800' :
+                                                        user.status === 'guest' ? 'bg-blue-100 text-blue-800' :
+                                                        user.status === 'inactive' ? 'bg-gray-100 text-gray-800' :
+                                                        'bg-yellow-100 text-yellow-800'
+                                                    }`}>
+                                                        {user.status}
+                                                    </span>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="flex gap-2">
@@ -340,6 +352,12 @@ const UserManager = ({ teams = [] }) => {
                                                             className="px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700"
                                                         >
                                                             ✏️ Edit
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleResetPassword(user.id)}
+                                                            className="px-3 py-1 text-xs bg-yellow-600 text-white rounded hover:bg-yellow-700"
+                                                        >
+                                                            🔑 Reset PW
                                                         </button>
                                                         <button
                                                             onClick={() => handleDelete(user.id)}
