@@ -372,7 +372,7 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
     };
 
     return (
-        <div className="h-full flex flex-col" style={{ backgroundColor: 'inherit' }}>
+        <div className="h-full flex flex-col" style={{ backgroundColor: 'transparent' }}>
             {/* Header */}
             <div className="bg-white/90 backdrop-blur-sm shadow-sm border-b px-6 py-4 flex-shrink-0">
                 <div className="flex items-center justify-between">

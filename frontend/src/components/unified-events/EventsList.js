@@ -150,7 +150,7 @@ const EventsList = ({
     }
 
     return (
-        <div className="flex-1 flex flex-col" style={{ backgroundColor: 'inherit' }}>
+        <div className="flex-1 flex flex-col" style={{ backgroundColor: 'transparent' }}>
             {/* Filters and Controls - Mobile Optimized */}
             <div className="bg-white/90 backdrop-blur-sm border-b px-4 py-3 sm:px-6 sm:py-4">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 sm:justify-between">
