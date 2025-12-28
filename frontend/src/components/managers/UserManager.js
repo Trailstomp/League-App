@@ -138,7 +138,12 @@ const UserManager = ({ teams = [] }) => {
                     email: editingUser.email,
                     role: editingUser.role,
                     teamId: editingUser.teamId,
-                    phone: editingUser.phone
+                    status: editingUser.status,
+                    phone: editingUser.phone,
+                    playerNumber: editingUser.playerNumber,
+                    position: editingUser.position,
+                    jerseySize: editingUser.jerseySize,
+                    emergencyContact: editingUser.emergencyContact
                 })
             });
 
@@ -150,6 +155,30 @@ const UserManager = ({ teams = [] }) => {
             }
         } catch (error) {
             alert('Error updating user');
+        }
+    };
+
+    const handleResetPassword = async (userId) => {
+        const newPassword = prompt('Enter new password (minimum 6 characters):');
+        if (!newPassword || newPassword.length < 6) {
+            alert('Password must be at least 6 characters');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${backendUrl}/api/users/${userId}/reset-password`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ newPassword })
+            });
+
+            if (response.ok) {
+                alert('✅ Password reset successfully!');
+            } else {
+                alert('Failed to reset password');
+            }
+        } catch (error) {
+            alert('Error resetting password');
         }
     };
 
