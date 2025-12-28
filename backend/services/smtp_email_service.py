@@ -211,9 +211,15 @@ class SMTPEmailService:
         event_location: str,
         event_description: str,
         rsvp_link: str,
-        team_logos: List[str]
+        team_logos: List[str],
+        event_image_url: str = None
     ) -> str:
         """Build rich HTML email template"""
+        
+        # Event image section
+        event_image_html = ''
+        if event_image_url:
+            event_image_html = f'<div style="text-align: center; margin: 20px 0;"><img src="{event_image_url}" style="max-width: 100%; height: auto; border-radius: 8px;" alt="Event Image" /></div>'
         
         # Team logos section
         logos_html = ''
