@@ -98,11 +98,20 @@ const LoginForm = ({ users, onLogin }) => {
                     required
                 />
             </div>
+            
+            {/* Error Message */}
+            {error && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-sm text-red-800">{error}</p>
+                </div>
+            )}
+            
             <button 
                 type="submit"
-                className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                disabled={loading}
+                className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold disabled:bg-gray-400"
             >
-                Login
+                {loading ? 'Logging in...' : 'Login'}
             </button>
         </form>
     );
