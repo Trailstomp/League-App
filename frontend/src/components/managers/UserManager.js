@@ -658,6 +658,71 @@ const UserManager = ({ teams = [] }) => {
                                     ))}
                                 </select>
                             </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <select
+                                    value={editingUser.status}
+                                    onChange={(e) => setEditingUser(prev => ({ ...prev, status: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                >
+                                    <option value="guest">Guest</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="archived">Archived</option>
+                                </select>
+                            </div>
+                            
+                            {/* Player Attributes */}
+                            {(editingUser.role === 'player' || editingUser.role === 'coach') && (
+                                <>
+                                    <div className="col-span-2 border-t pt-4">
+                                        <h4 className="font-medium text-gray-700 mb-3">Player Details</h4>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Jersey #</label>
+                                        <input
+                                            type="text"
+                                            value={editingUser.playerNumber || ''}
+                                            onChange={(e) => setEditingUser(prev => ({ ...prev, playerNumber: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Position</label>
+                                        <input
+                                            type="text"
+                                            value={editingUser.position || ''}
+                                            onChange={(e) => setEditingUser(prev => ({ ...prev, position: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Jersey Size</label>
+                                        <select
+                                            value={editingUser.jerseySize || ''}
+                                            onChange={(e) => setEditingUser(prev => ({ ...prev, jerseySize: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                        >
+                                            <option value="">Select size</option>
+                                            <option value="S">Small</option>
+                                            <option value="M">Medium</option>
+                                            <option value="L">Large</option>
+                                            <option value="XL">XL</option>
+                                            <option value="XXL">XXL</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
+                                        <input
+                                            type="text"
+                                            value={editingUser.emergencyContact || ''}
+                                            onChange={(e) => setEditingUser(prev => ({ ...prev, emergencyContact: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                        />
+                                    </div>
+                                </>
+                            )}
                         </div>
                         <div className="flex gap-3 mt-6">
                             <button
