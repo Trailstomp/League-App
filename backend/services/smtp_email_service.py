@@ -57,7 +57,8 @@ class SMTPEmailService:
         event_description: str = '',
         rsvp_link: str = '',
         team_logos: List[str] = None,
-        calendar_event: str = None
+        calendar_event: str = None,
+        event_image_url: str = None
     ) -> Dict[str, Any]:
         """
         Send event notification email
