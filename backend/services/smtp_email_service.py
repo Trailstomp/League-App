@@ -88,14 +88,20 @@ class SMTPEmailService:
                     msg['From'] = f'{self.sender_name} <{self.sender_email}>'
                     msg['To'] = to_email
                     
-                    # Build HTML email
+                    # Personalize RSVP link with user email
+                    personalized_rsvp_link = rsvp_link
+                    if rsvp_link:
+                        separator = '&' if '?' in rsvp_link else '?'
+                        personalized_rsvp_link = f"{rsvp_link}{separator}email={to_email}"
+                    
+                    # Build HTML email with personalized link
                     html_body = self._build_event_email_html(
                         event_title=event_title,
                         event_date=event_date,
                         event_time=event_time,
                         event_location=event_location,
                         event_description=event_description,
-                        rsvp_link=rsvp_link,
+                        rsvp_link=personalized_rsvp_link,
                         team_logos=team_logos
                     )
                     
