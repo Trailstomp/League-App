@@ -301,7 +301,9 @@ const EventsList = ({
                                                     onClick={() => setChangingStatus(event.id === changingStatus ? null : event.id)}
                                                     className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)} cursor-pointer hover:opacity-80`}
                                                 >
-                                                    {event.status.replace('_', ' ').toUpperCase()} ▼
+                                                    <span className="hidden sm:inline">{event.status.replace('_', ' ').toUpperCase()}</span>
+                                                    <span className="sm:hidden">{event.status.replace('_', ' ').substring(0, 3).toUpperCase()}</span>
+                                                    {' '}▼
                                                 </button>
                                                 {changingStatus === event.id && (
                                                     <div className="absolute right-0 mt-1 bg-white rounded-lg shadow-lg border z-10 py-1 min-w-[150px]">
@@ -318,15 +320,16 @@ const EventsList = ({
                                                 )}
                                             </div>
 
-                                            <div className="flex flex-col gap-2">
+                                            <div className="flex flex-col gap-2 w-full">
                                                 {/* Live View for All Users - Always visible for scheduled/in-progress games */}
                                                 {(event.type === 'regular_game' || event.type === 'tournament') && 
                                                  (event.status === 'in_progress' || event.status === 'scheduled') && (
                                                     <button
                                                         onClick={() => onViewLive ? onViewLive(event) : null}
-                                                        className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 font-medium"
+                                                        className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 font-medium w-full sm:w-auto"
                                                     >
-                                                        📺 Live View
+                                                        <span className="hidden sm:inline">📺 Live View</span>
+                                                        <span className="sm:hidden">📺 Live</span>
                                                     </button>
                                                 )}
 
