@@ -794,20 +794,23 @@ const UserManager = ({ teams = [] }) => {
                                     </div>
                                 </>
                             )}
+                            </div>
                         </div>
-                        <div className="flex gap-3 mt-6">
-                            <button
-                                onClick={() => setEditingUser(null)}
-                                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleUpdateUser}
-                                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                            >
-                                Update User
-                            </button>
+                        <div className="sticky bottom-0 bg-white border-t p-4 md:p-6">
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                <button
+                                    onClick={() => setEditingUser(null)}
+                                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleUpdateUser}
+                                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                >
+                                    Update User
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
