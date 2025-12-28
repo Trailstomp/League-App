@@ -339,18 +339,20 @@ const EventsList = ({
                                                         {/* Edit Event Button */}
                                                         <button
                                                             onClick={() => onEventSelect ? onEventSelect(event) : null}
-                                                            className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+                                                            className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 w-full sm:w-auto"
                                                         >
-                                                            ✏️ Edit Event
+                                                            <span className="hidden sm:inline">✏️ Edit Event</span>
+                                                            <span className="sm:hidden">✏️ Edit</span>
                                                         </button>
 
                                                         {/* Tournament Management */}
                                                         {event.type === 'tournament' && (
                                                             <button
                                                                 onClick={() => onManageTournament(event)}
-                                                                className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
+                                                                className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700 w-full sm:w-auto"
                                                             >
-                                                                🏅 Manage Bracket
+                                                                <span className="hidden sm:inline">🏅 Manage Bracket</span>
+                                                                <span className="sm:hidden">🏅 Bracket</span>
                                                             </button>
                                                         )}
 
@@ -365,9 +367,10 @@ const EventsList = ({
                                                                         console.error('❌ onEnterScoring is undefined!');
                                                                     }
                                                                 }}
-                                                                className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                                                                className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 w-full sm:w-auto"
                                                             >
-                                                                🎯 Enter Scores
+                                                                <span className="hidden sm:inline">🎯 Enter Scores</span>
+                                                                <span className="sm:hidden">🎯 Score</span>
                                                             </button>
                                                         )}
                                                         
@@ -375,18 +378,24 @@ const EventsList = ({
                                                         <button
                                                             onClick={() => handleSendNotifications(event.id)}
                                                             disabled={sendingNotifications[event.id]}
-                                                            className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                                                            className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 w-full sm:w-auto"
                                                         >
-                                                            {sendingNotifications[event.id] ? '⏳ Sending...' : '📧 Send Notifications'}
+                                                            {sendingNotifications[event.id] ? '⏳ ...' : (
+                                                                <>
+                                                                    <span className="hidden sm:inline">📧 Send Notifications</span>
+                                                                    <span className="sm:hidden">📧 Send</span>
+                                                                </>
+                                                            )}
                                                         </button>
                                                         
                                                         {/* View RSVPs Button */}
                                                         {event.rsvp_enabled && (
                                                             <button
                                                                 onClick={() => setViewingRSVPs(event)}
-                                                                className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
+                                                                className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700 w-full sm:w-auto"
                                                             >
-                                                                📊 View RSVPs
+                                                                <span className="hidden sm:inline">📊 View RSVPs</span>
+                                                                <span className="sm:hidden">📊 RSVP</span>
                                                             </button>
                                                         )}
                                                     </>
