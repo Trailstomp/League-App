@@ -368,13 +368,11 @@ const Layout = ({
                             fontSize: websiteStyle.mainFontSize || '16px',
                             color: websiteStyle.mainTextColor || '#374151',
                             minHeight: isMobileView ? 'calc(100vh - 160px)' : 'calc(100vh - 200px)',
-                            padding: '0',
+                            padding: '1rem',
                             ...getContentBackgroundStyle()
                         }}
                     >
-                        <div className="w-full h-full">
-                            {children}
-                        </div>
+                        {children}
                     </main>
                 </div>
             </div>
