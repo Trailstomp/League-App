@@ -7064,6 +7064,7 @@ class UnifiedEvent(BaseModel):
     date: str
     time: str
     location: str
+    imageUrl: Optional[str] = ""
     teams: List[str] = []
     status: str = "scheduled"  # scheduled, in_progress, completed, cancelled
     rsvp_enabled: bool = True
