@@ -280,14 +280,15 @@ const Layout = ({
                 className="main-content-area transition-all duration-300" 
                 style={{
                     marginLeft: isMobileView ? '0' : (isNavCollapsed ? '80px' : '320px'), // Use actual nav maxWidth
-                    paddingTop: '200px', // Account for fixed header (ticker 120px + banner 80px)
+                    paddingTop: isMobileView ? '80px' : '200px', // Reduced for mobile (no ticker/banner)
+                    paddingBottom: isMobileView ? '80px' : '0', // Space for bottom navbar on mobile
                     minHeight: '100vh',
                     width: isMobileView ? '100vw' : (isNavCollapsed ? 'calc(100vw - 80px)' : 'calc(100vw - 320px)')
                 }}
             >
                 <div className="flex flex-col h-full">
-                    {/* Mobile Navigation Button - Fixed at top left for mobile */}
-                    {isMobileView && (
+                    {/* Mobile Hamburger Menu Button - only show if NOT using bottom nav */}
+                    {isMobileView && !websiteStyle.useBottomNavOnMobile && (
                         <button
                             onClick={() => setIsMobileMenuOpen(true)}
                             onTouchStart={(e) => {
@@ -296,7 +297,7 @@ const Layout = ({
                             }}
                             className="fixed z-60 p-4 rounded-lg shadow-2xl transition-all duration-200 hover:scale-110 mobile-nav-button touch-manipulation"
                         style={{
-                            top: '210px', // Just below header with padding
+                            top: '90px', // Below mobile header
                             left: '16px', // Fixed position from left
                             backgroundColor: websiteStyle.primaryColor || '#3b82f6',
                             color: '#ffffff',
@@ -311,15 +312,16 @@ const Layout = ({
                         </button>
                     )}
 
-                    {/* Main Content Container */}
+                    {/* Main Content Container with customizable background */}
                     <main 
                         className="flex-1 overflow-x-hidden w-full"
                         style={{
                             fontFamily: websiteStyle.mainFont || 'Inter, sans-serif',
                             fontSize: websiteStyle.mainFontSize || '16px',
                             color: websiteStyle.mainTextColor || '#374151',
-                            minHeight: 'calc(100vh - 200px)', // Ensure full height below header
-                            padding: '0' // Remove padding to eliminate gaps
+                            minHeight: isMobileView ? 'calc(100vh - 160px)' : 'calc(100vh - 200px)',
+                            padding: '0',
+                            ...getContentBackgroundStyle()
                         }}
                     >
                         <div className="w-full h-full">
@@ -328,6 +330,17 @@ const Layout = ({
                     </main>
                 </div>
             </div>
+
+            {/* Bottom Navigation Bar for Mobile */}
+            {isMobileView && (
+                <BottomNavbar
+                    currentPage={currentPage}
+                    onNavigate={handleNavigate}
+                    currentUser={currentUser}
+                    websiteStyle={websiteStyle}
+                    onLogin={onLogin}
+                />
+            )}
         </div>
     );
 };
