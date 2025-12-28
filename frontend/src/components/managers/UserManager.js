@@ -518,10 +518,13 @@ const UserManager = ({ teams = [] }) => {
 
             {/* Create User Modal */}
             {showCreateModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
-                        <h3 className="text-xl font-bold mb-4">Create New User</h3>
-                        <div className="space-y-4">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto md:rounded-lg sm:rounded-none sm:max-h-screen">
+                        <div className="sticky top-0 bg-white border-b p-4 md:p-6">
+                            <h3 className="text-xl font-bold">Create New User</h3>
+                        </div>
+                        <div className="p-4 md:p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                                 <input
