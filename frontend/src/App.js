@@ -152,18 +152,25 @@ function App() {
   // Check URL on app load and sync with currentPage state
   useEffect(() => {
     const path = window.location.pathname;
-    console.log('🌐 Current URL path:', path);
+    const search = window.location.search;
+    console.log('🌐 Current URL path:', path, 'search:', search);
+    
+    // Check for RSVP parameters first - this takes priority
+    if (search.includes('response=') && path.includes('/events/')) {
+      console.log('📬 RSVP URL detected, will handle in renderPage');
+      return; // Let renderPage handle RSVP
+    }
     
     // Check for quick RSVP form URLs
     if (path.startsWith('/quick-rsvp/')) {
       setCurrentPage('quick-rsvp');
+      return;
     }
     
     // Check for RSVP page URLs - redirect to backend
     if (path.startsWith('/rsvp/')) {
       const eventId = path.split('/rsvp/')[1];
       window.location.href = `${process.env.REACT_APP_BACKEND_URL}/api/rsvp/${eventId}`;
-      return;
       return;
     }
     
