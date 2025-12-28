@@ -312,9 +312,50 @@ const SeasonManager = ({ teams = [], events = [], websiteStyle = {}, currentUser
                                             
                                             <div className="flex items-center space-x-4 text-xs text-gray-500">
                                                 <span>📊 {stats.events} events</span>
-                                                <span>🏆 {stats.teams} teams</span>
+                                                <span>🏆 {(season.teams || []).length} teams</span>
                                                 <span>🥍 {stats.games} games</span>
                                                 <span>🏆 {stats.tournaments} tournaments</span>
+                                            </div>
+
+                                            {/* Teams in Season */}
+                                            <div className="mt-3">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <span className="text-xs font-medium text-gray-700">Teams in Season:</span>
+                                                    <select
+                                                        onChange={(e) => {
+                                                            if (e.target.value) {
+                                                                handleAddTeamToSeason(season.id, e.target.value);
+                                                                e.target.value = '';
+                                                            }
+                                                        }}
+                                                        className="text-xs px-2 py-1 border border-gray-300 rounded"
+                                                    >
+                                                        <option value="">+ Add Team</option>
+                                                        {teams.filter(t => !(season.teams || []).includes(t.id)).map(team => (
+                                                            <option key={team.id} value={team.id}>{team.name}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {(season.teams || []).length === 0 ? (
+                                                        <span className="text-xs text-gray-400 italic">No teams assigned yet</span>
+                                                    ) : (
+                                                        (season.teams || []).map(teamId => {
+                                                            const team = teams.find(t => t.id === teamId);
+                                                            return team ? (
+                                                                <div key={teamId} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                                                                    {team.name}
+                                                                    <button
+                                                                        onClick={() => handleRemoveTeamFromSeason(season.id, teamId)}
+                                                                        className="ml-1 text-blue-600 hover:text-blue-800"
+                                                                    >
+                                                                        ✕
+                                                                    </button>
+                                                                </div>
+                                                            ) : null;
+                                                        })
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                         
