@@ -7084,6 +7084,7 @@ class EventUpdate(BaseModel):
     date: Optional[str] = None
     time: Optional[str] = None
     location: Optional[str] = None
+    imageUrl: Optional[str] = None
     teams: Optional[List[str]] = None
     status: Optional[str] = None
     rsvp_enabled: Optional[bool] = None
