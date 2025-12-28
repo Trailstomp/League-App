@@ -59,6 +59,7 @@ const SeasonManager = ({ teams = [], events = [], websiteStyle = {}, currentUser
         const seasonToAdd = {
             id: `season_${Date.now()}`,
             ...newSeason,
+            teams: [],  // Add teams array
             createdAt: new Date().toISOString(),
             createdBy: currentUser?.name || 'Admin'
         };
@@ -69,6 +70,31 @@ const SeasonManager = ({ teams = [], events = [], websiteStyle = {}, currentUser
         if (await saveSeasons(updatedSeasons)) {
             setNewSeason({ name: '', startDate: '', endDate: '', description: '', status: 'upcoming' });
         }
+    };
+
+    const handleAddTeamToSeason = async (seasonId, teamId) => {
+        const updatedSeasons = seasons.map(s => {
+            if (s.id === seasonId) {
+                const currentTeams = s.teams || [];
+                if (!currentTeams.includes(teamId)) {
+                    return { ...s, teams: [...currentTeams, teamId] };
+                }
+            }
+            return s;
+        });
+        setSeasons(updatedSeasons);
+        await saveSeasons(updatedSeasons);
+    };
+
+    const handleRemoveTeamFromSeason = async (seasonId, teamId) => {
+        const updatedSeasons = seasons.map(s => {
+            if (s.id === seasonId) {
+                return { ...s, teams: (s.teams || []).filter(t => t !== teamId) };
+            }
+            return s;
+        });
+        setSeasons(updatedSeasons);
+        await saveSeasons(updatedSeasons);
     };
 
     const handleEditSeason = (season) => {
