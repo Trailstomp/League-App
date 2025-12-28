@@ -7960,7 +7960,8 @@ async def send_email_event_notifications(event_id: str, options: Dict[str, Any] 
             event_description=event.get("description", ""),
             rsvp_link=rsvp_link,
             team_logos=team_logos,
-            calendar_event=calendar_content
+            calendar_event=calendar_content,
+            event_image_url=event.get("imageUrl", "")
         )
         
         logger.info(f"✅ Email notifications sent for event {event_id} - {result['sent_count']} sent, {result['failed_count']} failed")
