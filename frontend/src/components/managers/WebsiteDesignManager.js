@@ -1433,6 +1433,145 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                     </div>
                 )}
             </div>
+
+            {/* Card/Form Background Section */}
+            <div className="border-t pt-6">
+                <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200 mb-4">
+                    <h4 className="text-md font-semibold text-emerald-800 mb-2">📋 Card & Form Background</h4>
+                    <p className="text-emerald-600 text-sm">Control the background color of cards and forms. Use "Transparent" to show the content area background through.</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-3 mb-4">
+                    <button
+                        onClick={() => updateStyle({ cardBackgroundType: 'solid' })}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            editingStyle.cardBackgroundType !== 'transparent'
+                                ? 'bg-emerald-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Solid Color
+                    </button>
+                    <button
+                        onClick={() => updateStyle({ cardBackgroundType: 'transparent' })}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            editingStyle.cardBackgroundType === 'transparent'
+                                ? 'bg-emerald-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Transparent
+                    </button>
+                </div>
+
+                {editingStyle.cardBackgroundType !== 'transparent' && (
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Card Background Color</label>
+                        <div className="flex items-center space-x-3 mb-3">
+                            <input
+                                type="color"
+                                value={editingStyle.cardBackgroundColor || '#ffffff'}
+                                onChange={(e) => updateStyle({ cardBackgroundColor: e.target.value })}
+                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={editingStyle.cardBackgroundColor || '#ffffff'}
+                                onChange={(e) => {
+                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                        updateStyle({ cardBackgroundColor: e.target.value });
+                                    }
+                                }}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
+                                placeholder="#ffffff"
+                            />
+                        </div>
+                        
+                        {/* Card Opacity Slider */}
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Card Opacity: {Math.round((editingStyle.cardBackgroundOpacity || 1) * 100)}%
+                            </label>
+                            <input
+                                type="range"
+                                min="0.1"
+                                max="1"
+                                step="0.1"
+                                value={editingStyle.cardBackgroundOpacity || 1}
+                                onChange={(e) => updateStyle({ cardBackgroundOpacity: parseFloat(e.target.value) })}
+                                className="w-full"
+                            />
+                            <div className="flex justify-between text-xs text-slate-500">
+                                <span>10% (More transparent)</span>
+                                <span>100% (Solid)</span>
+                            </div>
+                        </div>
+                        
+                        {/* Quick Colors for Cards */}
+                        <div className="mb-3">
+                            <label className="block text-xs font-medium text-slate-500 mb-2">Quick Colors</label>
+                            <div className="flex flex-wrap gap-2">
+                                <button
+                                    onClick={() => updateStyle({ cardBackgroundColor: '#ffffff' })}
+                                    className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                                        editingStyle.cardBackgroundColor === '#ffffff' 
+                                            ? 'border-emerald-500 ring-2 ring-emerald-300' 
+                                            : 'border-slate-300 hover:border-slate-400'
+                                    }`}
+                                    style={{ backgroundColor: '#ffffff' }}
+                                    title="White"
+                                />
+                                <button
+                                    onClick={() => updateStyle({ cardBackgroundColor: '#f8fafc' })}
+                                    className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                                        editingStyle.cardBackgroundColor === '#f8fafc' 
+                                            ? 'border-emerald-500 ring-2 ring-emerald-300' 
+                                            : 'border-slate-300 hover:border-slate-400'
+                                    }`}
+                                    style={{ backgroundColor: '#f8fafc' }}
+                                    title="Light Gray"
+                                />
+                                <button
+                                    onClick={() => updateStyle({ cardBackgroundColor: '#1e293b' })}
+                                    className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                                        editingStyle.cardBackgroundColor === '#1e293b' 
+                                            ? 'border-emerald-500 ring-2 ring-emerald-300' 
+                                            : 'border-slate-300 hover:border-slate-400'
+                                    }`}
+                                    style={{ backgroundColor: '#1e293b' }}
+                                    title="Dark Slate"
+                                />
+                                <button
+                                    onClick={() => updateStyle({ cardBackgroundColor: '#0f172a' })}
+                                    className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                                        editingStyle.cardBackgroundColor === '#0f172a' 
+                                            ? 'border-emerald-500 ring-2 ring-emerald-300' 
+                                            : 'border-slate-300 hover:border-slate-400'
+                                    }`}
+                                    style={{ backgroundColor: '#0f172a' }}
+                                    title="Near Black"
+                                />
+                                {editingStyle.primaryColor && (
+                                    <button
+                                        onClick={() => updateStyle({ cardBackgroundColor: editingStyle.primaryColor })}
+                                        className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                                            editingStyle.cardBackgroundColor === editingStyle.primaryColor 
+                                                ? 'border-emerald-500 ring-2 ring-emerald-300' 
+                                                : 'border-slate-300 hover:border-slate-400'
+                                        }`}
+                                        style={{ backgroundColor: editingStyle.primaryColor }}
+                                        title={`Primary Color`}
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+                
+                <p className="text-xs text-slate-500">
+                    💡 Use "Transparent" to let the content area background show through, or set a custom card color with adjustable opacity.
+                </p>
+            </div>
         </div>
     );
 
