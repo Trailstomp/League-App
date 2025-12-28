@@ -84,7 +84,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border p-6">
+                <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm p-6">
                     <div className="flex items-center">
                         <LacrosseIcon name="calendar" style={{fontSize: '32px'}} className="text-green-500 mr-4" />
                         <div>
@@ -94,7 +94,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border p-6">
+                <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm p-6">
                     <div className="flex items-center">
                         <LacrosseIcon name="players" style={{fontSize: '32px'}} className="text-purple-500 mr-4" />
                         <div>
@@ -106,7 +106,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
             </div>
 
             {/* Teams by Division */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm p-6">
                 <h2 className="text-xl font-semibold text-slate-800 mb-6">League Teams</h2>
                 {teams.length > 0 ? (
                     <div className="space-y-8">
