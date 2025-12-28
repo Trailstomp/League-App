@@ -143,6 +143,23 @@ const Layout = ({
             style.backgroundColor = '#ffffff'; // Default white
         }
         
+        // Add CSS custom properties for card backgrounds
+        const cardBgColor = websiteStyle.cardBackgroundColor || '#ffffff';
+        const cardOpacity = websiteStyle.cardBackgroundOpacity || 1;
+        const isTransparent = websiteStyle.cardBackgroundType === 'transparent';
+        
+        // Convert hex to rgba for opacity support
+        const hexToRgba = (hex, alpha) => {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        };
+        
+        style['--card-bg'] = isTransparent ? 'transparent' : hexToRgba(cardBgColor, cardOpacity);
+        style['--card-bg-solid'] = isTransparent ? 'transparent' : cardBgColor;
+        style['--card-opacity'] = isTransparent ? '0' : cardOpacity;
+        
         return style;
     };
 
