@@ -69,7 +69,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
     };
 
     return (
-        <div className="space-y-6 p-4" style={{ backgroundColor: 'inherit' }}>
+        <div className="space-y-6 p-4" style={{ backgroundColor: 'transparent', minHeight: '100%' }}>
             {/* Banner and ticker moved to Layout component - now fixed at top of all pages */}
 
             {/* Quick Stats */}
