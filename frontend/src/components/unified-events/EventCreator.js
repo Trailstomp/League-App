@@ -457,38 +457,41 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                             <h4 className="text-sm font-semibold text-gray-700 mb-3">OTHER TEAMS</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                                 {teams.filter(t => !['box', 'field', 'outside'].includes(t.type || 'field')).map(team => {
-                            const isSelected = formData.teams.includes(team.id);
-                            return (
-                                <div
-                                    key={team.id}
-                                    className={`cursor-pointer p-3 rounded-lg border-2 transition-colors ${
-                                        isSelected
-                                            ? 'border-blue-500 bg-blue-50'
-                                            : 'border-gray-200 hover:border-gray-300'
-                                    }`}
-                                    onClick={() => handleTeamSelection(team.id)}
-                                >
-                                    <div className="flex items-center gap-3">
-                                        {team.style?.logoUrl && (
-                                            <img 
-                                                src={team.style.logoUrl} 
-                                                alt={team.name} 
-                                                className="w-8 h-8 object-cover rounded"
-                                            />
-                                        )}
-                                        <div>
-                                            <div className="font-medium text-gray-800">{team.name}</div>
-                                            {team.division && (
-                                                <div className="text-sm text-gray-600">{team.division}</div>
-                                            )}
+                                    const isSelected = formData.teams.includes(team.id);
+                                    return (
+                                        <div
+                                            key={team.id}
+                                            className={`cursor-pointer p-3 rounded-lg border-2 transition-colors ${
+                                                isSelected
+                                                    ? 'border-blue-500 bg-blue-50'
+                                                    : 'border-gray-200 hover:border-gray-300'
+                                            }`}
+                                            onClick={() => handleTeamSelection(team.id)}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                {team.style?.logoUrl && (
+                                                    <img 
+                                                        src={team.style.logoUrl} 
+                                                        alt={team.name} 
+                                                        className="w-8 h-8 object-cover rounded"
+                                                    />
+                                                )}
+                                                <div>
+                                                    <div className="font-medium text-gray-800">{team.name}</div>
+                                                    {team.division && (
+                                                        <div className="text-sm text-gray-600">{team.division}</div>
+                                                    )}
+                                                </div>
+                                                {isSelected && (
+                                                    <div className="ml-auto text-blue-600">✓</div>
+                                                )}
+                                            </div>
                                         </div>
-                                        {isSelected && (
-                                            <div className="ml-auto text-blue-600">✓</div>
-                                        )}
-                                    </div>
-                                </div>
-                            );
-                        })}
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
                     </div>
                     
                     {errors.teams && <p className="text-red-500 text-sm mt-2">{errors.teams}</p>}
