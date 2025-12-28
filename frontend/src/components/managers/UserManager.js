@@ -298,80 +298,142 @@ const UserManager = ({ teams = [] }) => {
                                 </button>
                             </div>
                         ) : (
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Team</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                        {activeUsers.map(user => (
-                                            <tr key={user.id} className="hover:bg-gray-50">
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="font-medium text-gray-900">{user.name}</div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-600">{user.email}</div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleBadgeColor(user.role)}`}>
+                            <>
+                                {/* Desktop: Table View */}
+                                <div className="hidden md:block overflow-x-auto">
+                                    <table className="min-w-full divide-y divide-gray-200">
+                                        <thead className="bg-gray-50">
+                                            <tr>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Team</th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                            {activeUsers.map(user => (
+                                                <tr key={user.id} className="hover:bg-gray-50">
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <div className="font-medium text-gray-900">{user.name}</div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <div className="text-sm text-gray-600">{user.email}</div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleBadgeColor(user.role)}`}>
+                                                            {user.role}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <div className="text-sm text-gray-600">
+                                                            {user.teamName || getTeamName(user.teamId)}
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <div className="text-sm font-mono text-gray-900">
+                                                            {user.playerNumber || '-'}
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                                            user.status === 'active' ? 'bg-green-100 text-green-800' :
+                                                            user.status === 'guest' ? 'bg-blue-100 text-blue-800' :
+                                                            user.status === 'inactive' ? 'bg-gray-100 text-gray-800' :
+                                                            'bg-yellow-100 text-yellow-800'
+                                                        }`}>
+                                                            {user.status}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                onClick={() => setEditingUser(user)}
+                                                                className="px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700"
+                                                            >
+                                                                ✏️ Edit
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleResetPassword(user.id)}
+                                                                className="px-3 py-1 text-xs bg-yellow-600 text-white rounded hover:bg-yellow-700"
+                                                            >
+                                                                🔑 Reset PW
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDelete(user.id)}
+                                                                className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
+                                                            >
+                                                                🗑️ Delete
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                {/* Mobile: Card View */}
+                                <div className="md:hidden space-y-4">
+                                    {activeUsers.map(user => (
+                                        <div key={user.id} className="bg-white border rounded-lg p-4 shadow-sm">
+                                            <div className="flex items-start justify-between mb-3">
+                                                <div>
+                                                    <h4 className="font-semibold text-gray-900">{user.name}</h4>
+                                                    <p className="text-sm text-gray-600">{user.email}</p>
+                                                </div>
+                                                {user.playerNumber && (
+                                                    <div className="text-2xl font-bold text-gray-400">#{user.playerNumber}</div>
+                                                )}
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+                                                <div>
+                                                    <span className="text-gray-500">Role:</span>
+                                                    <span className={`ml-2 px-2 py-0.5 rounded text-xs font-medium ${getRoleBadgeColor(user.role)}`}>
                                                         {user.role}
                                                     </span>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-600">
-                                                        {user.teamName || getTeamName(user.teamId)}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm font-mono text-gray-900">
-                                                        {user.playerNumber || '-'}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                                </div>
+                                                <div>
+                                                    <span className="text-gray-500">Status:</span>
+                                                    <span className={`ml-2 px-2 py-0.5 rounded text-xs font-medium ${
                                                         user.status === 'active' ? 'bg-green-100 text-green-800' :
                                                         user.status === 'guest' ? 'bg-blue-100 text-blue-800' :
-                                                        user.status === 'inactive' ? 'bg-gray-100 text-gray-800' :
-                                                        'bg-yellow-100 text-yellow-800'
+                                                        'bg-gray-100 text-gray-800'
                                                     }`}>
                                                         {user.status}
                                                     </span>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="flex gap-2">
-                                                        <button
-                                                            onClick={() => setEditingUser(user)}
-                                                            className="px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700"
-                                                        >
-                                                            ✏️ Edit
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleResetPassword(user.id)}
-                                                            className="px-3 py-1 text-xs bg-yellow-600 text-white rounded hover:bg-yellow-700"
-                                                        >
-                                                            🔑 Reset PW
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDelete(user.id)}
-                                                            className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
-                                                        >
-                                                            🗑️ Delete
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                                </div>
+                                                <div className="col-span-2">
+                                                    <span className="text-gray-500">Team:</span>
+                                                    <span className="ml-2 font-medium">{user.teamName || getTeamName(user.teamId)}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => setEditingUser(user)}
+                                                    className="flex-1 px-3 py-2 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+                                                >
+                                                    ✏️ Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => handleResetPassword(user.id)}
+                                                    className="flex-1 px-3 py-2 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700"
+                                                >
+                                                    🔑 PW
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(user.id)}
+                                                    className="px-3 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
                         )}
                     </div>
                 )}
