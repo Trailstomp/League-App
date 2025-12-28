@@ -79,10 +79,15 @@ class User(BaseModel):
     role: str = "guest"  # guest, player, coach, admin
     teamId: Optional[str] = None
     teamName: Optional[str] = None
-    status: str = "guest"  # guest, pending, active, inactive
+    status: str = "guest"  # guest, pending, active, inactive, archived
     requestedRole: Optional[str] = None
     requestedTeam: Optional[str] = None
     phone: Optional[str] = None
+    # Player-specific attributes
+    playerNumber: Optional[str] = None
+    position: Optional[str] = None
+    jerseySize: Optional[str] = None
+    emergencyContact: Optional[str] = None
     notificationPreferences: Dict[str, bool] = {
         "email": True,
         "sms": False,
@@ -107,7 +112,15 @@ class UserUpdate(BaseModel):
     teamId: Optional[str] = None
     status: Optional[str] = None
     phone: Optional[str] = None
+    playerNumber: Optional[str] = None
+    position: Optional[str] = None
+    jerseySize: Optional[str] = None
+    emergencyContact: Optional[str] = None
     notificationPreferences: Optional[Dict[str, bool]] = None
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
 # League and Division Models
 class League(BaseModel):
