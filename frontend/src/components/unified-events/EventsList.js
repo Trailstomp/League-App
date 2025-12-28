@@ -296,9 +296,27 @@ const EventsList = ({
 
                                         {/* Status and Actions */}
                                         <div className="flex flex-col items-end gap-3">
-                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)}`}>
-                                                {event.status.replace('_', ' ').toUpperCase()}
-                                            </span>
+                                            <div className="relative">
+                                                <button
+                                                    onClick={() => setChangingStatus(event.id === changingStatus ? null : event.id)}
+                                                    className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)} cursor-pointer hover:opacity-80`}
+                                                >
+                                                    {event.status.replace('_', ' ').toUpperCase()} ▼
+                                                </button>
+                                                {changingStatus === event.id && (
+                                                    <div className="absolute right-0 mt-1 bg-white rounded-lg shadow-lg border z-10 py-1 min-w-[150px]">
+                                                        {['scheduled', 'in_progress', 'completed', 'cancelled'].map(status => (
+                                                            <button
+                                                                key={status}
+                                                                onClick={() => handleStatusChange(event.id, status)}
+                                                                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+                                                            >
+                                                                {status.replace('_', ' ')}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
 
                                             <div className="flex flex-col gap-2">
                                                 {/* Live View for All Users - Always visible for scheduled/in-progress games */}
