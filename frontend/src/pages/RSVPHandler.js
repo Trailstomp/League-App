@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
 const RSVPHandler = () => {
     const [status, setStatus] = useState('processing');
     const [message, setMessage] = useState('');
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
-    useEffect(() => {
-        handleRSVP();
-    }, []);
-
-    const handleRSVP = async () => {
+    const handleRSVP = useCallback(async () => {
         try {
             // Parse URL parameters from window.location since we may not have React Router
             const urlParams = new URLSearchParams(window.location.search);
@@ -81,7 +77,11 @@ const RSVPHandler = () => {
             setStatus('error');
             setMessage('Error processing RSVP. Please try again.');
         }
-    };
+    }, [backendUrl]);
+
+    useEffect(() => {
+        handleRSVP();
+    }, [handleRSVP]);
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
