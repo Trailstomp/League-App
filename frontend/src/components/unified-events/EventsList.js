@@ -337,6 +337,16 @@ const EventsList = ({
                                                         >
                                                             {sendingNotifications[event.id] ? '⏳ Sending...' : '📧 Send Notifications'}
                                                         </button>
+                                                        
+                                                        {/* View RSVPs Button */}
+                                                        {event.rsvp_enabled && (
+                                                            <button
+                                                                onClick={() => setViewingRSVPs(event)}
+                                                                className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
+                                                            >
+                                                                📊 View RSVPs
+                                                            </button>
+                                                        )}
                                                     </>
                                                 )}
                                             </div>
