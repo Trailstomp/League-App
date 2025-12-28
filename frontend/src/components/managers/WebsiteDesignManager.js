@@ -1183,6 +1183,138 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                     </div>
                 )}
             </div>
+
+            {/* Content Area Background - NEW SECTION */}
+            <div className="border-t pt-6">
+                <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-200 mb-4">
+                    <h4 className="text-md font-semibold text-indigo-800 mb-2">📄 Content Area Background</h4>
+                    <p className="text-indigo-600 text-sm">This is the white area where page content appears. Customize it with a color or image background.</p>
+                </div>
+                
+                <div className="flex space-x-4 mb-4">
+                    <button
+                        onClick={() => toggleBackgroundType('content', 'color')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (editingStyle.contentBackgroundType !== 'image') 
+                                ? 'bg-indigo-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Color Background
+                    </button>
+                    <button
+                        onClick={() => toggleBackgroundType('content', 'image')}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                            (editingStyle.contentBackgroundType === 'image') 
+                                ? 'bg-indigo-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Image Background
+                    </button>
+                </div>
+
+                {editingStyle.contentBackgroundType === 'image' ? (
+                    <div className="border-2 border-dashed border-indigo-300 rounded-lg p-6 text-center">
+                        {editingStyle.contentBackgroundImage ? (
+                            <div>
+                                <img src={editingStyle.contentBackgroundImage} alt="Content Background" className="w-full h-32 mx-auto mb-3 object-cover rounded" />
+                                <div className="flex justify-center space-x-2">
+                                    <button 
+                                        onClick={() => updateStyle({ contentBackgroundImage: '' })}
+                                        className="text-red-600 hover:text-red-800 text-sm"
+                                    >
+                                        Remove
+                                    </button>
+                                    <span className="text-slate-400">|</span>
+                                    <button
+                                        onClick={() => {
+                                            console.log('🎯 Opening crop tool for content background');
+                                            setCropImageUrl(editingStyle.contentBackgroundImage);
+                                            setCropTarget('content_background');
+                                            setCropTargetType('background');
+                                            setShowCropTool(true);
+                                        }}
+                                        className="text-green-600 hover:text-green-800 text-sm"
+                                    >
+                                        📐 Edit/Crop
+                                    </button>
+                                    <span className="text-slate-400">|</span>
+                                    <label className="text-blue-600 hover:text-blue-800 text-sm cursor-pointer">
+                                        Replace
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'content', false)}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+                        ) : (
+                            <div>
+                                <LacrosseIcon name="image" className="mx-auto mb-3 text-indigo-400" style={{fontSize: '48px'}} />
+                                <p className="text-slate-600 mb-3">Upload content area background image</p>
+                                <div className="flex justify-center space-x-3">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'content', false)}
+                                        className="hidden"
+                                        id="content-bg-upload-direct"
+                                    />
+                                    <label 
+                                        htmlFor="content-bg-upload-direct"
+                                        className="bg-indigo-600 text-white px-3 py-2 rounded hover:bg-indigo-700 transition-colors cursor-pointer text-sm"
+                                    >
+                                        Upload Direct
+                                    </label>
+                                    
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'background', 'content', true)}
+                                        className="hidden"
+                                        id="content-bg-upload-crop"
+                                    />
+                                    <label 
+                                        htmlFor="content-bg-upload-crop"
+                                        className="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 transition-colors cursor-pointer text-sm"
+                                    >
+                                        📐 Crop & Upload
+                                    </label>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Content Area Background Color</label>
+                        <div className="flex items-center space-x-3">
+                            <input
+                                type="color"
+                                value={editingStyle.contentBackgroundColor || '#ffffff'}
+                                onChange={(e) => updateStyle({ contentBackgroundColor: e.target.value })}
+                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={editingStyle.contentBackgroundColor || '#ffffff'}
+                                onChange={(e) => {
+                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                        updateStyle({ contentBackgroundColor: e.target.value });
+                                    }
+                                }}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                                placeholder="#ffffff"
+                            />
+                        </div>
+                        <p className="text-xs text-slate-500 mt-2">
+                            💡 Default is white (#ffffff). Change this to customize the main content area appearance.
+                        </p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 
