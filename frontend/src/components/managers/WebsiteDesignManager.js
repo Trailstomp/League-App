@@ -1295,7 +1295,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                 ) : (
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-2">Content Area Background Color</label>
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-3 mb-3">
                             <input
                                 type="color"
                                 value={editingStyle.contentBackgroundColor || '#ffffff'}
@@ -1313,9 +1313,122 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                                 className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
                                 placeholder="#ffffff"
                             />
+                            {/* Extract colors from logo button */}
+                            {editingStyle.navLogoUrl && (
+                                <button
+                                    onClick={() => handleColorExtraction(editingStyle.navLogoUrl)}
+                                    className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm whitespace-nowrap"
+                                    title="Extract colors from league logo"
+                                >
+                                    🎨 From Logo
+                                </button>
+                            )}
                         </div>
-                        <p className="text-xs text-slate-500 mt-2">
-                            💡 Default is white (#ffffff). Change this to customize the main content area appearance.
+                        
+                        {/* Quick Color Palette - Theme colors */}
+                        <div className="mb-3">
+                            <label className="block text-xs font-medium text-slate-500 mb-2">Quick Colors (from theme)</label>
+                            <div className="flex flex-wrap gap-2">
+                                {/* White - Default */}
+                                <button
+                                    onClick={() => updateStyle({ contentBackgroundColor: '#ffffff' })}
+                                    className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                                        editingStyle.contentBackgroundColor === '#ffffff' 
+                                            ? 'border-blue-500 ring-2 ring-blue-300' 
+                                            : 'border-slate-300 hover:border-slate-400'
+                                    }`}
+                                    style={{ backgroundColor: '#ffffff' }}
+                                    title="White (Default)"
+                                />
+                                {/* Light Gray */}
+                                <button
+                                    onClick={() => updateStyle({ contentBackgroundColor: '#f8fafc' })}
+                                    className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                                        editingStyle.contentBackgroundColor === '#f8fafc' 
+                                            ? 'border-blue-500 ring-2 ring-blue-300' 
+                                            : 'border-slate-300 hover:border-slate-400'
+                                    }`}
+                                    style={{ backgroundColor: '#f8fafc' }}
+                                    title="Light Gray"
+                                />
+                                {/* Primary Color */}
+                                {editingStyle.primaryColor && (
+                                    <button
+                                        onClick={() => updateStyle({ contentBackgroundColor: editingStyle.primaryColor })}
+                                        className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                                            editingStyle.contentBackgroundColor === editingStyle.primaryColor 
+                                                ? 'border-blue-500 ring-2 ring-blue-300' 
+                                                : 'border-slate-300 hover:border-slate-400'
+                                        }`}
+                                        style={{ backgroundColor: editingStyle.primaryColor }}
+                                        title={`Primary Color (${editingStyle.primaryColor})`}
+                                    />
+                                )}
+                                {/* Accent Color */}
+                                {editingStyle.accentColor && (
+                                    <button
+                                        onClick={() => updateStyle({ contentBackgroundColor: editingStyle.accentColor })}
+                                        className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                                            editingStyle.contentBackgroundColor === editingStyle.accentColor 
+                                                ? 'border-blue-500 ring-2 ring-blue-300' 
+                                                : 'border-slate-300 hover:border-slate-400'
+                                        }`}
+                                        style={{ backgroundColor: editingStyle.accentColor }}
+                                        title={`Accent Color (${editingStyle.accentColor})`}
+                                    />
+                                )}
+                                {/* Nav Background Color */}
+                                {editingStyle.navBackgroundColor && editingStyle.navBackgroundColor !== '#ffffff' && (
+                                    <button
+                                        onClick={() => updateStyle({ contentBackgroundColor: editingStyle.navBackgroundColor })}
+                                        className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                                            editingStyle.contentBackgroundColor === editingStyle.navBackgroundColor 
+                                                ? 'border-blue-500 ring-2 ring-blue-300' 
+                                                : 'border-slate-300 hover:border-slate-400'
+                                        }`}
+                                        style={{ backgroundColor: editingStyle.navBackgroundColor }}
+                                        title={`Nav Color (${editingStyle.navBackgroundColor})`}
+                                    />
+                                )}
+                                {/* Banner Background Color */}
+                                {editingStyle.bannerBackgroundColor && (
+                                    <button
+                                        onClick={() => updateStyle({ contentBackgroundColor: editingStyle.bannerBackgroundColor })}
+                                        className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                                            editingStyle.contentBackgroundColor === editingStyle.bannerBackgroundColor 
+                                                ? 'border-blue-500 ring-2 ring-blue-300' 
+                                                : 'border-slate-300 hover:border-slate-400'
+                                        }`}
+                                        style={{ backgroundColor: editingStyle.bannerBackgroundColor }}
+                                        title={`Banner Color (${editingStyle.bannerBackgroundColor})`}
+                                    />
+                                )}
+                                {/* Dark colors */}
+                                <button
+                                    onClick={() => updateStyle({ contentBackgroundColor: '#1e293b' })}
+                                    className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                                        editingStyle.contentBackgroundColor === '#1e293b' 
+                                            ? 'border-blue-500 ring-2 ring-blue-300' 
+                                            : 'border-slate-300 hover:border-slate-400'
+                                    }`}
+                                    style={{ backgroundColor: '#1e293b' }}
+                                    title="Dark Slate"
+                                />
+                                <button
+                                    onClick={() => updateStyle({ contentBackgroundColor: '#0f172a' })}
+                                    className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                                        editingStyle.contentBackgroundColor === '#0f172a' 
+                                            ? 'border-blue-500 ring-2 ring-blue-300' 
+                                            : 'border-slate-300 hover:border-slate-400'
+                                    }`}
+                                    style={{ backgroundColor: '#0f172a' }}
+                                    title="Near Black"
+                                />
+                            </div>
+                        </div>
+                        
+                        <p className="text-xs text-slate-500">
+                            💡 Click "From Logo" to extract colors from your league logo, or pick from the quick colors above.
                         </p>
                     </div>
                 )}
