@@ -121,12 +121,23 @@ const Layout = ({
     const getContentBackgroundStyle = () => {
         const style = {};
         
+        // Debug log
+        console.log('🎨 Content Background Style:', {
+            type: websiteStyle.contentBackgroundType,
+            color: websiteStyle.contentBackgroundColor,
+            image: websiteStyle.contentBackgroundImage
+        });
+        
+        // Check if using image AND image is valid
         if (websiteStyle.contentBackgroundType === 'image' && websiteStyle.contentBackgroundImage) {
             style.backgroundImage = `url(${websiteStyle.contentBackgroundImage})`;
             style.backgroundSize = 'cover';
             style.backgroundPosition = 'center';
             style.backgroundAttachment = 'fixed';
-        } else if (websiteStyle.contentBackgroundColor) {
+        }
+        
+        // Always apply background color (as fallback or primary if type is 'color')
+        if (websiteStyle.contentBackgroundColor && websiteStyle.contentBackgroundColor !== '#ffffff') {
             style.backgroundColor = websiteStyle.contentBackgroundColor;
         } else {
             style.backgroundColor = '#ffffff'; // Default white
