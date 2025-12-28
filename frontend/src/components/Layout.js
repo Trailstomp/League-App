@@ -160,6 +160,13 @@ const Layout = ({
         style['--card-bg-solid'] = isTransparent ? 'transparent' : cardBgColor;
         style['--card-opacity'] = isTransparent ? '0' : cardOpacity;
         
+        // Typography CSS custom properties
+        style['--content-font'] = websiteStyle.contentFont || 'Inter, sans-serif';
+        style['--content-text-color'] = websiteStyle.contentTextColor || '#374151';
+        style['--card-font'] = websiteStyle.cardFont === 'inherit' ? 'inherit' : (websiteStyle.cardFont || 'inherit');
+        style['--card-text-color'] = websiteStyle.cardTextColor || '#374151';
+        style['--card-heading-color'] = websiteStyle.cardHeadingColor || '#1f2937';
+        
         return style;
     };
 
