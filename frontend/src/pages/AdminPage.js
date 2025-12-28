@@ -217,20 +217,21 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
 
             {/* Admin Tabs */}
             <div className="bg-white rounded-lg shadow-sm border">
-                <div className="border-b px-6 py-4">
-                    <div className="flex flex-wrap gap-2">
+                <div className="border-b px-6 py-4 overflow-x-auto admin-tabs-container">
+                    <div className="flex flex-nowrap gap-2 min-w-max md:flex-wrap md:min-w-0">
                         {adminTabs.map(tab => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                                className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap ${
                                     activeTab === tab.id
                                         ? 'bg-blue-100 text-blue-700'
                                         : 'text-slate-600 hover:bg-slate-100'
                                 }`}
                             >
                                 <LacrosseIcon name={tab.icon} className="mr-2" style={{fontSize: '16px'}} />
-                                {tab.label}
+                                <span className="hidden sm:inline">{tab.label}</span>
+                                <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
                             </button>
                         ))}
                     </div>
