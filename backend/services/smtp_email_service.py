@@ -249,6 +249,7 @@ class SMTPEmailService:
                     <h1 style="color: white; margin: 0; font-size: 32px;">📅 Event Notification</h1>
                 </div>
                 
+                {event_image_html}
                 {logos_html}
                 
                 <div style="background: white; padding: 30px; margin: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
