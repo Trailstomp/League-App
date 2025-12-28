@@ -16,6 +16,7 @@ const EventsList = ({
     const [filter, setFilter] = useState('all'); // all, scheduled, in_progress, completed
     const [sortBy, setSortBy] = useState('date'); // date, title, type
     const [sendingNotifications, setSendingNotifications] = useState({});
+    const [viewingRSVPs, setViewingRSVPs] = useState(null);
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
