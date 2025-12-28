@@ -10,6 +10,33 @@ const RSVPHandler = () => {
     const [userResponse, setUserResponse] = useState('');
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
+    const fetchEventDetails = useCallback(async (evtId) => {
+        try {
+            const response = await fetch(`${backendUrl}/api/unified-events`);
+            if (response.ok) {
+                const data = await response.json();
+                const event = data.events?.find(e => e.id === evtId);
+                if (event) {
+                    setEventDetails(event);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching event:', error);
+        }
+    }, [backendUrl]);
+
+    const fetchRSVPs = useCallback(async (evtId) => {
+        try {
+            const response = await fetch(`${backendUrl}/api/events/${evtId}/rsvps`);
+            if (response.ok) {
+                const data = await response.json();
+                setRsvpList(data);
+            }
+        } catch (error) {
+            console.error('Error fetching RSVPs:', error);
+        }
+    }, [backendUrl]);
+
     const handleRSVP = useCallback(async () => {
         try {
             // Parse URL parameters from window.location
@@ -55,9 +82,9 @@ const RSVPHandler = () => {
             if (rsvpResponse.ok) {
                 setStatus('success');
                 const responseText = {
-                    'going': "You're going!",
+                    'going': "You are going!",
                     'maybe': "You might attend",
-                    'not_going': "You can't make it"
+                    'not_going': "You cannot make it"
                 };
                 setMessage(responseText[response] || 'RSVP recorded');
                 
@@ -73,34 +100,7 @@ const RSVPHandler = () => {
             setStatus('error');
             setMessage('Error processing RSVP. Please try again.');
         }
-    }, [backendUrl]);
-
-    const fetchEventDetails = async (evtId) => {
-        try {
-            const response = await fetch(`${backendUrl}/api/unified-events`);
-            if (response.ok) {
-                const data = await response.json();
-                const event = data.events?.find(e => e.id === evtId);
-                if (event) {
-                    setEventDetails(event);
-                }
-            }
-        } catch (error) {
-            console.error('Error fetching event:', error);
-        }
-    };
-
-    const fetchRSVPs = async (evtId) => {
-        try {
-            const response = await fetch(`${backendUrl}/api/events/${evtId}/rsvps`);
-            if (response.ok) {
-                const data = await response.json();
-                setRsvpList(data);
-            }
-        } catch (error) {
-            console.error('Error fetching RSVPs:', error);
-        }
-    };
+    }, [backendUrl, fetchEventDetails, fetchRSVPs]);
 
     const handleChangeResponse = async (newResponse) => {
         if (!eventId || !userEmail) return;
@@ -118,9 +118,9 @@ const RSVPHandler = () => {
             if (response.ok) {
                 setUserResponse(newResponse);
                 const responseText = {
-                    'going': "You're going!",
+                    'going': "You are going!",
                     'maybe': "You might attend",
-                    'not_going': "You can't make it"
+                    'not_going': "You cannot make it"
                 };
                 setMessage(responseText[newResponse] || 'RSVP updated');
                 await fetchRSVPs(eventId);
