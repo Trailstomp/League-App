@@ -1572,6 +1572,215 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                     💡 Use "Transparent" to let the content area background show through, or set a custom card color with adjustable opacity.
                 </p>
             </div>
+
+            {/* Content Area Typography Section */}
+            <div className="border-t pt-6">
+                <div className="bg-violet-50 p-4 rounded-lg border border-violet-200 mb-4">
+                    <h4 className="text-md font-semibold text-violet-800 mb-2">🔤 Content Area Typography</h4>
+                    <p className="text-violet-600 text-sm">Set the default font and text color for the main content area.</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Content Font Family */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Content Font</label>
+                        <select
+                            value={editingStyle.contentFont || 'Inter, sans-serif'}
+                            onChange={(e) => updateStyle({ contentFont: e.target.value })}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500"
+                        >
+                            <option value="Inter, sans-serif">Inter (Modern)</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Open Sans', sans-serif">Open Sans</option>
+                            <option value="'Lato', sans-serif">Lato</option>
+                            <option value="'Poppins', sans-serif">Poppins</option>
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                            <option value="'Source Sans Pro', sans-serif">Source Sans Pro</option>
+                            <option value="'Nunito', sans-serif">Nunito</option>
+                            <option value="'Raleway', sans-serif">Raleway</option>
+                            <option value="Georgia, serif">Georgia (Serif)</option>
+                            <option value="'Merriweather', serif">Merriweather (Serif)</option>
+                            <option value="'Playfair Display', serif">Playfair Display (Serif)</option>
+                        </select>
+                    </div>
+
+                    {/* Content Text Color */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Content Text Color</label>
+                        <div className="flex items-center space-x-3">
+                            <input
+                                type="color"
+                                value={editingStyle.contentTextColor || '#374151'}
+                                onChange={(e) => updateStyle({ contentTextColor: e.target.value })}
+                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={editingStyle.contentTextColor || '#374151'}
+                                onChange={(e) => {
+                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                        updateStyle({ contentTextColor: e.target.value });
+                                    }
+                                }}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500"
+                                placeholder="#374151"
+                            />
+                        </div>
+                        {/* Quick Colors for Text */}
+                        <div className="flex flex-wrap gap-2 mt-2">
+                            <button
+                                onClick={() => updateStyle({ contentTextColor: '#000000' })}
+                                className={`w-6 h-6 rounded border-2 ${editingStyle.contentTextColor === '#000000' ? 'border-violet-500' : 'border-slate-300'}`}
+                                style={{ backgroundColor: '#000000' }}
+                                title="Black"
+                            />
+                            <button
+                                onClick={() => updateStyle({ contentTextColor: '#374151' })}
+                                className={`w-6 h-6 rounded border-2 ${editingStyle.contentTextColor === '#374151' ? 'border-violet-500' : 'border-slate-300'}`}
+                                style={{ backgroundColor: '#374151' }}
+                                title="Dark Gray"
+                            />
+                            <button
+                                onClick={() => updateStyle({ contentTextColor: '#6b7280' })}
+                                className={`w-6 h-6 rounded border-2 ${editingStyle.contentTextColor === '#6b7280' ? 'border-violet-500' : 'border-slate-300'}`}
+                                style={{ backgroundColor: '#6b7280' }}
+                                title="Gray"
+                            />
+                            <button
+                                onClick={() => updateStyle({ contentTextColor: '#ffffff' })}
+                                className={`w-6 h-6 rounded border-2 ${editingStyle.contentTextColor === '#ffffff' ? 'border-violet-500' : 'border-slate-300'}`}
+                                style={{ backgroundColor: '#ffffff' }}
+                                title="White"
+                            />
+                            <button
+                                onClick={() => updateStyle({ contentTextColor: '#f8fafc' })}
+                                className={`w-6 h-6 rounded border-2 ${editingStyle.contentTextColor === '#f8fafc' ? 'border-violet-500' : 'border-slate-300'}`}
+                                style={{ backgroundColor: '#f8fafc' }}
+                                title="Off-White"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Card Typography Section */}
+            <div className="border-t pt-6">
+                <div className="bg-teal-50 p-4 rounded-lg border border-teal-200 mb-4">
+                    <h4 className="text-md font-semibold text-teal-800 mb-2">📝 Card & Form Typography</h4>
+                    <p className="text-teal-600 text-sm">Set the font and text color specifically for cards and forms.</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Card Font Family */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Card Font</label>
+                        <select
+                            value={editingStyle.cardFont || 'inherit'}
+                            onChange={(e) => updateStyle({ cardFont: e.target.value })}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500"
+                        >
+                            <option value="inherit">Same as Content</option>
+                            <option value="Inter, sans-serif">Inter (Modern)</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="'Open Sans', sans-serif">Open Sans</option>
+                            <option value="'Lato', sans-serif">Lato</option>
+                            <option value="'Poppins', sans-serif">Poppins</option>
+                            <option value="'Montserrat', sans-serif">Montserrat</option>
+                            <option value="'Source Sans Pro', sans-serif">Source Sans Pro</option>
+                            <option value="'Nunito', sans-serif">Nunito</option>
+                            <option value="Georgia, serif">Georgia (Serif)</option>
+                            <option value="'Merriweather', serif">Merriweather (Serif)</option>
+                        </select>
+                    </div>
+
+                    {/* Card Text Color */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Card Text Color</label>
+                        <div className="flex items-center space-x-3">
+                            <input
+                                type="color"
+                                value={editingStyle.cardTextColor || '#374151'}
+                                onChange={(e) => updateStyle({ cardTextColor: e.target.value })}
+                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={editingStyle.cardTextColor || '#374151'}
+                                onChange={(e) => {
+                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                        updateStyle({ cardTextColor: e.target.value });
+                                    }
+                                }}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500"
+                                placeholder="#374151"
+                            />
+                        </div>
+                        {/* Quick Colors for Card Text */}
+                        <div className="flex flex-wrap gap-2 mt-2">
+                            <button
+                                onClick={() => updateStyle({ cardTextColor: '#000000' })}
+                                className={`w-6 h-6 rounded border-2 ${editingStyle.cardTextColor === '#000000' ? 'border-teal-500' : 'border-slate-300'}`}
+                                style={{ backgroundColor: '#000000' }}
+                                title="Black"
+                            />
+                            <button
+                                onClick={() => updateStyle({ cardTextColor: '#374151' })}
+                                className={`w-6 h-6 rounded border-2 ${editingStyle.cardTextColor === '#374151' ? 'border-teal-500' : 'border-slate-300'}`}
+                                style={{ backgroundColor: '#374151' }}
+                                title="Dark Gray"
+                            />
+                            <button
+                                onClick={() => updateStyle({ cardTextColor: '#6b7280' })}
+                                className={`w-6 h-6 rounded border-2 ${editingStyle.cardTextColor === '#6b7280' ? 'border-teal-500' : 'border-slate-300'}`}
+                                style={{ backgroundColor: '#6b7280' }}
+                                title="Gray"
+                            />
+                            <button
+                                onClick={() => updateStyle({ cardTextColor: '#ffffff' })}
+                                className={`w-6 h-6 rounded border-2 ${editingStyle.cardTextColor === '#ffffff' ? 'border-teal-500' : 'border-slate-300'}`}
+                                style={{ backgroundColor: '#ffffff' }}
+                                title="White"
+                            />
+                            <button
+                                onClick={() => updateStyle({ cardTextColor: '#f8fafc' })}
+                                className={`w-6 h-6 rounded border-2 ${editingStyle.cardTextColor === '#f8fafc' ? 'border-teal-500' : 'border-slate-300'}`}
+                                style={{ backgroundColor: '#f8fafc' }}
+                                title="Off-White"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Card Heading Color */}
+                <div className="mt-4">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Card Heading Color</label>
+                    <div className="flex items-center space-x-3">
+                        <input
+                            type="color"
+                            value={editingStyle.cardHeadingColor || '#1f2937'}
+                            onChange={(e) => updateStyle({ cardHeadingColor: e.target.value })}
+                            className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                        />
+                        <input
+                            type="text"
+                            value={editingStyle.cardHeadingColor || '#1f2937'}
+                            onChange={(e) => {
+                                if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                    updateStyle({ cardHeadingColor: e.target.value });
+                                }
+                            }}
+                            className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 max-w-xs"
+                            placeholder="#1f2937"
+                        />
+                        {/* Quick Colors */}
+                        <div className="flex gap-1">
+                            <button onClick={() => updateStyle({ cardHeadingColor: '#000000' })} className="w-6 h-6 rounded border" style={{ backgroundColor: '#000000' }} title="Black" />
+                            <button onClick={() => updateStyle({ cardHeadingColor: '#1f2937' })} className="w-6 h-6 rounded border" style={{ backgroundColor: '#1f2937' }} title="Slate 800" />
+                            <button onClick={() => updateStyle({ cardHeadingColor: '#ffffff' })} className="w-6 h-6 rounded border" style={{ backgroundColor: '#ffffff' }} title="White" />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 
