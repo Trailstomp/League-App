@@ -1,0 +1,104 @@
+/* Mobile Responsiveness Overrides */
+
+/* Base mobile breakpoints */
+@media (max-width: 640px) {
+  /* Force proper viewport scaling */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Touch-friendly tap targets (min 44x44px) */
+  button, a, input[type="checkbox"], input[type="radio"], select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Prevent text from being too small */
+  body {
+    font-size: 16px !important;
+  }
+
+  /* Admin Portal Mobile Fixes */
+  .admin-tabs-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .admin-tabs-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Table to Card transformation */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Stack form elements vertically */
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Full-width modals on mobile */
+  .fixed.inset-0 > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    max-height: 100vh !important;
+  }
+
+  /* Reduce padding on mobile */
+  .p-6, .px-6, .py-6 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Smaller text sizes */
+  h1 {
+    font-size: 1.5rem !important;
+  }
+
+  h2 {
+    font-size: 1.25rem !important;
+  }
+
+  h3 {
+    font-size: 1.125rem !important;
+  }
+
+  /* Button groups stack vertically */
+  .flex.gap-2 button, .flex.gap-3 button, .flex.gap-4 button {
+    width: 100%;
+  }
+
+  /* Hide less important info on mobile */
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .grid-cols-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Ensure inputs are readable on mobile */
+input, select, textarea {
+  font-size: 16px !important; /* Prevents zoom on iOS */
+}
+
+/* Better spacing for mobile forms */
+@media (max-width: 640px) {
+  .space-y-4 > * + * {
+    margin-top: 1.5rem !important;
+  }
+}
