@@ -69,12 +69,12 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 p-4" style={{ backgroundColor: 'inherit' }}>
             {/* Banner and ticker moved to Layout component - now fixed at top of all pages */}
 
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white rounded-lg shadow-sm border p-6">
+                <div className="bg-white/90 rounded-lg shadow-sm border p-6 backdrop-blur-sm">
                     <div className="flex items-center">
                         <LacrosseIcon name="teams" style={{fontSize: '32px'}} className="text-blue-500 mr-4" />
                         <div>
