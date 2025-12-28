@@ -34,32 +34,44 @@ const initialMockUsers = [
 const LoginForm = ({ users, onLogin }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleSubmit = (e) => {
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
         
         if (!email || !password) {
-            alert('Please enter both email and password.');
+            setError('Please enter both email and password.');
             return;
         }
 
-        // Find user by email - handle cases where u.email might be undefined
-        const user = users.find(u => {
-            if (!u.email) return false; // Skip users without email
-            const emailMatch = u.email.toLowerCase() === email.toLowerCase();
-            const isActive = u.status === 'active' || !u.status; // Default to active if no status
-            return emailMatch && isActive;
-        });
-        
-        if (!user) {
-            alert('Invalid email or account not active. Please check your credentials or contact an admin.');
-            return;
-        }
+        try {
+            setLoading(true);
 
-        // For demo purposes, accept any password for existing users
-        onLogin(user);
-        setEmail('');
-        setPassword('');
+            // Call the API login endpoint
+            const response = await fetch(`${backendUrl}/api/users/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                onLogin(data.user);
+                setEmail('');
+                setPassword('');
+            } else {
+                const errorData = await response.json();
+                setError(errorData.detail || 'Login failed');
+            }
+        } catch (err) {
+            setError('Network error. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
