@@ -7383,6 +7383,72 @@ async def _create_groupme_poll_for_event(event_data):
 # USER MANAGEMENT & REGISTRATION
 # ============================================================================
 
+@api_router.post("/users/login")
+async def login_user(login_data: LoginRequest):
+    """User login endpoint"""
+    try:
+        import hashlib
+        
+        # Hash the provided password
+        password_hash = hashlib.sha256(login_data.password.encode()).hexdigest()
+        
+        # Find user by email and password
+        user = await db.users.find_one({
+            "email": login_data.email,
+            "password": password_hash
+        }, {"_id": 0, "password": 0})
+        
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid email or password")
+        
+        # Check if account is active
+        if user["status"] not in ["active", "guest"]:
+            raise HTTPException(status_code=403, detail=f"Account is {user['status']}. Please contact an administrator.")
+        
+        logger.info(f"✅ User logged in: {user['email']}")
+        
+        return {
+            "status": "success",
+            "user": user,
+            "message": "Login successful"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error during login: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/users/{user_id}/reset-password")
+async def reset_user_password(user_id: str, data: Dict[str, Any]):
+    """Admin endpoint to reset user password"""
+    try:
+        import hashlib
+        
+        new_password = data.get("newPassword")
+        if not new_password or len(new_password) < 6:
+            raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+        
+        # Hash new password
+        password_hash = hashlib.sha256(new_password.encode()).hexdigest()
+        
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": {"password": password_hash}}
+        )
+        
+        logger.info(f"✅ Password reset for user: {user_id}")
+        
+        return {"status": "success", "message": "Password reset successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error resetting password: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.post("/users/register")
 async def register_user(user_data: UserRegistration):
     """Public user registration endpoint"""
