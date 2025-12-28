@@ -1,5 +1,25 @@
 /* Mobile Responsiveness Overrides */
 
+/* Card Background Custom Properties */
+.card-bg {
+  background-color: var(--card-bg, rgba(255, 255, 255, 0.9)) !important;
+}
+
+.card-bg-solid {
+  background-color: var(--card-bg-solid, #ffffff) !important;
+}
+
+/* Override Tailwind bg-white classes when custom card bg is set */
+main .bg-white,
+main .bg-white\/90 {
+  background-color: var(--card-bg, rgba(255, 255, 255, 0.9));
+}
+
+main .bg-slate-50,
+main .bg-gray-50 {
+  background-color: var(--card-bg, rgba(248, 250, 252, 0.9));
+}
+
 /* Base mobile breakpoints */
 @media (max-width: 640px) {
   /* Force proper viewport scaling */
