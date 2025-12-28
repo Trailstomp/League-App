@@ -218,12 +218,13 @@ class SMTPEmailService:
         # RSVP buttons
         rsvp_buttons = ''
         if rsvp_link:
+            # Note: recipient email will be added when sending individual emails
             rsvp_buttons = f"""
             <div style="text-align: center; margin: 30px 0;">
                 <p style="color: #666; margin-bottom: 15px;">Please respond:</p>
-                <a href="{rsvp_link}?response=going" style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; margin: 5px; text-decoration: none; border-radius: 6px; font-weight: bold;">✅ I'm Going</a>
-                <a href="{rsvp_link}?response=maybe" style="display: inline-block; background: #f59e0b; color: white; padding: 12px 24px; margin: 5px; text-decoration: none; border-radius: 6px; font-weight: bold;">❓ Maybe</a>
-                <a href="{rsvp_link}?response=not_going" style="display: inline-block; background: #ef4444; color: white; padding: 12px 24px; margin: 5px; text-decoration: none; border-radius: 6px; font-weight: bold;">❌ Can't Make It</a>
+                <a href="{rsvp_link}&response=going" style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; margin: 5px; text-decoration: none; border-radius: 6px; font-weight: bold;">✅ I'm Going</a>
+                <a href="{rsvp_link}&response=maybe" style="display: inline-block; background: #f59e0b; color: white; padding: 12px 24px; margin: 5px; text-decoration: none; border-radius: 6px; font-weight: bold;">❓ Maybe</a>
+                <a href="{rsvp_link}&response=not_going" style="display: inline-block; background: #ef4444; color: white; padding: 12px 24px; margin: 5px; text-decoration: none; border-radius: 6px; font-weight: bold;">❌ Can't Make It</a>
             </div>
             """
         
