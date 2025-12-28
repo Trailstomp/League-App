@@ -148,7 +148,6 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         { id: 'dashboard', label: 'Dashboard', icon: 'venue' },
         { id: 'seasons', label: 'Seasons & Leagues', icon: 'trophy' },
         { id: 'teams', label: 'Teams', icon: 'teams' },
-        { id: 'players', label: 'Players', icon: 'players' },
         { id: 'locations', label: 'Locations', icon: 'location' },
         { id: 'news', label: 'News', icon: '📰' },
         { id: 'users', label: 'Users & Security', icon: 'admin' },
