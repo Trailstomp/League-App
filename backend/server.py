@@ -1814,6 +1814,132 @@ async def save_youtube_config(data: Dict[str, Any]):
         logger.error(f"Error saving YouTube config: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# YouTube Video Fetching Endpoints
+@api_router.get("/youtube/videos/{channel_id}")
+async def get_youtube_videos(channel_id: str, max_results: int = 12):
+    """Get videos from a YouTube channel"""
+    try:
+        from services.youtube_service import youtube_service
+        videos = await youtube_service.get_channel_videos(channel_id, max_results)
+        return {"videos": videos, "channelId": channel_id}
+    except Exception as e:
+        logger.error(f"Error fetching YouTube videos: {e}")
+        return {"videos": [], "error": str(e)}
+
+@api_router.get("/youtube/channel/{channel_id}")
+async def get_youtube_channel_info(channel_id: str):
+    """Get YouTube channel information"""
+    try:
+        from services.youtube_service import youtube_service
+        info = await youtube_service.get_channel_info(channel_id)
+        return info
+    except Exception as e:
+        logger.error(f"Error fetching YouTube channel info: {e}")
+        return {"error": str(e)}
+
+@api_router.get("/youtube/live/{channel_id}")
+async def get_youtube_live_streams(channel_id: str):
+    """Get current live streams from a channel"""
+    try:
+        from services.youtube_service import youtube_service
+        live_streams = await youtube_service.get_live_streams(channel_id)
+        upcoming = await youtube_service.get_upcoming_streams(channel_id)
+        return {
+            "liveStreams": live_streams,
+            "upcomingStreams": upcoming,
+            "channelId": channel_id
+        }
+    except Exception as e:
+        logger.error(f"Error fetching YouTube live streams: {e}")
+        return {"liveStreams": [], "upcomingStreams": [], "error": str(e)}
+
+@api_router.get("/youtube/playlist/{playlist_id}")
+async def get_youtube_playlist_videos(playlist_id: str, max_results: int = 12):
+    """Get videos from a YouTube playlist"""
+    try:
+        from services.youtube_service import youtube_service
+        videos = await youtube_service.get_playlist_videos(playlist_id, max_results)
+        return {"videos": videos, "playlistId": playlist_id}
+    except Exception as e:
+        logger.error(f"Error fetching YouTube playlist videos: {e}")
+        return {"videos": [], "error": str(e)}
+
+@api_router.get("/youtube/video/{video_id}")
+async def get_youtube_video_details(video_id: str):
+    """Get detailed information about a specific video"""
+    try:
+        from services.youtube_service import youtube_service
+        details = await youtube_service.get_video_details(video_id)
+        return details
+    except Exception as e:
+        logger.error(f"Error fetching YouTube video details: {e}")
+        return {"error": str(e)}
+
+@api_router.get("/youtube/playlists/{channel_id}")
+async def get_youtube_channel_playlists(channel_id: str, max_results: int = 10):
+    """Get playlists from a YouTube channel"""
+    try:
+        from services.youtube_service import youtube_service
+        playlists = await youtube_service.get_channel_playlists(channel_id, max_results)
+        return {"playlists": playlists, "channelId": channel_id}
+    except Exception as e:
+        logger.error(f"Error fetching YouTube playlists: {e}")
+        return {"playlists": [], "error": str(e)}
+
+@api_router.get("/youtube/search/{channel_id}")
+async def search_youtube_channel_videos(channel_id: str, q: str, max_results: int = 10):
+    """Search for videos within a channel"""
+    try:
+        from services.youtube_service import youtube_service
+        videos = await youtube_service.search_videos(channel_id, q, max_results)
+        return {"videos": videos, "query": q, "channelId": channel_id}
+    except Exception as e:
+        logger.error(f"Error searching YouTube videos: {e}")
+        return {"videos": [], "error": str(e)}
+
+# Team YouTube Configuration
+@api_router.get("/teams/{team_id}/youtube")
+async def get_team_youtube_config(team_id: str):
+    """Get YouTube configuration for a specific team"""
+    try:
+        team = await db.teams.find_one({"id": team_id}, {"_id": 0})
+        if not team:
+            raise HTTPException(status_code=404, detail="Team not found")
+        
+        youtube_config = team.get('youtubeConfig', {
+            'enabled': False,
+            'channelId': '',
+            'channelUrl': '',
+            'playlistIds': []
+        })
+        return youtube_config
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching team YouTube config: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/teams/{team_id}/youtube")
+async def update_team_youtube_config(team_id: str, config: Dict[str, Any]):
+    """Update YouTube configuration for a specific team"""
+    try:
+        config['lastUpdated'] = datetime.utcnow().isoformat()
+        
+        result = await db.teams.update_one(
+            {"id": team_id},
+            {"$set": {"youtubeConfig": config}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Team not found")
+        
+        return {"status": "success", "message": "Team YouTube config updated"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating team YouTube config: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/locations")
 async def get_locations():
     """Get locations"""
