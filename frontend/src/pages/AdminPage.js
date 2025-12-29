@@ -191,6 +191,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <RoleManager users={users} setUsers={setUsers} />;
             case 'communications':
                 return <CommunicationHub />;
+            case 'youtube':
+                return <YouTubeSettings onSave={() => console.log('YouTube settings saved')} />;
             case 'website':
                 return <WebsiteDesignManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} teams={teams} events={events} />;
             case 'api':
