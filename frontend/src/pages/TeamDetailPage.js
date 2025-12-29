@@ -159,6 +159,7 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
                 {activeTab === 'chat' && <TeamChatTab team={team} />}
                 {activeTab === 'media' && <TeamMediaTab team={team} />}
                 {activeTab === 'contact' && <TeamContactTab team={team} />}
+                {activeTab === 'settings' && <TeamSettingsTab team={team} />}
             </div>
         </div>
     );
