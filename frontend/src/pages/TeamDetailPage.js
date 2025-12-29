@@ -1077,4 +1077,73 @@ const TeamChatTab = ({ team }) => {
     );
 };
 
+// Team Settings Tab - Admin Only
+const TeamSettingsTab = ({ team }) => {
+    const [activeSection, setActiveSection] = useState('youtube');
+    
+    const sections = [
+        { id: 'youtube', label: 'YouTube Channel', icon: '📺' },
+        { id: 'social', label: 'Social Media', icon: '📱' },
+        { id: 'appearance', label: 'Appearance', icon: '🎨' }
+    ];
+    
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-slate-800">Team Settings</h2>
+                <div className="flex items-center text-sm text-slate-600">
+                    <span className="mr-2">⚙️</span>
+                    Manage team configuration
+                </div>
+            </div>
+            
+            {/* Settings Navigation */}
+            <div className="flex gap-2 border-b pb-4">
+                {sections.map(section => (
+                    <button
+                        key={section.id}
+                        onClick={() => setActiveSection(section.id)}
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                            activeSection === section.id
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
+                    >
+                        <span className="mr-2">{section.icon}</span>
+                        {section.label}
+                    </button>
+                ))}
+            </div>
+            
+            {/* Settings Content */}
+            <div className="bg-white/90 rounded-lg shadow-sm border p-6 backdrop-blur-sm">
+                {activeSection === 'youtube' && (
+                    <YouTubeSettings 
+                        teamId={team.id} 
+                        onSave={() => console.log('Team YouTube settings saved')} 
+                    />
+                )}
+                
+                {activeSection === 'social' && (
+                    <div className="text-center py-8 text-slate-600">
+                        <p className="text-4xl mb-4">📱</p>
+                        <h3 className="text-lg font-semibold mb-2">Social Media Settings</h3>
+                        <p>Configure your team's social media links and integration.</p>
+                        <p className="text-sm text-slate-500 mt-4">Coming soon...</p>
+                    </div>
+                )}
+                
+                {activeSection === 'appearance' && (
+                    <div className="text-center py-8 text-slate-600">
+                        <p className="text-4xl mb-4">🎨</p>
+                        <h3 className="text-lg font-semibold mb-2">Appearance Settings</h3>
+                        <p>Customize your team page colors, fonts, and branding.</p>
+                        <p className="text-sm text-slate-500 mt-4">Coming soon...</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
 export default TeamDetailPage;
