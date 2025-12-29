@@ -4,6 +4,7 @@ import TeamGalleryDisplay from '../components/TeamGalleryDisplay';
 import GroupMeChat from '../components/GroupMeChat';
 import NewsDisplay from '../components/NewsDisplay';
 import TeamStatsDisplay from '../components/TeamStatsDisplay';
+import YouTubeSettings from '../components/managers/YouTubeSettings';
 import { fixGoogleDriveUrl } from '../utils/imageUtils';
 
 const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
