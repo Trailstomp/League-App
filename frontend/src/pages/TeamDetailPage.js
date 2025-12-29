@@ -34,7 +34,8 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
         { id: 'stats', label: 'Stats', icon: 'trophy' },
         { id: 'chat', label: 'Team Chat', icon: 'email' },
         { id: 'media', label: 'Photos & Vids', icon: 'view' },
-        { id: 'contact', label: 'Contact', icon: 'email' }
+        { id: 'contact', label: 'Contact', icon: 'email' },
+        { id: 'settings', label: 'Settings', icon: 'settings', adminOnly: true }
     ];
 
     const teamStyle = team.style || {};
