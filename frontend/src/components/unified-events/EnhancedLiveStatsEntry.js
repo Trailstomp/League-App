@@ -72,6 +72,14 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
     const [gameEvents, setGameEvents] = useState([]);
     const [gameStarted, setGameStarted] = useState(false); // Track if game has started
     
+    // Broadcast State (YouTube Live Stream)
+    const [broadcastConfig, setBroadcastConfig] = useState({
+        enabled: false,
+        youtubeVideoId: '',
+        youtubeChannelId: '',
+        customStreamUrl: ''
+    });
+    
     // Shot type selector state
     const [showShotMenu, setShowShotMenu] = useState(null); // stores player id when menu is open
     
