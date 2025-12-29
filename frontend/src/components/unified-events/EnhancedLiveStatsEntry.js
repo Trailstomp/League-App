@@ -2911,6 +2911,16 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                         >
                             💬 Live Chat
                         </button>
+                        <button
+                            onClick={() => setActiveTab('broadcast')}
+                            className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                                activeTab === 'broadcast'
+                                    ? 'border-red-500 text-red-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            📺 Broadcast
+                        </button>
                     </div>
                 </div>
             </div>
@@ -2925,6 +2935,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
                     {activeTab === 'away_stats' && renderPlayerStats('away_team', gameState.away_team)}
                     {activeTab === 'game_events' && renderGameEvents()}
                     {activeTab === 'live_chat' && renderLiveChat()}
+                    {activeTab === 'broadcast' && renderBroadcastTab()}
                 </div>
             </div>
 
