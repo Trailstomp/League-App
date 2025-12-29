@@ -2868,6 +2868,117 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel 
         );
     };
 
+    // Broadcast Tab - YouTube Live Stream Integration
+    const renderBroadcastTab = () => {
+        return (
+            <div className="bg-white rounded-lg shadow-md">
+                <div className="p-4 border-b bg-gray-50">
+                    <h3 className="text-xl font-bold flex items-center gap-2">
+                        📺 Live Broadcast
+                        {broadcastConfig.enabled && broadcastConfig.youtubeVideoId && (
+                            <span className="px-2 py-1 bg-red-600 text-white text-xs font-bold rounded animate-pulse">
+                                🔴 LIVE
+                            </span>
+                        )}
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                        Embed a YouTube live stream alongside the scoreboard
+                    </p>
+                </div>
+
+                <div className="p-6 space-y-6">
+                    {/* Enable Broadcast Toggle */}
+                    <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                        <div>
+                            <h4 className="font-medium text-slate-800">Enable Live Broadcast</h4>
+                            <p className="text-sm text-slate-600">Show YouTube stream in the spectator view</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={broadcastConfig.enabled}
+                                onChange={(e) => setBroadcastConfig(prev => ({ ...prev, enabled: e.target.checked }))}
+                                className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-slate-200 peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                        </label>
+                    </div>
+
+                    {/* YouTube Video ID Input */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                            YouTube Video/Stream ID
+                        </label>
+                        <input
+                            type="text"
+                            value={broadcastConfig.youtubeVideoId}
+                            onChange={(e) => setBroadcastConfig(prev => ({ ...prev, youtubeVideoId: e.target.value }))}
+                            placeholder="e.g., dQw4w9WgXcQ"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        />
+                        <p className="text-xs text-slate-500 mt-1">
+                            Enter the video ID from the YouTube URL (the part after v= or youtu.be/)
+                        </p>
+                    </div>
+
+                    {/* Preview */}
+                    {broadcastConfig.enabled && broadcastConfig.youtubeVideoId && (
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                Stream Preview
+                            </label>
+                            <div className="relative pt-[56.25%] bg-black rounded-lg overflow-hidden">
+                                <iframe
+                                    className="absolute inset-0 w-full h-full"
+                                    src={`https://www.youtube.com/embed/${broadcastConfig.youtubeVideoId}?autoplay=0`}
+                                    title="YouTube Live Stream"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                ></iframe>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Quick Channel Lookup */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                            YouTube Channel ID (for live stream detection)
+                        </label>
+                        <input
+                            type="text"
+                            value={broadcastConfig.youtubeChannelId}
+                            onChange={(e) => setBroadcastConfig(prev => ({ ...prev, youtubeChannelId: e.target.value }))}
+                            placeholder="UCxxxxxxxxxxxxxx"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        />
+                        <p className="text-xs text-slate-500 mt-1">
+                            Optional: Enter your channel ID to auto-detect when you go live
+                        </p>
+                    </div>
+
+                    {/* Info Box */}
+                    <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                        <div className="flex items-start gap-3">
+                            <svg className="w-6 h-6 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                            </svg>
+                            <div>
+                                <h5 className="font-medium text-red-800">How to use Live Broadcast</h5>
+                                <ol className="text-sm text-red-700 mt-2 space-y-1 list-decimal list-inside">
+                                    <li>Start a live stream on your YouTube channel</li>
+                                    <li>Copy the video ID from the stream URL</li>
+                                    <li>Paste it above and enable the broadcast</li>
+                                    <li>Spectators will see the stream alongside the scoreboard</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Fixed Header */}
