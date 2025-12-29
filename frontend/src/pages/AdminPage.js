@@ -16,6 +16,7 @@ import DatabaseAdminManager from '../components/DatabaseAdminManager';
 import GroupMeEventsManager from '../components/GroupMeEventsManager';
 import EventManager from '../components/unified-events/EventManager';
 import CommunicationHub from '../components/managers/CommunicationHub';
+import YouTubeSettings from '../components/managers/YouTubeSettings';
 
 const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, currentUser, websiteStyle, setWebsiteStyle, events, setEvents }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
