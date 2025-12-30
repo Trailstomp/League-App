@@ -144,8 +144,8 @@ const EventsPage = ({ teams, players = [], currentUser, events, setEvents, onEnt
             {/* List View with Enhanced Event Cards */}
             {activeTab === 'list' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {events.length > 0 ? (
-                        events
+                    {filteredEvents.length > 0 ? (
+                        filteredEvents
                             .sort((a, b) => new Date(a.start_datetime || a.date) - new Date(b.start_datetime || b.date))
                             .map(event => (
                                 <EnhancedEventCardWithGroupMe 
