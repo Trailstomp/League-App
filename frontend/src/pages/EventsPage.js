@@ -10,6 +10,16 @@ const EventsPage = ({ teams, players = [], currentUser, events, setEvents, onEnt
     const [showEventModal, setShowEventModal] = useState(false);
     const [showAddForm, setShowAddForm] = useState(false);
     const [activeTab, setActiveTab] = useState('calendar');
+    const [showCanceledArchived, setShowCanceledArchived] = useState(false);
+
+    // Filter out canceled and archived events by default
+    const filteredEvents = showCanceledArchived 
+        ? events 
+        : events.filter(event => 
+            event.status !== 'canceled' && 
+            event.status !== 'cancelled' && 
+            event.status !== 'archived'
+          );
 
     const handleAddEvent = (eventData) => {
         const newEvent = {
