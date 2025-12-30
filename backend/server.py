@@ -1783,14 +1783,27 @@ async def get_youtube_config():
         data = await db.youtube_integration.find_one({"id": "main_youtube"})
         if data:
             data.pop('_id', None)
+            # Mask API key for security - only show if exists
+            if data.get('apiKey'):
+                data['apiKeyConfigured'] = True
+                data['apiKeyMasked'] = '••••••••' + data['apiKey'][-4:] if len(data.get('apiKey', '')) > 4 else '••••••••'
+            else:
+                data['apiKeyConfigured'] = False
+                data['apiKeyMasked'] = ''
             return data
         else:
             return {
                 "id": "main_youtube",
                 "channelId": "",
                 "channelUrl": "",
+                "apiKey": "",
+                "apiKeyConfigured": False,
+                "apiKeyMasked": "",
                 "playlistIds": [],
                 "enabled": False,
+                "showLiveStreams": True,
+                "showRecentVideos": True,
+                "maxVideos": 12,
                 "teamOverrides": {},
                 "lastUpdated": datetime.utcnow().isoformat()
             }
@@ -1802,7 +1815,13 @@ async def get_youtube_config():
 async def save_youtube_config(data: Dict[str, Any]):
     """Save YouTube integration configuration"""
     try:
-        data["lastUpdated"] = datetime.utcnow()
+        data["lastUpdated"] = datetime.utcnow().isoformat()
+        
+        # If apiKey is empty string or None, preserve existing key
+        if not data.get('apiKey'):
+            existing = await db.youtube_integration.find_one({"id": "main_youtube"})
+            if existing and existing.get('apiKey'):
+                data['apiKey'] = existing['apiKey']
         
         await db.youtube_integration.replace_one(
             {"id": "main_youtube"},
@@ -1814,13 +1833,31 @@ async def save_youtube_config(data: Dict[str, Any]):
         logger.error(f"Error saving YouTube config: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# Helper function to get YouTube service with API key from database
+async def get_youtube_service_with_key():
+    """Get YouTube service instance with API key loaded from database"""
+    from services.youtube_service import YouTubeService
+    
+    # Try to get API key from database config
+    config = await db.youtube_integration.find_one({"id": "main_youtube"})
+    api_key = None
+    
+    if config and config.get('apiKey'):
+        api_key = config['apiKey']
+    
+    # Fall back to environment variable if not in database
+    if not api_key:
+        api_key = os.environ.get('YOUTUBE_API_KEY')
+    
+    return YouTubeService(api_key=api_key)
+
 # YouTube Video Fetching Endpoints
 @api_router.get("/youtube/videos/{channel_id}")
 async def get_youtube_videos(channel_id: str, max_results: int = 12):
     """Get videos from a YouTube channel"""
     try:
-        from services.youtube_service import youtube_service
-        videos = await youtube_service.get_channel_videos(channel_id, max_results)
+        service = await get_youtube_service_with_key()
+        videos = await service.get_channel_videos(channel_id, max_results)
         return {"videos": videos, "channelId": channel_id}
     except Exception as e:
         logger.error(f"Error fetching YouTube videos: {e}")
@@ -1830,8 +1867,8 @@ async def get_youtube_videos(channel_id: str, max_results: int = 12):
 async def get_youtube_channel_info(channel_id: str):
     """Get YouTube channel information"""
     try:
-        from services.youtube_service import youtube_service
-        info = await youtube_service.get_channel_info(channel_id)
+        service = await get_youtube_service_with_key()
+        info = await service.get_channel_info(channel_id)
         return info
     except Exception as e:
         logger.error(f"Error fetching YouTube channel info: {e}")
@@ -1841,9 +1878,9 @@ async def get_youtube_channel_info(channel_id: str):
 async def get_youtube_live_streams(channel_id: str):
     """Get current live streams from a channel"""
     try:
-        from services.youtube_service import youtube_service
-        live_streams = await youtube_service.get_live_streams(channel_id)
-        upcoming = await youtube_service.get_upcoming_streams(channel_id)
+        service = await get_youtube_service_with_key()
+        live_streams = await service.get_live_streams(channel_id)
+        upcoming = await service.get_upcoming_streams(channel_id)
         return {
             "liveStreams": live_streams,
             "upcomingStreams": upcoming,
@@ -1857,8 +1894,8 @@ async def get_youtube_live_streams(channel_id: str):
 async def get_youtube_playlist_videos(playlist_id: str, max_results: int = 12):
     """Get videos from a YouTube playlist"""
     try:
-        from services.youtube_service import youtube_service
-        videos = await youtube_service.get_playlist_videos(playlist_id, max_results)
+        service = await get_youtube_service_with_key()
+        videos = await service.get_playlist_videos(playlist_id, max_results)
         return {"videos": videos, "playlistId": playlist_id}
     except Exception as e:
         logger.error(f"Error fetching YouTube playlist videos: {e}")
@@ -1868,8 +1905,8 @@ async def get_youtube_playlist_videos(playlist_id: str, max_results: int = 12):
 async def get_youtube_video_details(video_id: str):
     """Get detailed information about a specific video"""
     try:
-        from services.youtube_service import youtube_service
-        details = await youtube_service.get_video_details(video_id)
+        service = await get_youtube_service_with_key()
+        details = await service.get_video_details(video_id)
         return details
     except Exception as e:
         logger.error(f"Error fetching YouTube video details: {e}")
@@ -1879,8 +1916,8 @@ async def get_youtube_video_details(video_id: str):
 async def get_youtube_channel_playlists(channel_id: str, max_results: int = 10):
     """Get playlists from a YouTube channel"""
     try:
-        from services.youtube_service import youtube_service
-        playlists = await youtube_service.get_channel_playlists(channel_id, max_results)
+        service = await get_youtube_service_with_key()
+        playlists = await service.get_channel_playlists(channel_id, max_results)
         return {"playlists": playlists, "channelId": channel_id}
     except Exception as e:
         logger.error(f"Error fetching YouTube playlists: {e}")
@@ -1890,8 +1927,8 @@ async def get_youtube_channel_playlists(channel_id: str, max_results: int = 10):
 async def search_youtube_channel_videos(channel_id: str, q: str, max_results: int = 10):
     """Search for videos within a channel"""
     try:
-        from services.youtube_service import youtube_service
-        videos = await youtube_service.search_videos(channel_id, q, max_results)
+        service = await get_youtube_service_with_key()
+        videos = await service.search_videos(channel_id, q, max_results)
         return {"videos": videos, "query": q, "channelId": channel_id}
     except Exception as e:
         logger.error(f"Error searching YouTube videos: {e}")
