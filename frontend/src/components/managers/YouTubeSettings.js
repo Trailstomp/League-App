@@ -24,6 +24,29 @@ const YouTubeSettings = ({ teamId = null, onSave }) => {
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
     
+    useEffect(() => {
+        const fetchConfig = async () => {
+            try {
+                setLoading(true);
+                const endpoint = teamId 
+                    ? `${backendUrl}/api/teams/${teamId}/youtube`
+                    : `${backendUrl}/api/youtube-integration`;
+                
+                const response = await fetch(endpoint);
+                if (response.ok) {
+                    const data = await response.json();
+                    setConfig(prev => ({ ...prev, ...data }));
+                    setNewApiKey(''); // Clear any entered API key
+                }
+            } catch (error) {
+                console.error('Error loading YouTube config:', error);
+            }
+            setLoading(false);
+        };
+        
+        fetchConfig();
+    }, [backendUrl, teamId]);
+    
     const loadConfig = useCallback(async () => {
         try {
             setLoading(true);
@@ -42,10 +65,6 @@ const YouTubeSettings = ({ teamId = null, onSave }) => {
         }
         setLoading(false);
     }, [backendUrl, teamId]);
-    
-    useEffect(() => {
-        loadConfig();
-    }, [loadConfig]);
     
     const saveConfig = async () => {
         try {
