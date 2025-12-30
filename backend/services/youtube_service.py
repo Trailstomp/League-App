@@ -16,9 +16,15 @@ class YouTubeService:
     BASE_URL = "https://www.googleapis.com/youtube/v3"
     
     def __init__(self, api_key: Optional[str] = None):
+        # API key can be passed directly, from env, or will be fetched from DB
         self.api_key = api_key or os.environ.get('YOUTUBE_API_KEY')
         self._cache = {}
         self._cache_ttl = timedelta(minutes=15)
+    
+    def set_api_key(self, api_key: str):
+        """Update the API key (useful when loading from database)"""
+        self.api_key = api_key
+        logger.info("YouTube API key updated")
     
     def _get_cache_key(self, endpoint: str, params: dict) -> str:
         """Generate cache key from endpoint and params"""
