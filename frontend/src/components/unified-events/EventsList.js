@@ -79,6 +79,12 @@ const EventsList = ({
     // Filter and sort events
     const filteredEvents = events
         .filter(event => {
+            // Default 'active' filter excludes canceled and archived
+            if (filter === 'active') {
+                return event.status !== 'canceled' && 
+                       event.status !== 'cancelled' && 
+                       event.status !== 'archived';
+            }
             if (filter === 'all') return true;
             return event.status === filter;
         })
