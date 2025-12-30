@@ -14,7 +14,7 @@ const EventsList = ({
     onViewLive,
     onRefresh 
 }) => {
-    const [filter, setFilter] = useState('all'); // all, scheduled, in_progress, completed
+    const [filter, setFilter] = useState('active'); // active (excludes canceled/archived), all, scheduled, in_progress, completed, canceled, archived
     const [sortBy, setSortBy] = useState('date'); // date, title, type
     const [sendingNotifications, setSendingNotifications] = useState({});
     const [viewingRSVPs, setViewingRSVPs] = useState(null);
