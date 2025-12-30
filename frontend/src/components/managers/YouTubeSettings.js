@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 const YouTubeSettings = ({ teamId = null, onSave }) => {
     const [config, setConfig] = useState({
@@ -24,11 +24,7 @@ const YouTubeSettings = ({ teamId = null, onSave }) => {
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
     
-    useEffect(() => {
-        loadConfig();
-    }, [teamId]);
-    
-    const loadConfig = async () => {
+    const loadConfig = useCallback(async () => {
         try {
             setLoading(true);
             const endpoint = teamId 
@@ -45,7 +41,11 @@ const YouTubeSettings = ({ teamId = null, onSave }) => {
             console.error('Error loading YouTube config:', error);
         }
         setLoading(false);
-    };
+    }, [backendUrl, teamId]);
+    
+    useEffect(() => {
+        loadConfig();
+    }, [loadConfig]);
     
     const saveConfig = async () => {
         try {
@@ -249,7 +249,7 @@ const YouTubeSettings = ({ teamId = null, onSave }) => {
                         </div>
                         {newApiKey && (
                             <p className="text-xs text-amber-600 mt-1">
-                                ⚠️ Click "Save Configuration" to apply the new API key
+                                ⚠️ Click Save Configuration to apply the new API key
                             </p>
                         )}
                     </div>
@@ -263,14 +263,14 @@ const YouTubeSettings = ({ teamId = null, onSave }) => {
                             <ol className="list-decimal list-inside space-y-1.5">
                                 <li>Go to <a href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Google Cloud Console</a></li>
                                 <li>Create a new project or select existing</li>
-                                <li>Go to <strong>APIs & Services → Library</strong></li>
-                                <li>Search for "<strong>YouTube Data API v3</strong>" and Enable it</li>
-                                <li>Go to <strong>APIs & Services → Credentials</strong></li>
+                                <li>Go to <strong>APIs &amp; Services → Library</strong></li>
+                                <li>Search for <strong>YouTube Data API v3</strong> and Enable it</li>
+                                <li>Go to <strong>APIs &amp; Services → Credentials</strong></li>
                                 <li>Click <strong>+ CREATE CREDENTIALS → API Key</strong></li>
                                 <li>Copy the key and paste it above</li>
                             </ol>
                             <p className="text-xs text-slate-500 mt-2">
-                                💡 Tip: Restrict your key to "YouTube Data API v3" for security
+                                💡 Tip: Restrict your key to YouTube Data API v3 for security
                             </p>
                         </div>
                     </details>
