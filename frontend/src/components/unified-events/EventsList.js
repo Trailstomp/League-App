@@ -169,10 +169,13 @@ const EventsList = ({
                                 onChange={(e) => setFilter(e.target.value)}
                                 className="px-2 py-1 sm:px-3 border border-gray-300 rounded text-xs sm:text-sm"
                             >
-                                <option value="all">All</option>
+                                <option value="active">Active (default)</option>
+                                <option value="all">All Events</option>
                                 <option value="scheduled">Scheduled</option>
                                 <option value="in_progress">In Progress</option>
                                 <option value="completed">Completed</option>
+                                <option value="canceled">Canceled</option>
+                                <option value="archived">Archived</option>
                             </select>
                         </div>
 
