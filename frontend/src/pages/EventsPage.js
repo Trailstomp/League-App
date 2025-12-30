@@ -122,7 +122,7 @@ const EventsPage = ({ teams, players = [], currentUser, events, setEvents, onEnt
                     {/* Advanced Events Calendar */}
                     <div className="lg:col-span-2">
                         <AdvancedEventCalendar 
-                            leagueSchedule={events}
+                            leagueSchedule={filteredEvents}
                             teams={teams}
                             onEventClick={handleEventClick}
                             onEditEvent={(event) => {
@@ -136,7 +136,7 @@ const EventsPage = ({ teams, players = [], currentUser, events, setEvents, onEnt
 
                     {/* Event Stats Sidebar */}
                     <div className="space-y-4">
-                        <EventStats events={events} />
+                        <EventStats events={filteredEvents} />
                     </div>
                 </div>
             )}
