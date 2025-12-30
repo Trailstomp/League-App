@@ -3,7 +3,7 @@
 # Script to restore the remaining teams to the database
 
 echo "Adding American Dads..."
-curl -X POST "https://livescore-mobile.preview.emergentagent.com/api/teams" \
+curl -X POST "https://sporttube.preview.emergentagent.com/api/teams" \
   -H "Content-Type: application/json" \
   -d '{
     "id": "2",
@@ -27,7 +27,7 @@ curl -X POST "https://livescore-mobile.preview.emergentagent.com/api/teams" \
   }'
 
 echo -e "\n\nAdding Cincinnati Trash Pandas..."
-curl -X POST "https://livescore-mobile.preview.emergentagent.com/api/teams" \
+curl -X POST "https://sporttube.preview.emergentagent.com/api/teams" \
   -H "Content-Type: application/json" \
   -d '{
     "id": "3",
@@ -51,7 +51,7 @@ curl -X POST "https://livescore-mobile.preview.emergentagent.com/api/teams" \
   }'
 
 echo -e "\n\nAdding Columbus Ball Hawgs..."
-curl -X POST "https://livescore-mobile.preview.emergentagent.com/api/teams" \
+curl -X POST "https://sporttube.preview.emergentagent.com/api/teams" \
   -H "Content-Type: application/json" \
   -d '{
     "id": "4",
