@@ -207,17 +207,19 @@ const EventsList = ({
                         <div className="text-4xl mb-4">📅</div>
                         <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
                         <p className="text-gray-600 mb-6">
-                            {filter === 'all' 
-                                ? 'Get started by creating your first event'
-                                : `No ${filter} events found. Try changing the filter.`
+                            {filter === 'active' 
+                                ? 'No active events. Create a new event or check canceled/archived events.'
+                                : filter === 'all' 
+                                    ? 'Get started by creating your first event'
+                                    : `No ${filter.replace('_', ' ')} events found. Try changing the filter.`
                             }
                         </p>
-                        {filter === 'all' && (
+                        {(filter === 'all' || filter === 'active') && (
                             <button
                                 onClick={onCreateEvent}
                                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                             >
-                                Create First Event
+                                Create Event
                             </button>
                         )}
                     </div>
