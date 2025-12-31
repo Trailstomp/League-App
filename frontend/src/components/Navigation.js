@@ -331,11 +331,12 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                     {isCollapsed && (
                         <div className="flex items-center justify-center w-full">
                             {websiteStyle.navLogoUrl ? (
-                                <img 
+                                <CachedImage 
                                     src={websiteStyle.navLogoUrl} 
                                     alt="Logo" 
                                     className="object-contain"
                                     style={{ width: '48px', height: '48px' }}
+                                    fallback={<span className="text-4xl">🥍</span>}
                                 />
                             ) : (
                                 <span className="text-4xl">🥍</span>
