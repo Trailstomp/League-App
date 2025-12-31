@@ -6,6 +6,8 @@ import NewsDisplay from '../components/NewsDisplay';
 import TeamStatsDisplay from '../components/TeamStatsDisplay';
 import YouTubeSettings from '../components/managers/YouTubeSettings';
 import { fixGoogleDriveUrl } from '../utils/imageUtils';
+import CachedImage from '../components/CachedImage';
+import Skeleton, { SkeletonEventCard } from '../components/Skeleton';
 
 const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
     const [activeTab, setActiveTab] = useState('home');

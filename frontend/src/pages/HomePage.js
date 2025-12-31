@@ -7,6 +7,8 @@ import EventDetailModal from '../scheduling/components/EventDetailModal';
 import TeamDetailModal from '../teams/components/TeamDetailModal';
 import NewsDisplay from '../components/NewsDisplay';
 import { fixGoogleDriveUrl } from '../utils/imageUtils';
+import CachedImage from '../components/CachedImage';
+import { SkeletonTeamCard } from '../components/Skeleton';
 
 const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyle = {}, onNavigate }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
