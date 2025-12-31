@@ -8938,17 +8938,6 @@ async def update_payment_config(config_data: Dict[str, Any]):
         logger.error(f"Error updating payment config: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# Fee Summaries & Reports
-@api_router.get("/fees/summary")
-async def get_fee_summary(fee_id: str = None, team_id: str = None):
-    """Get fee collection summary"""
-    try:
-        summary = await fee_service.get_fee_summary(fee_id=fee_id, team_id=team_id)
-        return summary
-    except Exception as e:
-        logger.error(f"Error getting fee summary: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
 @api_router.get("/players/{player_id}/fees")
 async def get_player_fees(player_id: str):
     """Get all fees for a specific player"""
@@ -8957,16 +8946,6 @@ async def get_player_fees(player_id: str):
         return fees
     except Exception as e:
         logger.error(f"Error getting player fees: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@api_router.get("/fees/overdue")
-async def get_overdue_fees():
-    """Get all overdue fee assignments"""
-    try:
-        overdue = await fee_service.get_overdue_assignments()
-        return {"overdue_assignments": overdue, "count": len(overdue)}
-    except Exception as e:
-        logger.error(f"Error getting overdue fees: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # Stripe Checkout Integration
