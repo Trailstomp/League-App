@@ -198,15 +198,15 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                                 />
                                             ) : null}
                                             
-                                            {/* Fallback letter logo - always present but hidden if image loads */}
+                                            {/* Fallback letter logo - shown when no logo URL */}
+                                            {!team.style?.logoUrl && (
                                             <div 
-                                                className="fallback-logo rounded-2xl flex items-center justify-center relative"
+                                                className="rounded-2xl flex items-center justify-center relative"
                                                 style={{ 
                                                     width: '240px', 
                                                     height: '240px',
                                                     background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
-                                                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-                                                    display: team.style?.logoUrl ? 'none' : 'flex' // Hidden if logo URL exists, shown otherwise
+                                                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
                                                 }}
                                             >
                                                 <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '6rem' }}>
@@ -215,6 +215,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                                 {/* Gradient shine overlay */}
                                                 <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-20 pointer-events-none rounded-2xl"></div>
                                             </div>
+                                            )}
                                         </div>
                                         
                                         {/* Record Badge - Like hover overlay in player card */}
