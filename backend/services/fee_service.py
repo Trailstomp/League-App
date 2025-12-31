@@ -210,6 +210,7 @@ class FeeService:
         }
         
         await self.db.fee_assignments.insert_one(assignment)
+        assignment.pop('_id', None)  # Remove MongoDB _id
         return assignment
     
     async def get_assignments(
