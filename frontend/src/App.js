@@ -431,6 +431,8 @@ function App() {
         );
       case 'quick-rsvp':
         return <QuickRSVPForm />;
+      case 'my-fees':
+        return <PlayerFeeDashboard currentUser={currentUser} />;
       case 'team':
         return (
           <TeamDetailPage 
