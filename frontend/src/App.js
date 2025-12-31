@@ -185,7 +185,8 @@ function App() {
       '/chat': 'chat',
       '/league_contact': 'league_contact',
       '/my-fees': 'my-fees',
-      '/fees': 'my-fees'
+      '/fees': 'my-fees',
+      '/fees/payment-success': 'payment-success'
     };
     
     const pageFromUrl = urlToPage[path] || 'home';
