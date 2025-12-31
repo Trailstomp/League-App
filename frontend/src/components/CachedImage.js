@@ -116,15 +116,17 @@ const CachedImage = ({
   const observerRef = useRef(null);
 
   useEffect(() => {
-    if (!src) {
-      setLoading(false);
-      setError(true);
-      return;
-    }
-
     let isMounted = true;
 
     const loadImage = async () => {
+      if (!src) {
+        if (isMounted) {
+          setLoading(false);
+          setError(true);
+        }
+        return;
+      }
+      
       // Check if cacheable
       if (!isCacheableUrl(src)) {
         if (isMounted) {
