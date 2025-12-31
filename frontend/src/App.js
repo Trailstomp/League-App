@@ -179,12 +179,14 @@ function App() {
   const handleLogin = (user) => {
     console.log('🔐 User logged in:', user);
     setCurrentUser(user);
+    setCache(CACHE_KEYS.USER, user); // Persist to localStorage
     setShowLogin(false);
   };
 
   const handleLogout = () => {
     console.log('🔐 User logged out');
     setCurrentUser(null);
+    localStorage.removeItem(CACHE_KEYS.USER); // Clear persisted session
     setCurrentPage('home'); // Redirect to home after logout
   };
 
