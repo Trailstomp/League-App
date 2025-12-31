@@ -316,7 +316,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                                         
                                                         <div className="relative z-10">
                                                             {team.style?.logoUrl ? (
-                                                                <img 
+                                                                <CachedImage 
                                                                     src={fixGoogleDriveUrl(team.style.logoUrl)} 
                                                                     alt={team.name}
                                                                     className="object-contain drop-shadow-2xl"
@@ -326,28 +326,35 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                                                         filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.4)) drop-shadow(0 4px 8px rgba(255,255,255,0.1))',
                                                                         backgroundColor: 'transparent'
                                                                     }}
-                                                                    onLoad={(e) => {
-                                                                        e.target.style.opacity = '1';
-                                                                        e.target.style.transition = 'opacity 0.3s ease';
-                                                                    }}
-                                                                    onError={(e) => {
+                                                                    onError={() => {
                                                                         console.warn(`Failed to load logo for team: ${team.name}`, team.style?.logoUrl);
-                                                                        e.target.style.display = 'none';
-                                                                        const fallback = e.target.parentElement.querySelector('.fallback-logo');
-                                                                        if (fallback) fallback.style.display = 'flex';
                                                                     }}
-                                                                    loading="lazy"
+                                                                    fallback={
+                                                                        <div 
+                                                                            className="rounded-2xl flex items-center justify-center relative"
+                                                                            style={{ 
+                                                                                width: '240px', 
+                                                                                height: '240px',
+                                                                                background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
+                                                                                boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+                                                                            }}
+                                                                        >
+                                                                            <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '6rem' }}>
+                                                                                {team.name.charAt(0)}
+                                                                            </span>
+                                                                        </div>
+                                                                    }
                                                                 />
                                                             ) : null}
                                                             
+                                                            {!team.style?.logoUrl && (
                                                             <div 
-                                                                className="fallback-logo rounded-2xl flex items-center justify-center relative"
+                                                                className="rounded-2xl flex items-center justify-center relative"
                                                                 style={{ 
                                                                     width: '240px', 
                                                                     height: '240px',
                                                                     background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
-                                                                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-                                                                    display: team.style?.logoUrl ? 'none' : 'flex'
+                                                                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
                                                                 }}
                                                             >
                                                                 <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '6rem' }}>
@@ -355,6 +362,7 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                                                 </span>
                                                                 <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-transparent opacity-20 pointer-events-none rounded-2xl"></div>
                                                             </div>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
