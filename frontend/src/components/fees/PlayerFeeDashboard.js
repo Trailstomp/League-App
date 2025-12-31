@@ -47,8 +47,40 @@ const PlayerFeeDashboard = ({ currentUser, playerId = null }) => {
     }, [backendUrl, userId]);
     
     useEffect(() => {
-        loadFees();
-    }, [loadFees]);
+        const fetchData = async () => {
+            if (!userId) return;
+            
+            try {
+                setLoading(true);
+                
+                const [assignmentsRes, paymentsRes, configRes] = await Promise.all([
+                    fetch(`${backendUrl}/api/fee-assignments?player_id=${userId}`),
+                    fetch(`${backendUrl}/api/payments?player_id=${userId}`),
+                    fetch(`${backendUrl}/api/payment-config`)
+                ]);
+                
+                if (assignmentsRes.ok) {
+                    const data = await assignmentsRes.json();
+                    setFees(data.assignments || []);
+                }
+                
+                if (paymentsRes.ok) {
+                    const data = await paymentsRes.json();
+                    setPayments(data.payments || []);
+                }
+                
+                if (configRes.ok) {
+                    const data = await configRes.json();
+                    setPaymentConfig(data);
+                }
+            } catch (error) {
+                console.error('Error loading fees:', error);
+            }
+            setLoading(false);
+        };
+        
+        fetchData();
+    }, [backendUrl, userId]);
     
     // Check for payment success from URL
     useEffect(() => {
