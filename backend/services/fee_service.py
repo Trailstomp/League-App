@@ -308,6 +308,7 @@ class FeeService:
         }
         
         await self.db.payments.insert_one(payment)
+        payment.pop('_id', None)  # Remove MongoDB _id
         
         # Update assignment
         new_amount_paid = assignment["amount_paid"] + amount
