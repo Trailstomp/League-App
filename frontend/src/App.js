@@ -112,6 +112,7 @@ function App() {
       
       // Update local state immediately
       setWebsiteStyle(newStyle);
+      setCache(CACHE_KEYS.WEBSITE_STYLE, newStyle); // Update cache
       
       // Save to API
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/league-data/websiteStyle`, {
