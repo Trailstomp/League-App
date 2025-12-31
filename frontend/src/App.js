@@ -183,7 +183,9 @@ function App() {
       '/events': 'events',
       '/standings': 'standings',
       '/chat': 'chat',
-      '/league_contact': 'league_contact'
+      '/league_contact': 'league_contact',
+      '/my-fees': 'my-fees',
+      '/fees': 'my-fees'
     };
     
     const pageFromUrl = urlToPage[path] || 'home';
