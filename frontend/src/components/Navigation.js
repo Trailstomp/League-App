@@ -141,6 +141,7 @@ const TeamsByDivision = ({ teams, websiteStyle, isCollapsed, onNavigate, onMobil
                                             >
                                                 <LacrosseIcon name="stick" style={{fontSize: '14px', color: 'white'}} />
                                             </div>
+                                            )}
                                         </div>
                                         
                                         <div className="flex-1 min-w-0 ml-3">
