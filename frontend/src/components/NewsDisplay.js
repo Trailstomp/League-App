@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LacrosseIcon } from './LacrosseIcons';
+import CachedImage from './CachedImage';
 
 const NewsDisplay = ({ teamId = null, maxItems = 5, showTeamFilter = false }) => {
     const [newsItems, setNewsItems] = useState([]);
@@ -148,7 +149,7 @@ const NewsDisplay = ({ teamId = null, maxItems = 5, showTeamFilter = false }) =>
                             {/* Image */}
                             {item.type === 'image' && item.imageUrl && (
                                 <div className="cursor-pointer" onClick={() => handleImageClick(item.imageUrl)}>
-                                    <img 
+                                    <CachedImage 
                                         src={item.imageUrl} 
                                         alt={item.heading}
                                         className="w-full h-48 object-cover rounded-lg hover:opacity-90 transition-opacity"
@@ -162,7 +163,7 @@ const NewsDisplay = ({ teamId = null, maxItems = 5, showTeamFilter = false }) =>
                                     className="relative cursor-pointer"
                                     onClick={() => handleVideoClick(item.videoUrl)}
                                 >
-                                    <img 
+                                    <CachedImage 
                                         src={item.thumbnailUrl} 
                                         alt={item.heading}
                                         className="w-full h-48 object-cover rounded-lg hover:opacity-90 transition-opacity"
