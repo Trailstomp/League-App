@@ -8695,6 +8695,409 @@ async def sync_google_rsvps(event_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ==================== FEE MANAGEMENT ROUTES ====================
+
+from services.fee_service import FeeService
+
+# Initialize fee service
+fee_service = FeeService(db)
+
+# Fee Definitions
+@api_router.get("/fees")
+async def get_fees(scope: str = None, team_id: str = None, include_archived: bool = False):
+    """Get all fee definitions"""
+    try:
+        fees = await fee_service.get_fees(scope=scope, team_id=team_id, include_archived=include_archived)
+        return {"fees": fees}
+    except Exception as e:
+        logger.error(f"Error getting fees: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/fees/{fee_id}")
+async def get_fee(fee_id: str):
+    """Get a single fee by ID"""
+    try:
+        fee = await fee_service.get_fee(fee_id)
+        if not fee:
+            raise HTTPException(status_code=404, detail="Fee not found")
+        return fee
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting fee: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/fees")
+async def create_fee(fee_data: Dict[str, Any]):
+    """Create a new fee definition"""
+    try:
+        created_by = fee_data.pop("created_by", "system")
+        fee = await fee_service.create_fee(fee_data, created_by)
+        return {"status": "success", "fee": fee}
+    except Exception as e:
+        logger.error(f"Error creating fee: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/fees/{fee_id}")
+async def update_fee(fee_id: str, updates: Dict[str, Any]):
+    """Update a fee definition"""
+    try:
+        updated_by = updates.pop("updated_by", "system")
+        fee = await fee_service.update_fee(fee_id, updates, updated_by)
+        if not fee:
+            raise HTTPException(status_code=404, detail="Fee not found")
+        return {"status": "success", "fee": fee}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating fee: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/fees/{fee_id}")
+async def archive_fee(fee_id: str):
+    """Archive a fee (soft delete)"""
+    try:
+        success = await fee_service.archive_fee(fee_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Fee not found")
+        return {"status": "success", "message": "Fee archived"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error archiving fee: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Fee Assignments
+@api_router.post("/fees/assign")
+async def assign_fee(assignment_data: Dict[str, Any]):
+    """Assign a fee to players or teams"""
+    try:
+        fee_id = assignment_data.get("fee_id")
+        assigned_by = assignment_data.get("assigned_by", "system")
+        player_ids = assignment_data.get("player_ids", [])
+        team_ids = assignment_data.get("team_ids", [])
+        use_payment_plan = assignment_data.get("use_payment_plan", False)
+        installments = assignment_data.get("installments", 1)
+        custom_due_date = assignment_data.get("custom_due_date")
+        notes = assignment_data.get("notes")
+        
+        assignments = await fee_service.assign_fee(
+            fee_id=fee_id,
+            assigned_by=assigned_by,
+            player_ids=player_ids,
+            team_ids=team_ids,
+            use_payment_plan=use_payment_plan,
+            installments=installments,
+            custom_due_date=custom_due_date,
+            notes=notes
+        )
+        
+        return {"status": "success", "assignments": assignments, "count": len(assignments)}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error assigning fee: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/fee-assignments")
+async def get_fee_assignments(
+    fee_id: str = None,
+    player_id: str = None,
+    team_id: str = None,
+    status: str = None
+):
+    """Get fee assignments with optional filters"""
+    try:
+        assignments = await fee_service.get_assignments(
+            fee_id=fee_id,
+            player_id=player_id,
+            team_id=team_id,
+            status=status
+        )
+        return {"assignments": assignments}
+    except Exception as e:
+        logger.error(f"Error getting assignments: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/fee-assignments/{assignment_id}")
+async def get_fee_assignment(assignment_id: str):
+    """Get a single fee assignment"""
+    try:
+        assignment = await fee_service.get_assignment(assignment_id)
+        if not assignment:
+            raise HTTPException(status_code=404, detail="Assignment not found")
+        return assignment
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting assignment: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Payments
+@api_router.post("/payments")
+async def record_payment(payment_data: Dict[str, Any]):
+    """Record a payment for a fee assignment"""
+    try:
+        assignment_id = payment_data.get("assignment_id")
+        amount = float(payment_data.get("amount", 0))
+        payment_method = payment_data.get("payment_method", "cash")
+        recorded_by = payment_data.get("recorded_by", "system")
+        transaction_id = payment_data.get("transaction_id")
+        payment_date = payment_data.get("payment_date")
+        paid_by = payment_data.get("paid_by")
+        paid_by_name = payment_data.get("paid_by_name")
+        notes = payment_data.get("notes")
+        receipt_url = payment_data.get("receipt_url")
+        
+        payment = await fee_service.record_payment(
+            assignment_id=assignment_id,
+            amount=amount,
+            payment_method=payment_method,
+            recorded_by=recorded_by,
+            transaction_id=transaction_id,
+            payment_date=payment_date,
+            paid_by=paid_by,
+            paid_by_name=paid_by_name,
+            notes=notes,
+            receipt_url=receipt_url
+        )
+        
+        return {"status": "success", "payment": payment}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error recording payment: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/payments")
+async def get_payments(
+    assignment_id: str = None,
+    fee_id: str = None,
+    payment_method: str = None
+):
+    """Get payment records"""
+    try:
+        payments = await fee_service.get_payments(
+            assignment_id=assignment_id,
+            fee_id=fee_id,
+            payment_method=payment_method
+        )
+        return {"payments": payments}
+    except Exception as e:
+        logger.error(f"Error getting payments: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Payment Configuration
+@api_router.get("/payment-config")
+async def get_payment_config(scope: str = "league", team_id: str = None):
+    """Get payment configuration"""
+    try:
+        config = await fee_service.get_payment_config(scope=scope, team_id=team_id)
+        return config
+    except Exception as e:
+        logger.error(f"Error getting payment config: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/payment-config")
+async def update_payment_config(config_data: Dict[str, Any]):
+    """Update payment configuration"""
+    try:
+        scope = config_data.pop("scope", "league")
+        team_id = config_data.pop("team_id", None)
+        updated_by = config_data.pop("updated_by", None)
+        
+        config = await fee_service.update_payment_config(
+            config_data=config_data,
+            scope=scope,
+            team_id=team_id,
+            updated_by=updated_by
+        )
+        return {"status": "success", "config": config}
+    except Exception as e:
+        logger.error(f"Error updating payment config: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Fee Summaries & Reports
+@api_router.get("/fees/summary")
+async def get_fee_summary(fee_id: str = None, team_id: str = None):
+    """Get fee collection summary"""
+    try:
+        summary = await fee_service.get_fee_summary(fee_id=fee_id, team_id=team_id)
+        return summary
+    except Exception as e:
+        logger.error(f"Error getting fee summary: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/players/{player_id}/fees")
+async def get_player_fees(player_id: str):
+    """Get all fees for a specific player"""
+    try:
+        fees = await fee_service.get_player_fees(player_id)
+        return fees
+    except Exception as e:
+        logger.error(f"Error getting player fees: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/fees/overdue")
+async def get_overdue_fees():
+    """Get all overdue fee assignments"""
+    try:
+        overdue = await fee_service.get_overdue_assignments()
+        return {"overdue_assignments": overdue, "count": len(overdue)}
+    except Exception as e:
+        logger.error(f"Error getting overdue fees: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Stripe Checkout Integration
+@api_router.post("/payments/stripe/checkout")
+async def create_stripe_checkout(checkout_data: Dict[str, Any], request: Request):
+    """Create a Stripe checkout session for fee payment"""
+    try:
+        from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionRequest
+        
+        assignment_id = checkout_data.get("assignment_id")
+        origin_url = checkout_data.get("origin_url", str(request.base_url).rstrip('/'))
+        
+        # Get assignment to get amount
+        assignment = await fee_service.get_assignment(assignment_id)
+        if not assignment:
+            raise HTTPException(status_code=404, detail="Assignment not found")
+        
+        amount = float(assignment.get("amount_due", 0))
+        if amount <= 0:
+            raise HTTPException(status_code=400, detail="No amount due")
+        
+        # Initialize Stripe
+        api_key = os.environ.get('STRIPE_API_KEY')
+        if not api_key:
+            raise HTTPException(status_code=500, detail="Stripe not configured")
+        
+        webhook_url = f"{BACKEND_URL}/api/webhook/stripe"
+        stripe_checkout = StripeCheckout(api_key=api_key, webhook_url=webhook_url)
+        
+        # Build URLs
+        success_url = f"{origin_url}/fees/payment-success?session_id={{CHECKOUT_SESSION_ID}}&assignment_id={assignment_id}"
+        cancel_url = f"{origin_url}/fees"
+        
+        # Create checkout session
+        checkout_request = CheckoutSessionRequest(
+            amount=amount,
+            currency=assignment.get("currency", "USD").lower(),
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata={
+                "assignment_id": assignment_id,
+                "fee_id": assignment.get("fee_id", ""),
+                "player_id": assignment.get("player_id", ""),
+                "fee_name": assignment.get("fee_name", "")
+            }
+        )
+        
+        session = await stripe_checkout.create_checkout_session(checkout_request)
+        
+        # Store pending transaction
+        await db.payment_transactions.insert_one({
+            "id": str(uuid.uuid4()),
+            "session_id": session.session_id,
+            "assignment_id": assignment_id,
+            "amount": amount,
+            "currency": assignment.get("currency", "USD"),
+            "status": "pending",
+            "payment_method": "stripe",
+            "created_at": datetime.utcnow().isoformat()
+        })
+        
+        return {"checkout_url": session.url, "session_id": session.session_id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating Stripe checkout: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/payments/stripe/status/{session_id}")
+async def get_stripe_payment_status(session_id: str):
+    """Get Stripe checkout session status"""
+    try:
+        from emergentintegrations.payments.stripe.checkout import StripeCheckout
+        
+        api_key = os.environ.get('STRIPE_API_KEY')
+        if not api_key:
+            raise HTTPException(status_code=500, detail="Stripe not configured")
+        
+        stripe_checkout = StripeCheckout(api_key=api_key, webhook_url="")
+        status = await stripe_checkout.get_checkout_status(session_id)
+        
+        # If paid, record the payment
+        if status.payment_status == "paid":
+            transaction = await db.payment_transactions.find_one({"session_id": session_id})
+            if transaction and transaction.get("status") != "completed":
+                # Update transaction
+                await db.payment_transactions.update_one(
+                    {"session_id": session_id},
+                    {"$set": {"status": "completed", "payment_status": status.payment_status}}
+                )
+                
+                # Record payment
+                assignment_id = transaction.get("assignment_id") or status.metadata.get("assignment_id")
+                if assignment_id:
+                    await fee_service.record_payment(
+                        assignment_id=assignment_id,
+                        amount=status.amount_total / 100,  # Convert from cents
+                        payment_method="stripe",
+                        recorded_by="stripe_webhook",
+                        transaction_id=session_id
+                    )
+        
+        return {
+            "status": status.status,
+            "payment_status": status.payment_status,
+            "amount_total": status.amount_total,
+            "currency": status.currency
+        }
+    except Exception as e:
+        logger.error(f"Error getting Stripe status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhooks"""
+    try:
+        from emergentintegrations.payments.stripe.checkout import StripeCheckout
+        
+        api_key = os.environ.get('STRIPE_API_KEY')
+        stripe_checkout = StripeCheckout(api_key=api_key, webhook_url="")
+        
+        body = await request.body()
+        signature = request.headers.get("Stripe-Signature")
+        
+        webhook_response = await stripe_checkout.handle_webhook(body, signature)
+        
+        logger.info(f"Stripe webhook: {webhook_response.event_type} - {webhook_response.session_id}")
+        
+        if webhook_response.payment_status == "paid":
+            transaction = await db.payment_transactions.find_one({"session_id": webhook_response.session_id})
+            if transaction and transaction.get("status") != "completed":
+                await db.payment_transactions.update_one(
+                    {"session_id": webhook_response.session_id},
+                    {"$set": {"status": "completed", "payment_status": "paid"}}
+                )
+                
+                assignment_id = transaction.get("assignment_id") or webhook_response.metadata.get("assignment_id")
+                if assignment_id:
+                    await fee_service.record_payment(
+                        assignment_id=assignment_id,
+                        amount=transaction.get("amount", 0),
+                        payment_method="stripe",
+                        recorded_by="stripe_webhook",
+                        transaction_id=webhook_response.session_id
+                    )
+        
+        return {"status": "received"}
+    except Exception as e:
+        logger.error(f"Stripe webhook error: {e}")
+        return {"status": "error", "message": str(e)}
+
+
 # Include the API router in the main app (after all routes are defined)
 app.include_router(api_router)
 
