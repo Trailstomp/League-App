@@ -52,32 +52,29 @@ const PlayerFeeDashboard = ({ currentUser, playerId = null }) => {
     
     // Check for payment success from URL
     useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const sessionId = urlParams.get('session_id');
-        const assignmentId = urlParams.get('assignment_id');
-        
-        if (sessionId && assignmentId) {
-            // Verify the payment
-            verifyPayment(sessionId, assignmentId);
-            // Clean up URL
-            window.history.replaceState({}, '', window.location.pathname);
-        }
-    }, []);
-    
-    const verifyPayment = async (sessionId, assignmentId) => {
-        try {
-            const response = await fetch(`${backendUrl}/api/payments/stripe/status/${sessionId}`);
-            if (response.ok) {
-                const data = await response.json();
-                if (data.payment_status === 'paid') {
-                    alert('✅ Payment successful! Thank you.');
-                    loadFees(); // Refresh the data
+        const checkPaymentStatus = async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('session_id');
+            
+            if (sessionId) {
+                try {
+                    const response = await fetch(`${backendUrl}/api/payments/stripe/status/${sessionId}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.payment_status === 'paid') {
+                            alert('✅ Payment successful! Thank you.');
+                            // Clean up URL
+                            window.history.replaceState({}, '', window.location.pathname);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error verifying payment:', error);
                 }
             }
-        } catch (error) {
-            console.error('Error verifying payment:', error);
-        }
-    };
+        };
+        
+        checkPaymentStatus();
+    }, [backendUrl]);
     
     const handleStripePayment = async (assignment) => {
         setProcessingPayment(assignment.id);
@@ -93,11 +90,11 @@ const PlayerFeeDashboard = ({ currentUser, playerId = null }) => {
             
             if (response.ok) {
                 const data = await response.json();
-                // Redirect to Stripe checkout
-                window.location.href = data.checkout_url;
+                // Redirect to Stripe checkout - this is intentional navigation
+                window.open(data.checkout_url, '_self');
             } else {
-                const error = await response.json();
-                alert(error.detail || 'Error creating payment session');
+                const errorData = await response.json();
+                alert(errorData.detail || 'Error creating payment session');
             }
         } catch (error) {
             console.error('Stripe checkout error:', error);
