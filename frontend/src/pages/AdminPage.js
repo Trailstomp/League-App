@@ -195,6 +195,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <CommunicationHub />;
             case 'youtube':
                 return <YouTubeSettings onSave={() => console.log('YouTube settings saved')} />;
+            case 'fees':
+                return <FeeManager teams={teams} players={players} currentUser={currentUser} scope="league" />;
             case 'website':
                 return <WebsiteDesignManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} teams={teams} events={events} />;
             case 'api':
