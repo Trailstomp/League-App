@@ -675,10 +675,22 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                 {/* Player Photo */}
                                 <div className="aspect-[3/4] relative">
                                     {player.photoUrl ? (
-                                        <img 
+                                        <CachedImage 
                                             src={player.photoUrl} 
                                             alt={player.name}
                                             className="w-full h-full object-cover"
+                                            fallback={
+                                                <div 
+                                                    className="w-full h-full flex items-center justify-center"
+                                                    style={{ 
+                                                        background: `linear-gradient(135deg, ${team.style?.backgroundColor || '#f8fafc'} 0%, ${team.style?.primaryColor || '#2563eb'}15 100%)`
+                                                    }}
+                                                >
+                                                    <svg className="w-20 h-20 opacity-30" fill="currentColor" viewBox="0 0 24 24" style={{ color: team.style?.primaryColor || '#2563eb' }}>
+                                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                                    </svg>
+                                                </div>
+                                            }
                                         />
                                     ) : (
                                         <div 
@@ -702,10 +714,13 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                             }}
                                         >
                                             {team.style?.logoUrl ? (
-                                                <img 
+                                                <CachedImage 
                                                     src={fixGoogleDriveUrl(team.style.logoUrl)} 
                                                     alt={team.name}
                                                     className="w-full h-full object-contain p-1"
+                                                    fallback={
+                                                        <LacrosseIcon name="stick" style={{ fontSize: '24px', color: team.style?.primaryColor || '#dc2626' }} />
+                                                    }
                                                 />
                                             ) : (
                                                 <div 
