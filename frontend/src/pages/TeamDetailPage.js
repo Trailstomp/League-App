@@ -82,11 +82,19 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
                         {/* Team Logo - Enhanced - LARGER */}
                         <div className="w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 rounded-xl overflow-hidden border-4 border-white shadow-xl flex-shrink-0 bg-white">
                             {teamStyle.logoUrl ? (
-                                <img 
+                                <CachedImage 
                                     src={fixGoogleDriveUrl(teamStyle.logoUrl)} 
                                     alt={`${team.name} logo`}
                                     className="w-full h-full object-contain p-2"
                                     style={{ opacity: teamStyle.logoOpacity || 1 }}
+                                    fallback={
+                                        <div 
+                                            className="w-full h-full flex items-center justify-center rounded-xl"
+                                            style={{ backgroundColor: teamStyle.primaryColor || '#dc2626' }}
+                                        >
+                                            <LacrosseIcon name="stick" style={{fontSize: '64px', color: 'white'}} />
+                                        </div>
+                                    }
                                 />
                             ) : (
                                 <div 
