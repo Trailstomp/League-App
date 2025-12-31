@@ -254,6 +254,12 @@ function App() {
         console.log('🔄 Starting optimized dashboard data load...');
         const startTime = Date.now();
         
+        // Check if we have valid cached data for instant render
+        const hasCachedData = teams.length > 0 || events.length > 0;
+        if (hasCachedData && isCacheValid()) {
+          console.log('⚡ Using cached data for instant render, refreshing in background...');
+        }
+        
         // Use new optimized dashboard endpoint for faster loading
         const dashboardResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/dashboard-data`);
         if (dashboardResponse.ok) {
@@ -281,6 +287,7 @@ function App() {
           if (dashboardData.teams && Array.isArray(dashboardData.teams)) {
             console.log('🏆 Setting teams from dashboard-data:', dashboardData.teams.map(t => t.name || 'Unnamed'));
             setTeams(dashboardData.teams);
+            setCache(CACHE_KEYS.TEAMS, dashboardData.teams); // Cache teams
           } else {
             console.log('📝 No teams in dashboard-data, starting with empty array');
             setTeams([]);
@@ -289,6 +296,7 @@ function App() {
           // UNIFIED DATA SOURCE: Load players from dashboard data
           if (dashboardData.players && Array.isArray(dashboardData.players)) {
             setPlayers(dashboardData.players);
+            setCache(CACHE_KEYS.PLAYERS, dashboardData.players); // Cache players
             console.log('✅ Loaded players from dashboard-data:', dashboardData.players.length, 'players');
           } else {
             console.log('📝 No players in dashboard-data, starting with empty array');
@@ -298,6 +306,7 @@ function App() {
           // Load events from dashboard data
           if (dashboardData.leagueSchedule && Array.isArray(dashboardData.leagueSchedule)) {
             setEvents(dashboardData.leagueSchedule);
+            setCache(CACHE_KEYS.EVENTS, dashboardData.leagueSchedule); // Cache events
             console.log('✅ Loaded events from dashboard-data:', dashboardData.leagueSchedule.length, 'events');
             if (dashboardData.leagueSchedule.length > 0) {
               console.log('📅 Event titles:', dashboardData.leagueSchedule.map(e => e.title || e.id));
@@ -310,10 +319,12 @@ function App() {
           // Load websiteStyle from dashboard data
           if (dashboardData.websiteStyle && typeof dashboardData.websiteStyle === 'object') {
             console.log('🎨 Loading saved websiteStyle with keys:', Object.keys(dashboardData.websiteStyle));
-            setWebsiteStyle(prev => ({
-              ...prev,
+            const newStyle = {
+              ...websiteStyle,
               ...dashboardData.websiteStyle
-            }));
+            };
+            setWebsiteStyle(newStyle);
+            setCache(CACHE_KEYS.WEBSITE_STYLE, newStyle); // Cache website style
             console.log('✅ WebsiteStyle loaded and applied');
           } else {
             console.log('📝 No saved websiteStyle found, keeping current defaults');
