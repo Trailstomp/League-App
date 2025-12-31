@@ -6,3 +6,4 @@ export { default as FeeAssignments } from './FeeAssignments';
 export { default as PaymentRegister } from './PaymentRegister';
 export { default as PaymentConfig } from './PaymentConfig';
 export { default as PlayerFeeDashboard } from './PlayerFeeDashboard';
+export { default as PaymentSuccess } from './PaymentSuccess';
