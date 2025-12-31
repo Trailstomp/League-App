@@ -149,6 +149,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
     // Admin tabs configuration
     const adminTabs = [
         { id: 'dashboard', label: 'Dashboard', icon: 'venue' },
+        { id: 'events', label: 'Events', icon: '📅' },
         { id: 'seasons', label: 'Seasons & Leagues', icon: 'trophy' },
         { id: 'teams', label: 'Teams', icon: 'teams' },
         { id: 'fees', label: 'Fees & Payments', icon: '💰' },
