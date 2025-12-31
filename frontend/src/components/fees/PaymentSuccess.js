@@ -102,7 +102,7 @@ const PaymentSuccess = ({ onNavigate }) => {
                         <div className="text-6xl mb-4">❌</div>
                         <h2 className="text-xl font-bold text-red-700 mb-2">Payment Error</h2>
                         <p className="text-slate-600 mb-4">
-                            We couldn't verify your payment. Please contact support if you were charged.
+                            We could not verify your payment. Please contact support if you were charged.
                         </p>
                         <button
                             onClick={() => onNavigate ? onNavigate('my-fees') : window.location.href = '/my-fees'}
