@@ -17,7 +17,7 @@ import QuickRSVPForm from './components/QuickRSVPForm';
 import StandingsTable from './components/StandingsTable';
 import LiveGamePage from './pages/LiveGamePage';
 import GameStatsEntry from './components/GameStatsEntry';
-import { PlayerFeeDashboard } from './components/fees';
+import { PlayerFeeDashboard, PaymentSuccess } from './components/fees';
 
 function App() {
   // Basic state management
