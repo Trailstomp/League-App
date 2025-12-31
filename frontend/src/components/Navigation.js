@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LacrosseIcon } from './LacrosseIcons';
+import CachedImage from './CachedImage';
 
 // Teams grouped by division component
 const TeamsByDivision = ({ teams, websiteStyle, isCollapsed, onNavigate, onMobileClose }) => {
@@ -107,7 +108,7 @@ const TeamsByDivision = ({ teams, websiteStyle, isCollapsed, onNavigate, onMobil
                                         {/* Team Logo */}
                                         <div className="w-8 h-8 rounded-full flex-shrink-0 overflow-hidden border border-slate-200">
                                             {team.style?.logoUrl ? (
-                                                <img 
+                                                <CachedImage 
                                                     src={team.style.logoUrl} 
                                                     alt={`${team.name} logo`}
                                                     className="w-full h-full object-contain"
@@ -115,18 +116,27 @@ const TeamsByDivision = ({ teams, websiteStyle, isCollapsed, onNavigate, onMobil
                                                         opacity: team.style.logoOpacity || 1,
                                                         backgroundColor: 'rgba(255,255,255,0.1)'
                                                     }}
-                                                    onError={(e) => {
-                                                        e.target.style.display = 'none';
-                                                        e.target.nextSibling.style.display = 'flex';
-                                                    }}
+                                                    fallback={
+                                                        <div 
+                                                            className="w-full h-full rounded-full flex items-center justify-center"
+                                                            style={{ 
+                                                                backgroundColor: team.style?.primaryColor || '#dc2626',
+                                                                opacity: websiteStyle.buttonTransparency || 0.9
+                                                            }}
+                                                        >
+                                                            <span className="text-white font-semibold text-xs">
+                                                                {team.name.charAt(0)}
+                                                            </span>
+                                                        </div>
+                                                    }
                                                 />
                                             ) : null}
+                                            {!team.style?.logoUrl && (
                                             <div 
                                                 className="w-full h-full rounded-full flex items-center justify-center"
                                                 style={{ 
                                                     backgroundColor: team.style?.primaryColor || '#dc2626',
-                                                    opacity: websiteStyle.buttonTransparency || 0.9,
-                                                    display: team.style?.logoUrl ? 'none' : 'flex'
+                                                    opacity: websiteStyle.buttonTransparency || 0.9
                                                 }}
                                             >
                                                 <LacrosseIcon name="stick" style={{fontSize: '14px', color: 'white'}} />
