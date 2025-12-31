@@ -435,6 +435,8 @@ function App() {
         return <QuickRSVPForm />;
       case 'my-fees':
         return <PlayerFeeDashboard currentUser={currentUser} />;
+      case 'payment-success':
+        return <PaymentSuccess onNavigate={handleNavigate} />;
       case 'team':
         return (
           <TeamDetailPage 
