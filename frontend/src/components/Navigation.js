@@ -367,6 +367,9 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                         <NavItem icon={<LacrosseIcon name="calendar" />} label="Events & Schedule" pageName="events" />
                         <NavItem icon={<LacrosseIcon name="trophy" />} label="Standings" pageName="standings" />
                         <NavItem icon={<LacrosseIcon name="email" />} label="League Contact" pageName="league_contact" />
+                        {currentUser && (
+                            <NavItem icon={<span>💰</span>} label="My Fees" pageName="my-fees" />
+                        )}
                         {currentUser && (isAdmin(currentUser) || isCoach(currentUser)) && (
                             <NavItem icon={<span>💬</span>} label="League Chat" pageName="chat" />
                         )}
