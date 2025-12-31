@@ -73,6 +73,12 @@ function App() {
   });
   const [selectedTeam, setSelectedTeam] = useState(null);
   
+  // Loading state for initial data fetch
+  const [isInitialLoad, setIsInitialLoad] = useState(() => {
+    // If we have cached data, don't show loading state
+    return !getCached(CACHE_KEYS.TEAMS) && !getCached(CACHE_KEYS.EVENTS);
+  });
+  
   // Authentication state
   const [showLogin, setShowLogin] = useState(false);
   const [users, setUsers] = useState(initialMockUsers);
