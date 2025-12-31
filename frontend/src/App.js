@@ -398,9 +398,10 @@ function App() {
         setEvents([]);
         window.dashboardData = { galleries: [], youtubeConfig: { enabled: false } };
       }
+      setIsInitialLoad(false); // Done loading
     };
 
-    loadData();
+    loadData().finally(() => setIsInitialLoad(false));
   }, []); // Empty dependency array to run only once on mount
 
   // Simple page renderer
