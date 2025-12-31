@@ -19,10 +19,58 @@ import LiveGamePage from './pages/LiveGamePage';
 import GameStatsEntry from './components/GameStatsEntry';
 import { PlayerFeeDashboard, PaymentSuccess } from './components/fees';
 
+// Cache utilities for performance optimization
+const CACHE_KEYS = {
+  USER: 'mlbl_current_user',
+  TEAMS: 'mlbl_teams_cache',
+  PLAYERS: 'mlbl_players_cache',
+  EVENTS: 'mlbl_events_cache',
+  WEBSITE_STYLE: 'mlbl_website_style_cache',
+  CACHE_TIMESTAMP: 'mlbl_cache_timestamp'
+};
+
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache validity
+
+// Helper to get cached data
+const getCached = (key) => {
+  try {
+    const data = localStorage.getItem(key);
+    if (!data) return null;
+    return JSON.parse(data);
+  } catch (e) {
+    console.warn('Cache read error:', e);
+    return null;
+  }
+};
+
+// Helper to set cached data
+const setCache = (key, data) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+    localStorage.setItem(CACHE_KEYS.CACHE_TIMESTAMP, Date.now().toString());
+  } catch (e) {
+    console.warn('Cache write error:', e);
+  }
+};
+
+// Check if cache is still valid
+const isCacheValid = () => {
+  const timestamp = localStorage.getItem(CACHE_KEYS.CACHE_TIMESTAMP);
+  if (!timestamp) return false;
+  return (Date.now() - parseInt(timestamp)) < CACHE_DURATION;
+};
+
 function App() {
-  // Basic state management
-  const [currentPage, setCurrentPage] = useState('home'); // Back to home as default
-  const [currentUser, setCurrentUser] = useState(null);
+  // Initialize user from localStorage for persistence
+  const [currentPage, setCurrentPage] = useState('home');
+  const [currentUser, setCurrentUser] = useState(() => {
+    // Try to restore user session from localStorage
+    const savedUser = getCached(CACHE_KEYS.USER);
+    if (savedUser) {
+      console.log('🔐 Restored user session:', savedUser.name);
+    }
+    return savedUser;
+  });
   const [selectedTeam, setSelectedTeam] = useState(null);
   
   // Authentication state
@@ -33,10 +81,11 @@ function App() {
   const [showStatsEntry, setShowStatsEntry] = useState(false);
   const [selectedEventForStats, setSelectedEventForStats] = useState(null);
   
-  const [teams, setTeams] = useState([]);
-  const [players, setPlayers] = useState([]);
-  const [events, setEvents] = useState([]);
-  const [websiteStyle, setWebsiteStyle] = useState({
+  // Initialize data from cache for faster initial load
+  const [teams, setTeams] = useState(() => getCached(CACHE_KEYS.TEAMS) || []);
+  const [players, setPlayers] = useState(() => getCached(CACHE_KEYS.PLAYERS) || []);
+  const [events, setEvents] = useState(() => getCached(CACHE_KEYS.EVENTS) || []);
+  const [websiteStyle, setWebsiteStyle] = useState(() => getCached(CACHE_KEYS.WEBSITE_STYLE) || {
     theme: 'professional',
     primaryColor: '#1e40af',
     accentColor: '#3b82f6',
