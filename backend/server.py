@@ -8713,6 +8713,27 @@ async def get_fees(scope: str = None, team_id: str = None, include_archived: boo
         logger.error(f"Error getting fees: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# Fee Summaries & Reports (must be before /fees/{fee_id})
+@api_router.get("/fees/summary")
+async def get_fee_summary(fee_id: str = None, team_id: str = None):
+    """Get fee collection summary"""
+    try:
+        summary = await fee_service.get_fee_summary(fee_id=fee_id, team_id=team_id)
+        return summary
+    except Exception as e:
+        logger.error(f"Error getting fee summary: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/fees/overdue")
+async def get_overdue_fees():
+    """Get all overdue fee assignments"""
+    try:
+        overdue = await fee_service.get_overdue_assignments()
+        return {"overdue_assignments": overdue, "count": len(overdue)}
+    except Exception as e:
+        logger.error(f"Error getting overdue fees: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/fees/{fee_id}")
 async def get_fee(fee_id: str):
     """Get a single fee by ID"""
