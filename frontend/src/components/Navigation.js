@@ -270,7 +270,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                             {/* Large Logo */}
                             <div className="flex items-center justify-center">
                                 {websiteStyle.navLogoUrl ? (
-                                    <img 
+                                    <CachedImage 
                                         src={websiteStyle.navLogoUrl} 
                                         alt="League Logo" 
                                         className="object-contain drop-shadow-lg"
@@ -279,6 +279,21 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                             height: '140px',
                                             filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))'
                                         }}
+                                        fallback={
+                                            <div 
+                                                className="flex items-center justify-center rounded-2xl"
+                                                style={{
+                                                    width: '140px',
+                                                    height: '140px',
+                                                    background: `linear-gradient(135deg, ${websiteStyle.primaryColor || '#2563eb'} 0%, ${websiteStyle.accentColor || '#3b82f6'} 100%)`,
+                                                    boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
+                                                }}
+                                            >
+                                                <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '4rem' }}>
+                                                    🥍
+                                                </span>
+                                            </div>
+                                        }
                                     />
                                 ) : (
                                     <div 
