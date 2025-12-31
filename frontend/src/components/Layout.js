@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navigation from './Navigation';
 import EventsTicker from './EventsTicker';
 import BottomNavbar from './BottomNavbar';
+import CachedImage from './CachedImage';
 
 const Layout = ({ 
     children, 
