@@ -18,6 +18,7 @@ import EventManager from '../components/unified-events/EventManager';
 import CommunicationHub from '../components/managers/CommunicationHub';
 import YouTubeSettings from '../components/managers/YouTubeSettings';
 import { FeeManager } from '../components/fees';
+import AdminEventsView from '../components/admin/AdminEventsView';
 
 const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, currentUser, websiteStyle, setWebsiteStyle, events, setEvents }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
