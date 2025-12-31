@@ -164,33 +164,37 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                                             ></div>
                                         )}
                                         
-                                        {/* Logo - Made 50% larger */}
+                                        {/* Logo - Made 50% larger with CachedImage for performance */}
                                         <div className="relative z-10">
                                             {team.style?.logoUrl ? (
-                                                <img 
+                                                <CachedImage 
                                                     src={fixGoogleDriveUrl(team.style.logoUrl)} 
                                                     alt={team.name}
                                                     className="object-contain drop-shadow-2xl"
                                                     style={{ 
-                                                        width: '240px', // Even larger for better visibility
-                                                        height: '240px', // Even larger for better visibility
+                                                        width: '240px',
+                                                        height: '240px',
                                                         filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.4)) drop-shadow(0 4px 8px rgba(255,255,255,0.1))',
                                                         backgroundColor: 'transparent'
                                                     }}
-                                                    onLoad={(e) => {
-                                                        // Image loaded successfully
-                                                        e.target.style.opacity = '1';
-                                                        e.target.style.transition = 'opacity 0.3s ease';
-                                                    }}
-                                                    onError={(e) => {
+                                                    onError={() => {
                                                         console.warn(`Failed to load logo for team: ${team.name}`, team.style?.logoUrl);
-                                                        // Hide the broken image and show fallback
-                                                        e.target.style.display = 'none';
-                                                        // Show the fallback letter logo
-                                                        const fallback = e.target.parentElement.querySelector('.fallback-logo');
-                                                        if (fallback) fallback.style.display = 'flex';
                                                     }}
-                                                    loading="lazy"
+                                                    fallback={
+                                                        <div 
+                                                            className="rounded-2xl flex items-center justify-center relative"
+                                                            style={{ 
+                                                                width: '240px', 
+                                                                height: '240px',
+                                                                background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
+                                                                boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+                                                            }}
+                                                        >
+                                                            <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '6rem' }}>
+                                                                {team.name.charAt(0)}
+                                                            </span>
+                                                        </div>
+                                                    }
                                                 />
                                             ) : null}
                                             
