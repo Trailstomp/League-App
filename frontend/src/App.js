@@ -18,6 +18,7 @@ import StandingsTable from './components/StandingsTable';
 import LiveGamePage from './pages/LiveGamePage';
 import GameStatsEntry from './components/GameStatsEntry';
 import { PlayerFeeDashboard, PaymentSuccess } from './components/fees';
+import { HomePageSkeleton } from './components/Skeleton';
 
 // Cache utilities for performance optimization
 const CACHE_KEYS = {
