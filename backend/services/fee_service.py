@@ -42,6 +42,7 @@ class FeeService:
         }
         
         await self.db.fees.insert_one(fee)
+        fee.pop('_id', None)  # Remove MongoDB _id
         logger.info(f"Created fee: {fee['id']} - {fee['name']}")
         return fee
     
