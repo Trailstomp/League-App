@@ -275,10 +275,11 @@ const Layout = ({
                         {/* Logo and League Name */}
                         <div className="flex items-center space-x-3">
                             {websiteStyle.navLogoUrl ? (
-                                <img 
+                                <CachedImage 
                                     src={websiteStyle.navLogoUrl} 
                                     alt="Logo" 
                                     className="w-10 h-10 object-contain rounded-lg"
+                                    fallback={<span className="text-2xl">🥍</span>}
                                 />
                             ) : (
                                 <span className="text-2xl">🥍</span>
