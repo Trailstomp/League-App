@@ -42,8 +42,32 @@ const AdminEventsView = ({ teams = [], currentUser, onEditEvent, onViewLive }) =
     }, [backendUrl]);
     
     useEffect(() => {
-        loadEvents();
-    }, [loadEvents]);
+        const fetchEvents = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch(`${backendUrl}/api/unified-events`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const eventList = data.events || [];
+                    setEvents(eventList);
+                    
+                    const now = new Date();
+                    setStats({
+                        total: eventList.length,
+                        upcoming: eventList.filter(e => e.status === 'scheduled' && new Date(e.date) > now).length,
+                        inProgress: eventList.filter(e => e.status === 'in_progress').length,
+                        completed: eventList.filter(e => e.status === 'completed').length,
+                        canceled: eventList.filter(e => e.status === 'canceled' || e.status === 'cancelled').length
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+            setLoading(false);
+        };
+        
+        fetchEvents();
+    }, [backendUrl]);
     
     // Filter and sort events
     const filteredEvents = events
