@@ -435,7 +435,10 @@ const EventsList = ({
                                                 </button>
                                                 
                                                 {notifyMenuOpen === event.id && (
-                                                    <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border z-50">
+                                                    <div 
+                                                        className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border z-50"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
                                                         <button
                                                             onClick={() => handleSendNotifications(event.id)}
                                                             className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-t-lg flex items-center gap-2"
