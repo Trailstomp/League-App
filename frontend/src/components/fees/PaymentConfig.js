@@ -6,6 +6,8 @@ const PaymentConfig = ({ scope, teamId, currentUser, canManage }) => {
         stripe_publishable_key: '',
         paypal_enabled: false,
         paypal_client_id: '',
+        paypal_secret: '',
+        paypal_mode: 'sandbox',
         paypal_email: '',
         venmo_enabled: false,
         venmo_username: '',
