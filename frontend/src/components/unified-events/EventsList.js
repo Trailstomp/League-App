@@ -502,8 +502,8 @@ const EventsList = ({
 
             {/* GroupMe Notification Modal */}
             {showGroupmeModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowGroupmeModal(null)}>
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[200] p-4" onClick={() => setShowGroupmeModal(null)}>
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-lg" onClick={e => e.stopPropagation()}>
                         <div className="border-b px-6 py-4 flex items-center justify-between">
                             <h3 className="text-lg font-bold text-gray-800">📢 Send to GroupMe</h3>
                             <button
@@ -519,7 +519,7 @@ const EventsList = ({
                             <div className="p-3 bg-blue-50 rounded-lg">
                                 <div className="font-medium text-blue-800">{showGroupmeModal.title}</div>
                                 <div className="text-sm text-blue-600">
-                                    {showGroupmeModal.start_datetime ? new Date(showGroupmeModal.start_datetime).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'TBD'}
+                                    {showGroupmeModal.start_datetime ? new Date(showGroupmeModal.start_datetime).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : (showGroupmeModal.date ? `${showGroupmeModal.date} ${showGroupmeModal.time || ''}` : 'TBD')}
                                 </div>
                             </div>
 
