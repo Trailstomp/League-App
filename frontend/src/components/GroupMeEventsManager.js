@@ -88,19 +88,34 @@ const GroupMeEventsManager = ({ currentUser }) => {
 
         try {
             setLoading(true);
-            const response = await fetch(`${backendUrl}/api/groupme/send-event-notification`, {
+            setError('');
+            
+            // Use enhanced notification endpoint with FormData for image support
+            const formData = new FormData();
+            formData.append('event_id', notificationForm.event_id);
+            formData.append('channel_ids', JSON.stringify(notificationForm.channel_ids));
+            formData.append('notification_type', notificationForm.notification_type);
+            formData.append('include_rsvp', notificationForm.include_rsvp);
+            formData.append('include_image', notificationForm.include_image);
+            formData.append('include_calendar_link', notificationForm.include_calendar_link);
+            
+            const response = await fetch(`${backendUrl}/api/groupme/send-enhanced-notification`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(notificationForm)
+                body: formData
             });
 
             if (response.ok) {
-                setSuccess('Event notification sent successfully!');
+                const result = await response.json();
+                const imageStatus = result.image_included ? '🖼️ with image' : '';
+                const calendarStatus = result.calendar_link_included ? '📆 with calendar link' : '';
+                setSuccess(`✅ Enhanced notification sent to ${result.success_channels?.length || 0} channels ${imageStatus} ${calendarStatus}`);
                 setNotificationForm({
                     event_id: '',
                     channel_ids: [],
                     notification_type: 'event_announcement',
                     include_rsvp: true,
+                    include_image: true,
+                    include_calendar_link: true,
                     send_time: 'now'
                 });
                 setTimeout(() => setSuccess(''), 5000);
