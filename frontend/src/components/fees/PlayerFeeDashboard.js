@@ -135,6 +135,41 @@ const PlayerFeeDashboard = ({ currentUser, playerId = null }) => {
         setProcessingPayment(null);
     };
     
+    const handlePayPalPayment = async (assignment) => {
+        setProcessingPayment(`paypal_${assignment.id}`);
+        try {
+            const response = await fetch(`${backendUrl}/api/payments/paypal/create-order`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    assignment_id: assignment.id,
+                    return_url: `${window.location.origin}/fees/payment-success?provider=paypal`,
+                    cancel_url: `${window.location.origin}/my-fees`
+                })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.approval_url) {
+                    // Store order ID for capture on return
+                    sessionStorage.setItem('paypal_order_id', data.order_id);
+                    sessionStorage.setItem('paypal_assignment_id', assignment.id);
+                    // Redirect to PayPal for approval
+                    window.open(data.approval_url, '_self');
+                } else {
+                    alert('Error: No PayPal approval URL received');
+                }
+            } else {
+                const errorData = await response.json();
+                alert(errorData.detail || 'Error creating PayPal order');
+            }
+        } catch (error) {
+            console.error('PayPal error:', error);
+            alert('Error connecting to PayPal');
+        }
+        setProcessingPayment(null);
+    };
+    
     const getStatusBadge = (status) => {
         const styles = {
             paid: 'bg-green-100 text-green-700',
