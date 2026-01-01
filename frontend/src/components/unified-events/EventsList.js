@@ -443,7 +443,11 @@ const EventsList = ({
                                                             📧 Send Email
                                                         </button>
                                                         <button
-                                                            onClick={() => openGroupmeModal(event)}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                console.log('💬 GroupMe button clicked, event:', event.id, event.title);
+                                                                openGroupmeModal(event);
+                                                            }}
                                                             className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-b-lg flex items-center gap-2 border-t"
                                                         >
                                                             💬 Send to GroupMe
