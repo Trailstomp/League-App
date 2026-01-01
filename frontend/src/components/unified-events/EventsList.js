@@ -300,10 +300,11 @@ const EventsList = ({
                     </div>
                 ) : (
                     <div className="space-y-3 sm:space-y-4">
-                        {filteredEvents.map(event => (
+                        {filteredEvents.map((event, index) => (
                             <div
                                 key={event.id}
-                                className="bg-white/90 backdrop-blur-sm rounded-lg shadow border hover:shadow-md transition-shadow"
+                                className="bg-white/90 backdrop-blur-sm rounded-lg shadow border hover:shadow-md transition-shadow relative"
+                                style={{ zIndex: notifyMenuOpen === event.id ? 100 : 1 }}
                             >
                                 {/* Mobile-first Card Layout */}
                                 <div className="p-3 sm:p-6">
