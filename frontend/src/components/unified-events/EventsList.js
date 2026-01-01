@@ -62,7 +62,7 @@ const EventsList = ({
             });
 
             if (response.ok) {
-                alert('✅ Notifications sent successfully!');
+                alert('✅ Email notifications sent successfully!');
             } else {
                 const error = await response.json();
                 alert(`❌ Failed to send: ${error.detail}`);
@@ -71,6 +71,69 @@ const EventsList = ({
             alert('❌ Error sending notifications');
         } finally {
             setSendingNotifications(prev => ({ ...prev, [eventId]: false }));
+            setNotifyMenuOpen(null);
+        }
+    };
+
+    // Load GroupMe channels when modal opens
+    const loadGroupmeChannels = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/api/groupme/channels?active_only=true`);
+            if (response.ok) {
+                const data = await response.json();
+                setGroupmeChannels(data.channels || []);
+            }
+        } catch (err) {
+            console.error('Error loading GroupMe channels:', err);
+        }
+    };
+
+    // Open GroupMe notification modal for an event
+    const openGroupmeModal = async (event) => {
+        setNotifyMenuOpen(null);
+        await loadGroupmeChannels();
+        setGroupmeForm({
+            channel_ids: [],
+            notification_type: 'event_announcement',
+            include_image: true,
+            include_calendar_link: true,
+            include_rsvp: true
+        });
+        setShowGroupmeModal(event);
+    };
+
+    // Send enhanced GroupMe notification
+    const handleSendGroupmeNotification = async () => {
+        if (!showGroupmeModal || groupmeForm.channel_ids.length === 0) return;
+        
+        try {
+            setSendingNotifications(prev => ({ ...prev, [showGroupmeModal.id]: true }));
+            
+            const formData = new FormData();
+            formData.append('event_id', showGroupmeModal.id);
+            formData.append('channel_ids', JSON.stringify(groupmeForm.channel_ids));
+            formData.append('notification_type', groupmeForm.notification_type);
+            formData.append('include_image', groupmeForm.include_image);
+            formData.append('include_calendar_link', groupmeForm.include_calendar_link);
+            formData.append('include_rsvp', groupmeForm.include_rsvp);
+            
+            const response = await fetch(`${backendUrl}/api/groupme/send-enhanced-notification`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                alert(`✅ GroupMe notification sent to ${result.success_channels?.length || 0} channels!`);
+                setShowGroupmeModal(null);
+            } else {
+                const error = await response.json();
+                alert(`❌ Failed to send: ${error.detail}`);
+            }
+        } catch (error) {
+            alert('❌ Error sending GroupMe notification');
+        } finally {
+            setSendingNotifications(prev => ({ ...prev, [showGroupmeModal.id]: false }));
         }
     };
 
