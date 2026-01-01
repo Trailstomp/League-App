@@ -9098,6 +9098,196 @@ async def stripe_webhook(request: Request):
         return {"status": "error", "message": str(e)}
 
 
+# ==================== PAYPAL PAYMENT ROUTES ====================
+
+@api_router.post("/payments/paypal/create-order")
+async def create_paypal_order(order_data: Dict[str, Any]):
+    """Create a PayPal order for fee payment"""
+    try:
+        from paypalcheckoutsdk.core import PayPalHttpClient, SandboxEnvironment, LiveEnvironment
+        from paypalcheckoutsdk.orders import OrdersCreateRequest
+        
+        assignment_id = order_data.get("assignment_id")
+        if not assignment_id:
+            raise HTTPException(status_code=400, detail="assignment_id required")
+        
+        # Get assignment details
+        assignment = await fee_service.get_assignment(assignment_id)
+        if not assignment:
+            raise HTTPException(status_code=404, detail="Assignment not found")
+        
+        # Get PayPal config
+        config = await fee_service.get_payment_config()
+        paypal_client_id = config.get("paypal_client_id")
+        paypal_secret = config.get("paypal_secret")
+        paypal_mode = config.get("paypal_mode", "sandbox")
+        
+        if not paypal_client_id or not paypal_secret:
+            raise HTTPException(status_code=400, detail="PayPal not configured. Please add Client ID and Secret in payment settings.")
+        
+        # Create PayPal environment
+        if paypal_mode == "live":
+            environment = LiveEnvironment(client_id=paypal_client_id, client_secret=paypal_secret)
+        else:
+            environment = SandboxEnvironment(client_id=paypal_client_id, client_secret=paypal_secret)
+        
+        client = PayPalHttpClient(environment)
+        
+        # Determine amount to pay
+        amount_to_pay = assignment.get("amount_due", 0)
+        if assignment.get("is_payment_plan") and assignment.get("next_installment_amount"):
+            amount_to_pay = assignment["next_installment_amount"]
+        
+        # Create order request
+        request = OrdersCreateRequest()
+        request.prefer('return=representation')
+        request.request_body({
+            "intent": "CAPTURE",
+            "purchase_units": [{
+                "reference_id": assignment_id,
+                "description": f"Fee payment: {assignment.get('fee_name', 'Fee')}",
+                "amount": {
+                    "currency_code": assignment.get("currency", "USD"),
+                    "value": f"{amount_to_pay:.2f}"
+                }
+            }],
+            "application_context": {
+                "brand_name": "League Fee Payment",
+                "landing_page": "BILLING",
+                "user_action": "PAY_NOW",
+                "return_url": order_data.get("return_url", "https://example.com/success"),
+                "cancel_url": order_data.get("cancel_url", "https://example.com/cancel")
+            }
+        })
+        
+        response = client.execute(request)
+        
+        logger.info(f"PayPal order created: {response.result.id}")
+        
+        # Find approval URL
+        approval_url = None
+        for link in response.result.links:
+            if link.rel == "approve":
+                approval_url = link.href
+                break
+        
+        return {
+            "order_id": response.result.id,
+            "approval_url": approval_url,
+            "status": response.result.status
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"PayPal order creation error: {e}")
+        raise HTTPException(status_code=500, detail=f"Error creating PayPal order: {str(e)}")
+
+
+@api_router.post("/payments/paypal/capture-order/{order_id}")
+async def capture_paypal_order(order_id: str, capture_data: Dict[str, Any] = None):
+    """Capture a PayPal order after approval"""
+    try:
+        from paypalcheckoutsdk.core import PayPalHttpClient, SandboxEnvironment, LiveEnvironment
+        from paypalcheckoutsdk.orders import OrdersCaptureRequest, OrdersGetRequest
+        
+        # Get PayPal config
+        config = await fee_service.get_payment_config()
+        paypal_client_id = config.get("paypal_client_id")
+        paypal_secret = config.get("paypal_secret")
+        paypal_mode = config.get("paypal_mode", "sandbox")
+        
+        if not paypal_client_id or not paypal_secret:
+            raise HTTPException(status_code=400, detail="PayPal not configured")
+        
+        # Create PayPal environment
+        if paypal_mode == "live":
+            environment = LiveEnvironment(client_id=paypal_client_id, client_secret=paypal_secret)
+        else:
+            environment = SandboxEnvironment(client_id=paypal_client_id, client_secret=paypal_secret)
+        
+        client = PayPalHttpClient(environment)
+        
+        # Capture the order
+        request = OrdersCaptureRequest(order_id)
+        response = client.execute(request)
+        
+        if response.result.status == "COMPLETED":
+            # Get assignment ID from reference_id
+            assignment_id = response.result.purchase_units[0].reference_id
+            capture = response.result.purchase_units[0].payments.captures[0]
+            amount = float(capture.amount.value)
+            
+            # Record the payment
+            if fee_service:
+                payment = await fee_service.record_payment(
+                    assignment_id=assignment_id,
+                    amount=amount,
+                    payment_method="paypal",
+                    recorded_by="paypal_capture",
+                    transaction_id=capture.id,
+                    notes=f"PayPal Order: {order_id}"
+                )
+                logger.info(f"PayPal payment recorded: {payment['id']}")
+            
+            return {
+                "status": "COMPLETED",
+                "transaction_id": capture.id,
+                "amount": amount,
+                "order_id": order_id
+            }
+        else:
+            return {
+                "status": response.result.status,
+                "order_id": order_id
+            }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"PayPal capture error: {e}")
+        raise HTTPException(status_code=500, detail=f"Error capturing PayPal order: {str(e)}")
+
+
+@api_router.get("/payments/paypal/order/{order_id}")
+async def get_paypal_order_status(order_id: str):
+    """Get PayPal order status"""
+    try:
+        from paypalcheckoutsdk.core import PayPalHttpClient, SandboxEnvironment, LiveEnvironment
+        from paypalcheckoutsdk.orders import OrdersGetRequest
+        
+        # Get PayPal config
+        config = await fee_service.get_payment_config()
+        paypal_client_id = config.get("paypal_client_id")
+        paypal_secret = config.get("paypal_secret")
+        paypal_mode = config.get("paypal_mode", "sandbox")
+        
+        if not paypal_client_id or not paypal_secret:
+            raise HTTPException(status_code=400, detail="PayPal not configured")
+        
+        # Create PayPal environment
+        if paypal_mode == "live":
+            environment = LiveEnvironment(client_id=paypal_client_id, client_secret=paypal_secret)
+        else:
+            environment = SandboxEnvironment(client_id=paypal_client_id, client_secret=paypal_secret)
+        
+        client = PayPalHttpClient(environment)
+        
+        request = OrdersGetRequest(order_id)
+        response = client.execute(request)
+        
+        return {
+            "order_id": order_id,
+            "status": response.result.status,
+            "create_time": response.result.create_time,
+            "amount": response.result.purchase_units[0].amount.value if response.result.purchase_units else None
+        }
+        
+    except Exception as e:
+        logger.error(f"PayPal order status error: {e}")
+        raise HTTPException(status_code=500, detail=f"Error getting order status: {str(e)}")
+
+
 # Include the API router in the main app (after all routes are defined)
 app.include_router(api_router)
 
