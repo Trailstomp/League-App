@@ -7911,7 +7911,7 @@ async def update_unified_event(event_id: str, updates: EventUpdate):
         # Add updated timestamp
         update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
         
-        # Update event
+        # Update event in unified_events
         await db.unified_events.update_one(
             {"id": event_id},
             {"$set": update_data}
@@ -7919,6 +7919,43 @@ async def update_unified_event(event_id: str, updates: EventUpdate):
         
         # Get updated event
         updated_event = await db.unified_events.find_one({"id": event_id})
+        
+        # ALSO update in leagueSchedule for ticker compatibility
+        try:
+            league_doc = await db.league_data.find_one({"id": "main_league"})
+            if league_doc:
+                current_schedule = league_doc.get("leagueSchedule", [])
+                for i, evt in enumerate(current_schedule):
+                    if evt.get("id") == event_id:
+                        # Update relevant fields
+                        for key, value in update_data.items():
+                            current_schedule[i][key] = value
+                        # Update specific ticker fields
+                        if "title" in update_data:
+                            current_schedule[i]["title"] = update_data["title"]
+                        if "date" in update_data:
+                            current_schedule[i]["date"] = update_data["date"]
+                        if "time" in update_data:
+                            current_schedule[i]["time"] = update_data["time"]
+                        if "location" in update_data:
+                            current_schedule[i]["location"] = update_data["location"]
+                        if "teams" in update_data and update_data["teams"]:
+                            current_schedule[i]["homeTeam"] = update_data["teams"][0] if len(update_data["teams"]) > 0 else None
+                            current_schedule[i]["awayTeam"] = update_data["teams"][1] if len(update_data["teams"]) > 1 else None
+                        if "date" in update_data and "time" in update_data:
+                            try:
+                                current_schedule[i]["start_datetime"] = f"{update_data['date']}T{update_data['time']}:00"
+                            except:
+                                pass
+                        break
+                
+                await db.league_data.update_one(
+                    {"id": "main_league"},
+                    {"$set": {"leagueSchedule": current_schedule}}
+                )
+                logger.info(f"✅ Event also updated in leagueSchedule")
+        except Exception as schedule_err:
+            logger.warning(f"Failed to update event in leagueSchedule: {schedule_err}")
         
         # Send email notifications if enabled (and email was just enabled in this update)
         if update_data.get("email_notifications", False):
@@ -7951,8 +7988,22 @@ async def delete_unified_event(event_id: str):
         if not existing_event:
             raise HTTPException(status_code=404, detail="Event not found")
         
-        # Delete event
+        # Delete event from unified_events
         await db.unified_events.delete_one({"id": event_id})
+        
+        # ALSO remove from leagueSchedule for ticker compatibility
+        try:
+            league_doc = await db.league_data.find_one({"id": "main_league"})
+            if league_doc:
+                current_schedule = league_doc.get("leagueSchedule", [])
+                current_schedule = [evt for evt in current_schedule if evt.get("id") != event_id]
+                await db.league_data.update_one(
+                    {"id": "main_league"},
+                    {"$set": {"leagueSchedule": current_schedule}}
+                )
+                logger.info(f"✅ Event also removed from leagueSchedule")
+        except Exception as schedule_err:
+            logger.warning(f"Failed to remove event from leagueSchedule: {schedule_err}")
         
         # Also delete related game stats if they exist
         await db.game_stats.delete_many({"event_id": event_id})
