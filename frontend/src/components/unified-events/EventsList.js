@@ -90,8 +90,8 @@ const EventsList = ({
 
     // Open GroupMe notification modal for an event
     const openGroupmeModal = async (event) => {
+        console.log('📢 Opening GroupMe modal for event:', event.title);
         setNotifyMenuOpen(null);
-        await loadGroupmeChannels();
         setGroupmeForm({
             channel_ids: [],
             notification_type: 'event_announcement',
@@ -100,6 +100,8 @@ const EventsList = ({
             include_rsvp: true
         });
         setShowGroupmeModal(event);
+        // Load channels after showing modal
+        await loadGroupmeChannels();
     };
 
     // Send enhanced GroupMe notification
