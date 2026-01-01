@@ -4538,6 +4538,370 @@ async def get_event_rsvp_summary(event_id: str):
         logger.error(f"Error getting event RSVP summary: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ==================== ENHANCED GROUPME NOTIFICATIONS WITH IMAGES ====================
+
+@api_router.post("/groupme/send-enhanced-notification")
+async def send_enhanced_event_notification(
+    event_id: str = Form(...),
+    channel_ids: str = Form(...),  # JSON string array
+    notification_type: str = Form("event_announcement"),
+    include_image: bool = Form(True),
+    include_calendar_link: bool = Form(True),
+    include_rsvp: bool = Form(True)
+):
+    """
+    Send enhanced event notification with visual card image, Google Calendar link, and RSVP
+    
+    This creates a rich GroupMe message with:
+    - Visual event card image with team branding
+    - Google Calendar "Add to Calendar" link
+    - RSVP link and text commands
+    """
+    try:
+        from services.event_card_service import event_card_service
+        import json
+        import base64
+        
+        # Parse channel IDs
+        channel_ids_list = json.loads(channel_ids)
+        
+        # Get event details
+        event_doc = await db.league_data.find_one({"leagueSchedule.id": event_id})
+        if not event_doc:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Find the specific event
+        target_event = None
+        for e in event_doc.get("leagueSchedule", []):
+            if e.get("id") == event_id:
+                target_event = e
+                break
+        
+        if not target_event:
+            raise HTTPException(status_code=404, detail="Event not found in schedule")
+        
+        # Parse event datetime
+        event_datetime = None
+        try:
+            if target_event.get("start_datetime"):
+                event_datetime = datetime.fromisoformat(target_event["start_datetime"].replace('Z', '+00:00'))
+            elif target_event.get("date") and target_event.get("time"):
+                date_str = target_event["date"]
+                time_str = target_event["time"]
+                # Parse date
+                date_obj = datetime.strptime(date_str, '%Y-%m-%d') if '-' in date_str else datetime.fromisoformat(date_str)
+                # Parse time (handle various formats)
+                try:
+                    time_parts = time_str.replace(' ', '').upper()
+                    if 'PM' in time_parts or 'AM' in time_parts:
+                        time_obj = datetime.strptime(time_parts, '%I:%M%p')
+                    else:
+                        time_obj = datetime.strptime(time_str, '%H:%M')
+                    event_datetime = date_obj.replace(hour=time_obj.hour, minute=time_obj.minute)
+                except:
+                    event_datetime = date_obj
+            elif target_event.get("date"):
+                date_str = target_event["date"]
+                event_datetime = datetime.strptime(date_str, '%Y-%m-%d') if '-' in date_str else datetime.fromisoformat(date_str)
+        except Exception as e:
+            logger.warning(f"Could not parse event datetime: {e}")
+        
+        # Get team info for styling
+        team_data = None
+        team_id = target_event.get("team_id") or target_event.get("homeTeam")
+        if team_id:
+            team = await db.teams.find_one({"id": team_id}, {"_id": 0})
+            if team:
+                team_data = {
+                    "name": team.get("name", ""),
+                    "primaryColor": team.get("style", {}).get("primaryColor", "#2563eb"),
+                    "accentColor": team.get("style", {}).get("accentColor", "#3b82f6"),
+                    "logoUrl": team.get("style", {}).get("logoUrl")
+                }
+        
+        # Get RSVP stats
+        rsvps_cursor = db.event_rsvps.find({"event_id": event_id})
+        rsvps = await rsvps_cursor.to_list(length=None)
+        rsvp_stats = {
+            "yes": len([r for r in rsvps if r.get("response") == "yes"]),
+            "no": len([r for r in rsvps if r.get("response") == "no"]),
+            "maybe": len([r for r in rsvps if r.get("response") == "maybe"])
+        }
+        
+        # Generate URLs
+        frontend_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:3000').replace('/api', '').rstrip('/')
+        rsvp_url = f"{frontend_url}/quick-rsvp/{event_id}"
+        
+        # Generate Google Calendar URL
+        calendar_url = None
+        if include_calendar_link and event_datetime:
+            calendar_url = event_card_service.generate_google_calendar_url(
+                title=target_event.get("title", "Event"),
+                start_datetime=event_datetime,
+                location=target_event.get("location"),
+                description=target_event.get("description")
+            )
+        
+        # Generate event card image
+        image_attachment = None
+        if include_image:
+            event_data = {
+                "title": target_event.get("title", "Event"),
+                "event_type": target_event.get("type", target_event.get("event_type", "event")),
+                "start_datetime": event_datetime,
+                "location": target_event.get("location"),
+                "description": target_event.get("description")
+            }
+            
+            image_bytes = event_card_service.generate_event_card(
+                event_data=event_data,
+                team_data=team_data,
+                rsvp_stats=rsvp_stats,
+                rsvp_url=rsvp_url
+            )
+            
+            if image_bytes:
+                # Upload image to GroupMe's image service
+                try:
+                    groupme_service = await get_groupme_service()
+                    if groupme_service:
+                        # GroupMe image upload endpoint
+                        import requests
+                        upload_url = "https://image.groupme.com/pictures"
+                        headers = {
+                            "X-Access-Token": groupme_service.access_token,
+                            "Content-Type": "image/png"
+                        }
+                        
+                        upload_response = requests.post(upload_url, headers=headers, data=image_bytes)
+                        if upload_response.status_code == 200:
+                            image_url = upload_response.json().get("payload", {}).get("url")
+                            if image_url:
+                                image_attachment = {
+                                    "type": "image",
+                                    "url": image_url
+                                }
+                                logger.info(f"Uploaded event card image: {image_url}")
+                except Exception as e:
+                    logger.warning(f"Could not upload image to GroupMe: {e}")
+        
+        # Build message text
+        formatted_date = event_datetime.strftime("%A, %B %d at %I:%M %p") if event_datetime else "TBD"
+        
+        notification_templates = {
+            "event_announcement": f"📢 NEW EVENT\n\n🏆 {target_event['title']}\n📅 {formatted_date}",
+            "rsvp_reminder": f"⏰ RSVP REMINDER\n\n🏆 {target_event['title']}\n📅 {formatted_date}",
+            "event_update": f"✏️ EVENT UPDATED\n\n🏆 {target_event['title']}\n📅 {formatted_date}",
+            "last_call": f"🚨 LAST CALL\n\n🏆 {target_event['title']}\n📅 {formatted_date}"
+        }
+        
+        message = notification_templates.get(notification_type, notification_templates["event_announcement"])
+        
+        # Add location
+        if target_event.get("location"):
+            message += f"\n📍 {target_event['location']}"
+        
+        # Add RSVP stats
+        message += f"\n\n✅ {rsvp_stats['yes']} Yes  ❌ {rsvp_stats['no']} No  ❓ {rsvp_stats['maybe']} Maybe"
+        
+        # Add calendar link
+        if calendar_url:
+            message += f"\n\n📆 Add to Calendar:\n{calendar_url}"
+        
+        # Add RSVP link
+        if include_rsvp:
+            message += f"\n\n🎯 RSVP Here:\n{rsvp_url}"
+            message += f"\n\n💬 Or reply: yes / no / maybe"
+        
+        # Send to channels
+        success_channels = []
+        failed_channels = []
+        
+        groupme_service = await get_groupme_service()
+        if not groupme_service:
+            raise HTTPException(status_code=400, detail="GroupMe not configured")
+        
+        for channel_id in channel_ids_list:
+            try:
+                channel = await db.groupme_channels.find_one({"id": channel_id, "is_active": True})
+                if channel and channel.get("groupme_bot_id"):
+                    # Send message with image attachment if available
+                    attachments = [image_attachment] if image_attachment else None
+                    success = await _send_groupme_message(
+                        groupme_service,
+                        channel["groupme_bot_id"],
+                        message,
+                        attachments=attachments
+                    )
+                    
+                    if success:
+                        success_channels.append(channel_id)
+                    else:
+                        failed_channels.append(channel_id)
+                else:
+                    failed_channels.append(channel_id)
+            except Exception as e:
+                logger.error(f"Failed to send to channel {channel_id}: {e}")
+                failed_channels.append(channel_id)
+        
+        # Store notification record
+        notification_record = {
+            "id": str(uuid.uuid4()),
+            "event_id": event_id,
+            "event_title": target_event["title"],
+            "notification_type": notification_type,
+            "enhanced": True,
+            "include_image": include_image,
+            "include_calendar_link": include_calendar_link,
+            "image_uploaded": image_attachment is not None,
+            "calendar_url": calendar_url,
+            "rsvp_url": rsvp_url,
+            "channel_ids": channel_ids_list,
+            "message": message,
+            "sent_at": datetime.utcnow().isoformat(),
+            "success_channels": success_channels,
+            "failed_channels": failed_channels,
+            "total_sent": len(success_channels)
+        }
+        
+        await db.groupme_event_notifications.insert_one(notification_record)
+        
+        return {
+            "message": f"Enhanced notification sent to {len(success_channels)}/{len(channel_ids_list)} channels",
+            "success_channels": success_channels,
+            "failed_channels": failed_channels,
+            "notification_id": notification_record["id"],
+            "image_included": image_attachment is not None,
+            "calendar_link_included": calendar_url is not None
+        }
+        
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid channel_ids format")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error sending enhanced notification: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/events/{event_id}/calendar-link")
+async def get_event_calendar_link(event_id: str):
+    """Get Google Calendar link for an event"""
+    try:
+        from services.event_card_service import event_card_service
+        
+        # Get event
+        event_doc = await db.league_data.find_one({"leagueSchedule.id": event_id})
+        if not event_doc:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        target_event = None
+        for e in event_doc.get("leagueSchedule", []):
+            if e.get("id") == event_id:
+                target_event = e
+                break
+        
+        if not target_event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Parse datetime
+        event_datetime = None
+        try:
+            if target_event.get("start_datetime"):
+                event_datetime = datetime.fromisoformat(target_event["start_datetime"].replace('Z', '+00:00'))
+            elif target_event.get("date"):
+                date_str = target_event["date"]
+                event_datetime = datetime.strptime(date_str, '%Y-%m-%d')
+                if target_event.get("time"):
+                    try:
+                        time_parts = target_event["time"].replace(' ', '').upper()
+                        if 'PM' in time_parts or 'AM' in time_parts:
+                            time_obj = datetime.strptime(time_parts, '%I:%M%p')
+                        else:
+                            time_obj = datetime.strptime(target_event["time"], '%H:%M')
+                        event_datetime = event_datetime.replace(hour=time_obj.hour, minute=time_obj.minute)
+                    except:
+                        pass
+        except:
+            pass
+        
+        if not event_datetime:
+            raise HTTPException(status_code=400, detail="Could not parse event date/time")
+        
+        calendar_url = event_card_service.generate_google_calendar_url(
+            title=target_event.get("title", "Event"),
+            start_datetime=event_datetime,
+            location=target_event.get("location"),
+            description=target_event.get("description")
+        )
+        
+        return {
+            "event_id": event_id,
+            "title": target_event.get("title"),
+            "google_calendar_url": calendar_url
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating calendar link: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/events/{event_id}/ics")
+async def download_event_ics(event_id: str):
+    """Download ICS file for an event"""
+    try:
+        from services.event_card_service import event_card_service
+        from fastapi.responses import Response
+        
+        # Get event
+        event_doc = await db.league_data.find_one({"leagueSchedule.id": event_id})
+        if not event_doc:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        target_event = None
+        for e in event_doc.get("leagueSchedule", []):
+            if e.get("id") == event_id:
+                target_event = e
+                break
+        
+        if not target_event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Parse datetime
+        event_datetime = datetime.now()
+        try:
+            if target_event.get("start_datetime"):
+                event_datetime = datetime.fromisoformat(target_event["start_datetime"].replace('Z', '+00:00'))
+            elif target_event.get("date"):
+                date_str = target_event["date"]
+                event_datetime = datetime.strptime(date_str, '%Y-%m-%d')
+        except:
+            pass
+        
+        ics_content = event_card_service.generate_ics_content(
+            event_id=event_id,
+            title=target_event.get("title", "Event"),
+            start_datetime=event_datetime,
+            location=target_event.get("location"),
+            description=target_event.get("description")
+        )
+        
+        return Response(
+            content=ics_content,
+            media_type="text/calendar",
+            headers={
+                "Content-Disposition": f"attachment; filename=event_{event_id}.ics"
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating ICS: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/quick-rsvp")
 async def submit_quick_rsvp(request_data: dict):
     """Handle quick RSVP form submissions"""
