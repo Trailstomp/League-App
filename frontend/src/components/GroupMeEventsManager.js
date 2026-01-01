@@ -14,6 +14,8 @@ const GroupMeEventsManager = ({ currentUser }) => {
         channel_ids: [],
         notification_type: 'event_announcement',
         include_rsvp: true,
+        include_image: true,
+        include_calendar_link: true,
         send_time: 'now'
     });
     const [activeTab, setActiveTab] = useState('overview');
