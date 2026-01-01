@@ -4693,20 +4693,28 @@ async def send_enhanced_event_notification(
         # Parse channel IDs
         channel_ids_list = json.loads(channel_ids)
         
-        # Get event details
-        event_doc = await db.league_data.find_one({"leagueSchedule.id": event_id})
-        if not event_doc:
-            raise HTTPException(status_code=404, detail="Event not found")
-        
-        # Find the specific event
+        # Try to find event in multiple locations
         target_event = None
-        for e in event_doc.get("leagueSchedule", []):
-            if e.get("id") == event_id:
-                target_event = e
-                break
+        
+        # First, check unified_events collection
+        unified_event = await db.unified_events.find_one({"id": event_id}, {"_id": 0})
+        if unified_event:
+            target_event = unified_event
+            logger.info(f"Found event in unified_events: {event_id}")
+        
+        # If not found, check leagueSchedule in league_data
+        if not target_event:
+            event_doc = await db.league_data.find_one({"leagueSchedule.id": event_id})
+            if event_doc:
+                for e in event_doc.get("leagueSchedule", []):
+                    if e.get("id") == event_id:
+                        target_event = e
+                        logger.info(f"Found event in leagueSchedule: {event_id}")
+                        break
         
         if not target_event:
-            raise HTTPException(status_code=404, detail="Event not found in schedule")
+            logger.error(f"Event not found anywhere: {event_id}")
+            raise HTTPException(status_code=404, detail="Event not found")
         
         # Parse event datetime
         event_datetime = None
