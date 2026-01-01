@@ -340,7 +340,7 @@ const PlayerFeeDashboard = ({ currentUser, playerId = null }) => {
                                         </div>
                                         
                                         <div className="flex flex-col gap-2">
-                                            {/* Online Payment Button */}
+                                            {/* Stripe Payment Button */}
                                             {paymentConfig?.stripe_enabled && (
                                                 <button
                                                     onClick={() => handleStripePayment(fee)}
@@ -354,7 +354,27 @@ const PlayerFeeDashboard = ({ currentUser, playerId = null }) => {
                                                         </>
                                                     ) : (
                                                         <>
-                                                            💳 Pay {formatCurrency(fee.is_payment_plan ? fee.next_installment_amount || fee.amount_due : fee.amount_due)} Online
+                                                            💳 Pay {formatCurrency(fee.is_payment_plan ? fee.next_installment_amount || fee.amount_due : fee.amount_due)} with Card
+                                                        </>
+                                                    )}
+                                                </button>
+                                            )}
+                                            
+                                            {/* PayPal Payment Button */}
+                                            {paymentConfig?.paypal_enabled && paymentConfig?.paypal_client_id && (
+                                                <button
+                                                    onClick={() => handlePayPalPayment(fee)}
+                                                    disabled={processingPayment === `paypal_${fee.id}`}
+                                                    className="px-6 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 flex items-center justify-center gap-2 font-medium"
+                                                >
+                                                    {processingPayment === `paypal_${fee.id}` ? (
+                                                        <>
+                                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                                            Processing...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            🌐 Pay with PayPal
                                                         </>
                                                     )}
                                                 </button>
