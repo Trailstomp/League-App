@@ -422,13 +422,33 @@ const EventsList = ({
                                                 </button>
                                             )}
                                             
-                                            <button
-                                                onClick={() => handleSendNotifications(event.id)}
-                                                disabled={sendingNotifications[event.id]}
-                                                className="px-2 py-1.5 text-xs sm:px-3 sm:text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
-                                            >
-                                                {sendingNotifications[event.id] ? '⏳...' : '📧 Notify'}
-                                            </button>
+                                            <div className="relative">
+                                                <button
+                                                    onClick={() => setNotifyMenuOpen(notifyMenuOpen === event.id ? null : event.id)}
+                                                    disabled={sendingNotifications[event.id]}
+                                                    className="px-2 py-1.5 text-xs sm:px-3 sm:text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 flex items-center gap-1"
+                                                >
+                                                    {sendingNotifications[event.id] ? '⏳...' : '📢 Notify'} 
+                                                    <span className="text-xs">▼</span>
+                                                </button>
+                                                
+                                                {notifyMenuOpen === event.id && (
+                                                    <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border z-50">
+                                                        <button
+                                                            onClick={() => handleSendNotifications(event.id)}
+                                                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-t-lg flex items-center gap-2"
+                                                        >
+                                                            📧 Send Email
+                                                        </button>
+                                                        <button
+                                                            onClick={() => openGroupmeModal(event)}
+                                                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 rounded-b-lg flex items-center gap-2 border-t"
+                                                        >
+                                                            💬 Send to GroupMe
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
                                             
                                             {event.rsvp_enabled && (
                                                 <button
