@@ -330,17 +330,47 @@ const GroupMeEventsManager = ({ currentUser }) => {
                 </div>
 
                 {/* Include RSVP */}
-                <div className="flex items-center space-x-2">
-                    <input
-                        type="checkbox"
-                        id="include_rsvp"
-                        checked={notificationForm.include_rsvp}
-                        onChange={(e) => setNotificationForm({...notificationForm, include_rsvp: e.target.checked})}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <label htmlFor="include_rsvp" className="text-sm text-gray-700">
-                        Include RSVP instructions in message
-                    </label>
+                <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
+                    <h4 className="font-medium text-gray-700 text-sm">Message Options</h4>
+                    
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            id="include_image"
+                            checked={notificationForm.include_image}
+                            onChange={(e) => setNotificationForm({...notificationForm, include_image: e.target.checked})}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <label htmlFor="include_image" className="text-sm text-gray-700">
+                            🖼️ Include visual event card image
+                        </label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            id="include_calendar_link"
+                            checked={notificationForm.include_calendar_link}
+                            onChange={(e) => setNotificationForm({...notificationForm, include_calendar_link: e.target.checked})}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <label htmlFor="include_calendar_link" className="text-sm text-gray-700">
+                            📆 Include "Add to Google Calendar" link
+                        </label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            id="include_rsvp"
+                            checked={notificationForm.include_rsvp}
+                            onChange={(e) => setNotificationForm({...notificationForm, include_rsvp: e.target.checked})}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <label htmlFor="include_rsvp" className="text-sm text-gray-700">
+                            🎯 Include RSVP link and instructions
+                        </label>
+                    </div>
                 </div>
 
                 {/* Send Button */}
