@@ -2,21 +2,27 @@ import React, { useState, useEffect } from 'react';
 
 const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEvent }) => {
     const [formData, setFormData] = useState({
-        type: 'regular_game', // regular_game, tournament, practice, social
+        type: 'regular_game', // regular_game, tournament, practice, social, external
         title: '',
         description: '',
         date: '',
         time: '',
         location: '',
+        locationId: '', // Reference to saved location
         imageUrl: '',
-        teams: [], // For regular games (max 2), tournaments (multiple)
+        imageFile: null, // For file upload
+        teams: [], // Optional for all event types now
         rsvp_enabled: true,
         groupme_integration: true,
         email_notifications: true,
         auto_create_polls: false,
+        // External event fields
+        is_external: false,
+        external_url: '',
+        external_organizer: '',
         tournament_config: {
-            format: 'single_elimination', // single_elimination, double_elimination
-            seeding_method: 'league_rankings', // league_rankings, manual
+            format: 'single_elimination',
+            seeding_method: 'league_rankings',
             auto_advance: true,
             allow_bracket_editing: true
         }
@@ -24,6 +30,16 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
 
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
+    const [locations, setLocations] = useState([]);
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const [imagePreview, setImagePreview] = useState(null);
+
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+
+    // Load locations on mount
+    useEffect(() => {
+        loadLocations();
+    }, []);
 
     // Populate form when editing an existing event
     useEffect(() => {
@@ -36,12 +52,17 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                 date: editingEvent.date || '',
                 time: editingEvent.time || '',
                 location: editingEvent.location || '',
+                locationId: editingEvent.locationId || '',
                 imageUrl: editingEvent.imageUrl || '',
+                imageFile: null,
                 teams: editingEvent.teams || [],
                 rsvp_enabled: editingEvent.rsvp_enabled !== false,
                 groupme_integration: editingEvent.groupme_integration || false,
                 email_notifications: editingEvent.email_notifications !== false,
                 auto_create_polls: editingEvent.auto_create_polls || false,
+                is_external: editingEvent.is_external || false,
+                external_url: editingEvent.external_url || '',
+                external_organizer: editingEvent.external_organizer || '',
                 tournament_config: editingEvent.tournament_config || {
                     format: 'single_elimination',
                     seeding_method: 'league_rankings',
@@ -49,14 +70,30 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                     allow_bracket_editing: true
                 }
             });
+            if (editingEvent.imageUrl) {
+                setImagePreview(editingEvent.imageUrl);
+            }
         }
     }, [editingEvent]);
+
+    const loadLocations = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/api/locations`);
+            if (response.ok) {
+                const data = await response.json();
+                setLocations(data || []);
+            }
+        } catch (error) {
+            console.error('Error loading locations:', error);
+        }
+    };
 
     const eventTypes = [
         { value: 'regular_game', label: '🏆 Regular Game', desc: 'League game between two teams' },
         { value: 'tournament', label: '🏅 Tournament', desc: 'Multi-team bracket competition' },
         { value: 'practice', label: '🏃 Practice', desc: 'Team practice session' },
-        { value: 'social', label: '🎉 Social Event', desc: 'Team social gathering or meeting' }
+        { value: 'social', label: '🎉 Social Event', desc: 'Team social gathering or meeting' },
+        { value: 'external', label: '🌐 External Event', desc: 'Tournament or event outside our league' }
     ];
 
     const tournamentFormats = [
@@ -81,6 +118,86 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                 ...prev,
                 [field]: null
             }));
+        }
+
+        // Auto-set is_external when type is 'external'
+        if (field === 'type' && value === 'external') {
+            setFormData(prev => ({
+                ...prev,
+                type: value,
+                is_external: true
+            }));
+        } else if (field === 'type') {
+            setFormData(prev => ({
+                ...prev,
+                type: value,
+                is_external: false
+            }));
+        }
+    };
+
+    const handleLocationSelect = (locationId) => {
+        const selectedLocation = locations.find(l => l.id === locationId);
+        setFormData(prev => ({
+            ...prev,
+            locationId: locationId,
+            location: selectedLocation ? selectedLocation.name : ''
+        }));
+    };
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file');
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image size must be less than 5MB');
+            return;
+        }
+
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            setImagePreview(e.target.result);
+        };
+        reader.readAsDataURL(file);
+
+        setFormData(prev => ({
+            ...prev,
+            imageFile: file
+        }));
+    };
+
+    const uploadImage = async (file) => {
+        try {
+            setUploadingImage(true);
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', 'event');
+
+            const response = await fetch(`${backendUrl}/api/upload/image`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                return data.url;
+            } else {
+                console.error('Image upload failed');
+                return null;
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            return null;
+        } finally {
+            setUploadingImage(false);
         }
     };
 
@@ -119,6 +236,8 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
     };
 
     const generateTournamentBracket = (teamIds, config) => {
+        if (!teamIds || teamIds.length < 4) return null;
+        
         const teamList = teamIds.map((teamId, index) => ({
             id: teamId,
             name: getTeamName(teamId),
@@ -129,7 +248,6 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
         let currentTeams = [...teamList];
         let roundNumber = 1;
 
-        // Generate rounds for single elimination
         while (currentTeams.length > 1) {
             const matches = [];
             const matchesInRound = Math.floor(currentTeams.length / 2);
@@ -155,7 +273,6 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                 matches: matches
             });
 
-            // Prepare for next round
             currentTeams = new Array(matchesInRound).fill(null);
             roundNumber++;
         }
@@ -198,16 +315,23 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
         const newErrors = {};
         
         if (!formData.title.trim()) newErrors.title = 'Title is required';
-        if (!formData.date) newErrors.date = 'Date is required';
-        if (!formData.time) newErrors.time = 'Time is required';
-        if (!formData.location.trim()) newErrors.location = 'Location is required';
+        // Date and time are optional for placeholder events
+        // Location is optional
         
-        if (formData.type === 'regular_game' && formData.teams.length !== 2) {
-            newErrors.teams = 'Regular games require exactly 2 teams';
+        // External events require URL
+        if (formData.is_external && !formData.external_url.trim()) {
+            newErrors.external_url = 'External event URL is required';
         }
         
-        if (formData.type === 'tournament' && formData.teams.length < 4) {
-            newErrors.teams = 'Tournaments require at least 4 teams';
+        // Teams are now OPTIONAL for all event types
+        // Only validate if teams are selected for regular games
+        if (formData.type === 'regular_game' && formData.teams.length > 0 && formData.teams.length !== 2) {
+            newErrors.teams = 'Regular games should have exactly 2 teams (or leave empty)';
+        }
+        
+        // Tournaments with teams selected need at least 4
+        if (formData.type === 'tournament' && formData.teams.length > 0 && formData.teams.length < 4) {
+            newErrors.teams = 'Tournaments need at least 4 teams (or leave empty for placeholder)';
         }
         
         setErrors(newErrors);
@@ -222,24 +346,32 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
         try {
             setLoading(true);
             
-            console.log('📋 Form data before submit:', JSON.stringify(formData, null, 2));
+            // Upload image if file is selected
+            let finalImageUrl = formData.imageUrl;
+            if (formData.imageFile) {
+                const uploadedUrl = await uploadImage(formData.imageFile);
+                if (uploadedUrl) {
+                    finalImageUrl = uploadedUrl;
+                }
+            }
             
             // Generate event ID
-            const eventId = `${formData.type}_${Date.now()}`;
+            const eventId = editingEvent?.id || `${formData.type}_${Date.now()}`;
             
-            // Generate bracket for tournament events
+            // Generate bracket for tournament events with enough teams
             let bracket = null;
             if (formData.type === 'tournament' && formData.teams.length >= 4) {
                 bracket = generateTournamentBracket(formData.teams, formData.tournament_config);
-                console.log('🏆 Generated tournament bracket:', bracket);
             }
 
             const eventData = {
                 ...formData,
                 id: eventId,
+                imageUrl: finalImageUrl,
+                imageFile: undefined, // Don't send file object
                 created_by: String(currentUser?.id || 'admin'),
                 created_at: new Date().toISOString(),
-                status: 'scheduled', // scheduled, in_progress, completed, cancelled
+                status: 'scheduled',
                 bracket: bracket
             };
             
@@ -273,7 +405,7 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                 {/* Event Type Selection */}
                 <div className="bg-white rounded-lg shadow p-6">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Event Type</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {eventTypes.map(type => (
                             <div
                                 key={type.value}
@@ -290,6 +422,22 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                         ))}
                     </div>
                 </div>
+
+                {/* External Event Notice */}
+                {formData.type === 'external' && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                        <div className="flex items-start gap-3">
+                            <span className="text-2xl">🌐</span>
+                            <div>
+                                <h4 className="font-semibold text-amber-800">External Event</h4>
+                                <p className="text-sm text-amber-700 mt-1">
+                                    This is for tournaments or events hosted outside our league. 
+                                    Add the external registration/info URL so players can access it.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Basic Event Details */}
                 <div className="bg-white rounded-lg shadow p-6">
@@ -313,45 +461,53 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Location *
+                                Location
                             </label>
-                            <input
-                                type="text"
-                                value={formData.location}
-                                onChange={(e) => handleInputChange('location', e.target.value)}
-                                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                    errors.location ? 'border-red-500' : 'border-gray-300'
-                                }`}
-                                placeholder="Enter location"
-                            />
-                            {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location}</p>}
+                            <div className="space-y-2">
+                                <select
+                                    value={formData.locationId}
+                                    onChange={(e) => handleLocationSelect(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="">Select from saved locations...</option>
+                                    {locations.map(loc => (
+                                        <option key={loc.id} value={loc.id}>
+                                            {loc.name} {loc.address ? `- ${loc.address}` : ''}
+                                        </option>
+                                    ))}
+                                </select>
+                                <div className="text-center text-xs text-gray-500">or</div>
+                                <input
+                                    type="text"
+                                    value={formData.location}
+                                    onChange={(e) => handleInputChange('location', e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Type custom location"
+                                />
+                            </div>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Date *
+                                Date <span className="text-gray-400 font-normal">(optional)</span>
                             </label>
                             <input
                                 type="date"
                                 value={formData.date}
                                 onChange={(e) => handleInputChange('date', e.target.value)}
-                                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                    errors.date ? 'border-red-500' : 'border-gray-300'
-                                }`}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
-                            {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
+                            <p className="text-xs text-gray-500 mt-1">Leave empty for placeholder events</p>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Time *
+                                Time <span className="text-gray-400 font-normal">(optional)</span>
                             </label>
                             <select
                                 value={formData.time}
                                 onChange={(e) => handleInputChange('time', e.target.value)}
-                                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                    errors.time ? 'border-red-500' : 'border-gray-300'
-                                }`}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">Select time...</option>
                                 {Array.from({ length: 96 }, (_, i) => {
@@ -367,24 +523,94 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                                     );
                                 })}
                             </select>
-                            {errors.time && <p className="text-red-500 text-sm mt-1">{errors.time}</p>}
                         </div>
                     </div>
 
+                    {/* External Event Fields */}
+                    {formData.type === 'external' && (
+                        <div className="mt-6 p-4 bg-gray-50 rounded-lg space-y-4">
+                            <h4 className="font-medium text-gray-800 flex items-center gap-2">
+                                🌐 External Event Details
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Event URL *
+                                    </label>
+                                    <input
+                                        type="url"
+                                        value={formData.external_url}
+                                        onChange={(e) => handleInputChange('external_url', e.target.value)}
+                                        className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                            errors.external_url ? 'border-red-500' : 'border-gray-300'
+                                        }`}
+                                        placeholder="https://tournament-site.com/register"
+                                    />
+                                    {errors.external_url && <p className="text-red-500 text-sm mt-1">{errors.external_url}</p>}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Organizer
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.external_organizer}
+                                        onChange={(e) => handleInputChange('external_organizer', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Tournament organizer name"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Event Image Upload */}
                     <div className="mt-6">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Event Image URL
+                            Event Image
                         </label>
-                        <input
-                            type="url"
-                            value={formData.imageUrl}
-                            onChange={(e) => handleInputChange('imageUrl', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="https://example.com/event-image.jpg (optional)"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">
-                            Optional: Add an image URL to display in notifications and event details
-                        </p>
+                        <div className="flex flex-col sm:flex-row gap-4 items-start">
+                            <div className="flex-1">
+                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageUpload}
+                                        className="hidden"
+                                        id="event-image-upload"
+                                    />
+                                    <label htmlFor="event-image-upload" className="cursor-pointer">
+                                        <div className="text-gray-500">
+                                            <span className="text-3xl">📷</span>
+                                            <p className="mt-2 text-sm">Click to upload image</p>
+                                            <p className="text-xs text-gray-400">PNG, JPG up to 5MB</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            {imagePreview && (
+                                <div className="relative">
+                                    <img 
+                                        src={imagePreview} 
+                                        alt="Preview" 
+                                        className="w-32 h-32 object-cover rounded-lg border"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setImagePreview(null);
+                                            setFormData(prev => ({ ...prev, imageFile: null, imageUrl: '' }));
+                                        }}
+                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        {uploadingImage && (
+                            <p className="text-sm text-blue-600 mt-2">⏳ Uploading image...</p>
+                        )}
                     </div>
 
                     <div className="mt-6">
@@ -401,109 +627,90 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                     </div>
                 </div>
 
-                {/* Team Selection */}
-                <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                        Team Selection
-                        {formData.type === 'regular_game' && ' (Select exactly 2 teams)'}
-                        {formData.type === 'tournament' && ' (Select 4 or more teams)'}
-                    </h3>
-                    
-                    {/* Group teams by type */}
-                    {['box', 'field', 'outside'].map(teamType => {
-                        const teamsByType = teams.filter(t => (t.type || 'field') === teamType);
-                        if (teamsByType.length === 0) return null;
+                {/* Team Selection - Now Optional */}
+                {formData.type !== 'external' && (
+                    <div className="bg-white rounded-lg shadow p-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-800">
+                                    Team Selection
+                                    <span className="text-sm font-normal text-gray-500 ml-2">(Optional)</span>
+                                </h3>
+                                <p className="text-sm text-gray-500 mt-1">
+                                    {formData.type === 'regular_game' && 'Select 2 teams for a game, or leave empty for a placeholder'}
+                                    {formData.type === 'tournament' && 'Select 4+ teams, or leave empty for a placeholder'}
+                                    {formData.type === 'practice' && 'Select teams for practice, or leave empty'}
+                                    {formData.type === 'social' && 'Select teams to invite, or leave empty for all'}
+                                </p>
+                            </div>
+                            {formData.teams.length > 0 && (
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData(prev => ({ ...prev, teams: [] }))}
+                                    className="text-sm text-red-600 hover:text-red-700"
+                                >
+                                    Clear selection
+                                </button>
+                            )}
+                        </div>
                         
-                        return (
-                            <div key={teamType} className="mb-6">
-                                <h4 className="text-sm font-semibold text-gray-700 mb-3 uppercase">{teamType} Teams</h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                                    {teamsByType.map(team => {
-                                        const isSelected = formData.teams.includes(team.id);
-                                        return (
-                                            <div
-                                                key={team.id}
-                                                className={`cursor-pointer p-3 rounded-lg border-2 transition-colors ${
-                                                    isSelected
-                                                        ? 'border-blue-500 bg-blue-50'
-                                                        : 'border-gray-200 hover:border-gray-300'
-                                                }`}
-                                                onClick={() => handleTeamSelection(team.id)}
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    {team.style?.logoUrl && (
-                                                        <img
-                                                            src={team.style.logoUrl}
-                                                            alt={team.name}
-                                                            className="w-8 h-8 object-cover rounded"
-                                                        />
-                                                    )}
-                                                    <div>
-                                                        <div className="font-medium text-gray-900">{team.name}</div>
-                                                        <div className="text-xs text-gray-500">{team.division}</div>
+                        {/* Group teams by type */}
+                        {['box', 'field', 'outside'].map(teamType => {
+                            const teamsByType = teams.filter(t => (t.type || 'field') === teamType);
+                            if (teamsByType.length === 0) return null;
+                            
+                            return (
+                                <div key={teamType} className="mb-6">
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-3 uppercase">{teamType} Teams</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                        {teamsByType.map(team => {
+                                            const isSelected = formData.teams.includes(team.id);
+                                            return (
+                                                <div
+                                                    key={team.id}
+                                                    className={`cursor-pointer p-3 rounded-lg border-2 transition-colors ${
+                                                        isSelected
+                                                            ? 'border-blue-500 bg-blue-50'
+                                                            : 'border-gray-200 hover:border-gray-300'
+                                                    }`}
+                                                    onClick={() => handleTeamSelection(team.id)}
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        {team.style?.logoUrl && (
+                                                            <img
+                                                                src={team.style.logoUrl}
+                                                                alt={team.name}
+                                                                className="w-8 h-8 object-cover rounded"
+                                                            />
+                                                        )}
+                                                        <div>
+                                                            <div className="font-medium text-gray-900">{team.name}</div>
+                                                            <div className="text-xs text-gray-500">{team.division}</div>
+                                                        </div>
+                                                        {isSelected && (
+                                                            <div className="ml-auto text-blue-600">✓</div>
+                                                        )}
                                                     </div>
                                                 </div>
-                                            </div>
-                                        );
-                                    })}
+                                            );
+                                        })}
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })}
-                    
-                    {/* Fallback if no teams or ungrouped teams */}
-                    {teams.filter(t => !['box', 'field', 'outside'].includes(t.type || 'field')).length > 0 && (
-                        <div className="mb-6">
-                            <h4 className="text-sm font-semibold text-gray-700 mb-3">OTHER TEAMS</h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                                {teams.filter(t => !['box', 'field', 'outside'].includes(t.type || 'field')).map(team => {
-                                    const isSelected = formData.teams.includes(team.id);
-                                    return (
-                                        <div
-                                            key={team.id}
-                                            className={`cursor-pointer p-3 rounded-lg border-2 transition-colors ${
-                                                isSelected
-                                                    ? 'border-blue-500 bg-blue-50'
-                                                    : 'border-gray-200 hover:border-gray-300'
-                                            }`}
-                                            onClick={() => handleTeamSelection(team.id)}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                {team.style?.logoUrl && (
-                                                    <img 
-                                                        src={team.style.logoUrl} 
-                                                        alt={team.name} 
-                                                        className="w-8 h-8 object-cover rounded"
-                                                    />
-                                                )}
-                                                <div>
-                                                    <div className="font-medium text-gray-800">{team.name}</div>
-                                                    {team.division && (
-                                                        <div className="text-sm text-gray-600">{team.division}</div>
-                                                    )}
-                                                </div>
-                                                {isSelected && (
-                                                    <div className="ml-auto text-blue-600">✓</div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                            );
+                        })}
+                        
+                        {errors.teams && <p className="text-red-500 text-sm mt-2">{errors.teams}</p>}
+                        
+                        <div className="mt-4 text-sm text-gray-600">
+                            Selected teams: {formData.teams.length}
+                            {formData.type === 'regular_game' && formData.teams.length > 0 && ' / 2'}
+                            {formData.type === 'tournament' && formData.teams.length > 0 && ' (minimum 4 for bracket)'}
                         </div>
-                    )}
-                    
-                    {errors.teams && <p className="text-red-500 text-sm mt-2">{errors.teams}</p>}
-                    
-                    <div className="mt-4 text-sm text-gray-600">
-                        Selected teams: {formData.teams.length}
-                        {formData.type === 'regular_game' && ' / 2'}
-                        {formData.type === 'tournament' && ' (minimum 4)'}
                     </div>
-                </div>
+                )}
 
                 {/* Tournament Configuration */}
-                {formData.type === 'tournament' && (
+                {formData.type === 'tournament' && formData.teams.length >= 4 && (
                     <div className="bg-white rounded-lg shadow p-6">
                         <h3 className="text-lg font-semibold text-gray-800 mb-4">Tournament Configuration</h3>
                         
@@ -582,65 +789,67 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                 )}
 
                 {/* RSVP & Communication Settings */}
-                <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">RSVP & Communication</h3>
-                    
-                    <div className="space-y-4">
-                        <label className="flex items-center gap-3">
-                            <input
-                                type="checkbox"
-                                checked={formData.rsvp_enabled}
-                                onChange={(e) => handleInputChange('rsvp_enabled', e.target.checked)}
-                                className="rounded"
-                            />
-                            <span className="text-sm font-medium text-gray-700">
-                                Enable RSVP for this event
-                            </span>
-                        </label>
+                {formData.type !== 'external' && (
+                    <div className="bg-white rounded-lg shadow p-6">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">RSVP & Communication</h3>
+                        
+                        <div className="space-y-4">
+                            <label className="flex items-center gap-3">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.rsvp_enabled}
+                                    onChange={(e) => handleInputChange('rsvp_enabled', e.target.checked)}
+                                    className="rounded"
+                                />
+                                <span className="text-sm font-medium text-gray-700">
+                                    Enable RSVP for this event
+                                </span>
+                            </label>
 
-                        {formData.rsvp_enabled && (
-                            <>
-                                <label className="flex items-center gap-3">
-                                    <input
-                                        type="checkbox"
-                                        checked={formData.email_notifications}
-                                        onChange={(e) => handleInputChange('email_notifications', e.target.checked)}
-                                        className="rounded"
-                                    />
-                                    <span className="text-sm font-medium text-gray-700">
-                                        📧 Send Email Notifications
-                                    </span>
-                                </label>
-
-                                <label className="flex items-center gap-3">
-                                    <input
-                                        type="checkbox"
-                                        checked={formData.groupme_integration}
-                                        onChange={(e) => handleInputChange('groupme_integration', e.target.checked)}
-                                        className="rounded"
-                                    />
-                                    <span className="text-sm font-medium text-gray-700">
-                                        💬 Integrate with GroupMe
-                                    </span>
-                                </label>
-
-                                {formData.groupme_integration && (
-                                    <label className="flex items-center gap-3 ml-6">
+                            {formData.rsvp_enabled && (
+                                <>
+                                    <label className="flex items-center gap-3">
                                         <input
                                             type="checkbox"
-                                            checked={formData.auto_create_polls}
-                                            onChange={(e) => handleInputChange('auto_create_polls', e.target.checked)}
+                                            checked={formData.email_notifications}
+                                            onChange={(e) => handleInputChange('email_notifications', e.target.checked)}
                                             className="rounded"
                                         />
                                         <span className="text-sm font-medium text-gray-700">
-                                            Automatically create GroupMe polls
+                                            📧 Send Email Notifications
                                         </span>
                                     </label>
-                                )}
-                            </>
-                        )}
+
+                                    <label className="flex items-center gap-3">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.groupme_integration}
+                                            onChange={(e) => handleInputChange('groupme_integration', e.target.checked)}
+                                            className="rounded"
+                                        />
+                                        <span className="text-sm font-medium text-gray-700">
+                                            💬 Integrate with GroupMe
+                                        </span>
+                                    </label>
+
+                                    {formData.groupme_integration && (
+                                        <label className="flex items-center gap-3 ml-6">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.auto_create_polls}
+                                                onChange={(e) => handleInputChange('auto_create_polls', e.target.checked)}
+                                                className="rounded"
+                                            />
+                                            <span className="text-sm font-medium text-gray-700">
+                                                Automatically create GroupMe polls
+                                            </span>
+                                        </label>
+                                    )}
+                                </>
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Form Actions */}
                 <div className="flex justify-between pt-6 border-t">
@@ -654,7 +863,7 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                     
                     <button
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || uploadingImage}
                         className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                     >
                         {loading 
