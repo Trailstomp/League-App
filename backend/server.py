@@ -7786,8 +7786,60 @@ async def create_unified_event(event: UnifiedEvent):
         if existing:
             raise HTTPException(status_code=400, detail="Event with this ID already exists")
         
-        # Insert event
+        # Insert event into unified_events collection
         await db.unified_events.insert_one(event_data)
+        
+        # ALSO add to leagueSchedule for ticker compatibility
+        try:
+            league_doc = await db.league_data.find_one({"id": "main_league"})
+            if not league_doc:
+                league_doc = {"id": "main_league", "leagueSchedule": []}
+                await db.league_data.insert_one(league_doc)
+            
+            current_schedule = league_doc.get("leagueSchedule", [])
+            
+            # Create leagueSchedule compatible event format
+            schedule_event = {
+                "id": event.id,
+                "title": event_data.get("title", ""),
+                "type": event_data.get("type", "event"),
+                "event_type": event_data.get("type", "event"),
+                "date": event_data.get("date", ""),
+                "time": event_data.get("time", ""),
+                "location": event_data.get("location", ""),
+                "description": event_data.get("description", ""),
+                "homeTeam": event_data.get("teams", [None])[0] if event_data.get("teams") else None,
+                "awayTeam": event_data.get("teams", [None, None])[1] if len(event_data.get("teams", [])) > 1 else None,
+                "teams": event_data.get("teams", []),
+                "status": event_data.get("status", "scheduled"),
+                "imageUrl": event_data.get("imageUrl", ""),
+                "is_external": event_data.get("is_external", False),
+                "external_url": event_data.get("external_url", ""),
+                "external_organizer": event_data.get("external_organizer", ""),
+                "rsvp_enabled": event_data.get("rsvp_enabled", True),
+                "created_at": now,
+                "updated_at": now
+            }
+            
+            # Add start_datetime if date and time are provided
+            if event_data.get("date") and event_data.get("time"):
+                try:
+                    schedule_event["start_datetime"] = f"{event_data['date']}T{event_data['time']}:00"
+                except:
+                    pass
+            elif event_data.get("date"):
+                schedule_event["start_datetime"] = f"{event_data['date']}T00:00:00"
+            
+            current_schedule.append(schedule_event)
+            
+            await db.league_data.update_one(
+                {"id": "main_league"},
+                {"$set": {"leagueSchedule": current_schedule}},
+                upsert=True
+            )
+            logger.info(f"✅ Event also added to leagueSchedule for ticker")
+        except Exception as schedule_err:
+            logger.warning(f"Failed to add event to leagueSchedule: {schedule_err}")
         
         # Create GroupMe integration if enabled
         if event.groupme_integration and event.auto_create_polls:
