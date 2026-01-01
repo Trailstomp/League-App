@@ -4726,12 +4726,11 @@ async def send_enhanced_event_notification(
                 channel = await db.groupme_channels.find_one({"id": channel_id, "is_active": True})
                 if channel and channel.get("groupme_bot_id"):
                     # Send message with image attachment if available
-                    attachments = [image_attachment] if image_attachment else None
+                    image_url = image_attachment.get("url") if image_attachment else None
                     success = await _send_groupme_message(
-                        groupme_service,
                         channel["groupme_bot_id"],
                         message,
-                        attachments=attachments
+                        image_url=image_url
                     )
                     
                     if success:
