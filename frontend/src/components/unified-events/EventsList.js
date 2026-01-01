@@ -19,6 +19,16 @@ const EventsList = ({
     const [sendingNotifications, setSendingNotifications] = useState({});
     const [viewingRSVPs, setViewingRSVPs] = useState(null);
     const [changingStatus, setChangingStatus] = useState(null);
+    const [notifyMenuOpen, setNotifyMenuOpen] = useState(null);
+    const [groupmeChannels, setGroupmeChannels] = useState([]);
+    const [showGroupmeModal, setShowGroupmeModal] = useState(null);
+    const [groupmeForm, setGroupmeForm] = useState({
+        channel_ids: [],
+        notification_type: 'event_announcement',
+        include_image: true,
+        include_calendar_link: true,
+        include_rsvp: true
+    });
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
