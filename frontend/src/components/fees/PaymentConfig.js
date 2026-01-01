@@ -135,7 +135,7 @@ const PaymentConfig = ({ scope, teamId, currentUser, canManage }) => {
                         <span className="text-2xl">🌐</span>
                         <div>
                             <h4 className="font-medium text-slate-800">PayPal</h4>
-                            <p className="text-sm text-slate-600">Accept PayPal payments</p>
+                            <p className="text-sm text-slate-600">Accept PayPal payments online</p>
                         </div>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -153,7 +153,41 @@ const PaymentConfig = ({ scope, teamId, currentUser, canManage }) => {
                 {config.paypal_enabled && (
                     <div className="ml-9 space-y-3">
                         <div>
-                            <label className="block text-sm text-slate-600 mb-1">PayPal Email (for manual tracking)</label>
+                            <label className="block text-sm text-slate-600 mb-1">PayPal Client ID</label>
+                            <input
+                                type="text"
+                                value={config.paypal_client_id || ''}
+                                onChange={(e) => setConfig(prev => ({ ...prev, paypal_client_id: e.target.value }))}
+                                placeholder="AW..."
+                                disabled={!canManage}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono disabled:bg-slate-100"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm text-slate-600 mb-1">PayPal Secret</label>
+                            <input
+                                type="password"
+                                value={config.paypal_secret || ''}
+                                onChange={(e) => setConfig(prev => ({ ...prev, paypal_secret: e.target.value }))}
+                                placeholder="••••••••"
+                                disabled={!canManage}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono disabled:bg-slate-100"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm text-slate-600 mb-1">Mode</label>
+                            <select
+                                value={config.paypal_mode || 'sandbox'}
+                                onChange={(e) => setConfig(prev => ({ ...prev, paypal_mode: e.target.value }))}
+                                disabled={!canManage}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm disabled:bg-slate-100"
+                            >
+                                <option value="sandbox">Sandbox (Testing)</option>
+                                <option value="live">Live (Production)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm text-slate-600 mb-1">PayPal Email (optional - for manual tracking)</label>
                             <input
                                 type="email"
                                 value={config.paypal_email || ''}
@@ -163,6 +197,9 @@ const PaymentConfig = ({ scope, teamId, currentUser, canManage }) => {
                                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm disabled:bg-slate-100"
                             />
                         </div>
+                        <p className="text-xs text-slate-500">
+                            Get your credentials from <a href="https://developer.paypal.com/developer/applications" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">PayPal Developer Dashboard</a>
+                        </p>
                     </div>
                 )}
             </div>
