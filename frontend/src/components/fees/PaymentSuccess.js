@@ -10,8 +10,16 @@ const PaymentSuccess = ({ onNavigate }) => {
         const verifyPayment = async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const sessionId = urlParams.get('session_id');
-            const assignmentId = urlParams.get('assignment_id');
+            const provider = urlParams.get('provider');
+            const paypalToken = urlParams.get('token'); // PayPal returns this
             
+            // Handle PayPal callback
+            if (provider === 'paypal' || paypalToken) {
+                await handlePayPalCallback();
+                return;
+            }
+            
+            // Handle Stripe callback
             if (!sessionId) {
                 setStatus('error');
                 return;
@@ -28,6 +36,55 @@ const PaymentSuccess = ({ onNavigate }) => {
                 }
             } catch (error) {
                 console.error('Error verifying payment:', error);
+                setStatus('error');
+            }
+        };
+        
+        const handlePayPalCallback = async () => {
+            // Get order ID from session storage (stored before redirect)
+            const orderId = sessionStorage.getItem('paypal_order_id');
+            
+            if (!orderId) {
+                // Try to get from URL (PayPal sometimes returns token as order ID)
+                const urlParams = new URLSearchParams(window.location.search);
+                const token = urlParams.get('token');
+                if (!token) {
+                    setStatus('error');
+                    return;
+                }
+            }
+            
+            const orderIdToCapture = orderId || new URLSearchParams(window.location.search).get('token');
+            
+            try {
+                // Capture the PayPal order
+                const response = await fetch(`${backendUrl}/api/payments/paypal/capture-order/${orderIdToCapture}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.status === 'COMPLETED') {
+                        setPaymentDetails({
+                            amount_total: data.amount * 100, // Convert to cents for consistency
+                            payment_method: 'paypal',
+                            transaction_id: data.transaction_id
+                        });
+                        setStatus('success');
+                        // Clear session storage
+                        sessionStorage.removeItem('paypal_order_id');
+                        sessionStorage.removeItem('paypal_assignment_id');
+                    } else {
+                        setStatus('pending');
+                    }
+                } else {
+                    const errorData = await response.json();
+                    console.error('PayPal capture error:', errorData);
+                    setStatus('error');
+                }
+            } catch (error) {
+                console.error('Error capturing PayPal payment:', error);
                 setStatus('error');
             }
         };
