@@ -938,6 +938,126 @@ async def upload_league_logo(file: UploadFile = File(...)):
         logger.error(f"❌ Error uploading league logo: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@api_router.post("/upload/image")
+async def upload_general_image(
+    file: UploadFile = File(...),
+    type: str = Form("general")
+):
+    """Upload an image (event, team, etc.) to Google Drive or local storage"""
+    try:
+        # Read file content
+        content = await file.read()
+        file_size = len(content)
+        
+        # Check file size (5MB limit)
+        if file_size > 5 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="File too large. Maximum size is 5MB")
+        
+        # Validate image type
+        content_type = file.content_type
+        if not content_type or not content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail="Invalid file type. Only images are allowed")
+        
+        # Try Google Drive upload first
+        try:
+            config = await db.cloud_storage.find_one({"id": "main_cloud_storage"})
+            
+            if config and config.get("googleDrive", {}).get("refreshToken"):
+                google_drive_config = config["googleDrive"]
+                refresh_token = google_drive_config["refreshToken"]
+                main_folder_id = google_drive_config.get("folderId")
+                
+                # Get fresh access token
+                access_token = await get_fresh_access_token(google_drive_config, refresh_token)
+                
+                # Create unique filename
+                timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+                extension = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+                filename = f"{type}_{timestamp}.{extension}"
+                
+                # Upload to Google Drive
+                upload_url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
+                
+                metadata = {
+                    "name": filename,
+                    "parents": [main_folder_id] if main_folder_id else []
+                }
+                
+                headers = {
+                    "Authorization": f"Bearer {access_token}"
+                }
+                
+                import httpx
+                import json
+                
+                files_data = {
+                    "metadata": (None, json.dumps(metadata), "application/json"),
+                    "file": (filename, content, content_type)
+                }
+                
+                async with httpx.AsyncClient() as client:
+                    response = await client.post(upload_url, headers=headers, files=files_data)
+                    
+                    if response.status_code not in [200, 201]:
+                        logger.error(f"Google Drive upload failed: {response.status_code}")
+                        raise Exception("Drive upload failed")
+                    
+                    result = response.json()
+                    file_id = result.get("id")
+                    
+                    # Make file public
+                    permission_url = f"https://www.googleapis.com/drive/v3/files/{file_id}/permissions"
+                    permission_data = {"role": "reader", "type": "anyone"}
+                    await client.post(permission_url, headers=headers, json=permission_data)
+                    
+                    # Generate public URL
+                    public_url = f"https://drive.google.com/uc?id={file_id}&export=view"
+                    
+                    logger.info(f"✅ Image uploaded to Google Drive: {file_id}")
+                    
+                    return {
+                        "url": public_url,
+                        "file_id": file_id,
+                        "filename": filename,
+                        "storage": "google_drive"
+                    }
+                    
+        except Exception as drive_error:
+            logger.warning(f"Google Drive upload failed, falling back to local: {drive_error}")
+        
+        # Fallback: Save locally
+        import os
+        import base64
+        
+        upload_dir = "/app/uploads"
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        extension = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+        filename = f"{type}_{timestamp}.{extension}"
+        filepath = os.path.join(upload_dir, filename)
+        
+        with open(filepath, 'wb') as f:
+            f.write(content)
+        
+        # Return local URL (will be served by static files)
+        local_url = f"/uploads/{filename}"
+        
+        logger.info(f"✅ Image saved locally: {filepath}")
+        
+        return {
+            "url": local_url,
+            "filename": filename,
+            "storage": "local"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error uploading image: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/league-background-upload")
 async def upload_league_background(file: UploadFile = File(...)):
     """Upload league background image to Google Drive"""
