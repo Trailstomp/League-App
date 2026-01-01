@@ -489,6 +489,132 @@ const EventsList = ({
                     </div>
                 </div>
             )}
+
+            {/* GroupMe Notification Modal */}
+            {showGroupmeModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowGroupmeModal(null)}>
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                        <div className="border-b px-6 py-4 flex items-center justify-between">
+                            <h3 className="text-lg font-bold text-gray-800">📢 Send to GroupMe</h3>
+                            <button
+                                onClick={() => setShowGroupmeModal(null)}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        
+                        <div className="p-6 space-y-4">
+                            {/* Event Info */}
+                            <div className="p-3 bg-blue-50 rounded-lg">
+                                <div className="font-medium text-blue-800">{showGroupmeModal.title}</div>
+                                <div className="text-sm text-blue-600">
+                                    {showGroupmeModal.start_datetime ? new Date(showGroupmeModal.start_datetime).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'TBD'}
+                                </div>
+                            </div>
+
+                            {/* Channel Selection */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Select Channels</label>
+                                {groupmeChannels.length === 0 ? (
+                                    <div className="text-sm text-gray-500 p-3 bg-gray-50 rounded">
+                                        No GroupMe channels configured. Set up channels in Admin → GroupMe.
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2 max-h-32 overflow-y-auto border rounded-lg p-2">
+                                        {groupmeChannels.map((channel) => (
+                                            <label key={channel.id} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={groupmeForm.channel_ids.includes(channel.id)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setGroupmeForm(prev => ({
+                                                                ...prev,
+                                                                channel_ids: [...prev.channel_ids, channel.id]
+                                                            }));
+                                                        } else {
+                                                            setGroupmeForm(prev => ({
+                                                                ...prev,
+                                                                channel_ids: prev.channel_ids.filter(id => id !== channel.id)
+                                                            }));
+                                                        }
+                                                    }}
+                                                    className="rounded border-gray-300 text-blue-600"
+                                                />
+                                                <span className="text-sm">{channel.name}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Notification Type */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Notification Type</label>
+                                <select
+                                    value={groupmeForm.notification_type}
+                                    onChange={(e) => setGroupmeForm(prev => ({...prev, notification_type: e.target.value}))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                >
+                                    <option value="event_announcement">📢 Event Announcement</option>
+                                    <option value="rsvp_reminder">⏰ RSVP Reminder</option>
+                                    <option value="event_update">✏️ Event Update</option>
+                                    <option value="last_call">🚨 Last Call for RSVPs</option>
+                                </select>
+                            </div>
+
+                            {/* Message Options */}
+                            <div className="space-y-2 p-3 bg-gray-50 rounded-lg">
+                                <div className="text-sm font-medium text-gray-700 mb-2">Message Options</div>
+                                <label className="flex items-center space-x-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={groupmeForm.include_image}
+                                        onChange={(e) => setGroupmeForm(prev => ({...prev, include_image: e.target.checked}))}
+                                        className="rounded border-gray-300 text-blue-600"
+                                    />
+                                    <span className="text-sm">🖼️ Include visual event card</span>
+                                </label>
+                                <label className="flex items-center space-x-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={groupmeForm.include_calendar_link}
+                                        onChange={(e) => setGroupmeForm(prev => ({...prev, include_calendar_link: e.target.checked}))}
+                                        className="rounded border-gray-300 text-blue-600"
+                                    />
+                                    <span className="text-sm">📆 Include Google Calendar link</span>
+                                </label>
+                                <label className="flex items-center space-x-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={groupmeForm.include_rsvp}
+                                        onChange={(e) => setGroupmeForm(prev => ({...prev, include_rsvp: e.target.checked}))}
+                                        className="rounded border-gray-300 text-blue-600"
+                                    />
+                                    <span className="text-sm">🎯 Include RSVP link</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div className="border-t px-6 py-4 flex justify-end gap-3">
+                            <button
+                                onClick={() => setShowGroupmeModal(null)}
+                                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSendGroupmeNotification}
+                                disabled={groupmeForm.channel_ids.length === 0 || sendingNotifications[showGroupmeModal.id]}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {sendingNotifications[showGroupmeModal.id] ? '⏳ Sending...' : '💬 Send to GroupMe'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
