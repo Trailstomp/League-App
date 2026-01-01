@@ -424,7 +424,7 @@ const EventsList = ({
                                                 </button>
                                             )}
                                             
-                                            <div className="relative">
+                                            <div className="relative z-[60]">
                                                 <button
                                                     onClick={() => setNotifyMenuOpen(notifyMenuOpen === event.id ? null : event.id)}
                                                     disabled={sendingNotifications[event.id]}
@@ -436,8 +436,9 @@ const EventsList = ({
                                                 
                                                 {notifyMenuOpen === event.id && (
                                                     <div 
-                                                        className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border z-50"
+                                                        className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-xl border z-[100]"
                                                         onClick={(e) => e.stopPropagation()}
+                                                        style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.2)' }}
                                                     >
                                                         <button
                                                             onClick={() => handleSendNotifications(event.id)}
