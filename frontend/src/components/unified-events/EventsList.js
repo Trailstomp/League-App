@@ -696,6 +696,107 @@ const EventsList = ({
                     </div>
                 </div>
             )}
+
+            {/* SMS Notification Modal */}
+            {showSmsModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[200] p-4" onClick={() => setShowSmsModal(null)}>
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                        <div className="border-b px-6 py-4 flex items-center justify-between">
+                            <h3 className="text-lg font-bold text-gray-800">📱 Send SMS Notification</h3>
+                            <button
+                                onClick={() => setShowSmsModal(null)}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        
+                        <div className="p-6 space-y-4">
+                            {/* Event Info */}
+                            <div className="p-3 bg-blue-50 rounded-lg">
+                                <div className="font-medium text-blue-800">{showSmsModal.title}</div>
+                                <div className="text-sm text-blue-600">
+                                    {showSmsModal.date ? `${showSmsModal.date} ${showSmsModal.time || ''}` : 'TBD'}
+                                </div>
+                            </div>
+
+                            {/* SMS Config Status */}
+                            {smsConfig && !smsConfig.enabled && (
+                                <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
+                                    ⚠️ SMS notifications are disabled. Enable them in Admin → SMS Notifications.
+                                </div>
+                            )}
+
+                            {smsConfig && !smsConfig.auth_token_configured && (
+                                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
+                                    ❌ Twilio credentials not configured. Set up in Admin → SMS Notifications.
+                                </div>
+                            )}
+
+                            {/* Notification Type */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Notification Type</label>
+                                <select
+                                    value={smsForm.notification_type}
+                                    onChange={(e) => setSmsForm(prev => ({...prev, notification_type: e.target.value}))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                >
+                                    <option value="event_reminder">📅 Event Reminder</option>
+                                    <option value="rsvp_confirmation">✅ RSVP Confirmation</option>
+                                    <option value="custom">✏️ Custom Message</option>
+                                </select>
+                            </div>
+
+                            {/* Target Users */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Send To</label>
+                                <select
+                                    value={smsForm.target_users}
+                                    onChange={(e) => setSmsForm(prev => ({...prev, target_users: e.target.value}))}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                >
+                                    <option value="all">👥 All Players (with phone numbers)</option>
+                                    <option value="going">✅ Confirmed RSVPs Only</option>
+                                    <option value="maybe">🤔 Maybe RSVPs Only</option>
+                                </select>
+                            </div>
+
+                            {/* Custom Message */}
+                            {smsForm.notification_type === 'custom' && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Custom Message</label>
+                                    <textarea
+                                        value={smsForm.custom_message}
+                                        onChange={(e) => setSmsForm(prev => ({...prev, custom_message: e.target.value}))}
+                                        rows={3}
+                                        placeholder="Enter your custom message..."
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        Characters: {smsForm.custom_message.length}/160
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="border-t px-6 py-4 flex justify-end gap-3">
+                            <button
+                                onClick={() => setShowSmsModal(null)}
+                                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSendSmsNotification}
+                                disabled={!smsConfig?.enabled || !smsConfig?.auth_token_configured || sendingNotifications[showSmsModal.id]}
+                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {sendingNotifications[showSmsModal.id] ? '⏳ Sending...' : '📱 Send SMS'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
