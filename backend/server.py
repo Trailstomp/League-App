@@ -9900,6 +9900,429 @@ async def get_paypal_order_status(order_id: str):
         raise HTTPException(status_code=500, detail=f"Error getting order status: {str(e)}")
 
 
+# ============================================================================
+# SMS/TWILIO INTEGRATION
+# ============================================================================
+
+class SMSConfig(BaseModel):
+    enabled: bool = False
+    account_sid: Optional[str] = ""
+    auth_token: Optional[str] = ""
+    phone_number: Optional[str] = ""  # Twilio phone number to send from
+    # Message templates
+    event_reminder_template: str = "📅 Reminder: {event_title} on {event_date} at {event_time}. Location: {location}. RSVP: {rsvp_link}"
+    rsvp_confirmation_template: str = "✅ Your RSVP for {event_title} has been recorded as: {response}"
+    custom_template: str = ""
+
+class SMSRequest(BaseModel):
+    to_numbers: List[str]  # List of phone numbers
+    message: str
+    event_id: Optional[str] = None
+
+@api_router.get("/sms-config")
+async def get_sms_config():
+    """Get SMS/Twilio configuration (with masked auth token)"""
+    try:
+        config = await db.sms_config.find_one({"id": "main_sms"})
+        
+        if not config:
+            return {
+                "id": "main_sms",
+                "enabled": False,
+                "account_sid": "",
+                "auth_token_configured": False,
+                "phone_number": "",
+                "event_reminder_template": "📅 Reminder: {event_title} on {event_date} at {event_time}. Location: {location}. RSVP: {rsvp_link}",
+                "rsvp_confirmation_template": "✅ Your RSVP for {event_title} has been recorded as: {response}",
+                "custom_template": ""
+            }
+        
+        config.pop('_id', None)
+        
+        # Mask auth token for security
+        if config.get("auth_token"):
+            config["auth_token_configured"] = True
+            config["auth_token_masked"] = "••••••••" + config["auth_token"][-4:] if len(config["auth_token"]) > 4 else "••••"
+        else:
+            config["auth_token_configured"] = False
+            config["auth_token_masked"] = ""
+        
+        # Don't return the actual auth token
+        response = {
+            "id": config.get("id", "main_sms"),
+            "enabled": config.get("enabled", False),
+            "account_sid": config.get("account_sid", ""),
+            "auth_token_configured": config.get("auth_token_configured", False),
+            "auth_token_masked": config.get("auth_token_masked", ""),
+            "phone_number": config.get("phone_number", ""),
+            "event_reminder_template": config.get("event_reminder_template", ""),
+            "rsvp_confirmation_template": config.get("rsvp_confirmation_template", ""),
+            "custom_template": config.get("custom_template", "")
+        }
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"Error getting SMS config: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/sms-config")
+async def update_sms_config(config: Dict[str, Any]):
+    """Update SMS/Twilio configuration"""
+    try:
+        existing = await db.sms_config.find_one({"id": "main_sms"})
+        
+        update_data = {
+            "id": "main_sms",
+            "enabled": config.get("enabled", False),
+            "account_sid": config.get("account_sid", ""),
+            "phone_number": config.get("phone_number", ""),
+            "event_reminder_template": config.get("event_reminder_template", ""),
+            "rsvp_confirmation_template": config.get("rsvp_confirmation_template", ""),
+            "custom_template": config.get("custom_template", ""),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Only update auth token if provided (not empty)
+        if config.get("auth_token") and config["auth_token"].strip():
+            update_data["auth_token"] = config["auth_token"]
+        elif existing and existing.get("auth_token"):
+            # Keep existing token if not provided
+            update_data["auth_token"] = existing["auth_token"]
+        
+        await db.sms_config.replace_one(
+            {"id": "main_sms"},
+            update_data,
+            upsert=True
+        )
+        
+        logger.info("✅ SMS configuration updated")
+        
+        return {
+            "status": "success",
+            "message": "SMS configuration updated successfully"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error updating SMS config: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/sms-config/test")
+async def test_sms_config(test_data: Dict[str, Any]):
+    """Test SMS configuration by sending a test message"""
+    try:
+        from twilio.rest import Client as TwilioClient
+        
+        # Get SMS config
+        config = await db.sms_config.find_one({"id": "main_sms"})
+        
+        if not config:
+            raise HTTPException(status_code=400, detail="SMS not configured")
+        
+        account_sid = config.get("account_sid")
+        auth_token = config.get("auth_token")
+        from_number = config.get("phone_number")
+        
+        if not account_sid or not auth_token or not from_number:
+            raise HTTPException(status_code=400, detail="SMS configuration incomplete. Please provide Account SID, Auth Token, and Phone Number.")
+        
+        to_number = test_data.get("to_number")
+        if not to_number:
+            raise HTTPException(status_code=400, detail="Please provide a test phone number")
+        
+        # Initialize Twilio client
+        client = TwilioClient(account_sid, auth_token)
+        
+        # Send test message
+        test_message = "🏆 Test message from your Lacrosse League! SMS notifications are configured successfully."
+        
+        message = client.messages.create(
+            body=test_message,
+            from_=from_number,
+            to=to_number
+        )
+        
+        logger.info(f"✅ Test SMS sent - SID: {message.sid}")
+        
+        return {
+            "status": "success",
+            "message": f"Test SMS sent successfully to {to_number}",
+            "message_sid": message.sid
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error testing SMS: {e}")
+        error_msg = str(e)
+        if "authenticate" in error_msg.lower():
+            error_msg = "Authentication failed. Please check your Account SID and Auth Token."
+        elif "phone number" in error_msg.lower():
+            error_msg = "Invalid phone number. Please use E.164 format (e.g., +1234567890)."
+        raise HTTPException(status_code=400, detail=error_msg)
+
+@api_router.post("/sms/send")
+async def send_sms(request: SMSRequest):
+    """Send SMS to multiple recipients"""
+    try:
+        from twilio.rest import Client as TwilioClient
+        
+        # Get SMS config
+        config = await db.sms_config.find_one({"id": "main_sms"})
+        
+        if not config or not config.get("enabled"):
+            raise HTTPException(status_code=400, detail="SMS notifications are not enabled")
+        
+        account_sid = config.get("account_sid")
+        auth_token = config.get("auth_token")
+        from_number = config.get("phone_number")
+        
+        if not account_sid or not auth_token or not from_number:
+            raise HTTPException(status_code=400, detail="SMS configuration incomplete")
+        
+        # Initialize Twilio client
+        client = TwilioClient(account_sid, auth_token)
+        
+        results = {
+            "sent": [],
+            "failed": []
+        }
+        
+        for to_number in request.to_numbers:
+            try:
+                message = client.messages.create(
+                    body=request.message,
+                    from_=from_number,
+                    to=to_number
+                )
+                results["sent"].append({
+                    "number": to_number,
+                    "message_sid": message.sid
+                })
+            except Exception as e:
+                results["failed"].append({
+                    "number": to_number,
+                    "error": str(e)
+                })
+        
+        # Log the SMS send
+        await db.sms_logs.insert_one({
+            "id": str(uuid.uuid4()),
+            "event_id": request.event_id,
+            "message": request.message,
+            "recipients": len(request.to_numbers),
+            "sent": len(results["sent"]),
+            "failed": len(results["failed"]),
+            "sent_at": datetime.now(timezone.utc).isoformat()
+        })
+        
+        return {
+            "status": "success",
+            "sent_count": len(results["sent"]),
+            "failed_count": len(results["failed"]),
+            "results": results
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error sending SMS: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/events/{event_id}/send-sms-notifications")
+async def send_event_sms_notifications(event_id: str, notification_data: Dict[str, Any]):
+    """Send SMS notifications for an event to all players with phone numbers"""
+    try:
+        from twilio.rest import Client as TwilioClient
+        
+        # Get SMS config
+        config = await db.sms_config.find_one({"id": "main_sms"})
+        
+        if not config or not config.get("enabled"):
+            raise HTTPException(status_code=400, detail="SMS notifications are not enabled")
+        
+        account_sid = config.get("account_sid")
+        auth_token = config.get("auth_token")
+        from_number = config.get("phone_number")
+        
+        if not account_sid or not auth_token or not from_number:
+            raise HTTPException(status_code=400, detail="SMS configuration incomplete")
+        
+        # Get event details
+        event = await db.unified_events.find_one({"id": event_id}, {"_id": 0})
+        
+        if not event:
+            # Check leagueSchedule
+            league_doc = await db.league_data.find_one({"leagueSchedule.id": event_id})
+            if league_doc:
+                for e in league_doc.get("leagueSchedule", []):
+                    if e.get("id") == event_id:
+                        event = e
+                        break
+        
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Get notification type
+        notification_type = notification_data.get("notification_type", "event_reminder")
+        custom_message = notification_data.get("custom_message")
+        target_users = notification_data.get("target_users", "all")  # all, going, maybe
+        
+        # Build message from template
+        if custom_message:
+            message = custom_message
+        else:
+            template = config.get(f"{notification_type}_template", config.get("event_reminder_template", ""))
+            
+            # Generate RSVP URL
+            frontend_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:3000').replace('/api', '').rstrip('/')
+            rsvp_link = f"{frontend_url}/quick-rsvp/{event_id}"
+            
+            # Format date and time
+            event_date = event.get("date", "TBD")
+            event_time = event.get("time", "TBD")
+            
+            if event_date and event_date != "TBD":
+                try:
+                    date_obj = datetime.strptime(event_date, "%Y-%m-%d")
+                    event_date = date_obj.strftime("%B %d, %Y")
+                except:
+                    pass
+            
+            if event_time and event_time != "TBD":
+                try:
+                    time_parts = event_time.split(":")
+                    hour = int(time_parts[0])
+                    minute = time_parts[1] if len(time_parts) > 1 else "00"
+                    ampm = "PM" if hour >= 12 else "AM"
+                    hour = hour % 12 or 12
+                    event_time = f"{hour}:{minute} {ampm}"
+                except:
+                    pass
+            
+            message = template.format(
+                event_title=event.get("title", "Event"),
+                event_date=event_date,
+                event_time=event_time,
+                location=event.get("location", "TBD"),
+                rsvp_link=rsvp_link
+            )
+        
+        # Get users with phone numbers
+        users_query = {"phone": {"$exists": True, "$ne": ""}}
+        
+        # Filter by team if event has teams
+        if event.get("teams"):
+            users_query["teamId"] = {"$in": event["teams"]}
+        
+        # Filter by RSVP status if specified
+        if target_users != "all":
+            rsvps = await db.event_rsvps.find({"event_id": event_id}).to_list(None)
+            rsvp_emails = []
+            for rsvp in rsvps:
+                if target_users == "going" and rsvp.get("response") == "yes":
+                    rsvp_emails.append(rsvp.get("user_email"))
+                elif target_users == "maybe" and rsvp.get("response") == "maybe":
+                    rsvp_emails.append(rsvp.get("user_email"))
+            
+            if rsvp_emails:
+                users_query["email"] = {"$in": rsvp_emails}
+        
+        users = await db.users.find(users_query).to_list(None)
+        
+        # Also check league_data.players for legacy phone numbers
+        league_doc = await db.league_data.find_one({"id": "main_league"})
+        legacy_players = league_doc.get("players", []) if league_doc else []
+        
+        phone_numbers = set()
+        for user in users:
+            if user.get("phone"):
+                phone = user["phone"].strip()
+                if not phone.startswith("+"):
+                    phone = "+1" + phone.replace("-", "").replace(" ", "")
+                phone_numbers.add(phone)
+        
+        for player in legacy_players:
+            if player.get("phone"):
+                phone = player["phone"].strip()
+                if not phone.startswith("+"):
+                    phone = "+1" + phone.replace("-", "").replace(" ", "")
+                phone_numbers.add(phone)
+        
+        if not phone_numbers:
+            return {
+                "status": "warning",
+                "message": "No users with phone numbers found",
+                "sent_count": 0
+            }
+        
+        # Initialize Twilio client and send messages
+        client = TwilioClient(account_sid, auth_token)
+        
+        results = {
+            "sent": [],
+            "failed": []
+        }
+        
+        for phone in phone_numbers:
+            try:
+                msg = client.messages.create(
+                    body=message,
+                    from_=from_number,
+                    to=phone
+                )
+                results["sent"].append({
+                    "phone": phone,
+                    "message_sid": msg.sid
+                })
+            except Exception as e:
+                results["failed"].append({
+                    "phone": phone,
+                    "error": str(e)
+                })
+        
+        # Log the notification
+        await db.sms_logs.insert_one({
+            "id": str(uuid.uuid4()),
+            "event_id": event_id,
+            "notification_type": notification_type,
+            "message": message,
+            "recipients": len(phone_numbers),
+            "sent": len(results["sent"]),
+            "failed": len(results["failed"]),
+            "sent_at": datetime.now(timezone.utc).isoformat()
+        })
+        
+        logger.info(f"✅ SMS notifications sent for event {event_id}: {len(results['sent'])} sent, {len(results['failed'])} failed")
+        
+        return {
+            "status": "success",
+            "message": f"SMS notifications sent to {len(results['sent'])} recipients",
+            "sent_count": len(results["sent"]),
+            "failed_count": len(results["failed"]),
+            "results": results
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error sending SMS notifications: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/sms-logs")
+async def get_sms_logs(limit: int = 50):
+    """Get SMS notification logs"""
+    try:
+        logs = await db.sms_logs.find().sort("sent_at", -1).limit(limit).to_list(None)
+        
+        for log in logs:
+            log.pop('_id', None)
+        
+        return {"logs": logs}
+        
+    except Exception as e:
+        logger.error(f"Error getting SMS logs: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Include the API router in the main app (after all routes are defined)
 app.include_router(api_router)
 
