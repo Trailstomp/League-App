@@ -7720,12 +7720,13 @@ async def get_season_summary(season_id: str):
 # Pydantic models for unified events
 class UnifiedEvent(BaseModel):
     id: Optional[str] = None
-    type: str = "regular_game"  # regular_game, tournament, practice, social
+    type: str = "regular_game"  # regular_game, tournament, practice, social, external
     title: str
     description: Optional[str] = ""
-    date: str
-    time: str
-    location: str
+    date: Optional[str] = ""  # Optional for placeholder events
+    time: Optional[str] = ""  # Optional for placeholder events
+    location: Optional[str] = ""  # Optional for placeholder events
+    locationId: Optional[str] = ""  # Reference to saved location
     imageUrl: Optional[str] = ""
     teams: List[str] = []
     status: str = "scheduled"  # scheduled, in_progress, completed, cancelled
@@ -7739,6 +7740,10 @@ class UnifiedEvent(BaseModel):
     created_by: Optional[str] = None
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
+    # External event fields
+    is_external: bool = False
+    external_url: Optional[str] = ""
+    external_organizer: Optional[str] = ""
 
 class EventUpdate(BaseModel):
     title: Optional[str] = None
