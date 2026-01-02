@@ -511,6 +511,15 @@ const EventsList = ({
                                                         <button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
+                                                                openSmsModal(event);
+                                                            }}
+                                                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 border-t"
+                                                        >
+                                                            📱 Send SMS
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
                                                                 console.log('💬 GroupMe button clicked, event:', event.id, event.title);
                                                                 openGroupmeModal(event);
                                                             }}
