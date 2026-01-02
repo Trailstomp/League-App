@@ -7751,6 +7751,7 @@ class EventUpdate(BaseModel):
     date: Optional[str] = None
     time: Optional[str] = None
     location: Optional[str] = None
+    locationId: Optional[str] = None
     imageUrl: Optional[str] = None
     teams: Optional[List[str]] = None
     status: Optional[str] = None
@@ -7760,6 +7761,10 @@ class EventUpdate(BaseModel):
     tournament_config: Optional[Dict[str, Any]] = None
     bracket: Optional[Dict[str, Any]] = None
     scores: Optional[Dict[str, Any]] = None
+    # External event fields
+    is_external: Optional[bool] = None
+    external_url: Optional[str] = None
+    external_organizer: Optional[str] = None
 
 @api_router.get("/unified-events")
 async def get_unified_events():
