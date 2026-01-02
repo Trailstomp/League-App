@@ -199,6 +199,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <RoleManager users={users} setUsers={setUsers} />;
             case 'communications':
                 return <CommunicationHub />;
+            case 'sms':
+                return <SMSSettings />;
             case 'youtube':
                 return <YouTubeSettings onSave={() => console.log('YouTube settings saved')} />;
             case 'fees':
