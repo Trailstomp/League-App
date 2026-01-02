@@ -22,12 +22,19 @@ const EventsList = ({
     const [notifyMenuOpen, setNotifyMenuOpen] = useState(null);
     const [groupmeChannels, setGroupmeChannels] = useState([]);
     const [showGroupmeModal, setShowGroupmeModal] = useState(null);
+    const [showSmsModal, setShowSmsModal] = useState(null);
+    const [smsConfig, setSmsConfig] = useState(null);
     const [groupmeForm, setGroupmeForm] = useState({
         channel_ids: [],
         notification_type: 'event_announcement',
         include_image: true,
         include_calendar_link: true,
         include_rsvp: true
+    });
+    const [smsForm, setSmsForm] = useState({
+        notification_type: 'event_reminder',
+        target_users: 'all', // all, going, maybe
+        custom_message: ''
     });
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
@@ -72,6 +79,60 @@ const EventsList = ({
         } finally {
             setSendingNotifications(prev => ({ ...prev, [eventId]: false }));
             setNotifyMenuOpen(null);
+        }
+    };
+
+    // Load SMS configuration
+    const loadSmsConfig = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/api/sms-config`);
+            if (response.ok) {
+                const data = await response.json();
+                setSmsConfig(data);
+            }
+        } catch (err) {
+            console.error('Error loading SMS config:', err);
+        }
+    };
+
+    // Open SMS notification modal
+    const openSmsModal = async (event) => {
+        console.log('📱 Opening SMS modal for event:', event.title);
+        setNotifyMenuOpen(null);
+        setSmsForm({
+            notification_type: 'event_reminder',
+            target_users: 'all',
+            custom_message: ''
+        });
+        setShowSmsModal(event);
+        await loadSmsConfig();
+    };
+
+    // Send SMS notification
+    const handleSendSmsNotification = async () => {
+        if (!showSmsModal) return;
+        
+        try {
+            setSendingNotifications(prev => ({ ...prev, [showSmsModal.id]: true }));
+            
+            const response = await fetch(`${backendUrl}/api/events/${showSmsModal.id}/send-sms-notifications`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(smsForm)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                alert(`✅ SMS sent to ${result.sent_count} recipients!${result.failed_count > 0 ? ` (${result.failed_count} failed)` : ''}`);
+                setShowSmsModal(null);
+            } else {
+                const error = await response.json();
+                alert(`❌ Failed to send: ${error.detail}`);
+            }
+        } catch (error) {
+            alert('❌ Error sending SMS notifications');
+        } finally {
+            setSendingNotifications(prev => ({ ...prev, [showSmsModal.id]: false }));
         }
     };
 
