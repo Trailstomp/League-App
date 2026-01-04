@@ -205,7 +205,7 @@ const UserManager = ({ teams = [] }) => {
         name: '',
         email: '',
         password: '',
-        role: 'player',
+        roles: ['player'],
         phone: '',
         jerseySize: '',
         emergencyContact: '',
@@ -241,7 +241,7 @@ const UserManager = ({ teams = [] }) => {
                 return;
             }
 
-            // Build user data with team assignments
+            // Build user data with team assignments and roles
             const userData = {
                 ...newUser,
                 // Set primary team for legacy compatibility
