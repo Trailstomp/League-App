@@ -351,13 +351,15 @@ async def get_dashboard_data():
         teams_task = db.teams.find().to_list(None)  # Get teams from new collection
         galleries_task = get_active_galleries_internal()
         youtube_task = db.youtube_integration.find_one({"id": "main_youtube"})
+        unified_events_task = db.unified_events.find({}, {"_id": 0}).to_list(None)  # Get unified events
         
         # Execute all queries in parallel
-        league_data, teams_from_collection, galleries_data, youtube_config = await asyncio.gather(
+        league_data, teams_from_collection, galleries_data, youtube_config, unified_events = await asyncio.gather(
             league_data_task,
             teams_task,
             galleries_task,
             youtube_task,
+            unified_events_task,
             return_exceptions=True
         )
         
@@ -381,6 +383,23 @@ async def get_dashboard_data():
                 "websiteStyle": {},
                 "lastUpdated": datetime.utcnow().isoformat()
             }
+        
+        # Process unified events - merge with leagueSchedule
+        if isinstance(unified_events, Exception):
+            logger.error(f"Error fetching unified events: {unified_events}")
+            unified_events = []
+        
+        # Merge unified_events into leagueSchedule (deduplicate by ID)
+        existing_ids = set(e.get('id') for e in league_data.get('leagueSchedule', []))
+        merged_events = list(league_data.get('leagueSchedule', []))
+        
+        for event in (unified_events or []):
+            if event.get('id') and event['id'] not in existing_ids:
+                merged_events.append(event)
+                existing_ids.add(event['id'])
+        
+        league_data['leagueSchedule'] = merged_events
+        logger.info(f"✅ Merged events: {len(merged_events)} total ({len(unified_events or [])} from unified_events)")
             
         # Process teams from new collection (prioritize over league_data teams)
         if isinstance(teams_from_collection, Exception):
