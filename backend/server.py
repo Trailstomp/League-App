@@ -8468,10 +8468,19 @@ async def create_user_admin(user_data: Dict[str, Any]):
         # Hash password
         password_hash = hashlib.sha256(user_data["password"].encode()).hexdigest()
         
-        # Get team name
+        # Get team name - support both legacy teamId and new teamAssignments
         team_name = None
-        if user_data.get("teamId"):
-            team = await db.teams.find_one({"id": user_data["teamId"]}, {"_id": 0})
+        team_id = user_data.get("teamId")
+        team_assignments = user_data.get("teamAssignments", [])
+        
+        # If teamAssignments provided, extract primary team info
+        if team_assignments:
+            primary = next((a for a in team_assignments if a.get("isPrimary")), team_assignments[0] if team_assignments else None)
+            if primary:
+                team_id = primary.get("teamId")
+        
+        if team_id:
+            team = await db.teams.find_one({"id": team_id}, {"_id": 0})
             team_name = team.get("name") if team else None
         
         user = {
@@ -8480,10 +8489,15 @@ async def create_user_admin(user_data: Dict[str, Any]):
             "email": user_data["email"],
             "password": password_hash,
             "role": user_data.get("role", "player"),
-            "teamId": user_data.get("teamId"),
+            "teamId": team_id,
             "teamName": team_name,
+            "teamAssignments": team_assignments,
             "status": "active",
             "phone": user_data.get("phone", ""),
+            "playerNumber": user_data.get("playerNumber", ""),
+            "position": user_data.get("position", ""),
+            "jerseySize": user_data.get("jerseySize", ""),
+            "emergencyContact": user_data.get("emergencyContact", ""),
             "notificationPreferences": user_data.get("notificationPreferences", {
                 "email": True,
                 "sms": False,
