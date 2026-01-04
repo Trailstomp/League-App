@@ -8574,6 +8574,230 @@ async def create_user_admin(user_data: Dict[str, Any]):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
+# ============================================================================
+# TEAM COACHES API
+# ============================================================================
+
+@api_router.get("/teams/{team_id}/coaches")
+async def get_team_coaches(team_id: str):
+    """Get all coaches for a specific team"""
+    try:
+        # Find users who are coaches for this team
+        # Check both teamAssignments and legacy teamId field
+        coaches = await db.users.find({
+            "$or": [
+                # New format: check teamAssignments array
+                {"teamAssignments.teamId": team_id, "roles": "coach"},
+                # Legacy format: check teamId field
+                {"teamId": team_id, "roles": "coach"},
+                {"teamId": team_id, "role": "coach"},
+            ]
+        }, {"_id": 0, "password": 0}).to_list(None)
+        
+        logger.info(f"📋 Found {len(coaches)} coaches for team {team_id}")
+        
+        return {"coaches": coaches, "team_id": team_id}
+        
+    except Exception as e:
+        logger.error(f"Error getting team coaches: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/coaches")
+async def get_all_coaches():
+    """Get all coaches in the system"""
+    try:
+        coaches = await db.users.find({
+            "$or": [
+                {"roles": "coach"},
+                {"role": "coach"}
+            ]
+        }, {"_id": 0, "password": 0}).to_list(None)
+        
+        # Group coaches by team
+        coaches_by_team = {}
+        for coach in coaches:
+            # Check teamAssignments first
+            team_assignments = coach.get("teamAssignments", [])
+            if team_assignments:
+                for assignment in team_assignments:
+                    team_id = assignment.get("teamId")
+                    if team_id:
+                        if team_id not in coaches_by_team:
+                            coaches_by_team[team_id] = []
+                        coaches_by_team[team_id].append(coach)
+            # Fall back to legacy teamId
+            elif coach.get("teamId"):
+                team_id = coach["teamId"]
+                if team_id not in coaches_by_team:
+                    coaches_by_team[team_id] = []
+                coaches_by_team[team_id].append(coach)
+        
+        logger.info(f"📋 Found {len(coaches)} total coaches across {len(coaches_by_team)} teams")
+        
+        return {
+            "coaches": coaches,
+            "coaches_by_team": coaches_by_team,
+            "total_coaches": len(coaches)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting coaches: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/events/{event_id}/notify-coaches")
+async def notify_event_coaches(event_id: str, notification: dict):
+    """Send notifications to coaches of teams participating in an event"""
+    try:
+        # Get the event
+        event = await db.unified_events.find_one({"id": event_id})
+        if not event:
+            # Try legacy events
+            league_data = await db.league_data.find_one({"id": "main_league"})
+            if league_data:
+                event = next((e for e in league_data.get("leagueSchedule", []) if e.get("id") == event_id), None)
+        
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        # Get teams from event
+        team_ids = event.get("teams", [])
+        if event.get("homeTeam"):
+            team_ids.append(event["homeTeam"])
+        if event.get("awayTeam"):
+            team_ids.append(event["awayTeam"])
+        
+        # Handle team objects vs strings
+        team_ids = [t if isinstance(t, str) else t.get("id") for t in team_ids]
+        team_ids = list(set(filter(None, team_ids)))  # Unique, non-null
+        
+        if not team_ids:
+            return {"success": False, "message": "No teams assigned to this event"}
+        
+        # Get coaches for these teams
+        coaches = await db.users.find({
+            "$or": [
+                {"teamAssignments.teamId": {"$in": team_ids}, "roles": "coach"},
+                {"teamId": {"$in": team_ids}, "roles": "coach"},
+                {"teamId": {"$in": team_ids}, "role": "coach"},
+            ]
+        }, {"_id": 0, "password": 0}).to_list(None)
+        
+        if not coaches:
+            return {"success": False, "message": "No coaches found for the event teams"}
+        
+        # Prepare notification data
+        message = notification.get("message", f"Event notification for: {event.get('title', 'Upcoming Event')}")
+        subject = notification.get("subject", f"Event Update: {event.get('title', 'League Event')}")
+        include_rsvp = notification.get("include_rsvp", True)
+        
+        results = {
+            "email_sent": 0,
+            "sms_sent": 0,
+            "failed": 0,
+            "coaches_notified": []
+        }
+        
+        # Send notifications based on coach preferences
+        for coach in coaches:
+            coach_name = f"{coach.get('firstName', '')} {coach.get('lastName', '')}".strip() or coach.get('email', 'Unknown')
+            prefs = coach.get("notificationPreferences", {"email": True})
+            
+            # Email notification
+            if prefs.get("email", True) and coach.get("email"):
+                try:
+                    # Get SMTP config
+                    league_data = await db.league_data.find_one({"id": "main_league"})
+                    smtp_config = league_data.get("smtpConfig") if league_data else None
+                    
+                    if smtp_config and smtp_config.get("email"):
+                        import smtplib
+                        from email.mime.text import MIMEText
+                        from email.mime.multipart import MIMEMultipart
+                        
+                        msg = MIMEMultipart()
+                        msg['From'] = f"{smtp_config.get('sender_name', 'League')} <{smtp_config['email']}>"
+                        msg['To'] = coach['email']
+                        msg['Subject'] = subject
+                        
+                        # Build email body
+                        body = f"""
+Hi {coach.get('firstName', 'Coach')},
+
+{message}
+
+Event Details:
+- Title: {event.get('title', 'N/A')}
+- Date: {event.get('date', 'TBD')}
+- Time: {event.get('time', 'TBD')}
+- Location: {event.get('location', 'TBD')}
+"""
+                        if include_rsvp:
+                            rsvp_url = f"{notification.get('base_url', '')}/rsvp/{event_id}"
+                            body += f"\nRSVP Link: {rsvp_url}\n"
+                        
+                        msg.attach(MIMEText(body, 'plain'))
+                        
+                        with smtplib.SMTP(smtp_config['host'], smtp_config.get('port', 587)) as server:
+                            server.starttls()
+                            server.login(smtp_config['email'], smtp_config['password'])
+                            server.send_message(msg)
+                        
+                        results["email_sent"] += 1
+                        results["coaches_notified"].append({
+                            "name": coach_name,
+                            "email": coach['email'],
+                            "method": "email"
+                        })
+                except Exception as e:
+                    logger.error(f"Failed to send email to {coach.get('email')}: {e}")
+                    results["failed"] += 1
+            
+            # SMS notification (if Twilio configured and coach has phone)
+            if prefs.get("sms", False) and coach.get("phone"):
+                try:
+                    sms_config = await db.sms_configs.find_one({})
+                    if sms_config:
+                        from twilio.rest import Client
+                        client = Client(sms_config['account_sid'], sms_config['auth_token'])
+                        
+                        sms_body = f"{subject}\n\n{message[:100]}..."
+                        if include_rsvp:
+                            sms_body += f"\nRSVP: {notification.get('base_url', '')}/rsvp/{event_id}"
+                        
+                        client.messages.create(
+                            body=sms_body[:160],  # SMS character limit
+                            from_=sms_config['phone_number'],
+                            to=coach['phone']
+                        )
+                        
+                        results["sms_sent"] += 1
+                        results["coaches_notified"].append({
+                            "name": coach_name,
+                            "phone": coach['phone'],
+                            "method": "sms"
+                        })
+                except Exception as e:
+                    logger.error(f"Failed to send SMS to {coach.get('phone')}: {e}")
+                    results["failed"] += 1
+        
+        logger.info(f"📧 Coach notifications sent for event {event_id}: {results}")
+        
+        return {
+            "success": True,
+            "event_id": event_id,
+            "event_title": event.get("title"),
+            "team_ids": team_ids,
+            "results": results
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error notifying coaches: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============================================================================
 # SMTP EMAIL CONFIGURATION
 # ============================================================================
