@@ -351,9 +351,9 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
             // Generate event ID
             const eventId = editingEvent?.id || `${formData.type}_${Date.now()}`;
             
-            // Generate bracket for tournament events with enough teams
+            // Generate bracket for tournament events with at least 2 teams
             let bracket = null;
-            if (formData.type === 'tournament' && formData.teams.length >= 4) {
+            if (formData.type === 'tournament' && formData.teams.length >= 2) {
                 bracket = generateTournamentBracket(formData.teams, formData.tournament_config);
             }
 
