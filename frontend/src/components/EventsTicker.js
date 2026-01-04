@@ -234,52 +234,142 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         );
     }
 
-    // Render individual event item
+    // Render individual event item - New design with status at top, teams stacked, score on right
     const renderEventItem = (event, index) => {
         const typeStyle = getEventTypeStyle(event.type);
-        const hasTeams = event.teams && event.teams.length >= 2;
+        const statusStyle = getStatusStyle(event.status);
         
+        // Check if this is a game with teams
+        const hasTeams = (event.teams && event.teams.length >= 2) || (event.homeTeam && event.awayTeam);
+        const homeTeamId = event.homeTeam || (event.teams && event.teams[0]);
+        const awayTeamId = event.awayTeam || (event.teams && event.teams[1]);
+        
+        // Get scores
+        const homeScore = event.scores?.home ?? event.homeScore ?? null;
+        const awayScore = event.scores?.away ?? event.awayScore ?? null;
+        const hasScores = homeScore !== null || awayScore !== null;
+        
+        // Determine if this is a game-type event
+        const isGame = event.type === 'game' || event.type === 'regular_game' || hasTeams;
+        
+        // Game card layout (teams stacked with score)
+        if (isGame && hasTeams) {
+            return (
+                <div 
+                    key={`${event.id}-${index}`}
+                    className="flex flex-col bg-slate-800/50 rounded-lg cursor-pointer hover:bg-slate-700/50 transition-colors flex-shrink-0 overflow-hidden"
+                    onClick={() => onEventClick && onEventClick(event)}
+                    style={{ minWidth: '200px', maxWidth: '240px' }}
+                >
+                    {/* Status bar at top */}
+                    <div className={`px-3 py-1 flex items-center justify-between ${statusStyle.bg} ${statusStyle.text}`}>
+                        <span className={`text-xs font-bold ${statusStyle.pulse ? 'animate-pulse' : ''}`}>
+                            {statusStyle.label}
+                        </span>
+                        <span className="text-xs opacity-80">
+                            {formatEventDate(event.date)}
+                        </span>
+                    </div>
+                    
+                    {/* Teams and score section */}
+                    <div className="px-3 py-2 flex items-center justify-between">
+                        {/* Teams stacked vertically */}
+                        <div className="flex flex-col space-y-1 flex-1 min-w-0">
+                            {/* Home/Away Team 1 */}
+                            <div className="flex items-center space-x-2">
+                                {getTeamLogo(homeTeamId) ? (
+                                    <img 
+                                        src={getTeamLogo(homeTeamId)}
+                                        alt={getTeamName(homeTeamId)}
+                                        className="w-5 h-5 rounded-full object-cover border border-slate-600 flex-shrink-0"
+                                        onError={(e) => { e.target.style.display = 'none'; }}
+                                    />
+                                ) : (
+                                    <div className="w-5 h-5 rounded-full bg-slate-600 flex items-center justify-center text-xs text-white flex-shrink-0">
+                                        {getTeamName(homeTeamId)?.charAt(0) || '?'}
+                                    </div>
+                                )}
+                                <span className="text-white text-sm truncate">
+                                    {getTeamName(homeTeamId)}
+                                </span>
+                            </div>
+                            
+                            {/* Away Team 2 */}
+                            <div className="flex items-center space-x-2">
+                                {getTeamLogo(awayTeamId) ? (
+                                    <img 
+                                        src={getTeamLogo(awayTeamId)}
+                                        alt={getTeamName(awayTeamId)}
+                                        className="w-5 h-5 rounded-full object-cover border border-slate-600 flex-shrink-0"
+                                        onError={(e) => { e.target.style.display = 'none'; }}
+                                    />
+                                ) : (
+                                    <div className="w-5 h-5 rounded-full bg-slate-600 flex items-center justify-center text-xs text-white flex-shrink-0">
+                                        {getTeamName(awayTeamId)?.charAt(0) || '?'}
+                                    </div>
+                                )}
+                                <span className="text-white text-sm truncate">
+                                    {getTeamName(awayTeamId)}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        {/* Score on the right */}
+                        {hasScores && (
+                            <div className="flex flex-col items-center ml-3 flex-shrink-0">
+                                <span className="text-white font-bold text-lg leading-tight">
+                                    {homeScore ?? '-'}
+                                </span>
+                                <span className="text-white font-bold text-lg leading-tight">
+                                    {awayScore ?? '-'}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                    
+                    {/* Venue/Time footer */}
+                    <div className="px-3 pb-2 flex items-center text-slate-400 text-xs">
+                        <span className="truncate">
+                            {event.time && `${event.time} • `}
+                            {getVenueName(event)}
+                        </span>
+                    </div>
+                </div>
+            );
+        }
+        
+        // Non-game event card (tournaments, practices, etc.)
         return (
             <div 
                 key={`${event.id}-${index}`}
-                className="flex items-center space-x-3 px-4 py-2 bg-slate-800/50 rounded-lg cursor-pointer hover:bg-slate-700/50 transition-colors flex-shrink-0"
+                className="flex flex-col bg-slate-800/50 rounded-lg cursor-pointer hover:bg-slate-700/50 transition-colors flex-shrink-0 overflow-hidden"
                 onClick={() => onEventClick && onEventClick(event)}
-                style={{ minWidth: '280px' }}
+                style={{ minWidth: '200px', maxWidth: '260px' }}
             >
-                {/* Event Type Badge */}
-                <span className={`px-2 py-0.5 rounded text-xs font-bold ${typeStyle.bg} ${typeStyle.text}`}>
-                    {typeStyle.label}
-                </span>
-                
-                {/* Event Info */}
-                <div className="flex flex-col">
-                    <span className="text-white font-medium text-sm truncate max-w-[180px]">
-                        {event.title || 'Untitled Event'}
+                {/* Type badge at top */}
+                <div className={`px-3 py-1 flex items-center justify-between ${typeStyle.bg}`}>
+                    <span className={`text-xs font-bold ${typeStyle.text}`}>
+                        {typeStyle.label}
                     </span>
-                    <span className="text-slate-400 text-xs">
+                    <span className={`text-xs ${typeStyle.text} opacity-80`}>
                         {formatEventDate(event.date)}
-                        {event.time && ` • ${event.time}`}
-                        {event.location && ` • ${event.location}`}
                     </span>
                 </div>
-
-                {/* Team logos for games */}
-                {hasTeams && (
-                    <div className="flex items-center space-x-1 ml-2">
-                        {event.teams.slice(0, 2).map((teamId, idx) => {
-                            const logo = getTeamLogo(teamId);
-                            return logo ? (
-                                <img 
-                                    key={teamId}
-                                    src={logo}
-                                    alt={getTeamName(teamId)}
-                                    className="w-6 h-6 rounded-full object-cover border border-slate-600"
-                                    onError={(e) => { e.target.style.display = 'none'; }}
-                                />
-                            ) : null;
-                        })}
-                    </div>
-                )}
+                
+                {/* Event content */}
+                <div className="px-3 py-2">
+                    <span className="text-white font-medium text-sm line-clamp-2">
+                        {event.title || 'Untitled Event'}
+                    </span>
+                </div>
+                
+                {/* Venue/Time footer */}
+                <div className="px-3 pb-2 flex items-center text-slate-400 text-xs">
+                    <span className="truncate">
+                        {event.time && `${event.time} • `}
+                        {getVenueName(event)}
+                    </span>
+                </div>
             </div>
         );
     };
