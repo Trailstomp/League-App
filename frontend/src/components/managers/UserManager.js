@@ -520,14 +520,12 @@ const UserManager = ({ teams = [] }) => {
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 flex-wrap">
                                             <span className="font-medium text-gray-900">{user.name}</span>
-                                            <span className={`px-2 py-0.5 rounded-full text-xs ${
-                                                user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
-                                                user.role === 'coach' ? 'bg-blue-100 text-blue-800' :
-                                                user.role === 'player' ? 'bg-green-100 text-green-800' :
-                                                'bg-gray-100 text-gray-800'
-                                            }`}>
-                                                {user.role}
-                                            </span>
+                                            {/* Display multiple roles */}
+                                            {(user.roles?.length > 0 ? user.roles : [user.role]).map((role, idx) => (
+                                                <span key={idx} className={`px-2 py-0.5 rounded-full text-xs ${getRoleBadgeColor(role)}`}>
+                                                    {role}
+                                                </span>
+                                            ))}
                                             <span className={`px-2 py-0.5 rounded-full text-xs ${
                                                 user.status === 'active' ? 'bg-green-100 text-green-800' :
                                                 user.status === 'pending' ? 'bg-orange-100 text-orange-800' :
