@@ -202,6 +202,21 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         return styles[type] || styles['other'];
     };
 
+    // Get event status label and color
+    const getStatusStyle = (status) => {
+        const styles = {
+            'live': { label: 'LIVE', bg: 'bg-red-600', text: 'text-white', pulse: true },
+            'in_progress': { label: 'LIVE', bg: 'bg-red-600', text: 'text-white', pulse: true },
+            'final': { label: 'FINAL', bg: 'bg-slate-600', text: 'text-white' },
+            'completed': { label: 'FINAL', bg: 'bg-slate-600', text: 'text-white' },
+            'postponed': { label: 'POSTPONED', bg: 'bg-orange-600', text: 'text-white' },
+            'cancelled': { label: 'CANCELLED', bg: 'bg-red-800', text: 'text-white' },
+            'scheduled': { label: 'UPCOMING', bg: 'bg-blue-600', text: 'text-white' },
+            'upcoming': { label: 'UPCOMING', bg: 'bg-blue-600', text: 'text-white' }
+        };
+        return styles[status?.toLowerCase()] || styles['scheduled'];
+    };
+
     // Don't render if no events
     if (tickerEvents.length === 0) {
         return (
