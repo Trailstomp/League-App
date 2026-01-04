@@ -379,7 +379,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
             className="w-full py-2 overflow-hidden relative"
             style={{ 
                 backgroundColor: websiteStyle?.tickerColor || '#1e293b',
-                minHeight: '60px'
+                minHeight: '90px'
             }}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
@@ -397,7 +397,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
             
             <div 
                 ref={tickerRef}
-                className="flex items-center space-x-4 overflow-x-hidden"
+                className="flex items-stretch space-x-4 overflow-x-hidden"
                 style={{ 
                     whiteSpace: 'nowrap',
                     paddingLeft: '1rem',
