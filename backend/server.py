@@ -79,19 +79,28 @@ class StatusCheckCreate(BaseModel):
     client_name: str
 
 # User Models
+class TeamAssignment(BaseModel):
+    teamId: str
+    teamName: Optional[str] = None
+    playerNumber: Optional[str] = None
+    position: Optional[str] = None
+    isPrimary: bool = False  # Designates the primary team
+
 class User(BaseModel):
     id: Optional[str] = None
     name: str
     email: str
     password: str  # Will be hashed
     role: str = "guest"  # guest, player, coach, admin
-    teamId: Optional[str] = None
-    teamName: Optional[str] = None
+    teamId: Optional[str] = None  # Legacy - primary team
+    teamName: Optional[str] = None  # Legacy - primary team name
+    # Multi-team support
+    teamAssignments: List[TeamAssignment] = []
     status: str = "guest"  # guest, pending, active, inactive, archived
     requestedRole: Optional[str] = None
     requestedTeam: Optional[str] = None
     phone: Optional[str] = None
-    # Player-specific attributes
+    # Player-specific attributes (legacy - use teamAssignments for multi-team)
     playerNumber: Optional[str] = None
     position: Optional[str] = None
     jerseySize: Optional[str] = None
