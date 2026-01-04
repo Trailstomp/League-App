@@ -17,6 +17,7 @@ const TeamCoachNotifier = ({ teams = [], events = [] }) => {
 
     useEffect(() => {
         loadCoaches();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const loadCoaches = async () => {
