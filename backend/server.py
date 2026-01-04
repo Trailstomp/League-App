@@ -8408,8 +8408,20 @@ async def update_user(user_id: str, updates: UserUpdate):
             if value is not None:
                 update_data[field] = value
         
-        # Get team name if team is being updated
-        if "teamId" in update_data and update_data["teamId"]:
+        # Handle teamAssignments - sync with legacy teamId field
+        if "teamAssignments" in update_data and update_data["teamAssignments"]:
+            assignments = update_data["teamAssignments"]
+            # Find primary team or use first assignment
+            primary = next((a for a in assignments if a.get("isPrimary")), assignments[0] if assignments else None)
+            if primary:
+                update_data["teamId"] = primary.get("teamId")
+                update_data["playerNumber"] = primary.get("playerNumber")
+                update_data["position"] = primary.get("position")
+                # Get team name
+                team = await db.teams.find_one({"id": primary.get("teamId")}, {"_id": 0})
+                update_data["teamName"] = team.get("name") if team else None
+        # Get team name if legacy teamId is being updated
+        elif "teamId" in update_data and update_data["teamId"]:
             team = await db.teams.find_one({"id": update_data["teamId"]}, {"_id": 0})
             update_data["teamName"] = team.get("name") if team else None
         
