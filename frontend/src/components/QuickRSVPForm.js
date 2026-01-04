@@ -162,8 +162,17 @@ const QuickRSVPForm = () => {
             <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
                 <div className="text-center max-w-md">
                     <div className="text-6xl mb-4">😕</div>
-                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Oops!</h1>
-                    <p className="text-gray-600">{error}</p>
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Event Not Found</h1>
+                    <p className="text-gray-600 mb-4">{error}</p>
+                    <p className="text-sm text-gray-500 mb-6">
+                        This event may have been deleted or the link may be outdated.
+                    </p>
+                    <a 
+                        href="/"
+                        className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        Go to Home Page
+                    </a>
                 </div>
             </div>
         );
