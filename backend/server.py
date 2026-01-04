@@ -8493,12 +8493,23 @@ async def create_user_admin(user_data: Dict[str, Any]):
             team = await db.teams.find_one({"id": team_id}, {"_id": 0})
             team_name = team.get("name") if team else None
         
+        # Handle multi-roles
+        roles = user_data.get("roles", [])
+        primary_role = user_data.get("role", "player")
+        if roles:
+            # Set primary role for legacy compatibility (use highest privilege)
+            role_priority = {"admin": 4, "coach": 3, "player": 2, "guest": 1}
+            primary_role = max(roles, key=lambda r: role_priority.get(r, 0))
+        elif primary_role:
+            roles = [primary_role]
+        
         user = {
             "id": str(uuid.uuid4()),
             "name": user_data["name"],
             "email": user_data["email"],
             "password": password_hash,
-            "role": user_data.get("role", "player"),
+            "role": primary_role,
+            "roles": roles,
             "teamId": team_id,
             "teamName": team_name,
             "teamAssignments": team_assignments,
