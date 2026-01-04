@@ -230,6 +230,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <UserManager users={users} setUsers={setUsers} teams={teams} />;
             case 'roles':
                 return <RoleManager users={users} setUsers={setUsers} />;
+            case 'coach-notify':
+                return <TeamCoachNotifier teams={teams} events={events} />;
             case 'communications':
                 return <CommunicationHub />;
             case 'sms':
