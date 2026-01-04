@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import EventRSVPDashboard from '../EventRSVPDashboard';
 
 const EventsList = ({ 
@@ -16,6 +16,7 @@ const EventsList = ({
 }) => {
     const [filter, setFilter] = useState('active'); // active (excludes canceled/archived), all, scheduled, in_progress, completed, canceled, archived
     const [sortBy, setSortBy] = useState('date'); // date, title, type
+    const [timeFilter, setTimeFilter] = useState('upcoming'); // upcoming, past
     const [sendingNotifications, setSendingNotifications] = useState({});
     const [viewingRSVPs, setViewingRSVPs] = useState(null);
     const [changingStatus, setChangingStatus] = useState(null);
@@ -38,6 +39,74 @@ const EventsList = ({
     });
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+
+    // Get today's date at midnight for comparison
+    const today = useMemo(() => {
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+        return d;
+    }, []);
+
+    // Split events into upcoming and past
+    const { upcomingEvents, pastEvents, upcomingCount, pastCount } = useMemo(() => {
+        // First filter by status
+        const statusFiltered = events.filter(event => {
+            if (filter === 'active') {
+                return event.status !== 'canceled' && 
+                       event.status !== 'cancelled' && 
+                       event.status !== 'archived';
+            }
+            if (filter === 'all') return true;
+            return event.status === filter;
+        });
+
+        const upcoming = [];
+        const past = [];
+        
+        statusFiltered.forEach(event => {
+            const eventDate = new Date(event.start_datetime || event.date || '2099-12-31');
+            eventDate.setHours(0, 0, 0, 0);
+            
+            if (eventDate >= today) {
+                upcoming.push(event);
+            } else {
+                past.push(event);
+            }
+        });
+        
+        // Sort upcoming by date ascending (soonest first)
+        upcoming.sort((a, b) => {
+            const dateA = new Date(a.start_datetime || a.date || '2099-12-31');
+            const dateB = new Date(b.start_datetime || b.date || '2099-12-31');
+            return dateA - dateB;
+        });
+        
+        // Sort past by date descending (most recent first)
+        past.sort((a, b) => {
+            const dateA = new Date(a.start_datetime || a.date || '1970-01-01');
+            const dateB = new Date(b.start_datetime || b.date || '1970-01-01');
+            return dateB - dateA;
+        });
+        
+        return { 
+            upcomingEvents: upcoming, 
+            pastEvents: past,
+            upcomingCount: upcoming.length,
+            pastCount: past.length
+        };
+    }, [events, filter, today]);
+
+    // Get displayed events based on time filter
+    const displayedEvents = useMemo(() => {
+        const eventsToShow = timeFilter === 'upcoming' ? upcomingEvents : pastEvents;
+        
+        // Apply secondary sort
+        return eventsToShow.sort((a, b) => {
+            if (sortBy === 'title') return a.title.localeCompare(b.title);
+            if (sortBy === 'type') return (a.type || '').localeCompare(b.type || '');
+            return 0; // Keep date sort from above
+        });
+    }, [timeFilter, upcomingEvents, pastEvents, sortBy]);
 
     const handleStatusChange = async (eventId, newStatus) => {
         try {
