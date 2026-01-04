@@ -263,6 +263,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
     useEffect(() => {
         const groupIdx = adminTabGroups.findIndex(g => g.tabs.some(t => t.id === activeTab));
         if (groupIdx >= 0) setActiveGroupIndex(groupIdx);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab]);
 
     return (
