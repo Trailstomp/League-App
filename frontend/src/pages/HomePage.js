@@ -128,21 +128,117 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
                 </div>
             </div>
 
-            {/* Teams by Division */}
-            <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm p-6">
-                <h2 className="text-xl font-semibold text-slate-800 mb-6">League Teams</h2>
-                {teams.length > 0 ? (
-                    <div className="space-y-8">
-                        {/* Group teams by division */}
-                        {['Field', 'Box'].map(division => {
-                            const divisionTeams = teams
-                                .filter(team => team.division === division)
-                                .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
-                            if (divisionTeams.length === 0) return null;
-                            
-                            return (
-                                <div key={division} className="space-y-4">
-                                    <h3 className="text-lg font-medium text-slate-700 border-b border-slate-200 pb-2">
+            {/* Main Content Tabs */}
+            <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm">
+                {/* Tab Navigation */}
+                <div className="border-b border-slate-200">
+                    <div className="flex">
+                        <button
+                            onClick={() => setActiveTab('teams')}
+                            className={`px-6 py-3 text-sm font-medium transition-colors ${
+                                activeTab === 'teams' 
+                                    ? 'border-b-2 border-blue-500 text-blue-600 bg-blue-50/50' 
+                                    : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
+                            }`}
+                        >
+                            🏆 Teams ({teams.length})
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('media')}
+                            className={`px-6 py-3 text-sm font-medium transition-colors ${
+                                activeTab === 'media' 
+                                    ? 'border-b-2 border-blue-500 text-blue-600 bg-blue-50/50' 
+                                    : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
+                            }`}
+                        >
+                            📸 Media & Videos
+                        </button>
+                    </div>
+                </div>
+
+                {/* Teams Tab Content */}
+                {activeTab === 'teams' && (
+                    <div className="p-6">
+                        {/* Team Division Filter Tabs */}
+                        <div className="flex flex-wrap gap-2 mb-6">
+                            <button
+                                onClick={() => setActiveTeamTab('all')}
+                                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                                    activeTeamTab === 'all'
+                                        ? 'bg-slate-800 text-white'
+                                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                }`}
+                            >
+                                All Teams ({teamsByDivision.all.length})
+                            </button>
+                            {teamsByDivision.field.length > 0 && (
+                                <button
+                                    onClick={() => setActiveTeamTab('field')}
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                                        activeTeamTab === 'field'
+                                            ? 'bg-green-600 text-white'
+                                            : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                    }`}
+                                >
+                                    🌿 Field ({teamsByDivision.field.length})
+                                </button>
+                            )}
+                            {teamsByDivision.box.length > 0 && (
+                                <button
+                                    onClick={() => setActiveTeamTab('box')}
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                                        activeTeamTab === 'box'
+                                            ? 'bg-orange-600 text-white'
+                                            : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                                    }`}
+                                >
+                                    📦 Box ({teamsByDivision.box.length})
+                                </button>
+                            )}
+                            {teamsByDivision.other.length > 0 && (
+                                <button
+                                    onClick={() => setActiveTeamTab('other')}
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                                        activeTeamTab === 'other'
+                                            ? 'bg-purple-600 text-white'
+                                            : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                                    }`}
+                                >
+                                    ⭐ Other ({teamsByDivision.other.length})
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Teams Grid */}
+                        {displayTeams.length > 0 ? (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                                {displayTeams.map(team => (
+                                    <TeamCard key={team.id} team={team} onNavigate={onNavigate} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8 text-slate-500">
+                                <LacrosseIcon name="teams" style={{fontSize: '48px'}} className="mx-auto mb-4 opacity-50" />
+                                <p>No teams in this category.</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Media Tab Content */}
+                {activeTab === 'media' && (
+                    <div className="p-6 space-y-8">
+                        {/* League Media Gallery */}
+                        <TeamGalleryDisplay pageType="league" />
+
+                        {/* YouTube Gallery */}
+                        <YouTubeGallery title="League YouTube Videos" />
+                    </div>
+                )}
+            </div>
+
+            {/* League News - Always visible */}
+            <NewsDisplay maxItems={3} showTeamFilter={true} />
                                         {division} Teams ({divisionTeams.length})
                                     </h3>
                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
