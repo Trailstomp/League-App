@@ -388,6 +388,16 @@ const UserManager = ({ teams = [] }) => {
         return colorClass;
     };
 
+    const getRoleBadgeColor = (role) => {
+        const colors = {
+            'admin': 'bg-purple-100 text-purple-800',
+            'coach': 'bg-blue-100 text-blue-800',
+            'player': 'bg-green-100 text-green-800',
+            'guest': 'bg-gray-100 text-gray-800'
+        };
+        return colors[role] || colors['guest'];
+    };
+
     // Filter users by tab
     const filteredUsers = users.filter(user => {
         if (activeTab === 'pending') return user.status === 'pending';
@@ -399,7 +409,7 @@ const UserManager = ({ teams = [] }) => {
     const pendingCount = users.filter(u => u.status === 'pending').length;
     const activeCount = users.filter(u => u.status === 'active').length;
 
-    // Prepare user for editing - migrate legacy single team to teamAssignments
+    // Prepare user for editing - migrate legacy single team/role to new structure
     const prepareUserForEdit = (user) => {
         let teamAssignments = user.teamAssignments || [];
         
@@ -414,9 +424,16 @@ const UserManager = ({ teams = [] }) => {
             }];
         }
 
+        // Migrate legacy single role to roles array
+        let roles = user.roles || [];
+        if (roles.length === 0 && user.role) {
+            roles = [user.role];
+        }
+
         setEditingUser({
             ...user,
-            teamAssignments
+            teamAssignments,
+            roles
         });
     };
 
