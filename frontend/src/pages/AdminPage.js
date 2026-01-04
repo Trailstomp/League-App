@@ -18,6 +18,7 @@ import EventManager from '../components/unified-events/EventManager';
 import CommunicationHub from '../components/managers/CommunicationHub';
 import YouTubeSettings from '../components/managers/YouTubeSettings';
 import SMSSettings from '../components/managers/SMSSettings';
+import TeamCoachNotifier from '../components/managers/TeamCoachNotifier';
 import { FeeManager } from '../components/fees';
 import AdminEventsView from '../components/admin/AdminEventsView';
 
