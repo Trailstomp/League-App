@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
 import GameTicker from '../components/GameTicker';
 import TeamGalleryDisplay from '../components/TeamGalleryDisplay';
@@ -15,12 +15,33 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
     const [showEventModal, setShowEventModal] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [showTeamModal, setShowTeamModal] = useState(false);
+    const [activeTab, setActiveTab] = useState('teams'); // 'teams', 'media'
+    const [activeTeamTab, setActiveTeamTab] = useState('all'); // 'all', 'field', 'box', 'other'
+    
     // Calculate real statistics from current data
     const stats = {
         totalTeams: teams.length,
         activeEvents: events ? events.length : 0, // Show ALL events count
         totalPlayers: teams.reduce((total, team) => total + (team.players?.length || 0), 0)
     };
+
+    // Group teams by division
+    const teamsByDivision = useMemo(() => {
+        const field = teams.filter(t => t.division === 'Field').sort((a, b) => a.name.localeCompare(b.name));
+        const box = teams.filter(t => t.division === 'Box').sort((a, b) => a.name.localeCompare(b.name));
+        const other = teams.filter(t => !t.division || (t.division !== 'Field' && t.division !== 'Box')).sort((a, b) => a.name.localeCompare(b.name));
+        return { field, box, other, all: teams.slice().sort((a, b) => a.name.localeCompare(b.name)) };
+    }, [teams]);
+
+    // Get teams to display based on active tab
+    const displayTeams = useMemo(() => {
+        switch(activeTeamTab) {
+            case 'field': return teamsByDivision.field;
+            case 'box': return teamsByDivision.box;
+            case 'other': return teamsByDivision.other;
+            default: return teamsByDivision.all;
+        }
+    }, [activeTeamTab, teamsByDivision]);
 
     // Handle event click from ticker
     const handleEventClick = (event) => {
