@@ -126,7 +126,8 @@ class UserRegistration(BaseModel):
 class UserUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
-    role: Optional[str] = None
+    role: Optional[str] = None  # Legacy support
+    roles: Optional[List[str]] = None  # Multi-role support
     teamId: Optional[str] = None  # Legacy support
     status: Optional[str] = None
     phone: Optional[str] = None
