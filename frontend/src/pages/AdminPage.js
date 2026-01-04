@@ -306,18 +306,6 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         </div>
     );
 };
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="p-6">
-                    {renderTabContent()}
-                </div>
-            </div>
-        </div>
-    );
-};
 
 // Admin Dashboard Component
 const AdminDashboard = ({ teams, players, users = [] }) => {
