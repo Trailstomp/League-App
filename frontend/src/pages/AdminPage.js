@@ -252,55 +252,68 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         }
     };
 
+    // Find current group for the active tab
+    const currentGroup = adminTabGroups.find(g => g.tabs.some(t => t.id === activeTab));
+    const [activeGroupIndex, setActiveGroupIndex] = useState(0);
+
+    // Update active group when tab changes
+    useEffect(() => {
+        const groupIdx = adminTabGroups.findIndex(g => g.tabs.some(t => t.id === activeTab));
+        if (groupIdx >= 0) setActiveGroupIndex(groupIdx);
+    }, [activeTab]);
+
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             {/* Admin Header */}
-            <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm p-6">
-                <h1 className="text-3xl font-bold text-slate-800 mb-2">Admin Portal</h1>
-                <p className="text-slate-600">Manage your lacrosse league</p>
+            <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm p-4">
+                <h1 className="text-2xl font-bold text-slate-800">Admin Portal</h1>
             </div>
 
-            {/* Admin Layout - Sidebar + Content */}
-            <div className="flex flex-col lg:flex-row gap-6">
-                {/* Sidebar Navigation */}
-                <div className="lg:w-64 flex-shrink-0">
-                    <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm p-4 lg:sticky lg:top-4">
-                        <nav className="space-y-4">
-                            {adminTabGroups.map((group, groupIndex) => (
-                                <div key={groupIndex}>
-                                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-2">
-                                        {group.groupName}
-                                    </h3>
-                                    <div className="space-y-1">
-                                        {group.tabs.map(tab => (
-                                            <button
-                                                key={tab.id}
-                                                onClick={() => setActiveTab(tab.id)}
-                                                className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-left ${
-                                                    activeTab === tab.id
-                                                        ? 'bg-blue-100 text-blue-700'
-                                                        : 'text-slate-600 hover:bg-slate-100'
-                                                }`}
-                                            >
-                                                <span className="mr-2 text-base">{typeof tab.icon === 'string' && tab.icon.length <= 2 ? tab.icon : ''}</span>
-                                                {typeof tab.icon === 'string' && tab.icon.length > 2 && (
-                                                    <LacrosseIcon name={tab.icon} className="mr-2" style={{fontSize: '16px'}} />
-                                                )}
-                                                {tab.label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </nav>
-                    </div>
+            {/* Group Tabs - Top Level Navigation */}
+            <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm">
+                <div className="flex flex-wrap border-b overflow-x-auto">
+                    {adminTabGroups.map((group, groupIndex) => (
+                        <button
+                            key={groupIndex}
+                            onClick={() => {
+                                setActiveGroupIndex(groupIndex);
+                                setActiveTab(group.tabs[0].id); // Select first tab in group
+                            }}
+                            className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
+                                activeGroupIndex === groupIndex
+                                    ? 'border-blue-500 text-blue-600 bg-blue-50/50'
+                                    : 'border-transparent text-slate-600 hover:text-slate-800 hover:bg-slate-50'
+                            }`}
+                        >
+                            {group.groupName}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Sub-tabs within the selected group */}
+                <div className="flex flex-wrap gap-1 p-2 bg-slate-50/50 border-b">
+                    {adminTabGroups[activeGroupIndex]?.tabs.map(tab => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex items-center px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                                activeTab === tab.id
+                                    ? 'bg-blue-600 text-white shadow-sm'
+                                    : 'text-slate-600 hover:bg-white hover:shadow-sm'
+                            }`}
+                        >
+                            <span className="mr-1.5">{typeof tab.icon === 'string' && tab.icon.length <= 2 ? tab.icon : ''}</span>
+                            {typeof tab.icon === 'string' && tab.icon.length > 2 && (
+                                <LacrosseIcon name={tab.icon} className="mr-1.5" style={{fontSize: '14px'}} />
+                            )}
+                            {tab.label}
+                        </button>
+                    ))}
                 </div>
 
                 {/* Main Content */}
-                <div className="flex-1 min-w-0">
-                    <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm p-6">
-                        {renderTabContent()}
-                    </div>
+                <div className="p-6">
+                    {renderTabContent()}
                 </div>
             </div>
         </div>
