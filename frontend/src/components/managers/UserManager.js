@@ -1,6 +1,142 @@
 import React, { useState, useEffect } from 'react';
 import { LacrosseIcon } from '../LacrosseIcons';
 
+// Multi-Team Assignment Component
+const TeamAssignmentEditor = ({ assignments = [], teams = [], onChange }) => {
+    const addAssignment = () => {
+        onChange([...assignments, { teamId: '', playerNumber: '', position: '', isPrimary: assignments.length === 0 }]);
+    };
+
+    const removeAssignment = (index) => {
+        const updated = assignments.filter((_, i) => i !== index);
+        // If we removed the primary, make the first one primary
+        if (updated.length > 0 && !updated.some(a => a.isPrimary)) {
+            updated[0].isPrimary = true;
+        }
+        onChange(updated);
+    };
+
+    const updateAssignment = (index, field, value) => {
+        const updated = [...assignments];
+        updated[index] = { ...updated[index], [field]: value };
+        
+        // If setting this as primary, unset others
+        if (field === 'isPrimary' && value) {
+            updated.forEach((a, i) => {
+                if (i !== index) a.isPrimary = false;
+            });
+        }
+        
+        // Auto-fill team name
+        if (field === 'teamId') {
+            const team = teams.find(t => t.id === value);
+            updated[index].teamName = team?.name || '';
+        }
+        
+        onChange(updated);
+    };
+
+    const getTeamName = (teamId) => {
+        const team = teams.find(t => t.id === teamId);
+        return team?.name || teamId;
+    };
+
+    const positionOptions = [
+        'Attack', 'Midfield', 'Defense', 'Goalie', 'FOGO', 'LSM', 'Coach', 'Assistant Coach'
+    ];
+
+    return (
+        <div className="space-y-3">
+            {assignments.map((assignment, index) => (
+                <div key={index} className="p-3 border rounded-lg bg-gray-50 relative">
+                    {/* Primary badge */}
+                    {assignment.isPrimary && (
+                        <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                            Primary
+                        </span>
+                    )}
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                        {/* Team Selection */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Team</label>
+                            <select
+                                value={assignment.teamId || ''}
+                                onChange={(e) => updateAssignment(index, 'teamId', e.target.value)}
+                                className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
+                            >
+                                <option value="">Select Team</option>
+                                {teams.map(team => (
+                                    <option key={team.id} value={team.id}>
+                                        {team.name} {team.division ? `(${team.division})` : ''}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Jersey Number */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Jersey #</label>
+                            <input
+                                type="text"
+                                value={assignment.playerNumber || ''}
+                                onChange={(e) => updateAssignment(index, 'playerNumber', e.target.value)}
+                                className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
+                                placeholder="12"
+                            />
+                        </div>
+
+                        {/* Position */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Position</label>
+                            <select
+                                value={assignment.position || ''}
+                                onChange={(e) => updateAssignment(index, 'position', e.target.value)}
+                                className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
+                            >
+                                <option value="">Select Position</option>
+                                {positionOptions.map(pos => (
+                                    <option key={pos} value={pos}>{pos}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-end gap-2">
+                            {!assignment.isPrimary && assignments.length > 1 && (
+                                <button
+                                    type="button"
+                                    onClick={() => updateAssignment(index, 'isPrimary', true)}
+                                    className="px-2 py-1.5 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                                    title="Set as primary team"
+                                >
+                                    Set Primary
+                                </button>
+                            )}
+                            <button
+                                type="button"
+                                onClick={() => removeAssignment(index)}
+                                className="px-2 py-1.5 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
+                                title="Remove team"
+                            >
+                                ✕ Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ))}
+
+            <button
+                type="button"
+                onClick={addAssignment}
+                className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors flex items-center justify-center gap-2"
+            >
+                <span className="text-lg">+</span> Add Team Assignment
+            </button>
+        </div>
+    );
+};
+
 const UserManager = ({ teams = [] }) => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -12,12 +148,10 @@ const UserManager = ({ teams = [] }) => {
         email: '',
         password: '',
         role: 'player',
-        teamId: '',
         phone: '',
-        playerNumber: '',
-        position: '',
         jerseySize: '',
-        emergencyContact: ''
+        emergencyContact: '',
+        teamAssignments: []
     });
     const [message, setMessage] = useState('');
 
@@ -49,16 +183,28 @@ const UserManager = ({ teams = [] }) => {
                 return;
             }
 
+            // Build user data with team assignments
+            const userData = {
+                ...newUser,
+                // Set primary team for legacy compatibility
+                teamId: newUser.teamAssignments.find(a => a.isPrimary)?.teamId || newUser.teamAssignments[0]?.teamId || '',
+                playerNumber: newUser.teamAssignments.find(a => a.isPrimary)?.playerNumber || newUser.teamAssignments[0]?.playerNumber || '',
+                position: newUser.teamAssignments.find(a => a.isPrimary)?.position || newUser.teamAssignments[0]?.position || ''
+            };
+
             const response = await fetch(`${backendUrl}/api/users/create`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newUser)
+                body: JSON.stringify(userData)
             });
 
             if (response.ok) {
                 setMessage('✅ User created successfully!');
                 setShowCreateModal(false);
-                setNewUser({ name: '', email: '', password: '', role: 'player', teamId: '', phone: '', playerNumber: '', position: '', jerseySize: '', emergencyContact: '' });
+                setNewUser({
+                    name: '', email: '', password: '', role: 'player', phone: '',
+                    jerseySize: '', emergencyContact: '', teamAssignments: []
+                });
                 await loadUsers();
                 setTimeout(() => setMessage(''), 3000);
             } else {
@@ -78,30 +224,32 @@ const UserManager = ({ teams = [] }) => {
                 body: JSON.stringify({
                     role: user.requestedRole,
                     teamId: user.requestedTeam,
-                    approvedBy: 'admin'
                 })
             });
 
             if (response.ok) {
-                setMessage(`✅ ${user.name} approved as ${user.requestedRole}!`);
+                setMessage(`✅ ${user.name} has been approved!`);
                 await loadUsers();
                 setTimeout(() => setMessage(''), 3000);
+            } else {
+                const error = await response.json();
+                alert(`Failed to approve user: ${error.detail}`);
             }
         } catch (error) {
             alert('Error approving user');
         }
     };
 
-    const handleReject = async (userId) => {
-        if (!window.confirm('Are you sure you want to reject this user?')) return;
-
+    const handleReject = async (user) => {
+        if (!window.confirm(`Are you sure you want to reject ${user.name}'s request?`)) return;
+        
         try {
-            const response = await fetch(`${backendUrl}/api/users/${userId}/reject`, {
-                method: 'POST'
+            const response = await fetch(`${backendUrl}/api/users/${user.id}`, {
+                method: 'DELETE'
             });
 
             if (response.ok) {
-                setMessage('✅ User request rejected');
+                setMessage(`User ${user.name} has been rejected and removed`);
                 await loadUsers();
                 setTimeout(() => setMessage(''), 3000);
             }
@@ -110,16 +258,54 @@ const UserManager = ({ teams = [] }) => {
         }
     };
 
-    const handleDelete = async (userId) => {
-        if (!window.confirm('Are you sure you want to delete this user?')) return;
-
+    const handleSaveEdit = async () => {
         try {
-            const response = await fetch(`${backendUrl}/api/users/${userId}`, {
+            // Build update data with team assignments
+            const updateData = {
+                name: editingUser.name,
+                email: editingUser.email,
+                phone: editingUser.phone,
+                role: editingUser.role,
+                status: editingUser.status,
+                jerseySize: editingUser.jerseySize,
+                emergencyContact: editingUser.emergencyContact,
+                teamAssignments: editingUser.teamAssignments || [],
+                // Set primary team for legacy compatibility
+                teamId: editingUser.teamAssignments?.find(a => a.isPrimary)?.teamId || editingUser.teamAssignments?.[0]?.teamId || editingUser.teamId || '',
+                playerNumber: editingUser.teamAssignments?.find(a => a.isPrimary)?.playerNumber || editingUser.teamAssignments?.[0]?.playerNumber || editingUser.playerNumber || '',
+                position: editingUser.teamAssignments?.find(a => a.isPrimary)?.position || editingUser.teamAssignments?.[0]?.position || editingUser.position || ''
+            };
+
+            const response = await fetch(`${backendUrl}/api/users/${editingUser.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updateData)
+            });
+
+            if (response.ok) {
+                setMessage('✅ User updated successfully!');
+                setEditingUser(null);
+                await loadUsers();
+                setTimeout(() => setMessage(''), 3000);
+            } else {
+                const error = await response.json();
+                alert(`Failed to update user: ${error.detail}`);
+            }
+        } catch (error) {
+            alert('Error updating user');
+        }
+    };
+
+    const handleDelete = async (user) => {
+        if (!window.confirm(`Are you sure you want to delete ${user.name}?`)) return;
+        
+        try {
+            const response = await fetch(`${backendUrl}/api/users/${user.id}`, {
                 method: 'DELETE'
             });
 
             if (response.ok) {
-                setMessage('✅ User deleted');
+                setMessage(`User ${user.name} has been deleted`);
                 await loadUsers();
                 setTimeout(() => setMessage(''), 3000);
             }
@@ -128,390 +314,218 @@ const UserManager = ({ teams = [] }) => {
         }
     };
 
-    const handleUpdateUser = async () => {
-        try {
-            const response = await fetch(`${backendUrl}/api/users/${editingUser.id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: editingUser.name,
-                    email: editingUser.email,
-                    role: editingUser.role,
-                    teamId: editingUser.teamId,
-                    status: editingUser.status,
-                    phone: editingUser.phone,
-                    playerNumber: editingUser.playerNumber,
-                    position: editingUser.position,
-                    jerseySize: editingUser.jerseySize,
-                    emergencyContact: editingUser.emergencyContact
-                })
-            });
-
-            if (response.ok) {
-                setMessage('✅ User updated successfully!');
-                setEditingUser(null);
-                await loadUsers();
-                setTimeout(() => setMessage(''), 3000);
-            }
-        } catch (error) {
-            alert('Error updating user');
-        }
-    };
-
-    const handleResetPassword = async (userId) => {
-        const newPassword = prompt('Enter new password (minimum 6 characters):');
-        if (!newPassword || newPassword.length < 6) {
-            alert('Password must be at least 6 characters');
-            return;
-        }
-
-        try {
-            const response = await fetch(`${backendUrl}/api/users/${userId}/reset-password`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ newPassword })
-            });
-
-            if (response.ok) {
-                alert('✅ Password reset successfully!');
-            } else {
-                alert('Failed to reset password');
-            }
-        } catch (error) {
-            alert('Error resetting password');
-        }
-    };
-
     const getTeamName = (teamId) => {
         const team = teams.find(t => t.id === teamId);
-        return team?.name || 'No Team';
+        return team ? team.name : teamId;
     };
 
-    const activeUsers = users.filter(u => u.status === 'active' || u.status === 'guest');
-    const pendingUsers = users.filter(u => u.status === 'pending');
+    const getTeamBadge = (teamId, division) => {
+        const colors = {
+            'Field': 'bg-green-100 text-green-800',
+            'Box': 'bg-orange-100 text-orange-800',
+            'default': 'bg-blue-100 text-blue-800'
+        };
+        const team = teams.find(t => t.id === teamId);
+        const colorClass = colors[team?.division] || colors['default'];
+        return colorClass;
+    };
 
-    const getRoleBadgeColor = (role) => {
-        switch (role) {
-            case 'admin': return 'bg-red-100 text-red-800';
-            case 'coach': return 'bg-purple-100 text-purple-800';
-            case 'player': return 'bg-blue-100 text-blue-800';
-            case 'guest': return 'bg-gray-100 text-gray-800';
-            default: return 'bg-gray-100 text-gray-800';
+    // Filter users by tab
+    const filteredUsers = users.filter(user => {
+        if (activeTab === 'pending') return user.status === 'pending';
+        if (activeTab === 'active') return user.status === 'active';
+        if (activeTab === 'all') return true;
+        return user.status === activeTab;
+    });
+
+    const pendingCount = users.filter(u => u.status === 'pending').length;
+    const activeCount = users.filter(u => u.status === 'active').length;
+
+    // Prepare user for editing - migrate legacy single team to teamAssignments
+    const prepareUserForEdit = (user) => {
+        let teamAssignments = user.teamAssignments || [];
+        
+        // If no team assignments but has legacy teamId, create one
+        if (teamAssignments.length === 0 && user.teamId) {
+            teamAssignments = [{
+                teamId: user.teamId,
+                teamName: user.teamName || getTeamName(user.teamId),
+                playerNumber: user.playerNumber || '',
+                position: user.position || '',
+                isPrimary: true
+            }];
         }
+
+        setEditingUser({
+            ...user,
+            teamAssignments
+        });
     };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center p-8">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="text-gray-600 mt-2">Loading users...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-                        <LacrosseIcon name="admin" className="mr-3" size={28} />
-                        User Management
-                    </h2>
-                    <p className="text-gray-600 mt-1">
-                        Manage league members, approve requests, and assign teams
-                    </p>
+                    <h2 className="text-2xl font-bold text-gray-800">User Management</h2>
+                    <p className="text-gray-600">Manage players, coaches, and admins</p>
                 </div>
                 <button
                     onClick={() => setShowCreateModal(true)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
                 >
-                    ➕ Create User
+                    <LacrosseIcon name="add" style={{fontSize: '16px'}} />
+                    Add User
                 </button>
             </div>
 
             {/* Message */}
             {message && (
-                <div className={`p-4 rounded-lg ${
-                    message.includes('✅') ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'
-                }`}>
+                <div className={`p-4 rounded-lg ${message.includes('✅') ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
                     {message}
                 </div>
             )}
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div className="bg-white rounded-lg shadow-sm border p-4">
-                    <div className="text-2xl md:text-3xl font-bold text-blue-600">{activeUsers.length}</div>
-                    <div className="text-xs md:text-sm text-gray-600">Active Users</div>
-                </div>
-                <div className="bg-white rounded-lg shadow-sm border p-4">
-                    <div className="text-2xl md:text-3xl font-bold text-yellow-600">{pendingUsers.length}</div>
-                    <div className="text-xs md:text-sm text-gray-600">Pending Approval</div>
-                </div>
-                <div className="bg-white rounded-lg shadow-sm border p-4 col-span-2 md:col-span-1">
-                    <div className="text-2xl md:text-3xl font-bold text-purple-600">{users.filter(u => u.role === 'coach').length}</div>
-                    <div className="text-xs md:text-sm text-gray-600">Coaches</div>
-                </div>
-            </div>
-
             {/* Tabs */}
-            <div className="bg-white rounded-lg shadow-sm border">
-                <div className="border-b px-6 py-3">
-                    <div className="flex gap-6">
+            <div className="border-b border-gray-200">
+                <nav className="flex gap-4">
+                    {[
+                        { id: 'active', label: 'Active', count: activeCount },
+                        { id: 'pending', label: 'Pending', count: pendingCount },
+                        { id: 'all', label: 'All Users', count: users.length }
+                    ].map(tab => (
                         <button
-                            onClick={() => setActiveTab('active')}
-                            className={`pb-2 px-3 font-medium transition border-b-2 ${
-                                activeTab === 'active'
-                                    ? 'border-blue-600 text-blue-600'
-                                    : 'border-transparent text-gray-600 hover:text-gray-800'
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                                activeTab === tab.id
+                                    ? 'border-blue-500 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
                         >
-                            Active Users ({activeUsers.length})
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('pending')}
-                            className={`pb-2 px-3 font-medium transition border-b-2 ${
-                                activeTab === 'pending'
-                                    ? 'border-yellow-600 text-yellow-600'
-                                    : 'border-transparent text-gray-600 hover:text-gray-800'
-                            }`}
-                        >
-                            Pending Approval ({pendingUsers.length})
-                            {pendingUsers.length > 0 && (
-                                <span className="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded-full text-xs">
-                                    {pendingUsers.length}
+                            {tab.label}
+                            {tab.count > 0 && (
+                                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+                                    tab.id === 'pending' && tab.count > 0 
+                                        ? 'bg-orange-100 text-orange-800' 
+                                        : 'bg-gray-100 text-gray-600'
+                                }`}>
+                                    {tab.count}
                                 </span>
                             )}
                         </button>
+                    ))}
+                </nav>
+            </div>
+
+            {/* Users List */}
+            <div className="bg-white rounded-lg shadow border overflow-hidden">
+                {filteredUsers.length === 0 ? (
+                    <div className="text-center py-12 text-gray-500">
+                        <LacrosseIcon name="players" style={{fontSize: '48px'}} className="mx-auto mb-4 opacity-50" />
+                        <p>No users found</p>
                     </div>
-                </div>
-
-                {/* Active Users Tab */}
-                {activeTab === 'active' && (
-                    <div className="p-6">
-                        {loading ? (
-                            <div className="text-center py-12">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                            </div>
-                        ) : activeUsers.length === 0 ? (
-                            <div className="text-center py-12">
-                                <div className="text-4xl mb-4">👥</div>
-                                <h3 className="text-lg font-medium text-gray-900 mb-2">No Users Yet</h3>
-                                <p className="text-gray-600 mb-4">Create users or wait for registrations</p>
-                                <button
-                                    onClick={() => setShowCreateModal(true)}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                                >
-                                    Create First User
-                                </button>
-                            </div>
-                        ) : (
-                            <>
-                                {/* Desktop: Table View */}
-                                <div className="hidden md:block overflow-x-auto">
-                                    <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Team</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
-                                            {activeUsers.map(user => (
-                                                <tr key={user.id} className="hover:bg-gray-50">
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <div className="font-medium text-gray-900">{user.name}</div>
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <div className="text-sm text-gray-600">{user.email}</div>
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleBadgeColor(user.role)}`}>
-                                                            {user.role}
+                ) : (
+                    <div className="divide-y">
+                        {filteredUsers.map(user => (
+                            <div key={user.id} className="p-4 hover:bg-gray-50">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    {/* User Info */}
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <span className="font-medium text-gray-900">{user.name}</span>
+                                            <span className={`px-2 py-0.5 rounded-full text-xs ${
+                                                user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
+                                                user.role === 'coach' ? 'bg-blue-100 text-blue-800' :
+                                                user.role === 'player' ? 'bg-green-100 text-green-800' :
+                                                'bg-gray-100 text-gray-800'
+                                            }`}>
+                                                {user.role}
+                                            </span>
+                                            <span className={`px-2 py-0.5 rounded-full text-xs ${
+                                                user.status === 'active' ? 'bg-green-100 text-green-800' :
+                                                user.status === 'pending' ? 'bg-orange-100 text-orange-800' :
+                                                'bg-gray-100 text-gray-800'
+                                            }`}>
+                                                {user.status}
+                                            </span>
+                                        </div>
+                                        <p className="text-sm text-gray-500">{user.email}</p>
+                                        
+                                        {/* Team Assignments Display */}
+                                        {(user.teamAssignments?.length > 0 || user.teamId) && (
+                                            <div className="mt-2 flex flex-wrap gap-2">
+                                                {user.teamAssignments?.length > 0 ? (
+                                                    user.teamAssignments.map((assignment, idx) => (
+                                                        <span 
+                                                            key={idx}
+                                                            className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs ${getTeamBadge(assignment.teamId)}`}
+                                                        >
+                                                            {assignment.isPrimary && <span className="text-yellow-500">★</span>}
+                                                            {assignment.teamName || getTeamName(assignment.teamId)}
+                                                            {assignment.playerNumber && <span className="font-bold">#{assignment.playerNumber}</span>}
+                                                            {assignment.position && <span className="opacity-75">({assignment.position})</span>}
                                                         </span>
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <div className="text-sm text-gray-600">
-                                                            {user.teamName || getTeamName(user.teamId)}
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <div className="text-sm font-mono text-gray-900">
-                                                            {user.playerNumber || '-'}
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                                            user.status === 'active' ? 'bg-green-100 text-green-800' :
-                                                            user.status === 'guest' ? 'bg-blue-100 text-blue-800' :
-                                                            user.status === 'inactive' ? 'bg-gray-100 text-gray-800' :
-                                                            'bg-yellow-100 text-yellow-800'
-                                                        }`}>
-                                                            {user.status}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <div className="flex gap-2">
-                                                            <button
-                                                                onClick={() => setEditingUser(user)}
-                                                                className="px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700"
-                                                            >
-                                                                ✏️ Edit
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleResetPassword(user.id)}
-                                                                className="px-3 py-1 text-xs bg-yellow-600 text-white rounded hover:bg-yellow-700"
-                                                            >
-                                                                🔑 Reset PW
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleDelete(user.id)}
-                                                                className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
-                                                            >
-                                                                🗑️ Delete
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                {/* Mobile: Card View */}
-                                <div className="md:hidden space-y-4">
-                                    {activeUsers.map(user => (
-                                        <div key={user.id} className="bg-white border rounded-lg p-4 shadow-sm">
-                                            <div className="flex items-start justify-between mb-3">
-                                                <div>
-                                                    <h4 className="font-semibold text-gray-900">{user.name}</h4>
-                                                    <p className="text-sm text-gray-600">{user.email}</p>
-                                                </div>
-                                                {user.playerNumber && (
-                                                    <div className="text-2xl font-bold text-gray-400">#{user.playerNumber}</div>
+                                                    ))
+                                                ) : user.teamId && (
+                                                    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs ${getTeamBadge(user.teamId)}`}>
+                                                        {user.teamName || getTeamName(user.teamId)}
+                                                        {user.playerNumber && <span className="font-bold">#{user.playerNumber}</span>}
+                                                        {user.position && <span className="opacity-75">({user.position})</span>}
+                                                    </span>
                                                 )}
                                             </div>
-                                            <div className="grid grid-cols-2 gap-2 text-sm mb-3">
-                                                <div>
-                                                    <span className="text-gray-500">Role:</span>
-                                                    <span className={`ml-2 px-2 py-0.5 rounded text-xs font-medium ${getRoleBadgeColor(user.role)}`}>
-                                                        {user.role}
-                                                    </span>
-                                                </div>
-                                                <div>
-                                                    <span className="text-gray-500">Status:</span>
-                                                    <span className={`ml-2 px-2 py-0.5 rounded text-xs font-medium ${
-                                                        user.status === 'active' ? 'bg-green-100 text-green-800' :
-                                                        user.status === 'guest' ? 'bg-blue-100 text-blue-800' :
-                                                        'bg-gray-100 text-gray-800'
-                                                    }`}>
-                                                        {user.status}
-                                                    </span>
-                                                </div>
-                                                <div className="col-span-2">
-                                                    <span className="text-gray-500">Team:</span>
-                                                    <span className="ml-2 font-medium">{user.teamName || getTeamName(user.teamId)}</span>
-                                                </div>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={() => setEditingUser(user)}
-                                                    className="flex-1 px-3 py-2 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
-                                                >
-                                                    ✏️ Edit
-                                                </button>
-                                                <button
-                                                    onClick={() => handleResetPassword(user.id)}
-                                                    className="flex-1 px-3 py-2 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700"
-                                                >
-                                                    🔑 PW
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDelete(user.id)}
-                                                    className="px-3 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
-                                                >
-                                                    🗑️
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </>
-                        )}
-                    </div>
-                )}
+                                        )}
+                                    </div>
 
-                {/* Pending Approvals Tab */}
-                {activeTab === 'pending' && (
-                    <div className="p-6">
-                        {loading ? (
-                            <div className="text-center py-12">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-600 mx-auto"></div>
-                            </div>
-                        ) : pendingUsers.length === 0 ? (
-                            <div className="text-center py-12">
-                                <div className="text-4xl mb-4">✅</div>
-                                <h3 className="text-lg font-medium text-gray-900 mb-2">No Pending Requests</h3>
-                                <p className="text-gray-600">All caught up!</p>
-                            </div>
-                        ) : (
-                            <div className="space-y-4">
-                                {pendingUsers.map(user => (
-                                    <div key={user.id} className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex-1">
-                                                <div className="flex items-center gap-3 mb-3">
-                                                    <div className="w-12 h-12 bg-yellow-600 text-white rounded-full flex items-center justify-center text-xl font-bold">
-                                                        {user.name.charAt(0).toUpperCase()}
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="text-lg font-semibold text-gray-900">{user.name}</h3>
-                                                        <p className="text-sm text-gray-600">{user.email}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="grid grid-cols-2 gap-4 text-sm">
-                                                    <div>
-                                                        <span className="text-gray-600">Requested Role:</span>
-                                                        <span className={`ml-2 px-2 py-1 rounded text-xs font-medium ${getRoleBadgeColor(user.requestedRole)}`}>
-                                                            {user.requestedRole}
-                                                        </span>
-                                                    </div>
-                                                    <div>
-                                                        <span className="text-gray-600">Desired Team:</span>
-                                                        <span className="ml-2 font-medium text-gray-900">
-                                                            {getTeamName(user.requestedTeam)}
-                                                        </span>
-                                                    </div>
-                                                    {user.phone && (
-                                                        <div>
-                                                            <span className="text-gray-600">Phone:</span>
-                                                            <span className="ml-2 font-medium text-gray-900">{user.phone}</span>
-                                                        </div>
-                                                    )}
-                                                    <div>
-                                                        <span className="text-gray-600">Registered:</span>
-                                                        <span className="ml-2 font-medium text-gray-900">
-                                                            {new Date(user.createdAt).toLocaleDateString()}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="flex gap-2 ml-4">
+                                    {/* Actions */}
+                                    <div className="flex gap-2">
+                                        {user.status === 'pending' ? (
+                                            <>
                                                 <button
                                                     onClick={() => handleApprove(user)}
-                                                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
+                                                    className="px-3 py-1.5 bg-green-600 text-white rounded text-sm hover:bg-green-700"
                                                 >
-                                                    ✅ Approve
+                                                    ✓ Approve
                                                 </button>
                                                 <button
-                                                    onClick={() => handleReject(user.id)}
-                                                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium"
+                                                    onClick={() => handleReject(user)}
+                                                    className="px-3 py-1.5 bg-red-600 text-white rounded text-sm hover:bg-red-700"
                                                 >
-                                                    ❌ Reject
+                                                    ✕ Reject
                                                 </button>
-                                            </div>
-                                        </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <button
+                                                    onClick={() => prepareUserForEdit(user)}
+                                                    className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(user)}
+                                                    className="px-3 py-1.5 bg-red-100 text-red-700 rounded text-sm hover:bg-red-200"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
-                                ))}
+                                </div>
                             </div>
-                        )}
+                        ))}
                     </div>
                 )}
             </div>
@@ -519,133 +533,108 @@ const UserManager = ({ teams = [] }) => {
             {/* Create User Modal */}
             {showCreateModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto md:rounded-lg sm:rounded-none sm:max-h-screen">
+                    <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                         <div className="sticky top-0 bg-white border-b p-4 md:p-6">
                             <h3 className="text-xl font-bold">Create New User</h3>
                         </div>
-                        <div className="p-4 md:p-6">
+                        <div className="p-4 md:p-6 space-y-4">
+                            {/* Basic Info */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-                                <input
-                                    type="text"
-                                    value={newUser.name}
-                                    onChange={(e) => setNewUser(prev => ({ ...prev, name: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                    placeholder="John Doe"
-                                />
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                                    <input
+                                        type="text"
+                                        value={newUser.name}
+                                        onChange={(e) => setNewUser(prev => ({ ...prev, name: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                        placeholder="John Smith"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                                    <input
+                                        type="email"
+                                        value={newUser.email}
+                                        onChange={(e) => setNewUser(prev => ({ ...prev, email: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                        placeholder="john@example.com"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                                    <input
+                                        type="password"
+                                        value={newUser.password}
+                                        onChange={(e) => setNewUser(prev => ({ ...prev, password: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                    <input
+                                        type="tel"
+                                        value={newUser.phone}
+                                        onChange={(e) => setNewUser(prev => ({ ...prev, phone: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                        placeholder="(555) 123-4567"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                                    <select
+                                        value={newUser.role}
+                                        onChange={(e) => setNewUser(prev => ({ ...prev, role: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    >
+                                        <option value="guest">Guest</option>
+                                        <option value="player">Player</option>
+                                        <option value="coach">Coach</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Jersey Size</label>
+                                    <select
+                                        value={newUser.jerseySize}
+                                        onChange={(e) => setNewUser(prev => ({ ...prev, jerseySize: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    >
+                                        <option value="">Select size</option>
+                                        <option value="S">Small</option>
+                                        <option value="M">Medium</option>
+                                        <option value="L">Large</option>
+                                        <option value="XL">XL</option>
+                                        <option value="XXL">XXL</option>
+                                    </select>
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
+                                    <input
+                                        type="text"
+                                        value={newUser.emergencyContact}
+                                        onChange={(e) => setNewUser(prev => ({ ...prev, emergencyContact: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                        placeholder="Contact name & phone"
+                                    />
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                                <input
-                                    type="email"
-                                    value={newUser.email}
-                                    onChange={(e) => setNewUser(prev => ({ ...prev, email: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                    placeholder="john@example.com"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
-                                <input
-                                    type="password"
-                                    value={newUser.password}
-                                    onChange={(e) => setNewUser(prev => ({ ...prev, password: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                    placeholder="Minimum 6 characters"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                                <input
-                                    type="tel"
-                                    value={newUser.phone}
-                                    onChange={(e) => setNewUser(prev => ({ ...prev, phone: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                    placeholder="(123) 456-7890"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Role *</label>
-                                <select
-                                    value={newUser.role}
-                                    onChange={(e) => setNewUser(prev => ({ ...prev, role: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                >
-                                    <option value="guest">Guest</option>
-                                    <option value="player">Player</option>
-                                    <option value="coach">Coach</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Team</label>
-                                <select
-                                    value={newUser.teamId}
-                                    onChange={(e) => setNewUser(prev => ({ ...prev, teamId: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                >
-                                    <option value="">No Team</option>
-                                    {teams.map(team => (
-                                        <option key={team.id} value={team.id}>{team.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            
-                            {/* Player Attributes (for players) */}
+
+                            {/* Team Assignments Section */}
                             {(newUser.role === 'player' || newUser.role === 'coach') && (
-                                <>
-                                    <div className="col-span-2 border-t pt-4">
-                                        <h4 className="font-medium text-gray-700 mb-3">Player Details</h4>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Jersey #</label>
-                                        <input
-                                            type="text"
-                                            value={newUser.playerNumber}
-                                            onChange={(e) => setNewUser(prev => ({ ...prev, playerNumber: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                            placeholder="12"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Position</label>
-                                        <input
-                                            type="text"
-                                            value={newUser.position}
-                                            onChange={(e) => setNewUser(prev => ({ ...prev, position: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                            placeholder="Attack, Defense, Midfield, Goalie"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Jersey Size</label>
-                                        <select
-                                            value={newUser.jerseySize}
-                                            onChange={(e) => setNewUser(prev => ({ ...prev, jerseySize: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                        >
-                                            <option value="">Select size</option>
-                                            <option value="S">Small</option>
-                                            <option value="M">Medium</option>
-                                            <option value="L">Large</option>
-                                            <option value="XL">XL</option>
-                                            <option value="XXL">XXL</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
-                                        <input
-                                            type="text"
-                                            value={newUser.emergencyContact}
-                                            onChange={(e) => setNewUser(prev => ({ ...prev, emergencyContact: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                            placeholder="Contact name & phone"
-                                        />
-                                    </div>
-                                </>
+                                <div className="border-t pt-4">
+                                    <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
+                                        🏆 Team Assignments
+                                        <span className="text-sm font-normal text-gray-500">
+                                            (Can play for multiple teams)
+                                        </span>
+                                    </h4>
+                                    <TeamAssignmentEditor
+                                        assignments={newUser.teamAssignments}
+                                        teams={teams}
+                                        onChange={(assignments) => setNewUser(prev => ({ ...prev, teamAssignments: assignments }))}
+                                    />
+                                </div>
                             )}
-                            </div>
                         </div>
                         <div className="sticky bottom-0 bg-white border-t p-4 md:p-6">
                             <div className="flex flex-col sm:flex-row gap-3">
@@ -670,131 +659,109 @@ const UserManager = ({ teams = [] }) => {
             {/* Edit User Modal */}
             {editingUser && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto md:rounded-lg sm:rounded-none sm:max-h-screen">
+                    <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                         <div className="sticky top-0 bg-white border-b p-4 md:p-6">
                             <h3 className="text-xl font-bold">Edit User: {editingUser.name}</h3>
                         </div>
-                        <div className="p-4 md:p-6">
+                        <div className="p-4 md:p-6 space-y-4">
+                            {/* Basic Info */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                                <input
-                                    type="text"
-                                    value={editingUser.name}
-                                    onChange={(e) => setEditingUser(prev => ({ ...prev, name: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                />
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                    <input
+                                        type="text"
+                                        value={editingUser.name}
+                                        onChange={(e) => setEditingUser(prev => ({ ...prev, name: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input
+                                        type="email"
+                                        value={editingUser.email}
+                                        onChange={(e) => setEditingUser(prev => ({ ...prev, email: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                    <input
+                                        type="tel"
+                                        value={editingUser.phone || ''}
+                                        onChange={(e) => setEditingUser(prev => ({ ...prev, phone: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                                    <select
+                                        value={editingUser.role}
+                                        onChange={(e) => setEditingUser(prev => ({ ...prev, role: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    >
+                                        <option value="guest">Guest</option>
+                                        <option value="player">Player</option>
+                                        <option value="coach">Coach</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                    <select
+                                        value={editingUser.status}
+                                        onChange={(e) => setEditingUser(prev => ({ ...prev, status: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    >
+                                        <option value="guest">Guest</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                        <option value="archived">Archived</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Jersey Size</label>
+                                    <select
+                                        value={editingUser.jerseySize || ''}
+                                        onChange={(e) => setEditingUser(prev => ({ ...prev, jerseySize: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    >
+                                        <option value="">Select size</option>
+                                        <option value="S">Small</option>
+                                        <option value="M">Medium</option>
+                                        <option value="L">Large</option>
+                                        <option value="XL">XL</option>
+                                        <option value="XXL">XXL</option>
+                                    </select>
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
+                                    <input
+                                        type="text"
+                                        value={editingUser.emergencyContact || ''}
+                                        onChange={(e) => setEditingUser(prev => ({ ...prev, emergencyContact: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    />
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                <input
-                                    type="email"
-                                    value={editingUser.email}
-                                    onChange={(e) => setEditingUser(prev => ({ ...prev, email: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                                <input
-                                    type="tel"
-                                    value={editingUser.phone || ''}
-                                    onChange={(e) => setEditingUser(prev => ({ ...prev, phone: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                                <select
-                                    value={editingUser.role}
-                                    onChange={(e) => setEditingUser(prev => ({ ...prev, role: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                >
-                                    <option value="guest">Guest</option>
-                                    <option value="player">Player</option>
-                                    <option value="coach">Coach</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Team</label>
-                                <select
-                                    value={editingUser.teamId || ''}
-                                    onChange={(e) => setEditingUser(prev => ({ ...prev, teamId: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                >
-                                    <option value="">No Team</option>
-                                    {teams.map(team => (
-                                        <option key={team.id} value={team.id}>{team.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                                <select
-                                    value={editingUser.status}
-                                    onChange={(e) => setEditingUser(prev => ({ ...prev, status: e.target.value }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                >
-                                    <option value="guest">Guest</option>
-                                    <option value="pending">Pending</option>
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                    <option value="archived">Archived</option>
-                                </select>
-                            </div>
-                            
-                            {/* Player Attributes */}
+
+                            {/* Team Assignments Section */}
                             {(editingUser.role === 'player' || editingUser.role === 'coach') && (
-                                <>
-                                    <div className="col-span-2 border-t pt-4">
-                                        <h4 className="font-medium text-gray-700 mb-3">Player Details</h4>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Jersey #</label>
-                                        <input
-                                            type="text"
-                                            value={editingUser.playerNumber || ''}
-                                            onChange={(e) => setEditingUser(prev => ({ ...prev, playerNumber: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Position</label>
-                                        <input
-                                            type="text"
-                                            value={editingUser.position || ''}
-                                            onChange={(e) => setEditingUser(prev => ({ ...prev, position: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Jersey Size</label>
-                                        <select
-                                            value={editingUser.jerseySize || ''}
-                                            onChange={(e) => setEditingUser(prev => ({ ...prev, jerseySize: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                        >
-                                            <option value="">Select size</option>
-                                            <option value="S">Small</option>
-                                            <option value="M">Medium</option>
-                                            <option value="L">Large</option>
-                                            <option value="XL">XL</option>
-                                            <option value="XXL">XXL</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
-                                        <input
-                                            type="text"
-                                            value={editingUser.emergencyContact || ''}
-                                            onChange={(e) => setEditingUser(prev => ({ ...prev, emergencyContact: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                        />
-                                    </div>
-                                </>
+                                <div className="border-t pt-4">
+                                    <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
+                                        🏆 Team Assignments
+                                        <span className="text-sm font-normal text-gray-500">
+                                            (Can play for multiple teams with different numbers/positions)
+                                        </span>
+                                    </h4>
+                                    <TeamAssignmentEditor
+                                        assignments={editingUser.teamAssignments || []}
+                                        teams={teams}
+                                        onChange={(assignments) => setEditingUser(prev => ({ ...prev, teamAssignments: assignments }))}
+                                    />
+                                </div>
                             )}
-                            </div>
                         </div>
                         <div className="sticky bottom-0 bg-white border-t p-4 md:p-6">
                             <div className="flex flex-col sm:flex-row gap-3">
@@ -805,10 +772,10 @@ const UserManager = ({ teams = [] }) => {
                                     Cancel
                                 </button>
                                 <button
-                                    onClick={handleUpdateUser}
+                                    onClick={handleSaveEdit}
                                     className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                                 >
-                                    Update User
+                                    Save Changes
                                 </button>
                             </div>
                         </div>
