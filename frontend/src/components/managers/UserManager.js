@@ -760,18 +760,12 @@ const UserManager = ({ teams = [] }) => {
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                                    <select
-                                        value={editingUser.role}
-                                        onChange={(e) => setEditingUser(prev => ({ ...prev, role: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                    >
-                                        <option value="guest">Guest</option>
-                                        <option value="player">Player</option>
-                                        <option value="coach">Coach</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Roles (select all that apply)</label>
+                                    <RoleSelector
+                                        selectedRoles={editingUser.roles || [editingUser.role]}
+                                        onChange={(roles) => setEditingUser(prev => ({ ...prev, roles }))}
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
@@ -814,7 +808,7 @@ const UserManager = ({ teams = [] }) => {
                             </div>
 
                             {/* Team Assignments Section */}
-                            {(editingUser.role === 'player' || editingUser.role === 'coach') && (
+                            {(editingUser.roles?.includes('player') || editingUser.roles?.includes('coach') || editingUser.role === 'player' || editingUser.role === 'coach') && (
                                 <div className="border-t pt-4">
                                     <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
                                         🏆 Team Assignments
