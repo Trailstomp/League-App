@@ -317,7 +317,7 @@ const UserManager = ({ teams = [] }) => {
     };
 
     const handleSaveEdit = async () => {
-        try:
+        try {
             // Build update data with team assignments and roles
             const updateData = {
                 name: editingUser.name,
