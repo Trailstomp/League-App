@@ -241,10 +241,21 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         const typeStyle = getEventTypeStyle(event.type);
         const statusStyle = getStatusStyle(event.status);
         
+        // Helper to extract team ID from various formats
+        const getTeamIdFromEntry = (entry) => {
+            if (typeof entry === 'string') return entry;
+            if (entry?.id) return entry.id;
+            if (entry?.teamId) return entry.teamId;
+            return null;
+        };
+        
         // Check if this is a game with teams
-        const hasTeams = (event.teams && event.teams.length >= 2) || (event.homeTeam && event.awayTeam);
-        const homeTeamId = event.homeTeam || (event.teams && event.teams[0]);
-        const awayTeamId = event.awayTeam || (event.teams && event.teams[1]);
+        const teamsArray = event.teams || [];
+        const hasTeams = teamsArray.length >= 2 || (event.homeTeam && event.awayTeam);
+        
+        // Get team IDs - handle both string arrays and object arrays
+        const homeTeamId = event.homeTeam || getTeamIdFromEntry(teamsArray[0]);
+        const awayTeamId = event.awayTeam || getTeamIdFromEntry(teamsArray[1]);
         
         // Get scores
         const homeScore = event.scores?.home ?? event.homeScore ?? null;
@@ -252,7 +263,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         const hasScores = homeScore !== null || awayScore !== null;
         
         // Determine if this is a game-type event
-        const isGame = event.type === 'game' || event.type === 'regular_game' || hasTeams;
+        const isGame = event.type === 'game' || event.type === 'regular_game' || (hasTeams && homeTeamId && awayTeamId);
         
         // Game card layout (teams stacked with score)
         if (isGame && hasTeams) {
