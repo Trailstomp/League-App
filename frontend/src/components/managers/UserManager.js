@@ -1,6 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import { LacrosseIcon } from '../LacrosseIcons';
 
+// Multi-Role Selector Component
+const RoleSelector = ({ selectedRoles = [], onChange }) => {
+    const availableRoles = [
+        { id: 'player', label: '🏃 Player', color: 'green' },
+        { id: 'coach', label: '📋 Coach', color: 'blue' },
+        { id: 'admin', label: '👑 Admin', color: 'purple' },
+        { id: 'guest', label: '👤 Guest', color: 'gray' }
+    ];
+
+    const toggleRole = (roleId) => {
+        if (selectedRoles.includes(roleId)) {
+            // Remove role (but keep at least one)
+            if (selectedRoles.length > 1) {
+                onChange(selectedRoles.filter(r => r !== roleId));
+            }
+        } else {
+            // Add role (remove guest if adding other roles)
+            let newRoles = [...selectedRoles, roleId];
+            if (roleId !== 'guest' && newRoles.includes('guest')) {
+                newRoles = newRoles.filter(r => r !== 'guest');
+            }
+            if (roleId === 'guest') {
+                newRoles = ['guest'];
+            }
+            onChange(newRoles);
+        }
+    };
+
+    const getColorClasses = (role, isSelected) => {
+        const colors = {
+            green: isSelected ? 'bg-green-500 text-white border-green-500' : 'bg-white text-green-700 border-green-300 hover:bg-green-50',
+            blue: isSelected ? 'bg-blue-500 text-white border-blue-500' : 'bg-white text-blue-700 border-blue-300 hover:bg-blue-50',
+            purple: isSelected ? 'bg-purple-500 text-white border-purple-500' : 'bg-white text-purple-700 border-purple-300 hover:bg-purple-50',
+            gray: isSelected ? 'bg-gray-500 text-white border-gray-500' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+        };
+        return colors[role.color] || colors.gray;
+    };
+
+    return (
+        <div className="flex flex-wrap gap-2">
+            {availableRoles.map(role => {
+                const isSelected = selectedRoles.includes(role.id);
+                return (
+                    <button
+                        key={role.id}
+                        type="button"
+                        onClick={() => toggleRole(role.id)}
+                        className={`px-3 py-1.5 rounded-full border-2 text-sm font-medium transition-all ${getColorClasses(role, isSelected)}`}
+                    >
+                        {isSelected && <span className="mr-1">✓</span>}
+                        {role.label}
+                    </button>
+                );
+            })}
+        </div>
+    );
+};
+
 // Multi-Team Assignment Component
 const TeamAssignmentEditor = ({ assignments = [], teams = [], onChange }) => {
     const addAssignment = () => {
