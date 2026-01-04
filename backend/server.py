@@ -126,14 +126,16 @@ class UserUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
     role: Optional[str] = None
-    teamId: Optional[str] = None
+    teamId: Optional[str] = None  # Legacy support
     status: Optional[str] = None
     phone: Optional[str] = None
-    playerNumber: Optional[str] = None
-    position: Optional[str] = None
+    playerNumber: Optional[str] = None  # Legacy support
+    position: Optional[str] = None  # Legacy support
     jerseySize: Optional[str] = None
     emergencyContact: Optional[str] = None
     notificationPreferences: Optional[Dict[str, bool]] = None
+    # Multi-team support
+    teamAssignments: Optional[List[Dict[str, Any]]] = None
 
 class LoginRequest(BaseModel):
     email: str
