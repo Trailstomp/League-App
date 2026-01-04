@@ -260,7 +260,7 @@ const UserManager = ({ teams = [] }) => {
                 setMessage('✅ User created successfully!');
                 setShowCreateModal(false);
                 setNewUser({
-                    name: '', email: '', password: '', role: 'player', phone: '',
+                    name: '', email: '', password: '', roles: ['player'], phone: '',
                     jerseySize: '', emergencyContact: '', teamAssignments: []
                 });
                 await loadUsers();
@@ -317,13 +317,13 @@ const UserManager = ({ teams = [] }) => {
     };
 
     const handleSaveEdit = async () => {
-        try {
-            // Build update data with team assignments
+        try:
+            // Build update data with team assignments and roles
             const updateData = {
                 name: editingUser.name,
                 email: editingUser.email,
                 phone: editingUser.phone,
-                role: editingUser.role,
+                roles: editingUser.roles || [editingUser.role || 'guest'],
                 status: editingUser.status,
                 jerseySize: editingUser.jerseySize,
                 emergencyContact: editingUser.emergencyContact,
