@@ -323,16 +323,9 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
             newErrors.external_url = 'External event URL is required';
         }
         
-        // Teams are now OPTIONAL for all event types
-        // Only validate if teams are selected for regular games
-        if (formData.type === 'regular_game' && formData.teams.length > 0 && formData.teams.length !== 2) {
-            newErrors.teams = 'Regular games should have exactly 2 teams (or leave empty)';
-        }
-        
-        // Tournaments with teams selected need at least 4
-        if (formData.type === 'tournament' && formData.teams.length > 0 && formData.teams.length < 4) {
-            newErrors.teams = 'Tournaments need at least 4 teams (or leave empty for placeholder)';
-        }
+        // Teams are FULLY OPTIONAL for all event types
+        // No validation on team count - allow 0, 1, 2, or any number
+        // Users can add teams as they sign on
         
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
