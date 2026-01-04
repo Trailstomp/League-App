@@ -389,17 +389,27 @@ async def get_dashboard_data():
             logger.error(f"Error fetching unified events: {unified_events}")
             unified_events = []
         
-        # Merge unified_events into leagueSchedule (deduplicate by ID)
-        existing_ids = set(e.get('id') for e in league_data.get('leagueSchedule', []))
-        merged_events = list(league_data.get('leagueSchedule', []))
+        # First, deduplicate leagueSchedule itself (in case of duplicates in source)
+        seen_ids = set()
+        deduped_schedule = []
+        for event in league_data.get('leagueSchedule', []):
+            event_id = event.get('id')
+            if event_id and event_id not in seen_ids:
+                deduped_schedule.append(event)
+                seen_ids.add(event_id)
+            elif not event_id:
+                # Keep events without IDs but they won't be deduped
+                deduped_schedule.append(event)
         
+        # Now merge unified_events into the deduped leagueSchedule
         for event in (unified_events or []):
-            if event.get('id') and event['id'] not in existing_ids:
-                merged_events.append(event)
-                existing_ids.add(event['id'])
+            event_id = event.get('id')
+            if event_id and event_id not in seen_ids:
+                deduped_schedule.append(event)
+                seen_ids.add(event_id)
         
-        league_data['leagueSchedule'] = merged_events
-        logger.info(f"✅ Merged events: {len(merged_events)} total ({len(unified_events or [])} from unified_events)")
+        league_data['leagueSchedule'] = deduped_schedule
+        logger.info(f"✅ Merged events: {len(deduped_schedule)} total ({len(unified_events or [])} from unified_events)")
             
         # Process teams from new collection (prioritize over league_data teams)
         if isinstance(teams_from_collection, Exception):
