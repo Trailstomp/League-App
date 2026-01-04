@@ -337,6 +337,46 @@ const EventsList = ({
 
     return (
         <div className="flex-1 flex flex-col" style={{ backgroundColor: 'transparent' }}>
+            {/* Upcoming / Past Tabs */}
+            <div className="bg-white/95 backdrop-blur-sm border-b">
+                <div className="flex">
+                    <button
+                        onClick={() => setTimeFilter('upcoming')}
+                        className={`flex-1 py-4 px-6 text-center font-medium transition-all ${
+                            timeFilter === 'upcoming'
+                                ? 'bg-green-50 text-green-700 border-b-3 border-green-500'
+                                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                        }`}
+                    >
+                        <span className="text-base sm:text-lg">🗓️ Upcoming Events</span>
+                        <span className={`ml-2 px-2.5 py-1 rounded-full text-sm font-semibold ${
+                            timeFilter === 'upcoming' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-gray-100 text-gray-600'
+                        }`}>
+                            {upcomingCount}
+                        </span>
+                    </button>
+                    <button
+                        onClick={() => setTimeFilter('past')}
+                        className={`flex-1 py-4 px-6 text-center font-medium transition-all ${
+                            timeFilter === 'past'
+                                ? 'bg-slate-100 text-slate-700 border-b-3 border-slate-500'
+                                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                        }`}
+                    >
+                        <span className="text-base sm:text-lg">📜 Past Events</span>
+                        <span className={`ml-2 px-2.5 py-1 rounded-full text-sm font-semibold ${
+                            timeFilter === 'past' 
+                                ? 'bg-slate-200 text-slate-800' 
+                                : 'bg-gray-100 text-gray-600'
+                        }`}>
+                            {pastCount}
+                        </span>
+                    </button>
+                </div>
+            </div>
+
             {/* Filters and Controls - Mobile Optimized */}
             <div className="bg-white/90 backdrop-blur-sm border-b px-4 py-3 sm:px-6 sm:py-4">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 sm:justify-between">
@@ -375,26 +415,26 @@ const EventsList = ({
                     </div>
 
                     <div className="text-xs sm:text-sm text-gray-600">
-                        {filteredEvents.length} of {events.length} events
+                        {displayedEvents.length} {timeFilter === 'upcoming' ? 'upcoming' : 'past'} events
                     </div>
                 </div>
             </div>
 
             {/* Events List - Mobile Optimized Cards */}
             <div className="flex-1 overflow-y-auto p-3 sm:p-6">
-                {filteredEvents.length === 0 ? (
+                {displayedEvents.length === 0 ? (
                     <div className="text-center py-12">
-                        <div className="text-4xl mb-4">📅</div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
+                        <div className="text-4xl mb-4">{timeFilter === 'upcoming' ? '🗓️' : '📜'}</div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            {timeFilter === 'upcoming' ? 'No Upcoming Events' : 'No Past Events'}
+                        </h3>
                         <p className="text-gray-600 mb-6">
-                            {filter === 'active' 
-                                ? 'No active events. Create a new event or check canceled/archived events.'
-                                : filter === 'all' 
-                                    ? 'Get started by creating your first event'
-                                    : `No ${filter.replace('_', ' ')} events found. Try changing the filter.`
+                            {timeFilter === 'upcoming' 
+                                ? 'Create a new event to get started'
+                                : 'Past events will appear here after they occur'
                             }
                         </p>
-                        {(filter === 'all' || filter === 'active') && (
+                        {timeFilter === 'upcoming' && (
                             <button
                                 onClick={onCreateEvent}
                                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -405,7 +445,7 @@ const EventsList = ({
                     </div>
                 ) : (
                     <div className="space-y-3 sm:space-y-4">
-                        {filteredEvents.map((event, index) => (
+                        {displayedEvents.map((event, index) => (
                             <div
                                 key={event.id}
                                 className="bg-white/90 backdrop-blur-sm rounded-lg shadow border hover:shadow-md transition-shadow relative"
