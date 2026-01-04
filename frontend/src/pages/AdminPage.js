@@ -147,29 +147,60 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         }
     };
 
-    // Admin tabs configuration
-    const adminTabs = [
-        { id: 'dashboard', label: 'Dashboard', icon: 'venue' },
-        { id: 'events', label: 'Events', icon: '📅' },
-        { id: 'seasons', label: 'Seasons & Leagues', icon: 'trophy' },
-        { id: 'teams', label: 'Teams', icon: 'teams' },
-        { id: 'fees', label: 'Fees & Payments', icon: '💰' },
-        { id: 'locations', label: 'Locations', icon: 'location' },
-        { id: 'news', label: 'News', icon: '📰' },
-        { id: 'users', label: 'Users & Security', icon: 'admin' },
-        { id: 'roles', label: 'Roles & Permissions', icon: 'settings' },
-        { id: 'communications', label: 'Communications', icon: 'email' },
-        { id: 'sms', label: 'SMS Notifications', icon: '📱' },
-        { id: 'youtube', label: 'YouTube', icon: '📺' },
-        { id: 'api-integrations', label: 'API Integrations', icon: 'settings' },
-        { id: 'groupme-events', label: 'GroupMe Events', icon: 'settings' },
-        { id: 'database-admin', label: 'Database Admin', icon: 'settings' },
-        { id: 'media', label: 'Media Gallery', icon: 'view' },
-        { id: 'cloud-storage', label: 'Cloud Storage', icon: 'backup' },
-        { id: 'social', label: 'Social Media', icon: 'social' },
-        { id: 'friends', label: 'Friends & Sponsors', icon: 'players' },
-        { id: 'website', label: 'Website Design', icon: 'view' },
+    // Admin tabs configuration - organized into logical groups
+    const adminTabGroups = [
+        {
+            groupName: '📊 Overview',
+            tabs: [
+                { id: 'dashboard', label: 'Dashboard', icon: 'venue' },
+            ]
+        },
+        {
+            groupName: '🏆 League Management',
+            tabs: [
+                { id: 'events', label: 'Events', icon: '📅' },
+                { id: 'seasons', label: 'Seasons', icon: 'trophy' },
+                { id: 'teams', label: 'Teams', icon: 'teams' },
+                { id: 'locations', label: 'Locations', icon: 'location' },
+            ]
+        },
+        {
+            groupName: '👥 People',
+            tabs: [
+                { id: 'users', label: 'Users', icon: 'admin' },
+                { id: 'roles', label: 'Roles', icon: 'settings' },
+                { id: 'fees', label: 'Fees & Payments', icon: '💰' },
+            ]
+        },
+        {
+            groupName: '📢 Communications',
+            tabs: [
+                { id: 'communications', label: 'Email Hub', icon: 'email' },
+                { id: 'sms', label: 'SMS (Twilio)', icon: '📱' },
+                { id: 'groupme', label: 'GroupMe', icon: '💬' },
+            ]
+        },
+        {
+            groupName: '📸 Content',
+            tabs: [
+                { id: 'news', label: 'News', icon: '📰' },
+                { id: 'media', label: 'Gallery', icon: 'view' },
+                { id: 'youtube', label: 'YouTube', icon: '📺' },
+            ]
+        },
+        {
+            groupName: '⚙️ Settings',
+            tabs: [
+                { id: 'website', label: 'Website Design', icon: 'view' },
+                { id: 'api-integrations', label: 'API Keys', icon: 'settings' },
+                { id: 'cloud-storage', label: 'Cloud Storage', icon: 'backup' },
+                { id: 'database-admin', label: 'Database', icon: 'settings' },
+            ]
+        }
     ];
+
+    // Flatten for easy lookup
+    const allTabs = adminTabGroups.flatMap(g => g.tabs);
 
     const renderTabContent = () => {
         switch (activeTab) {
@@ -185,8 +216,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <NewsManager teams={teams} currentUser={currentUser} />;
             case 'api-integrations':
                 return <APIIntegrationsManager />;
-            case 'groupme-events':
-                return <GroupMeEventsManager currentUser={currentUser} />;
+            case 'groupme':
+                return <GroupMeManager />;
             case 'database-admin':
                 return <DatabaseAdminManager />;
             case 'media':
@@ -207,15 +238,13 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <FeeManager teams={teams} players={players} currentUser={currentUser} scope="league" />;
             case 'website':
                 return <WebsiteDesignManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} teams={teams} events={events} />;
-            case 'api':
-                return <APIIntegrationsManager />;
             case 'seasons':
                 return <SeasonManager teams={teams} events={events} websiteStyle={websiteStyle} currentUser={currentUser} />;
             default:
                 return (
                     <div className="text-center py-16">
                         <h3 className="text-xl font-semibold text-slate-800 mb-2">
-                            {adminTabs.find(tab => tab.id === activeTab)?.label}
+                            {allTabs.find(tab => tab.id === activeTab)?.label}
                         </h3>
                         <p className="text-slate-600">Coming soon in future phases...</p>
                     </div>
@@ -231,23 +260,52 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 <p className="text-slate-600">Manage your lacrosse league</p>
             </div>
 
-            {/* Admin Tabs */}
-            <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm">
-                <div className="border-b px-6 py-4 overflow-x-auto admin-tabs-container">
-                    <div className="flex flex-nowrap gap-2 min-w-max md:flex-wrap md:min-w-0">
-                        {adminTabs.map(tab => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap ${
-                                    activeTab === tab.id
-                                        ? 'bg-blue-100 text-blue-700'
-                                        : 'text-slate-600 hover:bg-slate-100'
-                                }`}
-                            >
-                                <LacrosseIcon name={tab.icon} className="mr-2" style={{fontSize: '16px'}} />
-                                <span className="hidden sm:inline">{tab.label}</span>
-                                <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
+            {/* Admin Layout - Sidebar + Content */}
+            <div className="flex flex-col lg:flex-row gap-6">
+                {/* Sidebar Navigation */}
+                <div className="lg:w-64 flex-shrink-0">
+                    <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm p-4 lg:sticky lg:top-4">
+                        <nav className="space-y-4">
+                            {adminTabGroups.map((group, groupIndex) => (
+                                <div key={groupIndex}>
+                                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-2">
+                                        {group.groupName}
+                                    </h3>
+                                    <div className="space-y-1">
+                                        {group.tabs.map(tab => (
+                                            <button
+                                                key={tab.id}
+                                                onClick={() => setActiveTab(tab.id)}
+                                                className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-left ${
+                                                    activeTab === tab.id
+                                                        ? 'bg-blue-100 text-blue-700'
+                                                        : 'text-slate-600 hover:bg-slate-100'
+                                                }`}
+                                            >
+                                                <span className="mr-2 text-base">{typeof tab.icon === 'string' && tab.icon.length <= 2 ? tab.icon : ''}</span>
+                                                {typeof tab.icon === 'string' && tab.icon.length > 2 && (
+                                                    <LacrosseIcon name={tab.icon} className="mr-2" style={{fontSize: '16px'}} />
+                                                )}
+                                                {tab.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </nav>
+                    </div>
+                </div>
+
+                {/* Main Content */}
+                <div className="flex-1 min-w-0">
+                    <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm p-6">
+                        {renderTabContent()}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
                             </button>
                         ))}
                     </div>
