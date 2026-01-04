@@ -265,19 +265,6 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         // Determine if this is a game-type event
         const isGame = event.type === 'game' || event.type === 'regular_game' || (hasTeams && homeTeamId && awayTeamId);
         
-        // Debug logging for games
-        if (event.type === 'regular_game' || event.type === 'game' || hasTeams) {
-            console.log('🎮 Game event detected:', {
-                title: event.title,
-                type: event.type,
-                teams: teamsArray,
-                homeTeamId,
-                awayTeamId,
-                isGame,
-                hasTeams
-            });
-        }
-        
         // Game card layout (teams stacked with score)
         if (isGame && hasTeams) {
             return (
