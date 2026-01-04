@@ -60,10 +60,12 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
             // Map singular database types to plural filter types
             const typeMapping = {
                 'game': 'games',
+                'regular_game': 'games',  // Map regular_game to games
                 'tournament': 'tournaments', 
                 'practice': 'practices',
                 'meeting': 'meetings',
                 'social': 'social',
+                'external': 'other',  // External events fall under 'other'
                 'event': 'other', // Generic events fall under 'other'
                 'other': 'other'
             };
