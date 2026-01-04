@@ -33,17 +33,32 @@ const QuickRSVPForm = () => {
     const loadEvent = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${backendUrl}/api/league-data`);
-            if (response.ok) {
-                const data = await response.json();
-                const targetEvent = data.leagueSchedule?.find(e => e.id === eventId);
-                if (targetEvent) {
-                    setEvent(targetEvent);
-                } else {
-                    setError('Event not found');
+            
+            // First try to get from unified-events (primary source)
+            let targetEvent = null;
+            
+            try {
+                const unifiedResponse = await fetch(`${backendUrl}/api/unified-events/${eventId}`);
+                if (unifiedResponse.ok) {
+                    targetEvent = await unifiedResponse.json();
                 }
+            } catch (err) {
+                console.log('Event not found in unified-events, checking leagueSchedule...');
+            }
+            
+            // Fall back to leagueSchedule if not found
+            if (!targetEvent) {
+                const response = await fetch(`${backendUrl}/api/league-data`);
+                if (response.ok) {
+                    const data = await response.json();
+                    targetEvent = data.leagueSchedule?.find(e => e.id === eventId);
+                }
+            }
+            
+            if (targetEvent) {
+                setEvent(targetEvent);
             } else {
-                setError('Failed to load event');
+                setError('Event not found');
             }
         } catch (err) {
             setError('Failed to load event: ' + err.message);
