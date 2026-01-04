@@ -14,8 +14,10 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
 
     // Get team name by ID
     const getTeamName = (teamId) => {
+        if (!teamId) return 'TBD';
         const team = getTeam(teamId);
-        return team?.name || teamId || 'TBD';
+        const name = team?.name || String(teamId);
+        return name || 'TBD';
     };
 
     // Get team logo by ID with Google Drive URL fix
