@@ -652,18 +652,12 @@ const UserManager = ({ teams = [] }) => {
                                         placeholder="(555) 123-4567"
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                                    <select
-                                        value={newUser.role}
-                                        onChange={(e) => setNewUser(prev => ({ ...prev, role: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                    >
-                                        <option value="guest">Guest</option>
-                                        <option value="player">Player</option>
-                                        <option value="coach">Coach</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Roles (select all that apply)</label>
+                                    <RoleSelector
+                                        selectedRoles={newUser.roles}
+                                        onChange={(roles) => setNewUser(prev => ({ ...prev, roles }))}
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Jersey Size</label>
@@ -693,7 +687,7 @@ const UserManager = ({ teams = [] }) => {
                             </div>
 
                             {/* Team Assignments Section */}
-                            {(newUser.role === 'player' || newUser.role === 'coach') && (
+                            {(newUser.roles.includes('player') || newUser.roles.includes('coach')) && (
                                 <div className="border-t pt-4">
                                     <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
                                         🏆 Team Assignments
