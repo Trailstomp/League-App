@@ -7,17 +7,43 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
     const animationRef = useRef(null);
     const scrollPosRef = useRef(0);
 
+    // Get team data by ID
+    const getTeam = (teamId) => {
+        return teams.find(t => t.id === teamId) || null;
+    };
+
     // Get team name by ID
     const getTeamName = (teamId) => {
-        const team = teams.find(t => t.id === teamId);
-        return team?.name || teamId;
+        const team = getTeam(teamId);
+        return team?.name || teamId || 'TBD';
     };
 
     // Get team logo by ID with Google Drive URL fix
     const getTeamLogo = (teamId) => {
-        const team = teams.find(t => t.id === teamId);
+        const team = getTeam(teamId);
         const logoUrl = team?.style?.logoUrl || team?.logo || null;
         return logoUrl ? fixGoogleDriveUrl(logoUrl) : null;
+    };
+
+    // Get venue name from location (extract just the venue name, not full address)
+    const getVenueName = (event) => {
+        // Prefer venue field if available
+        if (event.venue) return event.venue;
+        
+        // If location exists, try to extract just the venue name (before any commas or numbers)
+        if (event.location) {
+            const loc = event.location;
+            // If it looks like a full address (has numbers or commas), take first part
+            if (/\d/.test(loc) || loc.includes(',')) {
+                // Take everything before the first number or comma
+                const match = loc.match(/^([^,\d]+)/);
+                if (match) {
+                    return match[1].trim();
+                }
+            }
+            return loc;
+        }
+        return 'TBD';
     };
 
     // Filter events based on admin ticker settings
