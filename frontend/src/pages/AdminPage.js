@@ -176,6 +176,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         {
             groupName: '📢 Communications',
             tabs: [
+                { id: 'coach-notify', label: 'Team Coaches', icon: '👨‍🏫' },
                 { id: 'communications', label: 'Email Hub', icon: 'email' },
                 { id: 'sms', label: 'SMS (Twilio)', icon: '📱' },
                 { id: 'groupme', label: 'GroupMe', icon: '💬' },
