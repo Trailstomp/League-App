@@ -91,7 +91,8 @@ class User(BaseModel):
     name: str
     email: str
     password: str  # Will be hashed
-    role: str = "guest"  # guest, player, coach, admin
+    role: str = "guest"  # Legacy - primary role: guest, player, coach, admin
+    roles: List[str] = []  # Multi-role support: ["player", "coach"], ["admin", "player"], etc.
     teamId: Optional[str] = None  # Legacy - primary team
     teamName: Optional[str] = None  # Legacy - primary team name
     # Multi-team support
