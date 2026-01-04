@@ -281,31 +281,6 @@ const EventsList = ({
         return team?.style?.logoUrl;
     };
 
-    // Filter and sort events
-    const filteredEvents = events
-        .filter(event => {
-            // Default 'active' filter excludes canceled and archived
-            if (filter === 'active') {
-                return event.status !== 'canceled' && 
-                       event.status !== 'cancelled' && 
-                       event.status !== 'archived';
-            }
-            if (filter === 'all') return true;
-            return event.status === filter;
-        })
-        .sort((a, b) => {
-            switch (sortBy) {
-                case 'date':
-                    return new Date(a.date) - new Date(b.date);
-                case 'title':
-                    return a.title.localeCompare(b.title);
-                case 'type':
-                    return a.type.localeCompare(b.type);
-                default:
-                    return 0;
-            }
-        });
-
     const formatDate = (dateStr) => {
         const date = new Date(dateStr);
         return date.toLocaleDateString('en-US', {
