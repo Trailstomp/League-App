@@ -8410,6 +8410,14 @@ async def update_user(user_id: str, updates: UserUpdate):
             if value is not None:
                 update_data[field] = value
         
+        # Handle multi-roles - sync with legacy role field
+        if "roles" in update_data and update_data["roles"]:
+            roles = update_data["roles"]
+            # Set primary role for legacy compatibility (use highest privilege)
+            role_priority = {"admin": 4, "coach": 3, "player": 2, "guest": 1}
+            primary_role = max(roles, key=lambda r: role_priority.get(r, 0))
+            update_data["role"] = primary_role
+        
         # Handle teamAssignments - sync with legacy teamId field
         if "teamAssignments" in update_data and update_data["teamAssignments"]:
             assignments = update_data["teamAssignments"]
