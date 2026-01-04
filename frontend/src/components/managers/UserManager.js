@@ -277,7 +277,7 @@ const UserManager = ({ teams = [] }) => {
             };
 
             const response = await fetch(`${backendUrl}/api/users/${editingUser.id}`, {
-                method: 'PUT',
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updateData)
             });
