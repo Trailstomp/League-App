@@ -13,6 +13,7 @@ const AdminEventsView = ({ teams = [], currentUser, onEditEvent, onViewLive }) =
     const [showQuickCreate, setShowQuickCreate] = useState(false);
     const [actionLoading, setActionLoading] = useState(null);
     const [stats, setStats] = useState({ total: 0, upcoming: 0, inProgress: 0, completed: 0 });
+    const [activeTab, setActiveTab] = useState('upcoming'); // 'upcoming' or 'past'
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
     
