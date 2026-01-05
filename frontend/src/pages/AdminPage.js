@@ -229,6 +229,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <CloudStorageManager teams={teams} />;
             case 'users':
                 return <UserManager users={users} setUsers={setUsers} teams={teams} />;
+            case 'import-players':
+                return <PlayerImporter teams={teams} onImportComplete={() => window.location.reload()} />;
             case 'roles':
                 return <RoleManager users={users} setUsers={setUsers} />;
             case 'coach-notify':
