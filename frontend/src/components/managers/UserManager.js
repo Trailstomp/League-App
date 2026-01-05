@@ -884,6 +884,40 @@ const UserManager = ({ teams = [] }) => {
                             <h3 className="text-xl font-bold">Edit User: {editingUser.name}</h3>
                         </div>
                         <div className="p-4 md:p-6 space-y-4">
+                            {/* Photo Upload */}
+                            <div className="flex items-center gap-4">
+                                <div className="relative">
+                                    {editingUser.photoUrl ? (
+                                        <img 
+                                            src={editingUser.photoUrl} 
+                                            alt="Profile" 
+                                            className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+                                        />
+                                    ) : (
+                                        <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
+                                            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                        </div>
+                                    )}
+                                    {uploadingPhoto && (
+                                        <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
+                                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Profile Photo</label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => e.target.files[0] && handlePhotoUpload(e.target.files[0], true)}
+                                        className="text-sm text-gray-600"
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">Used on player cards and live scoring</p>
+                                </div>
+                            </div>
+
                             {/* Basic Info */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
@@ -913,13 +947,6 @@ const UserManager = ({ teams = [] }) => {
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                                     />
                                 </div>
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Roles (select all that apply)</label>
-                                    <RoleSelector
-                                        selectedRoles={editingUser.roles || [editingUser.role]}
-                                        onChange={(roles) => setEditingUser(prev => ({ ...prev, roles }))}
-                                    />
-                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                                     <select
@@ -934,6 +961,13 @@ const UserManager = ({ teams = [] }) => {
                                         <option value="archived">Archived</option>
                                     </select>
                                 </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Roles (select all that apply)</label>
+                                    <RoleSelector
+                                        selectedRoles={editingUser.roles || [editingUser.role]}
+                                        onChange={(roles) => setEditingUser(prev => ({ ...prev, roles }))}
+                                    />
+                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Jersey Size</label>
                                     <select
@@ -942,21 +976,61 @@ const UserManager = ({ teams = [] }) => {
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                                     >
                                         <option value="">Select size</option>
-                                        <option value="S">Small</option>
-                                        <option value="M">Medium</option>
-                                        <option value="L">Large</option>
-                                        <option value="XL">XL</option>
-                                        <option value="XXL">XXL</option>
+                                        <option value="YS">Youth Small</option>
+                                        <option value="YM">Youth Medium</option>
+                                        <option value="YL">Youth Large</option>
+                                        <option value="S">Adult Small</option>
+                                        <option value="M">Adult Medium</option>
+                                        <option value="L">Adult Large</option>
+                                        <option value="XL">Adult XL</option>
+                                        <option value="XXL">Adult XXL</option>
                                     </select>
                                 </div>
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
-                                    <input
-                                        type="text"
-                                        value={editingUser.emergencyContact || ''}
-                                        onChange={(e) => setEditingUser(prev => ({ ...prev, emergencyContact: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                                    />
+                            </div>
+
+                            {/* Emergency Contact Section */}
+                            <div className="border-t pt-4">
+                                <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
+                                    🚨 Emergency Contact
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Contact Name</label>
+                                        <input
+                                            type="text"
+                                            value={editingUser.emergencyContactName || ''}
+                                            onChange={(e) => setEditingUser(prev => ({ ...prev, emergencyContactName: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                            placeholder="Jane Smith"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
+                                        <input
+                                            type="tel"
+                                            value={editingUser.emergencyContactPhone || ''}
+                                            onChange={(e) => setEditingUser(prev => ({ ...prev, emergencyContactPhone: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                            placeholder="(555) 987-6543"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Relationship</label>
+                                        <select
+                                            value={editingUser.emergencyContactRelationship || ''}
+                                            onChange={(e) => setEditingUser(prev => ({ ...prev, emergencyContactRelationship: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                        >
+                                            <option value="">Select...</option>
+                                            <option value="Parent">Parent</option>
+                                            <option value="Guardian">Guardian</option>
+                                            <option value="Spouse">Spouse</option>
+                                            <option value="Sibling">Sibling</option>
+                                            <option value="Other Family">Other Family</option>
+                                            <option value="Friend">Friend</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 
