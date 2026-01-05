@@ -327,6 +327,30 @@ const AdminEventsView = ({ teams = [], currentUser, onEditEvent, onViewLive }) =
                 </div>
             </div>
             
+            {/* Upcoming/Past Tabs */}
+            <div className="flex gap-2 border-b">
+                <button
+                    onClick={() => setActiveTab('upcoming')}
+                    className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                        activeTab === 'upcoming'
+                            ? 'border-blue-600 text-blue-600'
+                            : 'border-transparent text-slate-500 hover:text-slate-700'
+                    }`}
+                >
+                    📆 Upcoming & Current
+                </button>
+                <button
+                    onClick={() => setActiveTab('past')}
+                    className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                        activeTab === 'past'
+                            ? 'border-slate-600 text-slate-600'
+                            : 'border-transparent text-slate-500 hover:text-slate-700'
+                    }`}
+                >
+                    📋 Past Events
+                </button>
+            </div>
+            
             {/* Filters & Actions Bar */}
             <div className="bg-white rounded-lg border shadow-sm p-4">
                 <div className="flex flex-col lg:flex-row lg:items-center gap-4">
