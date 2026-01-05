@@ -366,6 +366,21 @@ const UserManager = ({ teams = [] }) => {
 
     const handleSaveEdit = async () => {
         try {
+            // Parse emergency contact - handle both old string format and new object format
+            let emergencyContact = editingUser.emergencyContact;
+            if (typeof emergencyContact === 'string') {
+                emergencyContact = {
+                    name: emergencyContact,
+                    phone: '',
+                    relationship: ''
+                };
+            }
+            emergencyContact = {
+                name: editingUser.emergencyContactName || emergencyContact?.name || '',
+                phone: editingUser.emergencyContactPhone || emergencyContact?.phone || '',
+                relationship: editingUser.emergencyContactRelationship || emergencyContact?.relationship || ''
+            };
+
             // Build update data with team assignments and roles
             const updateData = {
                 name: editingUser.name,
@@ -374,7 +389,8 @@ const UserManager = ({ teams = [] }) => {
                 roles: editingUser.roles || [editingUser.role || 'guest'],
                 status: editingUser.status,
                 jerseySize: editingUser.jerseySize,
-                emergencyContact: editingUser.emergencyContact,
+                photoUrl: editingUser.photoUrl,
+                emergencyContact: emergencyContact,
                 teamAssignments: editingUser.teamAssignments || [],
                 // Set primary team for legacy compatibility
                 teamId: editingUser.teamAssignments?.find(a => a.isPrimary)?.teamId || editingUser.teamAssignments?.[0]?.teamId || editingUser.teamId || '',
