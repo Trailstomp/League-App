@@ -238,6 +238,43 @@ const UserManager = ({ teams = [] }) => {
         }
     };
 
+    const handlePhotoUpload = async (file, isEdit = false) => {
+        if (!file) return null;
+        
+        setUploadingPhoto(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const response = await fetch(`${backendUrl}/api/upload/image`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const photoUrl = data.url || data.filename;
+                
+                if (isEdit && editingUser) {
+                    setEditingUser(prev => ({ ...prev, photoUrl }));
+                } else {
+                    setNewUser(prev => ({ ...prev, photoUrl }));
+                }
+                
+                return photoUrl;
+            } else {
+                alert('Failed to upload photo');
+                return null;
+            }
+        } catch (error) {
+            console.error('Photo upload error:', error);
+            alert('Error uploading photo');
+            return null;
+        } finally {
+            setUploadingPhoto(false);
+        }
+    };
+
     const handleCreateUser = async () => {
         try {
             if (!newUser.name || !newUser.email || !newUser.password) {
