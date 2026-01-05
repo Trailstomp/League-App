@@ -494,10 +494,26 @@ const UserManager = ({ teams = [] }) => {
             roles = [user.role];
         }
 
+        // Parse emergency contact - handle both old string format and new object format
+        let emergencyContactName = '';
+        let emergencyContactPhone = '';
+        let emergencyContactRelationship = '';
+        
+        if (typeof user.emergencyContact === 'object' && user.emergencyContact) {
+            emergencyContactName = user.emergencyContact.name || '';
+            emergencyContactPhone = user.emergencyContact.phone || '';
+            emergencyContactRelationship = user.emergencyContact.relationship || '';
+        } else if (typeof user.emergencyContact === 'string') {
+            emergencyContactName = user.emergencyContact;
+        }
+
         setEditingUser({
             ...user,
             teamAssignments,
-            roles
+            roles,
+            emergencyContactName,
+            emergencyContactPhone,
+            emergencyContactRelationship
         });
     };
 
