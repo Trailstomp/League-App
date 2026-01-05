@@ -201,6 +201,7 @@ const UserManager = ({ teams = [] }) => {
     const [activeTab, setActiveTab] = useState('active');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
+    const [uploadingPhoto, setUploadingPhoto] = useState(false);
     const [newUser, setNewUser] = useState({
         name: '',
         email: '',
@@ -208,7 +209,10 @@ const UserManager = ({ teams = [] }) => {
         roles: ['player'],
         phone: '',
         jerseySize: '',
-        emergencyContact: '',
+        photoUrl: '',
+        emergencyContactName: '',
+        emergencyContactPhone: '',
+        emergencyContactRelationship: '',
         teamAssignments: []
     });
     const [message, setMessage] = useState('');
