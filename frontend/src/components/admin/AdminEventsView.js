@@ -71,7 +71,24 @@ const AdminEventsView = ({ teams = [], currentUser, onEditEvent, onViewLive }) =
     }, [backendUrl]);
     
     // Filter and sort events
-    const filteredEvents = events
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Start of today
+    
+    // First filter by past/upcoming tab
+    const tabFilteredEvents = events.filter(event => {
+        const eventDate = event.date ? new Date(event.date) : null;
+        const isPast = eventDate && eventDate < now;
+        const isCompleted = event.status === 'completed' || event.status === 'canceled' || event.status === 'cancelled';
+        
+        if (activeTab === 'past') {
+            return isPast || isCompleted;
+        } else {
+            // Upcoming/Current - show future events and in-progress events
+            return !isPast || event.status === 'in_progress' || event.status === 'scheduled';
+        }
+    });
+    
+    const filteredEvents = tabFilteredEvents
         .filter(event => {
             // Status filter
             if (filter === 'active') {
