@@ -277,11 +277,10 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                         <button
                             key={groupIndex}
                             onClick={() => {
-                                setActiveGroupIndex(groupIndex);
                                 setActiveTab(group.tabs[0].id); // Select first tab in group
                             }}
                             className={`px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
-                                activeGroupIndex === groupIndex
+                                currentGroupIndex === groupIndex
                                     ? 'border-blue-500 text-blue-600 bg-blue-50/50'
                                     : 'border-transparent text-slate-600 hover:text-slate-800 hover:bg-slate-50'
                             }`}
@@ -293,7 +292,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
 
                 {/* Sub-tabs within the selected group */}
                 <div className="flex flex-wrap gap-1 p-2 bg-slate-50/50 border-b">
-                    {adminTabGroups[activeGroupIndex]?.tabs.map(tab => (
+                    {adminTabGroups[currentGroupIndex]?.tabs.map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
