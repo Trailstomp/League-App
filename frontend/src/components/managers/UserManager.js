@@ -288,7 +288,13 @@ const UserManager = ({ teams = [] }) => {
                 // Set primary team for legacy compatibility
                 teamId: newUser.teamAssignments.find(a => a.isPrimary)?.teamId || newUser.teamAssignments[0]?.teamId || '',
                 playerNumber: newUser.teamAssignments.find(a => a.isPrimary)?.playerNumber || newUser.teamAssignments[0]?.playerNumber || '',
-                position: newUser.teamAssignments.find(a => a.isPrimary)?.position || newUser.teamAssignments[0]?.position || ''
+                position: newUser.teamAssignments.find(a => a.isPrimary)?.position || newUser.teamAssignments[0]?.position || '',
+                // Emergency contact object
+                emergencyContact: {
+                    name: newUser.emergencyContactName || '',
+                    phone: newUser.emergencyContactPhone || '',
+                    relationship: newUser.emergencyContactRelationship || ''
+                }
             };
 
             const response = await fetch(`${backendUrl}/api/users/create`, {
@@ -302,7 +308,8 @@ const UserManager = ({ teams = [] }) => {
                 setShowCreateModal(false);
                 setNewUser({
                     name: '', email: '', password: '', roles: ['player'], phone: '',
-                    jerseySize: '', emergencyContact: '', teamAssignments: []
+                    jerseySize: '', photoUrl: '', emergencyContactName: '', 
+                    emergencyContactPhone: '', emergencyContactRelationship: '', teamAssignments: []
                 });
                 await loadUsers();
                 setTimeout(() => setMessage(''), 3000);
