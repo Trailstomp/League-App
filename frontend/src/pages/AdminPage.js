@@ -169,6 +169,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
             groupName: '👥 People',
             tabs: [
                 { id: 'users', label: 'Users', icon: 'admin' },
+                { id: 'import-players', label: 'Import Players', icon: '📥' },
                 { id: 'roles', label: 'Roles', icon: 'settings' },
                 { id: 'fees', label: 'Fees & Payments', icon: '💰' },
             ]
