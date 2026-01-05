@@ -259,15 +259,9 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         }
     };
 
-    // Find current group for the active tab
-    const currentGroup = adminTabGroups.find(g => g.tabs.some(t => t.id === activeTab));
-    const [activeGroupIndex, setActiveGroupIndex] = useState(0);
-
-    // Update active group when tab changes
-    useEffect(() => {
-        const groupIdx = adminTabGroups.findIndex(g => g.tabs.some(t => t.id === activeTab));
-        if (groupIdx >= 0) setActiveGroupIndex(groupIdx);
-    }, [activeTab, adminTabGroups]);
+    // Calculate active group index based on active tab
+    const activeGroupIndex = adminTabGroups.findIndex(g => g.tabs.some(t => t.id === activeTab));
+    const currentGroupIndex = activeGroupIndex >= 0 ? activeGroupIndex : 0;
 
     return (
         <div className="space-y-4">
