@@ -62,7 +62,16 @@ app = FastAPI()
 # Health check endpoint for Kubernetes/deployment health checks
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "service": "mlbl-backend"}
+    """Health check endpoint that verifies the service is running"""
+    try:
+        # Basic health response
+        return {
+            "status": "healthy",
+            "service": "mlbl-backend",
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+    except Exception as e:
+        return {"status": "unhealthy", "error": str(e)}
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
