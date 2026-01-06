@@ -435,7 +435,7 @@ const TeamGalleryManager = ({ teamId, teamName }) => {
     return (
         <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-2xl font-bold text-gray-800 mb-2">📸 {teamName} - Media Gallery</h2>
-            <p className="text-gray-600 mb-4">Manage your team's photo galleries and media</p>
+            <p className="text-gray-600 mb-4">Manage your team&apos;s photo galleries and media</p>
             <div className="bg-blue-50 border border-blue-200 rounded p-4">
                 <p className="text-blue-800">Gallery management coming soon!</p>
             </div>
