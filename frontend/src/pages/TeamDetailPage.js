@@ -5,6 +5,7 @@ import GroupMeChat from '../components/GroupMeChat';
 import NewsDisplay from '../components/NewsDisplay';
 import TeamStatsDisplay from '../components/TeamStatsDisplay';
 import YouTubeSettings from '../components/managers/YouTubeSettings';
+import PlayerCard from '../components/PlayerCard';
 import { fixGoogleDriveUrl } from '../utils/imageUtils';
 import CachedImage from '../components/CachedImage';
 import Skeleton, { SkeletonEventCard } from '../components/Skeleton';
