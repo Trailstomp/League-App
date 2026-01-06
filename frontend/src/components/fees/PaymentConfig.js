@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-const PaymentConfig = ({ scope, teamId, currentUser, canManage }) => {
+const PaymentConfig = ({ scope, teamId, currentUser, canManage, isLeagueAdmin, teams = [] }) => {
+    const [selectedTeamId, setSelectedTeamId] = useState(teamId || '');
     const [config, setConfig] = useState({
         stripe_enabled: false,
         stripe_publishable_key: '',
@@ -27,10 +28,12 @@ const PaymentConfig = ({ scope, teamId, currentUser, canManage }) => {
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
     
+    const effectiveTeamId = selectedTeamId || teamId;
+    
     const loadConfig = useCallback(async () => {
         try {
-            const params = new URLSearchParams({ scope });
-            if (teamId) params.append('team_id', teamId);
+            const params = new URLSearchParams({ scope: effectiveTeamId ? 'team' : 'league' });
+            if (effectiveTeamId) params.append('team_id', effectiveTeamId);
             
             const response = await fetch(`${backendUrl}/api/payment-config?${params}`);
             if (response.ok) {
@@ -41,7 +44,7 @@ const PaymentConfig = ({ scope, teamId, currentUser, canManage }) => {
             console.error('Error loading payment config:', error);
         }
         setLoading(false);
-    }, [backendUrl, scope, teamId]);
+    }, [backendUrl, effectiveTeamId]);
     
     useEffect(() => {
         loadConfig();
@@ -55,8 +58,8 @@ const PaymentConfig = ({ scope, teamId, currentUser, canManage }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...config,
-                    scope,
-                    team_id: teamId,
+                    scope: effectiveTeamId ? 'team' : 'league',
+                    team_id: effectiveTeamId,
                     updated_by: currentUser?.id
                 })
             });
@@ -81,11 +84,45 @@ const PaymentConfig = ({ scope, teamId, currentUser, canManage }) => {
     
     return (
         <div className="p-6 space-y-8">
-            <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-2">Payment Configuration</h3>
-                <p className="text-sm text-slate-600">
-                    Configure accepted payment methods for {scope === 'team' ? 'team' : 'league'} fees
-                </p>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-1">Payment Methods Configuration</h3>
+                    <p className="text-sm text-slate-600">
+                        {effectiveTeamId 
+                            ? `Configure payment methods for ${teams.find(t => t.id === effectiveTeamId)?.name || 'this team'}'s fees`
+                            : 'Configure league-wide payment methods'}
+                    </p>
+                </div>
+                
+                {/* Team Selection for Coaches */}
+                {teams.length > 0 && (
+                    <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-slate-700">Configure for:</label>
+                        <select
+                            value={selectedTeamId}
+                            onChange={(e) => setSelectedTeamId(e.target.value)}
+                            className="px-3 py-2 border rounded-lg text-sm"
+                        >
+                            {isLeagueAdmin && <option value="">League-wide Settings</option>}
+                            {teams.map(t => (
+                                <option key={t.id} value={t.id}>{t.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
+            </div>
+            
+            {/* Scope Badge */}
+            <div className="flex items-center gap-2">
+                {effectiveTeamId ? (
+                    <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                        🏆 Team Payment Settings
+                    </span>
+                ) : (
+                    <span className="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
+                        👑 League-wide Payment Settings
+                    </span>
+                )}
             </div>
             
             {/* Stripe */}
