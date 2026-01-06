@@ -43,12 +43,18 @@ logging.basicConfig(
 )
 
 # Backend URL for proxy endpoints
-BACKEND_URL = os.environ['BACKEND_URL']
+BACKEND_URL = os.environ.get('BACKEND_URL', 'http://localhost:8001')
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# MongoDB connection with error handling
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+try:
+    client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=5000)
+    db = client[os.environ.get('DB_NAME', 'mlbl_database')]
+except Exception as e:
+    logger.error(f"MongoDB connection error: {e}")
+    # Create a fallback client that will retry on first use
+    client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=5000)
+    db = client[os.environ.get('DB_NAME', 'mlbl_database')]
 
 # Create the main app without a prefix
 app = FastAPI()
