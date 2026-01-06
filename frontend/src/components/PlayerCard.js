@@ -154,24 +154,155 @@ const PlayerCard = ({ player, team, currentUser, onUpdate, showEditButton = true
     };
 
     const handleDownload = async () => {
-        // Create a canvas to generate an image
-        const card = cardRef.current;
-        if (!card) return;
-
+        // Generate PDF with front and back of card
         try {
-            // Use html2canvas if available, otherwise just alert
-            if (window.html2canvas) {
-                const canvas = await window.html2canvas(card);
-                const link = document.createElement('a');
-                link.download = `${player.name || 'player'}-card.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-            } else {
-                // Fallback to print
-                handlePrint();
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: [90, 130] // Card-size format
+            });
+            
+            const playerName = player.name || `${player.firstName} ${player.lastName}`;
+            const teamColorHex = teamColor.replace('#', '');
+            const r = parseInt(teamColorHex.substr(0, 2), 16);
+            const g = parseInt(teamColorHex.substr(2, 2), 16);
+            const b = parseInt(teamColorHex.substr(4, 2), 16);
+            
+            // === FRONT OF CARD ===
+            // Header with team color
+            pdf.setFillColor(r, g, b);
+            pdf.rect(0, 0, 90, 35, 'F');
+            
+            // Player photo placeholder or initials
+            pdf.setFillColor(255, 255, 255);
+            pdf.circle(45, 40, 20, 'F');
+            
+            if (!player.photoUrl) {
+                pdf.setFontSize(20);
+                pdf.setTextColor(r, g, b);
+                pdf.text(playerName.charAt(0).toUpperCase(), 45, 45, { align: 'center' });
             }
+            
+            // Jersey number badge
+            pdf.setFillColor(r, g, b);
+            pdf.circle(70, 55, 8, 'F');
+            pdf.setFontSize(10);
+            pdf.setTextColor(255, 255, 255);
+            pdf.text(player.jerseyNumber || '?', 70, 58, { align: 'center' });
+            
+            // Player name
+            pdf.setFontSize(14);
+            pdf.setTextColor(r, g, b);
+            pdf.text(playerName, 45, 70, { align: 'center', maxWidth: 80 });
+            
+            // Position
+            pdf.setFontSize(10);
+            pdf.setTextColor(100, 116, 139);
+            pdf.text(player.position || 'Player', 45, 78, { align: 'center' });
+            
+            // Team name
+            pdf.setFontSize(9);
+            pdf.text(team?.name || 'Team', 45, 85, { align: 'center' });
+            
+            // Social media icons (text representation)
+            let socialY = 95;
+            if (player.socialMedia) {
+                const socials = [];
+                if (player.socialMedia.instagram) socials.push(`@${player.socialMedia.instagram}`);
+                if (player.socialMedia.twitter) socials.push(`@${player.socialMedia.twitter}`);
+                if (socials.length > 0) {
+                    pdf.setFontSize(7);
+                    pdf.setTextColor(150, 150, 150);
+                    pdf.text(socials.join(' • '), 45, socialY, { align: 'center', maxWidth: 80 });
+                }
+            }
+            
+            // "Flip to see bio" text
+            pdf.setFontSize(6);
+            pdf.setTextColor(180, 180, 180);
+            pdf.text('(See back for player bio)', 45, 120, { align: 'center' });
+            
+            // === BACK OF CARD (new page) ===
+            pdf.addPage([90, 130]);
+            
+            // Header
+            pdf.setFillColor(248, 250, 252);
+            pdf.rect(0, 0, 90, 130, 'F');
+            
+            // Title
+            pdf.setFontSize(12);
+            pdf.setTextColor(r, g, b);
+            pdf.text(playerName, 45, 15, { align: 'center', maxWidth: 80 });
+            
+            pdf.setFontSize(8);
+            pdf.setTextColor(100, 116, 139);
+            pdf.text('Player Bio', 45, 22, { align: 'center' });
+            
+            // Line separator
+            pdf.setDrawColor(200, 200, 200);
+            pdf.line(10, 26, 80, 26);
+            
+            let yPos = 35;
+            
+            // High School
+            if (player.lacrosseHistory?.highSchool?.teamName) {
+                pdf.setFontSize(7);
+                pdf.setTextColor(71, 85, 105);
+                pdf.text('HIGH SCHOOL', 10, yPos);
+                yPos += 5;
+                pdf.setFontSize(9);
+                pdf.setTextColor(51, 65, 85);
+                const hsText = `${player.lacrosseHistory.highSchool.teamName}${player.lacrosseHistory.highSchool.graduationYear ? ` '${player.lacrosseHistory.highSchool.graduationYear.toString().slice(-2)}` : ''}`;
+                pdf.text(hsText, 10, yPos, { maxWidth: 70 });
+                yPos += 10;
+            }
+            
+            // College
+            if (player.lacrosseHistory?.college?.teamName) {
+                pdf.setFontSize(7);
+                pdf.setTextColor(71, 85, 105);
+                pdf.text('COLLEGE', 10, yPos);
+                yPos += 5;
+                pdf.setFontSize(9);
+                pdf.setTextColor(51, 65, 85);
+                const colText = `${player.lacrosseHistory.college.teamName}${player.lacrosseHistory.college.graduationYear ? ` '${player.lacrosseHistory.college.graduationYear.toString().slice(-2)}` : ''}`;
+                pdf.text(colText, 10, yPos, { maxWidth: 70 });
+                yPos += 10;
+            }
+            
+            // Post-Grad Teams
+            if (player.lacrosseHistory?.postGrad?.length > 0) {
+                pdf.setFontSize(7);
+                pdf.setTextColor(71, 85, 105);
+                pdf.text('POST-GRAD TEAMS', 10, yPos);
+                yPos += 5;
+                pdf.setFontSize(9);
+                pdf.setTextColor(51, 65, 85);
+                player.lacrosseHistory.postGrad.forEach(t => {
+                    pdf.text(`${t.teamName} (${t.years})`, 10, yPos, { maxWidth: 70 });
+                    yPos += 5;
+                });
+                yPos += 5;
+            }
+            
+            // Fun Facts
+            if (player.funFacts && yPos < 100) {
+                pdf.setFontSize(7);
+                pdf.setTextColor(71, 85, 105);
+                pdf.text('FUN FACTS', 10, yPos);
+                yPos += 5;
+                pdf.setFontSize(8);
+                pdf.setTextColor(51, 65, 85);
+                const lines = pdf.splitTextToSize(player.funFacts, 70);
+                pdf.text(lines.slice(0, 4), 10, yPos); // Limit to 4 lines
+            }
+            
+            // Save PDF
+            pdf.save(`${playerName.replace(/\s+/g, '_')}_player_card.pdf`);
+            
         } catch (error) {
-            console.error('Error downloading card:', error);
+            console.error('Error generating PDF:', error);
+            // Fallback to print
             handlePrint();
         }
     };
