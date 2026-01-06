@@ -6386,6 +6386,320 @@ async def resend_invite(invite_id: str):
         logger.error(f"❌ Error resending invite: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ============================================================================
+# TEAM INVITATIONS (League Admin inviting teams to join)
+# ============================================================================
+
+@api_router.post("/league/team-invites")
+async def send_team_invite(invite_data: Dict[str, Any]):
+    """Send an invitation for a team to join the league"""
+    try:
+        import secrets
+        import smtplib
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+        
+        team_name = invite_data.get("teamName", "").strip()
+        contact_name = invite_data.get("contactName", "").strip()
+        email = invite_data.get("email", "").strip().lower()
+        phone = invite_data.get("phone", "").strip()
+        method = invite_data.get("method", "email")
+        division = invite_data.get("division", "")
+        message = invite_data.get("message", "")
+        sent_by = invite_data.get("sentBy", "")
+        sent_by_name = invite_data.get("sentByName", "League Admin")
+        
+        if not team_name:
+            raise HTTPException(status_code=400, detail="Team name is required")
+        
+        if not contact_name:
+            raise HTTPException(status_code=400, detail="Contact name is required")
+        
+        if method == "email" and not email:
+            raise HTTPException(status_code=400, detail="Email is required")
+        
+        if method == "sms" and not phone:
+            raise HTTPException(status_code=400, detail="Phone is required for SMS")
+        
+        # Check if team already exists or invite sent
+        existing_team = await db.teams.find_one({"name": {"$regex": f"^{team_name}$", "$options": "i"}})
+        if existing_team:
+            raise HTTPException(status_code=400, detail="A team with this name already exists")
+        
+        existing_invite = await db.team_invites.find_one({
+            "email": email,
+            "status": {"$in": ["sent", "viewed"]}
+        })
+        if existing_invite:
+            raise HTTPException(status_code=400, detail="An invite has already been sent to this email")
+        
+        # Get league info
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        league_name = league_data.get("name", "the league") if league_data else "the league"
+        
+        # Generate invite token
+        invite_token = secrets.token_urlsafe(32)
+        
+        # Create invite record
+        invite = {
+            "id": str(uuid.uuid4()),
+            "teamName": team_name,
+            "contactName": contact_name,
+            "email": email,
+            "phone": phone,
+            "division": division,
+            "message": message,
+            "method": method,
+            "token": invite_token,
+            "status": "sending",
+            "sentBy": sent_by,
+            "sentByName": sent_by_name,
+            "sentAt": datetime.now(timezone.utc).isoformat(),
+            "viewedAt": None,
+            "respondedAt": None
+        }
+        
+        # Get frontend URL
+        frontend_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:3000').replace('/api', '').rstrip('/')
+        invite_link = f"{frontend_url}?team_invite={invite_token}"
+        
+        # Send invitation
+        if method == "sms":
+            sms_config = await db.sms_config.find_one({})
+            if not sms_config or not sms_config.get("account_sid"):
+                raise HTTPException(status_code=400, detail="SMS not configured")
+            
+            try:
+                from twilio.rest import Client
+                client = Client(sms_config['account_sid'], sms_config['auth_token'])
+                
+                sms_body = f"Hi {contact_name}! {team_name} has been invited to join {league_name}!"
+                if division:
+                    sms_body += f" (Division: {division})"
+                sms_body += f"\n\nJoin here: {invite_link}\n\n- {sent_by_name}"
+                
+                client.messages.create(
+                    body=sms_body,
+                    from_=sms_config['phone_number'],
+                    to=phone
+                )
+                invite["status"] = "sent"
+                logger.info(f"✅ Team invite SMS sent to {phone}")
+            except Exception as sms_error:
+                logger.error(f"❌ SMS error: {sms_error}")
+                invite["status"] = "failed"
+                invite["error"] = str(sms_error)
+        else:
+            smtp_config = league_data.get("smtpConfig") if league_data else None
+            if not smtp_config or not smtp_config.get("email"):
+                raise HTTPException(status_code=400, detail="Email not configured")
+            
+            try:
+                msg = MIMEMultipart('alternative')
+                msg['Subject'] = f"{team_name} is Invited to Join {league_name}!"
+                msg['From'] = f"{smtp_config.get('sender_name', 'MLBL')} <{smtp_config['email']}>"
+                msg['To'] = email
+                
+                text_body = f"Hi {contact_name}!\n\n"
+                text_body += f"{team_name} has been invited to join {league_name}!\n\n"
+                if division:
+                    text_body += f"Proposed Division: {division}\n\n"
+                if message:
+                    text_body += f'Message from {sent_by_name}:\n"{message}"\n\n'
+                text_body += f"Click here to accept and set up your team:\n{invite_link}\n\n"
+                text_body += f"See you on the field!\n- {league_name}"
+                
+                html_body = f'''
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+        .content {{ background: #f8fafc; padding: 30px; border-radius: 0 0 10px 10px; }}
+        .cta-button {{ display: inline-block; background: #22c55e; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🥍 Team Invitation!</h1>
+            <p>{team_name} is invited to join {league_name}</p>
+        </div>
+        <div class="content">
+            <p>Hi {contact_name}!</p>
+            <p>Great news! <strong>{team_name}</strong> has been invited to join <strong>{league_name}</strong>!</p>
+            {"<p><strong>Proposed Division:</strong> " + division + "</p>" if division else ""}
+            {"<p><em>" + message + "</em></p>" if message else ""}
+            <p style="text-align: center; margin: 30px 0;">
+                <a href="{invite_link}" class="cta-button">Accept & Set Up Team</a>
+            </p>
+            <p>We look forward to having you in the league!</p>
+            <p>- {league_name}</p>
+        </div>
+    </div>
+</body>
+</html>
+'''
+                
+                msg.attach(MIMEText(text_body, 'plain'))
+                msg.attach(MIMEText(html_body, 'html'))
+                
+                with smtplib.SMTP(smtp_config['host'], smtp_config.get('port', 587)) as server:
+                    server.starttls()
+                    server.login(smtp_config['email'], smtp_config['password'])
+                    server.send_message(msg)
+                
+                invite["status"] = "sent"
+                logger.info(f"✅ Team invite email sent to {email}")
+            except Exception as email_error:
+                logger.error(f"❌ Email error: {email_error}")
+                invite["status"] = "failed"
+                invite["error"] = str(email_error)
+        
+        await db.team_invites.insert_one(invite)
+        invite.pop("_id", None)
+        
+        return {"status": "success", "invite": invite}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error sending team invite: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/league/team-invites")
+async def get_team_invites():
+    """Get all team invitations"""
+    try:
+        invites = await db.team_invites.find({}, {"_id": 0}).sort("sentAt", -1).to_list(1000)
+        return {"invites": invites}
+    except Exception as e:
+        logger.error(f"❌ Error fetching team invites: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/team-invite/{token}")
+async def get_team_invite_details(token: str):
+    """Get team invite details"""
+    try:
+        invite = await db.team_invites.find_one({"token": token}, {"_id": 0})
+        if not invite:
+            raise HTTPException(status_code=404, detail="Invite not found")
+        
+        if invite.get("status") == "sent":
+            await db.team_invites.update_one(
+                {"token": token},
+                {"$set": {"status": "viewed", "viewedAt": datetime.now(timezone.utc).isoformat()}}
+            )
+        
+        return invite
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/team-invite/{token}/accept")
+async def accept_team_invite(token: str, team_data: Dict[str, Any]):
+    """Accept team invite and create team with coach account"""
+    try:
+        import hashlib
+        
+        invite = await db.team_invites.find_one({"token": token}, {"_id": 0})
+        if not invite:
+            raise HTTPException(status_code=404, detail="Invite not found")
+        
+        if invite.get("status") == "accepted":
+            raise HTTPException(status_code=400, detail="Already accepted")
+        
+        # Create team
+        team_id = str(uuid.uuid4())[:8] + "_team"
+        team = {
+            "id": team_id,
+            "name": invite.get("teamName"),
+            "division": invite.get("division") or team_data.get("division", ""),
+            "color": team_data.get("color", "#3b82f6"),
+            "abbreviation": team_data.get("abbreviation", invite.get("teamName", "")[:3].upper()),
+            "coach": team_data.get("coachName", invite.get("contactName")),
+            "status": "active",
+            "createdAt": datetime.now(timezone.utc).isoformat(),
+            "inviteId": invite.get("id")
+        }
+        
+        await db.teams.insert_one(team)
+        
+        # Create coach user account
+        email = team_data.get("email", invite.get("email", "")).lower().strip()
+        password = team_data.get("password", "")
+        
+        if password and len(password) >= 6:
+            password_hash = hashlib.sha256(password.encode()).hexdigest()
+            
+            coach = {
+                "id": str(uuid.uuid4()),
+                "name": team_data.get("coachName", invite.get("contactName")),
+                "email": email,
+                "password": password_hash,
+                "phone": team_data.get("phone", invite.get("phone", "")),
+                "role": "coach",
+                "roles": ["coach"],
+                "teamId": team_id,
+                "teamName": team.get("name"),
+                "teamAssignments": [{
+                    "teamId": team_id,
+                    "teamName": team.get("name"),
+                    "position": "Head Coach",
+                    "isPrimary": True
+                }],
+                "status": "active",
+                "createdAt": datetime.now(timezone.utc).isoformat(),
+                "approvedAt": datetime.now(timezone.utc).isoformat()
+            }
+            
+            await db.users.insert_one(coach)
+            coach.pop("password", None)
+            coach.pop("_id", None)
+        
+        # Update invite
+        await db.team_invites.update_one(
+            {"token": token},
+            {"$set": {
+                "status": "accepted",
+                "respondedAt": datetime.now(timezone.utc).isoformat(),
+                "acceptedTeamId": team_id
+            }}
+        )
+        
+        team.pop("_id", None)
+        logger.info(f"✅ Team invite accepted: {team.get('name')}")
+        
+        return {"status": "success", "team": team}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error accepting team invite: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.delete("/team-invite/{invite_id}")
+async def cancel_team_invite(invite_id: str):
+    """Cancel a team invite"""
+    try:
+        result = await db.team_invites.delete_one({"id": invite_id})
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Invite not found")
+        return {"status": "success"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.get("/team/{team_id}/users")
 async def get_team_users(team_id: str):
     """Get users associated with a specific team - checks users collection"""
