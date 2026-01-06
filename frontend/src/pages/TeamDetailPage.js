@@ -706,21 +706,21 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                         </div>
                                     )}
                                     
-                                    {/* Team Logo Overlay - Enhanced with Card Border - LARGER */}
-                                    <div className="absolute top-3 left-3">
+                                    {/* Team Logo Overlay - SMALLER to avoid covering faces */}
+                                    <div className="absolute top-2 left-2">
                                         <div 
-                                            className="w-20 h-20 rounded-full bg-white flex items-center justify-center overflow-hidden border-3 border-white"
+                                            className="w-12 h-12 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-white"
                                             style={{ 
-                                                boxShadow: '0 4px 12px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8)'
+                                                boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
                                             }}
                                         >
                                             {team.style?.logoUrl ? (
                                                 <CachedImage 
                                                     src={fixGoogleDriveUrl(team.style.logoUrl)} 
                                                     alt={team.name}
-                                                    className="w-full h-full object-contain p-1"
+                                                    className="w-full h-full object-contain p-0.5"
                                                     fallback={
-                                                        <LacrosseIcon name="stick" style={{ fontSize: '24px', color: team.style?.primaryColor || '#dc2626' }} />
+                                                        <LacrosseIcon name="stick" style={{ fontSize: '16px', color: team.style?.primaryColor || '#dc2626' }} />
                                                     }
                                                 />
                                             ) : (
@@ -728,7 +728,7 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                                     className="w-full h-full rounded-full flex items-center justify-center"
                                                     style={{ backgroundColor: team.style?.primaryColor || '#2563eb' }}
                                                 >
-                                                    <span className="text-white font-bold text-lg">
+                                                    <span className="text-white font-bold text-sm">
                                                         {team.name.charAt(0)}
                                                     </span>
                                                 </div>
