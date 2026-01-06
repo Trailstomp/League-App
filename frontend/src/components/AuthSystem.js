@@ -206,32 +206,6 @@ const AuthModal = ({
                         
                         {/* Email/Password Login Form */}
                         <LoginForm users={users} onLogin={onLogin} />
-
-                        {/* Quick Login (for demo/testing) */}
-                        <div className="mb-6 border-t pt-4">
-                            <h3 className="text-sm font-semibold mb-3 text-slate-600">Quick Login (Demo Mode):</h3>
-                            <div className="grid grid-cols-1 gap-2">
-                                {/* Always show demo users for testing, fall back to saved users */}
-                                {(users.length > 0 ? users : initialMockUsers).filter(u => {
-                                    const hasActiveStatus = u.status === 'active' || !u.status;
-                                    const hasRoles = (u.roles && u.roles.length > 0) || u.role;
-                                    return hasActiveStatus && hasRoles;
-                                }).slice(0, 3).map(user => (
-                                    <button 
-                                        key={user.id} 
-                                        onClick={() => handleQuickLogin(user)} 
-                                        className="text-left p-2 bg-slate-50 hover:bg-red-50 rounded text-sm flex items-center gap-2 transition-colors"
-                                    >
-                                       <UserCheck size={16} className="text-slate-500" />
-                                       <div>
-                                           <p className="font-medium text-sm">{user.name}</p>
-                                           <p className="text-xs text-slate-500">{user.email}</p>
-                                           <p className="text-xs text-blue-500">{(user.roles || [user.role]).filter(Boolean).join(', ')}</p>
-                                       </div>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
                         
                         {/* Registration Option */}
                         <div className="border-t pt-4">
