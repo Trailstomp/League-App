@@ -6094,22 +6094,13 @@ async def send_recruitment_invite(team_id: str, invite_data: Dict[str, Any]):
                 msg['To'] = email
                 
                 # Plain text version
-                text_body = f"""Hi {name}!
-
-You've been invited to join {team_name}"""
+                text_body = f"Hi {name}!\n\nYou've been invited to join {team_name}"
                 if position:
                     text_body += f" as a {position}"
-                text_body += f"!
-
-{sent_by_name} says:
-"{message if message else 'We would love to have you on our team!'}"
-
-Click here to accept the invitation and create your account:
-{invite_link}
-
-See you on the field!
-- {team_name}
-"""
+                text_body += "!\n\n"
+                text_body += f'{sent_by_name} says:\n"{message if message else "We would love to have you on our team!"}"\n\n'
+                text_body += f"Click here to accept the invitation and create your account:\n{invite_link}\n\n"
+                text_body += f"See you on the field!\n- {team_name}"
                 
                 # HTML version
                 html_body = f"""
