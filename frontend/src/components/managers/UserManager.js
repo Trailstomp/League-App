@@ -61,8 +61,11 @@ const RoleSelector = ({ selectedRoles = [], onChange }) => {
 
 // Multi-Team Assignment Component
 const TeamAssignmentEditor = ({ assignments = [], teams = [], onChange }) => {
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+    const [uploadingIndex, setUploadingIndex] = React.useState(null);
+
     const addAssignment = () => {
-        onChange([...assignments, { teamId: '', playerNumber: '', position: '', isPrimary: assignments.length === 0 }]);
+        onChange([...assignments, { teamId: '', playerNumber: '', position: '', photoUrl: '', isPrimary: assignments.length === 0 }]);
     };
 
     const removeAssignment = (index) => {
@@ -94,6 +97,39 @@ const TeamAssignmentEditor = ({ assignments = [], teams = [], onChange }) => {
         onChange(updated);
     };
 
+    const handlePhotoUpload = async (index, event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert('File size must be less than 5MB');
+            return;
+        }
+
+        setUploadingIndex(index);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch(`${backendUrl}/api/player-photo-upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                updateAssignment(index, 'photoUrl', result.photo_url);
+            } else {
+                alert('Failed to upload photo');
+            }
+        } catch (error) {
+            console.error('Photo upload error:', error);
+            alert('Failed to upload photo');
+        } finally {
+            setUploadingIndex(null);
+        }
+    };
+
     const getTeamName = (teamId) => {
         const team = teams.find(t => t.id === teamId);
         return team?.name || teamId;
@@ -114,67 +150,112 @@ const TeamAssignmentEditor = ({ assignments = [], teams = [], onChange }) => {
                         </span>
                     )}
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                        {/* Team Selection */}
-                        <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Team</label>
-                            <select
-                                value={assignment.teamId || ''}
-                                onChange={(e) => updateAssignment(index, 'teamId', e.target.value)}
-                                className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
-                            >
-                                <option value="">Select Team</option>
-                                {teams.map(team => (
-                                    <option key={team.id} value={team.id}>
-                                        {team.name} {team.division ? `(${team.division})` : ''}
-                                    </option>
-                                ))}
-                            </select>
+                    <div className="flex gap-3">
+                        {/* Team Photo */}
+                        <div className="flex-shrink-0">
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Team Photo</label>
+                            <div className="relative">
+                                <div className="w-20 h-24 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden bg-white flex items-center justify-center">
+                                    {uploadingIndex === index ? (
+                                        <div className="text-xs text-gray-500">Uploading...</div>
+                                    ) : assignment.photoUrl ? (
+                                        <img 
+                                            src={assignment.photoUrl} 
+                                            alt="Team photo"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="text-center text-gray-400">
+                                            <svg className="w-8 h-8 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                            </svg>
+                                            <span className="text-xs">No photo</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handlePhotoUpload(index, e)}
+                                    className="hidden"
+                                    id={`team-photo-${index}`}
+                                />
+                                <label
+                                    htmlFor={`team-photo-${index}`}
+                                    className="absolute -bottom-1 -right-1 bg-blue-600 text-white p-1 rounded-full cursor-pointer hover:bg-blue-700 shadow-md"
+                                    title="Upload team photo"
+                                >
+                                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </label>
+                            </div>
                         </div>
 
-                        {/* Jersey Number */}
-                        <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Jersey #</label>
-                            <input
-                                type="text"
-                                value={assignment.playerNumber || ''}
-                                onChange={(e) => updateAssignment(index, 'playerNumber', e.target.value)}
-                                className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
-                                placeholder="12"
-                            />
-                        </div>
+                        {/* Team Details */}
+                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            {/* Team Selection */}
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Team</label>
+                                <select
+                                    value={assignment.teamId || ''}
+                                    onChange={(e) => updateAssignment(index, 'teamId', e.target.value)}
+                                    className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
+                                >
+                                    <option value="">Select Team</option>
+                                    {teams.map(team => (
+                                        <option key={team.id} value={team.id}>
+                                            {team.name} {team.division ? `(${team.division})` : ''}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
-                        {/* Position */}
-                        <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Position</label>
-                            <select
-                                value={assignment.position || ''}
-                                onChange={(e) => updateAssignment(index, 'position', e.target.value)}
-                                className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
-                            >
-                                <option value="">Select Position</option>
-                                {positionOptions.map(pos => (
-                                    <option key={pos} value={pos}>{pos}</option>
-                                ))}
-                            </select>
+                            {/* Jersey Number */}
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Jersey #</label>
+                                <input
+                                    type="text"
+                                    value={assignment.playerNumber || ''}
+                                    onChange={(e) => updateAssignment(index, 'playerNumber', e.target.value)}
+                                    className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
+                                    placeholder="12"
+                                />
+                            </div>
+
+                            {/* Position */}
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Position</label>
+                                <select
+                                    value={assignment.position || ''}
+                                    onChange={(e) => updateAssignment(index, 'position', e.target.value)}
+                                    className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
+                                >
+                                    <option value="">Select Position</option>
+                                    {positionOptions.map(pos => (
+                                        <option key={pos} value={pos}>{pos}</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-end gap-2">
+                        <div className="flex flex-col gap-1 justify-center">
                             {!assignment.isPrimary && assignments.length > 1 && (
                                 <button
                                     type="button"
                                     onClick={() => updateAssignment(index, 'isPrimary', true)}
-                                    className="px-2 py-1.5 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                                    className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
                                     title="Set as primary team"
                                 >
-                                    Set Primary
+                                    ★ Primary
                                 </button>
                             )}
                             <button
                                 type="button"
                                 onClick={() => removeAssignment(index)}
-                                className="px-2 py-1.5 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
+                                className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
                                 title="Remove team"
                             >
                                 ✕ Remove
