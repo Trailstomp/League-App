@@ -5970,18 +5970,28 @@ async def get_team_players(team_id: str):
 
 @api_router.get("/team/{team_id}/users")
 async def get_team_users(team_id: str):
-    """Get users associated with a specific team"""
+    """Get users associated with a specific team - checks users collection"""
     try:
+        team_users = []
+        
+        # Check the users collection
+        users_cursor = db.users.find({
+            "$or": [
+                {"teamId": team_id},
+                {"teamAssignments.teamId": team_id}
+            ]
+        }, {"_id": 0, "password": 0})
+        
+        team_users = await users_cursor.to_list(1000)
+        
+        # Also check legacy league_data.users
         league_data = await db.league_data.find_one({"id": "main_league"})
-        
-        if not league_data or not league_data.get("users"):
-            return []
-        
-        # Filter users by team
-        team_users = [
-            user for user in league_data["users"]
-            if user.get("team_id") == team_id
-        ]
+        if league_data and league_data.get("users"):
+            for user in league_data["users"]:
+                if user.get("team_id") == team_id or user.get("teamId") == team_id:
+                    # Avoid duplicates
+                    if not any(u.get("id") == user.get("id") for u in team_users):
+                        team_users.append(user)
         
         logger.info(f"✅ Loaded {len(team_users)} users for team {team_id}")
         
