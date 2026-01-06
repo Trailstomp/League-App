@@ -510,8 +510,8 @@ function App() {
         );
       case 'quick-rsvp':
         return <QuickRSVPForm />;
-      case 'my-fees':
-        return <PlayerFeeDashboard currentUser={currentUser} />;
+      case 'player-dashboard':
+        return <PlayerDashboardPage currentUser={currentUser} />;
       case 'payment-success':
         return <PaymentSuccess onNavigate={handleNavigate} />;
       case 'team':
@@ -526,11 +526,11 @@ function App() {
         );
       case 'team-admin':
         // Check if user has team admin or coach role
-        if (!currentUser || (!currentUser.team_id && !isAdmin(currentUser))) {
+        if (!currentUser) {
           return (
             <div className="text-center py-16">
               <h2 className="text-2xl font-bold text-slate-800 mb-4">Access Denied</h2>
-              <p className="text-slate-600 mb-4">You must be a team coach to view this page.</p>
+              <p className="text-slate-600 mb-4">You must be logged in to view this page.</p>
               <button 
                 onClick={handleShowLogin}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
