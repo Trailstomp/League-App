@@ -95,6 +95,7 @@ class TeamAssignment(BaseModel):
     teamName: Optional[str] = None
     playerNumber: Optional[str] = None
     position: Optional[str] = None
+    photoUrl: Optional[str] = None  # Team-specific photo
     isPrimary: bool = False  # Designates the primary team
 
 class User(BaseModel):
