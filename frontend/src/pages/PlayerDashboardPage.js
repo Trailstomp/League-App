@@ -824,47 +824,5 @@ const PlayerProfile = ({ player, team }) => {
         </div>
     );
 };
-                                player.status === 'active' ? 'bg-green-100 text-green-700' :
-                                player.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                                'bg-gray-100 text-gray-700'
-                            }`}>
-                                {player.status || 'Unknown'}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Emergency Contact */}
-            <div className="bg-white rounded-lg shadow">
-                <div className="p-6 border-b">
-                    <h2 className="text-xl font-bold text-gray-800">🚨 Emergency Contact</h2>
-                </div>
-                <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-500">Contact Name</label>
-                        <div className="mt-1 text-lg text-gray-900">
-                            {typeof emergencyContact === 'object' 
-                                ? emergencyContact.name || 'Not provided'
-                                : emergencyContact || 'Not provided'}
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-500">Contact Phone</label>
-                        <div className="mt-1 text-lg text-gray-900">
-                            {emergencyContact.phone || 'Not provided'}
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-500">Relationship</label>
-                        <div className="mt-1 text-lg text-gray-900">
-                            {emergencyContact.relationship || 'Not provided'}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
 
 export default PlayerDashboardPage;
