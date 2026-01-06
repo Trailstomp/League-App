@@ -540,10 +540,13 @@ function App() {
             </div>
           );
         }
+        // Get team ID from user's assignments or URL
+        const userTeamId = currentUser.teamAssignments?.[0]?.teamId || currentUser.teamId || selectedTeam?.id;
         return (
           <TeamAdminPage 
             currentUser={currentUser}
-            teamId={selectedTeam?.id || currentUser.team_id}
+            teams={teams}
+            users={players}
           />
         );
       default:
