@@ -134,10 +134,15 @@ class UserUpdate(BaseModel):
     playerNumber: Optional[str] = None  # Legacy support
     position: Optional[str] = None  # Legacy support
     jerseySize: Optional[str] = None
-    emergencyContact: Optional[str] = None
+    emergencyContact: Optional[Union[str, Dict[str, str]]] = None  # Support both legacy string and new object format
     notificationPreferences: Optional[Dict[str, bool]] = None
     # Multi-team support
     teamAssignments: Optional[List[Dict[str, Any]]] = None
+    # Enhanced player profile fields
+    photoUrl: Optional[str] = None
+    lacrosseHistory: Optional[Dict[str, Any]] = None  # {highSchool: {teamName, graduationYear}, college: {...}, postGrad: [...]}
+    funFacts: Optional[str] = None
+    socialMedia: Optional[Dict[str, str]] = None  # {instagram, twitter, tiktok, facebook}
 
 class LoginRequest(BaseModel):
     email: str
