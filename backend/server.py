@@ -6572,7 +6572,7 @@ async def send_team_invite(invite_data: Dict[str, Any]):
 
 
 @api_router.get("/league/team-invites")
-async def get_team_invites():
+async def get_league_team_invites():
     """Get all team invitations"""
     try:
         invites = await db.team_invites.find({}, {"_id": 0}).sort("sentAt", -1).to_list(1000)
