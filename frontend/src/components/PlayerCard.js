@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { fixGoogleDriveUrl } from '../utils/imageUtils';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 // Social media icons
 const SocialIcons = {
