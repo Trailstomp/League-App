@@ -138,10 +138,6 @@ const AuthModal = ({
 
     if (!isOpen) return null;
 
-    const handleQuickLogin = (user) => {
-        onLogin(user);
-    };
-
     const handleRegistration = () => {
         if (!registrationData.name || !registrationData.email || !registrationData.reasonForJoining) {
             alert('Please fill in all required fields.');
