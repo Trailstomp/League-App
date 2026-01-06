@@ -13,22 +13,55 @@ const FeeManager = ({ teams = [], players = [], currentUser, scope = 'league', t
     const [showFeeForm, setShowFeeForm] = useState(false);
     const [editingFee, setEditingFee] = useState(null);
     const [summary, setSummary] = useState(null);
+    const [selectedScope, setSelectedScope] = useState(scope);
+    const [selectedTeamId, setSelectedTeamId] = useState(teamId);
+    const [feeType, setFeeType] = useState('all'); // 'all', 'player', 'team'
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+    
+    // Determine user permissions
+    const isLeagueAdmin = currentUser?.role === 'admin' || 
+                          currentUser?.roles?.includes('admin') ||
+                          currentUser?.isAdmin;
+    
+    const isTeamCoachOrAdmin = (tId) => {
+        if (isLeagueAdmin) return true;
+        
+        // Check if user is coach/admin for this specific team
+        const userRoles = currentUser?.roles || [currentUser?.role];
+        const isCoach = userRoles.includes('coach');
+        
+        // Check team assignments
+        const userTeams = currentUser?.teamAssignments?.map(a => a.teamId) || [];
+        if (currentUser?.teamId) userTeams.push(currentUser.teamId);
+        
+        return isCoach && userTeams.includes(tId);
+    };
+    
+    // Teams the current user can manage
+    const manageableTeams = teams.filter(t => isTeamCoachOrAdmin(t.id));
+    
+    const canManageFees = isLeagueAdmin || manageableTeams.length > 0;
+    const canManageTeamFees = isLeagueAdmin; // Only league admin can create team-level fees
+    const canManagePlayerFees = canManageFees; // Both league admin and team coaches can manage player fees
     
     const loadData = useCallback(async () => {
         try {
             setLoading(true);
             
-            // Load fees
+            // Build query params based on selected scope
             const feesParams = new URLSearchParams();
-            if (scope) feesParams.append('scope', scope);
-            if (teamId) feesParams.append('team_id', teamId);
+            if (selectedScope) feesParams.append('scope', selectedScope);
+            if (selectedTeamId) feesParams.append('team_id', selectedTeamId);
+            if (feeType !== 'all') feesParams.append('fee_type', feeType);
+            
+            const assignmentParams = new URLSearchParams();
+            if (selectedTeamId) assignmentParams.append('team_id', selectedTeamId);
             
             const [feesRes, assignmentsRes, summaryRes] = await Promise.all([
                 fetch(`${backendUrl}/api/fees?${feesParams}`),
-                fetch(`${backendUrl}/api/fee-assignments${teamId ? `?team_id=${teamId}` : ''}`),
-                fetch(`${backendUrl}/api/fees/summary${teamId ? `?team_id=${teamId}` : ''}`)
+                fetch(`${backendUrl}/api/fee-assignments?${assignmentParams}`),
+                fetch(`${backendUrl}/api/fees/summary?${assignmentParams}`)
             ]);
             
             if (feesRes.ok) {
@@ -50,7 +83,7 @@ const FeeManager = ({ teams = [], players = [], currentUser, scope = 'league', t
         } finally {
             setLoading(false);
         }
-    }, [backendUrl, scope, teamId]);
+    }, [backendUrl, selectedScope, selectedTeamId, feeType]);
     
     useEffect(() => {
         loadData();
@@ -63,8 +96,8 @@ const FeeManager = ({ teams = [], players = [], currentUser, scope = 'league', t
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...feeData,
-                    scope,
-                    team_id: teamId,
+                    scope: selectedScope,
+                    team_id: selectedTeamId,
                     created_by: currentUser?.id || 'system'
                 })
             });
@@ -116,11 +149,6 @@ const FeeManager = ({ teams = [], players = [], currentUser, scope = 'league', t
         }
     };
     
-    const canManageFees = currentUser?.role === 'admin' || 
-                          currentUser?.role === 'coach' || 
-                          currentUser?.role === 'captain' ||
-                          currentUser?.isAdmin;
-    
     if (loading) {
         return (
             <div className="flex items-center justify-center py-12">
@@ -132,13 +160,15 @@ const FeeManager = ({ teams = [], players = [], currentUser, scope = 'league', t
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div>
                     <h2 className="text-2xl font-bold text-slate-800">
                         💰 Fee Management
                     </h2>
                     <p className="text-slate-600">
-                        {scope === 'team' ? 'Team' : 'League'} fees, payments, and invoicing
+                        {isLeagueAdmin 
+                            ? 'Manage league and team fees, payments, and invoicing'
+                            : 'Manage player fees for your team(s)'}
                     </p>
                 </div>
                 
@@ -150,6 +180,87 @@ const FeeManager = ({ teams = [], players = [], currentUser, scope = 'league', t
                         <span>➕</span> Create Fee
                     </button>
                 )}
+            </div>
+            
+            {/* Scope & Filter Controls */}
+            <div className="bg-slate-50 p-4 rounded-lg space-y-4">
+                <div className="flex flex-wrap items-center gap-4">
+                    {/* Scope Selection - League Admin Only */}
+                    {isLeagueAdmin && (
+                        <div className="flex items-center gap-2">
+                            <label className="text-sm font-medium text-slate-700">Scope:</label>
+                            <select
+                                value={selectedScope}
+                                onChange={(e) => {
+                                    setSelectedScope(e.target.value);
+                                    if (e.target.value === 'league') setSelectedTeamId(null);
+                                }}
+                                className="px-3 py-1.5 border rounded-lg text-sm"
+                            >
+                                <option value="league">League-wide</option>
+                                <option value="team">Team-specific</option>
+                            </select>
+                        </div>
+                    )}
+                    
+                    {/* Team Selection */}
+                    {(selectedScope === 'team' || !isLeagueAdmin) && (
+                        <div className="flex items-center gap-2">
+                            <label className="text-sm font-medium text-slate-700">Team:</label>
+                            <select
+                                value={selectedTeamId || ''}
+                                onChange={(e) => setSelectedTeamId(e.target.value || null)}
+                                className="px-3 py-1.5 border rounded-lg text-sm"
+                            >
+                                {isLeagueAdmin ? (
+                                    <>
+                                        <option value="">All Teams</option>
+                                        {teams.map(t => (
+                                            <option key={t.id} value={t.id}>{t.name}</option>
+                                        ))}
+                                    </>
+                                ) : (
+                                    <>
+                                        {manageableTeams.length === 0 ? (
+                                            <option value="">No teams assigned</option>
+                                        ) : (
+                                            manageableTeams.map(t => (
+                                                <option key={t.id} value={t.id}>{t.name}</option>
+                                            ))
+                                        )}
+                                    </>
+                                )}
+                            </select>
+                        </div>
+                    )}
+                    
+                    {/* Fee Type Filter */}
+                    <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-slate-700">Fee Type:</label>
+                        <select
+                            value={feeType}
+                            onChange={(e) => setFeeType(e.target.value)}
+                            className="px-3 py-1.5 border rounded-lg text-sm"
+                        >
+                            <option value="all">All Fees</option>
+                            <option value="player">Player Fees</option>
+                            {isLeagueAdmin && <option value="team">Team Fees</option>}
+                        </select>
+                    </div>
+                </div>
+                
+                {/* Permission Indicator */}
+                <div className="flex items-center gap-2 text-sm">
+                    {isLeagueAdmin ? (
+                        <span className="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-700 rounded-full">
+                            👑 League Admin - Full access to all fees
+                        </span>
+                    ) : (
+                        <span className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
+                            🏆 Team Coach/Admin - Manage player fees for your team(s)
+                        </span>
+                    )}
+                </div>
             </div>
             
             {/* Summary Cards */}
@@ -185,21 +296,22 @@ const FeeManager = ({ teams = [], players = [], currentUser, scope = 'league', t
             {/* Tab Navigation */}
             <div className="border-b border-slate-200">
                 <nav className="flex space-x-8">
-                    {['fees', 'assignments', 'payments', 'settings'].map(tab => (
+                    {[
+                        { id: 'fees', label: 'Fees', icon: '📋' },
+                        { id: 'assignments', label: 'Assignments', icon: '👥' },
+                        { id: 'payments', label: 'Payments', icon: '💳' },
+                        { id: 'settings', label: 'Payment Methods', icon: '⚙️' }
+                    ].map(tab => (
                         <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            className={`py-3 px-1 border-b-2 font-medium text-sm capitalize ${
-                                activeTab === tab
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`py-3 px-1 border-b-2 font-medium text-sm ${
+                                activeTab === tab.id
                                     ? 'border-blue-500 text-blue-600'
                                     : 'border-transparent text-slate-500 hover:text-slate-700'
                             }`}
                         >
-                            {tab === 'fees' && '📋 '}
-                            {tab === 'assignments' && '👥 '}
-                            {tab === 'payments' && '💳 '}
-                            {tab === 'settings' && '⚙️ '}
-                            {tab}
+                            {tab.icon} {tab.label}
                         </button>
                     ))}
                 </nav>
@@ -214,6 +326,7 @@ const FeeManager = ({ teams = [], players = [], currentUser, scope = 'league', t
                         onDelete={handleDeleteFee}
                         onAssign={(fee) => setActiveTab('assignments')}
                         canManage={canManageFees}
+                        isLeagueAdmin={isLeagueAdmin}
                     />
                 )}
                 
@@ -221,11 +334,12 @@ const FeeManager = ({ teams = [], players = [], currentUser, scope = 'league', t
                     <FeeAssignments
                         assignments={assignments}
                         fees={fees}
-                        teams={teams}
+                        teams={isLeagueAdmin ? teams : manageableTeams}
                         players={players}
                         currentUser={currentUser}
                         onRefresh={loadData}
                         canManage={canManageFees}
+                        selectedTeamId={selectedTeamId}
                     />
                 )}
                 
@@ -240,10 +354,12 @@ const FeeManager = ({ teams = [], players = [], currentUser, scope = 'league', t
                 
                 {activeTab === 'settings' && (
                     <PaymentConfig
-                        scope={scope}
-                        teamId={teamId}
+                        scope={selectedScope}
+                        teamId={selectedTeamId}
                         currentUser={currentUser}
                         canManage={canManageFees}
+                        isLeagueAdmin={isLeagueAdmin}
+                        teams={isLeagueAdmin ? teams : manageableTeams}
                     />
                 )}
             </div>
@@ -254,7 +370,9 @@ const FeeManager = ({ teams = [], players = [], currentUser, scope = 'league', t
                     fee={editingFee}
                     onSubmit={editingFee ? (data) => handleUpdateFee(editingFee.id, data) : handleCreateFee}
                     onClose={() => { setShowFeeForm(false); setEditingFee(null); }}
-                    teams={teams}
+                    teams={isLeagueAdmin ? teams : manageableTeams}
+                    isLeagueAdmin={isLeagueAdmin}
+                    selectedTeamId={selectedTeamId}
                 />
             )}
         </div>
