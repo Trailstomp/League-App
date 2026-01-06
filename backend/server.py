@@ -2503,7 +2503,8 @@ async def process_google_credentials_file(file: UploadFile = File(...)):
         
         config["googleDrive"]["clientId"] = client_id
         config["googleDrive"]["clientSecret"] = client_secret
-        config["googleDrive"]["redirectUri"] = redirect_uris[0] if redirect_uris else "https://app-takeover.emergent.host"
+        backend_url = os.environ.get('BACKEND_URL', 'http://localhost:8001')
+        config["googleDrive"]["redirectUri"] = redirect_uris[0] if redirect_uris else f"{backend_url}/api/google-reauth/callback"
         config["lastUpdated"] = datetime.utcnow()
         
         # Save to database
