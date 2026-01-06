@@ -181,6 +181,7 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate 
                 {activeTab === 'chat' && <TeamChatTab team={team} />}
                 {activeTab === 'media' && <TeamMediaTab team={team} />}
                 {activeTab === 'contact' && <TeamContactTab team={team} />}
+                {activeTab === 'recruiting' && <TeamRecruitingTab team={team} currentUser={currentUser} />}
                 {activeTab === 'settings' && <TeamSettingsTab team={team} />}
             </div>
         </div>
