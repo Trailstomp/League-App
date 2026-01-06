@@ -5915,18 +5915,50 @@ async def get_team_locations(team_id: str):
 
 @api_router.get("/team/{team_id}/players")
 async def get_team_players(team_id: str):
-    """Get players for a specific team"""
+    """Get players for a specific team - checks both users collection and legacy league_data.players"""
     try:
+        team_players = []
+        
+        # First, check the users collection (new format)
+        users_cursor = db.users.find({
+            "$or": [
+                {"teamId": team_id},
+                {"teamAssignments.teamId": team_id}
+            ],
+            "status": "active"
+        }, {"_id": 0, "password": 0})
+        
+        users_list = await users_cursor.to_list(1000)
+        for user in users_list:
+            # Convert user to player format for consistency
+            player = {
+                "id": user.get("id"),
+                "name": user.get("name"),
+                "email": user.get("email"),
+                "phone": user.get("phone"),
+                "teamId": team_id,
+                "position": user.get("position", ""),
+                "jerseyNumber": user.get("playerNumber", user.get("jerseyNumber", "")),
+                "photoUrl": user.get("photoUrl", ""),
+                "roles": user.get("roles", []),
+                "status": user.get("status", "active")
+            }
+            # Get team-specific info from teamAssignments if available
+            for assignment in user.get("teamAssignments", []):
+                if assignment.get("teamId") == team_id:
+                    player["position"] = assignment.get("position") or player["position"]
+                    player["jerseyNumber"] = assignment.get("playerNumber") or player["jerseyNumber"]
+                    break
+            team_players.append(player)
+        
+        # Also check legacy league_data.players
         league_data = await db.league_data.find_one({"id": "main_league"})
-        
-        if not league_data or not league_data.get("players"):
-            return []
-        
-        # Filter players by team
-        team_players = [
-            player for player in league_data["players"]
-            if player.get("team_id") == team_id or player.get("teamId") == team_id
-        ]
+        if league_data and league_data.get("players"):
+            for player in league_data["players"]:
+                if player.get("team_id") == team_id or player.get("teamId") == team_id:
+                    # Avoid duplicates by checking ID
+                    if not any(p.get("id") == player.get("id") for p in team_players):
+                        team_players.append(player)
         
         logger.info(f"✅ Loaded {len(team_players)} players for team {team_id}")
         
