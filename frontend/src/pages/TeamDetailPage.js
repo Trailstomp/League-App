@@ -10,7 +10,7 @@ import { fixGoogleDriveUrl } from '../utils/imageUtils';
 import CachedImage from '../components/CachedImage';
 import Skeleton, { SkeletonEventCard } from '../components/Skeleton';
 
-const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
+const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate }) => {
     const [activeTab, setActiveTab] = useState('home');
 
     if (!team) {
@@ -31,6 +31,15 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
         );
     }
 
+    // Check if current user is a coach or admin for this team
+    const isTeamCoachOrAdmin = currentUser && (
+        currentUser.roles?.includes('admin') ||
+        (currentUser.roles?.includes('coach') && (
+            currentUser.teamId === team.id ||
+            currentUser.teamAssignments?.some(a => a.teamId === team.id)
+        ))
+    );
+
     const tabs = [
         { id: 'home', label: 'Home', icon: 'venue' },
         { id: 'schedule', label: 'Schedule', icon: 'calendar' },
@@ -39,6 +48,7 @@ const TeamDetailPage = ({ team, teams, events, players, onNavigate }) => {
         { id: 'chat', label: 'Team Chat', icon: 'email' },
         { id: 'media', label: 'Photos & Vids', icon: 'view' },
         { id: 'contact', label: 'Contact', icon: 'email' },
+        ...(isTeamCoachOrAdmin ? [{ id: 'recruiting', label: 'Recruiting', icon: 'add', coachOnly: true }] : []),
         { id: 'settings', label: 'Settings', icon: 'settings', adminOnly: true }
     ];
 
