@@ -736,13 +736,13 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                         </div>
                                     </div>
 
-                                    {/* Jersey Number - Enhanced with Metallic Effect */}
-                                    <div className="absolute bottom-3 right-3">
+                                    {/* Jersey Number - Smaller to match logo */}
+                                    <div className="absolute bottom-2 right-2">
                                         <div 
-                                            className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl border-3 border-white"
+                                            className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg border-2 border-white"
                                             style={{ 
                                                 background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 50%, ${team.style?.primaryColor || '#2563eb'} 100%)`,
-                                                boxShadow: '0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.1)'
+                                                boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
                                             }}
                                         >
                                             {player.jerseyNumber || '?'}
