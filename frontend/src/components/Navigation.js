@@ -395,7 +395,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                         <NavItem icon={<LacrosseIcon name="trophy" />} label="Standings" pageName="standings" />
                         <NavItem icon={<LacrosseIcon name="email" />} label="League Contact" pageName="league_contact" />
                         {currentUser && (
-                            <NavItem icon={<span>💰</span>} label="My Fees" pageName="my-fees" />
+                            <NavItem icon={<span>📊</span>} label="My Dashboard" pageName="player-dashboard" />
                         )}
                         {currentUser && (isAdmin(currentUser) || isCoach(currentUser)) && (
                             <NavItem icon={<span>💬</span>} label="League Chat" pageName="chat" />
@@ -403,8 +403,8 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                         {currentUser && isAdmin(currentUser) && (
                             <NavItem icon={<LacrosseIcon name="admin" />} label="Admin Portal" pageName="admin" />
                         )}
-                        {currentUser && currentUser.team_id && !isAdmin(currentUser) && (
-                            <NavItem icon={<span>🏆</span>} label="My Team Admin" pageName="team-admin" />
+                        {currentUser && isCoach(currentUser) && !isAdmin(currentUser) && (
+                            <NavItem icon={<span>🏆</span>} label="Team Admin" pageName="team-admin" />
                         )}
                     </div>
                     
