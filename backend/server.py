@@ -8301,6 +8301,211 @@ async def reset_user_password(user_id: str, data: Dict[str, Any]):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@api_router.post("/password-reset/request")
+async def request_password_reset(data: Dict[str, Any]):
+    """Request a password reset - sends code via email or SMS"""
+    try:
+        import hashlib
+        import secrets
+        import smtplib
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+        
+        email = data.get("email", "").lower().strip()
+        method = data.get("method", "email")  # "email" or "sms"
+        
+        if not email:
+            raise HTTPException(status_code=400, detail="Email is required")
+        
+        # Find user by email
+        user = await db.users.find_one({"email": email}, {"_id": 0})
+        if not user:
+            # Don't reveal if email exists or not for security
+            return {"status": "success", "message": "If an account exists, a reset code has been sent"}
+        
+        # Generate 6-digit reset code
+        reset_code = ''.join([str(secrets.randbelow(10)) for _ in range(6)])
+        reset_token = secrets.token_urlsafe(32)
+        
+        # Store reset token with expiry (15 minutes)
+        await db.password_resets.update_one(
+            {"email": email},
+            {
+                "$set": {
+                    "email": email,
+                    "user_id": user.get("id"),
+                    "code": reset_code,
+                    "token": reset_token,
+                    "created_at": datetime.now(timezone.utc),
+                    "expires_at": datetime.now(timezone.utc) + timedelta(minutes=15),
+                    "used": False
+                }
+            },
+            upsert=True
+        )
+        
+        # Send via chosen method
+        if method == "sms" and user.get("phone"):
+            # Send via Twilio SMS
+            sms_config = await db.sms_config.find_one({})
+            if sms_config and sms_config.get("account_sid"):
+                try:
+                    from twilio.rest import Client
+                    client = Client(sms_config['account_sid'], sms_config['auth_token'])
+                    
+                    message = client.messages.create(
+                        body=f"Your MLBL password reset code is: {reset_code}\n\nThis code expires in 15 minutes.",
+                        from_=sms_config['phone_number'],
+                        to=user['phone']
+                    )
+                    logger.info(f"✅ Password reset SMS sent to {user['phone']}")
+                except Exception as sms_error:
+                    logger.error(f"❌ SMS send error: {sms_error}")
+                    raise HTTPException(status_code=500, detail="Failed to send SMS. Try email instead.")
+            else:
+                raise HTTPException(status_code=400, detail="SMS not configured. Please use email.")
+        else:
+            # Send via email (default)
+            league_data = await db.league_data.find_one({"id": "main_league"})
+            smtp_config = league_data.get("smtpConfig") if league_data else None
+            
+            if smtp_config and smtp_config.get("email"):
+                try:
+                    msg = MIMEMultipart()
+                    msg['Subject'] = "MLBL Password Reset Code"
+                    msg['From'] = f"{smtp_config.get('sender_name', 'MLBL')} <{smtp_config['email']}>"
+                    msg['To'] = email
+                    
+                    body = f"""
+Hello {user.get('name', 'there')},
+
+You requested a password reset for your MLBL account.
+
+Your reset code is: {reset_code}
+
+This code expires in 15 minutes.
+
+If you didn't request this, please ignore this email.
+
+- The MLBL Team
+                    """
+                    msg.attach(MIMEText(body, 'plain'))
+                    
+                    with smtplib.SMTP(smtp_config['host'], smtp_config.get('port', 587)) as server:
+                        server.starttls()
+                        server.login(smtp_config['email'], smtp_config['password'])
+                        server.send_message(msg)
+                    
+                    logger.info(f"✅ Password reset email sent to {email}")
+                except Exception as email_error:
+                    logger.error(f"❌ Email send error: {email_error}")
+                    raise HTTPException(status_code=500, detail="Failed to send email")
+            else:
+                raise HTTPException(status_code=500, detail="Email not configured")
+        
+        return {"status": "success", "message": "Reset code sent", "token": reset_token}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error requesting password reset: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/password-reset/verify")
+async def verify_reset_code(data: Dict[str, Any]):
+    """Verify the reset code"""
+    try:
+        token = data.get("token")
+        code = data.get("code")
+        
+        if not token or not code:
+            raise HTTPException(status_code=400, detail="Token and code are required")
+        
+        # Find reset request
+        reset_request = await db.password_resets.find_one({
+            "token": token,
+            "code": code,
+            "used": False
+        }, {"_id": 0})
+        
+        if not reset_request:
+            raise HTTPException(status_code=400, detail="Invalid or expired code")
+        
+        # Check expiry
+        expires_at = reset_request.get("expires_at")
+        if expires_at and datetime.now(timezone.utc) > expires_at.replace(tzinfo=timezone.utc):
+            raise HTTPException(status_code=400, detail="Code has expired")
+        
+        return {"status": "success", "message": "Code verified", "user_id": reset_request.get("user_id")}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error verifying reset code: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/password-reset/complete")
+async def complete_password_reset(data: Dict[str, Any]):
+    """Complete password reset with new password"""
+    try:
+        import hashlib
+        
+        token = data.get("token")
+        code = data.get("code")
+        new_password = data.get("newPassword")
+        
+        if not token or not code or not new_password:
+            raise HTTPException(status_code=400, detail="Token, code, and new password are required")
+        
+        if len(new_password) < 6:
+            raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+        
+        # Find and validate reset request
+        reset_request = await db.password_resets.find_one({
+            "token": token,
+            "code": code,
+            "used": False
+        }, {"_id": 0})
+        
+        if not reset_request:
+            raise HTTPException(status_code=400, detail="Invalid or expired reset request")
+        
+        # Check expiry
+        expires_at = reset_request.get("expires_at")
+        if expires_at and datetime.now(timezone.utc) > expires_at.replace(tzinfo=timezone.utc):
+            raise HTTPException(status_code=400, detail="Reset code has expired")
+        
+        # Hash new password
+        password_hash = hashlib.sha256(new_password.encode()).hexdigest()
+        
+        # Update user password
+        result = await db.users.update_one(
+            {"id": reset_request["user_id"]},
+            {"$set": {"password": password_hash}}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Mark reset request as used
+        await db.password_resets.update_one(
+            {"token": token},
+            {"$set": {"used": True}}
+        )
+        
+        logger.info(f"✅ Password reset completed for user: {reset_request['user_id']}")
+        
+        return {"status": "success", "message": "Password reset successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error completing password reset: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.post("/users/register")
 async def register_user(user_data: UserRegistration):
     """Public user registration endpoint"""
