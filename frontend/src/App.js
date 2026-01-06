@@ -3,6 +3,7 @@ import Layout from './components/Layout';
 import { HomePage, AdminPage, EventsPage } from './pages';
 import TeamDetailPage from './pages/TeamDetailPage';
 import TeamAdminPage from './pages/TeamAdminPage';
+import PlayerDashboardPage from './pages/PlayerDashboardPage';
 import TournamentPage from './pages/TournamentPage';
 import UnifiedEventsPage from './pages/UnifiedEventsPage';
 import RegistrationPage from './pages/RegistrationPage';
