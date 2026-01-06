@@ -521,6 +521,7 @@ function App() {
             teams={teams}
             events={events}
             players={players}
+            currentUser={currentUser}
             onNavigate={handleNavigate}
           />
         );
