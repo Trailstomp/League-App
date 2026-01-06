@@ -88,6 +88,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Startup event for logging
+@app.on_event("startup")
+async def startup_event():
+    logger.info("🚀 MLBL Backend starting up...")
+    logger.info(f"📁 Uploads directory: {UPLOADS_DIR}")
+    logger.info(f"🗄️ Database: {os.environ.get('DB_NAME', 'mlbl_database')}")
+    logger.info("✅ Backend startup complete")
+
 
 # Define Models
 class StatusCheck(BaseModel):
