@@ -5940,7 +5940,7 @@ async def get_team_players(team_id: str):
                 "teamId": team_id,
                 "position": user.get("position", ""),
                 "jerseyNumber": user.get("playerNumber", user.get("jerseyNumber", "")),
-                "photoUrl": user.get("photoUrl", ""),
+                "photoUrl": user.get("photoUrl", ""),  # Default photo
                 "roles": user.get("roles", []),
                 "status": user.get("status", "active")
             }
@@ -5949,6 +5949,9 @@ async def get_team_players(team_id: str):
                 if assignment.get("teamId") == team_id:
                     player["position"] = assignment.get("position") or player["position"]
                     player["jerseyNumber"] = assignment.get("playerNumber") or player["jerseyNumber"]
+                    # Use team-specific photo if available, otherwise fall back to default
+                    if assignment.get("photoUrl"):
+                        player["photoUrl"] = assignment.get("photoUrl")
                     break
             team_players.append(player)
         
