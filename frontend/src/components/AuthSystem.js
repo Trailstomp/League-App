@@ -26,6 +26,14 @@ const LoginForm = ({ users, onLogin }) => {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [resetMode, setResetMode] = useState(false);
+    const [resetStep, setResetStep] = useState(1); // 1: enter email, 2: enter code, 3: new password
+    const [resetMethod, setResetMethod] = useState('email');
+    const [resetToken, setResetToken] = useState('');
+    const [resetCode, setResetCode] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
@@ -64,6 +72,296 @@ const LoginForm = ({ users, onLogin }) => {
         }
     };
 
+    const handleRequestReset = async (e) => {
+        e.preventDefault();
+        setError('');
+        setSuccessMessage('');
+        
+        if (!email) {
+            setError('Please enter your email address.');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await fetch(`${backendUrl}/api/password-reset/request`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, method: resetMethod })
+            });
+
+            const data = await response.json();
+            
+            if (response.ok) {
+                setResetToken(data.token);
+                setResetStep(2);
+                setSuccessMessage(`Reset code sent via ${resetMethod}. Check your ${resetMethod === 'sms' ? 'phone' : 'inbox'}.`);
+            } else {
+                setError(data.detail || 'Failed to send reset code');
+            }
+        } catch (err) {
+            setError('Network error. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerifyCode = async (e) => {
+        e.preventDefault();
+        setError('');
+        setSuccessMessage('');
+        
+        if (!resetCode || resetCode.length !== 6) {
+            setError('Please enter the 6-digit code.');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await fetch(`${backendUrl}/api/password-reset/verify`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: resetToken, code: resetCode })
+            });
+
+            const data = await response.json();
+            
+            if (response.ok) {
+                setResetStep(3);
+                setSuccessMessage('Code verified! Enter your new password.');
+            } else {
+                setError(data.detail || 'Invalid code');
+            }
+        } catch (err) {
+            setError('Network error. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCompleteReset = async (e) => {
+        e.preventDefault();
+        setError('');
+        setSuccessMessage('');
+        
+        if (!newPassword || newPassword.length < 6) {
+            setError('Password must be at least 6 characters.');
+            return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            setError('Passwords do not match.');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await fetch(`${backendUrl}/api/password-reset/complete`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: resetToken, code: resetCode, newPassword })
+            });
+
+            const data = await response.json();
+            
+            if (response.ok) {
+                setSuccessMessage('Password reset successful! You can now log in.');
+                // Reset all states and go back to login
+                setTimeout(() => {
+                    setResetMode(false);
+                    setResetStep(1);
+                    setResetToken('');
+                    setResetCode('');
+                    setNewPassword('');
+                    setConfirmPassword('');
+                    setSuccessMessage('');
+                }, 2000);
+            } else {
+                setError(data.detail || 'Failed to reset password');
+            }
+        } catch (err) {
+            setError('Network error. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const cancelReset = () => {
+        setResetMode(false);
+        setResetStep(1);
+        setResetToken('');
+        setResetCode('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setError('');
+        setSuccessMessage('');
+    };
+
+    // Password Reset Flow
+    if (resetMode) {
+        return (
+            <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-4 text-slate-800">Reset Password</h3>
+                
+                {/* Success Message */}
+                {successMessage && (
+                    <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <p className="text-sm text-green-800">{successMessage}</p>
+                    </div>
+                )}
+                
+                {/* Error Message */}
+                {error && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-sm text-red-800">{error}</p>
+                    </div>
+                )}
+
+                {/* Step 1: Enter Email */}
+                {resetStep === 1 && (
+                    <form onSubmit={handleRequestReset}>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Enter your email address"
+                                required
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Send code via</label>
+                            <div className="flex gap-4">
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="resetMethod"
+                                        value="email"
+                                        checked={resetMethod === 'email'}
+                                        onChange={() => setResetMethod('email')}
+                                        className="mr-2"
+                                    />
+                                    Email
+                                </label>
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="resetMethod"
+                                        value="sms"
+                                        checked={resetMethod === 'sms'}
+                                        onChange={() => setResetMethod('sms')}
+                                        className="mr-2"
+                                    />
+                                    Text Message (SMS)
+                                </label>
+                            </div>
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                type="button"
+                                onClick={cancelReset}
+                                className="flex-1 bg-slate-200 text-slate-700 p-3 rounded-lg hover:bg-slate-300 transition-colors font-medium"
+                            >
+                                Back to Login
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="flex-1 bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold disabled:bg-gray-400"
+                            >
+                                {loading ? 'Sending...' : 'Send Reset Code'}
+                            </button>
+                        </div>
+                    </form>
+                )}
+
+                {/* Step 2: Enter Code */}
+                {resetStep === 2 && (
+                    <form onSubmit={handleVerifyCode}>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Enter 6-Digit Code</label>
+                            <input
+                                type="text"
+                                value={resetCode}
+                                onChange={(e) => setResetCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-2xl tracking-widest"
+                                placeholder="000000"
+                                maxLength={6}
+                                required
+                            />
+                            <p className="text-xs text-slate-500 mt-2">Code expires in 15 minutes</p>
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                type="button"
+                                onClick={cancelReset}
+                                className="flex-1 bg-slate-200 text-slate-700 p-3 rounded-lg hover:bg-slate-300 transition-colors font-medium"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={loading || resetCode.length !== 6}
+                                className="flex-1 bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold disabled:bg-gray-400"
+                            >
+                                {loading ? 'Verifying...' : 'Verify Code'}
+                            </button>
+                        </div>
+                    </form>
+                )}
+
+                {/* Step 3: New Password */}
+                {resetStep === 3 && (
+                    <form onSubmit={handleCompleteReset}>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-slate-700 mb-2">New Password</label>
+                            <input
+                                type="password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Enter new password (min 6 characters)"
+                                minLength={6}
+                                required
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Confirm Password</label>
+                            <input
+                                type="password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Confirm new password"
+                                minLength={6}
+                                required
+                            />
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                type="button"
+                                onClick={cancelReset}
+                                className="flex-1 bg-slate-200 text-slate-700 p-3 rounded-lg hover:bg-slate-300 transition-colors font-medium"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="flex-1 bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition-colors font-semibold disabled:bg-gray-400"
+                            >
+                                {loading ? 'Resetting...' : 'Reset Password'}
+                            </button>
+                        </div>
+                    </form>
+                )}
+            </div>
+        );
+    }
+
+    // Normal Login Form
     return (
         <form onSubmit={handleSubmit} className="mb-6">
             <div className="mb-4">
@@ -77,7 +375,7 @@ const LoginForm = ({ users, onLogin }) => {
                     required
                 />
             </div>
-            <div className="mb-6">
+            <div className="mb-2">
                 <label className="block text-sm font-medium text-slate-700 mb-2">Password</label>
                 <input
                     type="password"
@@ -87,6 +385,17 @@ const LoginForm = ({ users, onLogin }) => {
                     placeholder="Enter your password"
                     required
                 />
+            </div>
+            
+            {/* Forgot Password Link */}
+            <div className="mb-4 text-right">
+                <button
+                    type="button"
+                    onClick={() => setResetMode(true)}
+                    className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                    Forgot password?
+                </button>
             </div>
             
             {/* Error Message */}
