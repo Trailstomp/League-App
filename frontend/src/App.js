@@ -244,8 +244,8 @@ function App() {
       '/standings': 'standings',
       '/chat': 'chat',
       '/league_contact': 'league_contact',
-      '/my-fees': 'my-fees',
-      '/fees': 'my-fees',
+      '/player-dashboard': 'player-dashboard',
+      '/my-dashboard': 'player-dashboard',
       '/fees/payment-success': 'payment-success'
     };
     
