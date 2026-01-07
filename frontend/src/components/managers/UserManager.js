@@ -654,13 +654,38 @@ const UserManager = ({ teams = [] }) => {
             emergencyContactName = user.emergencyContact;
         }
 
+        // Parse lacrosse history
+        const lacrosseHistory = {
+            highSchool: {
+                teamName: user.lacrosseHistory?.highSchool?.teamName || '',
+                graduationYear: user.lacrosseHistory?.highSchool?.graduationYear || ''
+            },
+            college: {
+                teamName: user.lacrosseHistory?.college?.teamName || '',
+                graduationYear: user.lacrosseHistory?.college?.graduationYear || ''
+            },
+            postGrad: user.lacrosseHistory?.postGrad || []
+        };
+
+        // Parse social media
+        const socialMedia = {
+            instagram: user.socialMedia?.instagram || '',
+            twitter: user.socialMedia?.twitter || '',
+            tiktok: user.socialMedia?.tiktok || '',
+            facebook: user.socialMedia?.facebook || '',
+            linkedin: user.socialMedia?.linkedin || ''
+        };
+
         setEditingUser({
             ...user,
             teamAssignments,
             roles,
             emergencyContactName,
             emergencyContactPhone,
-            emergencyContactRelationship
+            emergencyContactRelationship,
+            lacrosseHistory,
+            funFacts: user.funFacts || '',
+            socialMedia
         });
     };
 
