@@ -23,6 +23,326 @@ import PlayerImporter from '../components/managers/PlayerImporter';
 import { FeeManager } from '../components/fees';
 import AdminEventsView from '../components/admin/AdminEventsView';
 
+// Team Invites Manager Component for League Admins
+const TeamInvitesManager = ({ currentUser }) => {
+    const [invites, setInvites] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [showForm, setShowForm] = useState(false);
+    const [sending, setSending] = useState(false);
+    const [message, setMessage] = useState('');
+    const [formData, setFormData] = useState({
+        teamName: '',
+        contactName: '',
+        email: '',
+        phone: '',
+        method: 'email',
+        division: '',
+        message: ''
+    });
+
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+
+    useEffect(() => {
+        loadInvites();
+    }, []);
+
+    const loadInvites = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch(`${backendUrl}/api/league/team-invites`);
+            if (response.ok) {
+                const data = await response.json();
+                setInvites(data.invites || []);
+            }
+        } catch (error) {
+            console.error('Error loading team invites:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSendInvite = async (e) => {
+        e.preventDefault();
+        
+        if (!formData.teamName.trim() || !formData.contactName.trim()) {
+            setMessage('❌ Team name and contact name are required');
+            return;
+        }
+        
+        if (formData.method === 'email' && !formData.email.trim()) {
+            setMessage('❌ Email is required');
+            return;
+        }
+        
+        if (formData.method === 'sms' && !formData.phone.trim()) {
+            setMessage('❌ Phone number is required');
+            return;
+        }
+
+        try {
+            setSending(true);
+            const response = await fetch(`${backendUrl}/api/league/team-invites`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...formData,
+                    sentBy: currentUser?.id,
+                    sentByName: currentUser?.name || 'League Admin'
+                })
+            });
+
+            const data = await response.json();
+            
+            if (response.ok) {
+                setMessage('✅ Team invitation sent successfully!');
+                setShowForm(false);
+                setFormData({ teamName: '', contactName: '', email: '', phone: '', method: 'email', division: '', message: '' });
+                loadInvites();
+            } else {
+                setMessage(`❌ ${data.detail || 'Failed to send invite'}`);
+            }
+        } catch (error) {
+            setMessage('❌ Network error. Please try again.');
+        } finally {
+            setSending(false);
+            setTimeout(() => setMessage(''), 5000);
+        }
+    };
+
+    const handleCancel = async (inviteId) => {
+        if (!window.confirm('Cancel this invitation?')) return;
+        
+        try {
+            const response = await fetch(`${backendUrl}/api/team-invite/${inviteId}`, { method: 'DELETE' });
+            if (response.ok) {
+                setMessage('✅ Invitation cancelled');
+                loadInvites();
+            }
+        } catch (error) {
+            setMessage('❌ Error cancelling invite');
+        }
+        setTimeout(() => setMessage(''), 3000);
+    };
+
+    const getStatusBadge = (status) => {
+        const styles = {
+            sent: 'bg-blue-100 text-blue-800',
+            viewed: 'bg-yellow-100 text-yellow-800',
+            accepted: 'bg-green-100 text-green-800',
+            failed: 'bg-red-100 text-red-800'
+        };
+        return styles[status] || 'bg-gray-100 text-gray-800';
+    };
+
+    return (
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-2xl font-bold text-slate-800">Team Invitations</h2>
+                    <p className="text-slate-600">Invite new teams to join your league</p>
+                </div>
+                <button
+                    onClick={() => setShowForm(true)}
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
+                >
+                    <span>+</span> Invite Team
+                </button>
+            </div>
+
+            {/* Message */}
+            {message && (
+                <div className={`p-4 rounded-lg ${message.startsWith('✅') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                    {message}
+                </div>
+            )}
+
+            {/* Invite Form Modal */}
+            {showForm && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-xl font-bold text-slate-800">Invite a Team to Join</h3>
+                                <button onClick={() => setShowForm(false)} className="text-slate-400 hover:text-slate-600">✕</button>
+                            </div>
+
+                            <form onSubmit={handleSendInvite} className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Team Name *</label>
+                                        <input
+                                            type="text"
+                                            value={formData.teamName}
+                                            onChange={(e) => setFormData({...formData, teamName: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                            placeholder="Wildcats"
+                                            required
+                                        />
+                                    </div>
+                                    
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Contact Person Name *</label>
+                                        <input
+                                            type="text"
+                                            value={formData.contactName}
+                                            onChange={(e) => setFormData({...formData, contactName: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                            placeholder="John Smith (Coach)"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">Send via</label>
+                                        <div className="flex gap-4">
+                                            <label className="flex items-center">
+                                                <input type="radio" name="method" value="email" checked={formData.method === 'email'} onChange={() => setFormData({...formData, method: 'email'})} className="mr-2" />
+                                                📧 Email
+                                            </label>
+                                            <label className="flex items-center">
+                                                <input type="radio" name="method" value="sms" checked={formData.method === 'sms'} onChange={() => setFormData({...formData, method: 'sms'})} className="mr-2" />
+                                                📱 Text Message
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {formData.method === 'email' && (
+                                        <div className="col-span-2">
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Email Address *</label>
+                                            <input
+                                                type="email"
+                                                value={formData.email}
+                                                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                                placeholder="coach@team.com"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {formData.method === 'sms' && (
+                                        <div className="col-span-2">
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number *</label>
+                                            <input
+                                                type="tel"
+                                                value={formData.phone}
+                                                onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                                                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                                placeholder="(555) 123-4567"
+                                            />
+                                        </div>
+                                    )}
+
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Proposed Division</label>
+                                        <input
+                                            type="text"
+                                            value={formData.division}
+                                            onChange={(e) => setFormData({...formData, division: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                            placeholder="Premier Division, Division 2, etc."
+                                        />
+                                    </div>
+
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Personal Message</label>
+                                        <textarea
+                                            value={formData.message}
+                                            onChange={(e) => setFormData({...formData, message: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                            rows={3}
+                                            placeholder="We'd love to have your team join our league this season..."
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-3 pt-4">
+                                    <button type="button" onClick={() => setShowForm(false)} className="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50">
+                                        Cancel
+                                    </button>
+                                    <button type="submit" disabled={sending} className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400">
+                                        {sending ? 'Sending...' : 'Send Invitation'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Stats Summary */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="bg-blue-50 p-4 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-blue-600">{invites.filter(i => i.status === 'sent').length}</div>
+                    <div className="text-sm text-blue-800">Sent</div>
+                </div>
+                <div className="bg-yellow-50 p-4 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-yellow-600">{invites.filter(i => i.status === 'viewed').length}</div>
+                    <div className="text-sm text-yellow-800">Viewed</div>
+                </div>
+                <div className="bg-green-50 p-4 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-green-600">{invites.filter(i => i.status === 'accepted').length}</div>
+                    <div className="text-sm text-green-800">Accepted</div>
+                </div>
+                <div className="bg-slate-50 p-4 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-slate-600">{invites.length}</div>
+                    <div className="text-sm text-slate-800">Total</div>
+                </div>
+            </div>
+
+            {/* Invites List */}
+            <div className="bg-white border rounded-lg overflow-hidden">
+                <div className="px-4 py-3 bg-slate-50 border-b">
+                    <h3 className="font-semibold text-slate-800">Sent Invitations</h3>
+                </div>
+                
+                {loading ? (
+                    <div className="p-8 text-center text-slate-500">Loading...</div>
+                ) : invites.length === 0 ? (
+                    <div className="p-8 text-center">
+                        <div className="text-4xl mb-4">🏆</div>
+                        <h3 className="text-lg font-semibold text-slate-800 mb-2">No invitations yet</h3>
+                        <p className="text-slate-600">Start growing your league by inviting teams!</p>
+                    </div>
+                ) : (
+                    <div className="divide-y">
+                        {invites.map(invite => (
+                            <div key={invite.id} className="p-4 hover:bg-slate-50">
+                                <div className="flex items-start justify-between">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-semibold text-slate-800">{invite.teamName}</span>
+                                            <span className={`px-2 py-0.5 text-xs rounded-full ${getStatusBadge(invite.status)}`}>
+                                                {invite.status}
+                                            </span>
+                                        </div>
+                                        <div className="text-sm text-slate-600 mt-1">
+                                            Contact: {invite.contactName} • {invite.email || invite.phone}
+                                            {invite.division && <span className="ml-2">• {invite.division}</span>}
+                                        </div>
+                                        <div className="text-xs text-slate-400 mt-1">
+                                            Sent {new Date(invite.sentAt).toLocaleDateString()} by {invite.sentByName}
+                                        </div>
+                                    </div>
+                                    
+                                    {(invite.status === 'sent' || invite.status === 'viewed') && (
+                                        <button
+                                            onClick={() => handleCancel(invite.id)}
+                                            className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200"
+                                        >
+                                            Cancel
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
 const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, currentUser, websiteStyle, setWebsiteStyle, events, setEvents }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [seasons, setSeasons] = useState([]);
