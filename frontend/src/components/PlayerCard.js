@@ -455,78 +455,143 @@ const PlayerCard = ({ player, team, currentUser, onUpdate, showEditButton = true
                     }}
                 >
                     <div className="p-4 h-full overflow-y-auto">
-                        {/* Header */}
-                        <div className="text-center mb-4 pb-3 border-b">
-                            <h3 
-                                className="font-bold text-lg"
-                                style={{ color: teamColor }}
+                        {/* Header with mini photo */}
+                        <div className="flex items-center gap-3 mb-3 pb-3 border-b">
+                            <div 
+                                className="w-12 h-12 rounded-full flex-shrink-0 overflow-hidden border-2"
+                                style={{ borderColor: teamColor }}
                             >
-                                {player.name || `${player.firstName} ${player.lastName}`}
-                            </h3>
-                            <p className="text-sm text-slate-500">Player Bio</p>
+                                {player.photoUrl ? (
+                                    <img src={fixGoogleDriveUrl(player.photoUrl)} alt={player.name} className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-slate-200">
+                                        <span className="text-slate-400 text-lg font-bold">{player.name?.charAt(0)}</span>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-bold text-base truncate" style={{ color: teamColor }}>
+                                    {player.name || `${player.firstName} ${player.lastName}`}
+                                </h3>
+                                <p className="text-xs text-slate-500 truncate">
+                                    #{player.jerseyNumber || '?'} • {player.position || 'Player'} • {team?.name}
+                                </p>
+                            </div>
                         </div>
 
+                        {/* Stats Section - Trading Card Style */}
+                        {(playerStats.gamesPlayed > 0 || playerStats.goals > 0 || playerStats.assists > 0) && (
+                            <div className="mb-3 p-2 rounded-lg" style={{ backgroundColor: `${teamColor}08` }}>
+                                <div className="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">📊 Season Stats</div>
+                                <div className="grid grid-cols-3 gap-2 text-center">
+                                    <div className="bg-white rounded p-1.5 shadow-sm">
+                                        <div className="text-lg font-bold" style={{ color: teamColor }}>{playerStats.goals || 0}</div>
+                                        <div className="text-[10px] text-slate-500 uppercase">Goals</div>
+                                    </div>
+                                    <div className="bg-white rounded p-1.5 shadow-sm">
+                                        <div className="text-lg font-bold" style={{ color: teamColor }}>{playerStats.assists || 0}</div>
+                                        <div className="text-[10px] text-slate-500 uppercase">Assists</div>
+                                    </div>
+                                    <div className="bg-white rounded p-1.5 shadow-sm">
+                                        <div className="text-lg font-bold" style={{ color: teamColor }}>{(playerStats.goals || 0) + (playerStats.assists || 0)}</div>
+                                        <div className="text-[10px] text-slate-500 uppercase">Points</div>
+                                    </div>
+                                </div>
+                                {(playerStats.groundBalls > 0 || playerStats.saves > 0) && (
+                                    <div className="grid grid-cols-2 gap-2 text-center mt-2">
+                                        {playerStats.groundBalls > 0 && (
+                                            <div className="bg-white rounded p-1.5 shadow-sm">
+                                                <div className="text-lg font-bold" style={{ color: teamColor }}>{playerStats.groundBalls}</div>
+                                                <div className="text-[10px] text-slate-500 uppercase">Ground Balls</div>
+                                            </div>
+                                        )}
+                                        {playerStats.saves > 0 && (
+                                            <div className="bg-white rounded p-1.5 shadow-sm">
+                                                <div className="text-lg font-bold" style={{ color: teamColor }}>{playerStats.saves}</div>
+                                                <div className="text-[10px] text-slate-500 uppercase">Saves</div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         {/* Lacrosse History */}
-                        <div className="space-y-3 text-sm">
+                        <div className="space-y-2 text-sm">
                             {player.lacrosseHistory?.highSchool?.teamName && (
-                                <div>
-                                    <div className="font-semibold text-slate-700 text-xs uppercase tracking-wider">🏫 High School</div>
-                                    <div className="text-slate-600">
-                                        {player.lacrosseHistory.highSchool.teamName}
-                                        {player.lacrosseHistory.highSchool.graduationYear && ` '${player.lacrosseHistory.highSchool.graduationYear.toString().slice(-2)}`}
+                                <div className="flex items-start gap-2">
+                                    <span className="text-base">🏫</span>
+                                    <div className="flex-1">
+                                        <div className="font-semibold text-slate-700 text-xs">High School</div>
+                                        <div className="text-slate-600 text-xs">
+                                            {player.lacrosseHistory.highSchool.teamName}
+                                            {player.lacrosseHistory.highSchool.graduationYear && ` '${player.lacrosseHistory.highSchool.graduationYear.toString().slice(-2)}`}
+                                        </div>
                                     </div>
                                 </div>
                             )}
 
                             {player.lacrosseHistory?.college?.teamName && (
-                                <div>
-                                    <div className="font-semibold text-slate-700 text-xs uppercase tracking-wider">🎓 College</div>
-                                    <div className="text-slate-600">
-                                        {player.lacrosseHistory.college.teamName}
-                                        {player.lacrosseHistory.college.graduationYear && ` '${player.lacrosseHistory.college.graduationYear.toString().slice(-2)}`}
+                                <div className="flex items-start gap-2">
+                                    <span className="text-base">🎓</span>
+                                    <div className="flex-1">
+                                        <div className="font-semibold text-slate-700 text-xs">College</div>
+                                        <div className="text-slate-600 text-xs">
+                                            {player.lacrosseHistory.college.teamName}
+                                            {player.lacrosseHistory.college.graduationYear && ` '${player.lacrosseHistory.college.graduationYear.toString().slice(-2)}`}
+                                        </div>
                                     </div>
                                 </div>
                             )}
 
                             {player.lacrosseHistory?.postGrad?.length > 0 && (
-                                <div>
-                                    <div className="font-semibold text-slate-700 text-xs uppercase tracking-wider">🏆 Post-Grad Teams</div>
-                                    <div className="text-slate-600">
-                                        {player.lacrosseHistory.postGrad.map((t, i) => (
-                                            <div key={i}>{t.teamName} ({t.years})</div>
-                                        ))}
+                                <div className="flex items-start gap-2">
+                                    <span className="text-base">🏆</span>
+                                    <div className="flex-1">
+                                        <div className="font-semibold text-slate-700 text-xs">Post-Grad</div>
+                                        <div className="text-slate-600 text-xs">
+                                            {player.lacrosseHistory.postGrad.map((t, i) => (
+                                                <div key={i}>{t.teamName} {t.years && `(${t.years})`}</div>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             )}
 
                             {player.funFacts && (
-                                <div>
-                                    <div className="font-semibold text-slate-700 text-xs uppercase tracking-wider">✨ Fun Facts</div>
-                                    <div className="text-slate-600 text-xs">{player.funFacts}</div>
+                                <div className="flex items-start gap-2">
+                                    <span className="text-base">✨</span>
+                                    <div className="flex-1">
+                                        <div className="font-semibold text-slate-700 text-xs">Fun Facts</div>
+                                        <div className="text-slate-600 text-xs line-clamp-3">{player.funFacts}</div>
+                                    </div>
                                 </div>
                             )}
 
                             {/* Social Media on Back */}
                             {player.socialMedia && Object.keys(player.socialMedia).some(k => player.socialMedia[k]) && (
-                                <div>
-                                    <div className="font-semibold text-slate-700 text-xs uppercase tracking-wider mb-1">📱 Social Media</div>
-                                    <div className="flex flex-wrap gap-1">
-                                        {Object.entries(player.socialMedia).map(([platform, handle]) => handle && (
-                                            <a 
-                                                key={platform}
-                                                href={platform === 'instagram' ? `https://instagram.com/${handle}` : 
-                                                      platform === 'twitter' ? `https://twitter.com/${handle}` :
-                                                      platform === 'tiktok' ? `https://tiktok.com/@${handle}` :
-                                                      platform === 'facebook' ? `https://facebook.com/${handle}` :
-                                                      `https://linkedin.com/in/${handle}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-xs px-2 py-1 bg-slate-100 rounded-full text-slate-600 hover:bg-slate-200"
-                                                onClick={e => e.stopPropagation()}
-                                            >
-                                                @{handle}
-                                            </a>
-                                        ))}
+                                <div className="flex items-start gap-2">
+                                    <span className="text-base">📱</span>
+                                    <div className="flex-1">
+                                        <div className="font-semibold text-slate-700 text-xs mb-1">Social</div>
+                                        <div className="flex flex-wrap gap-1">
+                                            {Object.entries(player.socialMedia).map(([platform, handle]) => handle && (
+                                                <a 
+                                                    key={platform}
+                                                    href={platform === 'instagram' ? `https://instagram.com/${handle}` : 
+                                                          platform === 'twitter' ? `https://twitter.com/${handle}` :
+                                                          platform === 'tiktok' ? `https://tiktok.com/@${handle}` :
+                                                          platform === 'facebook' ? `https://facebook.com/${handle}` :
+                                                          `https://linkedin.com/in/${handle}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-[10px] px-1.5 py-0.5 bg-slate-100 rounded-full text-slate-600 hover:bg-slate-200"
+                                                    onClick={e => e.stopPropagation()}
+                                                >
+                                                    @{handle}
+                                                </a>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             )}
@@ -534,7 +599,8 @@ const PlayerCard = ({ player, team, currentUser, onUpdate, showEditButton = true
                             {/* Empty State */}
                             {!player.lacrosseHistory?.highSchool?.teamName && 
                              !player.lacrosseHistory?.college?.teamName && 
-                             !player.funFacts && (
+                             !player.funFacts &&
+                             !(playerStats.goals > 0 || playerStats.assists > 0) && (
                                 <div className="text-center text-slate-400 py-4">
                                     <p className="text-sm">No bio information yet</p>
                                     {canEdit && (
@@ -549,8 +615,8 @@ const PlayerCard = ({ player, team, currentUser, onUpdate, showEditButton = true
                             )}
                         </div>
 
-                        <p className="text-center text-xs text-slate-400 mt-4">
-                            ← Click to flip back
+                        <p className="text-center text-xs text-slate-400 mt-3">
+                            ← Tap to flip back
                         </p>
                     </div>
                 </div>
