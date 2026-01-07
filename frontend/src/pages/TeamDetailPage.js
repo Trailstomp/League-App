@@ -441,7 +441,15 @@ const TeamScheduleTab = ({ team, events = [] }) => {
 // Team Roster Tab
 const TeamRosterTab = ({ team, players = [] }) => {
     const [selectedPlayer, setSelectedPlayer] = useState(null);
+    const [flippedCards, setFlippedCards] = useState({}); // Track which cards are flipped
     const teamPlayers = players.filter(player => player.teamId === team.id);
+
+    const toggleFlip = (playerId) => {
+        setFlippedCards(prev => ({
+            ...prev,
+            [playerId]: !prev[playerId]
+        }));
+    };
 
     const getPositionColor = (position) => {
         switch (position?.toLowerCase()) {
