@@ -1147,6 +1147,238 @@ const UserManager = ({ teams = [] }) => {
                                     />
                                 </div>
                             )}
+
+                            {/* Lacrosse History Section - Only show for players */}
+                            {newUser.roles.includes('player') && (
+                                <div className="border-t pt-4">
+                                    <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
+                                        🥍 Lacrosse History
+                                    </h4>
+                                    
+                                    {/* High School */}
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-600 mb-2">High School</label>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            <input
+                                                type="text"
+                                                placeholder="Team Name"
+                                                value={newUser.lacrosseHistory?.highSchool?.teamName || ''}
+                                                onChange={(e) => setNewUser(prev => ({
+                                                    ...prev,
+                                                    lacrosseHistory: {
+                                                        ...prev.lacrosseHistory,
+                                                        highSchool: { ...prev.lacrosseHistory?.highSchool, teamName: e.target.value }
+                                                    }
+                                                }))}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Graduation Year"
+                                                value={newUser.lacrosseHistory?.highSchool?.graduationYear || ''}
+                                                onChange={(e) => setNewUser(prev => ({
+                                                    ...prev,
+                                                    lacrosseHistory: {
+                                                        ...prev.lacrosseHistory,
+                                                        highSchool: { ...prev.lacrosseHistory?.highSchool, graduationYear: e.target.value }
+                                                    }
+                                                }))}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* College */}
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-600 mb-2">College</label>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            <input
+                                                type="text"
+                                                placeholder="Team Name"
+                                                value={newUser.lacrosseHistory?.college?.teamName || ''}
+                                                onChange={(e) => setNewUser(prev => ({
+                                                    ...prev,
+                                                    lacrosseHistory: {
+                                                        ...prev.lacrosseHistory,
+                                                        college: { ...prev.lacrosseHistory?.college, teamName: e.target.value }
+                                                    }
+                                                }))}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Graduation Year"
+                                                value={newUser.lacrosseHistory?.college?.graduationYear || ''}
+                                                onChange={(e) => setNewUser(prev => ({
+                                                    ...prev,
+                                                    lacrosseHistory: {
+                                                        ...prev.lacrosseHistory,
+                                                        college: { ...prev.lacrosseHistory?.college, graduationYear: e.target.value }
+                                                    }
+                                                }))}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Post-Grad / Adult Teams */}
+                                    <div>
+                                        <div className="flex justify-between items-center mb-2">
+                                            <label className="block text-sm font-medium text-gray-600">Adult/Post-Grad Teams</label>
+                                            <button
+                                                type="button"
+                                                onClick={() => setNewUser(prev => ({
+                                                    ...prev,
+                                                    lacrosseHistory: {
+                                                        ...prev.lacrosseHistory,
+                                                        postGrad: [...(prev.lacrosseHistory?.postGrad || []), { teamName: '', years: '' }]
+                                                    }
+                                                }))}
+                                                className="text-sm text-blue-600 hover:text-blue-800"
+                                            >
+                                                + Add Team
+                                            </button>
+                                        </div>
+                                        {(newUser.lacrosseHistory?.postGrad || []).map((team, idx) => (
+                                            <div key={idx} className="flex gap-2 mb-2">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Team Name"
+                                                    value={team.teamName}
+                                                    onChange={(e) => {
+                                                        const updated = [...(newUser.lacrosseHistory?.postGrad || [])];
+                                                        updated[idx] = { ...updated[idx], teamName: e.target.value };
+                                                        setNewUser(prev => ({
+                                                            ...prev,
+                                                            lacrosseHistory: { ...prev.lacrosseHistory, postGrad: updated }
+                                                        }));
+                                                    }}
+                                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Years (e.g., 2020-2022)"
+                                                    value={team.years}
+                                                    onChange={(e) => {
+                                                        const updated = [...(newUser.lacrosseHistory?.postGrad || [])];
+                                                        updated[idx] = { ...updated[idx], years: e.target.value };
+                                                        setNewUser(prev => ({
+                                                            ...prev,
+                                                            lacrosseHistory: { ...prev.lacrosseHistory, postGrad: updated }
+                                                        }));
+                                                    }}
+                                                    className="w-32 px-3 py-2 border border-gray-300 rounded-lg"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const updated = (newUser.lacrosseHistory?.postGrad || []).filter((_, i) => i !== idx);
+                                                        setNewUser(prev => ({
+                                                            ...prev,
+                                                            lacrosseHistory: { ...prev.lacrosseHistory, postGrad: updated }
+                                                        }));
+                                                    }}
+                                                    className="px-2 text-red-500 hover:text-red-700"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Fun Facts Section - Only show for players */}
+                            {newUser.roles.includes('player') && (
+                                <div className="border-t pt-4">
+                                    <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
+                                        ✨ Fun Facts
+                                    </h4>
+                                    <textarea
+                                        placeholder="Share some fun facts about yourself... (favorite food, hobbies, interesting trivia, etc.)"
+                                        value={newUser.funFacts || ''}
+                                        onChange={(e) => setNewUser(prev => ({ ...prev, funFacts: e.target.value }))}
+                                        rows={3}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg resize-none"
+                                    />
+                                </div>
+                            )}
+
+                            {/* Social Media Section - Only show for players */}
+                            {newUser.roles.includes('player') && (
+                                <div className="border-t pt-4">
+                                    <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
+                                        📱 Social Media
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xl">📸</span>
+                                            <input
+                                                type="text"
+                                                placeholder="Instagram username"
+                                                value={newUser.socialMedia?.instagram || ''}
+                                                onChange={(e) => setNewUser(prev => ({
+                                                    ...prev,
+                                                    socialMedia: { ...prev.socialMedia, instagram: e.target.value }
+                                                }))}
+                                                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                                            />
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xl">🐦</span>
+                                            <input
+                                                type="text"
+                                                placeholder="Twitter/X username"
+                                                value={newUser.socialMedia?.twitter || ''}
+                                                onChange={(e) => setNewUser(prev => ({
+                                                    ...prev,
+                                                    socialMedia: { ...prev.socialMedia, twitter: e.target.value }
+                                                }))}
+                                                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                                            />
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xl">🎵</span>
+                                            <input
+                                                type="text"
+                                                placeholder="TikTok username"
+                                                value={newUser.socialMedia?.tiktok || ''}
+                                                onChange={(e) => setNewUser(prev => ({
+                                                    ...prev,
+                                                    socialMedia: { ...prev.socialMedia, tiktok: e.target.value }
+                                                }))}
+                                                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                                            />
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xl">👤</span>
+                                            <input
+                                                type="text"
+                                                placeholder="Facebook profile URL"
+                                                value={newUser.socialMedia?.facebook || ''}
+                                                onChange={(e) => setNewUser(prev => ({
+                                                    ...prev,
+                                                    socialMedia: { ...prev.socialMedia, facebook: e.target.value }
+                                                }))}
+                                                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                                            />
+                                        </div>
+                                        <div className="flex items-center gap-2 md:col-span-2">
+                                            <span className="text-xl">💼</span>
+                                            <input
+                                                type="text"
+                                                placeholder="LinkedIn profile URL"
+                                                value={newUser.socialMedia?.linkedin || ''}
+                                                onChange={(e) => setNewUser(prev => ({
+                                                    ...prev,
+                                                    socialMedia: { ...prev.socialMedia, linkedin: e.target.value }
+                                                }))}
+                                                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         <div className="sticky bottom-0 bg-white border-t p-4 md:p-6">
                             <div className="flex flex-col sm:flex-row gap-3">
