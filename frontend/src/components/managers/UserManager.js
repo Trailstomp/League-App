@@ -505,7 +505,11 @@ const UserManager = ({ teams = [] }) => {
                 // Set primary team for legacy compatibility
                 teamId: editingUser.teamAssignments?.find(a => a.isPrimary)?.teamId || editingUser.teamAssignments?.[0]?.teamId || editingUser.teamId || '',
                 playerNumber: editingUser.teamAssignments?.find(a => a.isPrimary)?.playerNumber || editingUser.teamAssignments?.[0]?.playerNumber || editingUser.playerNumber || '',
-                position: editingUser.teamAssignments?.find(a => a.isPrimary)?.position || editingUser.teamAssignments?.[0]?.position || editingUser.position || ''
+                position: editingUser.teamAssignments?.find(a => a.isPrimary)?.position || editingUser.teamAssignments?.[0]?.position || editingUser.position || '',
+                // Extended player info
+                lacrosseHistory: editingUser.lacrosseHistory || {},
+                funFacts: editingUser.funFacts || '',
+                socialMedia: editingUser.socialMedia || {}
             };
 
             const response = await fetch(`${backendUrl}/api/users/${editingUser.id}`, {
