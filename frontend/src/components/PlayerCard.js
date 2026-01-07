@@ -31,7 +31,7 @@ const SocialIcons = {
     )
 };
 
-const PlayerCard = ({ player, team, currentUser, onUpdate, showEditButton = true }) => {
+const PlayerCard = ({ player, team, currentUser, onUpdate, showEditButton = true, stats = null }) => {
     const [isFlipped, setIsFlipped] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const cardRef = useRef(null);
@@ -43,6 +43,16 @@ const PlayerCard = ({ player, team, currentUser, onUpdate, showEditButton = true
         currentUser.roles?.includes('admin') ||
         currentUser.roles?.includes('coach')
     );
+
+    // Mock stats if not provided (for demo purposes)
+    const playerStats = stats || player.stats || {
+        gamesPlayed: player.gamesPlayed || 0,
+        goals: player.goals || 0,
+        assists: player.assists || 0,
+        groundBalls: player.groundBalls || 0,
+        saves: player.saves || 0,
+        shotPercentage: player.shotPercentage || 0
+    };
 
     const handlePrint = () => {
         const printContent = cardRef.current;
