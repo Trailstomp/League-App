@@ -590,170 +590,266 @@ const TeamRosterTab = ({ team, players = [] }) => {
         }
     };
 
-    const PlayerDetailModal = ({ player, team, onClose }) => {
+    // Player Card Popup Modal with Flip Animation
+    const PlayerCardPopup = ({ player, team, isFlipped, onFlip, onClose, onPrint, onDownload }) => {
         if (!player) return null;
+
+        const teamColor = team?.style?.primaryColor || '#2563eb';
+        const accentColor = team?.style?.accentColor || '#3b82f6';
 
         return (
             <div 
-                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4"
                 onClick={(e) => {
-                    // Click-away to close - only if clicking the backdrop, not the modal
-                    if (e.target === e.currentTarget) {
-                        console.log('🎯 Player popup closed by click-away');
-                        onClose();
-                    }
+                    if (e.target === e.currentTarget) onClose();
                 }}
             >
-                <div className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border">
-                    {/* Large Player Card */}
-                    <div className="p-6">
-                        <div className="relative bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg overflow-hidden mb-4">
-                            {/* Player Photo */}
-                            <div className="aspect-[3/4] relative">
-                                {player.photoUrl ? (
-                                    <img 
-                                        src={player.photoUrl} 
-                                        alt={player.name}
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center">
-                                        <svg className="w-20 h-20 text-slate-500" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                        </svg>
-                                    </div>
-                                )}
-                                
-                                {/* Team Logo Overlay - LARGER */}
-                                <div className="absolute top-3 left-3">
-                                    <div className="w-16 h-16 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden border-2 border-white">
-                                        {team.style?.logoUrl ? (
-                                            <img 
-                                                src={fixGoogleDriveUrl(team.style.logoUrl)} 
-                                                alt={team.name}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <div 
-                                                className="w-full h-full rounded-full flex items-center justify-center"
-                                                style={{ backgroundColor: team.style?.primaryColor || '#2563eb' }}
-                                            >
-                                                <span className="text-white font-bold text-sm">
-                                                    {team.name.charAt(0)}
-                                                </span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
+                <div className="relative max-w-sm w-full">
+                    {/* Close Button */}
+                    <button
+                        onClick={onClose}
+                        className="absolute -top-3 -right-3 z-20 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors"
+                    >
+                        <span className="text-gray-600 text-xl">✕</span>
+                    </button>
 
-                                {/* Jersey Number */}
-                                <div className="absolute bottom-3 right-3">
-                                    <div 
-                                        className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg"
-                                        style={{ backgroundColor: team.style?.primaryColor || '#2563eb' }}
-                                    >
-                                        {player.jerseyNumber || '?'}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Player Info */}
-                        <div className="text-center mb-4">
-                            <h2 className="text-2xl font-bold text-slate-800 mb-1">{player.name}</h2>
-                            <div className="flex items-center justify-center space-x-4 text-sm text-slate-600">
-                                <span className={`font-medium ${getPositionColor(player.position)}`}>
-                                    {player.position || 'Unassigned'}
-                                </span>
-                                {player.handedness && (
-                                    <span className="bg-slate-100 px-2 py-1 rounded">
-                                        {player.handedness} Handed
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Player Details & Social Links */}
-                        <div className="space-y-4">
-                            {player.details && (
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 mb-2">About {player.name.split(' ')[0]}</h4>
-                                    <p className="text-sm text-slate-600 leading-relaxed">{player.details}</p>
-                                </div>
-                            )}
-                            
-                            {/* Social Links */}
-                            <div>
-                                <h4 className="font-semibold text-slate-700 mb-3">Connect</h4>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {player.social?.instagram && (
-                                        <a 
-                                            href={player.social.instagram} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="flex items-center justify-center px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all text-sm font-medium"
-                                        >
-                                            📷 Instagram
-                                        </a>
-                                    )}
-                                    {player.social?.twitter && (
-                                        <a 
-                                            href={player.social.twitter} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="flex items-center justify-center px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all text-sm font-medium"
-                                        >
-                                            🐦 Twitter
-                                        </a>
-                                    )}
-                                    {player.social?.facebook && (
-                                        <a 
-                                            href={player.social.facebook} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-sm font-medium"
-                                        >
-                                            📘 Facebook
-                                        </a>
-                                    )}
-                                    {player.social?.linkedin && (
-                                        <a 
-                                            href={player.social.linkedin} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="flex items-center justify-center px-3 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-all text-sm font-medium"
-                                        >
-                                            💼 LinkedIn
-                                        </a>
-                                    )}
+                    {/* Card Container with 3D Flip */}
+                    <div 
+                        className="relative w-full cursor-pointer"
+                        style={{ 
+                            perspective: '1500px',
+                            height: '480px'
+                        }}
+                        onClick={onFlip}
+                    >
+                        <div 
+                            className="relative w-full h-full"
+                            style={{ 
+                                transformStyle: 'preserve-3d',
+                                transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                                transition: 'transform 0.8s ease-in-out'
+                            }}
+                        >
+                            {/* FRONT OF CARD */}
+                            <div 
+                                className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden shadow-2xl"
+                                style={{ 
+                                    backfaceVisibility: 'hidden',
+                                    WebkitBackfaceVisibility: 'hidden',
+                                    border: `3px solid ${teamColor}`,
+                                    background: `linear-gradient(135deg, white 0%, ${team?.style?.backgroundColor || '#f8fafc'} 100%)`
+                                }}
+                            >
+                                {/* Header with Team Name */}
+                                <div 
+                                    className="h-10 w-full flex items-center justify-center"
+                                    style={{ background: `linear-gradient(90deg, ${teamColor} 0%, ${accentColor} 100%)` }}
+                                >
+                                    <span className="text-white font-bold text-sm tracking-wide">{team?.name || 'Team'}</span>
                                 </div>
                                 
-                                {/* Contact Info - Minimized */}
-                                {(player.email || player.phone) && (
-                                    <div className="mt-4 pt-3 border-t">
-                                        <h5 className="text-xs font-semibold text-slate-500 mb-2">CONTACT</h5>
-                                        <div className="space-y-1">
-                                            {player.email && (
-                                                <div className="text-xs text-slate-600">📧 {player.email}</div>
-                                            )}
-                                            {player.phone && (
-                                                <div className="text-xs text-slate-600">📱 {player.phone}</div>
+                                {/* Player Photo */}
+                                <div className="relative h-56 bg-gradient-to-br from-slate-100 to-slate-200">
+                                    {player.photoUrl ? (
+                                        <img src={player.photoUrl} alt={player.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${team?.style?.backgroundColor || '#f8fafc'} 0%, ${teamColor}15 100%)` }}>
+                                            <svg className="w-24 h-24 opacity-30" fill="currentColor" viewBox="0 0 24 24" style={{ color: teamColor }}>
+                                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                            </svg>
+                                        </div>
+                                    )}
+                                    
+                                    {/* Team Logo */}
+                                    <div className="absolute top-3 left-3">
+                                        <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center overflow-hidden border-2 border-white shadow-lg">
+                                            {team?.style?.logoUrl ? (
+                                                <img src={fixGoogleDriveUrl(team.style.logoUrl)} alt={team.name} className="w-full h-full object-contain p-1" />
+                                            ) : (
+                                                <div className="w-full h-full rounded-full flex items-center justify-center" style={{ backgroundColor: teamColor }}>
+                                                    <span className="text-white font-bold">{team?.name?.charAt(0)}</span>
+                                                </div>
                                             )}
                                         </div>
                                     </div>
-                                )}
+
+                                    {/* Jersey Number */}
+                                    <div className="absolute bottom-3 right-3">
+                                        <div className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-2xl border-2 border-white shadow-lg" style={{ backgroundColor: teamColor }}>
+                                            {player.jerseyNumber || '?'}
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Position Badge */}
+                                    <div className="absolute top-3 right-3">
+                                        <div className="px-3 py-1 bg-white/90 rounded-full text-sm font-bold shadow-sm" style={{ color: teamColor }}>
+                                            {player.position || 'Player'}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Player Info */}
+                                <div className="p-4 bg-white text-center">
+                                    <h2 className="font-bold text-xl mb-2" style={{ color: teamColor }}>
+                                        {player.name}
+                                    </h2>
+                                    <div className="inline-block px-4 py-1 rounded-full text-white text-sm font-medium" style={{ backgroundColor: accentColor }}>
+                                        {player.position || 'Player'}
+                                    </div>
+                                    <p className="text-slate-400 text-sm mt-3">
+                                        Tap card to flip →
+                                    </p>
+                                </div>
+
+                                {/* Footer */}
+                                <div className="h-3 w-full" style={{ background: `linear-gradient(90deg, ${accentColor} 0%, ${teamColor} 100%)` }}></div>
+                            </div>
+
+                            {/* BACK OF CARD */}
+                            <div 
+                                className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden shadow-2xl"
+                                style={{ 
+                                    backfaceVisibility: 'hidden',
+                                    WebkitBackfaceVisibility: 'hidden',
+                                    transform: 'rotateY(180deg)',
+                                    border: `3px solid ${teamColor}`,
+                                    background: `linear-gradient(135deg, ${teamColor}08 0%, #f8fafc 50%, ${accentColor}08 100%)`
+                                }}
+                            >
+                                {/* Header */}
+                                <div className="h-10 w-full flex items-center justify-center" style={{ background: `linear-gradient(90deg, ${teamColor} 0%, ${accentColor} 100%)` }}>
+                                    <span className="text-white font-bold text-sm tracking-wide">Player Bio</span>
+                                </div>
+                                
+                                <div className="p-4 h-[calc(100%-52px)] overflow-y-auto">
+                                    {/* Header with mini photo */}
+                                    <div className="flex items-center gap-3 mb-4 pb-3 border-b">
+                                        <div className="w-14 h-14 rounded-full overflow-hidden border-2 flex-shrink-0" style={{ borderColor: teamColor }}>
+                                            {player.photoUrl ? (
+                                                <img src={player.photoUrl} alt={player.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-500 text-lg font-bold">
+                                                    {player.name?.charAt(0)}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="font-bold text-lg" style={{ color: teamColor }}>{player.name}</h3>
+                                            <p className="text-sm text-slate-500">#{player.jerseyNumber || '?'} • {player.position || 'Player'}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Stats */}
+                                    {(player.goals > 0 || player.assists > 0) && (
+                                        <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: `${teamColor}08` }}>
+                                            <div className="text-xs font-semibold text-slate-600 uppercase mb-2">📊 Season Stats</div>
+                                            <div className="grid grid-cols-3 gap-2 text-center">
+                                                <div className="bg-white rounded p-2 shadow-sm">
+                                                    <div className="text-xl font-bold" style={{ color: teamColor }}>{player.goals || 0}</div>
+                                                    <div className="text-xs text-slate-500">Goals</div>
+                                                </div>
+                                                <div className="bg-white rounded p-2 shadow-sm">
+                                                    <div className="text-xl font-bold" style={{ color: teamColor }}>{player.assists || 0}</div>
+                                                    <div className="text-xs text-slate-500">Assists</div>
+                                                </div>
+                                                <div className="bg-white rounded p-2 shadow-sm">
+                                                    <div className="text-xl font-bold" style={{ color: teamColor }}>{(player.goals || 0) + (player.assists || 0)}</div>
+                                                    <div className="text-xs text-slate-500">Points</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Bio Info */}
+                                    <div className="space-y-3 text-sm">
+                                        {player.lacrosseHistory?.highSchool?.teamName && (
+                                            <div className="flex items-start gap-2">
+                                                <span className="text-lg">🏫</span>
+                                                <div>
+                                                    <div className="font-semibold text-slate-700">High School</div>
+                                                    <div className="text-slate-600">{player.lacrosseHistory.highSchool.teamName} {player.lacrosseHistory.highSchool.graduationYear && `'${player.lacrosseHistory.highSchool.graduationYear.toString().slice(-2)}`}</div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {player.lacrosseHistory?.college?.teamName && (
+                                            <div className="flex items-start gap-2">
+                                                <span className="text-lg">🎓</span>
+                                                <div>
+                                                    <div className="font-semibold text-slate-700">College</div>
+                                                    <div className="text-slate-600">{player.lacrosseHistory.college.teamName} {player.lacrosseHistory.college.graduationYear && `'${player.lacrosseHistory.college.graduationYear.toString().slice(-2)}`}</div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {player.lacrosseHistory?.postGrad?.length > 0 && (
+                                            <div className="flex items-start gap-2">
+                                                <span className="text-lg">🏆</span>
+                                                <div>
+                                                    <div className="font-semibold text-slate-700">Post-Grad</div>
+                                                    {player.lacrosseHistory.postGrad.map((t, i) => (
+                                                        <div key={i} className="text-slate-600">{t.teamName} {t.years && `(${t.years})`}</div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                        {player.funFacts && (
+                                            <div className="flex items-start gap-2">
+                                                <span className="text-lg">✨</span>
+                                                <div>
+                                                    <div className="font-semibold text-slate-700">Fun Facts</div>
+                                                    <div className="text-slate-600">{player.funFacts}</div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {player.socialMedia && Object.values(player.socialMedia).some(v => v) && (
+                                            <div className="flex items-start gap-2">
+                                                <span className="text-lg">📱</span>
+                                                <div>
+                                                    <div className="font-semibold text-slate-700 mb-1">Social</div>
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {player.socialMedia.instagram && <a href={`https://instagram.com/${player.socialMedia.instagram}`} target="_blank" rel="noopener noreferrer" className="text-xs px-2 py-1 bg-pink-100 text-pink-600 rounded-full hover:bg-pink-200" onClick={e => e.stopPropagation()}>📸 @{player.socialMedia.instagram}</a>}
+                                                        {player.socialMedia.twitter && <a href={`https://twitter.com/${player.socialMedia.twitter}`} target="_blank" rel="noopener noreferrer" className="text-xs px-2 py-1 bg-blue-100 text-blue-500 rounded-full hover:bg-blue-200" onClick={e => e.stopPropagation()}>🐦 @{player.socialMedia.twitter}</a>}
+                                                        {player.socialMedia.tiktok && <a href={`https://tiktok.com/@${player.socialMedia.tiktok}`} target="_blank" rel="noopener noreferrer" className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200" onClick={e => e.stopPropagation()}>🎵 @{player.socialMedia.tiktok}</a>}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        
+                                        {/* Empty state */}
+                                        {!player.lacrosseHistory?.highSchool?.teamName && 
+                                         !player.lacrosseHistory?.college?.teamName && 
+                                         !player.funFacts &&
+                                         !(player.goals > 0 || player.assists > 0) && (
+                                            <div className="text-center text-slate-400 py-4">
+                                                <p>No bio information yet</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <p className="text-center text-slate-400 text-sm mt-3">
+                                        ← Tap to flip back
+                                    </p>
+                                </div>
+
+                                {/* Footer */}
+                                <div className="h-3 w-full absolute bottom-0" style={{ background: `linear-gradient(90deg, ${accentColor} 0%, ${teamColor} 100%)` }}></div>
                             </div>
                         </div>
+                    </div>
 
-                        {/* Close Button */}
-                        <div className="flex justify-end mt-6">
-                            <button
-                                onClick={onClose}
-                                className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
-                            >
-                                Close
-                            </button>
-                        </div>
+                    {/* Action Buttons */}
+                    <div className="flex justify-center gap-3 mt-4">
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onPrint(); }}
+                            className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-md hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
+                        >
+                            🖨️ Print
+                        </button>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onDownload(); }}
+                            className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-md hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
+                        >
+                            📥 Save PDF
+                        </button>
                     </div>
                 </div>
             </div>
