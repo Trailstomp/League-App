@@ -513,6 +513,54 @@ async def get_dashboard_data():
                 "lastUpdated": datetime.utcnow().isoformat()
             }
         
+        # Process active players from users collection
+        if isinstance(active_players, Exception):
+            logger.error(f"Error fetching active players: {active_players}")
+            active_players = []
+        
+        # Format players for frontend - merge legacy players with users collection players
+        all_players = []
+        seen_player_ids = set()
+        
+        # First add players from users collection (with teamAssignments)
+        for user in (active_players or []):
+            player_id = user.get("id")
+            if player_id and player_id not in seen_player_ids:
+                # Get primary team assignment
+                team_assignments = user.get("teamAssignments", [])
+                primary_assignment = next((a for a in team_assignments if a.get("isPrimary")), team_assignments[0] if team_assignments else None)
+                
+                player = {
+                    "id": player_id,
+                    "name": user.get("name", ""),
+                    "email": user.get("email", ""),
+                    "phone": user.get("phone", ""),
+                    "teamId": primary_assignment.get("teamId") if primary_assignment else user.get("teamId", ""),
+                    "team_id": primary_assignment.get("teamId") if primary_assignment else user.get("teamId", ""),  # Legacy field
+                    "teamName": primary_assignment.get("teamName") if primary_assignment else user.get("teamName", ""),
+                    "position": primary_assignment.get("position") if primary_assignment else user.get("position", ""),
+                    "jerseyNumber": primary_assignment.get("playerNumber") if primary_assignment else user.get("playerNumber", ""),
+                    "playerNumber": primary_assignment.get("playerNumber") if primary_assignment else user.get("playerNumber", ""),
+                    "photoUrl": user.get("photoUrl", ""),
+                    "roles": user.get("roles", []),
+                    "status": user.get("status", "active"),
+                    "teamAssignments": team_assignments  # Include full team assignments for multi-team support
+                }
+                all_players.append(player)
+                seen_player_ids.add(player_id)
+        
+        # Then add any legacy players from league_data.players (avoiding duplicates)
+        legacy_players = league_data.get("players", [])
+        for player in legacy_players:
+            player_id = player.get("id")
+            if player_id and player_id not in seen_player_ids:
+                all_players.append(player)
+                seen_player_ids.add(player_id)
+        
+        # Update league_data with merged players
+        league_data["players"] = all_players
+        logger.info(f"✅ Merged players: {len(all_players)} total ({len(active_players or [])} from users, {len(legacy_players)} from legacy)")
+        
         # Return consolidated response
         dashboard_data = {
             **league_data,  # teams, players, events, websiteStyle, etc.
@@ -521,7 +569,7 @@ async def get_dashboard_data():
             "loadedAt": datetime.utcnow().isoformat()
         }
         
-        logger.info(f"✅ Dashboard data loaded: {len(dashboard_data.get('teams', []))} teams, {len(dashboard_data.get('galleries', []))} galleries, YouTube: {'enabled' if youtube_config.get('enabled') else 'disabled'}")
+        logger.info(f"✅ Dashboard data loaded: {len(dashboard_data.get('teams', []))} teams, {len(dashboard_data.get('players', []))} players, {len(dashboard_data.get('galleries', []))} galleries, YouTube: {'enabled' if youtube_config.get('enabled') else 'disabled'}")
         
         return dashboard_data
         
