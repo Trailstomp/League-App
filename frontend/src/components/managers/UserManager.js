@@ -553,11 +553,55 @@ const UserManager = ({ teams = [] }) => {
 
     // Filter users by tab
     const filteredUsers = users.filter(user => {
-        if (activeTab === 'pending') return user.status === 'pending';
-        if (activeTab === 'active') return user.status === 'active';
-        if (activeTab === 'all') return true;
-        return user.status === activeTab;
+        // First filter by tab/status
+        let matchesTab = true;
+        if (activeTab === 'pending') matchesTab = user.status === 'pending';
+        else if (activeTab === 'active') matchesTab = user.status === 'active';
+        else if (activeTab === 'all') matchesTab = true;
+        else matchesTab = user.status === activeTab;
+        
+        if (!matchesTab) return false;
+        
+        // Text search - search name, email, phone
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            const matchesSearch = 
+                (user.name && user.name.toLowerCase().includes(query)) ||
+                (user.email && user.email.toLowerCase().includes(query)) ||
+                (user.phone && user.phone.toLowerCase().includes(query)) ||
+                (user.playerNumber && user.playerNumber.toString().includes(query));
+            if (!matchesSearch) return false;
+        }
+        
+        // Role filter
+        if (filterRole !== 'all') {
+            const userRoles = user.roles?.length > 0 ? user.roles : [user.role];
+            if (!userRoles.includes(filterRole)) return false;
+        }
+        
+        // Team filter
+        if (filterTeam !== 'all') {
+            const userTeams = user.teamAssignments?.map(a => a.teamId) || [];
+            if (user.teamId) userTeams.push(user.teamId);
+            if (!userTeams.includes(filterTeam)) return false;
+        }
+        
+        // Position filter
+        if (filterPosition !== 'all') {
+            const userPositions = user.teamAssignments?.map(a => a.position) || [];
+            if (user.position) userPositions.push(user.position);
+            if (!userPositions.includes(filterPosition)) return false;
+        }
+        
+        return true;
     });
+
+    // Get unique positions from all users
+    const allPositions = [...new Set(users.flatMap(u => {
+        const positions = u.teamAssignments?.map(a => a.position).filter(Boolean) || [];
+        if (u.position) positions.push(u.position);
+        return positions;
+    }))].sort();
 
     const pendingCount = users.filter(u => u.status === 'pending').length;
     const activeCount = users.filter(u => u.status === 'active').length;
