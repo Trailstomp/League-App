@@ -1296,30 +1296,26 @@ const UserManager = ({ teams = [] }) => {
                                         ))}
                                     </div>
                                 </div>
-                            )}
 
-                            {/* Fun Facts Section - Only show for players */}
-                            {newUser.roles.includes('player') && (
-                                <div className="border-t pt-4">
-                                    <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
-                                        ✨ Fun Facts
-                                    </h4>
-                                    <textarea
-                                        placeholder="Share some fun facts about yourself... (favorite food, hobbies, interesting trivia, etc.)"
-                                        value={newUser.funFacts || ''}
-                                        onChange={(e) => setNewUser(prev => ({ ...prev, funFacts: e.target.value }))}
-                                        rows={3}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg resize-none"
-                                    />
-                                </div>
-                            )}
+                            {/* Fun Facts Section - Show for all users */}
+                            <div className="border-t pt-4">
+                                <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
+                                    ✨ Fun Facts
+                                </h4>
+                                <textarea
+                                    placeholder="Share some fun facts about yourself... (favorite food, hobbies, interesting trivia, etc.)"
+                                    value={newUser.funFacts || ''}
+                                    onChange={(e) => setNewUser(prev => ({ ...prev, funFacts: e.target.value }))}
+                                    rows={3}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg resize-none"
+                                />
+                            </div>
 
-                            {/* Social Media Section - Only show for players */}
-                            {newUser.roles.includes('player') && (
-                                <div className="border-t pt-4">
-                                    <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
-                                        📱 Social Media
-                                    </h4>
+                            {/* Social Media Section - Show for all users */}
+                            <div className="border-t pt-4">
+                                <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
+                                    📱 Social Media
+                                </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="flex items-center gap-2">
                                             <span className="text-xl">📸</span>
