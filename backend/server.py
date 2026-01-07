@@ -386,14 +386,20 @@ async def get_dashboard_data():
         galleries_task = get_active_galleries_internal()
         youtube_task = db.youtube_integration.find_one({"id": "main_youtube"})
         unified_events_task = db.unified_events.find({}, {"_id": 0}).to_list(None)  # Get unified events
+        # Fetch active players from users collection (player role)
+        players_task = db.users.find(
+            {"status": "active", "$or": [{"roles": "player"}, {"role": "player"}]},
+            {"_id": 0, "password": 0}
+        ).to_list(None)
         
         # Execute all queries in parallel
-        league_data, teams_from_collection, galleries_data, youtube_config, unified_events = await asyncio.gather(
+        league_data, teams_from_collection, galleries_data, youtube_config, unified_events, active_players = await asyncio.gather(
             league_data_task,
             teams_task,
             galleries_task,
             youtube_task,
             unified_events_task,
+            players_task,
             return_exceptions=True
         )
         
