@@ -11684,6 +11684,213 @@ async def get_sms_logs(limit: int = 50):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ============ TWILIO SMS WEBHOOK ENDPOINTS ============
+
+@api_router.post("/sms/webhook")
+async def sms_incoming_webhook(request: Request):
+    """
+    Handle incoming SMS messages from Twilio
+    Twilio sends POST data with: From, To, Body, MessageSid, etc.
+    """
+    try:
+        # Parse form data from Twilio
+        form_data = await request.form()
+        
+        incoming_message = {
+            "id": str(uuid4()),
+            "message_sid": form_data.get("MessageSid"),
+            "from_number": form_data.get("From"),
+            "to_number": form_data.get("To"),
+            "body": form_data.get("Body", ""),
+            "num_media": form_data.get("NumMedia", "0"),
+            "from_city": form_data.get("FromCity"),
+            "from_state": form_data.get("FromState"),
+            "from_country": form_data.get("FromCountry"),
+            "received_at": datetime.now(timezone.utc).isoformat(),
+            "processed": False,
+            "response_sent": False
+        }
+        
+        logger.info(f"📱 Incoming SMS from {incoming_message['from_number']}: {incoming_message['body'][:50]}...")
+        
+        # Store the incoming message
+        await db.sms_incoming.insert_one(incoming_message)
+        
+        # Check if this is a reply to a known user
+        user = await db.users.find_one({"phone": incoming_message['from_number']})
+        if user:
+            incoming_message['user_id'] = user.get('id')
+            incoming_message['user_name'] = user.get('name')
+            await db.sms_incoming.update_one(
+                {"id": incoming_message['id']},
+                {"$set": {"user_id": user.get('id'), "user_name": user.get('name')}}
+            )
+        
+        # Process keywords in the message
+        body_lower = incoming_message['body'].lower().strip()
+        response_message = None
+        
+        if body_lower in ['stop', 'unsubscribe', 'cancel']:
+            # Handle opt-out
+            if user:
+                await db.users.update_one(
+                    {"id": user['id']},
+                    {"$set": {"sms_opted_out": True, "sms_opt_out_date": datetime.now(timezone.utc).isoformat()}}
+                )
+            response_message = "You have been unsubscribed from SMS notifications. Reply START to re-subscribe."
+            
+        elif body_lower in ['start', 'subscribe', 'yes']:
+            # Handle opt-in
+            if user:
+                await db.users.update_one(
+                    {"id": user['id']},
+                    {"$set": {"sms_opted_out": False}}
+                )
+            response_message = "You have been subscribed to SMS notifications. Reply STOP to unsubscribe."
+            
+        elif body_lower == 'help':
+            response_message = "MLBL SMS: Reply STOP to unsubscribe, START to subscribe. For support, visit our website."
+        
+        # Return TwiML response if we have a response message
+        if response_message:
+            await db.sms_incoming.update_one(
+                {"id": incoming_message['id']},
+                {"$set": {"processed": True, "response_sent": True, "auto_response": response_message}}
+            )
+            twiml_response = f'<?xml version="1.0" encoding="UTF-8"?><Response><Message>{response_message}</Message></Response>'
+            return Response(content=twiml_response, media_type="application/xml")
+        
+        # Return empty TwiML (acknowledge receipt, no response)
+        return Response(content='<?xml version="1.0" encoding="UTF-8"?><Response></Response>', media_type="application/xml")
+        
+    except Exception as e:
+        logger.error(f"Error processing incoming SMS: {e}")
+        # Return empty response to acknowledge (don't want Twilio to retry)
+        return Response(content='<?xml version="1.0" encoding="UTF-8"?><Response></Response>', media_type="application/xml")
+
+
+@api_router.post("/sms/webhook/fallback")
+async def sms_fallback_webhook(request: Request):
+    """
+    Fallback webhook when primary webhook fails
+    Logs the error and stores the message for later processing
+    """
+    try:
+        form_data = await request.form()
+        
+        fallback_message = {
+            "id": str(uuid4()),
+            "message_sid": form_data.get("MessageSid"),
+            "from_number": form_data.get("From"),
+            "to_number": form_data.get("To"),
+            "body": form_data.get("Body", ""),
+            "error_code": form_data.get("ErrorCode"),
+            "error_message": form_data.get("ErrorMessage"),
+            "received_at": datetime.now(timezone.utc).isoformat(),
+            "is_fallback": True
+        }
+        
+        logger.warning(f"⚠️ SMS Fallback triggered for message from {fallback_message['from_number']}")
+        
+        # Store in fallback collection for manual review
+        await db.sms_fallback.insert_one(fallback_message)
+        
+        # Return acknowledgment
+        return Response(content='<?xml version="1.0" encoding="UTF-8"?><Response></Response>', media_type="application/xml")
+        
+    except Exception as e:
+        logger.error(f"Error in SMS fallback webhook: {e}")
+        return Response(content='<?xml version="1.0" encoding="UTF-8"?><Response></Response>', media_type="application/xml")
+
+
+@api_router.post("/sms/status")
+async def sms_status_callback(request: Request):
+    """
+    Handle delivery status callbacks from Twilio
+    Tracks: queued, sent, delivered, undelivered, failed
+    """
+    try:
+        form_data = await request.form()
+        
+        status_update = {
+            "message_sid": form_data.get("MessageSid"),
+            "message_status": form_data.get("MessageStatus"),  # queued, sent, delivered, undelivered, failed
+            "to_number": form_data.get("To"),
+            "from_number": form_data.get("From"),
+            "error_code": form_data.get("ErrorCode"),
+            "error_message": form_data.get("ErrorMessage"),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        logger.info(f"📊 SMS Status Update: {status_update['message_sid']} -> {status_update['message_status']}")
+        
+        # Update the original SMS log with delivery status
+        result = await db.sms_logs.update_one(
+            {"message_sid": status_update['message_sid']},
+            {"$set": {
+                "delivery_status": status_update['message_status'],
+                "delivery_updated_at": status_update['updated_at'],
+                "error_code": status_update.get('error_code'),
+                "error_message": status_update.get('error_message')
+            }}
+        )
+        
+        # Also store in status history
+        await db.sms_status_history.insert_one({
+            "id": str(uuid4()),
+            **status_update
+        })
+        
+        # Handle failed deliveries - could trigger alerts or retry logic
+        if status_update['message_status'] in ['failed', 'undelivered']:
+            logger.warning(f"❌ SMS delivery failed: {status_update['message_sid']} - {status_update.get('error_message', 'Unknown error')}")
+            
+            # Mark the phone number as potentially invalid if multiple failures
+            if status_update.get('error_code') in ['30003', '30005', '30006']:  # Invalid number codes
+                await db.sms_invalid_numbers.update_one(
+                    {"phone": status_update['to_number']},
+                    {"$set": {
+                        "phone": status_update['to_number'],
+                        "last_error": status_update.get('error_message'),
+                        "last_error_code": status_update.get('error_code'),
+                        "updated_at": status_update['updated_at']
+                    }, "$inc": {"failure_count": 1}},
+                    upsert=True
+                )
+        
+        return {"status": "received"}
+        
+    except Exception as e:
+        logger.error(f"Error processing SMS status callback: {e}")
+        return {"status": "error", "message": str(e)}
+
+
+@api_router.get("/sms/incoming")
+async def get_incoming_sms(limit: int = 50):
+    """Get incoming SMS messages"""
+    try:
+        messages = await db.sms_incoming.find().sort("received_at", -1).limit(limit).to_list(None)
+        for msg in messages:
+            msg.pop('_id', None)
+        return {"messages": messages, "count": len(messages)}
+    except Exception as e:
+        logger.error(f"Error getting incoming SMS: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/sms/status-history")
+async def get_sms_status_history(limit: int = 100):
+    """Get SMS delivery status history"""
+    try:
+        history = await db.sms_status_history.find().sort("updated_at", -1).limit(limit).to_list(None)
+        for h in history:
+            h.pop('_id', None)
+        return {"history": history, "count": len(history)}
+    except Exception as e:
+        logger.error(f"Error getting SMS status history: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============ DATABASE ADMIN ENDPOINTS ============
 
 @api_router.get("/database/stats")
