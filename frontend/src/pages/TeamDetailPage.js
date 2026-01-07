@@ -48,7 +48,12 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate 
         { id: 'chat', label: 'Team Chat', icon: 'email' },
         { id: 'media', label: 'Photos & Vids', icon: 'view' },
         { id: 'contact', label: 'Contact', icon: 'email' },
-        ...(isTeamCoachOrAdmin ? [{ id: 'recruiting', label: 'Recruiting', icon: 'add', coachOnly: true }] : []),
+        // Coach/Admin only tabs
+        ...(isTeamCoachOrAdmin ? [
+            { id: 'manage-roster', label: 'Manage Roster', icon: 'admin', coachOnly: true },
+            { id: 'recruiting', label: 'Recruiting', icon: 'add', coachOnly: true },
+            { id: 'team-fees', label: 'Fees', icon: '💰', coachOnly: true },
+        ] : []),
         { id: 'settings', label: 'Settings', icon: 'settings', adminOnly: true }
     ];
 
