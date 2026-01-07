@@ -430,7 +430,7 @@ function App() {
         if (isInitialLoad && teams.length === 0 && events.length === 0) {
           return <HomePageSkeleton />;
         }
-        return <HomePage teams={teams} currentUser={currentUser} events={events} setEvents={setEvents} websiteStyle={websiteStyle} onNavigate={handleNavigate} />;
+        return <HomePage teams={teams} players={players} currentUser={currentUser} events={events} setEvents={setEvents} websiteStyle={websiteStyle} onNavigate={handleNavigate} />;
       case 'admin':
         console.log('🔍 Admin case reached - checking permissions...');
         // Debug the admin check
