@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
 import TeamGalleryDisplay from '../components/TeamGalleryDisplay';
 import GroupMeChat from '../components/GroupMeChat';
