@@ -454,6 +454,7 @@ const PlayerCard = ({ player, team, currentUser, onUpdate, showEditButton = true
                     className="absolute inset-0 w-full rounded-xl overflow-hidden shadow-lg"
                     style={{ 
                         backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden',
                         transform: 'rotateY(180deg)',
                         background: `linear-gradient(135deg, ${teamColor}11 0%, #f8fafc 50%, ${accentColor}11 100%)`
                     }}
