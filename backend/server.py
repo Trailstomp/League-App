@@ -11697,7 +11697,7 @@ async def sms_incoming_webhook(request: Request):
         form_data = await request.form()
         
         incoming_message = {
-            "id": str(uuid4()),
+            "id": str(uuid.uuid4()),
             "message_sid": form_data.get("MessageSid"),
             "from_number": form_data.get("From"),
             "to_number": form_data.get("To"),
@@ -11779,7 +11779,7 @@ async def sms_fallback_webhook(request: Request):
         form_data = await request.form()
         
         fallback_message = {
-            "id": str(uuid4()),
+            "id": str(uuid.uuid4()),
             "message_sid": form_data.get("MessageSid"),
             "from_number": form_data.get("From"),
             "to_number": form_data.get("To"),
@@ -11837,7 +11837,7 @@ async def sms_status_callback(request: Request):
         
         # Also store in status history
         await db.sms_status_history.insert_one({
-            "id": str(uuid4()),
+            "id": str(uuid.uuid4()),
             **status_update
         })
         
