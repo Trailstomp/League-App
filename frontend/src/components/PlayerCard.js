@@ -320,15 +320,18 @@ const PlayerCard = ({ player, team, currentUser, onUpdate, showEditButton = true
     const accentColor = team?.style?.accentColor || '#3b82f6';
 
     return (
-        <div className="relative perspective-1000">
+        <div 
+            className="relative"
+            style={{ perspective: '1000px' }}
+        >
             {/* Card Container */}
             <div 
                 ref={cardRef}
-                className={`relative w-full transition-transform duration-500 transform-style-preserve-3d cursor-pointer ${isFlipped ? 'rotate-y-180' : ''}`}
+                className="relative w-full cursor-pointer"
                 style={{ 
                     transformStyle: 'preserve-3d',
                     transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                    transition: 'transform 0.6s'
+                    transition: 'transform 0.6s ease-in-out'
                 }}
                 onClick={() => !isEditing && setIsFlipped(!isFlipped)}
             >
@@ -337,6 +340,7 @@ const PlayerCard = ({ player, team, currentUser, onUpdate, showEditButton = true
                     className="w-full rounded-xl overflow-hidden shadow-lg"
                     style={{ 
                         backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden',
                         background: `linear-gradient(135deg, ${teamColor}22 0%, white 50%, ${accentColor}22 100%)`
                     }}
                 >
