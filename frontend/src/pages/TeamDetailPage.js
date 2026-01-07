@@ -968,10 +968,14 @@ const TeamRosterTab = ({ team, players = [] }) => {
 
             {/* Player Detail Modal */}
             {selectedPlayer && (
-                <PlayerDetailModal 
+                <PlayerCardPopup 
                     player={selectedPlayer} 
                     team={team}
-                    onClose={() => setSelectedPlayer(null)} 
+                    isFlipped={isFlipped}
+                    onFlip={toggleFlip}
+                    onClose={closePlayerCard}
+                    onPrint={handlePrint}
+                    onDownload={handleDownloadPDF}
                 />
             )}
         </div>
