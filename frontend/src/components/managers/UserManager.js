@@ -302,7 +302,21 @@ const UserManager = ({ teams = [] }) => {
         emergencyContactName: '',
         emergencyContactPhone: '',
         emergencyContactRelationship: '',
-        teamAssignments: []
+        teamAssignments: [],
+        // Extended player info
+        lacrosseHistory: {
+            highSchool: { teamName: '', graduationYear: '' },
+            college: { teamName: '', graduationYear: '' },
+            postGrad: []
+        },
+        funFacts: '',
+        socialMedia: {
+            instagram: '',
+            twitter: '',
+            tiktok: '',
+            facebook: '',
+            linkedin: ''
+        }
     });
     const [message, setMessage] = useState('');
 
