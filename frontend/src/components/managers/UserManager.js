@@ -1586,12 +1586,11 @@ const UserManager = ({ teams = [] }) => {
                                 </div>
                             )}
 
-                            {/* Lacrosse History Section - Only show for players */}
-                            {(editingUser.roles?.includes('player') || editingUser.role === 'player') && (
-                                <div className="border-t pt-4">
-                                    <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
-                                        🥍 Lacrosse History
-                                    </h4>
+                            {/* Lacrosse History Section - Show for all users for now */}
+                            <div className="border-t pt-4">
+                                <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
+                                    🥍 Lacrosse History
+                                </h4>
                                     
                                     {/* High School */}
                                     <div className="mb-4">
