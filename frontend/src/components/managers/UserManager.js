@@ -1811,7 +1811,6 @@ const UserManager = ({ teams = [] }) => {
                                         </div>
                                     </div>
                                 </div>
-                            )}
                         </div>
                         <div className="sticky bottom-0 bg-white border-t p-4 md:p-6">
                             <div className="flex flex-col sm:flex-row gap-3">
