@@ -441,14 +441,135 @@ const TeamScheduleTab = ({ team, events = [] }) => {
 // Team Roster Tab
 const TeamRosterTab = ({ team, players = [] }) => {
     const [selectedPlayer, setSelectedPlayer] = useState(null);
-    const [flippedCards, setFlippedCards] = useState({}); // Track which cards are flipped
+    const [isFlipped, setIsFlipped] = useState(false);
     const teamPlayers = players.filter(player => player.teamId === team.id);
+    const cardRef = useRef(null);
 
-    const toggleFlip = (playerId) => {
-        setFlippedCards(prev => ({
-            ...prev,
-            [playerId]: !prev[playerId]
-        }));
+    const openPlayerCard = (player) => {
+        setSelectedPlayer(player);
+        setIsFlipped(false);
+    };
+
+    const closePlayerCard = () => {
+        setSelectedPlayer(null);
+        setIsFlipped(false);
+    };
+
+    const toggleFlip = () => {
+        setIsFlipped(!isFlipped);
+    };
+
+    // Print the player card
+    const handlePrint = () => {
+        const printWindow = window.open('', '_blank');
+        const teamColor = team?.style?.primaryColor || '#2563eb';
+        
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>${selectedPlayer.name} - Player Card</title>
+                <style>
+                    @page { size: 3.5in 5in; margin: 0; }
+                    body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+                    .card { width: 3in; border: 2px solid ${teamColor}; border-radius: 12px; overflow: hidden; }
+                    .header { background: ${teamColor}; color: white; padding: 8px; text-align: center; }
+                    .photo { height: 180px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; }
+                    .photo img { max-width: 100%; max-height: 100%; object-fit: cover; }
+                    .info { padding: 12px; text-align: center; }
+                    .name { font-size: 18px; font-weight: bold; color: ${teamColor}; margin-bottom: 4px; }
+                    .position { background: ${teamColor}; color: white; padding: 4px 12px; border-radius: 12px; display: inline-block; font-size: 12px; }
+                    .number { font-size: 24px; font-weight: bold; color: ${teamColor}; }
+                    .section { margin-top: 8px; font-size: 11px; text-align: left; padding: 0 8px; }
+                    .section-title { font-weight: bold; color: #666; margin-bottom: 2px; }
+                </style>
+            </head>
+            <body>
+                <div class="card">
+                    <div class="header">${team?.name || 'Team'}</div>
+                    <div class="photo">
+                        ${selectedPlayer.photoUrl ? `<img src="${selectedPlayer.photoUrl}" />` : '<span style="font-size:48px;color:#ccc">👤</span>'}
+                    </div>
+                    <div class="info">
+                        <div class="number">#${selectedPlayer.jerseyNumber || '?'}</div>
+                        <div class="name">${selectedPlayer.name}</div>
+                        <div class="position">${selectedPlayer.position || 'Player'}</div>
+                    </div>
+                    ${selectedPlayer.lacrosseHistory?.highSchool?.teamName ? `
+                        <div class="section">
+                            <div class="section-title">🏫 High School</div>
+                            <div>${selectedPlayer.lacrosseHistory.highSchool.teamName}</div>
+                        </div>
+                    ` : ''}
+                    ${selectedPlayer.lacrosseHistory?.college?.teamName ? `
+                        <div class="section">
+                            <div class="section-title">🎓 College</div>
+                            <div>${selectedPlayer.lacrosseHistory.college.teamName}</div>
+                        </div>
+                    ` : ''}
+                    ${selectedPlayer.funFacts ? `
+                        <div class="section">
+                            <div class="section-title">✨ Fun Facts</div>
+                            <div>${selectedPlayer.funFacts}</div>
+                        </div>
+                    ` : ''}
+                </div>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+    };
+
+    // Download as PDF
+    const handleDownloadPDF = async () => {
+        const { jsPDF } = await import('jspdf');
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: [3.5, 5] });
+        const teamColor = team?.style?.primaryColor || '#2563eb';
+        
+        // Card border
+        pdf.setDrawColor(teamColor);
+        pdf.setLineWidth(0.02);
+        pdf.roundedRect(0.1, 0.1, 3.3, 4.8, 0.15, 0.15, 'S');
+        
+        // Header
+        pdf.setFillColor(teamColor);
+        pdf.rect(0.1, 0.1, 3.3, 0.4, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(14);
+        pdf.text(team?.name || 'Team', 1.75, 0.35, { align: 'center' });
+        
+        // Jersey number
+        pdf.setTextColor(teamColor);
+        pdf.setFontSize(36);
+        pdf.text(`#${selectedPlayer.jerseyNumber || '?'}`, 1.75, 2.2, { align: 'center' });
+        
+        // Name
+        pdf.setFontSize(16);
+        pdf.text(selectedPlayer.name || 'Player', 1.75, 2.5, { align: 'center' });
+        
+        // Position
+        pdf.setFontSize(11);
+        pdf.text(selectedPlayer.position || 'Player', 1.75, 2.75, { align: 'center' });
+        
+        // Bio info
+        let yPos = 3.1;
+        pdf.setFontSize(9);
+        pdf.setTextColor(100, 100, 100);
+        
+        if (selectedPlayer.lacrosseHistory?.highSchool?.teamName) {
+            pdf.text(`🏫 HS: ${selectedPlayer.lacrosseHistory.highSchool.teamName}`, 0.3, yPos);
+            yPos += 0.25;
+        }
+        if (selectedPlayer.lacrosseHistory?.college?.teamName) {
+            pdf.text(`🎓 College: ${selectedPlayer.lacrosseHistory.college.teamName}`, 0.3, yPos);
+            yPos += 0.25;
+        }
+        if (selectedPlayer.funFacts) {
+            const funFacts = selectedPlayer.funFacts.substring(0, 60) + (selectedPlayer.funFacts.length > 60 ? '...' : '');
+            pdf.text(`✨ ${funFacts}`, 0.3, yPos, { maxWidth: 2.9 });
+        }
+        
+        pdf.save(`${selectedPlayer.name?.replace(/\s+/g, '_')}_card.pdf`);
     };
 
     const getPositionColor = (position) => {
