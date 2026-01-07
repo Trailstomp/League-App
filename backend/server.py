@@ -11749,6 +11749,73 @@ async def get_collection_data(collection_name: str, limit: int = 100):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@api_router.put("/database/collections/{collection_name}/{record_id}")
+async def update_collection_record(collection_name: str, record_id: str, data: dict):
+    """Update a record in a collection"""
+    try:
+        collection = db[collection_name]
+        
+        # Remove _id from data if present (can't update _id)
+        data.pop('_id', None)
+        
+        # Try to find by 'id' field first, then by '_id'
+        result = await collection.update_one(
+            {"id": record_id},
+            {"$set": data}
+        )
+        
+        if result.matched_count == 0:
+            # Try with ObjectId if string id didn't match
+            from bson import ObjectId
+            try:
+                result = await collection.update_one(
+                    {"_id": ObjectId(record_id)},
+                    {"$set": data}
+                )
+            except:
+                pass
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Record not found")
+        
+        return {"status": "success", "message": "Record updated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating record: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.delete("/database/collections/{collection_name}/{record_id}")
+async def delete_collection_record(collection_name: str, record_id: str):
+    """Delete a record from a collection"""
+    try:
+        collection = db[collection_name]
+        
+        # Try to delete by 'id' field first
+        result = await collection.delete_one({"id": record_id})
+        
+        if result.deleted_count == 0:
+            # Try with ObjectId if string id didn't match
+            from bson import ObjectId
+            try:
+                result = await collection.delete_one({"_id": ObjectId(record_id)})
+            except:
+                pass
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Record not found")
+        
+        return {"status": "success", "message": "Record deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting record: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.post("/database/backup")
 async def create_backup():
     """Create a database backup (placeholder - actual backup would need mongodump)"""
