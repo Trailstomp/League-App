@@ -103,7 +103,7 @@ const TeamCard = ({ team, onNavigate }) => (
     </div>
 );
 
-const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyle = {}, onNavigate }) => {
+const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvents, websiteStyle = {}, onNavigate }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showEventModal, setShowEventModal] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState(null);
@@ -111,11 +111,11 @@ const HomePage = ({ teams = [], currentUser, events = [], setEvents, websiteStyl
     const [activeTab, setActiveTab] = useState('teams'); // 'teams', 'media'
     const [activeTeamTab, setActiveTeamTab] = useState('all'); // 'all', 'field', 'box', 'other'
     
-    // Calculate statistics
+    // Calculate statistics - use players array for accurate count
     const stats = {
         totalTeams: teams.length,
         activeEvents: events ? events.length : 0,
-        totalPlayers: teams.reduce((total, team) => total + (team.players?.length || 0), 0)
+        totalPlayers: players.length
     };
 
     // Group teams by division
