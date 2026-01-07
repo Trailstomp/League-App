@@ -11684,6 +11684,85 @@ async def get_sms_logs(limit: int = 50):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ============ DATABASE ADMIN ENDPOINTS ============
+
+@api_router.get("/database/stats")
+async def get_database_stats():
+    """Get database statistics and collection info"""
+    try:
+        # Get all collection names
+        collection_names = await db.list_collection_names()
+        
+        collections_info = []
+        total_documents = 0
+        
+        for name in collection_names:
+            if name.startswith('system.'):
+                continue
+            collection = db[name]
+            count = await collection.count_documents({})
+            total_documents += count
+            
+            # Get sample document to show fields
+            sample = await collection.find_one({}, {"_id": 0})
+            fields = list(sample.keys()) if sample else []
+            
+            collections_info.append({
+                "name": name,
+                "documents": count,
+                "fields": fields[:10],  # Limit to first 10 fields
+                "fieldCount": len(fields)
+            })
+        
+        # Sort by document count
+        collections_info.sort(key=lambda x: x['documents'], reverse=True)
+        
+        return {
+            "collections": len(collections_info),
+            "documents": total_documents,
+            "size": "N/A",  # Would need admin access to get actual size
+            "collectionsInfo": collections_info
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting database stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/database/collections/{collection_name}")
+async def get_collection_data(collection_name: str, limit: int = 100):
+    """Get data from a specific collection"""
+    try:
+        collection = db[collection_name]
+        documents = await collection.find({}, {"_id": 0}).limit(limit).to_list(None)
+        count = await collection.count_documents({})
+        
+        return {
+            "collection": collection_name,
+            "totalDocuments": count,
+            "returnedDocuments": len(documents),
+            "documents": documents
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting collection data: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/database/backup")
+async def create_backup():
+    """Create a database backup (placeholder - actual backup would need mongodump)"""
+    try:
+        # This is a placeholder - actual backup would require mongodump or Atlas backup
+        return {
+            "status": "info",
+            "message": "Database backup must be performed through MongoDB Atlas or mongodump CLI tool"
+        }
+    except Exception as e:
+        logger.error(f"Error creating backup: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Include the API router in the main app (after all routes are defined)
 app.include_router(api_router)
 
