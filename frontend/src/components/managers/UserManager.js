@@ -283,6 +283,14 @@ const UserManager = ({ teams = [] }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [uploadingPhoto, setUploadingPhoto] = useState(false);
+    
+    // Search and Filter State
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filterRole, setFilterRole] = useState('all');
+    const [filterTeam, setFilterTeam] = useState('all');
+    const [filterPosition, setFilterPosition] = useState('all');
+    const [showFilters, setShowFilters] = useState(false);
+    
     const [newUser, setNewUser] = useState({
         name: '',
         email: '',
