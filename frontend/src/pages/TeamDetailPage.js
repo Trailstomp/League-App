@@ -395,9 +395,14 @@ const TeamHomeTab = ({ team, teams, events, onNavigate }) => {
 // Team Schedule Tab
 const TeamScheduleTab = ({ team, events = [] }) => {
     const teamEvents = events.filter(event => 
-        event.teamIds?.includes(team.id) || 
+        // Filter to team's events
+        (event.teamIds?.includes(team.id) || 
         event.homeTeam === team.id || 
-        event.awayTeam === team.id
+        event.awayTeam === team.id) &&
+        // Exclude canceled/cancelled events
+        event.status !== 'canceled' &&
+        event.status !== 'cancelled' &&
+        event.status !== 'archived'
     );
 
     return (
