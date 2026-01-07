@@ -397,7 +397,11 @@ const UserManager = ({ teams = [] }) => {
                     name: newUser.emergencyContactName || '',
                     phone: newUser.emergencyContactPhone || '',
                     relationship: newUser.emergencyContactRelationship || ''
-                }
+                },
+                // Extended player info
+                lacrosseHistory: newUser.lacrosseHistory || {},
+                funFacts: newUser.funFacts || '',
+                socialMedia: newUser.socialMedia || {}
             };
 
             const response = await fetch(`${backendUrl}/api/users/create`, {
@@ -412,7 +416,10 @@ const UserManager = ({ teams = [] }) => {
                 setNewUser({
                     name: '', email: '', password: '', roles: ['player'], phone: '',
                     jerseySize: '', photoUrl: '', emergencyContactName: '', 
-                    emergencyContactPhone: '', emergencyContactRelationship: '', teamAssignments: []
+                    emergencyContactPhone: '', emergencyContactRelationship: '', teamAssignments: [],
+                    lacrosseHistory: { highSchool: { teamName: '', graduationYear: '' }, college: { teamName: '', graduationYear: '' }, postGrad: [] },
+                    funFacts: '',
+                    socialMedia: { instagram: '', twitter: '', tiktok: '', facebook: '', linkedin: '' }
                 });
                 await loadUsers();
                 setTimeout(() => setMessage(''), 3000);
