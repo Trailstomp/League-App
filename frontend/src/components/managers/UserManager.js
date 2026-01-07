@@ -1059,6 +1059,7 @@ const UserManager = ({ teams = [] }) => {
                                         value={newUser.password}
                                         onChange={(e) => setNewUser(prev => ({ ...prev, password: e.target.value }))}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                        autoComplete="new-password"
                                     />
                                 </div>
                                 <div>
