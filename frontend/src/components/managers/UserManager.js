@@ -1038,6 +1038,7 @@ const UserManager = ({ teams = [] }) => {
                                         onChange={(e) => setNewUser(prev => ({ ...prev, name: e.target.value }))}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                                         placeholder="John Smith"
+                                        autoComplete="off"
                                     />
                                 </div>
                                 <div>
@@ -1048,6 +1049,7 @@ const UserManager = ({ teams = [] }) => {
                                         onChange={(e) => setNewUser(prev => ({ ...prev, email: e.target.value }))}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                                         placeholder="john@example.com"
+                                        autoComplete="new-email"
                                     />
                                 </div>
                                 <div>
