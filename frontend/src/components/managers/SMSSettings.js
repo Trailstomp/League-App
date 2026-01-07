@@ -6,6 +6,7 @@ const SMSSettings = () => {
         account_sid: '',
         auth_token: '',
         phone_number: '',
+        production_domain: '',
         event_reminder_template: '📅 Reminder: {event_title} on {event_date} at {event_time}. Location: {location}. RSVP: {rsvp_link}',
         rsvp_confirmation_template: '✅ Your RSVP for {event_title} has been recorded as: {response}',
         custom_template: ''
@@ -17,8 +18,37 @@ const SMSSettings = () => {
     const [message, setMessage] = useState(null);
     const [logs, setLogs] = useState([]);
     const [showLogs, setShowLogs] = useState(false);
+    const [copiedUrl, setCopiedUrl] = useState(null);
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+
+    // Generate webhook URLs based on production domain
+    const getWebhookUrls = () => {
+        const domain = config.production_domain?.trim();
+        if (!domain) return null;
+        
+        // Ensure domain has https:// prefix
+        let baseUrl = domain;
+        if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+            baseUrl = 'https://' + baseUrl;
+        }
+        // Remove trailing slash
+        baseUrl = baseUrl.replace(/\/$/, '');
+        
+        return {
+            webhook: `${baseUrl}/api/sms/webhook`,
+            fallback: `${baseUrl}/api/sms/webhook/fallback`,
+            status: `${baseUrl}/api/sms/status`
+        };
+    };
+
+    const webhookUrls = getWebhookUrls();
+
+    const copyToClipboard = (url, name) => {
+        navigator.clipboard.writeText(url);
+        setCopiedUrl(name);
+        setTimeout(() => setCopiedUrl(null), 2000);
+    };
 
     useEffect(() => {
         loadConfig();
