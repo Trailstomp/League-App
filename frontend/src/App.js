@@ -190,6 +190,44 @@ function App() {
     setCurrentUser(user);
     setCache(CACHE_KEYS.USER, user); // Persist to localStorage
     setShowLogin(false);
+    
+    // Navigate to user's default landing page
+    if (user.defaultLandingPage) {
+      const landing = user.defaultLandingPage;
+      if (landing.type === 'team' && landing.teamId) {
+        // Navigate to team page with specific tab
+        const team = teams.find(t => t.id === landing.teamId);
+        if (team) {
+          setSelectedTeam(team);
+          setCurrentPage('team');
+          console.log(`🏠 Redirecting to default landing page: ${team.name} - ${landing.tabId || 'home'}`);
+        }
+      } else if (landing.type === 'page' && landing.pageName) {
+        setCurrentPage(landing.pageName);
+        console.log(`🏠 Redirecting to default page: ${landing.pageName}`);
+      }
+    } else {
+      // Default behavior: players/coaches go to their team page
+      const userRoles = user.roles || [user.role];
+      const isPlayerOrCoach = userRoles.includes('player') || userRoles.includes('coach');
+      const userTeamId = user.teamAssignments?.[0]?.teamId || user.teamId;
+      
+      if (isPlayerOrCoach && userTeamId) {
+        const team = teams.find(t => t.id === userTeamId);
+        if (team) {
+          setSelectedTeam(team);
+          setCurrentPage('team');
+          console.log(`🏠 Default redirect for ${userRoles.join(',')}: ${team.name}`);
+        }
+      }
+    }
+  };
+
+  // Update user in state (e.g., when preferences change)
+  const handleUserUpdate = (updatedUser) => {
+    console.log('👤 User updated:', updatedUser);
+    setCurrentUser(updatedUser);
+    setCache(CACHE_KEYS.USER, updatedUser); // Persist to localStorage
   };
 
   const handleLogout = () => {
