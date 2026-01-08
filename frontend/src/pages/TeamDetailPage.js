@@ -208,22 +208,64 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
 
             {/* Tab Navigation */}
             <div className="bg-white rounded-lg shadow-sm border overflow-hidden mb-4 sm:mb-6">
+                {/* Default page message */}
+                {defaultPageMessage && (
+                    <div className="bg-yellow-50 text-yellow-800 text-sm px-4 py-2 text-center">
+                        {defaultPageMessage}
+                    </div>
+                )}
                 <div className="flex overflow-x-auto">
-                    {tabs.map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-                                activeTab === tab.id
-                                    ? 'border-blue-500 text-blue-600 bg-blue-50'
-                                    : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                            }`}
-                        >
-                            <LacrosseIcon name={tab.icon} className="mr-1 sm:mr-2" style={{fontSize: '14px'}} />
-                            <span className="hidden sm:inline">{tab.label}</span>
-                            <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
-                        </button>
-                    ))}
+                    {tabs.map(tab => {
+                        const isThisTabDefault = currentUser?.defaultLandingPage?.type === 'team' && 
+                                                  currentUser?.defaultLandingPage?.teamId === team?.id &&
+                                                  currentUser?.defaultLandingPage?.tabId === tab.id;
+                        return (
+                            <div key={tab.id} className="relative group">
+                                <button
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`flex items-center px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                                        activeTab === tab.id
+                                            ? 'border-blue-500 text-blue-600 bg-blue-50'
+                                            : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                                    }`}
+                                >
+                                    <LacrosseIcon name={tab.icon} className="mr-1 sm:mr-2" style={{fontSize: '14px'}} />
+                                    <span className="hidden sm:inline">{tab.label}</span>
+                                    <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
+                                    {isThisTabDefault && (
+                                        <span className="ml-1 text-yellow-500" title="Your default landing page">⭐</span>
+                                    )}
+                                </button>
+                                {/* Star button - visible on hover or when active */}
+                                {currentUser && (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleSetDefaultPage(tab.id);
+                                        }}
+                                        disabled={settingDefault}
+                                        className={`absolute top-1 right-1 p-1 rounded-full transition-all ${
+                                            isThisTabDefault 
+                                                ? 'text-yellow-500 bg-yellow-50' 
+                                                : 'text-gray-300 hover:text-yellow-500 hover:bg-yellow-50 opacity-0 group-hover:opacity-100'
+                                        }`}
+                                        title={isThisTabDefault ? 'This is your default page' : 'Set as default landing page'}
+                                    >
+                                        {settingDefault ? (
+                                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                            </svg>
+                                        ) : (
+                                            <svg className="w-4 h-4" fill={isThisTabDefault ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                            </svg>
+                                        )}
+                                    </button>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
 
