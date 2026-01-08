@@ -98,6 +98,13 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
         ))
     );
 
+    // Check if user is a player or coach for this team
+    const isPlayerOrCoach = currentUser && (
+        (currentUser.roles?.includes('player') || currentUser.roles?.includes('coach') || 
+         currentUser.role === 'player' || currentUser.role === 'coach') &&
+        (currentUser.teamAssignments?.some(ta => ta.teamId === team?.id) || currentUser.teamId === team?.id)
+    );
+
     const tabs = [
         { id: 'home', label: 'Home', icon: 'venue' },
         { id: 'schedule', label: 'Schedule', icon: 'calendar' },
@@ -106,6 +113,10 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
         { id: 'chat', label: 'Team Chat', icon: 'email' },
         { id: 'media', label: 'Photos & Vids', icon: 'view' },
         { id: 'contact', label: 'Contact', icon: 'email' },
+        // Player/Coach personal dashboard tab
+        ...(isPlayerOrCoach ? [
+            { id: 'my-dashboard', label: 'My Dashboard', icon: 'admin', playerOnly: true }
+        ] : []),
         // Coach/Admin only tabs
         ...(isTeamCoachOrAdmin ? [
             { id: 'manage-roster', label: 'Manage Roster', icon: 'admin', coachOnly: true },
