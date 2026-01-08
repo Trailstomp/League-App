@@ -1432,24 +1432,29 @@ const TeamRecruitingTab = ({ team, currentUser }) => {
 
     const handleSendInvite = async (e) => {
         e.preventDefault();
+        console.log('📧 Attempting to send invite...', formData);
         
         if (!formData.name.trim()) {
             setMessage('❌ Name is required');
+            console.log('❌ Validation failed: Name is required');
             return;
         }
         
         if (formData.method === 'email' && !formData.email.trim()) {
             setMessage('❌ Email is required for email invites');
+            console.log('❌ Validation failed: Email is required');
             return;
         }
         
         if (formData.method === 'sms' && !formData.phone.trim()) {
             setMessage('❌ Phone number is required for SMS invites');
+            console.log('❌ Validation failed: Phone is required');
             return;
         }
 
         try {
             setSending(true);
+            console.log(`📧 Sending invite to ${backendUrl}/api/team/${team.id}/invites`);
             const response = await fetch(`${backendUrl}/api/team/${team.id}/invites`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1460,7 +1465,9 @@ const TeamRecruitingTab = ({ team, currentUser }) => {
                 })
             });
 
+            console.log('📧 Response status:', response.status);
             const data = await response.json();
+            console.log('📧 Response data:', data);
             
             if (response.ok) {
                 setMessage('✅ Invitation sent successfully!');
@@ -1480,8 +1487,10 @@ const TeamRecruitingTab = ({ team, currentUser }) => {
                     errorMsg = `❌ ${errorMsg}`;
                 }
                 setMessage(errorMsg);
+                console.log('❌ Invite error:', errorMsg);
             }
         } catch (error) {
+            console.error('❌ Network error sending invite:', error);
             setMessage('❌ Network error. Please try again.');
         } finally {
             setSending(false);
