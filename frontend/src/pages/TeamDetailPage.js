@@ -623,7 +623,7 @@ const TeamRosterTab = ({ team, players = [] }) => {
                         className="relative w-full cursor-pointer"
                         style={{ 
                             perspective: '1500px',
-                            height: '480px'
+                            height: '580px'
                         }}
                         onClick={onFlip}
                     >
