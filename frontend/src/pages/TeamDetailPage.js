@@ -298,10 +298,130 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
                 {activeTab === 'chat' && <TeamChatTab team={team} />}
                 {activeTab === 'media' && <TeamMediaTab team={team} />}
                 {activeTab === 'contact' && <TeamContactTab team={team} />}
+                {activeTab === 'my-dashboard' && <MyDashboardTab team={team} currentUser={currentUser} />}
                 {activeTab === 'manage-roster' && <TeamRosterManageTab team={team} currentUser={currentUser} />}
                 {activeTab === 'recruiting' && <TeamRecruitingTab team={team} currentUser={currentUser} />}
                 {activeTab === 'team-fees' && <TeamFeesTab team={team} currentUser={currentUser} />}
                 {activeTab === 'settings' && <TeamSettingsTab team={team} />}
+            </div>
+        </div>
+    );
+};
+
+// My Dashboard Tab - Player/Coach personal dashboard
+const MyDashboardTab = ({ team, currentUser }) => {
+    const [upcomingEvents, setUpcomingEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+
+    useEffect(() => {
+        loadDashboardData();
+    }, [team?.id]);
+
+    const loadDashboardData = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch(`${backendUrl}/api/team/${team?.id}/events`);
+            if (response.ok) {
+                const events = await response.json();
+                const now = new Date();
+                const upcoming = (events || [])
+                    .filter(e => new Date(e.date) >= now && e.status !== 'canceled')
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .slice(0, 5);
+                setUpcomingEvents(upcoming);
+            }
+        } catch (error) {
+            console.error('Error loading dashboard data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
+
+    const userRoles = currentUser?.roles || [currentUser?.role];
+    const teamAssignment = currentUser?.teamAssignments?.find(ta => ta.teamId === team?.id);
+
+    return (
+        <div className="space-y-6">
+            {/* Welcome Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white">
+                <h2 className="text-2xl font-bold mb-2">Welcome, {currentUser?.name}!</h2>
+                <p className="text-blue-100">
+                    {userRoles.includes('coach') ? '🏆 Team Coach' : '🥍 Player'} • {team?.name}
+                    {teamAssignment?.playerNumber && ` • #${teamAssignment.playerNumber}`}
+                    {teamAssignment?.position && ` • ${teamAssignment.position}`}
+                </p>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-white rounded-lg p-4 shadow-sm border">
+                    <div className="text-2xl font-bold text-blue-600">{upcomingEvents.length}</div>
+                    <div className="text-sm text-slate-600">Upcoming Events</div>
+                </div>
+                <div className="bg-white rounded-lg p-4 shadow-sm border">
+                    <div className="text-2xl font-bold text-green-600">{team?.record || '0-0'}</div>
+                    <div className="text-sm text-slate-600">Team Record</div>
+                </div>
+                <div className="bg-white rounded-lg p-4 shadow-sm border">
+                    <div className="text-2xl font-bold text-purple-600">{teamAssignment?.jerseyNumber || '—'}</div>
+                    <div className="text-sm text-slate-600">Jersey #</div>
+                </div>
+                <div className="bg-white rounded-lg p-4 shadow-sm border">
+                    <div className="text-2xl font-bold text-orange-600">{teamAssignment?.position || '—'}</div>
+                    <div className="text-sm text-slate-600">Position</div>
+                </div>
+            </div>
+
+            {/* Upcoming Events */}
+            <div className="bg-white rounded-lg shadow-sm border">
+                <div className="px-4 py-3 border-b bg-slate-50">
+                    <h3 className="font-semibold text-slate-800">📅 Your Upcoming Events</h3>
+                </div>
+                <div className="p-4">
+                    {upcomingEvents.length > 0 ? (
+                        <div className="space-y-3">
+                            {upcomingEvents.map((event, idx) => (
+                                <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                                    <div>
+                                        <div className="font-medium text-slate-800">{event.title}</div>
+                                        <div className="text-sm text-slate-600">
+                                            {new Date(event.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                                            {event.time && ` at ${event.time}`}
+                                        </div>
+                                    </div>
+                                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                        event.eventType === 'game' ? 'bg-red-100 text-red-800' :
+                                        event.eventType === 'practice' ? 'bg-blue-100 text-blue-800' :
+                                        'bg-gray-100 text-gray-800'
+                                    }`}>
+                                        {event.eventType || 'Event'}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-slate-500 text-center py-4">No upcoming events scheduled</p>
+                    )}
+                </div>
+            </div>
+
+            {/* Fees Section */}
+            <div className="bg-white rounded-lg shadow-sm border">
+                <div className="px-4 py-3 border-b bg-slate-50">
+                    <h3 className="font-semibold text-slate-800">💰 My Fees & Payments</h3>
+                </div>
+                <div className="p-4">
+                    <PlayerFeeDashboard teamId={team?.id} currentUser={currentUser} />
+                </div>
             </div>
         </div>
     );
