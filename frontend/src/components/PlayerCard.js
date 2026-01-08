@@ -346,7 +346,7 @@ const PlayerCard = ({ player, team, currentUser, onUpdate, showEditButton = true
                 >
                     {/* Photo Section */}
                     <div 
-                        className="relative h-48 bg-gradient-to-br overflow-hidden"
+                        className="relative h-64 bg-gradient-to-br overflow-hidden"
                         style={{ 
                             background: `linear-gradient(135deg, ${teamColor} 0%, ${accentColor} 100%)`
                         }}
