@@ -6238,6 +6238,16 @@ async def send_recruitment_invite(team_id: str, invite_data: Dict[str, Any]):
         await db.recruitment_invites.insert_one(invite)
         invite.pop("_id", None)
         
+        # Return error if the invite failed to send
+        if invite.get("status") == "failed":
+            error_msg = invite.get("error", "Failed to send invitation")
+            # Simplify the error message for the user
+            if "Username and Password not accepted" in error_msg or "Authentication" in error_msg:
+                error_msg = "Email configuration error. Please contact the league admin to verify SMTP settings."
+            elif "Connection refused" in error_msg or "timed out" in error_msg.lower():
+                error_msg = "Could not connect to email server. Please try again later."
+            raise HTTPException(status_code=500, detail=error_msg)
+        
         return {"status": "success", "invite": invite}
         
     except HTTPException:
