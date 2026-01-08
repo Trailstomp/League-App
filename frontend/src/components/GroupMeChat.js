@@ -381,7 +381,7 @@ const GroupMeChat = ({ teamId = null, channelType = "all", showAllChannels = tru
                                 <span className="font-medium">How to participate:</span>
                             </div>
                             <ul className="text-xs space-y-1 ml-6">
-                                <li>• Open GroupMe app and join the "{selectedChannel.name}" group</li>
+                                <li>• Open GroupMe app and join the &quot;{selectedChannel.name}&quot; group</li>
                                 <li>• Send messages there to participate in team discussions</li>
                                 <li>• Use <code className="bg-gray-200 px-1 rounded">/rsvp yes</code>, <code className="bg-gray-200 px-1 rounded">/rsvp no</code>, or <code className="bg-gray-200 px-1 rounded">/rsvp maybe</code> for events</li>
                                 <li>• Use <code className="bg-gray-200 px-1 rounded">/schedule</code> to see upcoming events</li>
