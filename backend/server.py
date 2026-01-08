@@ -9540,6 +9540,38 @@ async def update_user(user_id: str, updates: UserUpdate):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@api_router.post("/users/{user_id}/default-landing-page")
+async def set_default_landing_page(user_id: str, landing_page: Dict[str, Any]):
+    """Set user's default landing page preference"""
+    try:
+        # Validate the landing page structure
+        page_type = landing_page.get("type")
+        if page_type not in ["team", "page"]:
+            raise HTTPException(status_code=400, detail="Invalid landing page type. Must be 'team' or 'page'")
+        
+        if page_type == "team":
+            if not landing_page.get("teamId"):
+                raise HTTPException(status_code=400, detail="teamId is required for team landing page")
+        
+        await db.users.update_one(
+            {"id": user_id},
+            {"$set": {"defaultLandingPage": landing_page}}
+        )
+        
+        # Return updated user
+        user = await db.users.find_one({"id": user_id}, {"_id": 0})
+        
+        logger.info(f"✅ Default landing page set for user {user_id}: {landing_page}")
+        
+        return {"status": "success", "message": "Default landing page updated", "user": user}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error setting default landing page: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.delete("/users/{user_id}")
 async def delete_user(user_id: str):
     """Delete a user"""
