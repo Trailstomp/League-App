@@ -417,8 +417,17 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
                     paddingRight: '1rem'
                 }}
             >
-                {/* Duplicate content for infinite scroll effect */}
-                {[...tickerEvents, ...tickerEvents].map((event, index) => renderEventItem(event, index))}
+                {/* First set of events */}
+                {tickerEvents.map((event, index) => renderEventItem(event, index))}
+                
+                {/* Gap spacer between cycles (width of ~2 cards) */}
+                <div className="flex-shrink-0" style={{ width: '500px' }} aria-hidden="true" />
+                
+                {/* Duplicate set for infinite scroll effect */}
+                {tickerEvents.map((event, index) => renderEventItem(event, `dup-${index}`))}
+                
+                {/* Second gap spacer for smooth looping */}
+                <div className="flex-shrink-0" style={{ width: '500px' }} aria-hidden="true" />
             </div>
             
             {/* Hover indicator */}
