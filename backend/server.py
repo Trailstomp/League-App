@@ -172,6 +172,8 @@ class UserUpdate(BaseModel):
     lacrosseHistory: Optional[Dict[str, Any]] = None  # {highSchool: {teamName, graduationYear}, college: {...}, postGrad: [...]}
     funFacts: Optional[str] = None
     socialMedia: Optional[Dict[str, str]] = None  # {instagram, twitter, tiktok, facebook}
+    # User preferences
+    defaultLandingPage: Optional[Dict[str, Any]] = None  # {type: 'team'|'page', teamId?: string, tabId?: string, pageName?: string}
 
 class LoginRequest(BaseModel):
     email: str
