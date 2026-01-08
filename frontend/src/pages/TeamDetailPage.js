@@ -654,7 +654,7 @@ const TeamRosterTab = ({ team, players = [] }) => {
                                 </div>
                                 
                                 {/* Player Photo */}
-                                <div className="relative h-56 bg-gradient-to-br from-slate-100 to-slate-200">
+                                <div className="relative h-72 bg-gradient-to-br from-slate-100 to-slate-200">
                                     {player.photoUrl ? (
                                         <img src={player.photoUrl} alt={player.name} className="w-full h-full object-cover" />
                                     ) : (
