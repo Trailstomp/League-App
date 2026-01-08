@@ -1812,14 +1812,11 @@ const TeamRosterManageTab = ({ team, currentUser }) => {
             <div className="flex justify-between items-center">
                 <div>
                     <h2 className="text-2xl font-bold text-slate-800">Manage Roster</h2>
-                    <p className="text-slate-600">Add, edit, or remove players from {team.name}</p>
+                    <p className="text-slate-600">View and manage players for {team.name}</p>
+                    <p className="text-sm text-slate-500 mt-1">
+                        To add new players, use the People tab in the Admin Portal
+                    </p>
                 </div>
-                <button
-                    onClick={() => setShowAddForm(true)}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
-                >
-                    <span>+</span> Add Player
-                </button>
             </div>
 
             {message && (

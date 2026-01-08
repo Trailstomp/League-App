@@ -395,9 +395,9 @@ const DatabaseAdminManager = () => {
 
             {/* View/Edit Record Modal */}
             {editingRecord && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
-                        <div className="p-4 border-b flex items-center justify-between bg-gray-50">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-auto">
+                    <div className="bg-white rounded-lg w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col my-4">
+                        <div className="p-4 border-b flex items-center justify-between bg-gray-50 flex-shrink-0">
                             <h3 className="font-semibold text-lg">
                                 {viewMode === 'view' ? '👁️ View Record' : '✏️ Edit Record'}
                             </h3>
@@ -415,15 +415,15 @@ const DatabaseAdminManager = () => {
                                 </button>
                             </div>
                         </div>
-                        <div className="p-4 flex-1 overflow-y-auto">
+                        <div className="p-4 flex-1 overflow-y-auto min-h-0">
                             {viewMode === 'view' ? (
                                 <div className="space-y-3">
                                     {Object.entries(editingRecord).map(([key, value]) => (
                                         <div key={key} className="border-b pb-2">
                                             <div className="text-xs font-medium text-gray-500 uppercase">{key}</div>
-                                            <div className="text-sm text-gray-800 mt-1">
+                                            <div className="text-sm text-gray-800 mt-1 break-words">
                                                 {typeof value === 'object' ? (
-                                                    <pre className="bg-gray-50 p-2 rounded text-xs overflow-x-auto">
+                                                    <pre className="bg-gray-50 p-2 rounded text-xs overflow-x-auto whitespace-pre-wrap break-all">
                                                         {JSON.stringify(value, null, 2)}
                                                     </pre>
                                                 ) : (
@@ -437,19 +437,19 @@ const DatabaseAdminManager = () => {
                                 <textarea
                                     value={editedData}
                                     onChange={(e) => setEditedData(e.target.value)}
-                                    className="w-full h-96 font-mono text-sm p-3 border rounded-lg"
+                                    className="w-full min-h-[300px] max-h-[50vh] font-mono text-sm p-3 border rounded-lg resize-y"
                                     spellCheck={false}
                                 />
                             )}
                         </div>
-                        {viewMode === 'edit' && (
-                            <div className="p-4 border-t bg-gray-50 flex justify-end gap-3">
-                                <button
-                                    onClick={closeRecordModal}
-                                    className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                                >
-                                    Cancel
-                                </button>
+                        <div className="p-4 border-t bg-gray-50 flex justify-end gap-3 flex-shrink-0">
+                            <button
+                                onClick={closeRecordModal}
+                                className="px-4 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded"
+                            >
+                                {viewMode === 'edit' ? 'Cancel' : 'Close'}
+                            </button>
+                            {viewMode === 'edit' && (
                                 <button
                                     onClick={handleSaveRecord}
                                     disabled={saving}
@@ -457,8 +457,8 @@ const DatabaseAdminManager = () => {
                                 >
                                     {saving ? 'Saving...' : '💾 Save Changes'}
                                 </button>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
