@@ -125,6 +125,10 @@ const GroupMeChat = ({ teamId = null, channelType = "all", showAllChannels = tru
         return '👥'; // People for team
     };
 
+    const isCurrentTeamChannel = (channel) => {
+        return teamId && channel.team_id === teamId;
+    };
+
     const sendMessage = async () => {
         console.log('🚀 sendMessage called', { 
             newMessage: newMessage.trim(), 
