@@ -529,7 +529,7 @@ function App() {
           <div className="p-6">
             <StandingsTable 
               teams={teams}
-              onTeamClick={(teamId) => handleNavigateToTeam(teamId)}
+              onTeamClick={(teamId) => handleTeamNavigate(teamId)}
             />
           </div>
         );
