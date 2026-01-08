@@ -523,6 +523,7 @@ function App() {
             players={players}
             currentUser={currentUser}
             onNavigate={handleNavigate}
+            onUserUpdate={handleUserUpdate}
           />
         );
       case 'team-admin':
