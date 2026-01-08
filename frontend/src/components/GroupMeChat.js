@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const GroupMeChat = ({ teamId = null, channelType = "all" }) => {
+const GroupMeChat = ({ teamId = null, channelType = "all", showAllChannels = true }) => {
     const [channels, setChannels] = useState([]);
     const [selectedChannel, setSelectedChannel] = useState(null);
     const [messages, setMessages] = useState([]);
@@ -32,36 +32,49 @@ const GroupMeChat = ({ teamId = null, channelType = "all" }) => {
             const data = await response.json();
             console.log('🔍 Raw channels data:', data);
             
-            let filteredChannels = data.channels || [];
-            console.log('🔍 All channels found:', filteredChannels.length, filteredChannels);
+            let allChannels = data.channels || [];
+            console.log('🔍 All channels found:', allChannels.length, allChannels);
             
-            // Filter channels based on context
-            if (teamId && channelType === "team") {
-                // Show only this team's channel
-                filteredChannels = filteredChannels.filter(c => c.team_id === teamId);
-            } else if (channelType === "league") {
-                // Show only league-wide channels
-                filteredChannels = filteredChannels.filter(c => c.channel_type === "league");
+            // If showAllChannels is true, show all channels but prioritize current team's channel
+            if (showAllChannels) {
+                // Sort channels: current team's channel first, then league channels, then other teams
+                allChannels = allChannels.sort((a, b) => {
+                    // Current team's channel first
+                    if (teamId && a.team_id === teamId) return -1;
+                    if (teamId && b.team_id === teamId) return 1;
+                    // Then league channels
+                    if (a.channel_type === 'league') return -1;
+                    if (b.channel_type === 'league') return 1;
+                    // Then alphabetically
+                    return (a.name || '').localeCompare(b.name || '');
+                });
+            } else {
+                // Original filtering behavior
+                if (teamId && channelType === "team") {
+                    allChannels = allChannels.filter(c => c.team_id === teamId);
+                } else if (channelType === "league") {
+                    allChannels = allChannels.filter(c => c.channel_type === "league");
+                }
             }
-            // If channelType === "all", show all channels
             
-            setChannels(filteredChannels);
-            console.log('🔍 Filtered channels set:', filteredChannels.length, filteredChannels);
+            setChannels(allChannels);
+            console.log('🔍 Channels set:', allChannels.length, allChannels);
             
-            // Auto-select first channel if available
-            if (filteredChannels.length > 0 && !selectedChannel) {
-                setSelectedChannel(filteredChannels[0]);
-                console.log('🔍 Auto-selected channel:', filteredChannels[0]);
+            // Auto-select the current team's channel or first channel if available
+            if (allChannels.length > 0 && !selectedChannel) {
+                const teamChannel = teamId ? allChannels.find(c => c.team_id === teamId) : null;
+                setSelectedChannel(teamChannel || allChannels[0]);
+                console.log('🔍 Auto-selected channel:', teamChannel || allChannels[0]);
             }
             
-            if (filteredChannels.length === 0) {
+            if (allChannels.length === 0) {
                 setError('No GroupMe channels available');
-                console.log('🔍 No channels available after filtering');
+                console.log('🔍 No channels available');
             }
         } catch (error) {
             console.error('Failed to load channels:', error);
             setChannels([]);
-            setSelectedChannel(null); // Reset selected channel on error
+            setSelectedChannel(null);
         } finally {
             setLoading(false);
         }
