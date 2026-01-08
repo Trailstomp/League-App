@@ -1726,52 +1726,6 @@ const TeamRosterManageTab = ({ team, currentUser }) => {
         }
     };
 
-    const handleAddPlayer = async (e) => {
-        e.preventDefault();
-        
-        if (!formData.name.trim()) {
-            setMessage('❌ Name is required');
-            return;
-        }
-
-        try {
-            const playerData = {
-                ...formData,
-                roles: ['player'],
-                teamId: team.id,
-                teamName: team.name,
-                teamAssignments: [{
-                    teamId: team.id,
-                    teamName: team.name,
-                    playerNumber: formData.playerNumber,
-                    position: formData.position,
-                    isPrimary: true
-                }],
-                status: 'active',
-                approvedBy: currentUser?.id
-            };
-
-            const response = await fetch(`${backendUrl}/api/users/admin-create`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(playerData)
-            });
-
-            if (response.ok) {
-                setMessage('✅ Player added successfully!');
-                setShowAddForm(false);
-                setFormData({ name: '', email: '', phone: '', playerNumber: '', position: '', status: 'active' });
-                loadPlayers();
-            } else {
-                const data = await response.json();
-                setMessage(`❌ ${data.detail || 'Failed to add player'}`);
-            }
-        } catch (error) {
-            setMessage('❌ Network error');
-        }
-        setTimeout(() => setMessage(''), 4000);
-    };
-
     const handleRemovePlayer = async (playerId) => {
         if (!window.confirm('Remove this player from the team?')) return;
         
@@ -1795,8 +1749,6 @@ const TeamRosterManageTab = ({ team, currentUser }) => {
         }
         setTimeout(() => setMessage(''), 3000);
     };
-
-    const positionOptions = ['Attack', 'Midfield', 'Defense', 'Goalie', 'FOGO', 'LSM'];
 
     return (
         <div className="space-y-6">
