@@ -1702,17 +1702,8 @@ const TeamRecruitingTab = ({ team, currentUser }) => {
 const TeamRosterManageTab = ({ team, currentUser }) => {
     const [players, setPlayers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showAddForm, setShowAddForm] = useState(false);
     const [editingPlayer, setEditingPlayer] = useState(null);
     const [message, setMessage] = useState('');
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        playerNumber: '',
-        position: '',
-        status: 'active'
-    });
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
