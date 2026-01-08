@@ -234,7 +234,10 @@ const GroupMeChat = ({ teamId = null, channelType = "all", showAllChannels = tru
             {/* Channel Selector - Always show if channels exist */}
             {channels.length >= 1 && (
                 <div className="bg-gray-50 p-4 border-b">
-                    <h3 className="text-sm font-medium text-gray-900 mb-3">GroupMe Channels</h3>
+                    <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-sm font-medium text-gray-900">GroupMe Channels</h3>
+                        <span className="text-xs text-gray-500">{channels.length} channel{channels.length !== 1 ? 's' : ''} available</span>
+                    </div>
                     <div className="flex flex-wrap gap-2">
                         {channels.map((channel) => (
                             <button
@@ -242,13 +245,18 @@ const GroupMeChat = ({ teamId = null, channelType = "all", showAllChannels = tru
                                 onClick={() => setSelectedChannel(channel)}
                                 className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                                     selectedChannel?.id === channel.id
-                                        ? 'bg-blue-100 text-blue-800 border-2 border-blue-300'
-                                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                        ? 'bg-blue-600 text-white border-2 border-blue-600'
+                                        : isCurrentTeamChannel(channel)
+                                            ? 'bg-green-100 text-green-800 border-2 border-green-300 hover:bg-green-200'
+                                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                                 }`}
                             >
                                 <span className="mr-2">{getChannelIcon(channel)}</span>
                                 {channel.name}
-                                {channel.team_name && (
+                                {isCurrentTeamChannel(channel) && selectedChannel?.id !== channel.id && (
+                                    <span className="ml-2 text-xs bg-green-600 text-white px-1.5 py-0.5 rounded">Your Team</span>
+                                )}
+                                {channel.team_name && !isCurrentTeamChannel(channel) && (
                                     <span className="ml-2 text-xs text-gray-500">({channel.team_name})</span>
                                 )}
                             </button>
