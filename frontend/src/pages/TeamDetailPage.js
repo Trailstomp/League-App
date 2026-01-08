@@ -10,8 +10,58 @@ import { fixGoogleDriveUrl } from '../utils/imageUtils';
 import CachedImage from '../components/CachedImage';
 import Skeleton, { SkeletonEventCard } from '../components/Skeleton';
 
-const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate }) => {
+const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate, onUserUpdate }) => {
     const [activeTab, setActiveTab] = useState('home');
+    const [settingDefault, setSettingDefault] = useState(false);
+    const [defaultPageMessage, setDefaultPageMessage] = useState('');
+
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+
+    // Check if current tab is the user's default landing page
+    const isDefaultPage = currentUser?.defaultLandingPage?.type === 'team' && 
+                          currentUser?.defaultLandingPage?.teamId === team?.id &&
+                          currentUser?.defaultLandingPage?.tabId === activeTab;
+
+    // Set this tab as the default landing page
+    const handleSetDefaultPage = async (tabId) => {
+        if (!currentUser) {
+            alert('Please log in to set your default landing page');
+            return;
+        }
+
+        setSettingDefault(true);
+        try {
+            const landingPage = {
+                type: 'team',
+                teamId: team.id,
+                teamName: team.name,
+                tabId: tabId
+            };
+
+            const response = await fetch(`${backendUrl}/api/users/${currentUser.id}/default-landing-page`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(landingPage)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setDefaultPageMessage('⭐ Set as your default landing page!');
+                // Update the current user in parent component
+                if (onUserUpdate && data.user) {
+                    onUserUpdate(data.user);
+                }
+            } else {
+                setDefaultPageMessage('❌ Failed to set default page');
+            }
+        } catch (error) {
+            console.error('Error setting default page:', error);
+            setDefaultPageMessage('❌ Error saving preference');
+        } finally {
+            setSettingDefault(false);
+            setTimeout(() => setDefaultPageMessage(''), 3000);
+        }
+    };
 
     if (!team) {
         return (
