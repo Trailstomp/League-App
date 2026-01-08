@@ -216,7 +216,7 @@ const GroupMeChat = ({ teamId = null, channelType = "all", showAllChannels = tru
                 <div className="space-y-2">
                     <p className="text-sm text-yellow-600">To see your GroupMe groups in Team Chat:</p>
                     <p className="text-sm text-yellow-600">1. Go to <strong>Admin Portal → API Integrations</strong></p>
-                    <p className="text-sm text-yellow-600">2. Click <strong>"Manage Channels"</strong> in GroupMe section</p>
+                    <p className="text-sm text-yellow-600">2. Click <strong>&quot;Manage Channels&quot;</strong> in GroupMe section</p>
                     <p className="text-sm text-yellow-600">3. Create channels from your available GroupMe groups</p>
                 </div>
                 <a 
