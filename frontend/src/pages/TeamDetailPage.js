@@ -11,7 +11,15 @@ import CachedImage from '../components/CachedImage';
 import Skeleton, { SkeletonEventCard } from '../components/Skeleton';
 
 const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate, onUserUpdate }) => {
-    const [activeTab, setActiveTab] = useState('home');
+    const [activeTab, setActiveTab] = useState(() => {
+        // Check if user has a default tab for this team
+        if (currentUser?.defaultLandingPage?.type === 'team' && 
+            currentUser?.defaultLandingPage?.teamId === team?.id &&
+            currentUser?.defaultLandingPage?.tabId) {
+            return currentUser.defaultLandingPage.tabId;
+        }
+        return 'home';
+    });
     const [settingDefault, setSettingDefault] = useState(false);
     const [defaultPageMessage, setDefaultPageMessage] = useState('');
 
