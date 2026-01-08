@@ -1368,7 +1368,18 @@ const TeamRecruitingTab = ({ team, currentUser }) => {
                 setFormData({ name: '', email: '', phone: '', method: 'email', position: '', message: '' });
                 loadInvites();
             } else {
-                setMessage(`❌ ${data.detail || 'Failed to send invite'}`);
+                // Provide helpful error messages
+                let errorMsg = data.detail || 'Failed to send invite';
+                if (errorMsg.includes('already registered')) {
+                    errorMsg = '❌ This person is already registered. They can log in and join the team directly.';
+                } else if (errorMsg.includes('already been sent')) {
+                    errorMsg = '❌ An invitation has already been sent to this email address.';
+                } else if (errorMsg.includes('Email configuration') || errorMsg.includes('SMTP')) {
+                    errorMsg = '❌ Email service not configured. Please contact the league admin to set up email settings.';
+                } else {
+                    errorMsg = `❌ ${errorMsg}`;
+                }
+                setMessage(errorMsg);
             }
         } catch (error) {
             setMessage('❌ Network error. Please try again.');
