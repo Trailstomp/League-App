@@ -119,10 +119,41 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
             return inDateRange && typeAllowed;
         });
 
-        // Sort by date (upcoming first, then by title)
+        // Sort events: Scored/Final games first (most recent), then upcoming by date
         filteredEvents.sort((a, b) => {
             const dateA = a.date ? new Date(a.date) : new Date('2099-12-31');
             const dateB = b.date ? new Date(b.date) : new Date('2099-12-31');
+            const now = new Date();
+            
+            // Check if events have scores (completed games)
+            const aHasScores = a.scores?.home_team?.score !== undefined || 
+                               a.scores?.home !== undefined ||
+                               a.homeScore !== undefined;
+            const bHasScores = b.scores?.home_team?.score !== undefined || 
+                               b.scores?.home !== undefined ||
+                               b.homeScore !== undefined;
+            
+            // Check if event status is final/completed
+            const aIsFinal = ['final', 'completed'].includes(a.status?.toLowerCase());
+            const bIsFinal = ['final', 'completed'].includes(b.status?.toLowerCase());
+            
+            // Priority: Live games > Final/scored games (recent first) > Upcoming games (soonest first) > Past events
+            const aIsLive = ['live', 'in_progress'].includes(a.status?.toLowerCase());
+            const bIsLive = ['live', 'in_progress'].includes(b.status?.toLowerCase());
+            
+            // Live games first
+            if (aIsLive && !bIsLive) return -1;
+            if (!aIsLive && bIsLive) return 1;
+            
+            // Scored/final games next (most recent first)
+            if ((aHasScores || aIsFinal) && !(bHasScores || bIsFinal)) return -1;
+            if (!(aHasScores || aIsFinal) && (bHasScores || bIsFinal)) return 1;
+            if ((aHasScores || aIsFinal) && (bHasScores || bIsFinal)) {
+                // Both are scored - most recent first
+                return dateB - dateA;
+            }
+            
+            // Upcoming events by date (soonest first)
             if (dateA.getTime() !== dateB.getTime()) {
                 return dateA - dateB;
             }
