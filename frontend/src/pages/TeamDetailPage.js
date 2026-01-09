@@ -1133,11 +1133,16 @@ const TeamRosterTab = ({ team, players = [] }) => {
             <div className="flex justify-between items-center">
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-800">Team Roster</h2>
                 <div className="text-sm text-slate-500">
-                    {teamPlayers.length} player{teamPlayers.length !== 1 ? 's' : ''}
+                    {loading ? 'Loading...' : `${teamPlayers.length} player${teamPlayers.length !== 1 ? 's' : ''}`}
                 </div>
             </div>
             
-            {teamPlayers.length > 0 ? (
+            {loading ? (
+                <div className="flex items-center justify-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span className="ml-3 text-slate-600">Loading roster...</span>
+                </div>
+            ) : teamPlayers.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {teamPlayers.map(player => (
                         <div 
