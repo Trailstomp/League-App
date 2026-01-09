@@ -679,8 +679,43 @@ const TeamScheduleTab = ({ team, events = [] }) => {
 const TeamRosterTab = ({ team, players = [] }) => {
     const [selectedPlayer, setSelectedPlayer] = useState(null);
     const [isFlipped, setIsFlipped] = useState(false);
-    const teamPlayers = players.filter(player => player.teamId === team.id);
+    const [teamPlayers, setTeamPlayers] = useState([]);
+    const [loading, setLoading] = useState(true);
     const cardRef = useRef(null);
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+    
+    // Fetch players directly from API to ensure we get multi-team players
+    useEffect(() => {
+        const fetchTeamPlayers = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch(`${backendUrl}/api/team/${team.id}/players`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setTeamPlayers(data || []);
+                } else {
+                    // Fallback to prop-based filtering
+                    const filtered = players.filter(player => 
+                        player.teamId === team.id || 
+                        player.teamAssignments?.some(ta => ta.teamId === team.id)
+                    );
+                    setTeamPlayers(filtered);
+                }
+            } catch (error) {
+                console.error('Error fetching team players:', error);
+                // Fallback to prop-based filtering
+                const filtered = players.filter(player => 
+                    player.teamId === team.id || 
+                    player.teamAssignments?.some(ta => ta.teamId === team.id)
+                );
+                setTeamPlayers(filtered);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchTeamPlayers();
+    }, [team.id, backendUrl, players]);
 
     const openPlayerCard = (player) => {
         setSelectedPlayer(player);
