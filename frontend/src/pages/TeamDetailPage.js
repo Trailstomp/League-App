@@ -1584,12 +1584,12 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
                             />
                             
                             {/* Player Photo */}
-                            <div className="relative h-40 bg-gradient-to-br from-slate-100 to-slate-200">
+                            <div className="relative h-52 bg-gradient-to-br from-slate-100 to-slate-200">
                                 {player.photoUrl ? (
                                     <CachedImage 
                                         src={player.photoUrl} 
                                         alt={player.name}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-full object-cover object-top"
                                         fallback={
                                             <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${team.style?.backgroundColor || '#f8fafc'} 0%, ${team.style?.primaryColor || '#2563eb'}15 100%)` }}>
                                                 <svg className="w-16 h-16 opacity-30" fill="currentColor" viewBox="0 0 24 24" style={{ color: team.style?.primaryColor || '#2563eb' }}>
