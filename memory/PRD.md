@@ -8,10 +8,11 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 - Admin tools for league administration
 - Player dashboard for individual stats and team info
 - Payment processing for fees
+- Finance tracking for income and expenses
 
 ## User Personas
-- **League Admin**: Full control over all teams, events, and settings
-- **Team Admin/Coach**: Manage their team's roster, events, and settings
+- **League Admin**: Full control over all teams, events, finances, and settings
+- **Team Admin/Coach**: Manage their team's roster, events, finances, and settings
 - **Player**: View their stats, team info, and respond to events
 - **Guest**: Browse public team and event information
 
@@ -20,15 +21,27 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 ### Team Management
 - [x] Team creation and editing
 - [x] Division-based organization
-- [x] Team styling (colors, logos)
+- [x] Team styling (colors, logos, banners)
 - [x] Multi-team player support (players can be on multiple teams)
 - [x] **Roster Management** - Add/edit/remove players from team roster (visible to team/league admins)
+- [x] **Image Upload with Crop** - Upload logos and banners with cropping functionality
+- [x] **Use Logo Colors** - Extract colors from team logo for theme
+
+### Finance Management (NEW)
+- [x] **Team Finance Tab** - Track income and expenses at team level
+- [x] **Predefined Categories** - Income: Registration Fees, Sponsorship, Donations, etc. Expense: Equipment, Uniforms, Travel, etc.
+- [x] **Transaction CRUD** - Add, edit, delete transactions with date, amount, category, description
+- [x] **Summary Dashboard** - Total income, expenses, balance, transaction count
+- [x] **League Finance View** - Admin Portal view for league-wide financial overview
+- [x] **Team Summaries** - Per-team income/expense/balance visible to league admin
+- [x] **Transaction Filters** - Filter by All, Income, or Expense
 
 ### Player Management  
 - [x] Player profiles with photos, positions, jersey numbers
 - [x] Player import tool with password reset links
 - [x] Role-based access (admin, league_admin, coach, player, guest)
 - [x] Default landing page preferences per user
+- [x] **Player Card Image Fix** - Fixed cropping to show full head/face
 
 ### Live Scoring
 - [x] Real-time game scoring with shot tracking
@@ -48,9 +61,11 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 
 ### Frontend (React)
 - `/app/frontend/src/App.js` - Main app with routing and auth state
-- `/app/frontend/src/pages/TeamDetailPage.js` - Team detail with tabs (Roster, Stats, Settings, etc.)
-- `/app/frontend/src/scheduling/components/EnhancedScoring.js` - Live scoring interface
-- `/app/frontend/src/components/AuthSystem.js` - Login/registration forms
+- `/app/frontend/src/pages/TeamDetailPage.js` - Team detail with tabs (Roster, Finance, Stats, Settings, etc.)
+- `/app/frontend/src/pages/AdminPage.js` - Admin Portal with League Finance
+- `/app/frontend/src/components/ImageUploadCrop.js` - Reusable image upload with crop
+- `/app/frontend/src/components/managers/LeagueFinanceManager.js` - League-wide finance view
+- `/app/frontend/src/utils/colorExtractor.js` - Color extraction from images
 
 ### Backend (FastAPI)
 - `/app/backend/server.py` - Monolithic API server (needs refactoring)
@@ -59,92 +74,88 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 - `users` collection - User profiles with teamAssignments, roles
 - `teams` collection - Team data with style, division info
 - `league_schedule` collection - Events and games
+- `finance_transactions` collection (NEW) - Income/expense records
 
 ## Key API Endpoints
 
-### Team Player Management (NEW)
+### Finance Management (NEW)
+- `GET /api/finance/categories` - Get predefined income/expense categories
+- `GET /api/finance/transactions` - Get transactions with filters (scope, scope_id, type)
+- `POST /api/finance/transactions` - Create new transaction
+- `PUT /api/finance/transactions/{id}` - Update transaction
+- `DELETE /api/finance/transactions/{id}` - Delete transaction
+- `GET /api/finance/team/{team_id}/summary` - Get team finance summary
+- `GET /api/finance/league/summary` - Get league-wide finance summary
+
+### Team Player Management
 - `POST /api/team/{team_id}/add-player` - Add existing user to team
 - `POST /api/team/{team_id}/remove-player` - Remove player from team
 - `POST /api/team/{team_id}/update-player` - Update player position/number
 - `GET /api/team/{team_id}/players` - Get team roster
 
-### Authentication
-- `POST /api/users/login` - User login
-- `POST /api/reset-password-with-token` - Password reset
-
-### User Management
-- `POST /api/users/set-default-page` - Set user's default landing page
-- `POST /api/admin/create-user` - Create user with optional reset link
+### Image Upload
+- `POST /api/upload/image` - Upload and crop images (logos, banners)
 
 ## What's Been Implemented
 
+### January 10, 2025 (Current Session)
+- **Finance Register Feature (P1)**: Complete income/expense tracking system
+  - Team Finance tab visible to team admins/coaches
+  - Predefined categories for income (8) and expense (13)
+  - Add/Edit/Delete transactions with validation
+  - Summary cards: Total Income, Expenses, Balance, Transaction count
+  - Filter by All, Income, or Expense
+  - League Finance in Admin Portal showing all team summaries
+  - Backend: 15/15 API tests passed
+
+- **Image Upload with Crop**: Replaced URL-only inputs with file upload
+  - ImageUploadCrop component using react-image-crop library
+  - Square crop for logos, 16:9 crop for banners
+  - URL input fallback still available
+  - Integrates with existing Google Drive upload
+
+- **Use Logo Colors Feature**: Extract colors from team logo
+  - Uses colorthief library for color extraction
+  - Extracts primary, accent, background, and text colors
+  - "Use Logo Colors" button appears when logo is set
+  - Applies extracted colors to team theme
+
+- **Player Card Image Fix**: Fixed heads being cropped
+  - Changed from object-cover to object-contain
+  - Added items-start for top alignment
+  - Photos now show full head/face
+
 ### January 9, 2025
-- **Roster Management Feature (P0)**: Added inline player management on Team Roster tab
-  - Add Player modal with searchable user list
-  - Edit Player modal for position/jersey number
-  - Remove Player confirmation
-  - Visible only to team/league admins
-  - Backend APIs: add-player, remove-player, update-player
-  - Testing: Backend 96% pass rate, Frontend verified
-
-- **Player Card PDF Download Fix**: Fixed PDF download to include both front and back pages
-  - Page 1: Front of card with team header, jersey number, name, position
-  - Page 2: Back of card with bio info, stats, and career stats by year
-  
-- **Stats by Year Feature**: Added career stats grouped by year
-  - New backend endpoint: `/api/players/{player_id}/stats-by-year`
-  - Stats displayed on back of player card popup
-  - Stats included in PDF download
-  - Shows goals, assists, games played per year
-
-- **Ticker Tape Improvements**:
-  - Fixed scores display - now shows actual game scores from nested `scores.home_team.score` format
-  - Added "Show Cancelled Events" toggle in ticker settings
-  - Made team names clickable - clicking navigates to team page
-  - Improved sort order - Live games first, then scored/final games (recent first), then upcoming events
-  - Fixed event click navigation to event details
-  - Added proper status labels (LIVE, PAST, FINAL, UPCOMING, CANCELLED)
-  - Tournaments with scores now display as game cards with team logos and scores
-
-- **Auth State Improvements**: 
-  - Added cross-tab sync via storage events
-  - Enhanced logging for debugging session issues
-
-### Previous Sessions
-- Live Scoring overhaul with real player data
-- Multi-team roster fix (players on multiple teams show correctly)
-- Default landing page feature
-- Player importer with password reset links
-- Dashboard relocation to team page tabs
-- SMTP invite error handling
+- Roster Management Feature
+- Player Card PDF Download Fix
+- Stats by Year Feature
+- Ticker Tape Improvements
+- Auth State Improvements
 
 ## Prioritized Backlog
 
 ### P0 (Critical)
-- [x] Roster Management on Team Page - DONE
+- [x] Finance Register - DONE
+- [x] Image Upload with Crop - DONE
 
 ### P1 (High Priority)
-- [ ] Refactor `server.py` into feature-based routers (users.py, teams.py, events.py)
-- [ ] Handle inconsistent data in older teams gracefully
+- [ ] Refactor `server.py` into feature-based routers
+- [ ] Refactor `TeamDetailPage.js` - extract components
+- [ ] Extract PlayerCardPopup into separate component
 
 ### P2 (Medium Priority)
-- [ ] Refactor `TeamDetailPage.js` - extract tab content into separate components
-- [ ] Refactor `EnhancedScoring.js` - extract sub-sections
-- [ ] Complete YouTube backend integration for team channels
+- [ ] Complete YouTube backend integration
+- [ ] Mobile-responsive improvements
 
 ### P3 (Future)
 - [ ] OAuth/Social login integration
-- [ ] Mobile-responsive improvements
 - [ ] Offline support / PWA features
-
-## Known Issues
-- Older teams may have inconsistent data due to schema changes
-- Gmail SMTP requires "App Password" for email functionality
+- [ ] Financial reports/exports
 
 ## Technical Debt
-- `server.py` is monolithic (~10K+ lines) - needs breaking into routers
-- `TeamDetailPage.js` is growing large - needs component extraction
-- Some legacy fields (`teamId`, `role`) alongside new fields (`teamAssignments`, `roles`)
+- `server.py` is monolithic (~12K+ lines) - needs breaking into routers
+- `TeamDetailPage.js` is very large - needs component extraction
+- PlayerCardPopup defined inside render function (React anti-pattern)
 
 ## 3rd Party Integrations
 - Twilio (SMS notifications)
@@ -153,3 +164,5 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 - YouTube (Video feeds)
 - Google Drive (File storage)
 - GroupMe (Chat)
+- react-image-crop (Image cropping)
+- colorthief (Color extraction)
