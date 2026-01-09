@@ -616,6 +616,8 @@ function App() {
             users={players}
           />
         );
+      case 'help':
+        return <HelpPage />;
       default:
         console.log('🔄 Rendering default (HomePage)');
         return <HomePage teams={teams} currentUser={currentUser} />;
