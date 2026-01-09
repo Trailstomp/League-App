@@ -9127,7 +9127,12 @@ async def reset_user_password(user_id: str, data: Dict[str, Any]):
         
         await db.users.update_one(
             {"id": user_id},
-            {"$set": {"password": password_hash}}
+            {"$set": {
+                "password": password_hash,
+                "requirePasswordReset": False,
+                "passwordResetToken": None,
+                "passwordResetExpires": None
+            }}
         )
         
         logger.info(f"✅ Password reset for user: {user_id}")
@@ -9138,6 +9143,82 @@ async def reset_user_password(user_id: str, data: Dict[str, Any]):
         raise
     except Exception as e:
         logger.error(f"❌ Error resetting password: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/password-reset/token")
+async def reset_password_with_token(data: Dict[str, Any]):
+    """Reset password using a token (from welcome email)"""
+    try:
+        import hashlib
+        
+        token = data.get("token")
+        new_password = data.get("newPassword")
+        
+        if not token:
+            raise HTTPException(status_code=400, detail="Reset token is required")
+        if not new_password or len(new_password) < 6:
+            raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+        
+        # Find user with this token
+        user = await db.users.find_one({"passwordResetToken": token})
+        if not user:
+            raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+        
+        # Check if token is expired
+        expires = user.get("passwordResetExpires")
+        if expires:
+            expiry_date = datetime.fromisoformat(expires.replace('Z', '+00:00'))
+            if datetime.now(timezone.utc) > expiry_date:
+                raise HTTPException(status_code=400, detail="Reset token has expired. Please request a new one.")
+        
+        # Hash new password
+        password_hash = hashlib.sha256(new_password.encode()).hexdigest()
+        
+        # Update user
+        await db.users.update_one(
+            {"id": user["id"]},
+            {"$set": {
+                "password": password_hash,
+                "requirePasswordReset": False,
+                "passwordResetToken": None,
+                "passwordResetExpires": None,
+                "status": "active"
+            }}
+        )
+        
+        logger.info(f"✅ Password set via token for user: {user['email']}")
+        
+        return {"status": "success", "message": "Password set successfully. You can now log in."}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error resetting password with token: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/password-reset/validate/{token}")
+async def validate_reset_token(token: str):
+    """Validate a password reset token"""
+    try:
+        user = await db.users.find_one({"passwordResetToken": token}, {"_id": 0, "password": 0})
+        if not user:
+            raise HTTPException(status_code=400, detail="Invalid reset token")
+        
+        # Check if token is expired
+        expires = user.get("passwordResetExpires")
+        if expires:
+            expiry_date = datetime.fromisoformat(expires.replace('Z', '+00:00'))
+            if datetime.now(timezone.utc) > expiry_date:
+                raise HTTPException(status_code=400, detail="Reset token has expired")
+        
+        return {"valid": True, "email": user.get("email"), "name": user.get("name")}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error validating reset token: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
