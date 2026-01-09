@@ -300,21 +300,42 @@ const EnhancedScoresTab = ({
                                         
                                         {/* Team Roster */}
                                         <div className="border-t pt-3 mt-3">
-                                            <h5 className="font-medium text-gray-700 mb-2">📋 Roster</h5>
+                                            <h5 className="font-medium text-gray-700 mb-2">📋 Roster ({teamPlayers[teamId]?.length || 0})</h5>
                                             {loadingPlayers ? (
                                                 <div className="text-sm text-gray-500">Loading players...</div>
                                             ) : teamPlayers[teamId]?.length > 0 ? (
-                                                <div className="space-y-1 max-h-40 overflow-y-auto">
+                                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto">
                                                     {teamPlayers[teamId].map((player, idx) => (
-                                                        <div key={player.id || idx} className="flex items-center justify-between text-sm bg-gray-50 rounded px-2 py-1">
-                                                            <div className="flex items-center gap-2">
-                                                                {player.jerseyNumber && (
-                                                                    <span className="font-bold text-blue-600 w-6">#{player.jerseyNumber}</span>
-                                                                )}
-                                                                <span>{player.name}</span>
+                                                        <button
+                                                            key={player.id || idx}
+                                                            onClick={() => setSelectedPlayer(player)}
+                                                            className="flex items-center gap-2 p-2 bg-gray-50 hover:bg-blue-50 rounded-lg text-left transition-colors border border-transparent hover:border-blue-200"
+                                                        >
+                                                            {/* Player Photo Thumbnail */}
+                                                            <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex-shrink-0 border-2 border-white shadow-sm">
+                                                                {player.photoUrl ? (
+                                                                    <img 
+                                                                        src={player.photoUrl} 
+                                                                        alt={player.name}
+                                                                        className="w-full h-full object-cover"
+                                                                        onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                                                                    />
+                                                                ) : null}
+                                                                <div className={`w-full h-full flex items-center justify-center text-white font-bold text-sm ${player.photoUrl ? 'hidden' : ''}`} style={{ backgroundColor: team?.primaryColor || '#3b82f6' }}>
+                                                                    {player.name?.charAt(0) || '?'}
+                                                                </div>
                                                             </div>
-                                                            <span className="text-xs text-gray-500">{player.position || '—'}</span>
-                                                        </div>
+                                                            {/* Player Info */}
+                                                            <div className="min-w-0 flex-1">
+                                                                <div className="flex items-center gap-1">
+                                                                    {player.jerseyNumber && (
+                                                                        <span className="font-bold text-blue-600 text-xs">#{player.jerseyNumber}</span>
+                                                                    )}
+                                                                    <span className="font-medium text-gray-800 text-xs truncate">{player.name?.split(' ')[0]}</span>
+                                                                </div>
+                                                                <div className="text-xs text-gray-500 truncate">{player.position || '—'}</div>
+                                                            </div>
+                                                        </button>
                                                     ))}
                                                 </div>
                                             ) : (
@@ -326,6 +347,80 @@ const EnhancedScoresTab = ({
                             );
                         })}
                     </div>
+
+                    {/* Player Card Popup Modal */}
+                    {selectedPlayer && (
+                        <div 
+                            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                            onClick={() => setSelectedPlayer(null)}
+                        >
+                            <div 
+                                className="bg-white rounded-xl shadow-2xl max-w-sm w-full overflow-hidden"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                {/* Player Photo */}
+                                <div className="relative h-64 bg-gradient-to-br from-blue-500 to-blue-600">
+                                    {selectedPlayer.photoUrl ? (
+                                        <img 
+                                            src={selectedPlayer.photoUrl} 
+                                            alt={selectedPlayer.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <span className="text-8xl text-white/50 font-bold">
+                                                {selectedPlayer.name?.charAt(0) || '?'}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {/* Jersey Number Badge */}
+                                    {selectedPlayer.jerseyNumber && (
+                                        <div className="absolute top-4 right-4 bg-white text-blue-600 font-bold text-2xl px-3 py-1 rounded-lg shadow-lg">
+                                            #{selectedPlayer.jerseyNumber}
+                                        </div>
+                                    )}
+                                    {/* Close Button */}
+                                    <button
+                                        onClick={() => setSelectedPlayer(null)}
+                                        className="absolute top-4 left-4 bg-black/30 hover:bg-black/50 text-white w-8 h-8 rounded-full flex items-center justify-center"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                                
+                                {/* Player Info */}
+                                <div className="p-4">
+                                    <h3 className="text-xl font-bold text-gray-800">{selectedPlayer.name}</h3>
+                                    <div className="flex items-center gap-2 mt-1 text-gray-600">
+                                        {selectedPlayer.position && (
+                                            <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-sm font-medium">
+                                                {selectedPlayer.position}
+                                            </span>
+                                        )}
+                                        {selectedPlayer.teamName && (
+                                            <span className="text-sm">{selectedPlayer.teamName}</span>
+                                        )}
+                                    </div>
+                                    
+                                    {/* Additional Info */}
+                                    <div className="mt-4 space-y-2 text-sm">
+                                        {selectedPlayer.jerseySize && (
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-500">Jersey Size</span>
+                                                <span className="font-medium">{selectedPlayer.jerseySize}</span>
+                                            </div>
+                                        )}
+                                        {selectedPlayer.funFacts && (
+                                            <div className="mt-3 p-3 bg-yellow-50 rounded-lg">
+                                                <div className="text-xs font-medium text-yellow-800 mb-1">✨ Fun Fact</div>
+                                                <p className="text-yellow-700 text-sm">{selectedPlayer.funFacts}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Game Result Summary */}
                     {Object.keys(localGameStats.teamStats).length > 0 && (
