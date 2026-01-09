@@ -77,6 +77,12 @@ const EnhancedScoresTab = ({
             status: 'not_started' // not_started, in_progress, completed
         }
     });
+    
+    // State for team players fetched from API
+    const [teamPlayers, setTeamPlayers] = useState({});
+    const [loadingPlayers, setLoadingPlayers] = useState(false);
+    
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
 
     // Sync local state with gameStats prop when it changes (for tab switching)
     useEffect(() => {
@@ -94,6 +100,35 @@ const EnhancedScoresTab = ({
                       (event.teamId ? [event.teamId] : 
                       (event.homeTeam && event.awayTeam ? [event.homeTeam, event.awayTeam] : []));
     const getTeamInfo = (teamId) => teams.find(team => team.id === teamId);
+    
+    // Fetch players for each team in the event
+    useEffect(() => {
+        const fetchTeamPlayers = async () => {
+            if (eventTeams.length === 0) return;
+            
+            setLoadingPlayers(true);
+            const playersMap = {};
+            
+            for (const teamId of eventTeams) {
+                try {
+                    const response = await fetch(`${backendUrl}/api/team/${teamId}/players`);
+                    if (response.ok) {
+                        const players = await response.json();
+                        playersMap[teamId] = players || [];
+                        console.log(`📊 Loaded ${players?.length || 0} players for team ${teamId}`);
+                    }
+                } catch (error) {
+                    console.error(`Error fetching players for team ${teamId}:`, error);
+                    playersMap[teamId] = [];
+                }
+            }
+            
+            setTeamPlayers(playersMap);
+            setLoadingPlayers(false);
+        };
+        
+        fetchTeamPlayers();
+    }, [eventTeams.join(','), backendUrl]);
 
     // Initialize team stats if not present - only run when event teams change
     useEffect(() => {
