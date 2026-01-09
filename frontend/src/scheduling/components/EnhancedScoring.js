@@ -81,6 +81,7 @@ const EnhancedScoresTab = ({
     // State for team players fetched from API
     const [teamPlayers, setTeamPlayers] = useState({});
     const [loadingPlayers, setLoadingPlayers] = useState(false);
+    const [selectedPlayer, setSelectedPlayer] = useState(null);
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
 
