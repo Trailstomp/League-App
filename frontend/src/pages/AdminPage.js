@@ -496,6 +496,12 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
             ]
         },
         {
+            groupName: '💵 Finance',
+            tabs: [
+                { id: 'league-finance', label: 'League Finance', icon: '📊' },
+            ]
+        },
+        {
             groupName: '📢 Communications',
             tabs: [
                 { id: 'coach-notify', label: 'Team Coaches', icon: '👨‍🏫' },
