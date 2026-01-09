@@ -8053,6 +8053,100 @@ async def get_team_player_stats(team_id: str, season_id: Optional[str] = None):
         logger.error(f"Error getting player stats: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@api_router.get("/players/{player_id}/stats-by-year")
+async def get_player_stats_by_year(player_id: str):
+    """Get a player's stats grouped by year/season"""
+    try:
+        # Get all game stats where this player participated
+        all_games = await db.game_stats.find({
+            "$or": [
+                {"home_team.players.player_id": player_id},
+                {"away_team.players.player_id": player_id}
+            ],
+            "status": "final"
+        }).to_list(None)
+        
+        # Group stats by year
+        stats_by_year = {}
+        
+        for game in all_games:
+            # Extract year from game date or season
+            game_date = game.get("game_date") or game.get("created_at")
+            if game_date:
+                if isinstance(game_date, str):
+                    year = game_date[:4]  # Get YYYY from ISO date
+                else:
+                    year = str(game_date.year)
+            else:
+                year = "Unknown"
+            
+            if year not in stats_by_year:
+                stats_by_year[year] = {
+                    "year": year,
+                    "gamesPlayed": 0,
+                    "goals": 0,
+                    "assists": 0,
+                    "shots": 0,
+                    "groundBalls": 0,
+                    "wins": 0,
+                    "losses": 0,
+                    "ties": 0
+                }
+            
+            # Check home team
+            home_team = game.get("home_team", {})
+            for player in home_team.get("players", []):
+                if player.get("player_id") == player_id:
+                    if player.get("was_present", True):
+                        stats_by_year[year]["gamesPlayed"] += 1
+                        result = home_team.get("result", "")
+                        if result == "win":
+                            stats_by_year[year]["wins"] += 1
+                        elif result == "loss":
+                            stats_by_year[year]["losses"] += 1
+                        elif result == "tie":
+                            stats_by_year[year]["ties"] += 1
+                    stats_by_year[year]["goals"] += player.get("goals", 0)
+                    stats_by_year[year]["assists"] += player.get("assists", 0)
+                    stats_by_year[year]["shots"] += player.get("shots", 0)
+                    stats_by_year[year]["groundBalls"] += player.get("ground_balls", 0)
+                    break
+            
+            # Check away team
+            away_team = game.get("away_team", {})
+            if away_team:
+                for player in away_team.get("players", []):
+                    if player.get("player_id") == player_id:
+                        if player.get("was_present", True):
+                            stats_by_year[year]["gamesPlayed"] += 1
+                            result = away_team.get("result", "")
+                            if result == "win":
+                                stats_by_year[year]["wins"] += 1
+                            elif result == "loss":
+                                stats_by_year[year]["losses"] += 1
+                            elif result == "tie":
+                                stats_by_year[year]["ties"] += 1
+                        stats_by_year[year]["goals"] += player.get("goals", 0)
+                        stats_by_year[year]["assists"] += player.get("assists", 0)
+                        stats_by_year[year]["shots"] += player.get("shots", 0)
+                        stats_by_year[year]["groundBalls"] += player.get("ground_balls", 0)
+                        break
+        
+        # Sort by year descending
+        sorted_stats = dict(sorted(stats_by_year.items(), reverse=True))
+        
+        return {
+            "player_id": player_id,
+            "statsByYear": sorted_stats,
+            "totalYears": len(sorted_stats)
+        }
+    
+    except Exception as e:
+        logger.error(f"Error getting player stats by year: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.get("/league/standings")
 async def get_league_standings(
     league_id: Optional[str] = "main_league", 
