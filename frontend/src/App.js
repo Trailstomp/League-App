@@ -8,6 +8,7 @@ import TournamentPage from './pages/TournamentPage';
 import UnifiedEventsPage from './pages/UnifiedEventsPage';
 import RegistrationPage from './pages/RegistrationPage';
 import RSVPHandler from './pages/RSVPHandler';
+import PasswordResetPage from './pages/PasswordResetPage';
 import AuthModal, { initialMockUsers } from './components/AuthSystem';
 import OAuthCallback from './components/OAuthCallback';
 import { isAdmin, canEditEvent, canEditTeam } from './components/PermissionsSystem';
