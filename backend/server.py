@@ -9588,6 +9588,7 @@ async def delete_user(user_id: str):
 
 
 @api_router.post("/users/create")
+@api_router.post("/users/admin-create")
 async def create_user_admin(user_data: Dict[str, Any]):
     """Admin endpoint to create users directly"""
     try:
@@ -9626,6 +9627,13 @@ async def create_user_admin(user_data: Dict[str, Any]):
         elif primary_role:
             roles = [primary_role]
         
+        # Generate password reset token if required
+        password_reset_token = None
+        password_reset_expires = None
+        if user_data.get("requirePasswordReset"):
+            password_reset_token = str(uuid.uuid4())
+            password_reset_expires = (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
+        
         user = {
             "id": str(uuid.uuid4()),
             "name": user_data["name"],
@@ -9647,12 +9655,28 @@ async def create_user_admin(user_data: Dict[str, Any]):
                 "sms": False,
                 "groupme": True
             }),
+            # New enhanced profile fields
+            "photoUrl": user_data.get("photoUrl"),
+            "lacrosseHistory": user_data.get("lacrosseHistory"),
+            "funFacts": user_data.get("funFacts"),
+            "socialMedia": user_data.get("socialMedia"),
+            # Password reset fields
+            "requirePasswordReset": user_data.get("requirePasswordReset", False),
+            "passwordResetToken": password_reset_token,
+            "passwordResetExpires": password_reset_expires,
             "createdAt": datetime.now(timezone.utc).isoformat(),
             "approvedAt": datetime.now(timezone.utc).isoformat(),
             "approvedBy": user_data.get("createdBy", "admin")
         }
         
         await db.users.insert_one(user)
+        
+        # Send welcome email if requested
+        if user_data.get("sendWelcomeEmail") and password_reset_token:
+            try:
+                await send_welcome_email(user, password_reset_token)
+            except Exception as email_error:
+                logger.error(f"❌ Failed to send welcome email: {email_error}")
         
         user.pop("password")
         user.pop("_id", None)
@@ -9666,6 +9690,77 @@ async def create_user_admin(user_data: Dict[str, Any]):
     except Exception as e:
         logger.error(f"❌ Error creating user: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+async def send_welcome_email(user: dict, reset_token: str):
+    """Send welcome email with password reset link"""
+    try:
+        league_data = await db.league_data.find_one({}, {"_id": 0}) or {}
+        smtp_config = league_data.get("smtpConfig", {})
+        
+        if not smtp_config.get("email") or not smtp_config.get("password"):
+            logger.warning("SMTP not configured, skipping welcome email")
+            return
+        
+        # Get the production domain for the reset link
+        production_domain = league_data.get("productionDomain", "mlbl.org")
+        reset_link = f"https://{production_domain}/reset-password?token={reset_token}"
+        
+        import smtplib
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+        
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = f"Welcome to {league_data.get('leagueName', 'the League')}!"
+        msg['From'] = smtp_config['email']
+        msg['To'] = user['email']
+        
+        text_body = f"""
+Welcome to {league_data.get('leagueName', 'the League')}, {user['name']}!
+
+Your account has been created. To get started, please set your password by clicking the link below:
+
+{reset_link}
+
+This link will expire in 7 days.
+
+If you didn't request this account, please ignore this email.
+
+Best regards,
+{league_data.get('leagueName', 'League')} Team
+        """
+        
+        html_body = f"""
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <h2 style="color: #2563eb;">Welcome to {league_data.get('leagueName', 'the League')}!</h2>
+    <p>Hi {user['name']},</p>
+    <p>Your account has been created. To get started, please set your password:</p>
+    <p style="text-align: center; margin: 30px 0;">
+        <a href="{reset_link}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+            Set Your Password
+        </a>
+    </p>
+    <p style="color: #6b7280; font-size: 14px;">This link will expire in 7 days.</p>
+    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+    <p style="color: #9ca3af; font-size: 12px;">
+        If you didn't request this account, please ignore this email.
+    </p>
+</div>
+        """
+        
+        msg.attach(MIMEText(text_body, 'plain'))
+        msg.attach(MIMEText(html_body, 'html'))
+        
+        with smtplib.SMTP(smtp_config['host'], smtp_config.get('port', 587)) as server:
+            server.starttls()
+            server.login(smtp_config['email'], smtp_config['password'])
+            server.send_message(msg)
+        
+        logger.info(f"✅ Welcome email sent to {user['email']}")
+        
+    except Exception as e:
+        logger.error(f"❌ Error sending welcome email: {e}")
+        raise
 
 
 
