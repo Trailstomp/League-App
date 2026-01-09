@@ -406,6 +406,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                         {currentUser && isCoach(currentUser) && !isAdmin(currentUser) && (
                             <NavItem icon={<span>🏆</span>} label="Team Admin" pageName="team-admin" />
                         )}
+                        <NavItem icon={<span>📚</span>} label="Help & Docs" pageName="help" />
                     </div>
                     
                     {/* Authentication Actions - Moved up here */}
