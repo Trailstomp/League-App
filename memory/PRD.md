@@ -87,6 +87,16 @@ Create a comprehensive league management portal for lacrosse leagues with featur
   - Backend APIs: add-player, remove-player, update-player
   - Testing: Backend 96% pass rate, Frontend verified
 
+- **Player Card PDF Download Fix**: Fixed PDF download to include both front and back pages
+  - Page 1: Front of card with team header, jersey number, name, position
+  - Page 2: Back of card with bio info, stats, and career stats by year
+  
+- **Stats by Year Feature**: Added career stats grouped by year
+  - New backend endpoint: `/api/players/{player_id}/stats-by-year`
+  - Stats displayed on back of player card popup
+  - Stats included in PDF download
+  - Shows goals, assists, games played per year
+
 - **Auth State Improvements**: 
   - Added cross-tab sync via storage events
   - Enhanced logging for debugging session issues
