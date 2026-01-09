@@ -1267,9 +1267,14 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
                                 </div>
                                 
                                 {/* Player Photo */}
-                                <div className="relative h-72 bg-gradient-to-br from-slate-100 to-slate-200">
+                                <div className="relative h-72 bg-gradient-to-br from-slate-100 to-slate-200 flex items-start justify-center overflow-hidden">
                                     {player.photoUrl ? (
-                                        <img src={player.photoUrl} alt={player.name} className="w-full h-full object-cover" />
+                                        <img 
+                                            src={player.photoUrl} 
+                                            alt={player.name} 
+                                            className="w-full h-auto max-h-full object-contain"
+                                            style={{ objectPosition: 'center top' }}
+                                        />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${team?.style?.backgroundColor || '#f8fafc'} 0%, ${teamColor}15 100%)` }}>
                                             <svg className="w-24 h-24 opacity-30" fill="currentColor" viewBox="0 0 24 24" style={{ color: teamColor }}>
@@ -1584,12 +1589,12 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
                             />
                             
                             {/* Player Photo */}
-                            <div className="relative h-56 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
+                            <div className="relative h-56 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden flex items-start justify-center">
                                 {player.photoUrl ? (
                                     <CachedImage 
                                         src={player.photoUrl} 
                                         alt={player.name}
-                                        className="w-full h-full object-contain"
+                                        className="w-full h-auto max-h-full object-contain"
                                         style={{ objectPosition: 'center top' }}
                                         fallback={
                                             <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${team.style?.backgroundColor || '#f8fafc'} 0%, ${team.style?.primaryColor || '#2563eb'}15 100%)` }}>
