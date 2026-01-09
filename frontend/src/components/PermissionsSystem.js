@@ -81,12 +81,10 @@ export const SYSTEM_ROLES = {
         description: 'League player with basic access',
         isSystemRole: true,
         permissions: [
-            'users.view', 'users.create', 'users.edit', // TEMPORARY: For admin recovery
             'teams.view',
             'players.view',
             'events.view',
-            'media.view',
-            'system.admin_access' // TEMPORARY: For admin recovery
+            'media.view'
         ]
     },
     'guest': {
@@ -127,8 +125,7 @@ export const hasPermission = (user, permission) => {
 export const isAdmin = (user) => {
     if (!user || !user.roles) return false;
     const userRoles = Array.isArray(user.roles) ? user.roles : [user.role];
-    // TEMPORARY: Allow players to access admin for account recovery
-    return userRoles.includes('admin') || userRoles.includes('super_admin') || userRoles.includes('league_admin') || userRoles.includes('player') || userRoles.includes('coach');
+    return userRoles.includes('admin') || userRoles.includes('super_admin') || userRoles.includes('league_admin');
 };
 
 export const isCoach = (user) => {
