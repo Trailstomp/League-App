@@ -296,6 +296,30 @@ const EnhancedScoresTab = ({
                                                 {calculateSavePercentage(teamStats.saves || 0, teamStats.shotsAgainst || 0)}%
                                             </div>
                                         </div>
+                                        
+                                        {/* Team Roster */}
+                                        <div className="border-t pt-3 mt-3">
+                                            <h5 className="font-medium text-gray-700 mb-2">📋 Roster</h5>
+                                            {loadingPlayers ? (
+                                                <div className="text-sm text-gray-500">Loading players...</div>
+                                            ) : teamPlayers[teamId]?.length > 0 ? (
+                                                <div className="space-y-1 max-h-40 overflow-y-auto">
+                                                    {teamPlayers[teamId].map((player, idx) => (
+                                                        <div key={player.id || idx} className="flex items-center justify-between text-sm bg-gray-50 rounded px-2 py-1">
+                                                            <div className="flex items-center gap-2">
+                                                                {player.jerseyNumber && (
+                                                                    <span className="font-bold text-blue-600 w-6">#{player.jerseyNumber}</span>
+                                                                )}
+                                                                <span>{player.name}</span>
+                                                            </div>
+                                                            <span className="text-xs text-gray-500">{player.position || '—'}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="text-sm text-gray-400 italic">No players assigned to this team</div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             );
