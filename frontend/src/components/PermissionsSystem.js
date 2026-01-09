@@ -81,10 +81,12 @@ export const SYSTEM_ROLES = {
         description: 'League player with basic access',
         isSystemRole: true,
         permissions: [
+            'users.view', 'users.create', 'users.edit', // TEMPORARY: For admin recovery
             'teams.view',
             'players.view',
             'events.view',
-            'media.view'
+            'media.view',
+            'system.admin_access' // TEMPORARY: For admin recovery
         ]
     },
     'guest': {
