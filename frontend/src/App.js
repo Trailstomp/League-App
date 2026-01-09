@@ -255,6 +255,12 @@ function App() {
     const search = window.location.search;
     console.log('🌐 Current URL path:', path, 'search:', search);
     
+    // Check for password reset token
+    if (path === '/reset-password' || search.includes('token=')) {
+      setCurrentPage('password-reset');
+      return;
+    }
+    
     // Check for RSVP parameters first - this takes priority
     if (search.includes('response=') && path.includes('/events/')) {
       console.log('📬 RSVP URL detected, will handle in renderPage');
@@ -285,7 +291,8 @@ function App() {
       '/league_contact': 'league_contact',
       '/player-dashboard': 'player-dashboard',
       '/my-dashboard': 'player-dashboard',
-      '/fees/payment-success': 'payment-success'
+      '/fees/payment-success': 'payment-success',
+      '/reset-password': 'password-reset'
     };
     
     const pageFromUrl = urlToPage[path] || 'home';
