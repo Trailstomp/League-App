@@ -97,6 +97,15 @@ Create a comprehensive league management portal for lacrosse leagues with featur
   - Stats included in PDF download
   - Shows goals, assists, games played per year
 
+- **Ticker Tape Improvements**:
+  - Fixed scores display - now shows actual game scores from nested `scores.home_team.score` format
+  - Added "Show Cancelled Events" toggle in ticker settings
+  - Made team names clickable - clicking navigates to team page
+  - Improved sort order - Live games first, then scored/final games (recent first), then upcoming events
+  - Fixed event click navigation to event details
+  - Added proper status labels (LIVE, PAST, FINAL, UPCOMING, CANCELLED)
+  - Tournaments with scores now display as game cards with team logos and scores
+
 - **Auth State Improvements**: 
   - Added cross-tab sync via storage events
   - Enhanced logging for debugging session issues
