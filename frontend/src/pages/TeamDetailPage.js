@@ -293,7 +293,7 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
             <div className="bg-white rounded-lg shadow-sm border p-3 sm:p-6 overflow-x-hidden">
                 {activeTab === 'home' && <TeamHomeTab team={team} teams={teams} events={events} onNavigate={onNavigate} />}
                 {activeTab === 'schedule' && <TeamScheduleTab team={team} events={events} />}
-                {activeTab === 'roster' && <TeamRosterTab team={team} players={players} />}
+                {activeTab === 'roster' && <TeamRosterTab team={team} players={players} currentUser={currentUser} />}
                 {activeTab === 'stats' && <TeamStatsTab team={team} events={events} />}
                 {activeTab === 'chat' && <TeamChatTab team={team} />}
                 {activeTab === 'media' && <TeamMediaTab team={team} />}
