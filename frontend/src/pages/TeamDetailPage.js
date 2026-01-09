@@ -933,49 +933,220 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
         const { jsPDF } = await import('jspdf');
         const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: [3.5, 5] });
         const teamColor = team?.style?.primaryColor || '#2563eb';
+        const accentColor = team?.style?.accentColor || '#3b82f6';
         
+        // Convert hex to RGB
+        const hexToRgb = (hex) => {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 37, g: 99, b: 235 };
+        };
+        const teamRgb = hexToRgb(teamColor);
+        const accentRgb = hexToRgb(accentColor);
+        
+        // ============ PAGE 1: FRONT OF CARD ============
         // Card border
-        pdf.setDrawColor(teamColor);
-        pdf.setLineWidth(0.02);
+        pdf.setDrawColor(teamRgb.r, teamRgb.g, teamRgb.b);
+        pdf.setLineWidth(0.03);
         pdf.roundedRect(0.1, 0.1, 3.3, 4.8, 0.15, 0.15, 'S');
         
-        // Header
-        pdf.setFillColor(teamColor);
+        // Header bar
+        pdf.setFillColor(teamRgb.r, teamRgb.g, teamRgb.b);
+        pdf.rect(0.1, 0.1, 3.3, 0.5, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(16);
+        pdf.setFont(undefined, 'bold');
+        pdf.text(team?.name || 'Team', 1.75, 0.4, { align: 'center' });
+        
+        // Player photo placeholder area
+        pdf.setFillColor(240, 240, 240);
+        pdf.roundedRect(0.5, 0.8, 2.5, 2.2, 0.1, 0.1, 'F');
+        pdf.setTextColor(150, 150, 150);
+        pdf.setFontSize(10);
+        pdf.text('[ Player Photo ]', 1.75, 1.9, { align: 'center' });
+        
+        // Jersey number circle
+        pdf.setFillColor(teamRgb.r, teamRgb.g, teamRgb.b);
+        pdf.circle(2.7, 2.7, 0.35, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(18);
+        pdf.setFont(undefined, 'bold');
+        pdf.text(`${selectedPlayer.jerseyNumber || '?'}`, 2.7, 2.78, { align: 'center' });
+        
+        // Player name
+        pdf.setTextColor(teamRgb.r, teamRgb.g, teamRgb.b);
+        pdf.setFontSize(18);
+        pdf.setFont(undefined, 'bold');
+        pdf.text(selectedPlayer.name || 'Player', 1.75, 3.3, { align: 'center' });
+        
+        // Position badge
+        pdf.setFillColor(accentRgb.r, accentRgb.g, accentRgb.b);
+        pdf.roundedRect(1.15, 3.45, 1.2, 0.3, 0.1, 0.1, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(10);
+        pdf.setFont(undefined, 'bold');
+        pdf.text(selectedPlayer.position || 'Player', 1.75, 3.65, { align: 'center' });
+        
+        // Footer bar
+        pdf.setFillColor(accentRgb.r, accentRgb.g, accentRgb.b);
+        pdf.rect(0.1, 4.75, 3.3, 0.15, 'F');
+        
+        // ============ PAGE 2: BACK OF CARD ============
+        pdf.addPage([3.5, 5], 'portrait');
+        
+        // Card border
+        pdf.setDrawColor(teamRgb.r, teamRgb.g, teamRgb.b);
+        pdf.setLineWidth(0.03);
+        pdf.roundedRect(0.1, 0.1, 3.3, 4.8, 0.15, 0.15, 'S');
+        
+        // Header bar
+        pdf.setFillColor(teamRgb.r, teamRgb.g, teamRgb.b);
         pdf.rect(0.1, 0.1, 3.3, 0.4, 'F');
         pdf.setTextColor(255, 255, 255);
-        pdf.setFontSize(14);
-        pdf.text(team?.name || 'Team', 1.75, 0.35, { align: 'center' });
+        pdf.setFontSize(12);
+        pdf.setFont(undefined, 'bold');
+        pdf.text('Player Bio', 1.75, 0.35, { align: 'center' });
         
-        // Jersey number
-        pdf.setTextColor(teamColor);
-        pdf.setFontSize(36);
-        pdf.text(`#${selectedPlayer.jerseyNumber || '?'}`, 1.75, 2.2, { align: 'center' });
-        
-        // Name
-        pdf.setFontSize(16);
-        pdf.text(selectedPlayer.name || 'Player', 1.75, 2.5, { align: 'center' });
-        
-        // Position
+        // Mini name header
+        pdf.setTextColor(teamRgb.r, teamRgb.g, teamRgb.b);
         pdf.setFontSize(11);
-        pdf.text(selectedPlayer.position || 'Player', 1.75, 2.75, { align: 'center' });
+        pdf.text(`${selectedPlayer.name} • #${selectedPlayer.jerseyNumber || '?'}`, 1.75, 0.75, { align: 'center' });
+        
+        let yPos = 1.0;
+        
+        // Stats section (if available)
+        const hasStats = (selectedPlayer.goals > 0 || selectedPlayer.assists > 0);
+        if (hasStats) {
+            pdf.setFillColor(teamRgb.r, teamRgb.g, teamRgb.b, 0.1);
+            pdf.roundedRect(0.2, yPos - 0.05, 3.1, 0.7, 0.05, 0.05, 'F');
+            
+            pdf.setTextColor(80, 80, 80);
+            pdf.setFontSize(8);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('SEASON STATS', 0.3, yPos + 0.1);
+            
+            // Stats boxes
+            const statsY = yPos + 0.25;
+            const boxWidth = 0.9;
+            const boxGap = 0.15;
+            const startX = 0.35;
+            
+            // Goals
+            pdf.setFillColor(255, 255, 255);
+            pdf.roundedRect(startX, statsY, boxWidth, 0.35, 0.03, 0.03, 'F');
+            pdf.setTextColor(teamRgb.r, teamRgb.g, teamRgb.b);
+            pdf.setFontSize(14);
+            pdf.setFont(undefined, 'bold');
+            pdf.text(`${selectedPlayer.goals || 0}`, startX + boxWidth/2, statsY + 0.18, { align: 'center' });
+            pdf.setTextColor(100, 100, 100);
+            pdf.setFontSize(6);
+            pdf.text('Goals', startX + boxWidth/2, statsY + 0.3, { align: 'center' });
+            
+            // Assists
+            pdf.setFillColor(255, 255, 255);
+            pdf.roundedRect(startX + boxWidth + boxGap, statsY, boxWidth, 0.35, 0.03, 0.03, 'F');
+            pdf.setTextColor(teamRgb.r, teamRgb.g, teamRgb.b);
+            pdf.setFontSize(14);
+            pdf.setFont(undefined, 'bold');
+            pdf.text(`${selectedPlayer.assists || 0}`, startX + boxWidth + boxGap + boxWidth/2, statsY + 0.18, { align: 'center' });
+            pdf.setTextColor(100, 100, 100);
+            pdf.setFontSize(6);
+            pdf.text('Assists', startX + boxWidth + boxGap + boxWidth/2, statsY + 0.3, { align: 'center' });
+            
+            // Points
+            pdf.setFillColor(255, 255, 255);
+            pdf.roundedRect(startX + 2*(boxWidth + boxGap), statsY, boxWidth, 0.35, 0.03, 0.03, 'F');
+            pdf.setTextColor(teamRgb.r, teamRgb.g, teamRgb.b);
+            pdf.setFontSize(14);
+            pdf.setFont(undefined, 'bold');
+            pdf.text(`${(selectedPlayer.goals || 0) + (selectedPlayer.assists || 0)}`, startX + 2*(boxWidth + boxGap) + boxWidth/2, statsY + 0.18, { align: 'center' });
+            pdf.setTextColor(100, 100, 100);
+            pdf.setFontSize(6);
+            pdf.text('Points', startX + 2*(boxWidth + boxGap) + boxWidth/2, statsY + 0.3, { align: 'center' });
+            
+            yPos += 0.8;
+        }
+        
+        // Stats by Year (if available)
+        if (selectedPlayer.statsByYear && Object.keys(selectedPlayer.statsByYear).length > 0) {
+            pdf.setTextColor(80, 80, 80);
+            pdf.setFontSize(8);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('CAREER STATS BY YEAR', 0.3, yPos + 0.1);
+            yPos += 0.25;
+            
+            const years = Object.keys(selectedPlayer.statsByYear).sort().reverse();
+            for (const year of years.slice(0, 4)) { // Show max 4 years
+                const yearStats = selectedPlayer.statsByYear[year];
+                pdf.setTextColor(teamRgb.r, teamRgb.g, teamRgb.b);
+                pdf.setFontSize(9);
+                pdf.setFont(undefined, 'bold');
+                pdf.text(year, 0.3, yPos);
+                pdf.setFont(undefined, 'normal');
+                pdf.setTextColor(80, 80, 80);
+                pdf.text(`${yearStats.goals || 0}G  ${yearStats.assists || 0}A  ${yearStats.gamesPlayed || 0}GP`, 0.7, yPos);
+                yPos += 0.2;
+            }
+            yPos += 0.1;
+        }
         
         // Bio info
-        let yPos = 3.1;
         pdf.setFontSize(9);
         pdf.setTextColor(100, 100, 100);
         
         if (selectedPlayer.lacrosseHistory?.highSchool?.teamName) {
-            pdf.text(`🏫 HS: ${selectedPlayer.lacrosseHistory.highSchool.teamName}`, 0.3, yPos);
-            yPos += 0.25;
+            pdf.setTextColor(teamRgb.r, teamRgb.g, teamRgb.b);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('High School', 0.3, yPos);
+            pdf.setFont(undefined, 'normal');
+            pdf.setTextColor(80, 80, 80);
+            const hsText = `${selectedPlayer.lacrosseHistory.highSchool.teamName}${selectedPlayer.lacrosseHistory.highSchool.graduationYear ? ` '${selectedPlayer.lacrosseHistory.highSchool.graduationYear.toString().slice(-2)}` : ''}`;
+            pdf.text(hsText, 0.3, yPos + 0.15);
+            yPos += 0.4;
         }
+        
         if (selectedPlayer.lacrosseHistory?.college?.teamName) {
-            pdf.text(`🎓 College: ${selectedPlayer.lacrosseHistory.college.teamName}`, 0.3, yPos);
-            yPos += 0.25;
+            pdf.setTextColor(teamRgb.r, teamRgb.g, teamRgb.b);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('College', 0.3, yPos);
+            pdf.setFont(undefined, 'normal');
+            pdf.setTextColor(80, 80, 80);
+            const collegeText = `${selectedPlayer.lacrosseHistory.college.teamName}${selectedPlayer.lacrosseHistory.college.graduationYear ? ` '${selectedPlayer.lacrosseHistory.college.graduationYear.toString().slice(-2)}` : ''}`;
+            pdf.text(collegeText, 0.3, yPos + 0.15);
+            yPos += 0.4;
         }
-        if (selectedPlayer.funFacts) {
-            const funFacts = selectedPlayer.funFacts.substring(0, 60) + (selectedPlayer.funFacts.length > 60 ? '...' : '');
-            pdf.text(`✨ ${funFacts}`, 0.3, yPos, { maxWidth: 2.9 });
+        
+        if (selectedPlayer.lacrosseHistory?.postGrad?.length > 0) {
+            pdf.setTextColor(teamRgb.r, teamRgb.g, teamRgb.b);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Post-Grad', 0.3, yPos);
+            pdf.setFont(undefined, 'normal');
+            pdf.setTextColor(80, 80, 80);
+            yPos += 0.15;
+            for (const t of selectedPlayer.lacrosseHistory.postGrad.slice(0, 2)) {
+                pdf.text(`${t.teamName}${t.years ? ` (${t.years})` : ''}`, 0.3, yPos);
+                yPos += 0.15;
+            }
+            yPos += 0.1;
         }
+        
+        if (selectedPlayer.funFacts && yPos < 4.2) {
+            pdf.setTextColor(teamRgb.r, teamRgb.g, teamRgb.b);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Fun Facts', 0.3, yPos);
+            pdf.setFont(undefined, 'normal');
+            pdf.setTextColor(80, 80, 80);
+            const funFacts = selectedPlayer.funFacts.substring(0, 100) + (selectedPlayer.funFacts.length > 100 ? '...' : '');
+            const lines = pdf.splitTextToSize(funFacts, 2.9);
+            pdf.text(lines.slice(0, 3), 0.3, yPos + 0.15);
+        }
+        
+        // Footer bar
+        pdf.setFillColor(accentRgb.r, accentRgb.g, accentRgb.b);
+        pdf.rect(0.1, 4.75, 3.3, 0.15, 'F');
         
         pdf.save(`${selectedPlayer.name?.replace(/\s+/g, '_')}_card.pdf`);
     };
