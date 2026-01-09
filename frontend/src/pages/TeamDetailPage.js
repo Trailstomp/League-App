@@ -2185,6 +2185,53 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
         }
     };
     
+    // Extract colors from logo and apply to theme
+    const handleUseLogoColors = async () => {
+        if (!teamStyle.logoUrl) {
+            setMessage('❌ Please upload a logo first');
+            setTimeout(() => setMessage(''), 3000);
+            return;
+        }
+        
+        setExtractingColors(true);
+        setMessage('');
+        
+        try {
+            // Use the proxy endpoint for CORS-safe image loading
+            const proxyUrl = `${backendUrl}/api/proxy-image?url=${encodeURIComponent(fixGoogleDriveUrl(teamStyle.logoUrl))}`;
+            const colors = await extractThemeColors(proxyUrl);
+            
+            if (colors) {
+                setTeamStyle(prev => ({
+                    ...prev,
+                    primaryColor: colors.primaryColor,
+                    accentColor: colors.accentColor,
+                    backgroundColor: colors.backgroundColor,
+                    textColor: colors.textColor
+                }));
+                setMessage('✅ Colors extracted from logo! Click "Save Appearance" to apply.');
+            } else {
+                setMessage('❌ Could not extract colors from logo');
+            }
+        } catch (error) {
+            console.error('Error extracting colors:', error);
+            setMessage('❌ Error extracting colors from logo');
+        } finally {
+            setExtractingColors(false);
+            setTimeout(() => setMessage(''), 5000);
+        }
+    };
+    
+    // Handle logo upload
+    const handleLogoUpload = (url) => {
+        setTeamStyle(prev => ({ ...prev, logoUrl: url }));
+    };
+    
+    // Handle banner upload
+    const handleBannerUpload = (url) => {
+        setTeamStyle(prev => ({ ...prev, bannerUrl: url }));
+    };
+    
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
