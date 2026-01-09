@@ -676,46 +676,182 @@ const TeamScheduleTab = ({ team, events = [] }) => {
 };
 
 // Team Roster Tab
-const TeamRosterTab = ({ team, players = [] }) => {
+const TeamRosterTab = ({ team, players = [], currentUser }) => {
     const [selectedPlayer, setSelectedPlayer] = useState(null);
     const [isFlipped, setIsFlipped] = useState(false);
     const [teamPlayers, setTeamPlayers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editingPlayer, setEditingPlayer] = useState(null);
+    const [availableUsers, setAvailableUsers] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [message, setMessage] = useState('');
+    const [actionLoading, setActionLoading] = useState(false);
     const cardRef = useRef(null);
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
     
+    // Check if current user is a team admin or league admin
+    const isTeamAdmin = currentUser && (
+        currentUser.roles?.includes('admin') ||
+        currentUser.roles?.includes('league_admin') ||
+        (currentUser.roles?.includes('coach') && (
+            currentUser.teamId === team.id ||
+            currentUser.teamAssignments?.some(a => a.teamId === team.id)
+        ))
+    );
+    
     // Fetch players directly from API to ensure we get multi-team players
-    useEffect(() => {
-        const fetchTeamPlayers = async () => {
-            try {
-                setLoading(true);
-                const response = await fetch(`${backendUrl}/api/team/${team.id}/players`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setTeamPlayers(data || []);
-                } else {
-                    // Fallback to prop-based filtering
-                    const filtered = players.filter(player => 
-                        player.teamId === team.id || 
-                        player.teamAssignments?.some(ta => ta.teamId === team.id)
-                    );
-                    setTeamPlayers(filtered);
-                }
-            } catch (error) {
-                console.error('Error fetching team players:', error);
+    const fetchTeamPlayers = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch(`${backendUrl}/api/team/${team.id}/players`);
+            if (response.ok) {
+                const data = await response.json();
+                setTeamPlayers(data || []);
+            } else {
                 // Fallback to prop-based filtering
                 const filtered = players.filter(player => 
                     player.teamId === team.id || 
                     player.teamAssignments?.some(ta => ta.teamId === team.id)
                 );
                 setTeamPlayers(filtered);
-            } finally {
-                setLoading(false);
             }
-        };
-        
+        } catch (error) {
+            console.error('Error fetching team players:', error);
+            // Fallback to prop-based filtering
+            const filtered = players.filter(player => 
+                player.teamId === team.id || 
+                player.teamAssignments?.some(ta => ta.teamId === team.id)
+            );
+            setTeamPlayers(filtered);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    useEffect(() => {
         fetchTeamPlayers();
     }, [team.id, backendUrl, players]);
+    
+    // Fetch available users when add modal opens
+    const fetchAvailableUsers = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/api/users?status=active`);
+            if (response.ok) {
+                const data = await response.json();
+                // Filter out users already on this team
+                const teamPlayerIds = teamPlayers.map(p => p.id);
+                const available = (data.users || data || []).filter(u => 
+                    !teamPlayerIds.includes(u.id) &&
+                    (u.roles?.includes('player') || u.role === 'player' || !u.roles?.length)
+                );
+                setAvailableUsers(available);
+            }
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    };
+    
+    // Handle adding a player to the team
+    const handleAddPlayer = async (userId) => {
+        setActionLoading(true);
+        try {
+            const response = await fetch(`${backendUrl}/api/team/${team.id}/add-player`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId })
+            });
+            
+            if (response.ok) {
+                setMessage('✅ Player added to team!');
+                setShowAddModal(false);
+                fetchTeamPlayers();
+            } else {
+                const data = await response.json();
+                setMessage(`❌ ${data.detail || 'Failed to add player'}`);
+            }
+        } catch (error) {
+            setMessage('❌ Error adding player');
+        } finally {
+            setActionLoading(false);
+            setTimeout(() => setMessage(''), 3000);
+        }
+    };
+    
+    // Handle removing a player from the team
+    const handleRemovePlayer = async (playerId, e) => {
+        e.stopPropagation();
+        if (!window.confirm('Remove this player from the team roster?')) return;
+        
+        setActionLoading(true);
+        try {
+            const response = await fetch(`${backendUrl}/api/team/${team.id}/remove-player`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: playerId })
+            });
+            
+            if (response.ok) {
+                setMessage('✅ Player removed from team');
+                fetchTeamPlayers();
+            } else {
+                const data = await response.json();
+                setMessage(`❌ ${data.detail || 'Failed to remove player'}`);
+            }
+        } catch (error) {
+            setMessage('❌ Error removing player');
+        } finally {
+            setActionLoading(false);
+            setTimeout(() => setMessage(''), 3000);
+        }
+    };
+    
+    // Handle editing player details
+    const handleEditPlayer = async (e) => {
+        e.preventDefault();
+        if (!editingPlayer) return;
+        
+        setActionLoading(true);
+        try {
+            // Update the player's team assignment
+            const response = await fetch(`${backendUrl}/api/team/${team.id}/update-player`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: editingPlayer.id,
+                    playerNumber: editingPlayer.jerseyNumber,
+                    position: editingPlayer.position
+                })
+            });
+            
+            if (response.ok) {
+                setMessage('✅ Player updated!');
+                setShowEditModal(false);
+                setEditingPlayer(null);
+                fetchTeamPlayers();
+            } else {
+                const data = await response.json();
+                setMessage(`❌ ${data.detail || 'Failed to update player'}`);
+            }
+        } catch (error) {
+            setMessage('❌ Error updating player');
+        } finally {
+            setActionLoading(false);
+            setTimeout(() => setMessage(''), 3000);
+        }
+    };
+    
+    const openEditModal = (player, e) => {
+        e.stopPropagation();
+        setEditingPlayer({
+            id: player.id,
+            name: player.name,
+            jerseyNumber: player.jerseyNumber || '',
+            position: player.position || ''
+        });
+        setShowEditModal(true);
+    };
 
     const openPlayerCard = (player) => {
         setSelectedPlayer(player);
