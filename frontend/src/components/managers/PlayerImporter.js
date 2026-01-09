@@ -9,20 +9,32 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
     const [showPreview, setShowPreview] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState('');
     const [validationErrors, setValidationErrors] = useState([]);
+    const [defaultPassword, setDefaultPassword] = useState('Welcome123!');
+    const [sendWelcomeEmail, setSendWelcomeEmail] = useState(true);
     const fileInputRef = useRef(null);
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
 
-    // Expected CSV columns
+    // Expected CSV columns - Updated to match current user schema
     const expectedColumns = [
-        { key: 'firstName', label: 'First Name', required: true },
-        { key: 'lastName', label: 'Last Name', required: true },
-        { key: 'email', label: 'Email', required: true },
-        { key: 'phone', label: 'Phone', required: false },
-        { key: 'jerseyNumber', label: 'Jersey Number', required: false },
-        { key: 'position', label: 'Position', required: false },
-        { key: 'teamId', label: 'Team ID', required: false },
-        { key: 'role', label: 'Role', required: false },
+        { key: 'firstName', label: 'First Name', required: true, example: 'John' },
+        { key: 'lastName', label: 'Last Name', required: true, example: 'Doe' },
+        { key: 'email', label: 'Email', required: true, example: 'john@example.com' },
+        { key: 'phone', label: 'Phone', required: false, example: '555-123-4567' },
+        { key: 'jerseyNumber', label: 'Jersey Number', required: false, example: '12' },
+        { key: 'position', label: 'Position', required: false, example: 'Attack' },
+        { key: 'jerseySize', label: 'Jersey Size', required: false, example: 'L' },
+        { key: 'teamId', label: 'Team ID', required: false, example: 'team_id_here' },
+        { key: 'role', label: 'Role', required: false, example: 'player' },
+        { key: 'emergencyContactName', label: 'Emergency Contact Name', required: false, example: 'Jane Doe' },
+        { key: 'emergencyContactPhone', label: 'Emergency Contact Phone', required: false, example: '555-987-6543' },
+        { key: 'highSchoolTeam', label: 'High School Team', required: false, example: 'Central High' },
+        { key: 'highSchoolYear', label: 'HS Graduation Year', required: false, example: '2018' },
+        { key: 'collegeTeam', label: 'College Team', required: false, example: 'State University' },
+        { key: 'collegeYear', label: 'College Graduation Year', required: false, example: '2022' },
+        { key: 'funFacts', label: 'Fun Facts', required: false, example: 'Loves pizza' },
+        { key: 'instagram', label: 'Instagram', required: false, example: 'johndoe' },
+        { key: 'twitter', label: 'Twitter/X', required: false, example: 'johndoe' },
     ];
 
     const parseCSV = (text) => {
@@ -53,10 +65,37 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
             'number': 'jerseyNumber',
             'position': 'position',
             'pos': 'position',
+            'jerseysize': 'jerseySize',
+            'size': 'jerseySize',
             'teamid': 'teamId',
             'team': 'teamId',
             'role': 'role',
             'type': 'role',
+            'emergencycontactname': 'emergencyContactName',
+            'emergencyname': 'emergencyContactName',
+            'ecname': 'emergencyContactName',
+            'emergencycontactphone': 'emergencyContactPhone',
+            'emergencyphone': 'emergencyContactPhone',
+            'ecphone': 'emergencyContactPhone',
+            'highschoolteam': 'highSchoolTeam',
+            'hsteam': 'highSchoolTeam',
+            'highschool': 'highSchoolTeam',
+            'highschoolyear': 'highSchoolYear',
+            'hsyear': 'highSchoolYear',
+            'hsgrad': 'highSchoolYear',
+            'collegeteam': 'collegeTeam',
+            'college': 'collegeTeam',
+            'collegeyear': 'collegeYear',
+            'collegegrad': 'collegeYear',
+            'funfacts': 'funFacts',
+            'fun': 'funFacts',
+            'facts': 'funFacts',
+            'bio': 'funFacts',
+            'instagram': 'instagram',
+            'ig': 'instagram',
+            'twitter': 'twitter',
+            'x': 'twitter',
+            'tiktok': 'tiktok',
         };
 
         const mappedHeader = header.map(h => columnMap[h] || h);
@@ -182,22 +221,64 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
 
         for (const player of validRows) {
             try {
+                // Build emergency contact object
+                const emergencyContact = {};
+                if (player.emergencyContactName) emergencyContact.name = player.emergencyContactName;
+                if (player.emergencyContactPhone) emergencyContact.phone = player.emergencyContactPhone;
+
+                // Build lacrosse history object
+                const lacrosseHistory = {};
+                if (player.highSchoolTeam || player.highSchoolYear) {
+                    lacrosseHistory.highSchool = {
+                        teamName: player.highSchoolTeam || '',
+                        graduationYear: player.highSchoolYear || ''
+                    };
+                }
+                if (player.collegeTeam || player.collegeYear) {
+                    lacrosseHistory.college = {
+                        teamName: player.collegeTeam || '',
+                        graduationYear: player.collegeYear || ''
+                    };
+                }
+
+                // Build social media object
+                const socialMedia = {};
+                if (player.instagram) socialMedia.instagram = player.instagram;
+                if (player.twitter) socialMedia.twitter = player.twitter;
+                if (player.tiktok) socialMedia.tiktok = player.tiktok;
+
                 // Apply selected team if no team specified in CSV
+                const teamId = player.teamId || selectedTeam || null;
+                
                 const playerData = {
-                    ...player,
-                    teamId: player.teamId || selectedTeam || null,
-                    teamAssignments: player.teamId || selectedTeam ? [{
-                        teamId: player.teamId || selectedTeam,
-                        jerseyNumber: player.jerseyNumber || '',
+                    name: `${player.firstName} ${player.lastName}`.trim(),
+                    email: player.email,
+                    password: defaultPassword,
+                    phone: player.phone || null,
+                    teamId: teamId,
+                    teamAssignments: teamId ? [{
+                        teamId: teamId,
+                        playerNumber: player.jerseyNumber || '',
                         position: player.position || '',
                         isPrimary: true
                     }] : [],
                     roles: [player.role || 'player'],
+                    role: player.role || 'player',
+                    status: 'active',
+                    playerNumber: player.jerseyNumber || null,
+                    position: player.position || null,
+                    jerseySize: player.jerseySize || null,
+                    emergencyContact: Object.keys(emergencyContact).length > 0 ? emergencyContact : null,
+                    lacrosseHistory: Object.keys(lacrosseHistory).length > 0 ? lacrosseHistory : null,
+                    funFacts: player.funFacts || null,
+                    socialMedia: Object.keys(socialMedia).length > 0 ? socialMedia : null,
                     notificationPreferences: {
                         email: true,
                         sms: false,
                         groupme: true
-                    }
+                    },
+                    requirePasswordReset: true,
+                    sendWelcomeEmail: sendWelcomeEmail
                 };
 
                 const response = await fetch(`${backendUrl}/api/users/admin-create`, {
@@ -244,7 +325,7 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
 
     const downloadTemplate = () => {
         const headers = expectedColumns.map(c => c.label).join(',');
-        const sampleRow = 'John,Doe,john.doe@example.com,555-123-4567,12,Attack,team_id_here,player';
+        const sampleRow = expectedColumns.map(c => c.example || '').join(',');
         const csv = `${headers}\n${sampleRow}\n`;
         
         const blob = new Blob([csv], { type: 'text/csv' });
@@ -270,7 +351,7 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
                     onClick={downloadTemplate}
                     className="text-sm text-blue-600 hover:text-blue-700 underline"
                 >
-                    Download Template
+                    📄 Download Template
                 </button>
             </div>
 
@@ -280,9 +361,9 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
                 <p className="text-sm text-blue-700 mb-3">
                     Your CSV file should have these columns (first row as header):
                 </p>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto max-h-64">
                     <table className="text-sm w-full">
-                        <thead>
+                        <thead className="sticky top-0 bg-blue-50">
                             <tr className="text-left text-blue-800">
                                 <th className="pr-4 pb-1">Column</th>
                                 <th className="pr-4 pb-1">Required</th>
@@ -294,38 +375,65 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
                                 <tr key={col.key}>
                                     <td className="pr-4 py-0.5 font-medium">{col.label}</td>
                                     <td className="pr-4 py-0.5">{col.required ? '✓ Yes' : 'Optional'}</td>
-                                    <td className="py-0.5 text-blue-600">
-                                        {col.key === 'firstName' && 'John'}
-                                        {col.key === 'lastName' && 'Doe'}
-                                        {col.key === 'email' && 'john@example.com'}
-                                        {col.key === 'phone' && '555-123-4567'}
-                                        {col.key === 'jerseyNumber' && '12'}
-                                        {col.key === 'position' && 'Attack, Defense, Midfield, Goalie'}
-                                        {col.key === 'teamId' && 'team_id (or leave blank)'}
-                                        {col.key === 'role' && 'player, coach, admin'}
-                                    </td>
+                                    <td className="py-0.5 text-blue-600">{col.example}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
+                <div className="mt-3 text-xs text-blue-600">
+                    <strong>Position options:</strong> Attack, Midfield, Defense, Goalie, FOGO, LSM
+                </div>
             </div>
 
-            {/* Team Selection */}
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Default Team (for players without team specified)
+            {/* Import Settings */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Team Selection */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Default Team
+                    </label>
+                    <select
+                        value={selectedTeam}
+                        onChange={(e) => setSelectedTeam(e.target.value)}
+                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="">-- No default team --</option>
+                        {teams.map(team => (
+                            <option key={team.id} value={team.id}>{team.name}</option>
+                        ))}
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">Applied to players without a team in CSV</p>
+                </div>
+
+                {/* Default Password */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Default Password
+                    </label>
+                    <input
+                        type="text"
+                        value={defaultPassword}
+                        onChange={(e) => setDefaultPassword(e.target.value)}
+                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                        placeholder="Welcome123!"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Users will be prompted to change on first login</p>
+                </div>
+            </div>
+
+            {/* Welcome Email Option */}
+            <div className="flex items-center gap-2">
+                <input
+                    type="checkbox"
+                    id="sendWelcome"
+                    checked={sendWelcomeEmail}
+                    onChange={(e) => setSendWelcomeEmail(e.target.checked)}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label htmlFor="sendWelcome" className="text-sm text-gray-700">
+                    Send welcome email with login instructions and password reset link
                 </label>
-                <select
-                    value={selectedTeam}
-                    onChange={(e) => setSelectedTeam(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                    <option value="">-- No default team --</option>
-                    {teams.map(team => (
-                        <option key={team.id} value={team.id}>{team.name}</option>
-                    ))}
-                </select>
             </div>
 
             {/* File Upload */}
@@ -387,6 +495,7 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">Phone</th>
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">Jersey</th>
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">Position</th>
+                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">Size</th>
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">Status</th>
                                 </tr>
                             </thead>
@@ -401,6 +510,7 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
                                             <td className="px-3 py-2">{player.phone || '-'}</td>
                                             <td className="px-3 py-2">{player.jerseyNumber || '-'}</td>
                                             <td className="px-3 py-2">{player.position || '-'}</td>
+                                            <td className="px-3 py-2">{player.jerseySize || '-'}</td>
                                             <td className="px-3 py-2">
                                                 {rowError ? (
                                                     <span className="text-red-600 text-xs">
