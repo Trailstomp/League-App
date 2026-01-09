@@ -928,12 +928,26 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
         printWindow.print();
     };
 
-    // Download as PDF
-    const handleDownloadPDF = async () => {
+    // Download as PDF - now accepts optional statsByYear parameter
+    const handleDownloadPDF = async (playerStatsByYear = {}) => {
         const { jsPDF } = await import('jspdf');
         const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: [3.5, 5] });
         const teamColor = team?.style?.primaryColor || '#2563eb';
         const accentColor = team?.style?.accentColor || '#3b82f6';
+        
+        // If no statsByYear passed, try to fetch it
+        let statsByYear = playerStatsByYear;
+        if (Object.keys(statsByYear).length === 0 && selectedPlayer?.id) {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/players/${selectedPlayer.id}/stats-by-year`);
+                if (response.ok) {
+                    const data = await response.json();
+                    statsByYear = data.statsByYear || {};
+                }
+            } catch (e) {
+                console.error('Error fetching stats for PDF:', e);
+            }
+        }
         
         // Convert hex to RGB
         const hexToRgb = (hex) => {
