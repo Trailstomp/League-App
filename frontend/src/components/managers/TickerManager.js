@@ -159,6 +159,41 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
                                 How many days in the future to show events
                             </p>
                         </div>
+                        
+                        <div className="pt-2 border-t">
+                            <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50">
+                                <div className="flex items-center space-x-3">
+                                    <button
+                                        onClick={() => setTickerConfig(prev => ({
+                                            ...prev,
+                                            tickerShowCancelled: !prev.tickerShowCancelled
+                                        }))}
+                                        className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${
+                                            tickerConfig.tickerShowCancelled 
+                                                ? 'bg-red-600 text-white' 
+                                                : 'bg-slate-300 text-slate-600'
+                                        }`}
+                                    >
+                                        {tickerConfig.tickerShowCancelled ? '👁️' : '❌'}
+                                    </button>
+                                    <div>
+                                        <div className="font-medium text-slate-800">
+                                            Show Cancelled Events
+                                        </div>
+                                        <div className="text-xs text-slate-500">
+                                            Include cancelled/postponed events in the ticker
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={`px-2 py-1 rounded text-xs font-medium ${
+                                    tickerConfig.tickerShowCancelled 
+                                        ? 'bg-red-100 text-red-800' 
+                                        : 'bg-slate-200 text-slate-600'
+                                }`}>
+                                    {tickerConfig.tickerShowCancelled ? 'Showing' : 'Hidden'}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
