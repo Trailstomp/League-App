@@ -125,6 +125,7 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
             { id: 'manage-roster', label: 'Manage Roster', icon: 'admin', coachOnly: true },
             { id: 'recruiting', label: 'Recruiting', icon: 'add', coachOnly: true },
             { id: 'team-fees', label: 'Fees', icon: '💰', coachOnly: true },
+            { id: 'finance', label: 'Finance', icon: '📊', coachOnly: true },
         ] : []),
         { id: 'settings', label: 'Settings', icon: 'settings', adminOnly: true }
     ];
