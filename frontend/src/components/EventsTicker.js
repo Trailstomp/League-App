@@ -303,7 +303,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         const hasTeams = teamsArray.length >= 2 || (event.homeTeam && event.awayTeam);
         
         // Get team IDs - handle both string arrays and object arrays
-        // Also check scores object for team IDs
+        // Also check scores object for team IDs (which contain the actual game data)
         let homeTeamId = event.homeTeam || getTeamIdFromEntry(teamsArray[0]) || event.scores?.home_team?.id;
         let awayTeamId = event.awayTeam || getTeamIdFromEntry(teamsArray[1]) || event.scores?.away_team?.id;
         
@@ -311,11 +311,13 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         const scores = getScores(event);
         const hasScores = scores.home !== null || scores.away !== null;
         
-        // Determine if this is a game-type event
-        const isGame = event.type === 'game' || event.type === 'regular_game' || (hasTeams && homeTeamId && awayTeamId);
+        // Determine if this should display as a game card
+        // Show as game if: it's a game type, OR it has scores with teams (tournament finals, etc.)
+        const isGame = event.type === 'game' || event.type === 'regular_game' || 
+            (hasScores && homeTeamId && awayTeamId);
         
         // Game card layout (teams stacked with score)
-        if (isGame && hasTeams) {
+        if (isGame && (hasTeams || hasScores)) {
             return (
                 <div 
                     key={`${event.id}-${index}`}
