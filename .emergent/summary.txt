@@ -1,68 +1,73 @@
 <analysis>**original_problem_statement:**
 The user's high-level goal is to create a comprehensive league management portal.
 
-During this session, the user requested a wide range of features and fixes, culminating in the need for in-line player management on team rosters.
-- **UI/UX Polish:** Fix UI rendering issues like an overly wide database editor, a non-functional Add Player button, incorrect player card dimensions, and confusing spacing on the event ticker.
-- **Team & Player Management:**
-    - Fix a bug where players on multiple teams only appeared on one roster.
-    - Move the My Dashboard view into a tab on the team page for players/coaches.
-    - Implement a feature for users to set a default landing page/tab (e.g., their team's roster) by clicking a star icon.
-    - Update the player import tool to match the current data model, set a default password for new users, and send a password-reset link via email.
-- **Live Scoring Enhancements:**
-    - Replace dummy player data with real-time player rosters fetched from the backend.
-    - Add clickable player card popups so the scorekeeper can see player photos.
-    - Rework the scoring controls to have three distinct buttons: Shot-Miss, Shot-Save, and Shot-Goal.
-    - Add the ability to disable the shot clock.
-    - Redesign the page to include a view for the teams' YouTube channels.
-- **Bug Fixes & Admin:**
-    - Resolve an issue where team invites failed silently by making the backend return an error when SMTP fails.
-    - Address user login/permission issues in production by creating/updating admin accounts in the preview environment and temporarily lowering permissions to allow the user to self-elevate their role post-deployment.
-- **Latest Request:**
-    - Enable team admins and league admins to manage players (add, remove, edit) directly from the Roster tab on the team detail page.
-    - The user noted that older teams may have inconsistent data due to many updates and suggested they might need to start over.
+During this session, the user's requests focused on implementing core roster management, fixing long-standing bugs, and adding significant new features based on iterative feedback.
+
+**PRODUCT REQUIREMENTS:**
+-   **Roster Management:** Implement inline controls (add, edit, remove) for team admins and league admins to manage players directly on the public Roster tab of the team detail page.
+-   **Authentication Fix:** Address the critical and recurring issue of frontend authentication state loss, which causes frequent logouts and disrupts user experience and testing.
+-   **Player Card Enhancements:**
+    -   Fix the PDF download functionality to include both the front and back of the player card.
+    -   Add player statistics, broken down by year, to the back of the player card.
+    -   Fix player photos being cut off (specifically heads) on the player card display.
+-   **Event Ticker Overhaul:**
+    -   Fix the ticker to be in sync with events and correctly display scores for completed games.
+    -   Add a setting for admins to toggle the visibility of cancelled events.
+    -   Ensure team and event names in the ticker are hyperlinks that navigate to the correct pages.
+-   **Admin Settings Implementation:**
+    -   Implement the Social Media and Appearance tabs within the team settings, replacing the coming soon placeholders.
+    -   The Appearance tab should manage team colors, logos, and banners.
+-   **Image Upload & Processing:**
+    -   Add the ability to upload images for logos and banners.
+    -   Implement image cropping and resizing.
+    -   Add a feature to automatically apply colors from the team's logo to the team page's theme.
+-   **Documentation Creation:**
+    -   Create a comprehensive set of documentation, including a feature brochure, setup guide, and user-specific tip sheets (Admin, Coach, Player, etc.).
+    -   Integrate this documentation into the application via a new Help/Docs page that is viewable, printable, and downloadable.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a feature-rich league management portal. This session added significant functionality and polish:
--   **Live Scoring Overhaul:** The  component was completely reworked. It now fetches real player rosters, includes clickable player card popups, features three distinct shot-tracking buttons (Goal, Save, Miss), allows disabling the shot clock, and has a new layout that includes an embedded YouTube player section.
--   **Player & Team Roster Fixes:** The roster logic on  was corrected to properly display players who are assigned to multiple teams.
--   **Personalization:** A new feature allows logged-in users to click a star icon on any team page tab to set it as their default landing page upon login. This preference is saved to their user profile via a new backend endpoint.
--   **Improved Player Import:** The player import tool () was updated to include all new user fields. The backend () was enhanced to support setting a default password and generating a unique, token-based password reset link that is emailed to the newly created user. A corresponding  was created to handle this flow.
--   **Admin & User Management:** The agent successfully handled multiple requests to create and grant admin permissions to the user's account () for the production environment. This involved creating the user in the preview database and guiding the user to deploy. A temporary permission change was implemented as a workaround to solve a production access issue.
--   **Bug Fixes:** The team invite feature now correctly reports an error to the user if the backend SMTP sending fails. Various UI/UX issues like player card dimensions and event ticker spacing were also resolved.
+The application is a league management portal with newly added core features. The major accomplishments of this session were:
+-   **Roster Management:** A full-featured, inline roster management system was implemented on the . Team and league admins can now add, edit, and remove players directly from the team's public roster view. This includes new frontend modals and corresponding backend endpoints.
+-   **Authentication Fix Attempt:** An attempt was made to fix the persistent auth state loss by adding  hooks in  to re-synchronize the React state with  and listen for storage events.
+-   **Event Ticker Overhaul:** The event ticker was completely fixed. It now correctly fetches and displays scores, prioritizes sorting scored games first, filters cancelled events, and contains working hyperlinks for teams and events.
+-   **Player Card Enhancements:** The PDF download now generates both front and back pages. A new backend endpoint and UI component were created to display player stats grouped by year on the back of the card. The card's height was increased to provide more space for photos.
+-   **Admin Settings Implemented:** The Social Media and Appearance settings tabs in the team admin section were fully implemented with forms and save functionality, replacing the previous placeholders.
+-   **In-App Documentation Center:** A new  was created and integrated into the app's navigation. It displays all the  documentation files from a new  directory, complete with a sidebar for navigation, a search bar, and print/download functionality.
 
 **Last working item**:
--   **Last item agent was working on:** The agent was about to begin implementing the user's latest request: adding player management controls (add, remove, edit) to the Roster tab within . This functionality should only be visible to users with team admin or league admin roles.
--   **Status:** NOT STARTED
+-   **Last item agent was working on:** The agent was addressing the user's latest feedback, which included an image showing that player heads were still being cut off on the player cards. The agent had analyzed the provided image and was investigating the CSS () in  to fix the image positioning. This work also includes the user's request for image upload/crop functionality and fixing fields in the appearance tab.
+-   **Status:** IN PROGRESS
 -   **Agent Testing Done:** N
 -   **Which testing method agent to use?** Frontend testing agent
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Frontend Authentication State Loss (P0)**
-    -   **Description:** A critical and recurring issue where the user's session is frequently lost upon navigation, especially during automated testing. This forces re-logins and makes testing multi-step features extremely difficult. The agent and testing subagent encountered this repeatedly.
-    -   **Attempted fixes:** None. The agent only worked around it.
+-   **Issue 1: Player Card Image Display and Functionality (P0)**
+    -   **Description:** The user has reported that player photos are still being cropped incorrectly, cutting off heads. This is the current highest-priority bug. The user also requested image upload/crop functionality and a feature to extract colors from the logo for the team's theme.
+    -   **Attempted fixes:** The agent previously increased the card height and added , but this was insufficient.
     -   **Next debug checklist:**
-        1.  Review , , and any context providers to understand how the auth token and user state are stored and managed (e.g., localStorage, sessionStorage, React Context).
-        2.  Inspect network requests in the browser's developer tools to ensure the Authorization header is being sent correctly on every API call.
-        3.  Check for any logic that might be unintentionally clearing state on page reloads or route changes.
-    -   **Why fix this issue and what will be achieved with the fix?** A stable session is fundamental for application usability and is a prerequisite for reliable testing.
-    -   **Status:** NOT STARTED
+        1.  In , modify the CSS for the player image container. Replace  with  or adjust the parent  height and use different background-positioning properties to ensure the entire head is visible.
+        2.  Investigate and implement a file upload component for the Appearance tab.
+        3.  Use a library like  to add cropping functionality.
+        4.  Research a client-side library to extract dominant colors from the uploaded logo image.
+    -   **Why fix this issue and what will be achieved with the fix?** Fixing the visual bug is critical for UI polish. Implementing image uploads is a core requirement for team customization.
+    -   **Status:** IN PROGRESS
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** frontend
     -   **Blocked on other issue:** None.
--   **Issue 2: Inconsistent Data for Older Teams (P1)**
-    -   **Description:** The user mentioned that older teams have issues with stats and settings, likely due to schema changes over many iterations. They suggested needing to start over with those teams.
-    -   **Attempted fixes:** None.
+-   **Issue 2: Frontend Authentication State Loss (P1)**
+    -   **Description:** A recurring critical issue where the user's session is lost upon navigation or after a short period. An attempt was made to fix this, but its effectiveness is unconfirmed.
+    -   **Attempted fixes:** Added  hooks in  to resync state with  and a  event listener. The linter flagged this pattern, and it was refactored, but the core issue might persist.
     -   **Next debug checklist:**
-        1.  Examine the database schema for an old team vs. a new team to identify discrepancies.
-        2.  Consider creating a Reset Team Stats or Migrate Team Data function that an admin can trigger.
-        3.  When implementing roster management, ensure the code is robust enough to handle missing fields in older team/player documents.
-    -   **Why fix this issue and what will be achieved with the fix?** This will ensure all features work consistently for all teams, regardless of when they were created.
-    -   **Status:** NOT STARTED
+        1.  Thoroughly test multi-page navigation after logging in to see if the session drops.
+        2.  Use the browser's developer tools to monitor  and see if the  key is being cleared unexpectedly.
+        3.  Consider replacing the custom  state-based routing with a standard library like  for more stable session and state handling across the app.
+    -   **Why fix this issue and what will be achieved with the fix?** A stable session is fundamental for usability and is required for reliable testing of any multi-step feature.
+    -   **Status:** USER VERIFICATION PENDING
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** both
+    -   **Should Test frontend/backend/both after fix?** frontend
     -   **Blocked on other issue:** None.
 
 **In progress Task List**:
@@ -70,107 +75,101 @@ The application is a feature-rich league management portal. This session added s
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   **(P0) Roster Management on Team Page:** Add functionality to the Roster tab on  for team/league admins to add, edit, and remove players from their team.
-    -   **(P1) Refactor :** This monolithic file is a major source of technical debt and needs to be broken down into feature-based  files (e.g., , , ).
+    -   **(P0) Image Upload and Processing:** Implement file uploads with crop/resize for team logos and banners in the Appearance tab.
+    -   **(P1) Use Logo Colors Feature:** Add functionality to extract colors from a team's logo and apply them as a theme on the team page.
+    -   **(P1) Refactor :** This component is excessively large. The nested  and other tab content should be extracted into their own separate components to improve readability and maintainability.
 -   **Future Tasks:**
-    -   Refactor large frontend components like  and  to extract complex logic (modals, tabs) into their own dedicated components.
-    -   Complete the full reorganization of all coach-level tools into the  tabs.
+    -   **(P2) Refactor :** Break down the monolithic  into feature-based  files (e.g., , , ) to improve backend organization.
+    -   Integrate a dedicated routing library like .
 
 **Completed work in this session**
--   **Live Scoring Overhaul:** Completely reworked the  component with real player data, clickable popups, new shot buttons, a shot clock toggle, and a YouTube feed section.
--   **Multi-Team Roster Fix:** Corrected the logic in  to ensure players on multiple teams appear on each team's roster.
--   **Default Landing Page:** Implemented a feature for users to set a preferred landing tab via a star icon (, , ).
--   **Player Importer & Password Reset:** Updated the import tool () and backend () to support default passwords and send token-based reset links, and created a new .
--   **Dashboard Relocation:** Moved the  to a My Dashboard tab on the team detail page for players/coaches.
--   **Admin Account Management:** Resolved user's production login issues by creating and configuring their admin account in the preview environment for deployment.
--   **SMTP Invite Fix:** The backend now returns a proper error if an email invite fails to send due to SMTP issues.
--   **UI/UX Polish:** Fixed player card dimensions, event ticker spacing, and removed a dead button on the team page.
--   **Security Workaround:** Temporarily modified  to allow the user to self-elevate permissions in production, then reverted the changes.
+-   **Roster Management Implemented (DONE):** Added controls for admins to add, edit, and remove players in . Verified with the testing agent.
+-   **In-App Documentation System (DONE):** Created a new  directory with multiple guides and a new  to view, search, print, and download them.
+-   **Event Ticker Fixed (DONE):** Corrected score display, added hyperlinks, implemented show cancelled setting, and improved sorting to show scored games first.
+-   **Player Card PDF and Stats (DONE):** Fixed PDF download to include front/back pages and added a new stats by year feature to the card's back.
+-   **Admin Settings Implemented (DONE):** Replaced coming soon placeholders with functional forms for Social Media and Appearance settings for teams.
+-   **Auth State Loss (ATTEMPTED FIX):** Implemented a potential fix in  to make authentication state more resilient.
+-   **Player Card Height (DONE):** Increased the height of player cards in  to better accommodate photos.
 
 **Earlier issues found/mentioned but not fixed**
--   The critical Frontend Authentication State Loss issue remains unresolved and significantly impacts development and testing efficiency.
+-   The critical need to refactor  and  remains unaddressed and continues to accumulate technical debt.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** Frontend Authentication State Loss.
--   **Recurrence count:** High (occurred frequently during this session).
--   **Status:** NOT STARTED.
--   **Note:** This is the highest priority underlying technical issue. It makes verifying new features difficult and unreliable.
+-   **Recurrence count:** High.
+-   **Status:** USER VERIFICATION PENDING. A fix was implemented in this session, but it has not been confirmed as a permanent solution.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Token-Based Password Reset:** Implemented a secure flow where a unique token is generated, stored, and emailed to a user, allowing them to set their password on a dedicated page.
--   **Dynamic UI based on User Role:** Enhanced multiple components () to conditionally render administrative features (like the future player management tools) based on the 's roles.
--   **Complex Component State Management:** The  component was refactored to manage complex game state, including live stats, player rosters fetched asynchronously, and UI state for popups and toggles.
--   **User-Specific Application State:** Implemented functionality to save a user's UI preference () to the backend and use it to control the application's initial state after login.
+-   **Inline Roster Management:** Added CRUD controls directly within a displayed list of items, conditionally rendered based on user roles ().
+-   **Dynamic PDF Generation:** Used  to generate multi-page PDFs from React component data, including both front and back sides of a player card with dynamic stats.
+-   **Backend Aggregation:** Created a new MongoDB aggregation pipeline in  to group player game stats by year.
+-   **Complex Component Logic:** The  component was refactored with complex sorting logic to prioritize scored/recent games and dynamic rendering based on event type.
+-   **In-App Document Viewer:** Built a React component () that dynamically fetches, parses (using ), and renders a directory of Markdown files, providing a full help-desk experience.
 
 **key DB schema**
--   ** (modified):**
-    -   : Stores the user's preferred landing page URL fragment (e.g., 'team/lions_01/roster').
-    -   : A temporary, secure token for password resets.
-    -   : The expiration timestamp for the .
-
-**changes in tech stack**
--   None.
+-   ** (utilized):** The  and  fields were used to store data from the newly implemented settings tabs.
+-   ** (utilized):** The  array was modified by the new roster management endpoints.
+-   ** (utilized):** This collection is now read by the new  endpoint to generate historical stats.
 
 **All files of reference**
--   **/app/backend/server.py**: Main backend file, heavily modified.
--   **/app/frontend/src/scheduling/components/EnhancedScoring.js**: Core file for the live scoring feature, completely overhauled.
--   **/app/frontend/src/pages/TeamDetailPage.js**: Central hub for team-related views, heavily modified.
--   **/app/frontend/src/components/managers/PlayerImporter.js**: The UI for bulk-importing players.
--   **/app/frontend/src/pages/PasswordResetPage.js**: New page for the password reset flow.
--   **/app/frontend/src/App.js**: Top-level component managing routing and authentication state.
--   **/app/frontend/src/components/PermissionsSystem.js**: Defines role-based access control.
+-   **/app/backend/server.py**: Main backend file, modified for new roster and stats endpoints.
+-   **/app/frontend/src/pages/TeamDetailPage.js**: The most heavily modified frontend file, containing logic for roster management, player cards, and team settings.
+-   **/app/frontend/src/components/EventsTicker.js**: Core of the event ticker, completely reworked.
+-   **/app/frontend/src/pages/HelpPage.js**: New component for the documentation center.
+-   **/app/frontend/src/App.js**: Modified for routing and the authentication fix.
+-   **/app/docs/**: New directory containing all user documentation.
 
 **Areas that need refactoring**:
--   ****: CRITICAL. This monolithic file makes finding and debugging backend logic difficult. It must be broken into feature-based routers.
--   ****: This component is becoming a second monolith on the frontend. The tab content (Roster, Stats, Settings, etc.) should be extracted into separate, self-contained components.
--   ****: While recently rewritten, its sub-sections (YouTube viewer, team stat blocks, player roster) could be broken out into smaller components to improve readability.
+-   ****: CRITICAL. This file is now extremely large and complex. The Roster tab, the various settings forms, and the nested  component must be extracted into their own files to be manageable.
+-   ****: CRITICAL. Still a monolithic file. The addition of new endpoints further justifies breaking it into feature-based routers (e.g., , ).
 
 **key api endpoints**
--   ****: Saves a user's preferred landing page preference.
--   ****: Endpoint used by the player importer, updated to handle sending password reset links.
--   ****: New endpoint that validates a reset token and sets a new password.
--   : Existing endpoint, logic was updated to return a user-facing error if SMTP sending fails.
--   : Used to update user data, such as changing roles.
+-   ****: Adds an existing user to a team's roster.
+-   ****: Updates a player's details on a team (e.g., jersey number).
+-   ****: Removes a player from a team's roster.
+-   ****: New endpoint to get a player's game stats aggregated by year.
+-   ****: Existing endpoint used to save social media and appearance settings.
 
 **Critical Info for New Agent**
--   **User's Top Priority:** The immediate next task is to build the player management UI (add/edit/remove players) on the Roster tab of the , visible only to team/league admins.
--   **Frontend Auth is Unstable:** This is the most significant technical blocker. Expect to lose your session during testing. Fixing this should be a high-priority background task, as it wastes time and makes testing unreliable.
--   **Old Team Data May Be Inconsistent:** The user has reported that older teams are not working correctly with new features. When building the new roster management tools, be mindful of this. Your code should gracefully handle potentially missing data fields in older database documents. Proposing a data migration or reset strategy would be valuable.
--   **Gmail Requires an App Password:** The root cause of failing email invites was the use of a regular account password for Gmail's SMTP server. The user needs to generate and configure a 16-character App Password for SMTP to work.
+-   **Top Priority:** The user's most recent feedback must be addressed first: fix the player card photo cropping, implement image upload/crop in the Appearance tab, and add the use logo colors feature.
+-   **Auth Fix is Unverified:** The implemented fix for the authentication state loss is a patch. Be prepared for it to fail and investigate a more robust solution, possibly involving .
+-   **Technical Debt in :** The file is very difficult to work with. When working on the image upload feature in the Appearance tab, take the opportunity to extract the settings-related components into their own files.
+-   **Testing Flakiness:** The agent encountered significant flakiness with automated navigation during screenshot tests. This is likely related to the auth issue or the custom routing logic. Be prepared to use direct navigation URLs or more robust selectors in tests.
 
 **documents and test reports created in this job**
--   : Updated with notes for testing various new features.
+-   **/app/docs/**: A new directory containing a full suite of user documentation in markdown format (, , etc.).
+-   **/app/memory/PRD.md**: Created and updated with project requirements and progress.
+-   **/app/test_reports/iteration_1.json**: Test report from the testing agent for the roster management feature.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Requests admin login credentials as they are locked out of production. - **Status: DONE**. Agent provided credentials and a workaround.
-2.  **User:** Asks for their  account to be made admin. - **Status: DONE**. Agent created the account in preview for deployment.
-3.  **User:** Reports login still not working in prod and suggests a workaround: lower player permissions to allow them to self-elevate their role. - **Status: DONE**. Agent implemented the temporary permission change.
-4.  **User:** Confirms they are done elevating their role and asks for security to be reset. Reports new issues: player on two teams only shows on one roster, and live scoring has imaginary players. - **Status: DONE**. Agent reset security and fixed both roster issues.
-5.  **User:** Asks for an update to the player import document and the ability to set a default password and send a password reset link. - **Status: DONE**. Agent implemented this entire feature.
-6.  **User:** Asks if the live scoring dummy data issue was already fixed. - **Status: DONE**. Agent confirmed the fix was in place.
-7.  **User:** Requests adding a small, clickable player card/icon to the live scoring roster for visual identification. - **Status: DONE**. Agent added player photo popups.
-8.  **User:** Requests a major rework of the live scoring page: add YouTube feeds, change the Shot button to three distinct buttons (Miss, Save, Goal), and add an option to disable the shot clock. - **Status: DONE**. Agent completed the entire rework.
-9.  **User:** Requests the ability for team admins to manage their roster (add/remove/edit players) directly on the roster tab. - **Status: PENDING**. This is the current highest-priority task.
-10. **User:** (Part of the same message) Mentions that older teams have data issues and suggests they may need to be recreated to work with the current environment. - **Status: PENDING**. This is a new, high-priority issue to investigate.
+1.  **User:** Requests fix for player card PDF download (only prints back) and wants yearly stats added. - **Status: DONE**.
+2.  **User:** Reports event ticker is out of sync, needs a show cancelled filter, and isn't showing scores or linking to teams/events. - **Status: DONE**.
+3.  **User:** Reports player cards are too short, cutting off heads. - **Status: PARTIALLY DONE**. Height was increased, but cropping issue remains.
+4.  **User:** Requests implementation of the placeholder social media and style settings for team admins. - **Status: DONE**.
+5.  **User:** Asks for the creation of a feature brochure and user-specific tip sheets/guides. - **Status: DONE**.
+6.  **User:** Asks where to find the newly created documentation. - **Status: DONE**. Agent explained the location.
+7.  **User:** Likes the documentation and requests it be integrated into the app as a viewable/printable Help/Docs page. - **Status: DONE**.
+8.  **User:** Provides an image showing the player card photo is still bad, reports the appearance tab has incorrect fields, and requests image upload/crop functionality plus a use logo colors feature. - **Status: PENDING / IN PROGRESS**. This is the current task.
 
 **Project Health Check:**
--   **Broken:** Frontend authentication state management is highly unreliable.
+-   **Broken:**
+    -   Player card image cropping is visually broken.
+    -   Frontend authentication state management is unreliable and may still be broken despite attempted fixes.
 -   **Mocked:** None.
 
 **3rd Party Integrations**
--   **Twilio:** SMS notifications.
--   **SMTP (User-provided):** Email notifications. Currently misconfigured (requires Google App Password).
--   **YouTube:** UI for embedding YouTube feeds has been added to the live scoring page; backend logic to fetch team-specific channels may be needed.
--   **Stripe, PayPal, Google Drive, GroupMe:** Existing integrations.
+-   **jsPDF:** Used for generating player card PDFs.
+-   **react-markdown:** Used in the new  to render documentation.
+-   (Existing) Twilio, SMTP, YouTube, Stripe, PayPal, Google Drive, GroupMe.
 
 **Testing status**
--   **Testing agent used after significant changes:** YES, but its effectiveness was severely limited by the frontend authentication bug.
+-   **Testing agent used after significant changes:** YES. Used successfully to verify the roster management feature.
 -   **Troubleshoot agent used after agent stuck in loop:** NO.
 -   **Test files created:** None.
--   **Known regressions:** The recurring authentication issue can be considered a regression as it hinders all new development.
+-   **Known regressions:** The authentication state loss is a persistent regression that hinders development. Navigation was also observed to be flaky during automated screenshot tests.
 
 **Credentials to test flow:**
 -   **Email:** 
@@ -178,5 +177,5 @@ The application is a feature-rich league management portal. This session added s
 -   **Roles:** admin, league_admin, coach
 
 **What agent forgot to execute**
--   The agent never addressed the root cause of the **frontend authentication state loss**. This was a known issue from the previous handoff and persisted throughout this session, causing significant friction and unreliable testing.
--   The critical refactoring of the monolithic **** file remains pending.</analysis>
+-   The agent did not address the user's request to use logo colors to apply them to the teams pages from the last message; this should be added to the upcoming tasks.
+-   The agent did not fix the linter warnings related to defining a component () inside a render function in , which is a known source of performance issues and bugs in React. This should be part of the component refactoring.</analysis>
