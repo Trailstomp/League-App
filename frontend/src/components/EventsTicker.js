@@ -61,6 +61,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         // Get admin filter settings - much longer lookback for better visibility
         const lookBackDays = websiteStyle?.tickerLookBack || 365; // Default 1 year lookback
         const lookForwardDays = websiteStyle?.tickerLookForward || 365; // Default 1 year forward
+        const showCancelled = websiteStyle?.tickerShowCancelled ?? false; // Default hide cancelled
         const eventFilters = websiteStyle?.tickerFilters || {
             games: true,
             tournaments: true,
@@ -78,6 +79,12 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         lookForwardDate.setDate(today.getDate() + lookForwardDays);
 
         const filteredEvents = uniqueEvents.filter(event => {
+            // Filter out cancelled events unless showCancelled is true
+            const status = event.status?.toLowerCase();
+            if (!showCancelled && (status === 'cancelled' || status === 'canceled')) {
+                return false;
+            }
+            
             // Include events without dates (placeholder events)
             const eventDate = event.date ? new Date(event.date) : null;
             let inDateRange = true;
@@ -128,12 +135,13 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
             filtered: filteredEvents.length,
             lookBackDays,
             lookForwardDays,
+            showCancelled,
             activeFilters: Object.entries(eventFilters).filter(([_, enabled]) => enabled).map(([type]) => type),
-            sampleEvents: filteredEvents.slice(0, 3).map(e => ({ title: e.title, type: e.type, date: e.date }))
+            sampleEvents: filteredEvents.slice(0, 3).map(e => ({ title: e.title, type: e.type, date: e.date, status: e.status }))
         });
 
         return filteredEvents;
-    }, [websiteStyle?.tickerLookBack, websiteStyle?.tickerLookForward, websiteStyle?.tickerFilters]);
+    }, [websiteStyle?.tickerLookBack, websiteStyle?.tickerLookForward, websiteStyle?.tickerFilters, websiteStyle?.tickerShowCancelled]);
     
     const tickerEvents = applyTickerFilters(events);
 
@@ -213,10 +221,43 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
             'completed': { label: 'FINAL', bg: 'bg-slate-600', text: 'text-white' },
             'postponed': { label: 'POSTPONED', bg: 'bg-orange-600', text: 'text-white' },
             'cancelled': { label: 'CANCELLED', bg: 'bg-red-800', text: 'text-white' },
+            'canceled': { label: 'CANCELLED', bg: 'bg-red-800', text: 'text-white' },
             'scheduled': { label: 'UPCOMING', bg: 'bg-blue-600', text: 'text-white' },
-            'upcoming': { label: 'UPCOMING', bg: 'bg-blue-600', text: 'text-white' }
+            'upcoming': { label: 'UPCOMING', bg: 'bg-blue-600', text: 'text-white' },
+            'archived': { label: 'PAST', bg: 'bg-slate-500', text: 'text-white' }
         };
         return styles[status?.toLowerCase()] || styles['scheduled'];
+    };
+    
+    // Extract scores from event - handles various data formats
+    const getScores = (event) => {
+        // Try direct scores first (simple format)
+        if (event.homeScore !== undefined && event.homeScore !== null) {
+            return { home: event.homeScore, away: event.awayScore };
+        }
+        
+        // Try nested scores object with home/away
+        if (event.scores?.home !== undefined) {
+            return { home: event.scores.home, away: event.scores.away };
+        }
+        
+        // Try nested scores object with home_team/away_team (from live scoring)
+        if (event.scores?.home_team?.score !== undefined) {
+            return { 
+                home: event.scores.home_team.score, 
+                away: event.scores.away_team?.score 
+            };
+        }
+        
+        // Try gameStats if available
+        if (event.gameStats?.home_team?.goals_for !== undefined) {
+            return {
+                home: event.gameStats.home_team.goals_for,
+                away: event.gameStats.away_team?.goals_for
+            };
+        }
+        
+        return { home: null, away: null };
     };
 
     // Don't render if no events
@@ -236,6 +277,14 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         );
     }
 
+    // Handle team click - navigates to team page
+    const handleTeamClick = (e, teamId) => {
+        e.stopPropagation(); // Don't trigger event click
+        if (onTeamClick && teamId) {
+            onTeamClick(teamId);
+        }
+    };
+
     // Render individual event item - New design with status at top, teams stacked, score on right
     const renderEventItem = (event, index) => {
         const typeStyle = getEventTypeStyle(event.type);
@@ -254,13 +303,13 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         const hasTeams = teamsArray.length >= 2 || (event.homeTeam && event.awayTeam);
         
         // Get team IDs - handle both string arrays and object arrays
-        const homeTeamId = event.homeTeam || getTeamIdFromEntry(teamsArray[0]);
-        const awayTeamId = event.awayTeam || getTeamIdFromEntry(teamsArray[1]);
+        // Also check scores object for team IDs
+        let homeTeamId = event.homeTeam || getTeamIdFromEntry(teamsArray[0]) || event.scores?.home_team?.id;
+        let awayTeamId = event.awayTeam || getTeamIdFromEntry(teamsArray[1]) || event.scores?.away_team?.id;
         
-        // Get scores
-        const homeScore = event.scores?.home ?? event.homeScore ?? null;
-        const awayScore = event.scores?.away ?? event.awayScore ?? null;
-        const hasScores = homeScore !== null || awayScore !== null;
+        // Get scores using the helper function
+        const scores = getScores(event);
+        const hasScores = scores.home !== null || scores.away !== null;
         
         // Determine if this is a game-type event
         const isGame = event.type === 'game' || event.type === 'regular_game' || (hasTeams && homeTeamId && awayTeamId);
@@ -273,6 +322,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
                     className="flex flex-col bg-slate-800/50 rounded-lg cursor-pointer hover:bg-slate-700/50 transition-colors flex-shrink-0 overflow-hidden"
                     onClick={() => onEventClick && onEventClick(event)}
                     style={{ minWidth: '200px', maxWidth: '240px' }}
+                    data-testid={`ticker-event-${event.id}`}
                 >
                     {/* Status bar at top */}
                     <div className={`px-3 py-1 flex items-center justify-between ${statusStyle.bg} ${statusStyle.text}`}>
@@ -288,8 +338,12 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
                     <div className="px-3 py-2 flex items-center justify-between">
                         {/* Teams stacked vertically */}
                         <div className="flex flex-col space-y-1 flex-1 min-w-0">
-                            {/* Home/Away Team 1 */}
-                            <div className="flex items-center space-x-2">
+                            {/* Home Team */}
+                            <div 
+                                className="flex items-center space-x-2 hover:bg-slate-700/50 rounded px-1 -mx-1 cursor-pointer"
+                                onClick={(e) => handleTeamClick(e, homeTeamId)}
+                                title={`View ${getTeamName(homeTeamId)}`}
+                            >
                                 {getTeamLogo(homeTeamId) ? (
                                     <img 
                                         src={getTeamLogo(homeTeamId)}
@@ -302,13 +356,17 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
                                         {getTeamName(homeTeamId)?.charAt(0) || '?'}
                                     </div>
                                 )}
-                                <span className="text-white text-sm truncate">
+                                <span className="text-white text-sm truncate hover:underline">
                                     {getTeamName(homeTeamId)}
                                 </span>
                             </div>
                             
-                            {/* Away Team 2 */}
-                            <div className="flex items-center space-x-2">
+                            {/* Away Team */}
+                            <div 
+                                className="flex items-center space-x-2 hover:bg-slate-700/50 rounded px-1 -mx-1 cursor-pointer"
+                                onClick={(e) => handleTeamClick(e, awayTeamId)}
+                                title={`View ${getTeamName(awayTeamId)}`}
+                            >
                                 {getTeamLogo(awayTeamId) ? (
                                     <img 
                                         src={getTeamLogo(awayTeamId)}
@@ -321,7 +379,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
                                         {getTeamName(awayTeamId)?.charAt(0) || '?'}
                                     </div>
                                 )}
-                                <span className="text-white text-sm truncate">
+                                <span className="text-white text-sm truncate hover:underline">
                                     {getTeamName(awayTeamId)}
                                 </span>
                             </div>
@@ -331,10 +389,10 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
                         {hasScores && (
                             <div className="flex flex-col items-center ml-3 flex-shrink-0">
                                 <span className="text-white font-bold text-lg leading-tight">
-                                    {homeScore ?? '-'}
+                                    {scores.home ?? '-'}
                                 </span>
                                 <span className="text-white font-bold text-lg leading-tight">
-                                    {awayScore ?? '-'}
+                                    {scores.away ?? '-'}
                                 </span>
                             </div>
                         )}
@@ -358,6 +416,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
                 className="flex flex-col bg-slate-800/50 rounded-lg cursor-pointer hover:bg-slate-700/50 transition-colors flex-shrink-0 overflow-hidden"
                 onClick={() => onEventClick && onEventClick(event)}
                 style={{ minWidth: '200px', maxWidth: '260px' }}
+                data-testid={`ticker-event-${event.id}`}
             >
                 {/* Type badge at top */}
                 <div className={`px-3 py-1 flex items-center justify-between ${typeStyle.bg}`}>
