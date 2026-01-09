@@ -2094,6 +2094,7 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
     const [activeSection, setActiveSection] = useState('youtube');
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState('');
+    const [extractingColors, setExtractingColors] = useState(false);
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
     
     // Social Media State
