@@ -1085,16 +1085,16 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
         }
         
         // Stats by Year (if available)
-        if (selectedPlayer.statsByYear && Object.keys(selectedPlayer.statsByYear).length > 0) {
+        if (statsByYear && Object.keys(statsByYear).length > 0) {
             pdf.setTextColor(80, 80, 80);
             pdf.setFontSize(8);
             pdf.setFont(undefined, 'bold');
             pdf.text('CAREER STATS BY YEAR', 0.3, yPos + 0.1);
             yPos += 0.25;
             
-            const years = Object.keys(selectedPlayer.statsByYear).sort().reverse();
+            const years = Object.keys(statsByYear).sort().reverse();
             for (const year of years.slice(0, 4)) { // Show max 4 years
-                const yearStats = selectedPlayer.statsByYear[year];
+                const yearStats = statsByYear[year];
                 pdf.setTextColor(teamRgb.r, teamRgb.g, teamRgb.b);
                 pdf.setFontSize(9);
                 pdf.setFont(undefined, 'bold');
