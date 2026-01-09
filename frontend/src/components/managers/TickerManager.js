@@ -7,6 +7,9 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
         tickerLookBack: websiteStyle?.tickerLookBack || 7,
         tickerLookForward: websiteStyle?.tickerLookForward || 120,
         
+        // Show cancelled events
+        tickerShowCancelled: websiteStyle?.tickerShowCancelled || false,
+        
         // Event type filters
         tickerFilters: websiteStyle?.tickerFilters || {
             games: true,
