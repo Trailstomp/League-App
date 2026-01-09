@@ -556,6 +556,8 @@ function App() {
         );
       case 'quick-rsvp':
         return <QuickRSVPForm />;
+      case 'password-reset':
+        return <PasswordResetPage onComplete={() => setCurrentPage('home')} />;
       case 'player-dashboard':
         return <PlayerDashboardPage currentUser={currentUser} />;
       case 'payment-success':
