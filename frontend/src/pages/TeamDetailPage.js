@@ -1266,10 +1266,36 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
 
     return (
         <div className="space-y-4 sm:space-y-6">
-            <div className="flex justify-between items-center">
+            {/* Message Toast */}
+            {message && (
+                <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
+                    message.startsWith('✅') ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                }`}>
+                    {message}
+                </div>
+            )}
+            
+            <div className="flex justify-between items-center flex-wrap gap-2">
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-800">Team Roster</h2>
-                <div className="text-sm text-slate-500">
-                    {loading ? 'Loading...' : `${teamPlayers.length} player${teamPlayers.length !== 1 ? 's' : ''}`}
+                <div className="flex items-center gap-3">
+                    <div className="text-sm text-slate-500">
+                        {loading ? 'Loading...' : `${teamPlayers.length} player${teamPlayers.length !== 1 ? 's' : ''}`}
+                    </div>
+                    {isTeamAdmin && (
+                        <button
+                            onClick={() => {
+                                fetchAvailableUsers();
+                                setShowAddModal(true);
+                            }}
+                            data-testid="add-player-btn"
+                            className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add Player
+                        </button>
+                    )}
                 </div>
             </div>
             
@@ -1289,6 +1315,32 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
                             }}
                             onClick={() => openPlayerCard(player)}
                         >
+                            {/* Admin Action Buttons - Top Right Corner */}
+                            {isTeamAdmin && (
+                                <div className="absolute top-10 right-1 z-10 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                        onClick={(e) => openEditModal(player, e)}
+                                        data-testid={`edit-player-${player.id}`}
+                                        className="p-1.5 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition-colors"
+                                        title="Edit player"
+                                    >
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </button>
+                                    <button
+                                        onClick={(e) => handleRemovePlayer(player.id, e)}
+                                        data-testid={`remove-player-${player.id}`}
+                                        className="p-1.5 bg-red-500 text-white rounded-full shadow-md hover:bg-red-600 transition-colors"
+                                        title="Remove from team"
+                                    >
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
+                            
                             {/* Card Header */}
                             <div 
                                 className="h-2 w-full"
@@ -1373,9 +1425,18 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
                     <LacrosseIcon name="teams" style={{fontSize: '48px'}} className="mx-auto mb-4" />
                     <h3 className="text-base sm:text-lg font-medium mb-2">No players registered</h3>
                     <p className="text-sm mb-4">Start building your team by adding players to the roster</p>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                        Add First Player
-                    </button>
+                    {isTeamAdmin && (
+                        <button 
+                            onClick={() => {
+                                fetchAvailableUsers();
+                                setShowAddModal(true);
+                            }}
+                            data-testid="add-first-player-btn"
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        >
+                            Add First Player
+                        </button>
+                    )}
                 </div>
             )}
 
@@ -1390,6 +1451,158 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
                     onPrint={handlePrint}
                     onDownload={handleDownloadPDF}
                 />
+            )}
+            
+            {/* Add Player Modal */}
+            {showAddModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowAddModal(false)}>
+                    <div className="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+                        <div className="p-4 border-b bg-slate-50 flex justify-between items-center">
+                            <h3 className="font-bold text-lg text-slate-800">Add Player to Team</h3>
+                            <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div className="p-4">
+                            <input
+                                type="text"
+                                placeholder="Search by name or email..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full p-3 border rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                data-testid="search-players-input"
+                            />
+                            
+                            <div className="max-h-[50vh] overflow-y-auto space-y-2">
+                                {availableUsers
+                                    .filter(u => 
+                                        u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                        u.email?.toLowerCase().includes(searchTerm.toLowerCase())
+                                    )
+                                    .map(user => (
+                                        <div 
+                                            key={user.id}
+                                            className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                                                    {user.name?.charAt(0) || '?'}
+                                                </div>
+                                                <div>
+                                                    <div className="font-medium text-slate-800">{user.name}</div>
+                                                    <div className="text-sm text-slate-500">{user.email}</div>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => handleAddPlayer(user.id)}
+                                                disabled={actionLoading}
+                                                data-testid={`add-user-${user.id}`}
+                                                className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+                                            >
+                                                {actionLoading ? '...' : 'Add'}
+                                            </button>
+                                        </div>
+                                    ))
+                                }
+                                
+                                {availableUsers.length === 0 && (
+                                    <div className="text-center py-8 text-slate-500">
+                                        <p>No available users to add.</p>
+                                        <p className="text-sm mt-1">Create new users in the Admin Portal first.</p>
+                                    </div>
+                                )}
+                                
+                                {availableUsers.length > 0 && availableUsers.filter(u => 
+                                    u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    u.email?.toLowerCase().includes(searchTerm.toLowerCase())
+                                ).length === 0 && (
+                                    <div className="text-center py-8 text-slate-500">
+                                        No users match your search.
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            {/* Edit Player Modal */}
+            {showEditModal && editingPlayer && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowEditModal(false)}>
+                    <div className="bg-white rounded-xl shadow-xl max-w-md w-full" onClick={e => e.stopPropagation()}>
+                        <div className="p-4 border-b bg-slate-50 flex justify-between items-center">
+                            <h3 className="font-bold text-lg text-slate-800">Edit Player</h3>
+                            <button onClick={() => setShowEditModal(false)} className="text-slate-400 hover:text-slate-600">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <form onSubmit={handleEditPlayer} className="p-4 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Player Name</label>
+                                <input
+                                    type="text"
+                                    value={editingPlayer.name}
+                                    disabled
+                                    className="w-full p-3 border rounded-lg bg-slate-100 text-slate-500"
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Jersey Number</label>
+                                <input
+                                    type="text"
+                                    value={editingPlayer.jerseyNumber}
+                                    onChange={(e) => setEditingPlayer({...editingPlayer, jerseyNumber: e.target.value})}
+                                    placeholder="Enter jersey number"
+                                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    data-testid="edit-jersey-number"
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Position</label>
+                                <select
+                                    value={editingPlayer.position}
+                                    onChange={(e) => setEditingPlayer({...editingPlayer, position: e.target.value})}
+                                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    data-testid="edit-position"
+                                >
+                                    <option value="">Select position</option>
+                                    <option value="Attack">Attack</option>
+                                    <option value="Midfield">Midfield</option>
+                                    <option value="Defense">Defense</option>
+                                    <option value="Goalie">Goalie</option>
+                                    <option value="FOGO">FOGO</option>
+                                    <option value="LSM">LSM</option>
+                                </select>
+                            </div>
+                            
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowEditModal(false)}
+                                    className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={actionLoading}
+                                    data-testid="save-player-btn"
+                                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                >
+                                    {actionLoading ? 'Saving...' : 'Save Changes'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             )}
         </div>
     );
