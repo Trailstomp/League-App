@@ -572,6 +572,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <YouTubeSettings onSave={() => console.log('YouTube settings saved')} />;
             case 'fees':
                 return <FeeManager teams={teams} players={players} currentUser={currentUser} scope="league" />;
+            case 'league-finance':
+                return <LeagueFinanceManager teams={teams} currentUser={currentUser} />;
             case 'website':
                 return <WebsiteDesignManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} teams={teams} events={events} />;
             case 'seasons':
