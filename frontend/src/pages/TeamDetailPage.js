@@ -2527,42 +2527,92 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                         
                         {/* Logo & Banner Section */}
                         <div className="border rounded-lg p-4">
-                            <h4 className="font-medium text-slate-800 mb-4">🖼️ Logo & Banner</h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="flex items-center justify-between mb-4">
+                                <h4 className="font-medium text-slate-800">🖼️ Logo & Banner</h4>
+                                {teamStyle.logoUrl && (
+                                    <button
+                                        onClick={handleUseLogoColors}
+                                        disabled={extractingColors}
+                                        className="px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm rounded-lg hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 transition-all flex items-center gap-2"
+                                        title="Extract colors from logo and apply as team theme"
+                                    >
+                                        {extractingColors ? (
+                                            <>
+                                                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                                </svg>
+                                                Extracting...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                                                </svg>
+                                                Use Logo Colors
+                                            </>
+                                        )}
+                                    </button>
+                                )}
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Logo Upload */}
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Logo URL</label>
-                                    <input
-                                        type="url"
-                                        value={teamStyle.logoUrl}
-                                        onChange={(e) => setTeamStyle({...teamStyle, logoUrl: e.target.value})}
-                                        placeholder="https://... or Google Drive link"
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">Team Logo</label>
+                                    <ImageUploadCrop
+                                        currentImage={teamStyle.logoUrl ? fixGoogleDriveUrl(teamStyle.logoUrl) : ''}
+                                        onImageSelected={handleLogoUpload}
+                                        aspectRatio={1}
+                                        label="Upload Logo"
+                                        uploadType="team_logo"
+                                        maxSize={5}
+                                        circularCrop={false}
                                     />
-                                    {teamStyle.logoUrl && (
-                                        <div className="mt-2 p-2 bg-slate-100 rounded flex items-center justify-center">
-                                            <img src={fixGoogleDriveUrl(teamStyle.logoUrl)} alt="Logo preview" className="max-h-16 object-contain" onError={(e) => e.target.style.display='none'} />
-                                        </div>
-                                    )}
+                                    <p className="text-xs text-slate-500 mt-2">Square format recommended. Click to upload and crop.</p>
+                                    
+                                    {/* Alternative: URL input */}
+                                    <div className="mt-3">
+                                        <label className="text-xs text-slate-500">Or paste URL:</label>
+                                        <input
+                                            type="url"
+                                            value={teamStyle.logoUrl}
+                                            onChange={(e) => setTeamStyle({...teamStyle, logoUrl: e.target.value})}
+                                            placeholder="https://... or Google Drive link"
+                                            className="w-full px-2 py-1 border border-slate-200 rounded text-sm mt-1"
+                                        />
+                                    </div>
                                 </div>
                                 
+                                {/* Banner Upload */}
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Banner Image URL</label>
-                                    <input
-                                        type="url"
-                                        value={teamStyle.bannerUrl}
-                                        onChange={(e) => setTeamStyle({...teamStyle, bannerUrl: e.target.value})}
-                                        placeholder="https://... or Google Drive link"
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">Team Banner</label>
+                                    <ImageUploadCrop
+                                        currentImage={teamStyle.bannerUrl ? fixGoogleDriveUrl(teamStyle.bannerUrl) : ''}
+                                        onImageSelected={handleBannerUpload}
+                                        aspectRatio={16/9}
+                                        label="Upload Banner"
+                                        uploadType="team_banner"
+                                        maxSize={10}
+                                        circularCrop={false}
                                     />
-                                    {teamStyle.bannerUrl && (
-                                        <div className="mt-2 p-2 bg-slate-100 rounded">
-                                            <img src={fixGoogleDriveUrl(teamStyle.bannerUrl)} alt="Banner preview" className="max-h-20 w-full object-cover rounded" onError={(e) => e.target.style.display='none'} />
-                                        </div>
-                                    )}
+                                    <p className="text-xs text-slate-500 mt-2">Wide format (16:9) recommended. Click to upload and crop.</p>
+                                    
+                                    {/* Alternative: URL input */}
+                                    <div className="mt-3">
+                                        <label className="text-xs text-slate-500">Or paste URL:</label>
+                                        <input
+                                            type="url"
+                                            value={teamStyle.bannerUrl}
+                                            onChange={(e) => setTeamStyle({...teamStyle, bannerUrl: e.target.value})}
+                                            placeholder="https://... or Google Drive link"
+                                            className="w-full px-2 py-1 border border-slate-200 rounded text-sm mt-1"
+                                        />
+                                    </div>
                                 </div>
                                 
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Logo Opacity: {teamStyle.logoOpacity}</label>
+                                {/* Logo Opacity */}
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Logo Opacity: {(teamStyle.logoOpacity * 100).toFixed(0)}%</label>
                                     <input
                                         type="range"
                                         min="0"
@@ -2570,7 +2620,7 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                                         step="0.1"
                                         value={teamStyle.logoOpacity}
                                         onChange={(e) => setTeamStyle({...teamStyle, logoOpacity: parseFloat(e.target.value)})}
-                                        className="w-full"
+                                        className="w-full max-w-xs"
                                     />
                                 </div>
                             </div>
