@@ -1322,7 +1322,7 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
                             >
                                 {/* Header */}
                                 <div className="h-10 w-full flex items-center justify-center" style={{ background: `linear-gradient(90deg, ${teamColor} 0%, ${accentColor} 100%)` }}>
-                                    <span className="text-white font-bold text-sm tracking-wide">Player Bio</span>
+                                    <span className="text-white font-bold text-sm tracking-wide">Player Bio & Stats</span>
                                 </div>
                                 
                                 <div className="p-4 h-[calc(100%-52px)] overflow-y-auto">
@@ -1343,10 +1343,10 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
                                         </div>
                                     </div>
 
-                                    {/* Stats */}
+                                    {/* Current Season Stats */}
                                     {(player.goals > 0 || player.assists > 0) && (
                                         <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: `${teamColor}08` }}>
-                                            <div className="text-xs font-semibold text-slate-600 uppercase mb-2">📊 Season Stats</div>
+                                            <div className="text-xs font-semibold text-slate-600 uppercase mb-2">📊 Current Season</div>
                                             <div className="grid grid-cols-3 gap-2 text-center">
                                                 <div className="bg-white rounded p-2 shadow-sm">
                                                     <div className="text-xl font-bold" style={{ color: teamColor }}>{player.goals || 0}</div>
@@ -1361,6 +1361,32 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
                                                     <div className="text-xs text-slate-500">Points</div>
                                                 </div>
                                             </div>
+                                        </div>
+                                    )}
+                                    
+                                    {/* Stats By Year */}
+                                    {Object.keys(statsByYear).length > 0 && (
+                                        <div className="mb-4 p-3 rounded-lg border border-slate-200">
+                                            <div className="text-xs font-semibold text-slate-600 uppercase mb-2">📅 Career Stats by Year</div>
+                                            {loadingStats ? (
+                                                <div className="text-center text-slate-400 py-2">Loading...</div>
+                                            ) : (
+                                                <div className="space-y-2">
+                                                    {Object.keys(statsByYear).sort().reverse().slice(0, 5).map(year => {
+                                                        const yearStats = statsByYear[year];
+                                                        return (
+                                                            <div key={year} className="flex items-center justify-between bg-white rounded p-2 shadow-sm">
+                                                                <span className="font-bold text-sm" style={{ color: teamColor }}>{year}</span>
+                                                                <div className="flex gap-3 text-xs text-slate-600">
+                                                                    <span><strong>{yearStats.goals || 0}</strong> G</span>
+                                                                    <span><strong>{yearStats.assists || 0}</strong> A</span>
+                                                                    <span><strong>{yearStats.gamesPlayed || 0}</strong> GP</span>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            )}
                                         </div>
                                     )}
 
