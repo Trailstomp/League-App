@@ -78,16 +78,6 @@ function App() {
   });
   const [selectedTeam, setSelectedTeam] = useState(null);
   
-  // Auth state recovery - ensures localStorage and state stay in sync
-  useEffect(() => {
-    // Check if we lost user state but have localStorage data
-    const savedUser = getCached(CACHE_KEYS.USER);
-    if (!currentUser && savedUser) {
-      console.log('🔐 Recovering user session from localStorage:', savedUser.name);
-      setCurrentUser(savedUser);
-    }
-  }, [currentUser]);
-  
   // Listen for storage events (cross-tab sync and external changes)
   useEffect(() => {
     const handleStorageChange = (e) => {
