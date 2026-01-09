@@ -1171,6 +1171,31 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
 
     // Player Card Popup Modal with Flip Animation
     const PlayerCardPopup = ({ player, team, isFlipped, onFlip, onClose, onPrint, onDownload }) => {
+        const [statsByYear, setStatsByYear] = useState({});
+        const [loadingStats, setLoadingStats] = useState(false);
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+        
+        // Fetch stats by year when card opens
+        useEffect(() => {
+            if (player?.id) {
+                const fetchStats = async () => {
+                    setLoadingStats(true);
+                    try {
+                        const response = await fetch(`${backendUrl}/api/players/${player.id}/stats-by-year`);
+                        if (response.ok) {
+                            const data = await response.json();
+                            setStatsByYear(data.statsByYear || {});
+                        }
+                    } catch (error) {
+                        console.error('Error fetching player stats:', error);
+                    } finally {
+                        setLoadingStats(false);
+                    }
+                };
+                fetchStats();
+            }
+        }, [player?.id, backendUrl]);
+        
         if (!player) return null;
 
         const teamColor = team?.style?.primaryColor || '#2563eb';
