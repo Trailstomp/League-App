@@ -70,11 +70,23 @@ function App() {
     // Try to restore user session from localStorage
     const savedUser = getCached(CACHE_KEYS.USER);
     if (savedUser) {
-      console.log('🔐 Restored user session:', savedUser.name);
+      console.log('🔐 Restored user session:', savedUser.name, savedUser.id);
+    } else {
+      console.log('🔐 No saved user session found in localStorage');
     }
     return savedUser;
   });
   const [selectedTeam, setSelectedTeam] = useState(null);
+  
+  // Auth state recovery - ensures localStorage and state stay in sync
+  useEffect(() => {
+    // Check if we lost user state but have localStorage data
+    const savedUser = getCached(CACHE_KEYS.USER);
+    if (!currentUser && savedUser) {
+      console.log('🔐 Recovering user session from localStorage:', savedUser.name);
+      setCurrentUser(savedUser);
+    }
+  }, [currentUser]);
   
   // Loading state for initial data fetch
   const [isInitialLoad, setIsInitialLoad] = useState(() => {
