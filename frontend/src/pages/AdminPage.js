@@ -22,6 +22,7 @@ import TeamCoachNotifier from '../components/managers/TeamCoachNotifier';
 import PlayerImporter from '../components/managers/PlayerImporter';
 import { FeeManager } from '../components/fees';
 import AdminEventsView from '../components/admin/AdminEventsView';
+import LeagueFinanceManager from '../components/managers/LeagueFinanceManager';
 
 // Team Invites Manager Component for League Admins
 const TeamInvitesManager = ({ currentUser }) => {
