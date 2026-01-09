@@ -13,7 +13,7 @@ import os
 
 # Production and Preview URLs for comparison
 PRODUCTION_URL = "https://team-lax-portal.emergent.host"
-PREVIEW_URL = "https://laxcardsv2.preview.emergentagent.com"
+PREVIEW_URL = "https://gametime-54.preview.emergentagent.com"
 
 # Google OAuth endpoints to test
 GOOGLE_OAUTH_ENDPOINTS = [

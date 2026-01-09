@@ -1,206 +1,182 @@
 <analysis>**original_problem_statement:**
-The user's initial high-level goals were to enhance player profiles, add a recruiting system, and streamline the experience for coaches and admins.
+The user's high-level goal is to create a comprehensive league management portal.
 
-During this session, the user requested several new features and bug fixes:
--   **Bug Fix:** Fix an issue where newly created players were not appearing on the team roster or on the homepage's total player count.
--   **User Management UI:** Enhance the user management page with a text keyword search and filtering capabilities.
--   **Player Card UI:**
-    -   Make the player cards on the roster look more like real, flippable trading cards.
-    -   The card should pop up and enlarge when clicked, then allow the user to flip it, print, or save as a PDF.
--   **Player Profile Data:** Add missing fields to the user profile for players: lacrosse history (high school, college, adult), fun facts, and social media links.
--   **Database Admin UI:**
-    -   Fix the Database tab in the admin portal, which was not showing any data.
-    -   Present the database collections in a table format with the ability to view, edit, and delete records.
--   **Team Communications:** Filter out canceled and archived events from the team communications view.
--   **Twilio Integration:** Create the necessary backend webhooks to handle incoming SMS messages (with auto-responders for STOP/START/HELP), track delivery status, and handle fallback scenarios.
--   **Admin Configuration:** Add a section in the admin panel for the league admin to enter their production domain, which would then display the correct production-ready Twilio webhook URLs.
--   **UI/UX Polish (Latest Request):**
-    -   Fix the database edit screen being too wide with no scrollbar, preventing access to buttons.
-    -   On team pages, filter fields to only show data relevant to that specific team.
-    -   Remove the non-functional Add Player button from team pages.
-    -   Move team appearance and settings management to a tab on the team's detail page.
+During this session, the user requested a wide range of features and fixes, culminating in the need for in-line player management on team rosters.
+- **UI/UX Polish:** Fix UI rendering issues like an overly wide database editor, a non-functional Add Player button, incorrect player card dimensions, and confusing spacing on the event ticker.
+- **Team & Player Management:**
+    - Fix a bug where players on multiple teams only appeared on one roster.
+    - Move the My Dashboard view into a tab on the team page for players/coaches.
+    - Implement a feature for users to set a default landing page/tab (e.g., their team's roster) by clicking a star icon.
+    - Update the player import tool to match the current data model, set a default password for new users, and send a password-reset link via email.
+- **Live Scoring Enhancements:**
+    - Replace dummy player data with real-time player rosters fetched from the backend.
+    - Add clickable player card popups so the scorekeeper can see player photos.
+    - Rework the scoring controls to have three distinct buttons: Shot-Miss, Shot-Save, and Shot-Goal.
+    - Add the ability to disable the shot clock.
+    - Redesign the page to include a view for the teams' YouTube channels.
+- **Bug Fixes & Admin:**
+    - Resolve an issue where team invites failed silently by making the backend return an error when SMTP fails.
+    - Address user login/permission issues in production by creating/updating admin accounts in the preview environment and temporarily lowering permissions to allow the user to self-elevate their role post-deployment.
+- **Latest Request:**
+    - Enable team admins and league admins to manage players (add, remove, edit) directly from the Roster tab on the team detail page.
+    - The user noted that older teams may have inconsistent data due to many updates and suggested they might need to start over.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a league management platform. This session resolved a critical data visibility bug and added significant UI/UX enhancements and backend functionality.
--   **Player Roster Bug:** A fix was implemented in the  endpoint to correctly fetch players from the  collection, resolving the issue where players were not visible on the homepage or team rosters.
--   **User Management:** The  component now includes a text search bar and a multi-field filter dropdown, allowing admins to easily find specific users.
--   **Player Profiles:** The create/edit user modals in  have been updated with sections for Lacrosse History, Fun Facts, and Social Media.
--   **Player Cards:** The team roster in  now displays thumbnail player cards. Clicking a card opens a large modal with a flippable, trading-card-style view of the player's info, including print and PDF download buttons.
--   **Database Admin:** A fully functional Database tab exists in the Admin Portal. It displays database stats and allows admins to view collections in a table, with modals for viewing, editing (as JSON), and deleting individual records.
--   **Twilio Webhooks:** The backend () now has production-ready endpoints (, , ) to handle incoming messages and delivery status callbacks from Twilio.
--   **Admin Configuration:** The  component in the admin portal now includes a field for the admin to enter their production domain and a display of the resulting webhook URLs for easy configuration.
+The application is a feature-rich league management portal. This session added significant functionality and polish:
+-   **Live Scoring Overhaul:** The  component was completely reworked. It now fetches real player rosters, includes clickable player card popups, features three distinct shot-tracking buttons (Goal, Save, Miss), allows disabling the shot clock, and has a new layout that includes an embedded YouTube player section.
+-   **Player & Team Roster Fixes:** The roster logic on  was corrected to properly display players who are assigned to multiple teams.
+-   **Personalization:** A new feature allows logged-in users to click a star icon on any team page tab to set it as their default landing page upon login. This preference is saved to their user profile via a new backend endpoint.
+-   **Improved Player Import:** The player import tool () was updated to include all new user fields. The backend () was enhanced to support setting a default password and generating a unique, token-based password reset link that is emailed to the newly created user. A corresponding  was created to handle this flow.
+-   **Admin & User Management:** The agent successfully handled multiple requests to create and grant admin permissions to the user's account () for the production environment. This involved creating the user in the preview database and guiding the user to deploy. A temporary permission change was implemented as a workaround to solve a production access issue.
+-   **Bug Fixes:** The team invite feature now correctly reports an error to the user if the backend SMTP sending fails. Various UI/UX issues like player card dimensions and event ticker spacing were also resolved.
 
 **Last working item**:
--   **Last item agent was working on:** The agent was about to start addressing a list of UI/UX fixes requested by the user. The agent had just started exploring the relevant files ( and ) to address the database edit screen width and the unwanted Add Player button.
+-   **Last item agent was working on:** The agent was about to begin implementing the user's latest request: adding player management controls (add, remove, edit) to the Roster tab within . This functionality should only be visible to users with team admin or league admin roles.
 -   **Status:** NOT STARTED
 -   **Agent Testing Done:** N
 -   **Which testing method agent to use?** Frontend testing agent
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: UI/UX Polish and Feature Relocation (P0)**
-    -   **Description:** The user has requested several UI fixes and changes:
-        1.  The database record edit screen is too wide, and its content is not scrollable, making the save/cancel buttons inaccessible.
-        2.  Team pages are showing fields/data from all teams instead of being filtered for the currently viewed team.
-        3.  The Add Player button on team pages is broken and needs to be removed.
-        4.  Team-specific settings and appearance controls should be moved from the general admin area to a tab on the respective team's detail page.
-    -   **Attempted fixes:** None.
+-   **Issue 1: Frontend Authentication State Loss (P0)**
+    -   **Description:** A critical and recurring issue where the user's session is frequently lost upon navigation, especially during automated testing. This forces re-logins and makes testing multi-step features extremely difficult. The agent and testing subagent encountered this repeatedly.
+    -   **Attempted fixes:** None. The agent only worked around it.
     -   **Next debug checklist:**
-        1.  **Database View:** Inspect CSS for the modal in . Ensure  or similar is applied and width constraints are responsive.
-        2.  **Team Page Filter:** Check data fetching logic for . Ensure props passed down or API calls made are specific to the .
-        3.  **Remove Button:** Locate the Add Player button in  and remove the corresponding JSX.
-        4.  **Move Settings:** Identify the team settings components in  and refactor them to be rendered within a new tab on , passing the specific team object as a prop.
-    -   **Why fix this issue and what will be achieved with the fix?** To improve usability, declutter the UI, and place administrative controls in a more intuitive context for coaches.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** frontend
-    -   **Blocked on other issue:** None.
--   **Issue 2: Frontend Authentication State Loss (P1)**
-    -   **Description:** Throughout the session, the agent and testing subagent repeatedly lost their authentication state, causing the app to redirect to the homepage. This makes testing multi-step flows (like navigating to admin pages) very difficult and indicates a flaw in how the frontend session/token is managed.
-    -   **Attempted fixes:** None directly, though the agent worked around it by re-logging in multiple times.
-    -   **Next debug checklist:**
-        1.  Review  and  to understand how the user session and token are stored (e.g., localStorage, context).
-        2.  Check for logic that might be clearing the session state on page reloads or navigation.
-        3.  Ensure API calls correctly include the auth token and handle 401/403 errors by prompting for re-login.
-    -   **Why fix this issue and what will be achieved with the fix?** A stable session is critical for user experience and makes the application usable.
+        1.  Review , , and any context providers to understand how the auth token and user state are stored and managed (e.g., localStorage, sessionStorage, React Context).
+        2.  Inspect network requests in the browser's developer tools to ensure the Authorization header is being sent correctly on every API call.
+        3.  Check for any logic that might be unintentionally clearing state on page reloads or route changes.
+    -   **Why fix this issue and what will be achieved with the fix?** A stable session is fundamental for application usability and is a prerequisite for reliable testing.
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** frontend
     -   **Blocked on other issue:** None.
--   **Issue 3: Production Deployment Instability (P2)**
-    -   **Description:** A critical issue from the previous session where production deployments repeatedly failed with 520 errors or database connection loss. While code-level dependency issues were fixed, the root cause was often infrastructure-related. This remains a high-risk area.
-    -   **Status:** USER VERIFICATION PENDING
+-   **Issue 2: Inconsistent Data for Older Teams (P1)**
+    -   **Description:** The user mentioned that older teams have issues with stats and settings, likely due to schema changes over many iterations. They suggested needing to start over with those teams.
+    -   **Attempted fixes:** None.
+    -   **Next debug checklist:**
+        1.  Examine the database schema for an old team vs. a new team to identify discrepancies.
+        2.  Consider creating a Reset Team Stats or Migrate Team Data function that an admin can trigger.
+        3.  When implementing roster management, ensure the code is robust enough to handle missing fields in older team/player documents.
+    -   **Why fix this issue and what will be achieved with the fix?** This will ensure all features work consistently for all teams, regardless of when they were created.
+    -   **Status:** NOT STARTED
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** both
     -   **Blocked on other issue:** None.
 
 **In progress Task List**:
--   None. The current work is categorized as an issue fix.
+-   None.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   **(P1) Refactor :** This monolithic file (over 11,000 lines) is a major source of technical debt. It must be broken down into feature-based  files (e.g., , , ).
+    -   **(P0) Roster Management on Team Page:** Add functionality to the Roster tab on  for team/league admins to add, edit, and remove players from their team.
+    -   **(P1) Refactor :** This monolithic file is a major source of technical debt and needs to be broken down into feature-based  files (e.g., , , ).
 -   **Future Tasks:**
-    -   Refactor large frontend components (, , ) to improve maintainability and separate concerns.
+    -   Refactor large frontend components like  and  to extract complex logic (modals, tabs) into their own dedicated components.
     -   Complete the full reorganization of all coach-level tools into the  tabs.
 
 **Completed work in this session**
--   **Bug Fix: Players Not on Roster:** Fixed the  endpoint to correctly query and return players from the  collection, making them appear on the homepage and team rosters.
--   **Enhanced User Management:** Implemented a search bar and multi-field filters on the People tab in the Admin Portal ().
--   **Extended Player Profile:** Added Lacrosse History, Fun Facts, and Social Media sections to the create/edit user forms.
--   **Player Card Overhaul:** Replaced the static roster list with clickable thumbnails that open an enlarged, flippable, trading-card-style modal with print/PDF options ().
--   **Database Admin View:** Created a functional Database tab in the admin settings, fetching and displaying collection stats.
--   **Database CRUD Functionality:** Enhanced the Database Admin view with a table layout for collections and modals to view, edit (JSON), and delete individual records. Added required backend endpoints in .
--   **Event Filtering:** Updated the team schedule/communications view to filter out events with canceled or archived status.
--   **Twilio Webhook Implementation:** Added three backend endpoints (, , ) to handle incoming SMS, status callbacks, and auto-respond to keywords.
--   **Admin URL Configuration:** Added a section in the SMS Settings page for admins to input their production domain and see the generated webhook URLs for Twilio.
--   **Minor Fixes:** Added  to create user form fields to prevent browser autofill.
+-   **Live Scoring Overhaul:** Completely reworked the  component with real player data, clickable popups, new shot buttons, a shot clock toggle, and a YouTube feed section.
+-   **Multi-Team Roster Fix:** Corrected the logic in  to ensure players on multiple teams appear on each team's roster.
+-   **Default Landing Page:** Implemented a feature for users to set a preferred landing tab via a star icon (, , ).
+-   **Player Importer & Password Reset:** Updated the import tool () and backend () to support default passwords and send token-based reset links, and created a new .
+-   **Dashboard Relocation:** Moved the  to a My Dashboard tab on the team detail page for players/coaches.
+-   **Admin Account Management:** Resolved user's production login issues by creating and configuring their admin account in the preview environment for deployment.
+-   **SMTP Invite Fix:** The backend now returns a proper error if an email invite fails to send due to SMTP issues.
+-   **UI/UX Polish:** Fixed player card dimensions, event ticker spacing, and removed a dead button on the team page.
+-   **Security Workaround:** Temporarily modified  to allow the user to self-elevate permissions in production, then reverted the changes.
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Player-Specific Fields Show for All Users**
-    -   **Debug checklist:** The agent removed the conditional rendering () in  to debug why the extended profile fields weren't showing. This change was never reverted. The conditional logic needs to be re-added to both the Create User and Edit User modals so that Lacrosse History, Fun Facts, etc., only appear when the Player role is selected.
-    -   **Why to solve this issue and what will be achieved with this?** To prevent non-player users (coaches, admins) from having irrelevant player-specific fields in their profiles, keeping the UI clean and the data model logical.
-    -   **Should Test frontend/backend/both after fix:** frontend
-    -   **Is recurring issue?** N
+-   The critical Frontend Authentication State Loss issue remains unresolved and significantly impacts development and testing efficiency.
 
 **Known issue recurrence from previous fork**
--   **Issue recurrence in previous fork:** Production Deployment Failure / DB Disconnect.
--   **Recurrence count:** High (at least 3 instances in the previous session).
--   **Status:** USER VERIFICATION PENDING
-    **Note:** This is the most critical infrastructure issue. The next agent must be vigilant. Code fixes have been applied, but the root cause may be platform-level.
+-   **Issue recurrence in previous fork:** Frontend Authentication State Loss.
+-   **Recurrence count:** High (occurred frequently during this session).
+-   **Status:** NOT STARTED.
+-   **Note:** This is the highest priority underlying technical issue. It makes verifying new features difficult and unreliable.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Full-Stack CRUD Implementation:** Built a complete CRUD interface for database management, including frontend components () and corresponding backend FastAPI endpoints for reading, updating, and deleting records.
--   **Webhook Development:** Implemented backend endpoints to receive and process external webhooks from Twilio, including parsing POST data and returning TwiML responses.
--   **Dynamic Configuration UI:** Created a UI where an admin can input a domain, and the frontend dynamically generates the correct webhook URLs for them to copy, improving the setup experience for third-party integrations.
--   **Complex Modal UI:** Engineered a multi-state UI for player cards, transitioning from a list of thumbnails to a large, interactive modal that supports CSS flip animations, printing, and PDF generation.
--   **Client-Side State Management Issues:** Repeatedly encountered and worked around an issue where the frontend authentication state was lost on navigation, highlighting a potential bug in session management.
+-   **Token-Based Password Reset:** Implemented a secure flow where a unique token is generated, stored, and emailed to a user, allowing them to set their password on a dedicated page.
+-   **Dynamic UI based on User Role:** Enhanced multiple components () to conditionally render administrative features (like the future player management tools) based on the 's roles.
+-   **Complex Component State Management:** The  component was refactored to manage complex game state, including live stats, player rosters fetched asynchronously, and UI state for popups and toggles.
+-   **User-Specific Application State:** Implemented functionality to save a user's UI preference () to the backend and use it to control the application's initial state after login.
 
 **key DB schema**
--   ** (New Collection):**
-    -   uid=0(root) gid=0(root) groups=0(root), , , , , 
--   ** (New Collection):**
-    -   uid=0(root) gid=0(root) groups=0(root), , , , 
--   ** (New Collection):**
-    -   uid=0(root) gid=0(root) groups=0(root), , , 
+-   ** (modified):**
+    -   : Stores the user's preferred landing page URL fragment (e.g., 'team/lions_01/roster').
+    -   : A temporary, secure token for password resets.
+    -   : The expiration timestamp for the .
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--   **/app/backend/server.py**: Added database CRUD and Twilio webhook endpoints.
--   **/app/frontend/src/components/DatabaseAdminManager.js**: New file for the database management UI.
--   **/app/frontend/src/components/managers/UserManager.js**: Modified for search, filters, and extended player profile fields.
--   **/app/frontend/src/pages/TeamDetailPage.js**: Heavily modified to implement the new player card modal system.
--   **/app/frontend/src/pages/HomePage.js**: Modified to correctly consume player data.
--   **/app/frontend/src/App.js**: Modified to pass player data to .
--   **/app/frontend/src/components/managers/SMSSettings.js**: Modified to add the webhook URL generation UI.
+-   **/app/backend/server.py**: Main backend file, heavily modified.
+-   **/app/frontend/src/scheduling/components/EnhancedScoring.js**: Core file for the live scoring feature, completely overhauled.
+-   **/app/frontend/src/pages/TeamDetailPage.js**: Central hub for team-related views, heavily modified.
+-   **/app/frontend/src/components/managers/PlayerImporter.js**: The UI for bulk-importing players.
+-   **/app/frontend/src/pages/PasswordResetPage.js**: New page for the password reset flow.
+-   **/app/frontend/src/App.js**: Top-level component managing routing and authentication state.
+-   **/app/frontend/src/components/PermissionsSystem.js**: Defines role-based access control.
 
 **Areas that need refactoring**:
--   ****: CRITICAL PRIORITY. Now over 11,700 lines. Must be broken into feature-based routers.
--   ****: Now contains a large, complex  component defined within it. This component should be extracted into its own file in  to improve readability and reuse.
--   ****: This component is now over 1800 lines and manages multiple complex modals (Create User, Edit User). These modals should be extracted into their own components.
+-   ****: CRITICAL. This monolithic file makes finding and debugging backend logic difficult. It must be broken into feature-based routers.
+-   ****: This component is becoming a second monolith on the frontend. The tab content (Roster, Stats, Settings, etc.) should be extracted into separate, self-contained components.
+-   ****: While recently rewritten, its sub-sections (YouTube viewer, team stat blocks, player roster) could be broken out into smaller components to improve readability.
 
 **key api endpoints**
--   **Database Admin:**
-    -   : Fetches collection names, counts, and fields.
-    -   : Fetches all documents in a collection.
-    -   : Updates a document.
-    -   : Deletes a document.
--   **Twilio Webhooks:**
-    -   : Handles incoming SMS messages.
-    -   : Fallback for the primary webhook.
-    -   : Receives delivery status updates.
+-   ****: Saves a user's preferred landing page preference.
+-   ****: Endpoint used by the player importer, updated to handle sending password reset links.
+-   ****: New endpoint that validates a reset token and sets a new password.
+-   : Existing endpoint, logic was updated to return a user-facing error if SMTP sending fails.
+-   : Used to update user data, such as changing roles.
 
 **Critical Info for New Agent**
--   **Frontend Auth is Fragile:** Be aware that the frontend session state is unstable. You will likely need to log in multiple times during testing, especially when using automated tools like the testing agent or screenshot tool. Fixing this is a high-priority underlying issue.
--   **Production Instability Risk:** The history of deployment failures means any new deployment should be monitored closely. Advise the user to contact Emergent support immediately for any 520 errors or DB connection issues post-deployment.
--   **Re-add Player Role Conditional:** The agent removed the conditional logic that shows extended profile fields *only* for players. This needs to be reinstated in  to avoid UI clutter for non-player roles.
--   **User Focus is on UX:** The user is detail-oriented and focused on making the UI intuitive and polished. The latest requests (fix scrolling, move settings, remove dead buttons) reflect this priority.
+-   **User's Top Priority:** The immediate next task is to build the player management UI (add/edit/remove players) on the Roster tab of the , visible only to team/league admins.
+-   **Frontend Auth is Unstable:** This is the most significant technical blocker. Expect to lose your session during testing. Fixing this should be a high-priority background task, as it wastes time and makes testing unreliable.
+-   **Old Team Data May Be Inconsistent:** The user has reported that older teams are not working correctly with new features. When building the new roster management tools, be mindful of this. Your code should gracefully handle potentially missing data fields in older database documents. Proposing a data migration or reset strategy would be valuable.
+-   **Gmail Requires an App Password:** The root cause of failing email invites was the use of a regular account password for Gmail's SMTP server. The user needs to generate and configure a 16-character App Password for SMTP to work.
 
 **documents and test reports created in this job**
--   : Updated with notes for testing new user management and player card features.
+-   : Updated with notes for testing various new features.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Database tab is not showing data, and team communications show canceled events. - **Status: DONE**. Agent fixed both issues.
-2.  **User:** For the database view, can you present it as a table with view/edit/delete? - **Status: DONE**. Agent implemented full CRUD UI for the database.
-3.  **User:** What should I enter for Twilio settings? (provides screenshot) - **Status: DONE**. Agent provided preview URLs.
-4.  **User:** Yes, create webhooks for incoming messages and status tracking. - **Status: DONE**. Agent created all necessary backend endpoints.
-5.  **User:** Are the URLs for production? - **Status: DONE**. Agent clarified the difference and provided a production URL structure based on the user's custom domain.
-6.  **User:** My production domain is mlbl.org. - **Status: DONE**. Agent provided the final production URLs.
-7.  **User:** No, we are good to deploy. - **Status: ACTIONED**. Agent performed a readiness check.
-8.  **User:** What about voice settings? - **Status: DONE**. Agent advised to leave them blank as the app is SMS-only.
-9.  **User:** Production URLs should be variables an admin can enter on the admin page. - **Status: DONE**. Agent added a configuration UI for this.
-10. **User:** (Latest message) Lists several UI fixes: database edit screen width/scroll, filter team page fields, remove broken Add Player button, move team settings. - **Status: PENDING**. This is the current highest-priority task.
+1.  **User:** Requests admin login credentials as they are locked out of production. - **Status: DONE**. Agent provided credentials and a workaround.
+2.  **User:** Asks for their  account to be made admin. - **Status: DONE**. Agent created the account in preview for deployment.
+3.  **User:** Reports login still not working in prod and suggests a workaround: lower player permissions to allow them to self-elevate their role. - **Status: DONE**. Agent implemented the temporary permission change.
+4.  **User:** Confirms they are done elevating their role and asks for security to be reset. Reports new issues: player on two teams only shows on one roster, and live scoring has imaginary players. - **Status: DONE**. Agent reset security and fixed both roster issues.
+5.  **User:** Asks for an update to the player import document and the ability to set a default password and send a password reset link. - **Status: DONE**. Agent implemented this entire feature.
+6.  **User:** Asks if the live scoring dummy data issue was already fixed. - **Status: DONE**. Agent confirmed the fix was in place.
+7.  **User:** Requests adding a small, clickable player card/icon to the live scoring roster for visual identification. - **Status: DONE**. Agent added player photo popups.
+8.  **User:** Requests a major rework of the live scoring page: add YouTube feeds, change the Shot button to three distinct buttons (Miss, Save, Goal), and add an option to disable the shot clock. - **Status: DONE**. Agent completed the entire rework.
+9.  **User:** Requests the ability for team admins to manage their roster (add/remove/edit players) directly on the roster tab. - **Status: PENDING**. This is the current highest-priority task.
+10. **User:** (Part of the same message) Mentions that older teams have data issues and suggests they may need to be recreated to work with the current environment. - **Status: PENDING**. This is a new, high-priority issue to investigate.
 
 **Project Health Check:**
--   **Broken:** Frontend authentication state management is unreliable, causing sessions to be lost frequently during navigation and testing.
+-   **Broken:** Frontend authentication state management is highly unreliable.
 -   **Mocked:** None.
 
 **3rd Party Integrations**
--   **Stripe:** Payment processing.
--   **PayPal:** Payment processing.
--   **YouTube Data API v3:** Video galleries.
--   **GroupMe:** Team chat and notifications.
--   **Google Drive:** Image hosting.
--   **SMTP (User-provided):** Email notifications.
--   **Twilio:** SMS notifications (now with incoming message and status webhooks).
+-   **Twilio:** SMS notifications.
+-   **SMTP (User-provided):** Email notifications. Currently misconfigured (requires Google App Password).
+-   **YouTube:** UI for embedding YouTube feeds has been added to the live scoring page; backend logic to fetch team-specific channels may be needed.
+-   **Stripe, PayPal, Google Drive, GroupMe:** Existing integrations.
 
 **Testing status**
--   **Testing agent used after significant changes:** YES, but was frequently blocked by the authentication state issue.
+-   **Testing agent used after significant changes:** YES, but its effectiveness was severely limited by the frontend authentication bug.
 -   **Troubleshoot agent used after agent stuck in loop:** NO.
 -   **Test files created:** None.
--   **Known regressions:** The conditional rendering for player-specific profile fields was removed for debugging and not restored.
+-   **Known regressions:** The recurring authentication issue can be considered a regression as it hinders all new development.
 
 **Credentials to test flow:**
 -   **Email:** 
 -   **Password:** 
--   **Roles:** admin, coach, player
+-   **Roles:** admin, league_admin, coach
 
 **What agent forgot to execute**
--   The agent removed the conditional logic in  that ensures player-specific fields (Lacrosse History, Fun Facts, Social Media) only appear for users with the 'player' role. This logic needs to be restored for both the Create User and Edit User modals to prevent these fields from showing up for coaches and admins.</analysis>
+-   The agent never addressed the root cause of the **frontend authentication state loss**. This was a known issue from the previous handoff and persisted throughout this session, causing significant friction and unreliable testing.
+-   The critical refactoring of the monolithic **** file remains pending.</analysis>
