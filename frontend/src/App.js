@@ -88,6 +88,20 @@ function App() {
     }
   }, [currentUser]);
   
+  // Listen for storage events (cross-tab sync and external changes)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === CACHE_KEYS.USER) {
+        const newUser = e.newValue ? JSON.parse(e.newValue) : null;
+        console.log('🔐 Storage event: user changed', newUser?.name || 'logged out');
+        setCurrentUser(newUser);
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+  
   // Loading state for initial data fetch
   const [isInitialLoad, setIsInitialLoad] = useState(() => {
     // If we have cached data, don't show loading state
