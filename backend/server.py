@@ -28,7 +28,7 @@ from googleapiclient.http import MediaIoBaseUpload
 from googleapiclient.errors import HttpError
 
 # Import feature-based routers
-from routes import finance_router, locations_router, teams_router, users_router, rsvp_router, drive_router, set_finance_db, set_locations_db, set_teams_db, set_users_db, set_rsvp_db, set_drive_db
+from routes import finance_router, locations_router, teams_router, users_router, rsvp_router, drive_router, cleanup_router, set_finance_db, set_locations_db, set_teams_db, set_users_db, set_rsvp_db, set_drive_db, set_cleanup_db
 
 
 ROOT_DIR = Path(__file__).parent
