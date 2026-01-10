@@ -2913,6 +2913,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                     {activeSection === 'content' && renderContentSection()}
                     {activeSection === 'liveview' && renderLiveViewSection()}
                     {activeSection === 'ticker' && renderTickerSection()}
+                    {activeSection === 'pwa' && renderPWASection()}
                     {activeSection === 'preview' && renderPreviewSection()}
                 </div>
             </div>
