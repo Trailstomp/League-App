@@ -152,7 +152,7 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 ### P3 (Future)
 - [ ] OAuth/Social login integration
 - [ ] Offline support / PWA features
-- [ ] Financial reports/exports
+- [x] Financial reports/exports - CSV export added to Team and League Finance
 
 ## Technical Debt - RESOLVED
 ### Frontend Refactoring (TeamDetailPage.js)
