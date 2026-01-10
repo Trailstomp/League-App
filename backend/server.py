@@ -4573,7 +4573,7 @@ async def send_event_notification(
         # Add RSVP instructions if requested
         if include_rsvp:
             # Create quick RSVP link 
-            frontend_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:3000').replace('/api', '')
+            frontend_url = os.environ.get('FRONTEND_URL', os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:3000')).replace('/api', '')
             rsvp_url = f"{frontend_url}/quick-rsvp/{event_id}"
             if len(channel_ids_list) > 0:
                 rsvp_url += f"?channel={channel_ids_list[0]}"
