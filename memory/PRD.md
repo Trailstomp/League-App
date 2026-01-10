@@ -157,6 +157,9 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 - [x] Extract PlayerCardPopup into separate component - DONE
 
 ### P2 (Medium Priority)
+- [x] Session persistence across navigation and refresh - VERIFIED WORKING
+- [ ] Player card popup improvements
+- [ ] Advanced notification system
 - [ ] Complete YouTube backend integration
 - [ ] Mobile-responsive improvements
 
