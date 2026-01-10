@@ -15,14 +15,13 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
 
-    // Expected CSV columns - Updated to match current user schema
+    // Expected CSV columns - Updated to use single name field
     const expectedColumns = [
-        { key: 'firstName', label: 'First Name', required: true, example: 'John' },
-        { key: 'lastName', label: 'Last Name', required: true, example: 'Doe' },
+        { key: 'name', label: 'Name', required: true, example: 'John Doe' },
         { key: 'email', label: 'Email', required: true, example: 'john@example.com' },
         { key: 'phone', label: 'Phone', required: false, example: '555-123-4567' },
         { key: 'jerseyNumber', label: 'Jersey Number', required: false, example: '12' },
-        { key: 'position', label: 'Position', required: false, example: 'Attack' },
+        { key: 'position', label: 'Position', required: false, example: 'Attack, Midfield' },
         { key: 'jerseySize', label: 'Jersey Size', required: false, example: 'L' },
         { key: 'teamId', label: 'Team ID', required: false, example: 'team_id_here' },
         { key: 'role', label: 'Role', required: false, example: 'player' },
