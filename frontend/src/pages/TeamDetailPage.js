@@ -12,6 +12,7 @@ import Skeleton, { SkeletonEventCard } from '../components/Skeleton';
 import { PlayerFeeDashboard } from '../components/fees';
 import ImageUploadCrop from '../components/ImageUploadCrop';
 import { extractThemeColors } from '../utils/colorExtractor';
+import TeamFinanceTab from '../components/team/TeamFinanceTab';
 
 const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate, onUserUpdate }) => {
     const [activeTab, setActiveTab] = useState(() => {
