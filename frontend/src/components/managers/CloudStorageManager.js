@@ -447,6 +447,13 @@ const CloudStorageManager = ({ teams = [] }) => {
                 </div>
             )}
 
+            {/* Folder Management */}
+            {activeTab === 'folders' && (
+                <div className="bg-white rounded-lg shadow-sm border p-6">
+                    <GoogleDriveFolderManager teams={teams} />
+                </div>
+            )}
+
             {/* YouTube Integration Configuration */}
             {activeTab === 'youtube' && (
                 <div className="bg-white rounded-lg shadow-sm border">
