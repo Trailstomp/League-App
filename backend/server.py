@@ -12199,6 +12199,7 @@ api_router.include_router(finance_router)
 api_router.include_router(locations_router)
 api_router.include_router(teams_router)
 api_router.include_router(users_router)
+api_router.include_router(rsvp_router)
 
 # Include the API router in the main app (after all routes are defined)
 app.include_router(api_router)
