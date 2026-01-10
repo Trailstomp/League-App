@@ -737,6 +737,9 @@ const AdminDashboard = ({ teams, players, users = [] }) => {
                     </button>
                 </div>
             </div>
+
+            {/* Data Health Widget */}
+            <DataHealthWidget />
         </div>
     );
 };
