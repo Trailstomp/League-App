@@ -5,6 +5,7 @@ const GoogleDriveFolderManager = ({ teams = [] }) => {
     const [loading, setLoading] = useState(true);
     const [initializing, setInitializing] = useState(false);
     const [creatingTeamFolders, setCreatingTeamFolders] = useState({});
+    const [creatingAllFolders, setCreatingAllFolders] = useState(false);
     const [cleanupPreview, setCleanupPreview] = useState(null);
     const [cleaning, setCleaning] = useState(false);
     const [message, setMessage] = useState('');
@@ -75,6 +76,47 @@ const GoogleDriveFolderManager = ({ teams = [] }) => {
         }
     };
 
+    const createAllTeamFolders = async () => {
+        try {
+            setCreatingAllFolders(true);
+            setMessage('');
+            
+            let created = 0;
+            let failed = 0;
+            
+            for (const team of teams) {
+                const teamFolders = folderStructure?.folder_structure?.team_folders?.[team.id];
+                if (!teamFolders) {
+                    try {
+                        const response = await fetch(`${backendUrl}/api/drive/folders/team/${team.id}`, {
+                            method: 'POST'
+                        });
+                        if (response.ok) {
+                            created++;
+                        } else {
+                            failed++;
+                        }
+                    } catch {
+                        failed++;
+                    }
+                }
+            }
+            
+            if (created > 0) {
+                setMessage(`✅ Created folders for ${created} team(s)${failed > 0 ? `, ${failed} failed` : ''}`);
+                loadFolderStructure();
+            } else if (failed > 0) {
+                setMessage(`❌ Failed to create folders for ${failed} team(s)`);
+            } else {
+                setMessage('ℹ️ All teams already have folders');
+            }
+        } catch (error) {
+            setMessage('❌ Error creating team folders');
+        } finally {
+            setCreatingAllFolders(false);
+        }
+    };
+
     const previewCleanup = async () => {
         try {
             const response = await fetch(`${backendUrl}/api/drive/cleanup/preview`);
@@ -128,6 +170,11 @@ const GoogleDriveFolderManager = ({ teams = [] }) => {
 
     const isConfigured = folderStructure?.status === 'ok' && folderStructure?.configured;
     const isInitialized = folderStructure?.folder_structure?.teams_folder_id;
+    
+    // Count teams without folders
+    const teamsWithoutFolders = teams.filter(
+        t => !folderStructure?.folder_structure?.team_folders?.[t.id]
+    );
 
     return (
         <div className="space-y-6">
@@ -146,7 +193,7 @@ const GoogleDriveFolderManager = ({ teams = [] }) => {
             </div>
 
             {message && (
-                <div className={`p-4 rounded-lg ${message.startsWith('✅') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                <div className={`p-4 rounded-lg ${message.startsWith('✅') ? 'bg-green-50 text-green-800' : message.startsWith('ℹ️') ? 'bg-blue-50 text-blue-800' : 'bg-red-50 text-red-800'}`}>
                     {message}
                 </div>
             )}
@@ -230,7 +277,23 @@ const GoogleDriveFolderManager = ({ teams = [] }) => {
                         </div>
 
                         {/* Team Folders */}
-                        <h4 className="font-semibold text-slate-800 mb-3">Team Folders</h4>
+                        <div className="flex items-center justify-between mb-3">
+                            <h4 className="font-semibold text-slate-800">Team Folders</h4>
+                            {teamsWithoutFolders.length > 0 && (
+                                <button
+                                    onClick={createAllTeamFolders}
+                                    disabled={creatingAllFolders}
+                                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 text-sm flex items-center gap-2"
+                                >
+                                    {creatingAllFolders ? (
+                                        <>⏳ Creating...</>
+                                    ) : (
+                                        <>➕ Create Folders for All Teams ({teamsWithoutFolders.length})</>
+                                    )}
+                                </button>
+                            )}
+                        </div>
+                        
                         {teams.length === 0 ? (
                             <div className="bg-slate-50 rounded-lg p-4 text-center text-slate-500">
                                 No teams yet. Create teams first, then set up their folders.
@@ -283,46 +346,68 @@ const GoogleDriveFolderManager = ({ teams = [] }) => {
                 </>
             )}
 
-            {/* Data Cleanup Section */}
+            {/* Data Cleanup Section - ALWAYS VISIBLE */}
             <div className="bg-white border rounded-lg p-6">
                 <h4 className="font-semibold text-slate-800 mb-2">🧹 Data Cleanup</h4>
                 <p className="text-sm text-slate-600 mb-4">
-                    Clean up orphaned galleries and folder references from deleted teams.
+                    Clean up orphaned galleries and folder references from deleted teams. 
+                    This will not delete any actual files from Google Drive.
                 </p>
                 
                 {!cleanupPreview ? (
                     <button
                         onClick={previewCleanup}
-                        className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200"
+                        className="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 font-medium"
                     >
                         🔍 Preview Cleanup
                     </button>
                 ) : (
                     <div className="space-y-4">
                         <div className="bg-slate-50 rounded-lg p-4">
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div>
-                                    <span className="font-medium text-slate-700">Current Teams:</span>
-                                    <span className="ml-2 text-slate-600">{cleanupPreview.valid_teams?.length || 0}</span>
+                            <h5 className="font-medium text-slate-700 mb-3">Cleanup Preview</h5>
+                            <div className="grid grid-cols-3 gap-4 text-sm">
+                                <div className="bg-white p-3 rounded border">
+                                    <span className="text-2xl">✅</span>
+                                    <div className="font-medium text-slate-700 mt-1">Valid Teams</div>
+                                    <div className="text-2xl font-bold text-green-600">{cleanupPreview.valid_teams?.length || 0}</div>
                                 </div>
-                                <div>
-                                    <span className="font-medium text-slate-700">Orphaned Galleries:</span>
-                                    <span className="ml-2 text-red-600">{cleanupPreview.orphaned_galleries?.length || 0}</span>
+                                <div className="bg-white p-3 rounded border">
+                                    <span className="text-2xl">🗂️</span>
+                                    <div className="font-medium text-slate-700 mt-1">Orphaned Galleries</div>
+                                    <div className="text-2xl font-bold text-red-600">{cleanupPreview.orphaned_galleries?.length || 0}</div>
                                 </div>
-                                <div>
-                                    <span className="font-medium text-slate-700">Orphaned Folder Refs:</span>
-                                    <span className="ml-2 text-red-600">{cleanupPreview.orphaned_folder_references?.length || 0}</span>
+                                <div className="bg-white p-3 rounded border">
+                                    <span className="text-2xl">📁</span>
+                                    <div className="font-medium text-slate-700 mt-1">Orphaned Folder Refs</div>
+                                    <div className="text-2xl font-bold text-red-600">{cleanupPreview.orphaned_folder_references?.length || 0}</div>
                                 </div>
                             </div>
                             
                             {cleanupPreview.orphaned_galleries?.length > 0 && (
-                                <div className="mt-4">
-                                    <div className="text-sm font-medium text-slate-700 mb-2">Galleries to remove:</div>
-                                    <div className="text-xs text-slate-600 space-y-1">
+                                <div className="mt-4 p-3 bg-red-50 rounded">
+                                    <div className="text-sm font-medium text-red-800 mb-2">Galleries to remove:</div>
+                                    <div className="text-xs text-red-700 space-y-1 max-h-32 overflow-y-auto">
                                         {cleanupPreview.orphaned_galleries.map((g, i) => (
-                                            <div key={i}>• {g.name || g.id} (Team: {g.teamId})</div>
+                                            <div key={i}>• {g.name || g.id} (linked to deleted team: {g.teamId})</div>
                                         ))}
                                     </div>
+                                </div>
+                            )}
+                            
+                            {cleanupPreview.orphaned_folder_references?.length > 0 && (
+                                <div className="mt-4 p-3 bg-red-50 rounded">
+                                    <div className="text-sm font-medium text-red-800 mb-2">Folder references to remove:</div>
+                                    <div className="text-xs text-red-700 space-y-1">
+                                        {cleanupPreview.orphaned_folder_references.map((f, i) => (
+                                            <div key={i}>• {f.team_name} (ID: {f.team_id})</div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {cleanupPreview.orphaned_galleries?.length === 0 && cleanupPreview.orphaned_folder_references?.length === 0 && (
+                                <div className="mt-4 p-3 bg-green-50 rounded text-green-700 text-sm">
+                                    ✅ No orphaned data found! Your database is clean.
                                 </div>
                             )}
                         </div>
@@ -332,15 +417,17 @@ const GoogleDriveFolderManager = ({ teams = [] }) => {
                                 onClick={() => setCleanupPreview(null)}
                                 className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200"
                             >
-                                Cancel
+                                ← Back
                             </button>
-                            <button
-                                onClick={runCleanup}
-                                disabled={cleaning || (cleanupPreview.orphaned_galleries?.length === 0 && cleanupPreview.orphaned_folder_references?.length === 0)}
-                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
-                            >
-                                {cleaning ? '⏳ Cleaning...' : '🗑️ Run Cleanup'}
-                            </button>
+                            {(cleanupPreview.orphaned_galleries?.length > 0 || cleanupPreview.orphaned_folder_references?.length > 0) && (
+                                <button
+                                    onClick={runCleanup}
+                                    disabled={cleaning}
+                                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                                >
+                                    {cleaning ? '⏳ Cleaning...' : '🗑️ Run Cleanup'}
+                                </button>
+                            )}
                         </div>
                     </div>
                 )}
