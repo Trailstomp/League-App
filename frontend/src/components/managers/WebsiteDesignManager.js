@@ -2535,10 +2535,22 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
             {/* Theme Colors */}
             <div className="bg-white border rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">🎨 App Theme Colors</h3>
-                <p className="text-sm text-slate-600 mb-4">
-                    These colors affect the status bar and window appearance when the app is installed.
-                </p>
+                <div className="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 className="text-lg font-semibold text-slate-800">🎨 App Theme Colors</h3>
+                        <p className="text-sm text-slate-600">
+                            These colors affect the status bar and window appearance when the app is installed.
+                        </p>
+                    </div>
+                    {(editingStyle.navLogoUrl || editingStyle.pwaIconUrl) && (
+                        <button
+                            onClick={() => handleColorExtraction(editingStyle.pwaIconUrl || editingStyle.navLogoUrl)}
+                            className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-colors flex items-center gap-2 text-sm font-medium"
+                        >
+                            🎨 Use Logo Colors
+                        </button>
+                    )}
+                </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
