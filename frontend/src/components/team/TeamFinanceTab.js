@@ -170,6 +170,48 @@ const TeamFinanceTab = ({ team, currentUser }) => {
         }).format(amount || 0);
     };
 
+    // Export to CSV
+    const handleExportCSV = () => {
+        if (transactions.length === 0) {
+            setMessage('❌ No transactions to export');
+            setTimeout(() => setMessage(''), 3000);
+            return;
+        }
+
+        const headers = ['Date', 'Type', 'Category', 'Description', 'Amount', 'Added By'];
+        const csvContent = [
+            headers.join(','),
+            ...transactions.map(t => [
+                t.date,
+                t.type,
+                `"${t.category}"`,
+                `"${(t.description || '').replace(/"/g, '""')}"`,
+                t.type === 'income' ? t.amount : -t.amount,
+                `"${t.created_by_name || 'Unknown'}"`
+            ].join(','))
+        ].join('\n');
+
+        // Add summary at the bottom
+        const summaryRows = [
+            '',
+            'Summary',
+            `Total Income,${summary.total_income || 0}`,
+            `Total Expenses,${summary.total_expense || 0}`,
+            `Balance,${summary.balance || 0}`,
+            `Total Transactions,${summary.transaction_count || 0}`
+        ].join('\n');
+
+        const blob = new Blob([csvContent + '\n' + summaryRows], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${team.name.replace(/\s+/g, '_')}_finance_report_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        
+        setMessage('✅ Report exported successfully!');
+        setTimeout(() => setMessage(''), 3000);
+    };
+
     if (loading && transactions.length === 0) {
         return (
             <div className="flex items-center justify-center py-12">
