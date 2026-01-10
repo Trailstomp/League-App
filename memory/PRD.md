@@ -155,16 +155,24 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 - [ ] Financial reports/exports
 
 ## Technical Debt - RESOLVED
-- ✅ `server.py` refactored: Finance and Locations routers extracted (~400 lines moved to `/app/backend/routes/`)
-- ✅ `TeamDetailPage.js` refactored: 
-  - TeamFinanceTab (~450 lines) → `/app/frontend/src/components/team/TeamFinanceTab.js`
-  - TeamSettingsTab (~500 lines) → `/app/frontend/src/components/team/TeamSettingsTab.js`
-  - PlayerCardPopup (~330 lines) → `/app/frontend/src/components/team/PlayerCardPopup.js`
-  - **Total reduction**: 3,942 lines → 2,536 lines (~36% reduction)
+### Frontend Refactoring (TeamDetailPage.js)
+- **Before**: 3,942 lines → **After**: 1,685 lines (~57% reduction!)
+- Extracted components to `/app/frontend/src/components/team/`:
+  - `TeamFinanceTab.js` (449 lines) - Finance register
+  - `TeamSettingsTab.js` (499 lines) - Team settings (YouTube, Social, Appearance)
+  - `PlayerCardPopup.js` (328 lines) - Player card modal
+  - `TeamRosterTab.js` (690 lines) - Roster display with player management
+
+### Backend Refactoring (server.py)
+- **Before**: 12,843 lines → **After**: 12,204 lines
+- Created `/app/backend/routes/` with feature-based routers:
+  - `finance.py` (314 lines) - Finance CRUD operations
+  - `locations.py` (131 lines) - Location management
+  - `teams.py` (237 lines) - Team roster management
 
 ### Remaining Technical Debt
-- `server.py` is still large (~12.4K lines) - could extract more routers (users, teams, media)
-- TeamRosterTab could be extracted from TeamDetailPage.js
+- `server.py` still large (~12.2K lines) - could extract users, events, media routers
+- MyDashboardTab, TeamRosterManageTab could be extracted from TeamDetailPage.js
 
 ## 3rd Party Integrations
 - Twilio (SMS notifications)
