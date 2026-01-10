@@ -156,23 +156,34 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 
 ## Technical Debt - RESOLVED
 ### Frontend Refactoring (TeamDetailPage.js)
-- **Before**: 3,942 lines → **After**: 1,685 lines (~57% reduction!)
+- **Before**: 3,942 lines → **After**: 305 lines (~92% reduction!)
 - Extracted components to `/app/frontend/src/components/team/`:
   - `TeamFinanceTab.js` (449 lines) - Finance register
   - `TeamSettingsTab.js` (499 lines) - Team settings (YouTube, Social, Appearance)
   - `PlayerCardPopup.js` (328 lines) - Player card modal
   - `TeamRosterTab.js` (690 lines) - Roster display with player management
+  - `MyDashboardTab.js` (137 lines) - Player/Coach personal dashboard
+  - `TeamRecruitingTab.js` (381 lines) - Recruiting and invites
+  - `TeamHomeTab.js` (202 lines) - Team home with news and locations
+  - `TeamScheduleTab.js` (54 lines) - Event schedule
+  - `TeamStatsTab.js` (8 lines) - Stats wrapper
+  - `TeamMediaTab.js` (29 lines) - Photos & Videos wrapper
+  - `TeamContactTab.js` (169 lines) - Contact information
+  - `TeamChatTab.js` (41 lines) - GroupMe chat wrapper
+  - `TeamRosterManageTab.js` (115 lines) - Roster management for coaches
+  - `TeamFeesTab.js` (222 lines) - Team fee management
 
 ### Backend Refactoring (server.py)
-- **Before**: 12,843 lines → **After**: 12,204 lines
+- **Before**: 12,843 lines → **After**: 12,206 lines
 - Created `/app/backend/routes/` with feature-based routers:
   - `finance.py` (314 lines) - Finance CRUD operations
   - `locations.py` (131 lines) - Location management
   - `teams.py` (237 lines) - Team roster management
+  - `users.py` (361 lines) - User authentication and management
 
 ### Remaining Technical Debt
-- `server.py` still large (~12.2K lines) - could extract users, events, media routers
-- MyDashboardTab, TeamRosterManageTab could be extracted from TeamDetailPage.js
+- `server.py` still large (~12.2K lines) - duplicate endpoints remain, need removal
+- Could extract additional routers: events, media, groupme, payments
 
 ## 3rd Party Integrations
 - Twilio (SMS notifications)
