@@ -62,6 +62,7 @@ except Exception as e:
 # Initialize routers with database connection
 set_finance_db(db)
 set_locations_db(db)
+set_teams_db(db)
 
 # Create the main app without a prefix
 app = FastAPI()
