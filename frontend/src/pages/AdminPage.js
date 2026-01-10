@@ -24,6 +24,7 @@ import { FeeManager } from '../components/fees';
 import AdminEventsView from '../components/admin/AdminEventsView';
 import LeagueFinanceManager from '../components/managers/LeagueFinanceManager';
 import DataCleanupManager from '../components/managers/DataCleanupManager';
+import DataHealthWidget from '../components/DataHealthWidget';
 
 // Team Invites Manager Component for League Admins
 const TeamInvitesManager = ({ currentUser }) => {
