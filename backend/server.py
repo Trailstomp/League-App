@@ -6441,7 +6441,7 @@ async def send_team_invite(invite_data: Dict[str, Any]):
         }
         
         # Get frontend URL
-        frontend_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:3000').replace('/api', '').rstrip('/')
+        frontend_url = os.environ.get('FRONTEND_URL', os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:3000')).replace('/api', '').rstrip('/')
         invite_link = f"{frontend_url}?team_invite={invite_token}"
         
         # Send invitation
