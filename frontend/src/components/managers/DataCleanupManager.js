@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import HealthAlertSettings from './HealthAlertSettings';
 
 /**
  * DataCleanupManager - Utility for cleaning up orphaned data in the database
@@ -10,6 +11,7 @@ const DataCleanupManager = () => {
     const [preview, setPreview] = useState(null);
     const [cleanupResult, setCleanupResult] = useState(null);
     const [message, setMessage] = useState('');
+    const [activeTab, setActiveTab] = useState('cleanup');
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
 
     // Fetch database stats on mount
