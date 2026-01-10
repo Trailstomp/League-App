@@ -100,7 +100,18 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 
 ## What's Been Implemented
 
-### January 10, 2025 (Current Session)
+### January 10, 2025 (Current Session - Continued)
+- **Code Refactoring (Major)**:
+  - Frontend: TeamDetailPage.js reduced from ~1,150 to 305 lines (~73% reduction)
+  - Extracted 8 additional components to `/app/frontend/src/components/team/`
+  - Backend: Created `users.py` and `rsvp.py` routers (total 5 routers, 1,885 lines)
+  
+- **Finance CSV Export Feature**:
+  - Export CSV button added to Team Finance tab
+  - Export CSV button added to League Finance (Admin Portal)
+  - Exports include all transactions + summary data
+
+### January 10, 2025 (Earlier)
 - **Finance Register Feature (P1)**: Complete income/expense tracking system
   - Team Finance tab visible to team admins/coaches
   - Predefined categories for income (8) and expense (13)
