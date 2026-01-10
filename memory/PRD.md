@@ -123,7 +123,26 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 
 ## What's Been Implemented
 
-### January 10, 2025 (Current Session - Continued)
+### January 10, 2025 (Latest Session)
+- **Data Health Dashboard Widget**:
+  - New DataHealthWidget component on Admin Dashboard
+  - Shows: Active Users, Pending Approval, Orphaned Records, Teams count
+  - Color-coded health status (Healthy/Minor Issues/Needs Attention)
+  - Issues breakdown with link to Data Cleanup page
+  - Refresh button for real-time updates
+
+- **Data Cleanup Utility**:
+  - New tab in Admin Portal -> Settings -> Data Cleanup
+  - Preview orphaned data before deleting
+  - Clean legacy players, orphaned roster entries, invalid team assignments
+  - Database statistics view
+  - Backend: `/app/backend/routes/cleanup.py` router
+
+- **PWA Color Picker Fix**:
+  - Fixed missing border styling on color inputs in Mobile App Settings
+  - Theme Color, Background Color, Banner colors now properly styled
+
+### January 10, 2025 (Earlier Session)
 - **Code Refactoring (Major)**:
   - Frontend: TeamDetailPage.js reduced from ~1,150 to 305 lines (~73% reduction)
   - Extracted 8 additional components to `/app/frontend/src/components/team/`
@@ -134,7 +153,7 @@ Create a comprehensive league management portal for lacrosse leagues with featur
   - Export CSV button added to League Finance (Admin Portal)
   - Exports include all transactions + summary data
 
-### January 10, 2025 (Earlier)
+### January 10, 2025 (First Session)
 - **Finance Register Feature (P1)**: Complete income/expense tracking system
   - Team Finance tab visible to team admins/coaches
   - Predefined categories for income (8) and expense (13)
