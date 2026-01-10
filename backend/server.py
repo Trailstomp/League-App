@@ -27,6 +27,9 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 from googleapiclient.errors import HttpError
 
+# Import feature-based routers
+from routes import finance_router, locations_router, set_finance_db, set_locations_db
+
 
 ROOT_DIR = Path(__file__).parent
 
