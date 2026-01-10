@@ -224,19 +224,62 @@ const TeamAssignmentEditor = ({ assignments = [], teams = [], onChange }) => {
                                 />
                             </div>
 
-                            {/* Position */}
+                            {/* Position - Multi-select */}
                             <div>
-                                <label className="block text-xs font-medium text-gray-600 mb-1">Position</label>
-                                <select
-                                    value={assignment.position || ''}
-                                    onChange={(e) => updateAssignment(index, 'position', e.target.value)}
-                                    className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
-                                >
-                                    <option value="">Select Position</option>
-                                    {positionOptions.map(pos => (
-                                        <option key={pos} value={pos}>{pos}</option>
-                                    ))}
-                                </select>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Position(s)</label>
+                                <div className="relative">
+                                    <div 
+                                        className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm bg-white cursor-pointer min-h-[34px] flex flex-wrap gap-1"
+                                        onClick={(e) => {
+                                            const dropdown = e.currentTarget.nextElementSibling;
+                                            dropdown.classList.toggle('hidden');
+                                        }}
+                                    >
+                                        {(assignment.positions && assignment.positions.length > 0) ? (
+                                            assignment.positions.map(pos => (
+                                                <span key={pos} className="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-xs">
+                                                    {pos}
+                                                </span>
+                                            ))
+                                        ) : assignment.position ? (
+                                            <span className="bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded text-xs">
+                                                {assignment.position}
+                                            </span>
+                                        ) : (
+                                            <span className="text-gray-400">Select positions...</span>
+                                        )}
+                                    </div>
+                                    <div className="hidden absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow-lg max-h-48 overflow-y-auto">
+                                        {positionOptions.map(pos => {
+                                            const currentPositions = assignment.positions || (assignment.position ? [assignment.position] : []);
+                                            const isSelected = currentPositions.includes(pos);
+                                            return (
+                                                <label 
+                                                    key={pos} 
+                                                    className="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isSelected}
+                                                        onChange={(e) => {
+                                                            let newPositions;
+                                                            if (e.target.checked) {
+                                                                newPositions = [...currentPositions, pos];
+                                                            } else {
+                                                                newPositions = currentPositions.filter(p => p !== pos);
+                                                            }
+                                                            updateAssignment(index, 'positions', newPositions);
+                                                            // Also update legacy position field for backward compatibility
+                                                            updateAssignment(index, 'position', newPositions[0] || '');
+                                                        }}
+                                                        className="mr-2"
+                                                    />
+                                                    <span className="text-sm">{pos}</span>
+                                                </label>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
