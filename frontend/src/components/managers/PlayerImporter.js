@@ -141,8 +141,11 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
 
             // Validate required fields
             const rowErrors = [];
-            if (!player.firstName) rowErrors.push('Missing first name');
-            if (!player.lastName) rowErrors.push('Missing last name');
+            // Support both single 'name' field and legacy firstName/lastName
+            const playerName = player.name || `${player.firstName || ''} ${player.lastName || ''}`.trim();
+            if (!playerName) rowErrors.push('Missing name');
+            player.name = playerName; // Ensure name is set
+            
             if (!player.email) rowErrors.push('Missing email');
             else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(player.email)) {
                 rowErrors.push('Invalid email format');
