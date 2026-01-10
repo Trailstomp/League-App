@@ -680,7 +680,7 @@ function App() {
       )}
       
       {/* PWA Install Prompt */}
-      <InstallPWA />
+      <InstallPWA websiteStyle={websiteStyle} />
     </>
   );
 }
