@@ -28,7 +28,7 @@ from googleapiclient.http import MediaIoBaseUpload
 from googleapiclient.errors import HttpError
 
 # Import feature-based routers
-from routes import finance_router, locations_router, teams_router, users_router, rsvp_router, set_finance_db, set_locations_db, set_teams_db, set_users_db, set_rsvp_db
+from routes import finance_router, locations_router, teams_router, users_router, rsvp_router, drive_router, set_finance_db, set_locations_db, set_teams_db, set_users_db, set_rsvp_db, set_drive_db
 
 
 ROOT_DIR = Path(__file__).parent
@@ -65,6 +65,7 @@ set_locations_db(db)
 set_teams_db(db)
 set_users_db(db)
 set_rsvp_db(db)
+set_drive_db(db)
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -12267,6 +12268,7 @@ api_router.include_router(locations_router)
 api_router.include_router(teams_router)
 api_router.include_router(users_router)
 api_router.include_router(rsvp_router)
+api_router.include_router(drive_router)
 
 # Include the API router in the main app (after all routes are defined)
 app.include_router(api_router)
