@@ -124,6 +124,14 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 ## What's Been Implemented
 
 ### January 10, 2025 (Latest Session)
+- **Health Alert Email Notifications** (NEW):
+  - Email alerts when database health thresholds are exceeded
+  - Configurable thresholds for orphaned records, pending users, legacy players
+  - Multiple recipient email support
+  - Test alert functionality
+  - Settings UI in Data Cleanup → Health Alerts tab
+  - Backend: `/api/cleanup/health-alerts/*` endpoints
+
 - **Data Health Dashboard Widget**:
   - New DataHealthWidget component on Admin Dashboard
   - Shows: Active Users, Pending Approval, Orphaned Records, Teams count
