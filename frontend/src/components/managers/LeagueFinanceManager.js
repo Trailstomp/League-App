@@ -261,27 +261,40 @@ const LeagueFinanceManager = ({ teams, currentUser }) => {
                     <h2 className="text-2xl font-bold text-slate-800">League Finance</h2>
                     <p className="text-sm text-slate-600">Overview of all team and league finances</p>
                 </div>
-                <button
-                    onClick={() => {
-                        setFormData({
-                            type: 'income',
-                            amount: '',
-                            category: '',
-                            date: new Date().toISOString().split('T')[0],
-                            description: '',
-                            team_id: '',
-                            scope: 'league'
-                        });
-                        setShowAddForm(true);
-                    }}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-                    data-testid="add-league-transaction-btn"
-                >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    Add Transaction
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        onClick={handleExportCSV}
+                        disabled={allTransactions.length === 0}
+                        className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        data-testid="export-league-csv-btn"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Export CSV
+                    </button>
+                    <button
+                        onClick={() => {
+                            setFormData({
+                                type: 'income',
+                                amount: '',
+                                category: '',
+                                date: new Date().toISOString().split('T')[0],
+                                description: '',
+                                team_id: '',
+                                scope: 'league'
+                            });
+                            setShowAddForm(true);
+                        }}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                        data-testid="add-league-transaction-btn"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add Transaction
+                    </button>
+                </div>
             </div>
 
             {/* Message */}
