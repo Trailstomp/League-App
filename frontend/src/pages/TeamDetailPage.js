@@ -13,6 +13,7 @@ import { PlayerFeeDashboard } from '../components/fees';
 import ImageUploadCrop from '../components/ImageUploadCrop';
 import { extractThemeColors } from '../utils/colorExtractor';
 import TeamFinanceTab from '../components/team/TeamFinanceTab';
+import TeamSettingsTab from '../components/team/TeamSettingsTab';
 
 const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate, onUserUpdate }) => {
     const [activeTab, setActiveTab] = useState(() => {
