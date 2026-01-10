@@ -258,8 +258,12 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
                 // Apply selected team if no team specified in CSV
                 const teamId = player.teamId || selectedTeam || null;
                 
+                // Parse positions (can be comma-separated)
+                const positionsRaw = player.position || '';
+                const positions = positionsRaw.split(',').map(p => p.trim()).filter(Boolean);
+                
                 const playerData = {
-                    name: `${player.firstName} ${player.lastName}`.trim(),
+                    name: player.name,
                     email: player.email,
                     password: defaultPassword,
                     phone: player.phone || null,
@@ -267,14 +271,16 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
                     teamAssignments: teamId ? [{
                         teamId: teamId,
                         playerNumber: player.jerseyNumber || '',
-                        position: player.position || '',
+                        position: positions[0] || '',
+                        positions: positions,
                         isPrimary: true
                     }] : [],
                     roles: [player.role || 'player'],
                     role: player.role || 'player',
                     status: 'active',
                     playerNumber: player.jerseyNumber || null,
-                    position: player.position || null,
+                    position: positions[0] || null,
+                    positions: positions,
                     jerseySize: player.jerseySize || null,
                     emergencyContact: Object.keys(emergencyContact).length > 0 ? emergencyContact : null,
                     lacrosseHistory: Object.keys(lacrosseHistory).length > 0 ? lacrosseHistory : null,
