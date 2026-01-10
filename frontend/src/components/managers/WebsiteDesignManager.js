@@ -361,14 +361,23 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                     
                     // Main content zone
                     mainBackgroundColor: hexColors[2] || '#f8fafc',
-                    mainTextColor: hexColors[0] || '#374151'
+                    mainTextColor: hexColors[0] || '#374151',
+                    
+                    // PWA / Mobile App colors - AUTO-PROPAGATE from logo
+                    pwaThemeColor: hexColors[0] || '#1e40af',
+                    pwaBackgroundColor: hexColors[2] || '#f8fafc',
+                    pwaInstallBannerBgColor: hexColors[0] || '#1e40af',
+                    pwaInstallBannerTextColor: '#ffffff',
+                    pwaInstallBannerButtonColor: '#ffffff',
+                    pwaInstallBannerButtonTextColor: hexColors[0] || '#1e40af'
                 };
                 
-                console.log('🎨 Colors applied to ALL zones with nav logo propagation:', {
+                console.log('🎨 Colors applied to ALL zones including PWA:', {
                     primary: newState.primaryColor,
                     navBackground: newState.navBackgroundColor,
                     menuBackground: newState.menuBackgroundColor,
-                    menuText: newState.menuTextColor
+                    menuText: newState.menuTextColor,
+                    pwaTheme: newState.pwaThemeColor
                 });
                 
                 return newState;
@@ -377,7 +386,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
             setShowColorExtractor(false);
             setExtractImageUrl('');
             
-            console.log('🎨 Color extraction complete - nav logo colors propagated to sidebar');
+            console.log('🎨 Color extraction complete - nav logo colors propagated to sidebar and PWA');
             
             // Save immediately after color extraction
             setTimeout(() => handleSave(), 500);
