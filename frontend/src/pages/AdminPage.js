@@ -555,6 +555,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <GroupMeManager />;
             case 'database-admin':
                 return <DatabaseAdminManager />;
+            case 'data-cleanup':
+                return <DataCleanupManager />;
             case 'media':
                 return <GalleryManager teams={teams} currentUser={currentUser} />;
             case 'cloud-storage':
