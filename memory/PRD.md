@@ -155,9 +155,9 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 - [ ] Financial reports/exports
 
 ## Technical Debt
-- `server.py` is monolithic (~12K+ lines) - needs breaking into routers
-- `TeamDetailPage.js` is very large - needs component extraction
-- PlayerCardPopup defined inside render function (React anti-pattern)
+- `server.py` refactored: Finance and Locations routers extracted (~400 lines moved to `/app/backend/routes/`)
+- `TeamDetailPage.js` refactored: TeamFinanceTab extracted (~444 lines moved to `/app/frontend/src/components/team/`)
+- **Remaining**: TeamSettingsTab, TeamRosterTab, PlayerCardPopup could be further extracted
 
 ## 3rd Party Integrations
 - Twilio (SMS notifications)
