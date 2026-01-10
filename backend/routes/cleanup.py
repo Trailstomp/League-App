@@ -350,3 +350,335 @@ async def remove_inactive_users(confirm: bool = False):
     except Exception as e:
         logger.error(f"❌ Error removing inactive users: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+# ============= Health Alert Endpoints =============
+
+@cleanup_router.get("/health-alerts/settings")
+async def get_health_alert_settings():
+    """Get current health alert settings"""
+    try:
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        if not league_data:
+            return {
+                "enabled": False,
+                "recipient_emails": [],
+                "orphaned_threshold": 5,
+                "pending_users_threshold": 10,
+                "legacy_players_threshold": 5
+            }
+        
+        settings = league_data.get("healthAlertSettings", {})
+        return {
+            "enabled": settings.get("enabled", False),
+            "recipient_emails": settings.get("recipient_emails", []),
+            "orphaned_threshold": settings.get("orphaned_threshold", 5),
+            "pending_users_threshold": settings.get("pending_users_threshold", 10),
+            "legacy_players_threshold": settings.get("legacy_players_threshold", 5),
+            "last_alert_sent": settings.get("last_alert_sent"),
+            "last_check": settings.get("last_check")
+        }
+    except Exception as e:
+        logger.error(f"❌ Error getting health alert settings: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@cleanup_router.post("/health-alerts/settings")
+async def update_health_alert_settings(settings: HealthAlertSettings):
+    """Update health alert settings"""
+    try:
+        await db.league_data.update_one(
+            {"id": "main_league"},
+            {
+                "$set": {
+                    "healthAlertSettings": {
+                        "enabled": settings.enabled,
+                        "recipient_emails": settings.recipient_emails,
+                        "orphaned_threshold": settings.orphaned_threshold,
+                        "pending_users_threshold": settings.pending_users_threshold,
+                        "legacy_players_threshold": settings.legacy_players_threshold
+                    }
+                }
+            },
+            upsert=True
+        )
+        
+        return {"status": "success", "message": "Health alert settings updated"}
+    except Exception as e:
+        logger.error(f"❌ Error updating health alert settings: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@cleanup_router.post("/health-alerts/check")
+async def check_and_send_health_alert(force: bool = False):
+    """
+    Check database health and send alert if thresholds are exceeded
+    Set force=True to send alert regardless of thresholds
+    """
+    try:
+        # Get settings
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        if not league_data:
+            return {"status": "error", "message": "League data not found"}
+        
+        settings = league_data.get("healthAlertSettings", {})
+        
+        if not settings.get("enabled") and not force:
+            return {"status": "skipped", "message": "Health alerts are disabled"}
+        
+        recipient_emails = settings.get("recipient_emails", [])
+        if not recipient_emails:
+            return {"status": "skipped", "message": "No recipient emails configured"}
+        
+        # Get current health status
+        stats = await get_database_stats_internal()
+        orphaned = await get_orphaned_preview_internal()
+        
+        # Check thresholds
+        issues = []
+        orphaned_count = orphaned.get("total_issues", 0)
+        pending_users = stats.get("users", {}).get("pending", 0)
+        legacy_players = stats.get("legacy_players", 0)
+        
+        orphaned_threshold = settings.get("orphaned_threshold", 5)
+        pending_threshold = settings.get("pending_users_threshold", 10)
+        legacy_threshold = settings.get("legacy_players_threshold", 5)
+        
+        if orphaned_count >= orphaned_threshold:
+            issues.append(f"Orphaned records: {orphaned_count} (threshold: {orphaned_threshold})")
+        if pending_users >= pending_threshold:
+            issues.append(f"Pending users: {pending_users} (threshold: {pending_threshold})")
+        if legacy_players >= legacy_threshold:
+            issues.append(f"Legacy players: {legacy_players} (threshold: {legacy_threshold})")
+        
+        if not issues and not force:
+            # Update last check time
+            await db.league_data.update_one(
+                {"id": "main_league"},
+                {"$set": {"healthAlertSettings.last_check": datetime.now(timezone.utc).isoformat()}}
+            )
+            return {
+                "status": "healthy",
+                "message": "All metrics within thresholds",
+                "stats": {
+                    "orphaned_records": orphaned_count,
+                    "pending_users": pending_users,
+                    "legacy_players": legacy_players
+                }
+            }
+        
+        # Send alert email
+        smtp_config = league_data.get("smtpConfig")
+        if not smtp_config or not smtp_config.get("email"):
+            return {"status": "error", "message": "SMTP not configured. Cannot send alerts."}
+        
+        # Build email content
+        league_name = league_data.get("name", "MLBL")
+        subject = f"⚠️ Database Health Alert - {league_name}"
+        
+        issues_html = "".join([f"<li style='margin: 8px 0;'>{issue}</li>" for issue in issues]) if issues else "<li>Manual check requested</li>"
+        
+        html_body = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background: linear-gradient(135deg, #dc2626, #f97316); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+        .content {{ background: #f8fafc; padding: 30px; border-radius: 0 0 10px 10px; }}
+        .alert-box {{ background: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0; border-radius: 4px; }}
+        .stats-grid {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }}
+        .stat-card {{ background: white; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #e2e8f0; }}
+        .stat-value {{ font-size: 24px; font-weight: bold; color: #1e40af; }}
+        .stat-label {{ font-size: 12px; color: #64748b; }}
+        .cta-button {{ display: inline-block; background: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }}
+        .footer {{ text-align: center; color: #64748b; font-size: 12px; margin-top: 20px; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚠️ Database Health Alert</h1>
+            <p>{league_name}</p>
+        </div>
+        <div class="content">
+            <p>The following issues were detected in your database:</p>
+            
+            <div class="alert-box">
+                <ul style="margin: 0; padding-left: 20px;">
+                    {issues_html}
+                </ul>
+            </div>
+            
+            <h3>Current Statistics</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">{stats.get('users', {}).get('active', 0)}</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{pending_users}</div>
+                    <div class="stat-label">Pending Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{orphaned_count}</div>
+                    <div class="stat-label">Orphaned Records</div>
+                </div>
+            </div>
+            
+            <p style="text-align: center;">
+                <a href="#" class="cta-button">Open Admin Portal</a>
+            </p>
+            
+            <p>To resolve these issues, go to <strong>Admin Portal → Settings → Data Cleanup</strong> and run the cleanup utility.</p>
+        </div>
+        <div class="footer">
+            <p>This is an automated health alert from {league_name}.</p>
+            <p>Generated at {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+        
+        text_body = f"""
+Database Health Alert - {league_name}
+
+The following issues were detected:
+{chr(10).join(['- ' + issue for issue in issues]) if issues else '- Manual check requested'}
+
+Current Statistics:
+- Active Users: {stats.get('users', {}).get('active', 0)}
+- Pending Users: {pending_users}
+- Orphaned Records: {orphaned_count}
+
+To resolve these issues, go to Admin Portal → Settings → Data Cleanup.
+
+Generated at {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}
+"""
+        
+        # Send email
+        try:
+            msg = MIMEMultipart('alternative')
+            msg['Subject'] = subject
+            msg['From'] = f"{smtp_config.get('sender_name', league_name)} <{smtp_config['email']}>"
+            msg['To'] = ", ".join(recipient_emails)
+            
+            msg.attach(MIMEText(text_body, 'plain'))
+            msg.attach(MIMEText(html_body, 'html'))
+            
+            with smtplib.SMTP(smtp_config['host'], smtp_config.get('port', 587)) as server:
+                server.starttls()
+                server.login(smtp_config['email'], smtp_config['password'])
+                server.send_message(msg)
+            
+            # Update last alert sent time
+            await db.league_data.update_one(
+                {"id": "main_league"},
+                {
+                    "$set": {
+                        "healthAlertSettings.last_alert_sent": datetime.now(timezone.utc).isoformat(),
+                        "healthAlertSettings.last_check": datetime.now(timezone.utc).isoformat()
+                    }
+                }
+            )
+            
+            logger.info(f"✅ Health alert sent to {recipient_emails}")
+            return {
+                "status": "sent",
+                "message": f"Alert sent to {len(recipient_emails)} recipient(s)",
+                "recipients": recipient_emails,
+                "issues": issues
+            }
+            
+        except Exception as email_error:
+            logger.error(f"❌ Failed to send health alert: {email_error}")
+            return {"status": "error", "message": f"Failed to send email: {str(email_error)}"}
+        
+    except Exception as e:
+        logger.error(f"❌ Error checking health alerts: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@cleanup_router.post("/health-alerts/test")
+async def send_test_health_alert():
+    """Send a test health alert email to verify configuration"""
+    return await check_and_send_health_alert(force=True)
+
+
+# Internal helper functions
+async def get_database_stats_internal():
+    """Internal function to get database stats"""
+    stats = {
+        "users": {"total": 0, "active": 0, "pending": 0, "inactive": 0},
+        "teams": {"total": 0},
+        "legacy_players": 0,
+        "team_roster_entries": 0
+    }
+    
+    all_users = await db.users.find({}, {"_id": 0, "status": 1}).to_list(1000)
+    stats["users"]["total"] = len(all_users)
+    
+    for user in all_users:
+        status = user.get("status", "unknown")
+        if status == "active":
+            stats["users"]["active"] += 1
+        elif status == "pending":
+            stats["users"]["pending"] += 1
+        else:
+            stats["users"]["inactive"] += 1
+    
+    league_data = await db.league_data.find_one({"id": "main_league"})
+    if league_data:
+        stats["legacy_players"] = len(league_data.get("players", []))
+        teams = league_data.get("teams", [])
+        stats["teams"]["total"] = len(teams)
+        for team in teams:
+            stats["team_roster_entries"] += len(team.get("roster", []))
+    
+    return stats
+
+
+async def get_orphaned_preview_internal():
+    """Internal function to get orphaned data preview"""
+    orphaned_data = {
+        "legacy_players": [],
+        "orphaned_team_assignments": [],
+        "users_without_valid_teams": [],
+        "total_issues": 0
+    }
+    
+    active_users = await db.users.find({"status": "active"}, {"_id": 0}).to_list(1000)
+    active_user_ids = {u.get("id") for u in active_users}
+    active_user_emails = {u.get("email", "").lower() for u in active_users if u.get("email")}
+    
+    league_data = await db.league_data.find_one({"id": "main_league"})
+    
+    if league_data:
+        legacy_players = league_data.get("players", [])
+        teams = league_data.get("teams", [])
+        
+        for player in legacy_players:
+            player_id = player.get("id")
+            player_email = player.get("email", "").lower()
+            
+            if player_id and player_id not in active_user_ids:
+                if not player_email or player_email not in active_user_emails:
+                    orphaned_data["legacy_players"].append(player)
+        
+        for team in teams:
+            roster = team.get("roster", [])
+            for roster_entry in roster:
+                if isinstance(roster_entry, str):
+                    if roster_entry not in active_user_ids:
+                        orphaned_data["orphaned_team_assignments"].append({"teamId": team.get("id"), "playerId": roster_entry})
+                elif isinstance(roster_entry, dict):
+                    entry_id = roster_entry.get("id") or roster_entry.get("playerId")
+                    if entry_id and entry_id not in active_user_ids:
+                        orphaned_data["orphaned_team_assignments"].append({"teamId": team.get("id"), "playerId": entry_id})
+    
+    orphaned_data["total_issues"] = len(orphaned_data["legacy_players"]) + len(orphaned_data["orphaned_team_assignments"])
+    
+    return orphaned_data
