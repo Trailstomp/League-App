@@ -77,6 +77,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         { id: 'content', label: 'Main Content', icon: 'text', description: 'Page background and content text' },
         { id: 'liveview', label: 'Live View & Scoring', icon: 'customize', description: 'Styling for live game views and score entry' },
         { id: 'ticker', label: 'Event Ticker', icon: 'customize', description: 'Configure the scrolling events ticker' },
+        { id: 'pwa', label: 'Mobile App Settings', icon: 'admin', description: 'App icon, install banner, and home screen settings' },
         { id: 'preview', label: 'Live Preview', icon: 'customize', description: 'See all changes applied' }
     ];
 
