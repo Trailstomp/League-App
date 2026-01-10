@@ -526,6 +526,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 { id: 'api-integrations', label: 'API Keys', icon: 'settings' },
                 { id: 'cloud-storage', label: 'Cloud Storage', icon: 'backup' },
                 { id: 'database-admin', label: 'Database', icon: 'settings' },
+                { id: 'data-cleanup', label: 'Data Cleanup', icon: 'delete' },
             ]
         }
     ];
