@@ -59,6 +59,10 @@ except Exception as e:
     client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=5000)
     db = client[os.environ.get('DB_NAME', 'mlbl_database')]
 
+# Initialize routers with database connection
+set_finance_db(db)
+set_locations_db(db)
+
 # Create the main app without a prefix
 app = FastAPI()
 
