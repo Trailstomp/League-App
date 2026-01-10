@@ -678,6 +678,9 @@ function App() {
           }}
         />
       )}
+      
+      {/* PWA Install Prompt */}
+      <InstallPWA />
     </>
   );
 }
