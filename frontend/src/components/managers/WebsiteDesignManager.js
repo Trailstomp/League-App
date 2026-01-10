@@ -60,6 +60,20 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         primaryColor: websiteStyle.primaryColor || '#1e40af',
         accentColor: websiteStyle.accentColor || '#3b82f6',
         
+        // PWA / Mobile App Settings
+        pwaAppName: websiteStyle.pwaAppName || 'Midwest Lacrosse League',
+        pwaShortName: websiteStyle.pwaShortName || 'MLBL',
+        pwaDescription: websiteStyle.pwaDescription || 'League management portal for schedules, rosters, and stats',
+        pwaThemeColor: websiteStyle.pwaThemeColor || '#1e40af',
+        pwaBackgroundColor: websiteStyle.pwaBackgroundColor || '#f8fafc',
+        pwaIconUrl: websiteStyle.pwaIconUrl || '',
+        pwaInstallBannerTitle: websiteStyle.pwaInstallBannerTitle || 'Install Our App',
+        pwaInstallBannerText: websiteStyle.pwaInstallBannerText || 'Add to your home screen for quick access!',
+        pwaInstallBannerBgColor: websiteStyle.pwaInstallBannerBgColor || '#1e40af',
+        pwaInstallBannerTextColor: websiteStyle.pwaInstallBannerTextColor || '#ffffff',
+        pwaInstallBannerButtonColor: websiteStyle.pwaInstallBannerButtonColor || '#ffffff',
+        pwaInstallBannerButtonTextColor: websiteStyle.pwaInstallBannerButtonTextColor || '#1e40af',
+        
         // Include all existing websiteStyle properties
         ...websiteStyle
     }));
