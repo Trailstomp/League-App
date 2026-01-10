@@ -173,8 +173,22 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
             
             {/* YouTube Settings Section */}
             {activeSection === 'youtube' && (
-                <div className="bg-slate-50 rounded-lg p-4">
-                    <YouTubeSettings team={team} onUpdate={onTeamUpdate} />
+                <div className="space-y-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                        <div className="flex items-start gap-3">
+                            <span className="text-xl">ℹ️</span>
+                            <div>
+                                <p className="text-sm text-blue-800 font-medium">Team YouTube Settings</p>
+                                <p className="text-sm text-blue-700 mt-1">
+                                    Configure a YouTube channel specific to this team. Videos from both the team channel 
+                                    and the league channel will be shown on your team page.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="bg-slate-50 rounded-lg p-4">
+                        <YouTubeSettings teamId={team.id} onSave={() => setMessage('✅ YouTube settings saved!')} />
+                    </div>
                 </div>
             )}
             
