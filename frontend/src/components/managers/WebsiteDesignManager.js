@@ -2412,6 +2412,345 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         </div>
     );
 
+    // PWA / Mobile App Settings Section
+    const renderPWASection = () => (
+        <div className="space-y-6">
+            {/* App Identity */}
+            <div className="bg-white border rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">📱 App Identity</h3>
+                <p className="text-sm text-slate-600 mb-4">
+                    These settings control how your app appears when installed on users' devices.
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">App Name</label>
+                        <input
+                            type="text"
+                            value={editingStyle.pwaAppName || ''}
+                            onChange={(e) => handleStyleChange('pwaAppName', e.target.value)}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                            placeholder="Midwest Lacrosse League"
+                        />
+                        <p className="text-xs text-slate-500 mt-1">Full name shown in app stores and install prompts</p>
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Short Name</label>
+                        <input
+                            type="text"
+                            value={editingStyle.pwaShortName || ''}
+                            onChange={(e) => handleStyleChange('pwaShortName', e.target.value)}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                            placeholder="MLBL"
+                            maxLength={12}
+                        />
+                        <p className="text-xs text-slate-500 mt-1">Shown under the app icon on home screen (max 12 chars)</p>
+                    </div>
+                    
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-slate-700 mb-1">App Description</label>
+                        <textarea
+                            value={editingStyle.pwaDescription || ''}
+                            onChange={(e) => handleStyleChange('pwaDescription', e.target.value)}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                            rows={2}
+                            placeholder="League management portal for schedules, rosters, and stats"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* App Icon */}
+            <div className="bg-white border rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">🎨 App Icon</h3>
+                <p className="text-sm text-slate-600 mb-4">
+                    This icon appears on users' home screens and in the install prompt. For best results, use a square image (512x512px recommended).
+                </p>
+                
+                <div className="flex items-start gap-6">
+                    {/* Icon Preview */}
+                    <div className="flex flex-col items-center">
+                        <div className="w-24 h-24 rounded-2xl border-2 border-slate-200 overflow-hidden bg-slate-100 flex items-center justify-center shadow-lg">
+                            {editingStyle.pwaIconUrl ? (
+                                <img 
+                                    src={editingStyle.pwaIconUrl} 
+                                    alt="App Icon" 
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : editingStyle.navLogoUrl ? (
+                                <img 
+                                    src={editingStyle.navLogoUrl} 
+                                    alt="App Icon" 
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <span className="text-4xl">📱</span>
+                            )}
+                        </div>
+                        <p className="text-xs text-slate-500 mt-2">Home Screen Preview</p>
+                    </div>
+                    
+                    <div className="flex-1">
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Icon Image URL</label>
+                        <input
+                            type="url"
+                            value={editingStyle.pwaIconUrl || ''}
+                            onChange={(e) => handleStyleChange('pwaIconUrl', e.target.value)}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                            placeholder="https://example.com/icon-512.png"
+                        />
+                        <p className="text-xs text-slate-500 mt-1">Leave empty to use the navigation logo</p>
+                        
+                        <div className="mt-3 flex gap-2">
+                            <button
+                                onClick={() => {
+                                    if (editingStyle.navLogoUrl) {
+                                        handleStyleChange('pwaIconUrl', editingStyle.navLogoUrl);
+                                    }
+                                }}
+                                className="px-3 py-1 text-sm bg-slate-100 text-slate-700 rounded hover:bg-slate-200"
+                            >
+                                Use Nav Logo
+                            </button>
+                            <button
+                                onClick={() => handleStyleChange('pwaIconUrl', '')}
+                                className="px-3 py-1 text-sm bg-slate-100 text-slate-700 rounded hover:bg-slate-200"
+                            >
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Theme Colors */}
+            <div className="bg-white border rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">🎨 App Theme Colors</h3>
+                <p className="text-sm text-slate-600 mb-4">
+                    These colors affect the status bar and window appearance when the app is installed.
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Theme Color</label>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="color"
+                                value={editingStyle.pwaThemeColor || '#1e40af'}
+                                onChange={(e) => handleStyleChange('pwaThemeColor', e.target.value)}
+                                className="w-12 h-10 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={editingStyle.pwaThemeColor || '#1e40af'}
+                                onChange={(e) => handleStyleChange('pwaThemeColor', e.target.value)}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
+                            />
+                        </div>
+                        <p className="text-xs text-slate-500 mt-1">Status bar and title bar color</p>
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Background Color</label>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="color"
+                                value={editingStyle.pwaBackgroundColor || '#f8fafc'}
+                                onChange={(e) => handleStyleChange('pwaBackgroundColor', e.target.value)}
+                                className="w-12 h-10 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={editingStyle.pwaBackgroundColor || '#f8fafc'}
+                                onChange={(e) => handleStyleChange('pwaBackgroundColor', e.target.value)}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
+                            />
+                        </div>
+                        <p className="text-xs text-slate-500 mt-1">Splash screen background when app loads</p>
+                    </div>
+                </div>
+                
+                {/* Quick color presets */}
+                <div className="mt-4">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Quick Presets</label>
+                    <div className="flex flex-wrap gap-2">
+                        {[
+                            { name: 'Blue', theme: '#1e40af', bg: '#f8fafc' },
+                            { name: 'Green', theme: '#166534', bg: '#f0fdf4' },
+                            { name: 'Red', theme: '#991b1b', bg: '#fef2f2' },
+                            { name: 'Purple', theme: '#6b21a8', bg: '#faf5ff' },
+                            { name: 'Orange', theme: '#c2410c', bg: '#fff7ed' },
+                            { name: 'Dark', theme: '#1f2937', bg: '#111827' },
+                        ].map(preset => (
+                            <button
+                                key={preset.name}
+                                onClick={() => {
+                                    handleStyleChange('pwaThemeColor', preset.theme);
+                                    handleStyleChange('pwaBackgroundColor', preset.bg);
+                                }}
+                                className="px-3 py-1 text-sm rounded-full border hover:shadow-md transition-shadow flex items-center gap-2"
+                                style={{ borderColor: preset.theme }}
+                            >
+                                <span 
+                                    className="w-4 h-4 rounded-full"
+                                    style={{ backgroundColor: preset.theme }}
+                                />
+                                {preset.name}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Install Banner Customization */}
+            <div className="bg-white border rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">📲 Install Banner</h3>
+                <p className="text-sm text-slate-600 mb-4">
+                    Customize the banner that prompts users to install your app on their device.
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Banner Title</label>
+                        <input
+                            type="text"
+                            value={editingStyle.pwaInstallBannerTitle || ''}
+                            onChange={(e) => handleStyleChange('pwaInstallBannerTitle', e.target.value)}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                            placeholder="Install Our App"
+                        />
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Banner Text</label>
+                        <input
+                            type="text"
+                            value={editingStyle.pwaInstallBannerText || ''}
+                            onChange={(e) => handleStyleChange('pwaInstallBannerText', e.target.value)}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                            placeholder="Add to your home screen for quick access!"
+                        />
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Banner Background</label>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="color"
+                                value={editingStyle.pwaInstallBannerBgColor || '#1e40af'}
+                                onChange={(e) => handleStyleChange('pwaInstallBannerBgColor', e.target.value)}
+                                className="w-12 h-10 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={editingStyle.pwaInstallBannerBgColor || '#1e40af'}
+                                onChange={(e) => handleStyleChange('pwaInstallBannerBgColor', e.target.value)}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Banner Text Color</label>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="color"
+                                value={editingStyle.pwaInstallBannerTextColor || '#ffffff'}
+                                onChange={(e) => handleStyleChange('pwaInstallBannerTextColor', e.target.value)}
+                                className="w-12 h-10 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={editingStyle.pwaInstallBannerTextColor || '#ffffff'}
+                                onChange={(e) => handleStyleChange('pwaInstallBannerTextColor', e.target.value)}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Button Background</label>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="color"
+                                value={editingStyle.pwaInstallBannerButtonColor || '#ffffff'}
+                                onChange={(e) => handleStyleChange('pwaInstallBannerButtonColor', e.target.value)}
+                                className="w-12 h-10 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={editingStyle.pwaInstallBannerButtonColor || '#ffffff'}
+                                onChange={(e) => handleStyleChange('pwaInstallBannerButtonColor', e.target.value)}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Button Text Color</label>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="color"
+                                value={editingStyle.pwaInstallBannerButtonTextColor || '#1e40af'}
+                                onChange={(e) => handleStyleChange('pwaInstallBannerButtonTextColor', e.target.value)}
+                                className="w-12 h-10 rounded cursor-pointer"
+                            />
+                            <input
+                                type="text"
+                                value={editingStyle.pwaInstallBannerButtonTextColor || '#1e40af'}
+                                onChange={(e) => handleStyleChange('pwaInstallBannerButtonTextColor', e.target.value)}
+                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
+                            />
+                        </div>
+                    </div>
+                </div>
+                
+                {/* Live Preview of Install Banner */}
+                <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Banner Preview</label>
+                    <div 
+                        className="rounded-xl p-4 shadow-lg max-w-md"
+                        style={{ 
+                            background: `linear-gradient(135deg, ${editingStyle.pwaInstallBannerBgColor || '#1e40af'} 0%, ${editingStyle.pwaInstallBannerBgColor || '#1e40af'}dd 100%)`,
+                            color: editingStyle.pwaInstallBannerTextColor || '#ffffff'
+                        }}
+                    >
+                        <div className="flex items-start gap-3">
+                            <div className="w-12 h-12 rounded-xl overflow-hidden bg-white flex items-center justify-center shadow-lg flex-shrink-0">
+                                {editingStyle.pwaIconUrl || editingStyle.navLogoUrl ? (
+                                    <img 
+                                        src={editingStyle.pwaIconUrl || editingStyle.navLogoUrl} 
+                                        alt="App" 
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-2xl">📱</span>
+                                )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h4 className="font-bold text-lg">{editingStyle.pwaInstallBannerTitle || 'Install Our App'}</h4>
+                                <p className="text-sm opacity-90">{editingStyle.pwaInstallBannerText || 'Add to your home screen for quick access!'}</p>
+                                <button
+                                    className="mt-3 w-full py-2 px-4 rounded-lg font-semibold text-sm flex items-center justify-center gap-2"
+                                    style={{
+                                        backgroundColor: editingStyle.pwaInstallBannerButtonColor || '#ffffff',
+                                        color: editingStyle.pwaInstallBannerButtonTextColor || '#1e40af'
+                                    }}
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    Install App
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
     // Live Preview Section
     const renderPreviewSection = () => (
         <div className="space-y-6">
