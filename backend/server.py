@@ -12269,6 +12269,7 @@ api_router.include_router(teams_router)
 api_router.include_router(users_router)
 api_router.include_router(rsvp_router)
 api_router.include_router(drive_router)
+api_router.include_router(cleanup_router)
 
 # Include the API router in the main app (after all routes are defined)
 app.include_router(api_router)
