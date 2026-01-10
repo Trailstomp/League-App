@@ -47,6 +47,11 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
         
         // Map common column names to our expected keys
         const columnMap = {
+            'name': 'name',
+            'fullname': 'name',
+            'playername': 'name',
+            'player': 'name',
+            // Legacy support for first/last name (will be combined)
             'firstname': 'firstName',
             'first': 'firstName',
             'fname': 'firstName',
@@ -64,6 +69,7 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
             'number': 'jerseyNumber',
             'position': 'position',
             'pos': 'position',
+            'positions': 'position',
             'jerseysize': 'jerseySize',
             'size': 'jerseySize',
             'teamid': 'teamId',
