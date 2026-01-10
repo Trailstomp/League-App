@@ -42,6 +42,8 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 - [x] Role-based access (admin, league_admin, coach, player, guest)
 - [x] Default landing page preferences per user
 - [x] **Player Card Image Fix** - Fixed cropping to show full head/face
+- [x] **Multi-select Positions** - Users can have multiple positions (Attack, Midfield, Defense, etc.)
+- [x] **CSV Import Single Name** - Changed from firstName/lastName to single "name" field
 
 ### Live Scoring
 - [x] Real-time game scoring with shot tracking
