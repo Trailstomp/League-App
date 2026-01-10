@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LacrosseIcon } from '../LacrosseIcons';
+import GoogleDriveFolderManager from './GoogleDriveFolderManager';
 
 const CloudStorageManager = ({ teams = [] }) => {
     const [config, setConfig] = useState(null);
