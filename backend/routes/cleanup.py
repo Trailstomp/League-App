@@ -3,9 +3,13 @@ Data Cleanup Router - Handles cleanup of orphaned data in the database
 Helps clean up old/retired users and orphaned references
 """
 from fastapi import APIRouter, HTTPException
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from datetime import datetime, timezone
+from pydantic import BaseModel
 import logging
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +22,14 @@ db = None
 def set_db(database):
     global db
     db = database
+
+
+class HealthAlertSettings(BaseModel):
+    enabled: bool = False
+    recipient_emails: List[str] = []
+    orphaned_threshold: int = 5
+    pending_users_threshold: int = 10
+    legacy_players_threshold: int = 5
 
 
 @cleanup_router.get("/orphaned-players/preview")
