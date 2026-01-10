@@ -11762,7 +11762,7 @@ async def send_event_sms_notifications(event_id: str, notification_data: Dict[st
             template = config.get(f"{notification_type}_template", config.get("event_reminder_template", ""))
             
             # Generate RSVP URL
-            frontend_url = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:3000').replace('/api', '').rstrip('/')
+            frontend_url = os.environ.get('FRONTEND_URL', os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:3000')).replace('/api', '').rstrip('/')
             rsvp_link = f"{frontend_url}/quick-rsvp/{event_id}"
             
             # Format date and time
