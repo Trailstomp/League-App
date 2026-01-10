@@ -190,6 +190,16 @@ const CloudStorageManager = ({ teams = [] }) => {
                         ☁️ Cloud Storage
                     </button>
                     <button
+                        onClick={() => setActiveTab('folders')}
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                            activeTab === 'folders'
+                                ? 'bg-green-100 text-green-700'
+                                : 'text-slate-600 hover:bg-slate-100'
+                        }`}
+                    >
+                        📁 Folder Management
+                    </button>
+                    <button
                         onClick={() => setActiveTab('youtube')}
                         className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                             activeTab === 'youtube'
