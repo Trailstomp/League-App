@@ -519,7 +519,7 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
                                     return (
                                         <tr key={index} className={rowError ? 'bg-red-50' : ''}>
                                             <td className="px-3 py-2 text-gray-500">{index + 1}</td>
-                                            <td className="px-3 py-2">{player.firstName} {player.lastName}</td>
+                                            <td className="px-3 py-2">{player.name}</td>
                                             <td className="px-3 py-2">{player.email}</td>
                                             <td className="px-3 py-2">{player.phone || '-'}</td>
                                             <td className="px-3 py-2">{player.jerseyNumber || '-'}</td>
