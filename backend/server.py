@@ -66,6 +66,7 @@ set_teams_db(db)
 set_users_db(db)
 set_rsvp_db(db)
 set_drive_db(db)
+set_cleanup_db(db)
 
 # Create the main app without a prefix
 app = FastAPI()
