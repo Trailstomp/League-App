@@ -16,6 +16,8 @@ import TeamFinanceTab from '../components/team/TeamFinanceTab';
 import TeamSettingsTab from '../components/team/TeamSettingsTab';
 import PlayerCardPopup from '../components/team/PlayerCardPopup';
 import TeamRosterTab from '../components/team/TeamRosterTab';
+import MyDashboardTab from '../components/team/MyDashboardTab';
+import TeamRecruitingTab from '../components/team/TeamRecruitingTab';
 
 const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate, onUserUpdate }) => {
     const [activeTab, setActiveTab] = useState(() => {
