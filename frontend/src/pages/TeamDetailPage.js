@@ -15,6 +15,7 @@ import { extractThemeColors } from '../utils/colorExtractor';
 import TeamFinanceTab from '../components/team/TeamFinanceTab';
 import TeamSettingsTab from '../components/team/TeamSettingsTab';
 import PlayerCardPopup from '../components/team/PlayerCardPopup';
+import TeamRosterTab from '../components/team/TeamRosterTab';
 
 const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate, onUserUpdate }) => {
     const [activeTab, setActiveTab] = useState(() => {
