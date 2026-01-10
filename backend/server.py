@@ -12843,6 +12843,10 @@ async def get_league_finance_summary():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# Include feature-based routers in api_router
+api_router.include_router(finance_router)
+api_router.include_router(locations_router)
+
 # Include the API router in the main app (after all routes are defined)
 app.include_router(api_router)
 
