@@ -141,9 +141,9 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 - [x] Image Upload with Crop - DONE
 
 ### P1 (High Priority)
-- [ ] Refactor `server.py` into feature-based routers
-- [ ] Refactor `TeamDetailPage.js` - extract components
-- [ ] Extract PlayerCardPopup into separate component
+- [x] Refactor `server.py` into feature-based routers - IN PROGRESS
+- [x] Refactor `TeamDetailPage.js` - extract components - DONE (~92% reduction)
+- [x] Extract PlayerCardPopup into separate component - DONE
 
 ### P2 (Medium Priority)
 - [ ] Complete YouTube backend integration
