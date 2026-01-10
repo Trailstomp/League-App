@@ -2428,7 +2428,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         <input
                             type="text"
                             value={editingStyle.pwaAppName || ''}
-                            onChange={(e) => handleStyleChange('pwaAppName', e.target.value)}
+                            onChange={(e) => updateStyle({ pwaAppName: e.target.value })}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg"
                             placeholder="Midwest Lacrosse League"
                         />
@@ -2440,7 +2440,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         <input
                             type="text"
                             value={editingStyle.pwaShortName || ''}
-                            onChange={(e) => handleStyleChange('pwaShortName', e.target.value)}
+                            onChange={(e) => updateStyle({ pwaShortName: e.target.value })}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg"
                             placeholder="MLBL"
                             maxLength={12}
@@ -2452,7 +2452,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         <label className="block text-sm font-medium text-slate-700 mb-1">App Description</label>
                         <textarea
                             value={editingStyle.pwaDescription || ''}
-                            onChange={(e) => handleStyleChange('pwaDescription', e.target.value)}
+                            onChange={(e) => updateStyle({ pwaDescription: e.target.value })}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg"
                             rows={2}
                             placeholder="League management portal for schedules, rosters, and stats"
@@ -2496,7 +2496,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         <input
                             type="url"
                             value={editingStyle.pwaIconUrl || ''}
-                            onChange={(e) => handleStyleChange('pwaIconUrl', e.target.value)}
+                            onChange={(e) => updateStyle({ pwaIconUrl: e.target.value })}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg"
                             placeholder="https://example.com/icon-512.png"
                         />
@@ -2506,7 +2506,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                             <button
                                 onClick={() => {
                                     if (editingStyle.navLogoUrl) {
-                                        handleStyleChange('pwaIconUrl', editingStyle.navLogoUrl);
+                                        updateStyle({ pwaIconUrl: editingStyle.navLogoUrl });
                                     }
                                 }}
                                 className="px-3 py-1 text-sm bg-slate-100 text-slate-700 rounded hover:bg-slate-200"
@@ -2514,7 +2514,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                                 Use Nav Logo
                             </button>
                             <button
-                                onClick={() => handleStyleChange('pwaIconUrl', '')}
+                                onClick={() => updateStyle({ pwaIconUrl: '' })}
                                 className="px-3 py-1 text-sm bg-slate-100 text-slate-700 rounded hover:bg-slate-200"
                             >
                                 Clear
@@ -2538,13 +2538,13 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                             <input
                                 type="color"
                                 value={editingStyle.pwaThemeColor || '#1e40af'}
-                                onChange={(e) => handleStyleChange('pwaThemeColor', e.target.value)}
+                                onChange={(e) => updateStyle({ pwaThemeColor: e.target.value })}
                                 className="w-12 h-10 rounded cursor-pointer"
                             />
                             <input
                                 type="text"
                                 value={editingStyle.pwaThemeColor || '#1e40af'}
-                                onChange={(e) => handleStyleChange('pwaThemeColor', e.target.value)}
+                                onChange={(e) => updateStyle({ pwaThemeColor: e.target.value })}
                                 className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
                             />
                         </div>
@@ -2557,13 +2557,13 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                             <input
                                 type="color"
                                 value={editingStyle.pwaBackgroundColor || '#f8fafc'}
-                                onChange={(e) => handleStyleChange('pwaBackgroundColor', e.target.value)}
+                                onChange={(e) => updateStyle({ pwaBackgroundColor: e.target.value })}
                                 className="w-12 h-10 rounded cursor-pointer"
                             />
                             <input
                                 type="text"
                                 value={editingStyle.pwaBackgroundColor || '#f8fafc'}
-                                onChange={(e) => handleStyleChange('pwaBackgroundColor', e.target.value)}
+                                onChange={(e) => updateStyle({ pwaBackgroundColor: e.target.value })}
                                 className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
                             />
                         </div>
@@ -2586,8 +2586,8 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                             <button
                                 key={preset.name}
                                 onClick={() => {
-                                    handleStyleChange('pwaThemeColor', preset.theme);
-                                    handleStyleChange('pwaBackgroundColor', preset.bg);
+                                    updateStyle({ pwaThemeColor: preset.theme });
+                                    updateStyle({ pwaBackgroundColor: preset.bg });
                                 }}
                                 className="px-3 py-1 text-sm rounded-full border hover:shadow-md transition-shadow flex items-center gap-2"
                                 style={{ borderColor: preset.theme }}
@@ -2616,7 +2616,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         <input
                             type="text"
                             value={editingStyle.pwaInstallBannerTitle || ''}
-                            onChange={(e) => handleStyleChange('pwaInstallBannerTitle', e.target.value)}
+                            onChange={(e) => updateStyle({ pwaInstallBannerTitle: e.target.value })}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg"
                             placeholder="Install Our App"
                         />
@@ -2627,7 +2627,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         <input
                             type="text"
                             value={editingStyle.pwaInstallBannerText || ''}
-                            onChange={(e) => handleStyleChange('pwaInstallBannerText', e.target.value)}
+                            onChange={(e) => updateStyle({ pwaInstallBannerText: e.target.value })}
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg"
                             placeholder="Add to your home screen for quick access!"
                         />
@@ -2639,13 +2639,13 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                             <input
                                 type="color"
                                 value={editingStyle.pwaInstallBannerBgColor || '#1e40af'}
-                                onChange={(e) => handleStyleChange('pwaInstallBannerBgColor', e.target.value)}
+                                onChange={(e) => updateStyle({ pwaInstallBannerBgColor: e.target.value })}
                                 className="w-12 h-10 rounded cursor-pointer"
                             />
                             <input
                                 type="text"
                                 value={editingStyle.pwaInstallBannerBgColor || '#1e40af'}
-                                onChange={(e) => handleStyleChange('pwaInstallBannerBgColor', e.target.value)}
+                                onChange={(e) => updateStyle({ pwaInstallBannerBgColor: e.target.value })}
                                 className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
                             />
                         </div>
@@ -2657,13 +2657,13 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                             <input
                                 type="color"
                                 value={editingStyle.pwaInstallBannerTextColor || '#ffffff'}
-                                onChange={(e) => handleStyleChange('pwaInstallBannerTextColor', e.target.value)}
+                                onChange={(e) => updateStyle({ pwaInstallBannerTextColor: e.target.value })}
                                 className="w-12 h-10 rounded cursor-pointer"
                             />
                             <input
                                 type="text"
                                 value={editingStyle.pwaInstallBannerTextColor || '#ffffff'}
-                                onChange={(e) => handleStyleChange('pwaInstallBannerTextColor', e.target.value)}
+                                onChange={(e) => updateStyle({ pwaInstallBannerTextColor: e.target.value })}
                                 className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
                             />
                         </div>
@@ -2675,13 +2675,13 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                             <input
                                 type="color"
                                 value={editingStyle.pwaInstallBannerButtonColor || '#ffffff'}
-                                onChange={(e) => handleStyleChange('pwaInstallBannerButtonColor', e.target.value)}
+                                onChange={(e) => updateStyle({ pwaInstallBannerButtonColor: e.target.value })}
                                 className="w-12 h-10 rounded cursor-pointer"
                             />
                             <input
                                 type="text"
                                 value={editingStyle.pwaInstallBannerButtonColor || '#ffffff'}
-                                onChange={(e) => handleStyleChange('pwaInstallBannerButtonColor', e.target.value)}
+                                onChange={(e) => updateStyle({ pwaInstallBannerButtonColor: e.target.value })}
                                 className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
                             />
                         </div>
@@ -2693,13 +2693,13 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                             <input
                                 type="color"
                                 value={editingStyle.pwaInstallBannerButtonTextColor || '#1e40af'}
-                                onChange={(e) => handleStyleChange('pwaInstallBannerButtonTextColor', e.target.value)}
+                                onChange={(e) => updateStyle({ pwaInstallBannerButtonTextColor: e.target.value })}
                                 className="w-12 h-10 rounded cursor-pointer"
                             />
                             <input
                                 type="text"
                                 value={editingStyle.pwaInstallBannerButtonTextColor || '#1e40af'}
-                                onChange={(e) => handleStyleChange('pwaInstallBannerButtonTextColor', e.target.value)}
+                                onChange={(e) => updateStyle({ pwaInstallBannerButtonTextColor: e.target.value })}
                                 className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
                             />
                         </div>
