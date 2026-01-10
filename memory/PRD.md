@@ -27,7 +27,7 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 - [x] **Image Upload with Crop** - Upload logos and banners with cropping functionality
 - [x] **Use Logo Colors** - Extract colors from team logo for theme
 
-### Finance Management (NEW)
+### Finance Management
 - [x] **Team Finance Tab** - Track income and expenses at team level
 - [x] **Predefined Categories** - Income: Registration Fees, Sponsorship, Donations, etc. Expense: Equipment, Uniforms, Travel, etc.
 - [x] **Transaction CRUD** - Add, edit, delete transactions with date, amount, category, description
@@ -35,6 +35,7 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 - [x] **League Finance View** - Admin Portal view for league-wide financial overview
 - [x] **Team Summaries** - Per-team income/expense/balance visible to league admin
 - [x] **Transaction Filters** - Filter by All, Income, or Expense
+- [x] **CSV Export** - Export financial data to CSV format
 
 ### Player Management  
 - [x] Player profiles with photos, positions, jersey numbers
@@ -44,6 +45,17 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 - [x] **Player Card Image Fix** - Fixed cropping to show full head/face
 - [x] **Multi-select Positions** - Users can have multiple positions (Attack, Midfield, Defense, etc.)
 - [x] **CSV Import Single Name** - Changed from firstName/lastName to single "name" field
+
+### Progressive Web App (PWA)
+- [x] **PWA Conversion** - App can be installed on devices
+- [x] **PWA Customization** - Admin can customize app name, icon, description, theme colors
+- [x] **Install Banner Customization** - Customize install prompt appearance
+- [x] **Dynamic Manifest** - `/api/pwa/manifest.json` serves customized manifest
+
+### Data Management
+- [x] **Data Cleanup Utility** - Find and remove orphaned data (deleted users in rosters)
+- [x] **Database Statistics** - View user counts, team counts, legacy data
+- [x] **Preview Before Delete** - Preview orphaned data before cleaning
 
 ### Live Scoring
 - [x] Real-time game scoring with shot tracking
@@ -67,20 +79,31 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 - `/app/frontend/src/pages/AdminPage.js` - Admin Portal with League Finance
 - `/app/frontend/src/components/ImageUploadCrop.js` - Reusable image upload with crop
 - `/app/frontend/src/components/managers/LeagueFinanceManager.js` - League-wide finance view
+- `/app/frontend/src/components/managers/DataCleanupManager.js` - Data cleanup utility
 - `/app/frontend/src/utils/colorExtractor.js` - Color extraction from images
 
 ### Backend (FastAPI)
-- `/app/backend/server.py` - Monolithic API server (needs refactoring)
+- `/app/backend/server.py` - Main API server with routers
+- `/app/backend/routes/cleanup.py` - Data cleanup endpoints
+- `/app/backend/routes/users.py` - User/auth endpoints
+- `/app/backend/routes/teams.py` - Team roster management
+- `/app/backend/routes/finance.py` - Finance CRUD operations
 
 ### Database (MongoDB)
 - `users` collection - User profiles with teamAssignments, roles
 - `teams` collection - Team data with style, division info
 - `league_schedule` collection - Events and games
-- `finance_transactions` collection (NEW) - Income/expense records
+- `finance_transactions` collection - Income/expense records
 
 ## Key API Endpoints
 
-### Finance Management (NEW)
+### Data Cleanup (NEW - Jan 10, 2025)
+- `GET /api/cleanup/database-stats` - Get database statistics
+- `GET /api/cleanup/orphaned-players/preview` - Preview orphaned data without deleting
+- `POST /api/cleanup/orphaned-players/clean` - Remove orphaned data
+- `DELETE /api/cleanup/inactive-users` - Remove inactive users (with confirm param)
+
+### Finance Management
 - `GET /api/finance/categories` - Get predefined income/expense categories
 - `GET /api/finance/transactions` - Get transactions with filters (scope, scope_id, type)
 - `POST /api/finance/transactions` - Create new transaction
