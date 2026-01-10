@@ -207,7 +207,7 @@ async def clean_orphaned_players():
                     league_data,
                     upsert=True
                 )
-                logger.info(f"✅ League data cleaned and saved")
+                logger.info("✅ League data cleaned and saved")
         
         # Clean invalid team assignments from users
         for user in active_users:
