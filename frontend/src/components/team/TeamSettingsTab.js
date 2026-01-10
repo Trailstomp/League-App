@@ -388,34 +388,7 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                     
                     {/* Logo & Banner Section */}
                     <div className="border rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-4">
-                            <h4 className="font-medium text-slate-800">🖼️ Logo & Banner</h4>
-                            {teamStyle.logoUrl && (
-                                <button
-                                    onClick={handleUseLogoColors}
-                                    disabled={extractingColors}
-                                    className="px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm rounded-lg hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 transition-all flex items-center gap-2"
-                                    title="Extract colors from logo and apply as team theme"
-                                >
-                                    {extractingColors ? (
-                                        <>
-                                            <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                            </svg>
-                                            Extracting...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-                                            </svg>
-                                            Use Logo Colors
-                                        </>
-                                    )}
-                                </button>
-                            )}
-                        </div>
+                        <h4 className="font-medium text-slate-800 mb-4">🖼️ Logo & Banner</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Logo Upload */}
                             <div>
