@@ -6,9 +6,12 @@ const YouTubeGallery = ({
     title = "YouTube Videos",
     showLiveIndicator = true,
     maxVideos = 12,
-    compact = false
+    compact = false,
+    showBothLeagueAndTeam = true  // New prop to show both
 }) => {
     const [youtubeConfig, setYoutubeConfig] = useState(null);
+    const [teamConfig, setTeamConfig] = useState(null);
+    const [leagueConfig, setLeagueConfig] = useState(null);
     const [videos, setVideos] = useState([]);
     const [liveStreams, setLiveStreams] = useState([]);
     const [playlists, setPlaylists] = useState([]);
@@ -16,6 +19,7 @@ const YouTubeGallery = ({
     const [selectedVideo, setSelectedVideo] = useState(null);
     const [activeTab, setActiveTab] = useState('videos');
     const [error, setError] = useState(null);
+    const [videoSource, setVideoSource] = useState('all'); // 'all', 'team', 'league'
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
@@ -24,14 +28,87 @@ const YouTubeGallery = ({
             setLoading(true);
             setError(null);
             
-            // Get configuration
+            let allVideos = [];
+            let allLiveStreams = [];
+            let allPlaylists = [];
             let config = null;
             
             if (channelId) {
                 // Direct channel ID provided
                 config = { enabled: true, channelId, playlistIds: [] };
+                setYoutubeConfig(config);
+            } else if (teamId && showBothLeagueAndTeam) {
+                // Fetch both team and league configs
+                const [teamRes, leagueRes] = await Promise.all([
+                    fetch(`${backendUrl}/api/teams/${teamId}/youtube`),
+                    fetch(`${backendUrl}/api/youtube-integration`)
+                ]);
+                
+                let teamCfg = null;
+                let leagueCfg = null;
+                
+                if (teamRes.ok) {
+                    teamCfg = await teamRes.json();
+                    setTeamConfig(teamCfg);
+                }
+                
+                if (leagueRes.ok) {
+                    leagueCfg = await leagueRes.json();
+                    setLeagueConfig(leagueCfg);
+                }
+                
+                // Fetch videos from both channels
+                const fetchPromises = [];
+                
+                if (teamCfg?.enabled && teamCfg?.channelId) {
+                    fetchPromises.push(
+                        fetch(`${backendUrl}/api/youtube/videos/${teamCfg.channelId}?max_results=${Math.ceil(maxVideos/2)}`)
+                            .then(r => r.ok ? r.json() : { videos: [] })
+                            .then(data => ({ source: 'team', videos: data.videos || [] }))
+                    );
+                    fetchPromises.push(
+                        fetch(`${backendUrl}/api/youtube/live/${teamCfg.channelId}`)
+                            .then(r => r.ok ? r.json() : { liveStreams: [], upcomingStreams: [] })
+                            .then(data => ({ source: 'team', live: [...(data.liveStreams || []), ...(data.upcomingStreams || [])] }))
+                    );
+                }
+                
+                if (leagueCfg?.enabled && leagueCfg?.channelId && leagueCfg.channelId !== teamCfg?.channelId) {
+                    fetchPromises.push(
+                        fetch(`${backendUrl}/api/youtube/videos/${leagueCfg.channelId}?max_results=${Math.ceil(maxVideos/2)}`)
+                            .then(r => r.ok ? r.json() : { videos: [] })
+                            .then(data => ({ source: 'league', videos: data.videos || [] }))
+                    );
+                    fetchPromises.push(
+                        fetch(`${backendUrl}/api/youtube/live/${leagueCfg.channelId}`)
+                            .then(r => r.ok ? r.json() : { liveStreams: [], upcomingStreams: [] })
+                            .then(data => ({ source: 'league', live: [...(data.liveStreams || []), ...(data.upcomingStreams || [])] }))
+                    );
+                }
+                
+                const results = await Promise.all(fetchPromises);
+                
+                results.forEach(result => {
+                    if (result.videos) {
+                        allVideos.push(...result.videos.map(v => ({ ...v, source: result.source })));
+                    }
+                    if (result.live) {
+                        allLiveStreams.push(...result.live.map(l => ({ ...l, source: result.source })));
+                    }
+                });
+                
+                // Sort by date
+                allVideos.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+                
+                setVideos(allVideos.slice(0, maxVideos));
+                setLiveStreams(allLiveStreams);
+                config = teamCfg || leagueCfg;
+                setYoutubeConfig(config);
+                setLoading(false);
+                return;
+                
             } else if (teamId) {
-                // Team-specific configuration
+                // Team-specific configuration only
                 const response = await fetch(`${backendUrl}/api/teams/${teamId}/youtube`);
                 if (response.ok) {
                     config = await response.json();
