@@ -870,6 +870,73 @@ async def update_website_style(style_data: Dict[str, Any]):
         logger.error(f"❌ Error updating website style: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@api_router.get("/pwa/manifest.json")
+async def get_pwa_manifest():
+    """Generate dynamic PWA manifest based on websiteStyle settings"""
+    try:
+        # Get the current league data for PWA settings
+        league_doc = await db.league_data.find_one({"id": "main_league"})
+        style = league_doc.get("websiteStyle", {}) if league_doc else {}
+        
+        # Build manifest from websiteStyle or use defaults
+        manifest = {
+            "short_name": style.get("pwaShortName", "MLBL"),
+            "name": style.get("pwaAppName", style.get("navLeagueName", "Midwest Lacrosse League")),
+            "description": style.get("pwaDescription", "League management portal for schedules, rosters, and stats"),
+            "icons": [
+                {
+                    "src": style.get("pwaIconUrl") or style.get("navLogoUrl") or "/icon-192.png",
+                    "sizes": "192x192",
+                    "type": "image/png",
+                    "purpose": "any maskable"
+                },
+                {
+                    "src": style.get("pwaIconUrl") or style.get("navLogoUrl") or "/icon-512.png",
+                    "sizes": "512x512",
+                    "type": "image/png",
+                    "purpose": "any maskable"
+                }
+            ],
+            "start_url": "/",
+            "display": "standalone",
+            "theme_color": style.get("pwaThemeColor", style.get("primaryColor", "#1e40af")),
+            "background_color": style.get("pwaBackgroundColor", "#f8fafc"),
+            "orientation": "portrait-primary",
+            "scope": "/",
+            "categories": ["sports", "productivity"],
+            "shortcuts": [
+                {
+                    "name": "View Schedule",
+                    "short_name": "Schedule",
+                    "description": "View upcoming games and events",
+                    "url": "/?page=events"
+                },
+                {
+                    "name": "Standings",
+                    "short_name": "Standings", 
+                    "description": "View league standings",
+                    "url": "/?page=standings"
+                }
+            ]
+        }
+        
+        from fastapi.responses import JSONResponse
+        return JSONResponse(content=manifest, media_type="application/manifest+json")
+        
+    except Exception as e:
+        logger.error(f"❌ Error generating PWA manifest: {e}")
+        # Return default manifest on error
+        return JSONResponse(content={
+            "short_name": "MLBL",
+            "name": "Midwest Lacrosse League",
+            "start_url": "/",
+            "display": "standalone",
+            "theme_color": "#1e40af",
+            "background_color": "#f8fafc"
+        }, media_type="application/manifest+json")
+
+
 @api_router.post("/league-data/liveViewSettings")
 async def update_live_view_settings(settings_data: Dict[str, Any]):
     """Update live view styling settings in the league database"""
