@@ -329,6 +329,8 @@ const DataCleanupManager = () => {
                     </div>
                 </div>
             )}
+            </>
+            )}
         </div>
     );
 };
