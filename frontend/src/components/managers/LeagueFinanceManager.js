@@ -187,6 +187,57 @@ const LeagueFinanceManager = ({ teams, currentUser }) => {
         }).format(amount || 0);
     };
 
+    // Export all transactions to CSV
+    const handleExportCSV = () => {
+        if (allTransactions.length === 0) {
+            setMessage('❌ No transactions to export');
+            setTimeout(() => setMessage(''), 3000);
+            return;
+        }
+
+        const headers = ['Date', 'Scope', 'Team', 'Type', 'Category', 'Description', 'Amount', 'Added By'];
+        const csvContent = [
+            headers.join(','),
+            ...allTransactions.map(t => [
+                t.date,
+                t.scope || 'team',
+                `"${getTeamName(t.team_id)}"`,
+                t.type,
+                `"${t.category}"`,
+                `"${(t.description || '').replace(/"/g, '""')}"`,
+                t.type === 'income' ? t.amount : -t.amount,
+                `"${t.created_by_name || 'Unknown'}"`
+            ].join(','))
+        ].join('\n');
+
+        // Add summary at the bottom
+        const summaryRows = [
+            '',
+            'League Summary',
+            `Total Income,${leagueSummary?.total_income || 0}`,
+            `Total Expenses,${leagueSummary?.total_expense || 0}`,
+            `Balance,${leagueSummary?.balance || 0}`,
+            `Total Transactions,${allTransactions.length}`,
+            '',
+            'Team Breakdowns'
+        ].join('\n');
+
+        // Add team summaries
+        const teamSummaryRows = (leagueSummary?.team_summaries || []).map(ts => 
+            `"${ts.team_name}",${ts.income},${ts.expense},${ts.balance}`
+        ).join('\n');
+
+        const blob = new Blob([csvContent + '\n' + summaryRows + '\n' + teamSummaryRows], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `League_Finance_Report_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        
+        setMessage('✅ League report exported successfully!');
+        setTimeout(() => setMessage(''), 3000);
+    };
+
     // Get team name by ID
     const getTeamName = (teamId) => {
         if (!teamId) return 'League';
