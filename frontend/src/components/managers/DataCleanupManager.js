@@ -88,6 +88,34 @@ const DataCleanupManager = () => {
 
     return (
         <div className="space-y-6">
+            {/* Tab Navigation */}
+            <div className="flex border-b border-slate-200">
+                <button
+                    onClick={() => setActiveTab('cleanup')}
+                    className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                        activeTab === 'cleanup'
+                            ? 'border-blue-600 text-blue-600'
+                            : 'border-transparent text-slate-600 hover:text-slate-800'
+                    }`}
+                >
+                    🧹 Data Cleanup
+                </button>
+                <button
+                    onClick={() => setActiveTab('alerts')}
+                    className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                        activeTab === 'alerts'
+                            ? 'border-blue-600 text-blue-600'
+                            : 'border-transparent text-slate-600 hover:text-slate-800'
+                    }`}
+                >
+                    📧 Health Alerts
+                </button>
+            </div>
+
+            {activeTab === 'alerts' ? (
+                <HealthAlertSettings />
+            ) : (
+            <>
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                 <h3 className="text-lg font-semibold text-amber-800 mb-2">🧹 Data Cleanup Utility</h3>
                 <p className="text-amber-700 text-sm">
