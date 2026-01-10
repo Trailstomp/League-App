@@ -291,76 +291,95 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                     
                     {/* Team Colors */}
                     <div className="border rounded-lg p-4">
-                        <h4 className="font-medium text-slate-800 mb-4">🎨 Team Colors</h4>
+                        <div className="flex items-center justify-between mb-4">
+                            <h4 className="font-medium text-slate-800">🎨 Team Colors</h4>
+                            {teamStyle.logoUrl && (
+                                <button
+                                    onClick={handleUseLogoColors}
+                                    disabled={extractingColors}
+                                    className="px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm rounded-lg hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 transition-all flex items-center gap-2"
+                                >
+                                    {extractingColors ? '⏳ Extracting...' : '🎨 Use Logo Colors'}
+                                </button>
+                            )}
+                        </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Primary Color</label>
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 items-center">
                                     <input
                                         type="color"
                                         value={teamStyle.primaryColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, primaryColor: e.target.value})}
-                                        className="w-10 h-10 rounded border cursor-pointer"
+                                        className="w-12 h-10 rounded border-2 border-slate-300 cursor-pointer p-0.5"
+                                        style={{ WebkitAppearance: 'none' }}
                                     />
                                     <input
                                         type="text"
                                         value={teamStyle.primaryColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, primaryColor: e.target.value})}
                                         className="flex-1 px-2 py-1 border border-slate-300 rounded text-sm"
+                                        placeholder="#2563eb"
                                     />
                                 </div>
                             </div>
                             
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Accent Color</label>
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 items-center">
                                     <input
                                         type="color"
                                         value={teamStyle.accentColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, accentColor: e.target.value})}
-                                        className="w-10 h-10 rounded border cursor-pointer"
+                                        className="w-12 h-10 rounded border-2 border-slate-300 cursor-pointer p-0.5"
+                                        style={{ WebkitAppearance: 'none' }}
                                     />
                                     <input
                                         type="text"
                                         value={teamStyle.accentColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, accentColor: e.target.value})}
                                         className="flex-1 px-2 py-1 border border-slate-300 rounded text-sm"
+                                        placeholder="#3b82f6"
                                     />
                                 </div>
                             </div>
                             
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Background</label>
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 items-center">
                                     <input
                                         type="color"
                                         value={teamStyle.backgroundColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, backgroundColor: e.target.value})}
-                                        className="w-10 h-10 rounded border cursor-pointer"
+                                        className="w-12 h-10 rounded border-2 border-slate-300 cursor-pointer p-0.5"
+                                        style={{ WebkitAppearance: 'none' }}
                                     />
                                     <input
                                         type="text"
                                         value={teamStyle.backgroundColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, backgroundColor: e.target.value})}
                                         className="flex-1 px-2 py-1 border border-slate-300 rounded text-sm"
+                                        placeholder="#f8fafc"
                                     />
                                 </div>
                             </div>
                             
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Text Color</label>
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 items-center">
                                     <input
                                         type="color"
                                         value={teamStyle.textColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, textColor: e.target.value})}
-                                        className="w-10 h-10 rounded border cursor-pointer"
+                                        className="w-12 h-10 rounded border-2 border-slate-300 cursor-pointer p-0.5"
+                                        style={{ WebkitAppearance: 'none' }}
                                     />
                                     <input
                                         type="text"
                                         value={teamStyle.textColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, textColor: e.target.value})}
                                         className="flex-1 px-2 py-1 border border-slate-300 rounded text-sm"
+                                        placeholder="#1e293b"
                                     />
                                 </div>
                             </div>
