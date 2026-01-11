@@ -3,35 +3,50 @@ import { LacrosseIcon } from '../LacrosseIcons';
 
 const TeamScheduleTab = ({ team, events = [] }) => {
     const teamEvents = events.filter(event => 
-        // Filter to team's events
-        (event.teamIds?.includes(team.id) || 
+        // Filter to team's events - check both 'teams' array and legacy fields
+        (event.teams?.includes(team.id) || 
+        event.teamIds?.includes(team.id) ||
         event.homeTeam === team.id || 
-        event.awayTeam === team.id) &&
+        event.awayTeam === team.id ||
+        event.team_id === team.id) &&
         // Exclude canceled/cancelled events
         event.status !== 'canceled' &&
         event.status !== 'cancelled' &&
         event.status !== 'archived'
     );
 
+    // Sort by date
+    const sortedEvents = [...teamEvents].sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateA - dateB;
+    });
+
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-bold text-slate-800">Schedule</h2>
             
-            {teamEvents.length > 0 ? (
+            {sortedEvents.length > 0 ? (
                 <div className="space-y-4">
-                    {teamEvents.map(event => (
+                    {sortedEvents.map(event => (
                         <div key={event.id} className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h3 className="font-semibold text-slate-800">{event.title}</h3>
-                                    <p className="text-sm text-slate-600">{event.date} at {event.time}</p>
-                                    <p className="text-sm text-slate-500">{event.location}</p>
+                                    <p className="text-sm text-slate-600">
+                                        {event.date ? new Date(event.date).toLocaleDateString() : 'TBD'} 
+                                        {event.time ? ` at ${event.time}` : ''}
+                                    </p>
+                                    {event.location && (
+                                        <p className="text-sm text-slate-500">{event.location}</p>
+                                    )}
                                 </div>
                                 <div className="text-right">
                                     <span className={`px-2 py-1 rounded text-xs font-medium ${
                                         event.type === 'game' ? 'bg-red-100 text-red-800' :
                                         event.type === 'practice' ? 'bg-blue-100 text-blue-800' :
-                                        'bg-purple-100 text-purple-800'
+                                        event.type === 'tournament' ? 'bg-purple-100 text-purple-800' :
+                                        'bg-slate-100 text-slate-800'
                                     }`}>
                                         {event.type || 'Event'}
                                     </span>
