@@ -352,6 +352,145 @@ async def remove_inactive_users(confirm: bool = False):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@cleanup_router.get("/orphaned-events/preview")
+async def preview_orphaned_events(team_id: str = None):
+    """
+    Preview events that may be orphaned or associated with invalid teams
+    """
+    try:
+        # Get valid team IDs
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        valid_team_ids = {t.get("id") for t in league_data.get("teams", [])} if league_data else set()
+        
+        # Get all events from both collections
+        events_from_schedule = await db.league_schedule.find({}, {"_id": 0}).to_list(1000)
+        
+        orphaned_events = []
+        
+        for event in events_from_schedule:
+            event_teams = event.get("teams", [])
+            home_team = event.get("homeTeam")
+            away_team = event.get("awayTeam")
+            
+            # If filtering by team
+            if team_id:
+                if team_id not in event_teams and team_id != home_team and team_id != away_team:
+                    continue
+            
+            # Check for invalid team references
+            invalid_teams = []
+            for t in event_teams:
+                if t and t not in valid_team_ids:
+                    invalid_teams.append(t)
+            if home_team and home_team not in valid_team_ids:
+                invalid_teams.append(home_team)
+            if away_team and away_team not in valid_team_ids:
+                invalid_teams.append(away_team)
+            
+            if invalid_teams:
+                orphaned_events.append({
+                    "id": event.get("id"),
+                    "title": event.get("title"),
+                    "date": event.get("date"),
+                    "teams": event_teams,
+                    "invalid_teams": invalid_teams,
+                    "reason": f"References non-existent team(s): {invalid_teams}"
+                })
+        
+        return {
+            "total_orphaned": len(orphaned_events),
+            "orphaned_events": orphaned_events,
+            "valid_teams": list(valid_team_ids)
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error previewing orphaned events: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@cleanup_router.delete("/events/{event_id}")
+async def delete_event(event_id: str):
+    """Delete a specific event by ID"""
+    try:
+        result = await db.league_schedule.delete_one({"id": event_id})
+        
+        if result.deleted_count > 0:
+            # Also clean up any RSVPs for this event
+            await db.event_rsvps.delete_many({"event_id": event_id})
+            
+            return {
+                "status": "success",
+                "message": f"Event {event_id} deleted"
+            }
+        else:
+            raise HTTPException(status_code=404, detail="Event not found")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error deleting event: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@cleanup_router.post("/team/{team_id}/clear-events")
+async def clear_team_events(team_id: str):
+    """Remove all events associated with a specific team"""
+    try:
+        # Find and delete events where this team is involved
+        result = await db.league_schedule.delete_many({
+            "$or": [
+                {"teams": team_id},
+                {"homeTeam": team_id},
+                {"awayTeam": team_id}
+            ]
+        })
+        
+        return {
+            "status": "success",
+            "deleted_count": result.deleted_count,
+            "message": f"Deleted {result.deleted_count} events for team {team_id}"
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error clearing team events: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@cleanup_router.post("/team/{team_id}/clear-roster")
+async def clear_team_roster(team_id: str):
+    """Remove all players from a team's roster (in users collection)"""
+    try:
+        # Remove team from all user's teamAssignments
+        result = await db.users.update_many(
+            {"teamAssignments.teamId": team_id},
+            {"$pull": {"teamAssignments": {"teamId": team_id}}}
+        )
+        
+        # Also clear the team's roster in league_data
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        if league_data:
+            teams = league_data.get("teams", [])
+            for team in teams:
+                if team.get("id") == team_id:
+                    team["roster"] = []
+                    break
+            
+            await db.league_data.replace_one(
+                {"id": "main_league"},
+                league_data,
+                upsert=True
+            )
+        
+        return {
+            "status": "success",
+            "users_updated": result.modified_count,
+            "message": f"Cleared roster for team {team_id}"
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error clearing team roster: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 # ============= Health Alert Endpoints =============
 
