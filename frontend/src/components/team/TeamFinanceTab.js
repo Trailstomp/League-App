@@ -81,9 +81,82 @@ const TeamFinanceTab = ({ team, currentUser }) => {
     useEffect(() => {
         if (team?.id) {
             fetchTransactions();
+            loadFees();
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [team?.id, filter]);
+
+    // Load Fees
+    const loadFees = async () => {
+        try {
+            setFeesLoading(true);
+            const response = await fetch(`${backendUrl}/api/fees?teamId=${team.id}`);
+            if (response.ok) {
+                const data = await response.json();
+                setFees(data.fees || []);
+            }
+        } catch (error) {
+            console.error('Error loading fees:', error);
+        } finally {
+            setFeesLoading(false);
+        }
+    };
+
+    // Handle Add Fee
+    const handleAddFee = async (e) => {
+        e.preventDefault();
+        
+        if (!feeFormData.name.trim() || !feeFormData.amount) {
+            setMessage('❌ Name and amount are required');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${backendUrl}/api/fees`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: feeFormData.name,
+                    amount: parseFloat(feeFormData.amount),
+                    dueDate: feeFormData.dueDate || null,
+                    description: feeFormData.description,
+                    teamId: team.id,
+                    teamName: team.name,
+                    scope: 'team',
+                    createdBy: currentUser?.id
+                })
+            });
+
+            if (response.ok) {
+                setMessage('✅ Fee created successfully!');
+                setShowAddFeeForm(false);
+                setFeeFormData({ name: '', amount: '', dueDate: '', description: '' });
+                loadFees();
+            } else {
+                const data = await response.json();
+                setMessage(`❌ ${data.detail || 'Failed to create fee'}`);
+            }
+        } catch (error) {
+            setMessage('❌ Network error');
+        }
+        setTimeout(() => setMessage(''), 4000);
+    };
+
+    // Handle Delete Fee
+    const handleDeleteFee = async (feeId) => {
+        if (!window.confirm('Delete this fee?')) return;
+        
+        try {
+            const response = await fetch(`${backendUrl}/api/fees/${feeId}`, { method: 'DELETE' });
+            if (response.ok) {
+                setMessage('✅ Fee deleted');
+                loadFees();
+            }
+        } catch (error) {
+            setMessage('❌ Error deleting fee');
+        }
+        setTimeout(() => setMessage(''), 3000);
+    };
 
     // Handle form submission
     const handleSubmit = async (e) => {
