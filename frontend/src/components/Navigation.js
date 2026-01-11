@@ -110,7 +110,7 @@ const TeamsByDivision = ({ teams, websiteStyle, isCollapsed, onNavigate, onMobil
                                         <div className="w-8 h-8 rounded-full flex-shrink-0 overflow-hidden border border-slate-200">
                                             {team.style?.logoUrl ? (
                                                 <CachedImage 
-                                                    src={team.style.logoUrl} 
+                                                    src={fixGoogleDriveUrl(team.style.logoUrl)} 
                                                     alt={`${team.name} logo`}
                                                     className="w-full h-full object-contain"
                                                     style={{ 
