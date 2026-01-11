@@ -11,25 +11,35 @@ import CachedImage from '../components/CachedImage';
 import { SkeletonTeamCard } from '../components/Skeleton';
 
 // Team Card Component
-const TeamCard = ({ team, onNavigate }) => (
-    <div 
-        className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-transform hover:scale-105 duration-300 border-4 cursor-pointer group"
-        style={{ borderColor: team.style?.primaryColor || '#2563eb' }}
-        onClick={() => onNavigate && onNavigate('team', team.id)}
-        title="Click for team details"
-    >
-        {/* Main Logo Area */}
-        <div className="relative overflow-hidden" style={{ aspectRatio: '3/4', minHeight: '200px' }}>
+const TeamCard = ({ team, onNavigate }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    
+    return (
+        <div 
+            className="relative bg-white rounded-2xl shadow-xl overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+            style={{ 
+                borderColor: team.style?.primaryColor || '#2563eb',
+                borderWidth: '3px',
+                borderStyle: 'solid'
+            }}
+            onClick={() => onNavigate && onNavigate('team', team.id)}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            title="Click for team details"
+        >
+            {/* Large Logo Area - 70% of card */}
             <div 
-                className="w-full h-full flex items-center justify-center relative"
+                className="relative w-full flex items-center justify-center p-6"
                 style={{ 
+                    aspectRatio: '1/1',
                     background: team.style?.cardBackgroundImage 
-                        ? `url(${team.style.cardBackgroundImage})`
-                        : `linear-gradient(135deg, ${team.style?.backgroundColor || '#f8fafc'} 0%, rgba(255,255,255,0.9) 100%)`,
+                        ? `url(${fixGoogleDriveUrl(team.style.cardBackgroundImage)})`
+                        : `linear-gradient(145deg, ${team.style?.backgroundColor || '#f8fafc'} 0%, white 50%, ${team.style?.accentColor || '#e2e8f0'}30 100%)`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center'
                 }}
             >
+                {/* Background overlay if image exists */}
                 {team.style?.cardBackgroundImage && (
                     <div 
                         className="absolute inset-0"
@@ -37,29 +47,32 @@ const TeamCard = ({ team, onNavigate }) => (
                     />
                 )}
                 
-                <div className="relative z-10">
+                {/* Team Logo - Large & Centered */}
+                <div className="relative z-10 w-full h-full flex items-center justify-center">
                     {team.style?.logoUrl ? (
                         <CachedImage 
                             src={fixGoogleDriveUrl(team.style.logoUrl)} 
                             alt={team.name}
-                            className="object-contain drop-shadow-2xl"
+                            className="object-contain transition-transform duration-300"
                             style={{ 
-                                width: '200px',
-                                height: '200px',
-                                filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.4))',
-                                backgroundColor: 'transparent'
+                                width: '85%',
+                                height: '85%',
+                                filter: isHovered ? 'drop-shadow(0 12px 24px rgba(0,0,0,0.4))' : 'drop-shadow(0 8px 16px rgba(0,0,0,0.25))',
+                                opacity: team.style?.logoOpacity || 1,
+                                transform: isHovered ? 'scale(1.05)' : 'scale(1)'
                             }}
                             fallback={
                                 <div 
-                                    className="rounded-2xl flex items-center justify-center"
+                                    className="rounded-2xl flex items-center justify-center transition-transform duration-300"
                                     style={{ 
-                                        width: '200px', 
-                                        height: '200px',
+                                        width: '80%', 
+                                        height: '80%',
                                         background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
-                                        boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+                                        boxShadow: isHovered ? '0 12px 40px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.25)',
+                                        transform: isHovered ? 'scale(1.05)' : 'scale(1)'
                                     }}
                                 >
-                                    <span className="text-white font-bold drop-shadow-lg text-6xl">
+                                    <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '4rem' }}>
                                         {team.name.charAt(0)}
                                     </span>
                                 </div>
@@ -67,37 +80,52 @@ const TeamCard = ({ team, onNavigate }) => (
                         />
                     ) : (
                         <div 
-                            className="rounded-2xl flex items-center justify-center"
+                            className="rounded-2xl flex items-center justify-center transition-transform duration-300"
                             style={{ 
-                                width: '200px', 
-                                height: '200px',
+                                width: '80%', 
+                                height: '80%',
                                 background: `linear-gradient(135deg, ${team.style?.primaryColor || '#2563eb'} 0%, ${team.style?.accentColor || '#3b82f6'} 100%)`,
-                                boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+                                boxShadow: isHovered ? '0 12px 40px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.25)',
+                                transform: isHovered ? 'scale(1.05)' : 'scale(1)'
                             }}
                         >
-                            <span className="text-white font-bold drop-shadow-lg text-6xl">
+                            <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '4rem' }}>
                                 {team.name.charAt(0)}
                             </span>
                         </div>
                     )}
                 </div>
                 
-                {/* Record Badge on hover */}
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="bg-black bg-opacity-60 rounded px-2 py-1 text-xs text-white">
-                        {team.wins || 0}-{team.losses || 0}
-                    </div>
+                {/* Record Badge - Top Right */}
+                <div 
+                    className="absolute top-3 right-3 px-3 py-1 rounded-full text-sm font-bold shadow-lg"
+                    style={{ 
+                        backgroundColor: team.style?.primaryColor || '#2563eb',
+                        color: 'white'
+                    }}
+                >
+                    {team.wins || 0}-{team.losses || 0}{team.ties ? `-${team.ties}` : ''}
                 </div>
             </div>
+            
+            {/* Info Footer - Clean & Minimal */}
+            <div 
+                className="px-4 py-3 border-t"
+                style={{ 
+                    backgroundColor: team.style?.primaryColor || '#2563eb',
+                    borderColor: team.style?.accentColor || team.style?.primaryColor || '#2563eb'
+                }}
+            >
+                <h3 className="font-bold text-lg text-center text-white truncate drop-shadow-sm">
+                    {team.name}
+                </h3>
+                <p className="text-center text-white/80 text-sm">
+                    {team.division || 'Division'}
+                </p>
+            </div>
         </div>
-        
-        {/* Info Section */}
-        <div className="p-3">
-            <h3 className="font-bold text-base text-center truncate" style={{ color: team.style?.primaryColor || '#2563eb' }}>
-                {team.name}
-            </h3>
-            <div className="text-center">
-                <p className="text-xs text-slate-500">{team.division || 'Division'} • {team.wins || 0}-{team.losses || 0}</p>
+    );
+};
             </div>
         </div>
     </div>
