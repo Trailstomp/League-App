@@ -12,4 +12,3 @@ export { default as TeamMediaTab } from './TeamMediaTab';
 export { default as TeamContactTab } from './TeamContactTab';
 export { default as TeamChatTab } from './TeamChatTab';
 export { default as TeamRosterManageTab } from './TeamRosterManageTab';
-export { default as TeamFeesTab } from './TeamFeesTab';
