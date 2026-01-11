@@ -299,7 +299,7 @@ const TeamFinanceTab = ({ team, currentUser }) => {
         setTimeout(() => setMessage(''), 3000);
     };
 
-    if (loading && transactions.length === 0) {
+    if (loading && transactions.length === 0 && activeSubTab === 'transactions') {
         return (
             <div className="flex items-center justify-center py-12">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -307,8 +307,173 @@ const TeamFinanceTab = ({ team, currentUser }) => {
         );
     }
 
+    // Render Fees Sub-Tab
+    const renderFeesTab = () => (
+        <div className="space-y-6">
+            {/* Fees Header */}
+            <div className="flex justify-between items-center">
+                <div>
+                    <h3 className="text-xl font-bold text-slate-800">Team Fees</h3>
+                    <p className="text-slate-600">Manage fees for {team.name}</p>
+                </div>
+                <button
+                    onClick={() => setShowAddFeeForm(true)}
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
+                >
+                    <span>+</span> Add Fee
+                </button>
+            </div>
+
+            {/* Add Fee Form Modal */}
+            {showAddFeeForm && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-xl font-bold text-slate-800">Create Team Fee</h3>
+                                <button onClick={() => setShowAddFeeForm(false)} className="text-slate-400 hover:text-slate-600">✕</button>
+                            </div>
+
+                            <form onSubmit={handleAddFee} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Fee Name *</label>
+                                    <input
+                                        type="text"
+                                        value={feeFormData.name}
+                                        onChange={(e) => setFeeFormData({...feeFormData, name: e.target.value})}
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                        placeholder="Season Registration, Tournament Fee, etc."
+                                        required
+                                    />
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Amount *</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value={feeFormData.amount}
+                                            onChange={(e) => setFeeFormData({...feeFormData, amount: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                            placeholder="100.00"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Due Date</label>
+                                        <input
+                                            type="date"
+                                            value={feeFormData.dueDate}
+                                            onChange={(e) => setFeeFormData({...feeFormData, dueDate: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                                    <textarea
+                                        value={feeFormData.description}
+                                        onChange={(e) => setFeeFormData({...feeFormData, description: e.target.value})}
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                        rows={2}
+                                        placeholder="Details about the fee..."
+                                    />
+                                </div>
+
+                                <div className="flex gap-3 pt-4">
+                                    <button type="button" onClick={() => setShowAddFeeForm(false)} className="flex-1 px-4 py-2 border border-slate-300 rounded-lg">
+                                        Cancel
+                                    </button>
+                                    <button type="submit" className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                                        Create Fee
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Fees List */}
+            <div className="bg-white border rounded-lg overflow-hidden">
+                <div className="px-4 py-3 bg-slate-50 border-b">
+                    <h3 className="font-semibold text-slate-800">Active Fees</h3>
+                </div>
+                
+                {feesLoading ? (
+                    <div className="p-8 text-center text-slate-500">Loading...</div>
+                ) : fees.length === 0 ? (
+                    <div className="p-8 text-center">
+                        <div className="text-4xl mb-4">💰</div>
+                        <p className="text-slate-600">No fees set up yet</p>
+                        <p className="text-sm text-slate-500 mt-2">Create a fee to start collecting payments</p>
+                    </div>
+                ) : (
+                    <div className="divide-y">
+                        {fees.map(fee => (
+                            <div key={fee.id} className="p-4 hover:bg-slate-50 flex items-center justify-between">
+                                <div>
+                                    <div className="font-medium text-slate-800">{fee.name}</div>
+                                    <div className="text-sm text-slate-500">
+                                        ${fee.amount?.toFixed(2) || '0.00'}
+                                        {fee.dueDate && ` • Due: ${new Date(fee.dueDate).toLocaleDateString()}`}
+                                    </div>
+                                    {fee.description && (
+                                        <div className="text-xs text-slate-400 mt-1">{fee.description}</div>
+                                    )}
+                                </div>
+                                <button
+                                    onClick={() => handleDeleteFee(fee.id)}
+                                    className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+
     return (
         <div className="space-y-6">
+            {/* Sub-Tab Navigation */}
+            <div className="flex border-b border-slate-200">
+                <button
+                    onClick={() => setActiveSubTab('transactions')}
+                    className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                        activeSubTab === 'transactions'
+                            ? 'border-blue-600 text-blue-600'
+                            : 'border-transparent text-slate-600 hover:text-slate-800'
+                    }`}
+                >
+                    📊 Transactions
+                </button>
+                <button
+                    onClick={() => setActiveSubTab('fees')}
+                    className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                        activeSubTab === 'fees'
+                            ? 'border-blue-600 text-blue-600'
+                            : 'border-transparent text-slate-600 hover:text-slate-800'
+                    }`}
+                >
+                    💰 Fees & Payments
+                </button>
+            </div>
+
+            {/* Message */}
+            {message && (
+                <div className={`p-4 rounded-lg ${message.includes('✅') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                    {message}
+                </div>
+            )}
+
+            {/* Render active sub-tab */}
+            {activeSubTab === 'fees' ? renderFeesTab() : (
+            <>
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
