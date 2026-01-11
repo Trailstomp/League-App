@@ -80,7 +80,7 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
                 <div className="text-center">
                     <LacrosseIcon name="teams" style={{fontSize: '48px'}} />
                     <h2 className="text-xl font-semibold text-slate-800 mt-4">Team not found</h2>
-                    <p className="text-slate-600 mt-2">The team you're looking for doesn't exist.</p>
+                    <p className="text-slate-600 mt-2">The team you&apos;re looking for doesn&apos;t exist.</p>
                     <button 
                         onClick={() => onNavigate('home')}
                         className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
