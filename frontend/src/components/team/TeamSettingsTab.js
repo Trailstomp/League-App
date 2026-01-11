@@ -374,7 +374,7 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                                         type="text"
                                         value={teamStyle.textColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, textColor: e.target.value})}
-                                        className="flex-1 px-2 py-1 border border-slate-300 rounded text-sm"
+                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
                                         placeholder="#1e293b"
                                     />
                                 </div>
