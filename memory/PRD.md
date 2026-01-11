@@ -1,5 +1,34 @@
 # League Management Portal - Product Requirements Document
 
+## Deployment Configuration
+
+### Required Environment Variables (Backend)
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `MONGO_URL` | MongoDB connection string | `mongodb://localhost:27017` |
+| `DB_NAME` | Database name | `mlbl_database` |
+| `FRONTEND_URL` | **Production URL for RSVP links** | `https://yourdomain.com` |
+| `BACKEND_URL` | Backend API URL | `https://yourdomain.com` |
+| `STRIPE_API_KEY` | Stripe API key | `sk_live_xxx` |
+
+### Important: FRONTEND_URL for Production
+When deploying to production, **you must set `FRONTEND_URL`** in `/app/backend/.env` to your production domain.
+
+This URL is used for:
+- Quick RSVP links sent via GroupMe/Email notifications
+- Team invite links
+- Password reset links
+
+**Example:**
+```
+FRONTEND_URL="https://mlbl.yourdomain.com"
+```
+
+Without this, notification links will point to localhost and won't work!
+
+---
+
 ## Original Problem Statement
 Create a comprehensive league management portal for lacrosse leagues with features for:
 - Team management with rosters and player assignments
