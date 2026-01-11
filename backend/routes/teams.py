@@ -140,41 +140,61 @@ async def add_player_to_team(team_id: str, data: Dict[str, Any]):
 
 @teams_router.put("/{team_id}/player/{player_id}")
 async def update_team_player(team_id: str, player_id: str, data: Dict[str, Any]):
-    """Update a player's info on a team (jersey number, position)"""
+    """Update a player's info on a team - coaches can edit all player details"""
     try:
         # Get the user
         user = await db.users.find_one({"id": player_id}, {"_id": 0})
         if not user:
             raise HTTPException(status_code=404, detail="Player not found")
         
-        # Find and update the team assignment
+        # Verify player is on this team
         assignments = user.get("teamAssignments", [])
-        updated = False
+        team_assignment_idx = None
         
         for i, assignment in enumerate(assignments):
             if assignment.get("teamId") == team_id:
-                if "jerseyNumber" in data:
-                    assignments[i]["playerNumber"] = data["jerseyNumber"]
-                if "position" in data:
-                    assignments[i]["position"] = data["position"]
-                updated = True
+                team_assignment_idx = i
                 break
         
-        if not updated:
+        if team_assignment_idx is None:
             raise HTTPException(status_code=404, detail="Player not found on this team")
         
-        # Save updated assignments
+        # Build update data - separate user-level and team-level updates
+        user_update = {}
+        
+        # User-level fields that coaches can update
+        user_fields = [
+            "name", "email", "phone", "photoUrl", 
+            "graduationYear", "height", "weight", "school",
+            "emergencyContactName", "emergencyContactPhone"
+        ]
+        
+        for field in user_fields:
+            if field in data and data[field] is not None:
+                user_update[field] = data[field]
+        
+        # Team-specific fields go into the team assignment
+        if "jerseyNumber" in data:
+            assignments[team_assignment_idx]["playerNumber"] = data["jerseyNumber"]
+        if "position" in data:
+            assignments[team_assignment_idx]["position"] = data["position"]
+        
+        user_update["teamAssignments"] = assignments
+        user_update["updatedAt"] = datetime.now(timezone.utc).isoformat()
+        
+        # Also update legacy fields for compatibility
+        if "jerseyNumber" in data and user.get("teamId") == team_id:
+            user_update["playerNumber"] = data["jerseyNumber"]
+        if "position" in data and user.get("teamId") == team_id:
+            user_update["position"] = data["position"]
+        
+        # Save updates
         await db.users.update_one(
             {"id": player_id},
-            {
-                "$set": {
-                    "teamAssignments": assignments,
-                    "updatedAt": datetime.now(timezone.utc).isoformat()
-                }
-            }
+            {"$set": user_update}
         )
         
-        logger.info(f"✅ Updated player {player_id} on team {team_id}")
+        logger.info(f"✅ Updated player {player_id} on team {team_id}: {list(user_update.keys())}")
         
         return {
             "status": "success",
