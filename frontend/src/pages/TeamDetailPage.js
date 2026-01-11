@@ -292,7 +292,6 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
                 {activeTab === 'my-dashboard' && <MyDashboardTab team={team} currentUser={currentUser} />}
                 {activeTab === 'manage-roster' && <TeamRosterManageTab team={team} currentUser={currentUser} />}
                 {activeTab === 'recruiting' && <TeamRecruitingTab team={team} currentUser={currentUser} />}
-                {activeTab === 'team-fees' && <TeamFeesTab team={team} currentUser={currentUser} />}
                 {activeTab === 'finance' && <TeamFinanceTab team={team} currentUser={currentUser} />}
                 {activeTab === 'settings' && <TeamSettingsTab team={team} />}
             </div>
