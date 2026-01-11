@@ -618,8 +618,8 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
             {/* Edit Player Modal */}
             {showEditModal && editingPlayer && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowEditModal(false)}>
-                    <div className="bg-white rounded-xl shadow-xl max-w-md w-full" onClick={e => e.stopPropagation()}>
-                        <div className="p-4 border-b bg-slate-50 flex justify-between items-center">
+                    <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                        <div className="p-4 border-b bg-slate-50 flex justify-between items-center sticky top-0 z-10">
                             <h3 className="font-bold text-lg text-slate-800">Edit Player</h3>
                             <button onClick={() => setShowEditModal(false)} className="text-slate-400 hover:text-slate-600">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -629,39 +629,174 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
                         </div>
                         
                         <div className="p-4 space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Player</label>
-                                <div className="text-slate-800 font-medium">{editingPlayer.name}</div>
+                            {/* Player Photo */}
+                            <div className="flex items-center gap-4">
+                                <div className="w-20 h-20 rounded-full overflow-hidden bg-slate-200 flex-shrink-0">
+                                    {editingPlayer.photoUrl ? (
+                                        <img src={editingPlayer.photoUrl} alt={editingPlayer.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-slate-400 text-2xl font-bold">
+                                            {editingPlayer.name?.charAt(0) || '?'}
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Photo URL</label>
+                                    <input
+                                        type="url"
+                                        value={editingPlayer.photoUrl || ''}
+                                        onChange={(e) => setEditingPlayer({...editingPlayer, photoUrl: e.target.value})}
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                                        placeholder="https://..."
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Basic Info */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Full Name *</label>
+                                    <input
+                                        type="text"
+                                        value={editingPlayer.name || ''}
+                                        onChange={(e) => setEditingPlayer({...editingPlayer, name: e.target.value})}
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                        required
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                                    <input
+                                        type="email"
+                                        value={editingPlayer.email || ''}
+                                        onChange={(e) => setEditingPlayer({...editingPlayer, email: e.target.value})}
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                                    <input
+                                        type="tel"
+                                        value={editingPlayer.phone || ''}
+                                        onChange={(e) => setEditingPlayer({...editingPlayer, phone: e.target.value})}
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                        placeholder="(555) 123-4567"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Team-specific Info */}
+                            <div className="border-t pt-4">
+                                <h4 className="font-medium text-slate-800 mb-3">Team Details</h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Jersey Number</label>
+                                        <input
+                                            type="text"
+                                            value={editingPlayer.jerseyNumber || ''}
+                                            onChange={(e) => setEditingPlayer({...editingPlayer, jerseyNumber: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Position</label>
+                                        <select
+                                            value={editingPlayer.position || ''}
+                                            onChange={(e) => setEditingPlayer({...editingPlayer, position: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                        >
+                                            <option value="">Select Position</option>
+                                            <option value="Attack">Attack</option>
+                                            <option value="Midfield">Midfield</option>
+                                            <option value="Defense">Defense</option>
+                                            <option value="Goalie">Goalie</option>
+                                            <option value="FOGO">FOGO</option>
+                                            <option value="LSM">LSM</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Additional Info */}
+                            <div className="border-t pt-4">
+                                <h4 className="font-medium text-slate-800 mb-3">Additional Info</h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Graduation Year</label>
+                                        <input
+                                            type="text"
+                                            value={editingPlayer.graduationYear || ''}
+                                            onChange={(e) => setEditingPlayer({...editingPlayer, graduationYear: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                            placeholder="2025"
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Height</label>
+                                        <input
+                                            type="text"
+                                            value={editingPlayer.height || ''}
+                                            onChange={(e) => setEditingPlayer({...editingPlayer, height: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                            placeholder="5'10&quot;"
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Weight</label>
+                                        <input
+                                            type="text"
+                                            value={editingPlayer.weight || ''}
+                                            onChange={(e) => setEditingPlayer({...editingPlayer, weight: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                            placeholder="165 lbs"
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">School</label>
+                                        <input
+                                            type="text"
+                                            value={editingPlayer.school || ''}
+                                            onChange={(e) => setEditingPlayer({...editingPlayer, school: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Emergency Contact */}
+                            <div className="border-t pt-4">
+                                <h4 className="font-medium text-slate-800 mb-3">Emergency Contact</h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Contact Name</label>
+                                        <input
+                                            type="text"
+                                            value={editingPlayer.emergencyContactName || ''}
+                                            onChange={(e) => setEditingPlayer({...editingPlayer, emergencyContactName: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Contact Phone</label>
+                                        <input
+                                            type="tel"
+                                            value={editingPlayer.emergencyContactPhone || ''}
+                                            onChange={(e) => setEditingPlayer({...editingPlayer, emergencyContactPhone: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                             
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Jersey Number</label>
-                                <input
-                                    type="text"
-                                    value={editingPlayer.jerseyNumber || ''}
-                                    onChange={(e) => setEditingPlayer({...editingPlayer, jerseyNumber: e.target.value})}
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                                />
-                            </div>
-                            
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Position</label>
-                                <select
-                                    value={editingPlayer.position || ''}
-                                    onChange={(e) => setEditingPlayer({...editingPlayer, position: e.target.value})}
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                                >
-                                    <option value="">Select Position</option>
-                                    <option value="Attack">Attack</option>
-                                    <option value="Midfield">Midfield</option>
-                                    <option value="Defense">Defense</option>
-                                    <option value="Goalie">Goalie</option>
-                                    <option value="FOGO">FOGO</option>
-                                    <option value="LSM">LSM</option>
-                                </select>
-                            </div>
-                            
-                            <div className="flex gap-3 pt-2">
+                            {/* Action Buttons */}
+                            <div className="flex gap-3 pt-4 border-t">
                                 <button
                                     onClick={() => setShowEditModal(false)}
                                     className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50"
@@ -670,13 +805,23 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
                                 </button>
                                 <button
                                     onClick={() => handleUpdatePlayer(editingPlayer.id, {
+                                        name: editingPlayer.name,
+                                        email: editingPlayer.email,
+                                        phone: editingPlayer.phone,
+                                        photoUrl: editingPlayer.photoUrl,
                                         jerseyNumber: editingPlayer.jerseyNumber,
-                                        position: editingPlayer.position
+                                        position: editingPlayer.position,
+                                        graduationYear: editingPlayer.graduationYear,
+                                        height: editingPlayer.height,
+                                        weight: editingPlayer.weight,
+                                        school: editingPlayer.school,
+                                        emergencyContactName: editingPlayer.emergencyContactName,
+                                        emergencyContactPhone: editingPlayer.emergencyContactPhone
                                     })}
-                                    disabled={actionLoading}
+                                    disabled={actionLoading || !editingPlayer.name?.trim()}
                                     className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                                 >
-                                    {actionLoading ? 'Saving...' : 'Save'}
+                                    {actionLoading ? 'Saving...' : 'Save Changes'}
                                 </button>
                             </div>
                         </div>
