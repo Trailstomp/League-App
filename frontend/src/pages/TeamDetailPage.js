@@ -145,12 +145,13 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
         >
             {/* Team Header */}
             <div 
-                className="relative bg-gradient-to-r from-slate-800 to-slate-600 text-white rounded-lg overflow-hidden mb-4 sm:mb-6"
+                className="relative bg-gradient-to-r from-slate-800 to-slate-600 rounded-lg overflow-hidden mb-4 sm:mb-6"
                 style={{
                     backgroundColor: teamStyle.primaryColor || '#64748b',
                     backgroundImage: teamStyle.bannerUrl ? `url(${teamStyle.bannerUrl})` : 'none',
                     backgroundSize: 'cover',
-                    backgroundPosition: 'center'
+                    backgroundPosition: 'center',
+                    color: teamStyle.headerTextColor || '#ffffff'
                 }}
             >
                 {teamStyle.bannerUrl && <div className="absolute inset-0 bg-black bg-opacity-40"></div>}
