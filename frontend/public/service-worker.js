@@ -1,5 +1,6 @@
 // Service Worker for Midwest Lacrosse League PWA
-const CACHE_NAME = 'mlbl-cache-v1';
+// Version bumped: 2025-01-11 - Force update for all users
+const CACHE_NAME = 'mlbl-cache-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
