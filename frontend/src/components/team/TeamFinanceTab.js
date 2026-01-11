@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 /**
- * TeamFinanceTab - Finance register for tracking team income and expenses
+ * TeamFinanceTab - Finance register for tracking team income, expenses, and fees
+ * Includes sub-tabs: Transactions | Fees & Payments
  */
 const TeamFinanceTab = ({ team, currentUser }) => {
+    const [activeSubTab, setActiveSubTab] = useState('transactions');
     const [transactions, setTransactions] = useState([]);
     const [summary, setSummary] = useState({});
     const [loading, setLoading] = useState(true);
@@ -13,6 +15,18 @@ const TeamFinanceTab = ({ team, currentUser }) => {
     const [filter, setFilter] = useState('all'); // all, income, expense
     const [message, setMessage] = useState('');
     const [saving, setSaving] = useState(false);
+    
+    // Fees state
+    const [fees, setFees] = useState([]);
+    const [feesLoading, setFeesLoading] = useState(true);
+    const [showAddFeeForm, setShowAddFeeForm] = useState(false);
+    const [feeFormData, setFeeFormData] = useState({
+        name: '',
+        amount: '',
+        dueDate: '',
+        description: ''
+    });
+    
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
 
     const [formData, setFormData] = useState({
