@@ -14,8 +14,7 @@ import {
     TeamStatsTab,
     TeamMediaTab,
     TeamContactTab,
-    TeamChatTab,
-    TeamRosterManageTab
+    TeamChatTab
 } from '../components/team';
 
 const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate, onUserUpdate }) => {
