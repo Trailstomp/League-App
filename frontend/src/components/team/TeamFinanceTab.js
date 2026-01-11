@@ -749,6 +749,8 @@ const TeamFinanceTab = ({ team, currentUser }) => {
                     </div>
                 </div>
             )}
+            </>
+            )}
         </div>
     );
 };
