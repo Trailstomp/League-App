@@ -126,10 +126,6 @@ const TeamCard = ({ team, onNavigate }) => {
         </div>
     );
 };
-            </div>
-        </div>
-    </div>
-);
 
 const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvents, websiteStyle = {}, onNavigate }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
