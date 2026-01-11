@@ -21,10 +21,19 @@ def set_db(database):
 
 
 @locations_router.get("")
-async def get_locations():
-    """Get all locations"""
+async def get_locations(team_id: str = None):
+    """Get locations, optionally filtered by team_id"""
     try:
-        locations = await db.locations.find().to_list(length=None)
+        query = {}
+        if team_id:
+            # Filter locations for this specific team
+            query = {"$or": [
+                {"team_id": team_id},
+                {"teamId": team_id},
+                {"teams": team_id}  # In case it's stored as an array
+            ]}
+        
+        locations = await db.locations.find(query).to_list(length=None)
         result_locations = []
         for location in locations:
             location.pop('_id', None)
