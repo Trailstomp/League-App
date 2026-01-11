@@ -311,14 +311,13 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                                         type="color"
                                         value={teamStyle.primaryColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, primaryColor: e.target.value})}
-                                        className="w-12 h-10 rounded border-2 border-slate-300 cursor-pointer p-0.5"
-                                        style={{ WebkitAppearance: 'none' }}
+                                        className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
                                     />
                                     <input
                                         type="text"
                                         value={teamStyle.primaryColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, primaryColor: e.target.value})}
-                                        className="flex-1 px-2 py-1 border border-slate-300 rounded text-sm"
+                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
                                         placeholder="#2563eb"
                                     />
                                 </div>
@@ -331,14 +330,13 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                                         type="color"
                                         value={teamStyle.accentColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, accentColor: e.target.value})}
-                                        className="w-12 h-10 rounded border-2 border-slate-300 cursor-pointer p-0.5"
-                                        style={{ WebkitAppearance: 'none' }}
+                                        className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
                                     />
                                     <input
                                         type="text"
                                         value={teamStyle.accentColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, accentColor: e.target.value})}
-                                        className="flex-1 px-2 py-1 border border-slate-300 rounded text-sm"
+                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
                                         placeholder="#3b82f6"
                                     />
                                 </div>
@@ -351,14 +349,13 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                                         type="color"
                                         value={teamStyle.backgroundColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, backgroundColor: e.target.value})}
-                                        className="w-12 h-10 rounded border-2 border-slate-300 cursor-pointer p-0.5"
-                                        style={{ WebkitAppearance: 'none' }}
+                                        className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
                                     />
                                     <input
                                         type="text"
                                         value={teamStyle.backgroundColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, backgroundColor: e.target.value})}
-                                        className="flex-1 px-2 py-1 border border-slate-300 rounded text-sm"
+                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
                                         placeholder="#f8fafc"
                                     />
                                 </div>
@@ -371,8 +368,7 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                                         type="color"
                                         value={teamStyle.textColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, textColor: e.target.value})}
-                                        className="w-12 h-10 rounded border-2 border-slate-300 cursor-pointer p-0.5"
-                                        style={{ WebkitAppearance: 'none' }}
+                                        className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
                                     />
                                     <input
                                         type="text"
