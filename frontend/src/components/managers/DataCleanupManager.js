@@ -165,6 +165,16 @@ const DataCleanupManager = () => {
                     🧹 Data Cleanup
                 </button>
                 <button
+                    onClick={() => setActiveTab('team-players')}
+                    className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                        activeTab === 'team-players'
+                            ? 'border-blue-600 text-blue-600'
+                            : 'border-transparent text-slate-600 hover:text-slate-800'
+                    }`}
+                >
+                    👥 Team Players
+                </button>
+                <button
                     onClick={() => setActiveTab('alerts')}
                     className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
                         activeTab === 'alerts'
@@ -178,6 +188,200 @@ const DataCleanupManager = () => {
 
             {activeTab === 'alerts' ? (
                 <HealthAlertSettings />
+            ) : activeTab === 'team-players' ? (
+                <div className="space-y-6">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h3 className="text-lg font-semibold text-blue-800 mb-2">👥 Team Player Sources</h3>
+                        <p className="text-blue-700 text-sm">
+                            This tool shows ALL sources where players are stored for a team.
+                            Use this to find and clear phantom players that appear even after deletion.
+                        </p>
+                    </div>
+
+                    {/* Team Selector */}
+                    <div className="bg-white border rounded-lg p-6">
+                        <h4 className="text-lg font-semibold text-slate-800 mb-4">Select a Team to Inspect</h4>
+                        <div className="flex gap-4 items-end">
+                            <div className="flex-1">
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Team</label>
+                                <select
+                                    value={teamId}
+                                    onChange={(e) => setTeamId(e.target.value)}
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                >
+                                    <option value="">Select a team...</option>
+                                    {teams.map(t => (
+                                        <option key={t.id} value={t.id}>{t.name} ({t.id})</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <button
+                                onClick={() => checkTeamPlayerSources(teamId)}
+                                disabled={!teamId || loading}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                            >
+                                {loading ? '⏳ Loading...' : '🔍 Check Sources'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Message */}
+                    {message && (
+                        <div className={`p-4 rounded-lg ${message.includes('✅') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                            {message}
+                        </div>
+                    )}
+
+                    {/* Team Sources Results */}
+                    {teamSources && (
+                        <div className="bg-white border rounded-lg overflow-hidden">
+                            <div className="px-4 py-3 bg-slate-50 border-b flex justify-between items-center">
+                                <h3 className="font-semibold text-slate-800">
+                                    Player Sources for Team: {teams.find(t => t.id === teamSources.team_id)?.name || teamSources.team_id}
+                                </h3>
+                                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                                    {teamSources.total_unique_players} unique players
+                                </span>
+                            </div>
+                            
+                            <div className="p-4 space-y-4">
+                                {/* Source 1: Users with teamId */}
+                                <div className="border rounded-lg p-4">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <h5 className="font-medium text-slate-800">
+                                            📁 Source 1: Users with teamId field
+                                        </h5>
+                                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                            teamSources.users_with_teamId?.length > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
+                                        }`}>
+                                            {teamSources.users_with_teamId?.length || 0} found
+                                        </span>
+                                    </div>
+                                    {teamSources.users_with_teamId?.length > 0 && (
+                                        <ul className="text-sm text-slate-600 space-y-1">
+                                            {teamSources.users_with_teamId.map((u, i) => (
+                                                <li key={i}>• {u.name} ({u.email}) - status: {u.status}</li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+
+                                {/* Source 2: Users with teamAssignments */}
+                                <div className="border rounded-lg p-4">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <h5 className="font-medium text-slate-800">
+                                            📁 Source 2: Users with teamAssignments
+                                        </h5>
+                                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                            teamSources.users_with_teamAssignment?.length > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
+                                        }`}>
+                                            {teamSources.users_with_teamAssignment?.length || 0} found
+                                        </span>
+                                    </div>
+                                    {teamSources.users_with_teamAssignment?.length > 0 && (
+                                        <ul className="text-sm text-slate-600 space-y-1">
+                                            {teamSources.users_with_teamAssignment.map((u, i) => (
+                                                <li key={i}>• {u.name} ({u.email}) - status: {u.status}</li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+
+                                {/* Source 3: Legacy league_data.players */}
+                                <div className="border rounded-lg p-4">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <h5 className="font-medium text-slate-800">
+                                            📁 Source 3: Legacy league_data.players array
+                                        </h5>
+                                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                            teamSources.legacy_league_data_players?.length > 0 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                                        }`}>
+                                            {teamSources.legacy_league_data_players?.length || 0} found
+                                        </span>
+                                    </div>
+                                    {teamSources.legacy_league_data_players?.length > 0 && (
+                                        <ul className="text-sm text-slate-600 space-y-1">
+                                            {teamSources.legacy_league_data_players.map((p, i) => (
+                                                <li key={i}>• {p.name} ({p.email || 'no email'})</li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+
+                                {/* Source 4: Team roster array */}
+                                <div className="border rounded-lg p-4">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <h5 className="font-medium text-slate-800">
+                                            📁 Source 4: Team roster array
+                                        </h5>
+                                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                            teamSources.team_roster_array?.length > 0 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                                        }`}>
+                                            {teamSources.team_roster_array?.length || 0} found
+                                        </span>
+                                    </div>
+                                    {teamSources.team_roster_array?.length > 0 && (
+                                        <pre className="text-xs text-slate-600 bg-slate-50 p-2 rounded overflow-auto max-h-32">
+                                            {JSON.stringify(teamSources.team_roster_array, null, 2)}
+                                        </pre>
+                                    )}
+                                </div>
+
+                                {/* Source 5: Team players array */}
+                                <div className="border rounded-lg p-4">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <h5 className="font-medium text-slate-800">
+                                            📁 Source 5: Team players array
+                                        </h5>
+                                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                            teamSources.team_players_array?.length > 0 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                                        }`}>
+                                            {teamSources.team_players_array?.length || 0} found
+                                        </span>
+                                    </div>
+                                    {teamSources.team_players_array?.length > 0 && (
+                                        <pre className="text-xs text-slate-600 bg-slate-50 p-2 rounded overflow-auto max-h-32">
+                                            {JSON.stringify(teamSources.team_players_array, null, 2)}
+                                        </pre>
+                                    )}
+                                </div>
+
+                                {/* Clear All Button */}
+                                {teamSources.total_unique_players > 0 && (
+                                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                                        <h5 className="font-semibold text-red-800 mb-2">🗑️ Clear All Player References</h5>
+                                        <p className="text-sm text-red-700 mb-4">
+                                            This will remove ALL player references for this team from ALL sources above.
+                                            This action cannot be undone.
+                                        </p>
+                                        <button
+                                            onClick={() => clearAllTeamPlayers(teamSources.team_id)}
+                                            disabled={loading}
+                                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                                        >
+                                            {loading ? '⏳ Clearing...' : '🗑️ Clear All Players from This Team'}
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* Cleanup Results */}
+                                {cleanupResult && (
+                                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                                        <h5 className="font-semibold text-green-800 mb-2">✅ Cleanup Complete</h5>
+                                        <ul className="text-sm text-green-700 space-y-1">
+                                            <li>• Users with teamId cleared: {cleanupResult.users_teamId_cleared}</li>
+                                            <li>• Users with teamAssignment cleared: {cleanupResult.users_teamAssignment_cleared}</li>
+                                            <li>• Legacy players cleared: {cleanupResult.legacy_players_cleared}</li>
+                                            <li>• Team roster entries cleared: {cleanupResult.team_roster_cleared}</li>
+                                            <li>• Team players entries cleared: {cleanupResult.team_players_cleared}</li>
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            ) : (
             ) : (
             <>
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
