@@ -382,9 +382,8 @@ const DataCleanupManager = () => {
                     )}
                 </div>
             ) : (
-            ) : (
-            <>
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <>
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                 <h3 className="text-lg font-semibold text-amber-800 mb-2">🧹 Data Cleanup Utility</h3>
                 <p className="text-amber-700 text-sm">
                     This tool helps you find and remove orphaned data from the database - such as 
