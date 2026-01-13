@@ -133,11 +133,15 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 
 ## Key API Endpoints
 
-### Data Cleanup (NEW - Jan 10, 2025)
+### Data Cleanup (Updated - Jan 13, 2025)
 - `GET /api/cleanup/database-stats` - Get database statistics
+- `GET /api/cleanup/team/{team_id}/player-sources` - Get ALL 5 sources where players are stored for a team
+- `POST /api/cleanup/team/{team_id}/clear-all-players` - Clear all player references for a team (confirm=true to execute)
 - `GET /api/cleanup/orphaned-players/preview` - Preview orphaned data without deleting
 - `POST /api/cleanup/orphaned-players/clean` - Remove orphaned data
 - `DELETE /api/cleanup/inactive-users` - Remove inactive users (with confirm param)
+- `GET /api/cleanup/health-alerts/settings` - Get health alert email settings
+- `POST /api/cleanup/health-alerts/settings` - Update health alert settings
 
 ### Finance Management
 - `GET /api/finance/categories` - Get predefined income/expense categories
