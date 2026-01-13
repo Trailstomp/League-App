@@ -32,6 +32,179 @@ class HealthAlertSettings(BaseModel):
     legacy_players_threshold: int = 5
 
 
+@cleanup_router.get("/team/{team_id}/player-sources")
+async def get_team_player_sources(team_id: str):
+    """
+    Diagnostic: Show ALL sources where players are coming from for a team
+    This helps identify where 'phantom' players might be stored
+    """
+    try:
+        sources = {
+            "team_id": team_id,
+            "users_with_teamId": [],
+            "users_with_teamAssignment": [],
+            "legacy_league_data_players": [],
+            "team_roster_array": [],
+            "team_players_array": [],
+            "total_unique_players": 0
+        }
+        
+        # Source 1: Users with direct teamId field
+        users_direct = await db.users.find(
+            {"teamId": team_id},
+            {"_id": 0, "id": 1, "name": 1, "email": 1, "status": 1, "teamId": 1}
+        ).to_list(1000)
+        sources["users_with_teamId"] = users_direct
+        
+        # Source 2: Users with teamAssignments containing this team
+        users_assigned = await db.users.find(
+            {"teamAssignments.teamId": team_id},
+            {"_id": 0, "id": 1, "name": 1, "email": 1, "status": 1, "teamAssignments": 1}
+        ).to_list(1000)
+        sources["users_with_teamAssignment"] = [
+            {"id": u.get("id"), "name": u.get("name"), "email": u.get("email"), "status": u.get("status")}
+            for u in users_assigned
+        ]
+        
+        # Source 3: Legacy league_data.players array
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        if league_data:
+            legacy_players = league_data.get("players", [])
+            for p in legacy_players:
+                if p.get("teamId") == team_id or p.get("team_id") == team_id:
+                    sources["legacy_league_data_players"].append({
+                        "id": p.get("id"),
+                        "name": p.get("name"),
+                        "email": p.get("email"),
+                        "teamId": p.get("teamId") or p.get("team_id")
+                    })
+            
+            # Source 4 & 5: Team object roster and players arrays
+            teams = league_data.get("teams", [])
+            for t in teams:
+                if t.get("id") == team_id:
+                    roster = t.get("roster", [])
+                    if roster:
+                        sources["team_roster_array"] = roster
+                    
+                    players = t.get("players", [])
+                    if players:
+                        sources["team_players_array"] = players
+                    break
+        
+        # Count unique players
+        all_ids = set()
+        for u in sources["users_with_teamId"]:
+            all_ids.add(u.get("id"))
+        for u in sources["users_with_teamAssignment"]:
+            all_ids.add(u.get("id"))
+        for p in sources["legacy_league_data_players"]:
+            all_ids.add(p.get("id"))
+        for r in sources["team_roster_array"]:
+            if isinstance(r, str):
+                all_ids.add(r)
+            elif isinstance(r, dict):
+                all_ids.add(r.get("id"))
+        
+        sources["total_unique_players"] = len(all_ids)
+        
+        return sources
+        
+    except Exception as e:
+        logger.error(f"❌ Error getting player sources: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@cleanup_router.post("/team/{team_id}/clear-all-players")
+async def clear_all_team_players(team_id: str, confirm: bool = False):
+    """
+    Clear ALL player references for a team from ALL sources
+    Set confirm=True to actually perform the deletion
+    """
+    try:
+        if not confirm:
+            # Preview mode
+            sources = await get_team_player_sources(team_id)
+            return {
+                "preview": True,
+                "sources": sources,
+                "message": "Set confirm=true to clear all these player references"
+            }
+        
+        results = {
+            "users_teamId_cleared": 0,
+            "users_teamAssignment_cleared": 0,
+            "legacy_players_cleared": 0,
+            "team_roster_cleared": 0,
+            "team_players_cleared": 0
+        }
+        
+        # Clear Source 1: Users with direct teamId field
+        result1 = await db.users.update_many(
+            {"teamId": team_id},
+            {"$unset": {"teamId": ""}}
+        )
+        results["users_teamId_cleared"] = result1.modified_count
+        
+        # Clear Source 2: Remove this team from teamAssignments
+        result2 = await db.users.update_many(
+            {"teamAssignments.teamId": team_id},
+            {"$pull": {"teamAssignments": {"teamId": team_id}}}
+        )
+        results["users_teamAssignment_cleared"] = result2.modified_count
+        
+        # Clear Sources 3, 4, 5 from league_data
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        if league_data:
+            modified = False
+            
+            # Source 3: Remove from legacy players array
+            legacy_players = league_data.get("players", [])
+            original_count = len(legacy_players)
+            league_data["players"] = [
+                p for p in legacy_players 
+                if p.get("teamId") != team_id and p.get("team_id") != team_id
+            ]
+            results["legacy_players_cleared"] = original_count - len(league_data["players"])
+            if results["legacy_players_cleared"] > 0:
+                modified = True
+            
+            # Sources 4 & 5: Clear team's roster and players arrays
+            teams = league_data.get("teams", [])
+            for i, t in enumerate(teams):
+                if t.get("id") == team_id:
+                    if t.get("roster"):
+                        results["team_roster_cleared"] = len(t.get("roster", []))
+                        teams[i]["roster"] = []
+                        modified = True
+                    if t.get("players"):
+                        results["team_players_cleared"] = len(t.get("players", []))
+                        teams[i]["players"] = []
+                        modified = True
+                    break
+            
+            if modified:
+                league_data["teams"] = teams
+                await db.league_data.replace_one(
+                    {"id": "main_league"},
+                    league_data,
+                    upsert=True
+                )
+        
+        total_cleared = sum(results.values())
+        logger.info(f"✅ Cleared {total_cleared} player references for team {team_id}")
+        
+        return {
+            "status": "success",
+            "results": results,
+            "total_cleared": total_cleared
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error clearing team players: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @cleanup_router.get("/orphaned-players/preview")
 async def preview_orphaned_players():
     """
