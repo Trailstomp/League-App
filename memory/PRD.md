@@ -85,6 +85,13 @@ Create a comprehensive league management portal for lacrosse leagues with featur
 - [x] **Data Cleanup Utility** - Find and remove orphaned data (deleted users in rosters)
 - [x] **Database Statistics** - View user counts, team counts, legacy data
 - [x] **Preview Before Delete** - Preview orphaned data before cleaning
+- [x] **Team Player Sources Diagnostic** - Shows ALL 5 locations where player data can be stored:
+  - Source 1: Users with teamId field
+  - Source 2: Users with teamAssignments array
+  - Source 3: Legacy league_data.players array
+  - Source 4: Team roster array
+  - Source 5: Team players array
+- [x] **Clear All Players** - Nuclear option to clear all player references from a specific team
 
 ### Live Scoring
 - [x] Real-time game scoring with shot tracking
