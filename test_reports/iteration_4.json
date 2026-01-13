@@ -1,0 +1,68 @@
+{
+  "summary": "Completed comprehensive testing of Data Cleanup API and UI. All 13 backend API tests passed (100%). Frontend UI verified working - Data Cleanup section accessible via Admin Portal > Settings > Data Cleanup with all 3 tabs (Data Cleanup, Team Players, Health Alerts) functional.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/tests/test_cleanup_api.py",
+    "/app/test_reports/pytest/pytest_cleanup_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "cleanup.py properly implements all 5 player data sources: users.teamId, users.teamAssignments, legacy league_data.players, team.roster, team.players",
+    "DataCleanupManager.js correctly displays all 5 sources with counts and player details",
+    "API endpoints properly return structured data with correct field names",
+    "Preview mode (confirm=false) works correctly for clear-all-players endpoint",
+    "Health alert settings properly saved and retrieved from league_data.healthAlertSettings"
+  ],
+  "updated_files": [
+    "/app/tests/test_cleanup_api.py"
+  ],
+  "success_rate": {
+    "backend": "100% (13/13 tests passed)",
+    "frontend": "100% (all features verified working)"
+  },
+  "test_credentials": {
+    "email": "trailstomp@gmail.com",
+    "password": "Admin123!",
+    "roles": ["admin", "league_admin", "coach"]
+  },
+  "seed_data_creation": "None - used existing test data",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Data Cleanup feature fully functional. Access via Admin Portal > Settings > Data Cleanup. Team Players tab shows all 5 data sources. Eagles team (eagles_01) has 3 players in Sources 1 and 2. Database is healthy with 0 orphaned records.",
+  "features_verified": {
+    "backend_apis": {
+      "GET /api/cleanup/database-stats": "Working - returns users (total/active/pending/inactive), teams, legacy_players, team_roster_entries",
+      "GET /api/cleanup/team/{team_id}/player-sources": "Working - returns all 5 player data sources with counts",
+      "POST /api/cleanup/team/{team_id}/clear-all-players": "Working - preview mode returns sources, confirm=true clears all",
+      "GET /api/cleanup/orphaned-players/preview": "Working - returns legacy_players, orphaned_team_assignments, users_without_valid_teams, total_issues",
+      "POST /api/cleanup/orphaned-players/clean": "Working - removes orphaned data and returns cleanup counts",
+      "GET /api/cleanup/health-alerts/settings": "Working - returns enabled, recipient_emails, thresholds",
+      "POST /api/cleanup/health-alerts/settings": "Working - saves health alert configuration"
+    },
+    "frontend_features": {
+      "Admin Portal Access": {
+        "navigation": "Admin Portal visible in sidebar for admin users",
+        "settings_tab": "Settings tab accessible with sub-tabs: Website Design, API Keys, Cloud Storage, Database, Data Cleanup"
+      },
+      "Data Cleanup Section": {
+        "data_cleanup_tab": "Shows Database Statistics (Total Users, Teams, Legacy Players, Roster Entries) and Scan for Orphaned Data button",
+        "team_players_tab": "Shows team selector dropdown, Check Sources button, displays all 5 player sources with counts",
+        "health_alerts_tab": "Shows enable toggle, recipient emails, threshold settings, save and test buttons"
+      },
+      "Team Player Sources Diagnostic": {
+        "team_selector": "Dropdown populated with all teams (Eagles, Hawks, Lions, Tigers)",
+        "check_sources_button": "Fetches and displays player sources from API",
+        "source_display": "Shows all 5 sources with player names, emails, status",
+        "clear_all_button": "Present with warning message about irreversible action"
+      }
+    }
+  }
+}
