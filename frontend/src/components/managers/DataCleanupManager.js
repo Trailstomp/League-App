@@ -12,12 +12,28 @@ const DataCleanupManager = () => {
     const [cleanupResult, setCleanupResult] = useState(null);
     const [message, setMessage] = useState('');
     const [activeTab, setActiveTab] = useState('cleanup');
+    const [teamId, setTeamId] = useState('');
+    const [teamSources, setTeamSources] = useState(null);
+    const [teams, setTeams] = useState([]);
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
 
-    // Fetch database stats on mount
+    // Fetch database stats and teams on mount
     useEffect(() => {
         fetchStats();
+        fetchTeams();
     }, []);
+
+    const fetchTeams = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/api/league-data`);
+            if (response.ok) {
+                const data = await response.json();
+                setTeams(data.teams || []);
+            }
+        } catch (error) {
+            console.error('Error fetching teams:', error);
+        }
+    };
 
     const fetchStats = async () => {
         try {
@@ -30,6 +46,54 @@ const DataCleanupManager = () => {
         } catch (error) {
             console.error('Error fetching stats:', error);
             setMessage('❌ Error fetching database statistics');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const checkTeamPlayerSources = async (id) => {
+        if (!id) return;
+        try {
+            setLoading(true);
+            setMessage('');
+            const response = await fetch(`${backendUrl}/api/cleanup/team/${id}/player-sources`);
+            if (response.ok) {
+                const data = await response.json();
+                setTeamSources(data);
+            } else {
+                setMessage('❌ Error fetching player sources');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setMessage('❌ Network error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const clearAllTeamPlayers = async (id) => {
+        if (!window.confirm(`Are you sure you want to clear ALL player references for this team? This cannot be undone.`)) {
+            return;
+        }
+        try {
+            setLoading(true);
+            setMessage('');
+            const response = await fetch(`${backendUrl}/api/cleanup/team/${id}/clear-all-players?confirm=true`, {
+                method: 'POST'
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setMessage(`✅ Cleared ${data.total_cleared} player references`);
+                setCleanupResult(data.results);
+                // Refresh sources
+                await checkTeamPlayerSources(id);
+                await fetchStats();
+            } else {
+                setMessage('❌ Error clearing players');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setMessage('❌ Network error');
         } finally {
             setLoading(false);
         }
