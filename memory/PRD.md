@@ -108,6 +108,14 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 - [x] **Role-based Access** - admin, league_admin, coach, player, guest roles
 - [ ] **OAuth/Social Login** - Additional providers (Facebook, Apple)
 
+### Multi-Sport Configuration
+- [x] **Sport Type Selection** - Admin can select league sport (Lacrosse, Hockey, Soccer, Volleyball)
+- [x] **Sport-Specific Positions** - Each sport has unique positions (e.g., Attack/Midfield for Lacrosse, Center/Wing for Hockey)
+- [x] **Sport-Specific Scoring** - Goals/Saves for hockey/soccer/lacrosse, Kills/Aces for volleyball
+- [x] **Sport Icons** - Custom SVG icons for each sport
+- [x] **Terminology** - Sport-appropriate terms (Period vs Half vs Set, Goal vs Point)
+- [x] **Configuration Preview** - Shows positions and scoring actions when selecting sport
+
 ## Architecture
 
 ### Frontend (React)
