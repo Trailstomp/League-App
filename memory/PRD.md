@@ -102,11 +102,11 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 - [x] YouTube feed integration
 
 ### Authentication
-- [x] Email/password login
-- [x] Password reset via token
-- [x] localStorage session persistence
-- [x] Cross-tab sync via storage events
-- [ ] OAuth/Social login
+- [x] **Email/Password Authentication** - Traditional login with email and password
+- [x] **Google OAuth** - "Sign in with Google" via Emergent Auth
+- [x] **Password Reset** - Email-based password reset flow
+- [x] **Role-based Access** - admin, league_admin, coach, player, guest roles
+- [ ] **OAuth/Social Login** - Additional providers (Facebook, Apple)
 
 ## Architecture
 
