@@ -273,6 +273,7 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                         event={selectedEvent}
                         teams={teams}
                         currentUser={currentUser}
+                        sportType={sportType}
                         onSubmit={(statsData) => handleScoreSubmit(selectedEvent.id, statsData)}
                         onCancel={() => setActiveView('list')}
                     />
