@@ -625,9 +625,24 @@ function App() {
     }
   };
 
-  // Check if this is an OAuth callback (has 'code' parameter in URL)
+  // Check if this is an OAuth callback
+  // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+  // Emergent Auth uses session_id in URL fragment
+  const urlHash = window.location.hash;
   const urlParams = new URLSearchParams(window.location.search);
+  const isEmergentAuthCallback = urlHash.includes('session_id=');
   const isOAuthCallback = urlParams.has('code') || urlParams.has('error');
+  
+  // Handle Emergent Auth callback with session_id in hash
+  if (isEmergentAuthCallback) {
+    // Dynamic import to avoid circular dependency
+    const AuthCallback = require('./components/AuthCallback').default;
+    return (
+      <div className="App">
+        <AuthCallback onLogin={handleLogin} />
+      </div>
+    );
+  }
 
   if (isOAuthCallback) {
     return (
