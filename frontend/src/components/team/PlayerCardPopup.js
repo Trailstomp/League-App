@@ -208,21 +208,30 @@ const PlayerCardPopup = ({ player, team, isFlipped, onFlip, onClose, onPrint, on
                                 </div>
 
                                 {/* Current Season Stats */}
-                                {(player.goals > 0 || player.assists > 0) && (
+                                {(player.goals > 0 || player.assists > 0 || player.kills > 0) && (
                                     <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: `${teamColor}08` }}>
                                         <div className="text-xs font-semibold text-slate-600 uppercase mb-2">📊 Current Season</div>
                                         <div className="grid grid-cols-3 gap-2 text-center">
                                             <div className="bg-white rounded p-2 shadow-sm">
-                                                <div className="text-xl font-bold" style={{ color: teamColor }}>{player.goals || 0}</div>
-                                                <div className="text-xs text-slate-500">Goals</div>
+                                                <div className="text-xl font-bold" style={{ color: teamColor }}>
+                                                    {player[statDisplay.primary.key] || 0}
+                                                </div>
+                                                <div className="text-xs text-slate-500">{statDisplay.primary.label}</div>
                                             </div>
                                             <div className="bg-white rounded p-2 shadow-sm">
-                                                <div className="text-xl font-bold" style={{ color: teamColor }}>{player.assists || 0}</div>
-                                                <div className="text-xs text-slate-500">Assists</div>
+                                                <div className="text-xl font-bold" style={{ color: teamColor }}>
+                                                    {player[statDisplay.secondary.key] || 0}
+                                                </div>
+                                                <div className="text-xs text-slate-500">{statDisplay.secondary.label}</div>
                                             </div>
                                             <div className="bg-white rounded p-2 shadow-sm">
-                                                <div className="text-xl font-bold" style={{ color: teamColor }}>{(player.goals || 0) + (player.assists || 0)}</div>
-                                                <div className="text-xs text-slate-500">Points</div>
+                                                <div className="text-xl font-bold" style={{ color: teamColor }}>
+                                                    {statDisplay.tertiary.computed 
+                                                        ? (player[statDisplay.primary.key] || 0) + (player[statDisplay.secondary.key] || 0)
+                                                        : player[statDisplay.tertiary.key] || 0
+                                                    }
+                                                </div>
+                                                <div className="text-xs text-slate-500">{statDisplay.tertiary.label}</div>
                                             </div>
                                         </div>
                                     </div>
