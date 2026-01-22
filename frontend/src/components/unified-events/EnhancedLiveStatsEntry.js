@@ -1938,7 +1938,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                         </div>
                         {/* Period */}
                         <div className="px-2 py-0.5 md:px-4 md:py-1 rounded text-white text-xs md:text-sm font-medium">
-                            Period {gameState.current_period} of {gameState.game_settings.periods}
+                            {gameState.game_settings.periodName} {gameState.current_period} of {gameState.game_settings.periods}
                         </div>
                     </div>
                 </div>
