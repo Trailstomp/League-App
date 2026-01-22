@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { getSportConfig } from '../config/sportsConfig';
 
-const StandingsTable = ({ teams = [], onTeamClick }) => {
+const StandingsTable = ({ teams = [], onTeamClick, sportType = 'lacrosse' }) => {
     const [standings, setStandings] = useState([]);
     const [standingsByDivision, setStandingsByDivision] = useState({});
     const [loading, setLoading] = useState(true);
@@ -11,6 +12,34 @@ const StandingsTable = ({ teams = [], onTeamClick }) => {
     const [selectedSeason, setSelectedSeason] = useState(null);
     const [leagues, setLeagues] = useState([]);
     const [divisions, setDivisions] = useState([]);
+    
+    // Get sport-specific configuration
+    const sportConfig = getSportConfig(sportType);
+    
+    // Get sport-specific column headers
+    const getStatHeaders = () => {
+        if (sportType === 'volleyball') {
+            return {
+                scored: 'Sets Won',
+                scoredAbbrev: 'SW',
+                against: 'Sets Lost',
+                againstAbbrev: 'SL',
+                diff: 'Set Diff',
+                diffAbbrev: 'SD'
+            };
+        }
+        // Default for goal-based sports (lacrosse, hockey, soccer)
+        return {
+            scored: sportConfig.terminology.score + 's For',
+            scoredAbbrev: 'GF',
+            against: sportConfig.terminology.score + 's Against',
+            againstAbbrev: 'GA',
+            diff: sportConfig.terminology.score + ' Diff',
+            diffAbbrev: 'GD'
+        };
+    };
+    
+    const statHeaders = getStatHeaders();
     
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
