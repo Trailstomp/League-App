@@ -14,7 +14,7 @@ setup_router = APIRouter(prefix="/api/setup", tags=["setup"])
 
 # Get database connection
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "league_db")
+DB_NAME = os.environ.get("DB_NAME", "mlbl_database")
 client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
