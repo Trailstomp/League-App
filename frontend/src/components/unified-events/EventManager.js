@@ -296,6 +296,7 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                         event={selectedMatch.event}
                         teams={teams}
                         currentUser={currentUser}
+                        sportType={sportType}
                         onSubmit={async (statsData) => {
                             // Save stats for this specific match
                             await handleScoreSubmit(selectedMatch.event.id, statsData);
