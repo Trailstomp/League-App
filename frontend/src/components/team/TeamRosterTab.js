@@ -577,6 +577,7 @@ const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse'
                     onClose={closePlayerCard}
                     onPrint={handlePrint}
                     onDownload={handleDownloadPDF}
+                    sportType={sportType}
                 />
             )}
             
