@@ -12,6 +12,7 @@ import PasswordResetPage from './pages/PasswordResetPage';
 import HelpPage from './pages/HelpPage';
 import AuthModal, { initialMockUsers } from './components/AuthSystem';
 import OAuthCallback from './components/OAuthCallback';
+import SetupWizard from './components/SetupWizard';
 import { isAdmin, canEditEvent, canEditTeam } from './components/PermissionsSystem';
 import InstallPWA from './components/InstallPWA';
 import "./App.css";
