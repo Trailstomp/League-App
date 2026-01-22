@@ -557,6 +557,7 @@ function App() {
             <StandingsTable 
               teams={teams}
               onTeamClick={(teamId) => handleTeamNavigate(teamId)}
+              sportType={websiteStyle?.sportType || 'lacrosse'}
             />
           </div>
         );
