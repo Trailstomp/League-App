@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { LacrosseIcon } from '../LacrosseIcons';
+import { SportIcon } from '../SportIcons';
+import { SPORTS, SPORT_CONFIG, getAvailableSports, getSportConfig } from '../../config/sportsConfig';
 import ColorExtractor from '../ColorExtractor';
 import SimpleCropTool from '../SimpleCropTool';
 import TickerManager from './TickerManager';
 
 const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, teams = [], events = [] }) => {
-    const [activeSection, setActiveSection] = useState('navigation');
+    const [activeSection, setActiveSection] = useState('sport');
     const saveTimeoutRef = useRef(null); // Component-level timeout ref
     
     // Properly initialize editingStyle with websiteStyle data
