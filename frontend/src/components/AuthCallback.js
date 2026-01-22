@@ -51,7 +51,7 @@ const AuthCallback = ({ onLogin }) => {
                 console.log('✅ OAuth user data received:', userData.email);
 
                 // Now create or update user in our backend
-                const backendResponse = await fetch(`${backendUrl}/api/auth/google-login`, {
+                const backendResponse = await fetch(`${backendUrl}/api/users/google-login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
