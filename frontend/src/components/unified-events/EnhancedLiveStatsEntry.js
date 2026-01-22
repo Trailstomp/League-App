@@ -2016,7 +2016,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                         disabled={gameState.current_period >= gameState.game_settings.periods}
                         className="px-2 md:px-4 py-1.5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-xs md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        ⏭️ Next Period
+                        ⏭️ Next {gameState.game_settings.periodName}
                     </button>
                     
                     <button
