@@ -115,6 +115,11 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 - [x] **Sport Icons** - Custom SVG icons for each sport
 - [x] **Terminology** - Sport-appropriate terms (Period vs Half vs Set, Goal vs Point)
 - [x] **Configuration Preview** - Shows positions and scoring actions when selecting sport
+- [x] **Live Scoring Integration** - Sport config flows to live stats entry with:
+  - Sport icon and name in title bar
+  - Sport-specific period names (Quarter/Period/Half/Set)
+  - Sport-specific number of periods (4/3/2/5)
+  - Dynamic stat types based on sport
 
 ## Architecture
 
