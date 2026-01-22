@@ -12273,6 +12273,9 @@ api_router.include_router(rsvp_router)
 api_router.include_router(drive_router)
 api_router.include_router(cleanup_router)
 
+# Setup router - for first-time setup wizard
+app.include_router(setup_router)
+
 # Include the API router in the main app (after all routes are defined)
 app.include_router(api_router)
 
