@@ -22,7 +22,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
         is_running: false,
         manual_time_input: false,
         game_settings: {
-            periods: 4,
+            periods: sportConfig.periods,
+            periodName: sportConfig.periodName,
             period_length_options: [10, 15, 20, 25, 30]
         }
     });
