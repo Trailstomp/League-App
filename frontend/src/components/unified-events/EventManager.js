@@ -7,7 +7,7 @@ import EnhancedLiveStatsEntry from './EnhancedLiveStatsEntry';
 import QuickScoreEntry from './QuickScoreEntry';
 import LiveSpectatorView from '../../pages/LiveSpectatorView';
 
-const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavigate }) => {
+const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavigate, sportType = 'lacrosse' }) => {
     const [events, setEvents] = useState(initialEvents || []);
     const [activeView, setActiveView] = useState('list'); // list, create, tournament, scoring-selector, live-stats, quick-score, spectator-view, tournament-match-scoring
     const [selectedEvent, setSelectedEvent] = useState(null);
