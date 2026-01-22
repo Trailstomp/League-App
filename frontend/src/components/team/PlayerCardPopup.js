@@ -1,13 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { fixGoogleDriveUrl } from '../../utils/imageUtils';
+import { getSportConfig } from '../../config/sportsConfig';
 
 /**
  * PlayerCardPopup - Displays a flippable player card with stats and bio
  */
-const PlayerCardPopup = ({ player, team, isFlipped, onFlip, onClose, onPrint, onDownload }) => {
+const PlayerCardPopup = ({ player, team, isFlipped, onFlip, onClose, onPrint, onDownload, sportType = 'lacrosse' }) => {
     const [statsByYear, setStatsByYear] = useState({});
     const [loadingStats, setLoadingStats] = useState(false);
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+    
+    // Get sport-specific configuration
+    const sportConfig = getSportConfig(sportType);
+    
+    // Get sport-specific stat display configuration
+    const getStatDisplay = () => {
+        if (sportType === 'volleyball') {
+            return {
+                primary: { key: 'kills', label: 'Kills' },
+                secondary: { key: 'aces', label: 'Aces' },
+                tertiary: { key: 'blocks', label: 'Blocks' },
+                abbreviations: { kills: 'K', aces: 'A', blocks: 'B', digs: 'D' }
+            };
+        }
+        // Default: Lacrosse, Hockey, Soccer
+        return {
+            primary: { key: 'goals', label: 'Goals' },
+            secondary: { key: 'assists', label: 'Assists' },
+            tertiary: { key: 'points', label: 'Points', computed: true },
+            abbreviations: { goals: 'G', assists: 'A', saves: 'Sv', shots: 'S' }
+        };
+    };
+    
+    const statDisplay = getStatDisplay();
     
     // Fetch stats by year when card opens
     useEffect(() => {
