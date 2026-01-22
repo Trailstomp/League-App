@@ -45,17 +45,26 @@ async def get_setup_status():
         if not league_data:
             return {"setup_complete": False, "reason": "no_league_data"}
         
-        # Check if setup wizard was completed
+        # Check if setup wizard was explicitly completed
         if league_data.get("setupComplete"):
             return {"setup_complete": True}
         
-        # Check if there are any admin users
+        # Check if there are any admin users - if so, setup was done before wizard existed
         admin_count = await db.users.count_documents({
             "roles": {"$in": ["admin", "league_admin"]}
         })
         
-        if admin_count == 0:
-            return {"setup_complete": False, "reason": "no_admin"}
+        # Check if there are any teams - if so, this is an existing database
+        team_count = await db.teams.count_documents({})
+        
+        # If we have admins OR teams, consider setup complete (legacy databases)
+        if admin_count > 0 or team_count > 0:
+            # Mark setup as complete for future checks
+            await db.league_data.update_one(
+                {"_id": league_data["_id"]},
+                {"$set": {"setupComplete": True}}
+            )
+            return {"setup_complete": True, "reason": "legacy_database"}
         
         # Check if league has a name set
         if not league_data.get("leagueName") and not league_data.get("websiteStyle", {}).get("navLeagueName"):
