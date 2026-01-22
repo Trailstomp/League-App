@@ -548,6 +548,7 @@ function App() {
             teams={teams}
             currentUser={currentUser}
             onNavigate={handleNavigate}
+            sportType={websiteStyle?.sportType || 'lacrosse'}
           />
         );
       case 'standings':
