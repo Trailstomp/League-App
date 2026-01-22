@@ -251,9 +251,19 @@ const PlayerCardPopup = ({ player, team, isFlipped, onFlip, onClose, onPrint, on
                                                         <div key={year} className="flex items-center justify-between bg-white rounded p-2 shadow-sm">
                                                             <span className="font-bold text-sm" style={{ color: teamColor }}>{year}</span>
                                                             <div className="flex gap-3 text-xs text-slate-600">
-                                                                <span><strong>{yearStats.goals || 0}</strong> G</span>
-                                                                <span><strong>{yearStats.assists || 0}</strong> A</span>
-                                                                <span><strong>{yearStats.gamesPlayed || 0}</strong> GP</span>
+                                                                {sportType === 'volleyball' ? (
+                                                                    <>
+                                                                        <span><strong>{yearStats.kills || 0}</strong> K</span>
+                                                                        <span><strong>{yearStats.aces || 0}</strong> A</span>
+                                                                        <span><strong>{yearStats.gamesPlayed || 0}</strong> GP</span>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <span><strong>{yearStats.goals || 0}</strong> G</span>
+                                                                        <span><strong>{yearStats.assists || 0}</strong> A</span>
+                                                                        <span><strong>{yearStats.gamesPlayed || 0}</strong> GP</span>
+                                                                    </>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     );
