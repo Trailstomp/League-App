@@ -676,6 +676,32 @@ function App() {
     );
   }
 
+  // Show setup wizard for first-time setup
+  if (showSetupWizard) {
+    return (
+      <SetupWizard 
+        onComplete={(wizardData) => {
+          console.log('✅ Setup wizard completed:', wizardData);
+          setShowSetupWizard(false);
+          // Reload the page to fetch new data
+          window.location.reload();
+        }}
+      />
+    );
+  }
+
+  // Show loading while checking setup status
+  if (!setupCheckComplete) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <Layout 
