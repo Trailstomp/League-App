@@ -1667,7 +1667,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                     <div className="mb-4 p-3 bg-gray-100 rounded text-center">
                         <div className="text-sm text-gray-600">Time</div>
                         <div className="font-mono font-bold text-lg">{teamShotInput.timestamp}</div>
-                        <div className="text-xs text-gray-500">Period {gameState.current_period}</div>
+                        <div className="text-xs text-gray-500">{gameState.game_settings.periodName} {gameState.current_period}</div>
                     </div>
 
                     {/* Buttons */}
