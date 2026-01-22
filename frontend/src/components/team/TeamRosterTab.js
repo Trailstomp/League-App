@@ -248,8 +248,9 @@ const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse'
         
         let yPos = 32;
         
-        // Current season stats
-        if (selectedPlayer.goals > 0 || selectedPlayer.assists > 0) {
+        // Current season stats - sport-specific
+        const hasPrimaryStats = (selectedPlayer[statLabels.primaryKey] || 0) > 0 || (selectedPlayer[statLabels.secondaryKey] || 0) > 0;
+        if (hasPrimaryStats) {
             pdf.setFillColor(240, 245, 255);
             pdf.rect(5, yPos, 80, 20, 'F');
             pdf.setTextColor(parseInt(teamColor.slice(1,3), 16), parseInt(teamColor.slice(3,5), 16), parseInt(teamColor.slice(5,7), 16));
@@ -257,13 +258,15 @@ const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse'
             pdf.setFont('helvetica', 'bold');
             pdf.text('CURRENT SEASON', 45, yPos + 5, { align: 'center' });
             pdf.setFontSize(10);
-            pdf.text(`${selectedPlayer.goals || 0} G`, 20, yPos + 14, { align: 'center' });
-            pdf.text(`${selectedPlayer.assists || 0} A`, 45, yPos + 14, { align: 'center' });
-            pdf.text(`${(selectedPlayer.goals || 0) + (selectedPlayer.assists || 0)} Pts`, 70, yPos + 14, { align: 'center' });
+            const primaryVal = selectedPlayer[statLabels.primaryKey] || 0;
+            const secondaryVal = selectedPlayer[statLabels.secondaryKey] || 0;
+            pdf.text(`${primaryVal} ${statLabels.primary.charAt(0)}`, 20, yPos + 14, { align: 'center' });
+            pdf.text(`${secondaryVal} ${statLabels.secondary.charAt(0)}`, 45, yPos + 14, { align: 'center' });
+            pdf.text(`${primaryVal + secondaryVal} Pts`, 70, yPos + 14, { align: 'center' });
             yPos += 25;
         }
         
-        // Stats by year
+        // Stats by year - sport-specific
         if (statsByYear && Object.keys(statsByYear).length > 0) {
             pdf.setTextColor(80, 80, 80);
             pdf.setFontSize(8);
@@ -275,7 +278,9 @@ const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse'
                 const yearStats = statsByYear[year];
                 pdf.setFont('helvetica', 'normal');
                 pdf.setFontSize(8);
-                pdf.text(`${year}: ${yearStats.goals || 0}G, ${yearStats.assists || 0}A, ${yearStats.gamesPlayed || 0}GP`, 5, yPos);
+                const primaryVal = yearStats[statLabels.primaryKey] || 0;
+                const secondaryVal = yearStats[statLabels.secondaryKey] || 0;
+                pdf.text(`${year}: ${primaryVal}${statLabels.primary.charAt(0)}, ${secondaryVal}${statLabels.secondary.charAt(0)}, ${yearStats.gamesPlayed || 0}GP`, 5, yPos);
                 yPos += 5;
             });
             yPos += 3;
