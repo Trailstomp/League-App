@@ -65,9 +65,20 @@ const LiveStatsEntry = ({ event, teams, onSubmit, onCancel, sportType = 'lacross
         }));
     };
 
-    // Initialize teams and players
+    // Initialize teams and players with sport-specific stats
     useEffect(() => {
         if (event && event.teams && event.teams.length >= 2) {
+            // Create initial stats object based on sport
+            const createInitialStats = () => {
+                const stats = { penalties: 0 };
+                statTypes.forEach(stat => {
+                    if (stat.key !== 'penalty') {
+                        stats[stat.key + 's'] = 0; // goals, assists, shots, saves, kills, aces, blocks, etc.
+                    }
+                });
+                return stats;
+            };
+            
             setGameState(prev => ({
                 ...prev,
                 home_team: {
@@ -76,7 +87,7 @@ const LiveStatsEntry = ({ event, teams, onSubmit, onCancel, sportType = 'lacross
                     score: 0,
                     players: getMockPlayers(event.teams[0]).map(p => ({
                         ...p,
-                        stats: { goals: 0, assists: 0, shots: 0, saves: 0, penalties: 0 }
+                        stats: createInitialStats()
                     }))
                 },
                 away_team: {
@@ -85,27 +96,33 @@ const LiveStatsEntry = ({ event, teams, onSubmit, onCancel, sportType = 'lacross
                     score: 0,
                     players: getMockPlayers(event.teams[1]).map(p => ({
                         ...p,
-                        stats: { goals: 0, assists: 0, shots: 0, saves: 0, penalties: 0 }
+                        stats: createInitialStats()
                     }))
                 }
             }));
         }
-    }, [event]);
+    }, [event, sportType]);
 
     const getTeamName = (teamId) => {
         const team = teams?.find(t => t.id === teamId);
         return team ? team.name : teamId;
     };
 
-    const statTypes = [
-        { key: 'goal', label: '⚽ Goal', color: 'bg-green-100 text-green-800' },
-        { key: 'assist', label: '🎯 Assist', color: 'bg-blue-100 text-blue-800' },
-        { key: 'shot', label: '🏹 Shot', color: 'bg-yellow-100 text-yellow-800' },
-        { key: 'save', label: '🥅 Save', color: 'bg-purple-100 text-purple-800' },
-        { key: 'penalty', label: '⚠️ Penalty', color: 'bg-red-100 text-red-800' }
-    ];
+    // Get the stat key for storage (adds 's' for plural)
+    const getStatKey = (statType) => {
+        if (statType === 'penalty') return 'penalties';
+        return statType + 's';
+    };
+    
+    // Check if this stat type scores points
+    const isScoringStat = (statType) => {
+        const stat = statTypes.find(s => s.key === statType);
+        return stat && stat.points > 0;
+    };
 
     const addStat = (teamKey, playerId, statType) => {
+        const statKey = getStatKey(statType);
+        
         setGameState(prev => ({
             ...prev,
             [teamKey]: {
@@ -113,17 +130,7 @@ const LiveStatsEntry = ({ event, teams, onSubmit, onCancel, sportType = 'lacross
                 players: prev[teamKey].players.map(player => {
                     if (player.id === playerId) {
                         const newStats = { ...player.stats };
-                        if (statType === 'goal') {
-                            newStats.goals += 1;
-                        } else if (statType === 'assist') {
-                            newStats.assists += 1;
-                        } else if (statType === 'shot') {
-                            newStats.shots += 1;
-                        } else if (statType === 'save') {
-                            newStats.saves += 1;
-                        } else if (statType === 'penalty') {
-                            newStats.penalties += 1;
-                        }
+                        newStats[statKey] = (newStats[statKey] || 0) + 1;
                         return { ...player, stats: newStats };
                     }
                     return player;
@@ -131,8 +138,8 @@ const LiveStatsEntry = ({ event, teams, onSubmit, onCancel, sportType = 'lacross
             }
         }));
 
-        // Auto-update team score for goals
-        if (statType === 'goal') {
+        // Auto-update team score for scoring stats (goals, kills, aces, blocks in volleyball)
+        if (isScoringStat(statType)) {
             setGameState(prev => ({
                 ...prev,
                 [teamKey]: {
@@ -144,35 +151,33 @@ const LiveStatsEntry = ({ event, teams, onSubmit, onCancel, sportType = 'lacross
     };
 
     const removeStat = (teamKey, playerId, statType) => {
-        setGameState(prev => ({
-            ...prev,
-            [teamKey]: {
-                ...prev[teamKey],
-                players: prev[teamKey].players.map(player => {
-                    if (player.id === playerId) {
-                        const newStats = { ...player.stats };
-                        if (statType === 'goal' && newStats.goals > 0) {
-                            newStats.goals -= 1;
-                            // Also decrease team score
-                            setGameState(p => ({
-                                ...p,
-                                [teamKey]: { ...p[teamKey], score: Math.max(0, p[teamKey].score - 1) }
-                            }));
-                        } else if (statType === 'assist' && newStats.assists > 0) {
-                            newStats.assists -= 1;
-                        } else if (statType === 'shot' && newStats.shots > 0) {
-                            newStats.shots -= 1;
-                        } else if (statType === 'save' && newStats.saves > 0) {
-                            newStats.saves -= 1;
-                        } else if (statType === 'penalty' && newStats.penalties > 0) {
-                            newStats.penalties -= 1;
+        const statKey = getStatKey(statType);
+        
+        setGameState(prev => {
+            const updatedState = {
+                ...prev,
+                [teamKey]: {
+                    ...prev[teamKey],
+                    players: prev[teamKey].players.map(player => {
+                        if (player.id === playerId) {
+                            const newStats = { ...player.stats };
+                            if ((newStats[statKey] || 0) > 0) {
+                                newStats[statKey] -= 1;
+                            }
+                            return { ...player, stats: newStats };
                         }
-                        return { ...player, stats: newStats };
-                    }
-                    return player;
-                })
+                        return player;
+                    })
+                }
+            };
+            
+            // Also decrease team score for scoring stats
+            if (isScoringStat(statType) && prev[teamKey].score > 0) {
+                updatedState[teamKey].score = prev[teamKey].score - 1;
             }
-        }));
+            
+            return updatedState;
+        });
     };
 
     const renderScoreboard = () => (
