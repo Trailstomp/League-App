@@ -17,7 +17,7 @@ import {
     TeamChatTab
 } from '../components/team';
 
-const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate, onUserUpdate }) => {
+const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate, onUserUpdate, sportType = 'lacrosse' }) => {
     const [activeTab, setActiveTab] = useState(() => {
         // Check if user has a default tab for this team
         if (currentUser?.defaultLandingPage?.type === 'team' && 
