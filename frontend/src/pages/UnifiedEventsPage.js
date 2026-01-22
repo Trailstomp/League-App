@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import EventManager from '../components/unified-events/EventManager';
 
-const UnifiedEventsPage = ({ teams, currentUser, onNavigate }) => {
+const UnifiedEventsPage = ({ teams, currentUser, onNavigate, sportType = 'lacrosse' }) => {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
 
