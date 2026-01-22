@@ -234,25 +234,50 @@ const QuickRSVPForm = () => {
     }
 
     if (submitted) {
+        const isOneClick = autoResponse && (userName || userEmail);
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
                 <div className="text-center max-w-md">
                     <div className="text-6xl mb-4">🎉</div>
-                    <h1 className="text-2xl font-bold text-green-600 mb-2">RSVP Submitted!</h1>
+                    <h1 className="text-2xl font-bold text-green-600 mb-2">
+                        {isOneClick ? 'RSVP Confirmed!' : 'RSVP Submitted!'}
+                    </h1>
                     <p className="text-gray-600 mb-4">
-                        Thank you, {formData.name}! Your response "{formData.response.toUpperCase()}" 
-                        for {event?.title} has been recorded.
+                        {isOneClick 
+                            ? `Your response "${formData.response.toUpperCase()}" for ${event?.title} has been automatically recorded.`
+                            : `Thank you, ${formData.name}! Your response "${formData.response.toUpperCase()}" for ${event?.title} has been recorded.`
+                        }
                     </p>
                     <div className="bg-white rounded-lg p-4 shadow-sm border">
                         <div className="flex items-center justify-center space-x-2">
                             <span className="text-2xl">{getResponseEmoji(formData.response)}</span>
                             <span className="text-lg font-medium capitalize">{formData.response}</span>
                         </div>
-                        {formData.notes && (
+                        {formData.notes && !isOneClick && (
                             <div className="mt-2 text-sm text-gray-600">
                                 Note: {formData.notes}
                             </div>
                         )}
+                    </div>
+                    {/* Show change response buttons */}
+                    <div className="mt-6">
+                        <p className="text-sm text-gray-500 mb-3">Want to change your response?</p>
+                        <div className="flex flex-wrap justify-center gap-2">
+                            {['yes', 'no', 'maybe'].filter(r => r !== formData.response).map(response => (
+                                <button
+                                    key={response}
+                                    onClick={() => {
+                                        setFormData(prev => ({ ...prev, response }));
+                                        setSubmitted(false);
+                                        hasAutoSubmitted.current = false;
+                                        setAutoSubmitAttempted(false);
+                                    }}
+                                    className={`px-4 py-2 rounded-lg text-white font-medium ${getResponseColor(response)}`}
+                                >
+                                    Change to {response.charAt(0).toUpperCase() + response.slice(1)}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
