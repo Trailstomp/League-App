@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { getSportConfig, SPORTS } from '../../config/sportsConfig';
 
-const LiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
+const LiveStatsEntry = ({ event, teams, onSubmit, onCancel, sportType = 'lacrosse' }) => {
+    // Get sport-specific configuration
+    const sportConfig = getSportConfig(sportType);
+    
     const [gameState, setGameState] = useState({
         home_team: { id: '', name: '', score: 0, players: [] },
         away_team: { id: '', name: '', score: 0, players: [] },
@@ -14,15 +18,52 @@ const LiveStatsEntry = ({ event, teams, onSubmit, onCancel }) => {
     const [statEntry, setStatEntry] = useState({ type: 'goal', player: null });
     const [loading, setLoading] = useState(false);
 
+    // Get sport-specific stat types with colors
+    const getStatTypes = () => {
+        const baseStats = [
+            { key: 'penalty', label: '⚠️ Penalty', color: 'bg-red-100 text-red-800' }
+        ];
+        
+        // Sport-specific scoring actions
+        const sportStats = sportConfig.scoringActions.map(action => ({
+            key: action.id,
+            label: `${action.emoji} ${action.name}`,
+            color: action.id === 'goal' || action.id === 'kill' || action.id === 'ace' 
+                ? 'bg-green-100 text-green-800'
+                : action.id === 'save' || action.id === 'block' || action.id === 'dig'
+                ? 'bg-purple-100 text-purple-800'
+                : action.id === 'miss' || action.id === 'error'
+                ? 'bg-yellow-100 text-yellow-800'
+                : 'bg-blue-100 text-blue-800',
+            points: action.points
+        }));
+        
+        // Add assist for non-volleyball sports
+        if (sportType !== 'volleyball') {
+            sportStats.push({ key: 'assist', label: '🎯 Assist', color: 'bg-blue-100 text-blue-800', points: 0 });
+        }
+        
+        // Add shot for goal-based sports
+        if (['lacrosse', 'hockey', 'soccer'].includes(sportType)) {
+            sportStats.push({ key: 'shot', label: '🏹 Shot', color: 'bg-yellow-100 text-yellow-800', points: 0 });
+        }
+        
+        return [...sportStats, ...baseStats];
+    };
+    
+    const statTypes = getStatTypes();
+
     // Mock player data - this would come from teams prop in real implementation
-    const getMockPlayers = (teamId) => [
-        { id: '1', name: 'John Smith', number: '12', position: 'Attack' },
-        { id: '2', name: 'Mike Johnson', number: '7', position: 'Midfield' },
-        { id: '3', name: 'Dave Wilson', number: '23', position: 'Defense' },
-        { id: '4', name: 'Tom Brown', number: '1', position: 'Goalie' },
-        { id: '5', name: 'Chris Davis', number: '15', position: 'Attack' },
-        { id: '6', name: 'Ryan Miller', number: '8', position: 'Midfield' }
-    ];
+    const getMockPlayers = (teamId) => {
+        // Use sport-specific positions
+        const positions = sportConfig.positions.slice(0, 6);
+        return positions.map((pos, index) => ({
+            id: String(index + 1),
+            name: `Player ${index + 1}`,
+            number: String((index + 1) * 5),
+            position: pos.name
+        }));
+    };
 
     // Initialize teams and players
     useEffect(() => {
