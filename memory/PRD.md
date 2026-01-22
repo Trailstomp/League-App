@@ -120,6 +120,13 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
   - Sport-specific period names (Quarter/Period/Half/Set)
   - Sport-specific number of periods (4/3/2/5)
   - Dynamic stat types based on sport
+- [x] **Player Stats Integration** - Player cards and rosters show sport-specific stats:
+  - Lacrosse/Hockey/Soccer: Goals, Assists, Points
+  - Volleyball: Kills, Aces, Blocks
+- [x] **Standings Integration** - League standings use sport-specific terminology:
+  - Goal-based sports: GF (Goals For), GA (Goals Against), GD (Goal Diff)
+  - Volleyball: SW (Sets Won), SL (Sets Lost), SD (Set Diff)
+  - Sport icon displayed in division headers
 
 ## Architecture
 
