@@ -105,6 +105,10 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [users, setUsers] = useState(initialMockUsers);
   
+  // Setup wizard state
+  const [showSetupWizard, setShowSetupWizard] = useState(false);
+  const [setupCheckComplete, setSetupCheckComplete] = useState(false);
+  
   // Stats entry state
   const [showStatsEntry, setShowStatsEntry] = useState(false);
   const [selectedEventForStats, setSelectedEventForStats] = useState(null);
