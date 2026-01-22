@@ -164,7 +164,32 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 
 ## What's Been Implemented
 
-### January 13, 2025 (Current Session)
+### January 22, 2025 (Current Session)
+- **Google OAuth Integration (P1):**
+  - Added "Sign in with Google" button to login modal
+  - Created AuthCallback.js component for Emergent Auth callback handling
+  - Backend endpoint POST /api/users/google-login creates/updates users
+  - New Google users created with status='pending', authProvider='google'
+  - Existing users get googleId linked on Google login
+
+- **One-Click RSVP Magic Links (P2):**
+  - Enhanced QuickRSVPForm.js with auto-submit functionality
+  - URL parameters: `?response=yes&name=John&email=john@email.com`
+  - Auto-submits RSVP when all required parameters present
+  - Shows "RSVP Confirmed!" page with option to change response
+  - Prevents double-submission in React StrictMode
+
+- **Multi-Sport Support (P2):**
+  - Created sportsConfig.js with configurations for Lacrosse, Hockey, Soccer, Volleyball
+  - Created SportIcons.js with SVG icons for each sport
+  - Added "Sport Type" section to Admin Portal > Settings > Website Design
+  - Each sport has: positions, scoring actions, game structure, terminology
+  - sportType persists in websiteStyle configuration
+  - Sport selection affects icons, positions, and scoring throughout app
+
+- **All 14 tests passed (100% success rate)**
+
+### January 13, 2025 (Previous Session)
 - **Enhanced Team Player Sources Diagnostic Tool** (P0 Fix):
   - Fixed JSX syntax error in DataCleanupManager.js that was breaking frontend build
   - New "Team Players" tab shows ALL 5 data locations where players can be stored
