@@ -450,6 +450,110 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         }, 1500);
     }, []);
 
+    // Sport Type Section
+    const renderSportSection = () => {
+        const availableSports = getAvailableSports();
+        const currentSport = getSportConfig(editingStyle.sportType || 'lacrosse');
+        
+        return (
+            <div className="space-y-6">
+                <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg border border-purple-200">
+                    <h3 className="text-lg font-semibold text-purple-800 mb-2">🏆 League Sport Type</h3>
+                    <p className="text-purple-600 text-sm">Select your sport to customize icons, positions, and scoring throughout the app</p>
+                </div>
+
+                {/* Sport Selection */}
+                <div className="bg-white border rounded-lg p-6">
+                    <h4 className="text-md font-semibold text-slate-800 mb-4">Choose Your Sport</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {availableSports.map(sport => (
+                            <button
+                                key={sport.id}
+                                onClick={() => updateStyle({ sportType: sport.id })}
+                                className={`p-6 rounded-xl border-2 transition-all text-center ${
+                                    editingStyle.sportType === sport.id
+                                        ? 'border-blue-500 bg-blue-50 shadow-lg scale-105'
+                                        : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                                }`}
+                            >
+                                <div className="text-4xl mb-2">{sport.icon}</div>
+                                <div className={`font-semibold ${editingStyle.sportType === sport.id ? 'text-blue-700' : 'text-slate-700'}`}>
+                                    {sport.name}
+                                </div>
+                                {editingStyle.sportType === sport.id && (
+                                    <div className="mt-2 text-xs text-blue-600 font-medium">✓ Selected</div>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Sport Preview */}
+                <div className="bg-white border rounded-lg p-6">
+                    <h4 className="text-md font-semibold text-slate-800 mb-4">
+                        {currentSport.icon} {currentSport.name} Configuration Preview
+                    </h4>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Positions */}
+                        <div>
+                            <h5 className="text-sm font-medium text-slate-600 mb-2">Available Positions</h5>
+                            <div className="flex flex-wrap gap-2">
+                                {currentSport.positions.map(pos => (
+                                    <span key={pos.id} className="px-3 py-1 bg-slate-100 rounded-full text-sm text-slate-700">
+                                        {pos.abbrev} - {pos.name}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                        
+                        {/* Scoring Actions */}
+                        <div>
+                            <h5 className="text-sm font-medium text-slate-600 mb-2">Scoring Actions</h5>
+                            <div className="flex flex-wrap gap-2">
+                                {currentSport.scoringActions.map(action => (
+                                    <span key={action.id} className="px-3 py-1 bg-green-100 rounded-full text-sm text-green-700">
+                                        {action.emoji} {action.name}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                        
+                        {/* Game Structure */}
+                        <div>
+                            <h5 className="text-sm font-medium text-slate-600 mb-2">Game Structure</h5>
+                            <div className="text-sm text-slate-700">
+                                <p><strong>Periods:</strong> {currentSport.periods} {currentSport.periodName}s</p>
+                                <p><strong>Ball/Puck:</strong> {currentSport.ballName}</p>
+                            </div>
+                        </div>
+                        
+                        {/* Terminology */}
+                        <div>
+                            <h5 className="text-sm font-medium text-slate-600 mb-2">Terminology</h5>
+                            <div className="text-sm text-slate-700">
+                                <p><strong>Score:</strong> {currentSport.terminology.score}</p>
+                                <p><strong>Assist:</strong> {currentSport.terminology.assist}</p>
+                                <p><strong>Save:</strong> {currentSport.terminology.save}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Save Button */}
+                <div className="flex justify-end">
+                    <button
+                        onClick={handleSave}
+                        data-save-button
+                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+                    >
+                        Save Sport Settings
+                    </button>
+                </div>
+            </div>
+        );
+    };
+
     // Navigation Section
     const renderNavigationSection = () => (
         <div className="space-y-6">
