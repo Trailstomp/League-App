@@ -281,75 +281,97 @@ const LiveStatsEntry = ({ event, teams, onSubmit, onCancel, sportType = 'lacross
         </div>
     );
 
-    const renderPlayerStats = (teamKey, teamData) => (
-        <div className="space-y-4">
-            <h3 className="text-lg font-semibold">{teamData.name} - Player Statistics</h3>
-            
-            <div className="bg-white rounded-lg border overflow-hidden">
-                <table className="w-full">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">#</th>
-                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Player</th>
-                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Pos</th>
-                            <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">G</th>
-                            <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">A</th>
-                            <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">S</th>
-                            <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Sv</th>
-                            <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">P</th>
-                            <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                        {teamData.players.map(player => (
-                            <tr key={player.id} className="hover:bg-gray-50">
-                                <td className="px-4 py-3 text-sm font-medium">{player.number}</td>
-                                <td className="px-4 py-3 text-sm">{player.name}</td>
-                                <td className="px-4 py-3 text-sm text-gray-600">{player.position}</td>
-                                <td className="px-4 py-3 text-sm text-center font-medium text-green-600">
-                                    {player.stats.goals}
-                                </td>
-                                <td className="px-4 py-3 text-sm text-center font-medium text-blue-600">
-                                    {player.stats.assists}
-                                </td>
-                                <td className="px-4 py-3 text-sm text-center font-medium text-yellow-600">
-                                    {player.stats.shots}
-                                </td>
-                                <td className="px-4 py-3 text-sm text-center font-medium text-purple-600">
-                                    {player.stats.saves}
-                                </td>
-                                <td className="px-4 py-3 text-sm text-center font-medium text-red-600">
-                                    {player.stats.penalties}
-                                </td>
-                                <td className="px-4 py-3 text-center">
-                                    <div className="flex justify-center gap-1">
-                                        {statTypes.map(stat => (
-                                            <div key={stat.key} className="flex">
-                                                <button
-                                                    onClick={() => addStat(teamKey, player.id, stat.key)}
-                                                    className="w-6 h-6 bg-green-100 text-green-600 rounded-l text-xs hover:bg-green-200"
-                                                    title={`Add ${stat.label}`}
-                                                >
-                                                    +
-                                                </button>
-                                                <button
-                                                    onClick={() => removeStat(teamKey, player.id, stat.key)}
-                                                    className="w-6 h-6 bg-red-100 text-red-600 rounded-r text-xs hover:bg-red-200"
-                                                    title={`Remove ${stat.label}`}
-                                                >
-                                                    -
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </td>
+    const renderPlayerStats = (teamKey, teamData) => {
+        // Get display stat columns based on sport
+        const getStatColumns = () => {
+            if (sportType === 'volleyball') {
+                return [
+                    { key: 'kills', label: 'K', title: 'Kills' },
+                    { key: 'aces', label: 'A', title: 'Aces' },
+                    { key: 'blocks', label: 'B', title: 'Blocks' },
+                    { key: 'digs', label: 'D', title: 'Digs' },
+                    { key: 'errors', label: 'E', title: 'Errors' }
+                ];
+            } else {
+                // Lacrosse, Hockey, Soccer
+                return [
+                    { key: 'goals', label: 'G', title: 'Goals' },
+                    { key: 'assists', label: 'A', title: 'Assists' },
+                    { key: 'shots', label: 'S', title: 'Shots' },
+                    { key: 'saves', label: 'Sv', title: 'Saves' }
+                ];
+            }
+        };
+        
+        const statColumns = getStatColumns();
+        
+        return (
+            <div className="space-y-4">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <span>{sportConfig.icon}</span>
+                    {teamData.name} - Player Statistics
+                </h3>
+                
+                <div className="bg-white rounded-lg border overflow-hidden">
+                    <table className="w-full">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">#</th>
+                                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Player</th>
+                                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Pos</th>
+                                {statColumns.map(col => (
+                                    <th key={col.key} className="px-4 py-3 text-center text-sm font-medium text-gray-700" title={col.title}>
+                                        {col.label}
+                                    </th>
+                                ))}
+                                <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">P</th>
+                                <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                            {teamData.players.map(player => (
+                                <tr key={player.id} className="hover:bg-gray-50">
+                                    <td className="px-4 py-3 text-sm font-medium">{player.number}</td>
+                                    <td className="px-4 py-3 text-sm">{player.name}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-600">{player.position}</td>
+                                    {statColumns.map(col => (
+                                        <td key={col.key} className="px-4 py-3 text-sm text-center font-medium text-green-600">
+                                            {player.stats[col.key] || 0}
+                                        </td>
+                                    ))}
+                                    <td className="px-4 py-3 text-sm text-center font-medium text-red-600">
+                                        {player.stats.penalties || 0}
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        <div className="flex justify-center gap-1 flex-wrap">
+                                            {statTypes.slice(0, 4).map(stat => (
+                                                <div key={stat.key} className="flex">
+                                                    <button
+                                                        onClick={() => addStat(teamKey, player.id, stat.key)}
+                                                        className="w-6 h-6 bg-green-100 text-green-600 rounded-l text-xs hover:bg-green-200"
+                                                        title={`Add ${stat.label}`}
+                                                    >
+                                                        +
+                                                    </button>
+                                                    <button
+                                                        onClick={() => removeStat(teamKey, player.id, stat.key)}
+                                                        className="w-6 h-6 bg-red-100 text-red-600 rounded-r text-xs hover:bg-red-200"
+                                                        title={`Remove ${stat.label}`}
+                                                    >
+                                                        -
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     const handleSubmit = async () => {
         try {
