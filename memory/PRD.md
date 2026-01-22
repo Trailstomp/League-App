@@ -200,7 +200,15 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
   - sportType persists in websiteStyle configuration
   - Sport selection affects icons, positions, and scoring throughout app
 
-- **All 14 tests passed (100% success rate)**
+- **Live Scoring Sport Integration (P2):**
+  - Updated LiveStatsEntry.js and EnhancedLiveStatsEntry.js to use sportConfig
+  - Sport-specific period names: Quarter (lacrosse), Period (hockey), Half (soccer), Set (volleyball)
+  - Sport-specific period counts: 4/3/2/5 respectively
+  - Sport icon and name displayed in live scoring header
+  - Dynamic stat types based on sport (Goals/Kills, Assists, Shots/Aces, Saves/Blocks)
+  - All "Period" text throughout live scoring now uses sport-specific terminology
+
+- **All tests passed (100% success rate)**
 
 ### January 13, 2025 (Previous Session)
 - **Enhanced Team Player Sources Diagnostic Tool** (P0 Fix):
