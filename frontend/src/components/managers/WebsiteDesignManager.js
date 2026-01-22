@@ -12,6 +12,9 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
     
     // Properly initialize editingStyle with websiteStyle data
     const [editingStyle, setEditingStyle] = useState(() => ({
+        // Sport Type Setting
+        sportType: websiteStyle.sportType || 'lacrosse',
+        
         // Navigation Zone - with websiteStyle fallbacks
         navBackgroundType: websiteStyle.navBackgroundType || 'color',
         navBackgroundColor: websiteStyle.navBackgroundColor || '#ffffff',
