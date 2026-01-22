@@ -86,6 +86,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
     const [cropTargetType, setCropTargetType] = useState('banner');
 
     const designSections = [
+        { id: 'sport', label: 'Sport Type', icon: 'trophy', description: 'Choose your league sport for icons and scoring' },
         { id: 'navigation', label: 'Navigation & Sidebar', icon: 'players', description: 'Header navigation, sidebar, and menu styling' },
         { id: 'banner', label: 'Top Banner', icon: 'image', description: 'Main banner/hero section' },
         { id: 'content', label: 'Main Content', icon: 'text', description: 'Page background and content text' },
