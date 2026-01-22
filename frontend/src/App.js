@@ -328,6 +328,22 @@ function App() {
 
   useEffect(() => {
     const loadData = async () => {
+      // Check if setup wizard is needed first
+      try {
+        const setupResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/setup/status`);
+        if (setupResponse.ok) {
+          const setupData = await setupResponse.json();
+          if (!setupData.setup_complete) {
+            console.log('🧙 Setup not complete, showing wizard. Reason:', setupData.reason);
+            setShowSetupWizard(true);
+            setSetupCheckComplete(true);
+            return; // Don't load other data yet
+          }
+        }
+      } catch (err) {
+        console.log('Setup check failed, continuing with normal load:', err);
+      }
+      setSetupCheckComplete(true);
       try {
         console.log('🔄 Starting optimized dashboard data load...');
         const startTime = Date.now();
