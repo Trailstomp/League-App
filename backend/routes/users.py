@@ -359,3 +359,101 @@ async def reset_user_password(user_id: str, data: Dict[str, Any]):
     except Exception as e:
         logger.error(f"❌ Error resetting password: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============= Google OAuth Login =============
+
+class GoogleLoginRequest(BaseModel):
+    email: EmailStr
+    name: str
+    picture: Optional[str] = None
+    session_token: str
+    google_id: str
+
+
+@users_router.post("/google-login")
+async def google_login(login_data: GoogleLoginRequest):
+    """Handle Google OAuth login - create or update user"""
+    try:
+        # Check if user exists by email
+        existing_user = await db.users.find_one(
+            {"email": login_data.email},
+            {"_id": 0, "password": 0}
+        )
+        
+        if existing_user:
+            # Update existing user with Google info if not already set
+            update_data = {
+                "lastLogin": datetime.now(timezone.utc).isoformat()
+            }
+            
+            # Link Google account if not already linked
+            if not existing_user.get("googleId"):
+                update_data["googleId"] = login_data.google_id
+            
+            # Update photo if user doesn't have one
+            if not existing_user.get("photoUrl") and login_data.picture:
+                update_data["photoUrl"] = login_data.picture
+            
+            await db.users.update_one(
+                {"email": login_data.email},
+                {"$set": update_data}
+            )
+            
+            # Get updated user
+            user = await db.users.find_one(
+                {"email": login_data.email},
+                {"_id": 0, "password": 0}
+            )
+            
+            logger.info(f"✅ Existing user logged in via Google: {user['email']}")
+            
+            return {
+                "status": "success",
+                "user": user,
+                "session_token": login_data.session_token,
+                "message": "Login successful"
+            }
+        
+        else:
+            # Create new user from Google profile
+            new_user = {
+                "id": str(uuid.uuid4()),
+                "name": login_data.name,
+                "email": login_data.email,
+                "googleId": login_data.google_id,
+                "photoUrl": login_data.picture,
+                "role": "guest",  # New Google users start as guests
+                "roles": ["guest"],
+                "status": "pending",  # Require admin approval
+                "teamId": None,
+                "teamAssignments": [],
+                "notificationPreferences": {
+                    "email": True,
+                    "sms": False,
+                    "groupme": True
+                },
+                "createdAt": datetime.now(timezone.utc).isoformat(),
+                "lastLogin": datetime.now(timezone.utc).isoformat(),
+                "authProvider": "google"
+            }
+            
+            await db.users.insert_one(new_user)
+            
+            # Remove MongoDB _id for response
+            new_user.pop("_id", None)
+            
+            logger.info(f"✅ New user created via Google: {new_user['email']}")
+            
+            return {
+                "status": "success",
+                "user": new_user,
+                "session_token": login_data.session_token,
+                "message": "Account created - pending admin approval",
+                "is_new_user": True
+            }
+        
+    except Exception as e:
+        logger.error(f"❌ Error during Google login: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
