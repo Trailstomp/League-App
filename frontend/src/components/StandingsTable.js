@@ -191,7 +191,10 @@ const StandingsTable = ({ teams = [], onTeamClick, sportType = 'lacrosse' }) => 
         <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
             {title && (
                 <div className="bg-gradient-to-r from-blue-500 to-blue-700 px-6 py-3">
-                    <h3 className="text-xl font-bold text-white">{title}</h3>
+                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                        <span>{sportConfig.icon}</span>
+                        {title}
+                    </h3>
                 </div>
             )}
             <div className="overflow-x-auto">
@@ -204,9 +207,9 @@ const StandingsTable = ({ teams = [], onTeamClick, sportType = 'lacrosse' }) => 
                             <th className="px-6 py-4 text-center text-sm font-semibold">W</th>
                             <th className="px-6 py-4 text-center text-sm font-semibold">L</th>
                             <th className="px-6 py-4 text-center text-sm font-semibold">T</th>
-                            <th className="px-6 py-4 text-center text-sm font-semibold">GF</th>
-                            <th className="px-6 py-4 text-center text-sm font-semibold">GA</th>
-                            <th className="px-6 py-4 text-center text-sm font-semibold">GD</th>
+                            <th className="px-6 py-4 text-center text-sm font-semibold" title={statHeaders.scored}>{statHeaders.scoredAbbrev}</th>
+                            <th className="px-6 py-4 text-center text-sm font-semibold" title={statHeaders.against}>{statHeaders.againstAbbrev}</th>
+                            <th className="px-6 py-4 text-center text-sm font-semibold" title={statHeaders.diff}>{statHeaders.diffAbbrev}</th>
                             <th className="px-6 py-4 text-center text-sm font-semibold">PTS</th>
                         </tr>
                     </thead>
