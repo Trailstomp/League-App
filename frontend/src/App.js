@@ -591,6 +591,7 @@ function App() {
             currentUser={currentUser}
             onNavigate={handleNavigate}
             onUserUpdate={handleUserUpdate}
+            sportType={websiteStyle?.sportType || 'lacrosse'}
           />
         );
       case 'team-admin':
