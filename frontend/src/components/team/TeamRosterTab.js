@@ -3,11 +3,12 @@ import { fixGoogleDriveUrl } from '../../utils/imageUtils';
 import CachedImage from '../CachedImage';
 import PlayerCardPopup from './PlayerCardPopup';
 import jsPDF from 'jspdf';
+import { getSportConfig } from '../../config/sportsConfig';
 
 /**
  * TeamRosterTab - Displays team roster with player cards and management controls
  */
-const TeamRosterTab = ({ team, players = [], currentUser }) => {
+const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse' }) => {
     const [selectedPlayer, setSelectedPlayer] = useState(null);
     const [isFlipped, setIsFlipped] = useState(false);
     const [teamPlayers, setTeamPlayers] = useState([]);
@@ -21,6 +22,18 @@ const TeamRosterTab = ({ team, players = [], currentUser }) => {
     const [actionLoading, setActionLoading] = useState(false);
     const cardRef = useRef(null);
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+    
+    // Get sport-specific configuration
+    const sportConfig = getSportConfig(sportType);
+    
+    // Get sport-specific stat labels
+    const getStatLabels = () => {
+        if (sportType === 'volleyball') {
+            return { primary: 'Kills', secondary: 'Aces', primaryKey: 'kills', secondaryKey: 'aces' };
+        }
+        return { primary: 'Goals', secondary: 'Assists', primaryKey: 'goals', secondaryKey: 'assists' };
+    };
+    const statLabels = getStatLabels();
     
     // Check if current user is a team admin or league admin
     const isTeamAdmin = currentUser && (
