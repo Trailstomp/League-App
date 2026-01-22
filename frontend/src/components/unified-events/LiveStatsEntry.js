@@ -182,10 +182,16 @@ const LiveStatsEntry = ({ event, teams, onSubmit, onCancel, sportType = 'lacross
 
     const renderScoreboard = () => (
         <div className="space-y-6">
+            {/* Sport Header */}
+            <div className="text-center">
+                <span className="text-3xl">{sportConfig.icon}</span>
+                <span className="ml-2 text-lg font-medium text-gray-600">{sportConfig.name}</span>
+            </div>
+            
             {/* Game Clock */}
             <div className="text-center bg-gray-900 text-white rounded-lg p-6">
                 <div className="text-4xl font-bold mb-2">{gameState.time_remaining}</div>
-                <div className="text-lg">Period {gameState.current_period}</div>
+                <div className="text-lg">{sportConfig.periodName} {gameState.current_period} of {sportConfig.periods}</div>
                 <button
                     onClick={() => setGameState(prev => ({ ...prev, is_running: !prev.is_running }))}
                     className={`mt-3 px-4 py-2 rounded font-medium ${
