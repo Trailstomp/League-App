@@ -2011,7 +2011,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                             }));
                             
                             const newPeriod = Math.min(gameState.current_period + 1, gameState.game_settings.periods);
-                            addGameEvent(`🔔 Period ${gameState.current_period} ended. Starting Period ${newPeriod}`, 'period_change');
+                            addGameEvent(`🔔 ${gameState.game_settings.periodName} ${gameState.current_period} ended. Starting ${gameState.game_settings.periodName} ${newPeriod}`, 'period_change');
                         }}
                         disabled={gameState.current_period >= gameState.game_settings.periods}
                         className="px-2 md:px-4 py-1.5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-xs md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
