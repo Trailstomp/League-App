@@ -55,6 +55,7 @@ const UnifiedEventsPage = ({ teams, currentUser, onNavigate, sportType = 'lacros
                 onEventUpdate={handleEventUpdate}
                 initialEvents={events}
                 onNavigate={onNavigate}
+                sportType={sportType}
             />
         </div>
     );
