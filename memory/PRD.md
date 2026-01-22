@@ -128,6 +128,20 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
   - Volleyball: SW (Sets Won), SL (Sets Lost), SD (Set Diff)
   - Sport icon displayed in division headers
 
+### First-Time Setup Wizard
+- [x] **Setup Detection** - Automatically detects fresh install vs existing database
+- [x] **4-Step Wizard:**
+  1. Sport Selection - Choose league sport (Lacrosse, Hockey, Soccer, Volleyball)
+  2. League Info - Name, tagline, primary/accent colors with preview
+  3. Admin Account - Create first admin with full privileges
+  4. First Team (Optional) - Quick team creation to get started
+- [x] **Backend Endpoints:**
+  - GET /api/setup/status - Check if setup is needed
+  - POST /api/setup/admin - Create first admin account
+  - POST /api/setup/league - Save league settings
+  - POST /api/setup/complete - Mark setup as done
+- [x] **Legacy Database Support** - Existing databases skip wizard automatically
+
 ## Architecture
 
 ### Frontend (React)
