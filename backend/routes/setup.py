@@ -8,11 +8,15 @@ from datetime import datetime, timezone
 import uuid
 import hashlib
 import os
+from motor.motor_asyncio import AsyncIOMotorClient
 
 setup_router = APIRouter(prefix="/api/setup", tags=["setup"])
 
-# Get database connection from server
-from server import db
+# Get database connection
+MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+DB_NAME = os.environ.get("DB_NAME", "league_db")
+client = AsyncIOMotorClient(MONGO_URL)
+db = client[DB_NAME]
 
 # ============= Models =============
 
