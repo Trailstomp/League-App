@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const QuickRSVPForm = () => {
     // Extract eventId from URL path
@@ -12,6 +12,8 @@ const QuickRSVPForm = () => {
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState('');
+    const [autoSubmitAttempted, setAutoSubmitAttempted] = useState(false);
+    const hasAutoSubmitted = useRef(false);
     const [formData, setFormData] = useState({
         name: '',
         response: '',
@@ -21,6 +23,11 @@ const QuickRSVPForm = () => {
     const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
     const channelId = urlParams.get('channel');
     const userName = urlParams.get('name') || '';
+    
+    // One-click RSVP parameters
+    const autoResponse = urlParams.get('response'); // yes, no, maybe
+    const userEmail = urlParams.get('email');
+    const token = urlParams.get('token');
 
     useEffect(() => {
         loadEvent();
@@ -28,7 +35,55 @@ const QuickRSVPForm = () => {
         if (userName) {
             setFormData(prev => ({ ...prev, name: userName }));
         }
-    }, [eventId, userName]);
+        // Pre-fill response if provided in URL (for one-click)
+        if (autoResponse) {
+            setFormData(prev => ({ ...prev, response: autoResponse }));
+        }
+    }, [eventId, userName, autoResponse]);
+    
+    // Auto-submit for one-click RSVP
+    useEffect(() => {
+        // Check if this is a one-click RSVP link
+        if (!hasAutoSubmitted.current && autoResponse && (userName || userEmail) && event && !autoSubmitAttempted) {
+            hasAutoSubmitted.current = true;
+            setAutoSubmitAttempted(true);
+            console.log('🚀 Auto-submitting one-click RSVP:', { autoResponse, userName, userEmail, eventId });
+            autoSubmitRSVP();
+        }
+    }, [event, autoResponse, userName, userEmail, autoSubmitAttempted]);
+    
+    const autoSubmitRSVP = async () => {
+        const name = userName || userEmail?.split('@')[0] || 'Guest';
+        
+        try {
+            setSubmitting(true);
+            const response = await fetch(`${backendUrl}/api/quick-rsvp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    event_id: eventId,
+                    channel_id: channelId,
+                    user_name: name,
+                    user_email: userEmail,
+                    response: autoResponse,
+                    notes: 'One-click RSVP',
+                    source: 'one_click'
+                })
+            });
+
+            if (response.ok) {
+                setFormData(prev => ({ ...prev, name, response: autoResponse }));
+                setSubmitted(true);
+            } else {
+                const errorData = await response.json();
+                setError(errorData.detail || 'Failed to submit RSVP');
+            }
+        } catch (err) {
+            setError('Failed to submit RSVP: ' + err.message);
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     const loadEvent = async () => {
         try {
