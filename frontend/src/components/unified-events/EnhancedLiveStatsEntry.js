@@ -1,11 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { getSportConfig } from '../../config/sportsConfig';
 
-const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel }) => {
+const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel, sportType = 'lacrosse' }) => {
+    // Get sport-specific configuration
+    const sportConfig = getSportConfig(sportType);
+    
     console.log('🎮 EnhancedLiveStatsEntry mounted with:', {
         event: event,
         eventId: event?.id,
         eventTitle: event?.title,
-        teamsCount: teams?.length
+        teamsCount: teams?.length,
+        sport: sportType
     });
     const [gameState, setGameState] = useState({
         home_team: { id: '', name: '', score: 0, players: [], logo: '' },
