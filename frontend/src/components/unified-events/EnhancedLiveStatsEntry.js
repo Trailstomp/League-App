@@ -2584,7 +2584,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                                 const label = type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                                 const icon = 
                                     type === 'goal' ? '🚨' :
-                                    type === 'shot' ? '🥍' :
+                                    type === 'shot' ? sportConfig.icon :
                                     type === 'shot_miss' ? '❌' :
                                     type === 'save' ? '✋' :
                                     type === 'penalty' ? '⚠️' :
