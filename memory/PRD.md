@@ -30,14 +30,15 @@ Without this, notification links will point to localhost and won't work!
 ---
 
 ## Original Problem Statement
-Create a comprehensive league management portal for lacrosse leagues with features for:
+Create a comprehensive league management portal for **multiple sports** (Lacrosse, Hockey, Soccer, Volleyball) with features for:
 - Team management with rosters and player assignments
 - Event scheduling and RSVP management  
-- Live game scoring with real-time player stats
+- Live game scoring with real-time player stats (sport-specific)
 - Admin tools for league administration
 - Player dashboard for individual stats and team info
 - Payment processing for fees
 - Finance tracking for income and expenses
+- **Multi-sport support** with configurable positions and scoring
 
 ## User Personas
 - **League Admin**: Full control over all teams, events, finances, and settings
