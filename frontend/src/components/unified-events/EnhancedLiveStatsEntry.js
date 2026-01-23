@@ -524,55 +524,66 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
     }, [event?.id, backendUrl]);
 
 
-    // Initialize teams and players
+    // Initialize teams and players - now fetches real roster data
     useEffect(() => {
-        if (event && event.teams && event.teams.length >= 2) {
-            const homeTeam = teams?.find(t => t.id === event.teams[0]);
-            const awayTeam = teams?.find(t => t.id === event.teams[1]);
-            
-            const homeData = getMockPlayers(event.teams[0], homeTeam?.name);
-            const awayData = getMockPlayers(event.teams[1], awayTeam?.name);
+        const initializeTeams = async () => {
+            if (event && event.teams && event.teams.length >= 2) {
+                setLoadingPlayers(true);
+                
+                const homeTeam = teams?.find(t => t.id === event.teams[0]);
+                const awayTeam = teams?.find(t => t.id === event.teams[1]);
+                
+                // Fetch real players from API
+                const [homeData, awayData] = await Promise.all([
+                    fetchTeamPlayers(event.teams[0]),
+                    fetchTeamPlayers(event.teams[1])
+                ]);
 
-            setGameState(prev => ({
-                ...prev,
-                home_team: {
-                    id: event.teams[0],
-                    name: homeTeam?.name || 'Home Team',
-                    logo: homeTeam?.style?.logoUrl || '',
-                    color: homeTeam?.style?.primaryColor || '#3b82f6',
-                    banner: homeTeam?.style?.bannerUrl || null,
-                    font: homeTeam?.style?.font || 'Inter, sans-serif',
-                    score: 0,
-                    players: homeData.players.map(p => ({
-                        ...p,
-                        stats: { goals: 0, assists: 0, shots: 0, penalties: 0 }
-                    }))
-                },
-                away_team: {
-                    id: event.teams[1],
-                    name: awayTeam?.name || 'Away Team',
-                    logo: awayTeam?.style?.logoUrl || '',
-                    color: awayTeam?.style?.accentColor || awayTeam?.style?.primaryColor || '#ef4444',
-                    banner: awayTeam?.style?.bannerUrl || null,
-                    font: awayTeam?.style?.font || 'Inter, sans-serif',
-                    score: 0,
-                    players: awayData.players.map(p => ({
-                        ...p,
-                        stats: { goals: 0, assists: 0, shots: 0, penalties: 0 }
-                    }))
-                },
-                goalies: {
-                    home: homeData.goalies.map(p => ({
-                        ...p,
-                        stats: { saves: 0, goals_against: 0, shots_faced: 0 }
-                    })),
-                    away: awayData.goalies.map(p => ({
-                        ...p,
-                        stats: { saves: 0, goals_against: 0, shots_faced: 0 }
-                    }))
-                }
-            }));
-        }
+                setGameState(prev => ({
+                    ...prev,
+                    home_team: {
+                        id: event.teams[0],
+                        name: homeTeam?.name || 'Home Team',
+                        logo: homeTeam?.style?.logoUrl || '',
+                        color: homeTeam?.style?.primaryColor || '#3b82f6',
+                        banner: homeTeam?.style?.bannerUrl || null,
+                        font: homeTeam?.style?.font || 'Inter, sans-serif',
+                        score: 0,
+                        players: homeData.players.map(p => ({
+                            ...p,
+                            stats: { goals: 0, assists: 0, shots: 0, penalties: 0 }
+                        }))
+                    },
+                    away_team: {
+                        id: event.teams[1],
+                        name: awayTeam?.name || 'Away Team',
+                        logo: awayTeam?.style?.logoUrl || '',
+                        color: awayTeam?.style?.accentColor || awayTeam?.style?.primaryColor || '#ef4444',
+                        banner: awayTeam?.style?.bannerUrl || null,
+                        font: awayTeam?.style?.font || 'Inter, sans-serif',
+                        score: 0,
+                        players: awayData.players.map(p => ({
+                            ...p,
+                            stats: { goals: 0, assists: 0, shots: 0, penalties: 0 }
+                        }))
+                    },
+                    goalies: {
+                        home: homeData.goalies.map(p => ({
+                            ...p,
+                            stats: { saves: 0, goals_against: 0, shots_faced: 0 }
+                        })),
+                        away: awayData.goalies.map(p => ({
+                            ...p,
+                            stats: { saves: 0, goals_against: 0, shots_faced: 0 }
+                        }))
+                    }
+                }));
+                
+                setLoadingPlayers(false);
+            }
+        };
+        
+        initializeTeams();
     }, [event, teams]);
 
     const formatTime = (seconds) => {
