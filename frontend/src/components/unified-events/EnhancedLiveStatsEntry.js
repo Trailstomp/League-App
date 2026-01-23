@@ -2221,13 +2221,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                         </div>
                     </div>
                 </div>
-                            <div className="text-center">
-                                <div className="text-xs md:text-sm font-bold text-red-800">{gameState.away_team.name}</div>
-                                <div className="text-3xl md:text-5xl font-bold text-red-600">{gameState.away_team.score}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
         </div>
