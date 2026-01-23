@@ -3216,26 +3216,78 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                         </button>
                         
                         <button
-                            onClick={() => {
+                            onClick={async () => {
+                                // Save game with FINAL status so it counts in standings
                                 const gameData = {
-                                    home_team: gameState.home_team,
-                                    away_team: gameState.away_team,
+                                    event_id: event.id,
+                                    home_team: {
+                                        team_id: gameState.home_team.id,
+                                        name: gameState.home_team.name,
+                                        goals_for: gameState.home_team.score,
+                                        goals_against: gameState.away_team.score,
+                                        players: gameState.home_team.players
+                                    },
+                                    away_team: {
+                                        team_id: gameState.away_team.id,
+                                        name: gameState.away_team.name,
+                                        goals_for: gameState.away_team.score,
+                                        goals_against: gameState.home_team.score,
+                                        players: gameState.away_team.players
+                                    },
                                     goalies: gameState.goalies,
                                     time_remaining: formatTime(gameState.time_remaining),
                                     current_period: gameState.current_period,
+                                    game_settings: gameState.game_settings,
+                                    status: 'final', // IMPORTANT: Mark as final for standings
                                     final_score: `${gameState.home_team.score}-${gameState.away_team.score}`,
-                                    winner: gameState.home_team.score > gameState.away_team.score ? gameState.home_team : gameState.away_team,
+                                    winner: gameState.home_team.score > gameState.away_team.score 
+                                        ? gameState.home_team.id 
+                                        : gameState.home_team.score < gameState.away_team.score 
+                                        ? gameState.away_team.id 
+                                        : null,
                                     entry_type: 'enhanced_live_stats',
                                     entry_time: new Date().toISOString(),
                                     game_duration: gameState.current_period,
                                     period_length: gameState.period_length,
-                                    detailed_stats: true
+                                    detailed_stats: true,
+                                    game_events: gameEvents,
+                                    penalties: penalties
                                 };
-                                onSubmit(gameData);
+                                
+                                try {
+                                    // Save to game_stats with final status
+                                    const response = await fetch(`${backendUrl}/api/game-stats`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify(gameData)
+                                    });
+                                    
+                                    if (response.ok) {
+                                        // Also update the event to completed
+                                        await fetch(`${backendUrl}/api/unified-events/${event.id}`, {
+                                            method: 'PATCH',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                                status: 'completed',
+                                                homeScore: gameState.home_team.score,
+                                                awayScore: gameState.away_team.score,
+                                                scores: gameData
+                                            })
+                                        });
+                                        
+                                        alert(`✅ Game saved as FINAL!\n\nFinal Score: ${gameState.home_team.name} ${gameState.home_team.score} - ${gameState.away_team.score} ${gameState.away_team.name}\n\nStandings will be updated.`);
+                                        onSubmit(gameData);
+                                    } else {
+                                        alert('❌ Error saving game stats');
+                                    }
+                                } catch (error) {
+                                    console.error('Error saving final game:', error);
+                                    alert('❌ Error saving game stats');
+                                }
                             }}
-                            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-bold"
                         >
-                            ✅ Save Game Stats
+                            🏁 End Game (Final)
                         </button>
                     </div>
                 </div>
