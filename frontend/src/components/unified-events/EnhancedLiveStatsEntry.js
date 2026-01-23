@@ -226,8 +226,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
         try {
             const response = await fetch(`${backendUrl}/api/teams/${teamId}/players`);
             if (response.ok) {
-                const data = await response.json();
-                const players = data.players || [];
+                const players = await response.json(); // Returns array directly
                 
                 // Separate goalies from field players
                 const goalies = players.filter(p => 
@@ -241,18 +240,20 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                     p.position?.toLowerCase() !== 'g'
                 );
                 
+                console.log(`📋 Loaded ${fieldPlayers.length} players + ${goalies.length} goalies for team ${teamId}`);
+                
                 return {
                     players: fieldPlayers.map(p => ({
                         id: p.id || p.userId,
                         name: p.name,
-                        number: p.jerseyNumber || '?',
+                        number: p.jerseyNumber || p.playerNumber || '?',
                         position: p.position || 'Player',
                         active: true
                     })),
                     goalies: goalies.map(p => ({
                         id: p.id || p.userId,
                         name: p.name,
-                        number: p.jerseyNumber || '?',
+                        number: p.jerseyNumber || p.playerNumber || '?',
                         position: 'Goalie',
                         active: true
                     }))
