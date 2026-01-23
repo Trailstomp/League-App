@@ -219,25 +219,51 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
         'Other (specify)'
     ];
 
-    // Enhanced player data with better structure
-    const getMockPlayers = (teamId, teamName) => {
-        const players = [
-            { id: '1', name: 'John Smith', number: '12', position: 'Attack', active: true },
-            { id: '2', name: 'Mike Johnson', number: '7', position: 'Midfield', active: true },
-            { id: '3', name: 'Dave Wilson', number: '23', position: 'Defense', active: true },
-            { id: '5', name: 'Chris Davis', number: '15', position: 'Attack', active: true },
-            { id: '6', name: 'Ryan Miller', number: '8', position: 'Midfield', active: false },
-            { id: '7', name: 'Alex Brown', number: '22', position: 'Defense', active: true },
-            { id: '8', name: 'Sam Wilson', number: '9', position: 'Midfield', active: true },
-            { id: '9', name: 'Jake Taylor', number: '11', position: 'Attack', active: false }
-        ];
-
-        const goalies = [
-            { id: '4', name: 'Tom Brown', number: '1', position: 'Goalie', active: true },
-            { id: '10', name: 'Matt Anderson', number: '30', position: 'Goalie', active: true }
-        ];
-
-        return { players, goalies };
+    // Enhanced player data - now fetches real players from API
+    const [loadingPlayers, setLoadingPlayers] = useState(false);
+    
+    const fetchTeamPlayers = async (teamId) => {
+        try {
+            const response = await fetch(`${backendUrl}/api/teams/${teamId}/players`);
+            if (response.ok) {
+                const data = await response.json();
+                const players = data.players || [];
+                
+                // Separate goalies from field players
+                const goalies = players.filter(p => 
+                    p.position?.toLowerCase().includes('goalie') || 
+                    p.position?.toLowerCase().includes('goalkeeper') ||
+                    p.position?.toLowerCase() === 'g'
+                );
+                const fieldPlayers = players.filter(p => 
+                    !p.position?.toLowerCase().includes('goalie') && 
+                    !p.position?.toLowerCase().includes('goalkeeper') &&
+                    p.position?.toLowerCase() !== 'g'
+                );
+                
+                return {
+                    players: fieldPlayers.map(p => ({
+                        id: p.id || p.userId,
+                        name: p.name,
+                        number: p.jerseyNumber || '?',
+                        position: p.position || 'Player',
+                        active: true
+                    })),
+                    goalies: goalies.map(p => ({
+                        id: p.id || p.userId,
+                        name: p.name,
+                        number: p.jerseyNumber || '?',
+                        position: 'Goalie',
+                        active: true
+                    }))
+                };
+            }
+        } catch (error) {
+            console.error('Error fetching team players:', error);
+        }
+        
+        // Fallback to empty if fetch fails
+        return { players: [], goalies: [] };
     };
 
     // Timer functionality
