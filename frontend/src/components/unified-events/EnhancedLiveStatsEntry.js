@@ -224,7 +224,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
     
     const fetchTeamPlayers = async (teamId) => {
         try {
-            const response = await fetch(`${backendUrl}/api/teams/${teamId}/players`);
+            // Use /api/team/{id}/players endpoint (singular 'team')
+            const response = await fetch(`${backendUrl}/api/team/${teamId}/players`);
             if (response.ok) {
                 const players = await response.json(); // Returns array directly
                 
