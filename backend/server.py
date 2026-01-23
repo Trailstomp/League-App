@@ -7591,24 +7591,21 @@ async def get_game_timer_state(event_id: str):
 async def get_team_season_stats(team_id: str, season_id: Optional[str] = None):
     """Get aggregated season stats for a team"""
     try:
-        # Build query filter
+        # Build query filter - always look for final games for this team
         query_home = {"home_team.team_id": team_id, "status": "final"}
         query_away = {"away_team.team_id": team_id, "status": "final"}
         
-        # If season specified, filter by it; otherwise get active season or all
+        # If season specified, filter by it; otherwise get all final games
+        # (removed auto-season filter to ensure games without season_id are counted)
         if season_id:
             query_home["season_id"] = season_id
             query_away["season_id"] = season_id
-        elif season_id is None:
-            # Get active season if no season specified
-            active_season = await db.seasons.find_one({"is_active": True})
-            if active_season:
-                query_home["season_id"] = active_season["id"]
-                query_away["season_id"] = active_season["id"]
         
         # Get all game stats for this team
         games_home = await db.game_stats.find(query_home).to_list(None)
         games_away = await db.game_stats.find(query_away).to_list(None)
+        
+        logger.info(f"📊 Found {len(games_home)} home games and {len(games_away)} away games for team {team_id}")
         
         games_played = 0
         wins = 0
@@ -7620,8 +7617,15 @@ async def get_team_season_stats(team_id: str, season_id: Optional[str] = None):
         # Process home games
         for game in games_home:
             games_played += 1
-            home_goals = game["home_team"]["goals_for"]
-            away_goals = game["home_team"]["goals_against"]
+            home_goals = game.get("home_team", {}).get("goals_for", 0) or 0
+            away_goals = game.get("home_team", {}).get("goals_against", 0) or 0
+            
+            # Also check for score in home_team directly if goals_for not present
+            if home_goals == 0 and "score" in game.get("home_team", {}):
+                home_goals = game["home_team"].get("score", 0) or 0
+            if away_goals == 0 and "score" in game.get("away_team", {}):
+                away_goals = game["away_team"].get("score", 0) or 0
+            
             goals_for += home_goals
             goals_against += away_goals
             
@@ -7637,8 +7641,15 @@ async def get_team_season_stats(team_id: str, season_id: Optional[str] = None):
         for game in games_away:
             if game.get("away_team"):
                 games_played += 1
-                away_goals = game["away_team"]["goals_for"]
-                home_goals = game["away_team"]["goals_against"]
+                away_goals = game.get("away_team", {}).get("goals_for", 0) or 0
+                home_goals = game.get("away_team", {}).get("goals_against", 0) or 0
+                
+                # Also check for score directly if goals_for not present
+                if away_goals == 0 and "score" in game.get("away_team", {}):
+                    away_goals = game["away_team"].get("score", 0) or 0
+                if home_goals == 0 and "score" in game.get("home_team", {}):
+                    home_goals = game["home_team"].get("score", 0) or 0
+                
                 goals_for += away_goals
                 goals_against += home_goals
                 
@@ -7652,6 +7663,8 @@ async def get_team_season_stats(team_id: str, season_id: Optional[str] = None):
         
         goal_diff = goals_for - goals_against
         points = (wins * 2) + (ties * 1)
+        
+        logger.info(f"📈 Team {team_id} stats: {wins}W-{losses}L-{ties}T, {goals_for}GF-{goals_against}GA")
         
         return {
             "team_id": team_id,
