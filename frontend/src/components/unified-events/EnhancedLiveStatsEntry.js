@@ -2053,50 +2053,83 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                 </div>
 
                 {/* Redesigned Layout: Score | Buttons | Shot Clock | Buttons | Score */}
-                <div className="px-2 md:px-4 py-3 bg-gray-50">
-                    <div className="flex items-center justify-between gap-2 max-w-7xl mx-auto">
+                <div className="px-4 py-4 bg-gray-50 mt-2">
+                    <div className="flex items-stretch justify-between gap-4 max-w-7xl mx-auto">
                         {/* Home Team: Score (Left) */}
-                        <div className="flex-1 flex justify-center">
+                        <div className="flex-1 flex items-center justify-center bg-blue-50 rounded-xl p-4 min-w-[120px]">
                             <div className="text-center">
-                                <div className="text-xs md:text-sm font-bold text-blue-800">{gameState.home_team.name}</div>
-                                <div className="text-3xl md:text-5xl font-bold text-blue-600">{gameState.home_team.score}</div>
+                                <div className="text-sm font-bold text-blue-800 truncate">{gameState.home_team.name}</div>
+                                <div className="text-5xl md:text-6xl font-bold text-blue-600">{gameState.home_team.score}</div>
                             </div>
                         </div>
 
-                        {/* Home Team: Action Buttons */}
-                        <div className="flex gap-1">
-                            <button
-                                onClick={() => openTeamShotModal('home_team')}
-                                className="w-12 h-12 md:w-14 md:h-14 bg-yellow-500 hover:bg-yellow-600 text-white rounded font-medium flex flex-col items-center justify-center p-0.5"
-                                title="Record Shot"
-                            >
-                                <span className="text-base md:text-lg">🥍</span>
-                                <span className="text-[7px] md:text-[8px]">Shot</span>
-                            </button>
-                            <button
-                                onClick={() => openTeamPenaltyModal('home_team')}
-                                className="w-12 h-12 md:w-14 md:h-14 bg-red-500 hover:bg-red-600 text-white rounded font-medium flex flex-col items-center justify-center p-0.5"
-                                title="Record Penalty"
-                            >
-                                <span className="text-base md:text-lg">⚠️</span>
-                                <span className="text-[7px] md:text-[8px]">Pen</span>
-                            </button>
-                            <button
-                                onClick={() => callTimeout('home')}
-                                className="w-12 h-12 md:w-14 md:h-14 bg-orange-500 hover:bg-orange-600 text-white rounded font-medium flex flex-col items-center justify-center p-0.5"
-                                title={`Timeout (${timeouts.home} remaining)`}
-                            >
-                                <span className="text-base md:text-lg">⏸️</span>
-                                <span className="text-[7px] md:text-[8px]">TO({timeouts.home})</span>
-                            </button>
+                        {/* Home Team: Action Buttons - 3 Shot Buttons + Penalty */}
+                        <div className="flex flex-col gap-2">
+                            <div className="text-xs font-bold text-center text-gray-600 uppercase">{gameState.home_team.name}</div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => {
+                                        addShotStat('home_team', 'team', 'goal');
+                                        if (stopClockOnGoal) {
+                                            setGameState(prev => ({ ...prev, is_running: false }));
+                                        }
+                                        resetShotClock();
+                                    }}
+                                    className="w-16 h-16 md:w-20 md:h-20 bg-green-500 hover:bg-green-600 text-white rounded-xl font-bold flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105"
+                                    title="Goal!"
+                                >
+                                    <span className="text-2xl md:text-3xl">🥅</span>
+                                    <span className="text-xs md:text-sm font-bold">GOAL</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        addShotStat('home_team', 'team', 'save');
+                                        resetShotClock();
+                                    }}
+                                    className="w-16 h-16 md:w-20 md:h-20 bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-bold flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105"
+                                    title="Save by goalie"
+                                >
+                                    <span className="text-2xl md:text-3xl">🧤</span>
+                                    <span className="text-xs md:text-sm font-bold">SAVE</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        addShotStat('home_team', 'team', 'miss');
+                                        resetShotClock();
+                                    }}
+                                    className="w-16 h-16 md:w-20 md:h-20 bg-yellow-500 hover:bg-yellow-600 text-white rounded-xl font-bold flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105"
+                                    title="Shot missed"
+                                >
+                                    <span className="text-2xl md:text-3xl">❌</span>
+                                    <span className="text-xs md:text-sm font-bold">MISS</span>
+                                </button>
+                            </div>
+                            <div className="flex gap-2 justify-center">
+                                <button
+                                    onClick={() => openTeamPenaltyModal('home_team')}
+                                    className="flex-1 h-10 bg-red-500 hover:bg-red-600 text-white rounded-lg font-bold flex items-center justify-center gap-1 shadow transition-transform hover:scale-105"
+                                    title="Record Penalty"
+                                >
+                                    <span>⚠️</span>
+                                    <span className="text-sm">Penalty</span>
+                                </button>
+                                <button
+                                    onClick={() => callTimeout('home')}
+                                    className="flex-1 h-10 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold flex items-center justify-center gap-1 shadow transition-transform hover:scale-105"
+                                    title={`Timeout (${timeouts.home} remaining)`}
+                                >
+                                    <span>⏸️</span>
+                                    <span className="text-sm">TO ({timeouts.home})</span>
+                                </button>
+                            </div>
                         </div>
 
                         {/* Center: Shot Clock */}
-                        <div className="flex flex-col items-center px-2 md:px-4">
-                            <div className="text-[8px] md:text-[10px] font-bold text-gray-600 mb-0.5">SHOT CLOCK</div>
+                        <div className="flex flex-col items-center justify-center px-4 bg-gray-100 rounded-xl min-w-[100px]">
+                            <div className="text-xs font-bold text-gray-600 mb-1 uppercase">Shot Clock</div>
                             <button
                                 onClick={resetShotClock}
-                                className={`text-2xl md:text-4xl font-bold font-mono px-3 py-1 rounded border-2 cursor-pointer transition-all ${
+                                className={`text-4xl md:text-5xl font-bold font-mono px-4 py-2 rounded-xl border-2 cursor-pointer transition-all ${
                                     shotClock.timeRemaining === 0
                                         ? 'bg-red-600 text-white border-red-700 animate-pulse'
                                         : shotClock.timeRemaining <= 10
@@ -2107,47 +2140,87 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                             >
                                 {shotClock.timeRemaining}
                             </button>
-                            <label className="flex items-center gap-1 mt-1 cursor-pointer text-[8px] md:text-[9px] text-gray-700">
+                            <label className="flex items-center gap-2 mt-2 cursor-pointer text-xs text-gray-700">
                                 <input
                                     type="checkbox"
                                     checked={stopClockOnGoal}
                                     onChange={(e) => setStopClockOnGoal(e.target.checked)}
-                                    className="rounded w-2.5 h-2.5"
+                                    className="rounded w-4 h-4"
                                 />
-                                <span>⏸️ Stop</span>
+                                <span>⏸️ Stop on Goal</span>
                             </label>
                         </div>
 
-                        {/* Away Team: Action Buttons */}
-                        <div className="flex gap-1">
-                            <button
-                                onClick={() => openTeamShotModal('away_team')}
-                                className="w-12 h-12 md:w-14 md:h-14 bg-yellow-500 hover:bg-yellow-600 text-white rounded font-medium flex flex-col items-center justify-center p-0.5"
-                                title="Record Shot"
-                            >
-                                <span className="text-base md:text-lg">🥍</span>
-                                <span className="text-[7px] md:text-[8px]">Shot</span>
-                            </button>
-                            <button
-                                onClick={() => openTeamPenaltyModal('away_team')}
-                                className="w-12 h-12 md:w-14 md:h-14 bg-red-500 hover:bg-red-600 text-white rounded font-medium flex flex-col items-center justify-center p-0.5"
-                                title="Record Penalty"
-                            >
-                                <span className="text-base md:text-lg">⚠️</span>
-                                <span className="text-[7px] md:text-[8px]">Pen</span>
-                            </button>
-                            <button
-                                onClick={() => callTimeout('away')}
-                                className="w-12 h-12 md:w-14 md:h-14 bg-orange-500 hover:bg-orange-600 text-white rounded font-medium flex flex-col items-center justify-center p-0.5"
-                                title={`Timeout (${timeouts.away} remaining)`}
-                            >
-                                <span className="text-base md:text-lg">⏸️</span>
-                                <span className="text-[7px] md:text-[8px]">TO({timeouts.away})</span>
-                            </button>
+                        {/* Away Team: Action Buttons - 3 Shot Buttons + Penalty */}
+                        <div className="flex flex-col gap-2">
+                            <div className="text-xs font-bold text-center text-gray-600 uppercase">{gameState.away_team.name}</div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => {
+                                        addShotStat('away_team', 'team', 'goal');
+                                        if (stopClockOnGoal) {
+                                            setGameState(prev => ({ ...prev, is_running: false }));
+                                        }
+                                        resetShotClock();
+                                    }}
+                                    className="w-16 h-16 md:w-20 md:h-20 bg-green-500 hover:bg-green-600 text-white rounded-xl font-bold flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105"
+                                    title="Goal!"
+                                >
+                                    <span className="text-2xl md:text-3xl">🥅</span>
+                                    <span className="text-xs md:text-sm font-bold">GOAL</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        addShotStat('away_team', 'team', 'save');
+                                        resetShotClock();
+                                    }}
+                                    className="w-16 h-16 md:w-20 md:h-20 bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-bold flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105"
+                                    title="Save by goalie"
+                                >
+                                    <span className="text-2xl md:text-3xl">🧤</span>
+                                    <span className="text-xs md:text-sm font-bold">SAVE</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        addShotStat('away_team', 'team', 'miss');
+                                        resetShotClock();
+                                    }}
+                                    className="w-16 h-16 md:w-20 md:h-20 bg-yellow-500 hover:bg-yellow-600 text-white rounded-xl font-bold flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105"
+                                    title="Shot missed"
+                                >
+                                    <span className="text-2xl md:text-3xl">❌</span>
+                                    <span className="text-xs md:text-sm font-bold">MISS</span>
+                                </button>
+                            </div>
+                            <div className="flex gap-2 justify-center">
+                                <button
+                                    onClick={() => openTeamPenaltyModal('away_team')}
+                                    className="flex-1 h-10 bg-red-500 hover:bg-red-600 text-white rounded-lg font-bold flex items-center justify-center gap-1 shadow transition-transform hover:scale-105"
+                                    title="Record Penalty"
+                                >
+                                    <span>⚠️</span>
+                                    <span className="text-sm">Penalty</span>
+                                </button>
+                                <button
+                                    onClick={() => callTimeout('away')}
+                                    className="flex-1 h-10 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold flex items-center justify-center gap-1 shadow transition-transform hover:scale-105"
+                                    title={`Timeout (${timeouts.away} remaining)`}
+                                >
+                                    <span>⏸️</span>
+                                    <span className="text-sm">TO ({timeouts.away})</span>
+                                </button>
+                            </div>
                         </div>
 
                         {/* Away Team: Score (Right) */}
-                        <div className="flex-1 flex justify-center">
+                        <div className="flex-1 flex items-center justify-center bg-red-50 rounded-xl p-4 min-w-[120px]">
+                            <div className="text-center">
+                                <div className="text-sm font-bold text-red-800 truncate">{gameState.away_team.name}</div>
+                                <div className="text-5xl md:text-6xl font-bold text-red-600">{gameState.away_team.score}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                             <div className="text-center">
                                 <div className="text-xs md:text-sm font-bold text-red-800">{gameState.away_team.name}</div>
                                 <div className="text-3xl md:text-5xl font-bold text-red-600">{gameState.away_team.score}</div>
