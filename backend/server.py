@@ -8566,24 +8566,41 @@ async def create_game_stats(game_stats: Dict[str, Any]):
                 {"$set": game_stats}
             )
             logger.info(f"✅ Game stats updated for event: {event_id}")
-            return {
-                "status": "success",
-                "message": "Game statistics updated successfully",
-                "game_stat_id": game_stats['id'],
-                "action": "updated"
-            }
+            action = "updated"
         else:
             # Insert new record
             logger.info(f"➕ Creating new game stats for event: {event_id}")
             result = await db.game_stats.insert_one(game_stats)
             logger.info(f"✅ Game stats created with ID: {game_stats['id']}")
-            return {
-                "status": "success",
-                "message": "Game statistics created successfully",
-                "game_stat_id": game_stats['id'],
-                "inserted_id": str(result.inserted_id),
-                "action": "created"
-            }
+            action = "created"
+        
+        # If status is "final", update team season stats and player stats
+        if game_stats.get('status') == 'final':
+            logger.info(f"🏁 Game marked as FINAL - updating team and player stats")
+            
+            # Update team season stats
+            home_team_id = game_stats.get('home_team', {}).get('team_id')
+            away_team_id = game_stats.get('away_team', {}).get('team_id')
+            
+            if home_team_id:
+                await _update_team_season_stats(home_team_id)
+                logger.info(f"📈 Updated season stats for home team: {home_team_id}")
+            
+            if away_team_id:
+                await _update_team_season_stats(away_team_id)
+                logger.info(f"📈 Updated season stats for away team: {away_team_id}")
+            
+            # Update player stats
+            await _update_player_stats_from_game(game_stats)
+            logger.info(f"👤 Updated player stats from game")
+        
+        return {
+            "status": "success",
+            "message": "Game statistics saved successfully",
+            "game_stat_id": game_stats['id'],
+            "action": action,
+            "stats_updated": game_stats.get('status') == 'final'
+        }
         
     except HTTPException:
         raise
