@@ -7978,6 +7978,98 @@ async def _update_team_season_stats(team_id: str):
     except Exception as e:
         logger.error(f"Error updating team season stats: {e}")
 
+
+async def _update_player_stats_from_game(game_stats: Dict[str, Any]):
+    """Update individual player stats from a game"""
+    try:
+        # Process home team players
+        home_team = game_stats.get('home_team', {})
+        home_players = home_team.get('players', [])
+        
+        for player in home_players:
+            player_id = player.get('id')
+            if not player_id:
+                continue
+                
+            stats = player.get('stats', {})
+            goals = stats.get('goals', 0)
+            assists = stats.get('assists', 0)
+            shots = stats.get('shots', 0)
+            penalties = stats.get('penalties', 0)
+            
+            # Update user's stats - increment totals
+            await db.users.update_one(
+                {"id": player_id},
+                {
+                    "$inc": {
+                        "goals": goals,
+                        "assists": assists,
+                        "shots": shots,
+                        "penalties": penalties,
+                        "gamesPlayed": 1
+                    }
+                }
+            )
+            logger.info(f"📊 Updated stats for player {player_id}: +{goals}G +{assists}A")
+        
+        # Process away team players
+        away_team = game_stats.get('away_team', {})
+        away_players = away_team.get('players', [])
+        
+        for player in away_players:
+            player_id = player.get('id')
+            if not player_id:
+                continue
+                
+            stats = player.get('stats', {})
+            goals = stats.get('goals', 0)
+            assists = stats.get('assists', 0)
+            shots = stats.get('shots', 0)
+            penalties = stats.get('penalties', 0)
+            
+            # Update user's stats - increment totals
+            await db.users.update_one(
+                {"id": player_id},
+                {
+                    "$inc": {
+                        "goals": goals,
+                        "assists": assists,
+                        "shots": shots,
+                        "penalties": penalties,
+                        "gamesPlayed": 1
+                    }
+                }
+            )
+            logger.info(f"📊 Updated stats for player {player_id}: +{goals}G +{assists}A")
+        
+        # Process goalies
+        goalies = game_stats.get('goalies', {})
+        for team_key in ['home', 'away']:
+            team_goalies = goalies.get(team_key, [])
+            for goalie in team_goalies:
+                goalie_id = goalie.get('id')
+                if not goalie_id:
+                    continue
+                    
+                stats = goalie.get('stats', {})
+                saves = stats.get('saves', 0)
+                goals_against = stats.get('goals_against', 0)
+                
+                await db.users.update_one(
+                    {"id": goalie_id},
+                    {
+                        "$inc": {
+                            "saves": saves,
+                            "goalsAgainst": goals_against,
+                            "gamesPlayed": 1
+                        }
+                    }
+                )
+                logger.info(f"🧤 Updated goalie stats for {goalie_id}: +{saves} saves")
+                
+    except Exception as e:
+        logger.error(f"Error updating player stats from game: {e}")
+
 # ============================================
 # SEASON MANAGEMENT API ENDPOINTS
 # ============================================
