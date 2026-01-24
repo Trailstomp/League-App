@@ -2183,37 +2183,25 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                             <div className="text-xs font-bold text-center text-gray-600 uppercase">{gameState.away_team.name}</div>
                             <div className="flex gap-2">
                                 <button
-                                    onClick={() => {
-                                        addShotStat('away_team', 'team', 'goal');
-                                        if (stopClockOnGoal) {
-                                            setGameState(prev => ({ ...prev, is_running: false }));
-                                        }
-                                        resetShotClock();
-                                    }}
+                                    onClick={() => openTeamShotModalWithType('away_team', 'goal')}
                                     className="w-16 h-16 md:w-20 md:h-20 bg-green-500 hover:bg-green-600 text-white rounded-xl font-bold flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105"
-                                    title="Goal!"
+                                    title="Goal - select player"
                                 >
                                     <span className="text-2xl md:text-3xl">🥅</span>
                                     <span className="text-xs md:text-sm font-bold">GOAL</span>
                                 </button>
                                 <button
-                                    onClick={() => {
-                                        addShotStat('away_team', 'team', 'save');
-                                        resetShotClock();
-                                    }}
+                                    onClick={() => openTeamShotModalWithType('away_team', 'saved')}
                                     className="w-16 h-16 md:w-20 md:h-20 bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-bold flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105"
-                                    title="Save by goalie"
+                                    title="Save - select player"
                                 >
                                     <span className="text-2xl md:text-3xl">🧤</span>
                                     <span className="text-xs md:text-sm font-bold">SAVE</span>
                                 </button>
                                 <button
-                                    onClick={() => {
-                                        addShotStat('away_team', 'team', 'miss');
-                                        resetShotClock();
-                                    }}
+                                    onClick={() => openTeamShotModalWithType('away_team', 'miss')}
                                     className="w-16 h-16 md:w-20 md:h-20 bg-yellow-500 hover:bg-yellow-600 text-white rounded-xl font-bold flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105"
-                                    title="Shot missed"
+                                    title="Miss - select player"
                                 >
                                     <span className="text-2xl md:text-3xl">❌</span>
                                     <span className="text-xs md:text-sm font-bold">MISS</span>
