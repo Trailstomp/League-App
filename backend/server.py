@@ -481,6 +481,8 @@ async def get_dashboard_data():
                     "id": team.get("id", ""),
                     "name": team.get("name", ""),
                     "division": team.get("division", ""),
+                    "division_id": team.get("division_id"),  # Include division_id for filtering
+                    "league_id": team.get("league_id", "main_league"),
                     "color": team.get("color", "#3b82f6"),
                     "logo": team.get("logo", ""),
                     "active": team.get("active", True),
