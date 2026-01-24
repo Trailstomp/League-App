@@ -825,6 +825,22 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
         setShowTeamShotModal(true);
     };
 
+    // Open team shot modal with pre-selected shot type (for quick buttons)
+    const openTeamShotModalWithType = (team, shotType) => {
+        setTeamShotModalTeam(team);
+        setTeamShotInput({
+            playerId: 'unknown',
+            shotType: shotType,
+            timestamp: formatTime(gameState.time_remaining)
+        });
+        // If goal type, pause the game clock
+        if (shotType === 'goal' && gameState.is_running && stopClockOnGoal) {
+            setGameState(prev => ({ ...prev, is_running: false }));
+            addGameEvent('⏸️ GAME PAUSED (Goal scored)', 'game_pause');
+        }
+        setShowTeamShotModal(true);
+    };
+
 
     // Open team penalty modal
     const openTeamPenaltyModal = (team) => {
