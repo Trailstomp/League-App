@@ -49,15 +49,32 @@ logging.basicConfig(
 # Backend URL for proxy endpoints
 BACKEND_URL = os.environ.get('BACKEND_URL', 'http://localhost:8001')
 
-# MongoDB connection with error handling
+# MongoDB connection with error handling and increased pool size
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 try:
-    client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=5000)
+    client = AsyncIOMotorClient(
+        mongo_url, 
+        serverSelectionTimeoutMS=10000,  # Increased from 5s to 10s
+        maxPoolSize=20,  # Increased from default 5 to 20
+        minPoolSize=5,   # Keep minimum connections alive
+        maxIdleTimeMS=60000,  # Close idle connections after 60s
+        retryWrites=True,
+        retryReads=True,
+        connectTimeoutMS=20000,
+        socketTimeoutMS=30000,
+        waitQueueTimeoutMS=30000
+    )
     db = client[os.environ.get('DB_NAME', 'mlbl_database')]
 except Exception as e:
     logger.error(f"MongoDB connection error: {e}")
     # Create a fallback client that will retry on first use
-    client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=5000)
+    client = AsyncIOMotorClient(
+        mongo_url, 
+        serverSelectionTimeoutMS=10000,
+        maxPoolSize=20,
+        retryWrites=True,
+        retryReads=True
+    )
     db = client[os.environ.get('DB_NAME', 'mlbl_database')]
 
 # Initialize routers with database connection
