@@ -986,9 +986,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
             addShotStat(teamKey, playerId, shotType);
         }
 
-        // Close modal
+        // Close modal and reset shot clock
         setShowTeamShotModal(false);
         setTeamShotInput({ playerId: 'unknown', shotType: '', timestamp: '' });
+        resetShotClock();
     };
 
 
