@@ -491,12 +491,17 @@ async def get_dashboard_data():
                         "secondaryColor": team.get("secondary_color", ""),
                         "accentColor": team.get("accent_color", "")
                     },
-                    # Preserve any additional fields from old format
+                    # Preserve stat fields from teams collection
                     "wins": team.get("wins", 0),
                     "losses": team.get("losses", 0),
                     "ties": team.get("ties", 0),
-                    "pf": team.get("pf", 0),
-                    "pa": team.get("pa", 0)
+                    "points": team.get("points", 0),
+                    "goals_for": team.get("goals_for", team.get("pf", 0)),
+                    "goals_against": team.get("goals_against", team.get("pa", 0)),
+                    "goal_diff": team.get("goal_diff", 0),
+                    "games_played": team.get("games_played", 0),
+                    "pf": team.get("pf", team.get("goals_for", 0)),
+                    "pa": team.get("pa", team.get("goals_against", 0))
                 }
                 formatted_teams.append(formatted_team)
             
