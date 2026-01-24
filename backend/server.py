@@ -7979,15 +7979,23 @@ async def _update_team_season_stats(team_id: str):
         stats = await get_team_season_stats(team_id)
         
         # Update team document with season stats
+        # Include goals_for/goals_against (also as pf/pa for legacy compatibility)
         await db.teams.update_one(
             {"id": team_id},
             {"$set": {
                 "wins": stats["wins"],
                 "losses": stats["losses"],
                 "ties": stats.get("ties", 0),
-                "points": stats["points"]
+                "points": stats["points"],
+                "goals_for": stats.get("goals_for", 0),
+                "goals_against": stats.get("goals_against", 0),
+                "goal_diff": stats.get("goal_diff", 0),
+                "pf": stats.get("goals_for", 0),  # Legacy field
+                "pa": stats.get("goals_against", 0),  # Legacy field
+                "games_played": stats.get("games_played", 0)
             }}
         )
+        logger.info(f"✅ Updated team {team_id} stats: W{stats['wins']}-L{stats['losses']}, GF:{stats.get('goals_for',0)}")
     except Exception as e:
         logger.error(f"Error updating team season stats: {e}")
 
