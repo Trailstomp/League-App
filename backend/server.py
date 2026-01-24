@@ -8152,6 +8152,31 @@ async def recalculate_all_stats():
         logger.error(f"Error recalculating stats: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@api_router.put("/admin/teams/{team_id}")
+async def admin_update_team(team_id: str, data: Dict[str, Any]):
+    """Admin endpoint to update team data in the teams collection"""
+    try:
+        result = await db.teams.update_one(
+            {"id": team_id},
+            {"$set": data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail=f"Team {team_id} not found")
+        
+        return {
+            "success": True,
+            "message": f"Team {team_id} updated",
+            "modified_count": result.modified_count
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating team {team_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============================================
 # SEASON MANAGEMENT API ENDPOINTS
 # ============================================
