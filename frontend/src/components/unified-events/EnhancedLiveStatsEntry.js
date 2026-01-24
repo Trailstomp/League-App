@@ -339,12 +339,24 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
     };
 
     // Auto-save functionality for live updates - wrapped in useCallback to always have latest gameState
+    // Track if an auto-save is in progress to prevent overlapping requests
+    const autoSaveInProgressRef = useRef(false);
+    const autoSaveRetryCountRef = useRef(0);
+    const MAX_RETRY_COUNT = 3;
+
     const autoSaveGameStats = React.useCallback(async () => {
         if (!event?.id) {
             console.log('⚠️ Auto-save skipped: No event ID');
             return;
         }
+
+        // Skip if another auto-save is already in progress
+        if (autoSaveInProgressRef.current) {
+            console.log('⏳ Auto-save skipped: Previous save still in progress');
+            return;
+        }
         
+        autoSaveInProgressRef.current = true;
         console.log('💾 Auto-saving game stats for event:', event.id, 'Current scores:', gameState.home_team.score, '-', gameState.away_team.score);
         
         try {
@@ -371,16 +383,24 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
 
             console.log('💾 Sending auto-save data to game_stats');
 
-            // Save to game_stats collection
+            // Save to game_stats collection with timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
             const statsResponse = await fetch(`${backendUrl}/api/game-stats`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(gameData)
+                body: JSON.stringify(gameData),
+                signal: controller.signal
             });
+
+            clearTimeout(timeoutId);
 
             if (!statsResponse.ok) {
                 const error = await statsResponse.text();
                 console.error('❌ Auto-save to game_stats failed:', statsResponse.status, error);
+                autoSaveRetryCountRef.current++;
+                autoSaveInProgressRef.current = false;
                 return;
             }
 
@@ -388,42 +408,62 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
 
             // ALSO update unified_events.scores so Live View sees the update immediately
             console.log('💾 Updating unified_events.scores');
+            const eventController = new AbortController();
+            const eventTimeoutId = setTimeout(() => eventController.abort(), 15000);
+
             const eventUpdateResponse = await fetch(`${backendUrl}/api/unified-events/${event.id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     scores: gameData,
                     status: 'in_progress'
-                })
+                }),
+                signal: eventController.signal
             });
+
+            clearTimeout(eventTimeoutId);
 
             if (eventUpdateResponse.ok) {
                 setLastSaved(new Date());
+                autoSaveRetryCountRef.current = 0; // Reset retry count on success
                 console.log('✅ Auto-saved to BOTH game_stats AND unified_events.scores');
             } else {
                 const error = await eventUpdateResponse.text();
                 console.error('❌ Failed to update unified_events.scores:', error);
             }
         } catch (error) {
-            console.error('❌ Auto-save error:', error);
+            if (error.name === 'AbortError') {
+                console.error('❌ Auto-save timed out');
+            } else {
+                console.error('❌ Auto-save error:', error);
+            }
+            autoSaveRetryCountRef.current++;
+        } finally {
+            autoSaveInProgressRef.current = false;
         }
     }, [event, gameState, penalties, gameEvents, shotClock, backendUrl]);
 
-    // Setup auto-save interval when timer is running
+    // Setup auto-save interval when timer is running - reduced frequency to 30 seconds
     useEffect(() => {
         console.log('🔧 Auto-save useEffect triggered. Enabled:', autoSaveEnabled, 'Running:', gameState.is_running, 'Event ID:', event?.id);
         
         if (autoSaveEnabled && gameState.is_running && event?.id) {
-            console.log('✅ Starting auto-save interval (every 10 seconds)');
+            console.log('✅ Starting auto-save interval (every 30 seconds)');
             
             // Immediate first save
             autoSaveGameStats();
             
-            // Then save every 10 seconds
+            // Then save every 30 seconds (reduced from 10 to reduce DB load)
             const intervalId = setInterval(() => {
-                console.log('⏰ 10 seconds elapsed, triggering auto-save...');
+                // Skip if too many consecutive failures
+                if (autoSaveRetryCountRef.current >= MAX_RETRY_COUNT) {
+                    console.log('⚠️ Auto-save paused: Too many failures. Will retry in 60s');
+                    setTimeout(() => { autoSaveRetryCountRef.current = 0; }, 60000);
+                    return;
+                }
+                console.log('⏰ 30 seconds elapsed, triggering auto-save...');
                 autoSaveGameStats();
-            }, 10000);
+            }, 30000); // Changed from 10000 to 30000
             
             // Store in ref so cleanup can access it
             autoSaveRef.current = intervalId;
