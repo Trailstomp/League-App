@@ -8104,6 +8104,54 @@ async def _update_player_stats_from_game(game_stats: Dict[str, Any]):
     except Exception as e:
         logger.error(f"Error updating player stats from game: {e}")
 
+
+
+@api_router.post("/admin/recalculate-stats")
+async def recalculate_all_stats():
+    """Admin endpoint to recalculate all team and player stats from final games"""
+    try:
+        # Get all teams
+        teams = await db.teams.find().to_list(None)
+        updated_teams = 0
+        
+        for team in teams:
+            team_id = team.get("id")
+            if team_id:
+                await _update_team_season_stats(team_id)
+                updated_teams += 1
+        
+        # Get all final games and update player stats
+        final_games = await db.game_stats.find({"status": "final"}).to_list(None)
+        
+        # Reset all player stats first
+        await db.users.update_many(
+            {"$or": [{"roles": "player"}, {"role": "player"}]},
+            {"$set": {
+                "goals": 0,
+                "assists": 0,
+                "shots": 0,
+                "penalties": 0,
+                "gamesPlayed": 0,
+                "saves": 0,
+                "goalsAgainst": 0
+            }}
+        )
+        
+        # Recalculate from all final games
+        for game in final_games:
+            await _update_player_stats_from_game(game)
+        
+        logger.info(f"✅ Recalculated stats: {updated_teams} teams, {len(final_games)} final games")
+        
+        return {
+            "success": True,
+            "teams_updated": updated_teams,
+            "games_processed": len(final_games)
+        }
+    except Exception as e:
+        logger.error(f"Error recalculating stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # ============================================
 # SEASON MANAGEMENT API ENDPOINTS
 # ============================================
