@@ -209,10 +209,19 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
   - Fixed Eagles and Hawks teams to have correct `division_id` for standings display
   - Added `division_id` and `league_id` to dashboard team response for consistency
 
-- **Live Scoring UI Fix (P1):**
+- **Live Scoring UI Fixes (P1):**
   - Fixed tab navigation z-index/positioning issue in EnhancedLiveStatsEntry.js
   - Tab navigation now properly positioned below fixed header (top: 320px, zIndex: 40)
-  - Three-button shot system (Goal, Save, Miss) already properly sized and implemented
+  - **Fixed Goal/Save/Miss buttons to open player selection modal** instead of direct recording
+  - Buttons now pre-select shot type (Goal/Save/Miss) and allow player selection from roster
+  - "Unknown Player" option available for quick recording when player is unknown
+  - Events properly logged to Game Events tab with player names
+  - Shot clock resets after each shot submission
+
+- **End-to-End Stats Flow Verified:**
+  - Scored game via Live Stats Entry → End Game (Final) → Stats propagated to standings
+  - Eagles: 2W-0L, GF:7 GA:2 | Hawks: 0W-2L, GF:2 GA:7
+  - Player stats (Nick: 2 goals) recorded and displayed correctly
 
 - **All 17 Backend Tests Passed (100% success rate)**
 
