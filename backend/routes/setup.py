@@ -8,15 +8,16 @@ from datetime import datetime, timezone
 import uuid
 import hashlib
 import os
-from motor.motor_asyncio import AsyncIOMotorClient
 
 setup_router = APIRouter(prefix="/api/setup", tags=["setup"])
 
-# Get database connection
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "mlbl_database")
-client = AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+# Database will be injected from server.py
+db = None
+
+def set_setup_db(database):
+    """Set the database connection from the main server"""
+    global db
+    db = database
 
 # ============= Models =============
 
