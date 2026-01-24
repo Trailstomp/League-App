@@ -3099,8 +3099,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
 
             {/* Main Content with padding for fixed header */}
             <div style={{ paddingTop: '320px' }}>
-            {/* Tab Navigation */}
-            <div className="bg-white border-b sticky" style={{ top: '0px', zIndex: 10 }}>
+            {/* Tab Navigation - positioned below fixed header */}
+            <div className="bg-white border-b sticky" style={{ top: '320px', zIndex: 40 }}>
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex space-x-8">
                         <button
