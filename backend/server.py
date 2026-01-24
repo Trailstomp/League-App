@@ -564,7 +564,15 @@ async def get_dashboard_data():
                     "photoUrl": user.get("photoUrl", ""),
                     "roles": user.get("roles", []),
                     "status": user.get("status", "active"),
-                    "teamAssignments": team_assignments  # Include full team assignments for multi-team support
+                    "teamAssignments": team_assignments,  # Include full team assignments for multi-team support
+                    # Include player stats
+                    "goals": user.get("goals", 0),
+                    "assists": user.get("assists", 0),
+                    "shots": user.get("shots", 0),
+                    "penalties": user.get("penalties", 0),
+                    "gamesPlayed": user.get("gamesPlayed", 0),
+                    "saves": user.get("saves", 0),
+                    "goalsAgainst": user.get("goalsAgainst", 0)
                 }
                 all_players.append(player)
                 seen_player_ids.add(player_id)
