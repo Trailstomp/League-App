@@ -198,7 +198,25 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 
 ## What's Been Implemented
 
-### January 22, 2025 (Current Session)
+### January 24, 2025 (Current Session)
+- **Critical Stats Aggregation Bug Fix (P0):**
+  - Fixed team stats not propagating to standings after games marked final
+  - Updated `_update_team_season_stats` function to include `goals_for`, `goals_against`, `goal_diff`, `pf`, `pa`, `games_played` fields
+  - Updated `/api/dashboard-data` endpoint to include all stat fields in team response
+  - Added player stats (goals, assists, gamesPlayed, etc.) to dashboard player data
+  - Created `/api/admin/recalculate-stats` endpoint to recalculate all team stats from final games
+  - Created `/api/admin/teams/{team_id}` endpoint for updating team data directly
+  - Fixed Eagles and Hawks teams to have correct `division_id` for standings display
+  - Added `division_id` and `league_id` to dashboard team response for consistency
+
+- **Live Scoring UI Fix (P1):**
+  - Fixed tab navigation z-index/positioning issue in EnhancedLiveStatsEntry.js
+  - Tab navigation now properly positioned below fixed header (top: 320px, zIndex: 40)
+  - Three-button shot system (Goal, Save, Miss) already properly sized and implemented
+
+- **All 17 Backend Tests Passed (100% success rate)**
+
+### January 22, 2025 (Previous Session)
 - **Google OAuth Integration (P1):**
   - Added "Sign in with Google" button to login modal
   - Created AuthCallback.js component for Emergent Auth callback handling
