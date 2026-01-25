@@ -115,7 +115,7 @@ const PlayerCardPopup = ({ player, team, isFlipped, onFlip, onClose, onPrint, on
                             <div className="relative h-72 bg-gradient-to-br from-slate-100 to-slate-200 flex items-start justify-center overflow-hidden">
                                 {player.photoUrl ? (
                                     <img 
-                                        src={player.photoUrl} 
+                                        src={getFullImageUrl(player.photoUrl)} 
                                         alt={player.name} 
                                         className="w-full h-auto max-h-full object-contain"
                                         style={{ objectPosition: 'center top' }}
