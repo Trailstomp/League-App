@@ -1294,8 +1294,8 @@ async def upload_general_image(
         with open(filepath, 'wb') as f:
             f.write(content)
         
-        # Return local URL (will be served by static files)
-        local_url = f"/uploads/{filename}"
+        # Return local URL (will be served by static files under /api/uploads)
+        local_url = f"/api/uploads/{filename}"
         
         logger.info(f"✅ Image saved locally: {filepath}")
         
