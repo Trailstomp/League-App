@@ -188,10 +188,11 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 - `GET /api/finance/league/summary` - Get league-wide finance summary
 
 ### Team Player Management
-- `POST /api/team/{team_id}/add-player` - Add existing user to team
-- `POST /api/team/{team_id}/remove-player` - Remove player from team
-- `POST /api/team/{team_id}/update-player` - Update player position/number
-- `GET /api/team/{team_id}/players` - Get team roster
+- `POST /api/team/{team_id}/player` - Add existing user to team
+- `DELETE /api/team/{team_id}/player/{player_id}` - Remove player from team
+- `PUT /api/team/{team_id}/player/{player_id}` - Update player info (position, number, availability)
+- `PUT /api/team/{team_id}/player/{player_id}/payment` - Update player payment status (paymentStatus, amountPaid, amountOwed, notes, lastPaymentDate)
+- `GET /api/team/{team_id}/players` - Get team roster with payment and availability fields
 
 ### Image Upload
 - `POST /api/upload/image` - Upload and crop images (logos, banners)
