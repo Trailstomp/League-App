@@ -53,7 +53,21 @@ async def get_team_players(team_id: str):
                 "lacrosseHistory": user.get("lacrosseHistory"),
                 "funFacts": user.get("funFacts"),
                 "socialMedia": user.get("socialMedia"),
-                "teamAssignments": user.get("teamAssignments", [])
+                "teamAssignments": user.get("teamAssignments", []),
+                # Payment and availability fields (user-level defaults)
+                "paymentStatus": user.get("paymentStatus", "unpaid"),
+                "amountPaid": user.get("amountPaid", 0),
+                "amountOwed": user.get("amountOwed", 0),
+                "paymentNotes": user.get("paymentNotes", ""),
+                "lastPaymentDate": user.get("lastPaymentDate", ""),
+                "availability": user.get("availability", "active"),
+                # Additional fields for player management
+                "graduationYear": user.get("graduationYear", ""),
+                "height": user.get("height", ""),
+                "weight": user.get("weight", ""),
+                "school": user.get("school", ""),
+                "emergencyContactName": user.get("emergencyContactName", ""),
+                "emergencyContactPhone": user.get("emergencyContactPhone", "")
             }
             # Get team-specific info from teamAssignments if available
             for assignment in user.get("teamAssignments", []):
@@ -62,6 +76,19 @@ async def get_team_players(team_id: str):
                     player["jerseyNumber"] = assignment.get("playerNumber") or player["jerseyNumber"]
                     if assignment.get("photoUrl"):
                         player["photoUrl"] = assignment.get("photoUrl")
+                    # Team-specific payment/availability overrides
+                    if "paymentStatus" in assignment:
+                        player["paymentStatus"] = assignment["paymentStatus"]
+                    if "amountPaid" in assignment:
+                        player["amountPaid"] = assignment["amountPaid"]
+                    if "amountOwed" in assignment:
+                        player["amountOwed"] = assignment["amountOwed"]
+                    if "paymentNotes" in assignment:
+                        player["paymentNotes"] = assignment["paymentNotes"]
+                    if "lastPaymentDate" in assignment:
+                        player["lastPaymentDate"] = assignment["lastPaymentDate"]
+                    if "availability" in assignment:
+                        player["availability"] = assignment["availability"]
                     break
             team_players.append(player)
         
