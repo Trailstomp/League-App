@@ -200,17 +200,19 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 ## What's Been Implemented
 
 ### January 25, 2025 (Current Session)
-- **Team Admin Hub Feature (P1):**
-  - Created new TeamAdminHub.js component for centralized team management
-  - **4 Admin Sections:**
-    1. **Overview**: Quick stats dashboard showing total players, payment status breakdown, availability status, and total collected
-    2. **Payment Tracker**: Per-player payment status tracking (Paid/Partial/Unpaid), with amounts owed/paid, last payment date, and notes
-    3. **Availability**: Player availability management (Active/Injured/On Leave/Inactive) with inline dropdown updates
-    4. **Roster Actions**: Bulk actions (Reset All Payments, Activate All Players), communication tools (copy emails for bulk messaging), and CSV exports (Full Roster, Payment Report, Emergency Contacts)
+- **Team Admin Tab Reorganization (P1):**
+  - Created new `TeamAdminTab.js` component with cleaner, table-based UI for player management
+  - **3 Admin Sections:**
+    1. **Manage Players**: Table view of all players with add/edit/delete actions, showing name, position, email, status badges
+    2. **Payment Tracking**: Per-player payment management with summary stats, filtering, and payment update modal
+    3. **Availability**: Player status management (Active/Injured/On Leave/Inactive) with inline dropdown updates
+  - Reorganized team tabs: Admin → Finance → Recruiting (consolidated admin features)
+  - Quick stats bar showing paid/unpaid/active counts at a glance
+  - CSV export and email copy tools for team communication
   - Backend: New `PUT /api/team/{team_id}/player/{player_id}/payment` endpoint for payment updates
   - Backend: Enhanced `GET /api/team/{team_id}/players` to return payment and availability fields
   - Backend: Updated `PUT /api/team/{team_id}/player/{player_id}` to support availability updates
-  - All 13 new backend tests passing (100% success rate)
+  - All backend tests passing (100% success rate)
 
 - **Player Pictures Fix (P2):**
   - Verified fix for player images not appearing on roster cards
