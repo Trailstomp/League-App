@@ -17,8 +17,13 @@ export const getFullImageUrl = (url) => {
         return url;
     }
     
-    // If it's a relative URL starting with /uploads, prepend backend URL
+    // If it's a relative URL starting with /uploads (legacy), convert to /api/uploads
     if (url.startsWith('/uploads/')) {
+        return `${BACKEND_URL}/api${url}`;
+    }
+    
+    // If it's already /api/uploads, prepend backend URL
+    if (url.startsWith('/api/uploads/')) {
         return `${BACKEND_URL}${url}`;
     }
     
