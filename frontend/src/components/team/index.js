@@ -11,3 +11,4 @@ export { default as TeamStatsTab } from './TeamStatsTab';
 export { default as TeamMediaTab } from './TeamMediaTab';
 export { default as TeamContactTab } from './TeamContactTab';
 export { default as TeamChatTab } from './TeamChatTab';
+export { default as TeamAdminHub } from './TeamAdminHub';
