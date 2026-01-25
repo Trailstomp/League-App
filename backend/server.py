@@ -34,8 +34,8 @@ from routes.setup import setup_router, set_setup_db
 
 ROOT_DIR = Path(__file__).parent
 
-# Create uploads directory
-UPLOADS_DIR = ROOT_DIR / "uploads"
+# Create uploads directory (use /app/uploads for consistency)
+UPLOADS_DIR = Path("/app/uploads")
 UPLOADS_DIR.mkdir(exist_ok=True)
 load_dotenv(ROOT_DIR / '.env')
 
