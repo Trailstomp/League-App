@@ -2,6 +2,34 @@
  * Utility functions for handling image URLs, especially Google Drive URLs with CORS issues
  */
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+
+/**
+ * Get the full image URL, handling relative paths from backend
+ * @param {string} url - The image URL (could be relative or absolute)
+ * @returns {string} - The full URL
+ */
+export const getFullImageUrl = (url) => {
+    if (!url) return url;
+    
+    // If it's already a full URL, return as-is
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url;
+    }
+    
+    // If it's a relative URL starting with /uploads, prepend backend URL
+    if (url.startsWith('/uploads/')) {
+        return `${BACKEND_URL}${url}`;
+    }
+    
+    // If it's a relative URL starting with /, prepend backend URL
+    if (url.startsWith('/')) {
+        return `${BACKEND_URL}${url}`;
+    }
+    
+    return url;
+};
+
 /**
  * Fix Google Drive URLs using backend proxy to avoid CORS
  * @param {string} url - The original image URL
@@ -10,7 +38,8 @@
 export const fixGoogleDriveUrl = (url) => {
     if (!url) return url;
     
-    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+    // First handle relative URLs
+    url = getFullImageUrl(url);
     
     // Extract Google Drive file ID from various URL formats
     let fileId = null;
