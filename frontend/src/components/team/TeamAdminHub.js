@@ -45,6 +45,7 @@ const TeamAdminHub = ({ team, currentUser, onTeamUpdate }) => {
         if (team?.id) {
             fetchPlayers();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [team?.id]);
 
     // Update player payment status
@@ -159,7 +160,7 @@ const TeamAdminHub = ({ team, currentUser, onTeamUpdate }) => {
             <div className="flex justify-between items-center">
                 <div>
                     <h2 className="text-2xl font-bold text-slate-800">Team Admin Hub</h2>
-                    <p className="text-slate-600">Manage your team's players, payments, and availability</p>
+                    <p className="text-slate-600">Manage your team&apos;s players, payments, and availability</p>
                 </div>
             </div>
 
