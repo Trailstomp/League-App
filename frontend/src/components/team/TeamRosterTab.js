@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { fixGoogleDriveUrl } from '../../utils/imageUtils';
-import CachedImage from '../CachedImage';
 import PlayerCardPopup from './PlayerCardPopup';
 import jsPDF from 'jspdf';
 import { getSportConfig } from '../../config/sportsConfig';
