@@ -39,11 +39,49 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
         pageBackgroundImage: team.style?.pageBackgroundImage || ''
     });
     
+    // Payment Links State
+    const [paymentLinks, setPaymentLinks] = useState({
+        venmo: team.paymentLinks?.venmo || '',
+        paypal: team.paymentLinks?.paypal || '',
+        zelle: team.paymentLinks?.zelle || '',
+        cashapp: team.paymentLinks?.cashapp || '',
+        stripe: team.paymentLinks?.stripe || '',
+        customPaymentUrl: team.paymentLinks?.customPaymentUrl || '',
+        customPaymentLabel: team.paymentLinks?.customPaymentLabel || ''
+    });
+    
     const sections = [
         { id: 'youtube', label: 'YouTube Channel', icon: '📺' },
         { id: 'social', label: 'Social Media', icon: '📱' },
+        { id: 'payments', label: 'Payment Links', icon: '💳' },
         { id: 'appearance', label: 'Appearance', icon: '🎨' }
     ];
+    
+    // Save payment links
+    const handleSavePaymentLinks = async () => {
+        setSaving(true);
+        setMessage('');
+        try {
+            const response = await fetch(`${backendUrl}/api/league-data/teams/${team.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paymentLinks })
+            });
+            
+            if (response.ok) {
+                setMessage('✅ Payment links saved!');
+                if (onTeamUpdate) onTeamUpdate();
+            } else {
+                setMessage('❌ Failed to save settings');
+            }
+        } catch (error) {
+            console.error('Error saving payment links:', error);
+            setMessage('❌ Error saving settings');
+        } finally {
+            setSaving(false);
+            setTimeout(() => setMessage(''), 3000);
+        }
+    };
     
     // Save social media settings
     const handleSaveSocialMedia = async () => {
