@@ -107,8 +107,8 @@ async def health_check():
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
-# Mount uploads directory for serving uploaded files
-app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
+# Mount uploads directory for serving uploaded files (under /api/uploads for proxy routing)
+app.mount("/api/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 # Add CORS middleware
 app.add_middleware(
