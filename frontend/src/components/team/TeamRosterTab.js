@@ -458,19 +458,21 @@ const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse'
                                     {/* Player Photo */}
                                     <div className="relative h-56 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden flex items-start justify-center">
                                         {player.photoUrl ? (
-                                            <CachedImage 
+                                            <img 
                                                 src={player.photoUrl} 
                                                 alt={player.name}
                                                 className="w-full h-auto max-h-full object-contain"
                                                 style={{ objectPosition: 'center top' }}
-                                                fallback={
-                                                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-200 to-slate-300">
-                                                        <svg className="w-16 h-16 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
-                                                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                                        </svg>
-                                                    </div>
-                                                }
+                                                onError={(e) => {
+                                                    e.target.style.display = 'none';
+                                                    e.target.nextSibling.style.display = 'flex';
+                                                }}
                                             />
+                                            <div className="w-full h-full items-center justify-center bg-gradient-to-br from-slate-200 to-slate-300" style={{ display: 'none' }}>
+                                                <svg className="w-16 h-16 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                                </svg>
+                                            </div>
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-200 to-slate-300">
                                                 <svg className="w-16 h-16 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
