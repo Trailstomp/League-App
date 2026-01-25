@@ -255,3 +255,61 @@ async def remove_player_from_team(team_id: str, player_id: str):
     except Exception as e:
         logger.error(f"❌ Error removing player: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@teams_router.put("/{team_id}/player/{player_id}/payment")
+async def update_player_payment(team_id: str, player_id: str, data: Dict[str, Any]):
+    """Update a player's payment status for a team"""
+    try:
+        # Get the user
+        user = await db.users.find_one({"id": player_id}, {"_id": 0})
+        if not user:
+            raise HTTPException(status_code=404, detail="Player not found")
+        
+        # Verify player is on this team
+        assignments = user.get("teamAssignments", [])
+        team_assignment_idx = None
+        
+        for i, assignment in enumerate(assignments):
+            if assignment.get("teamId") == team_id:
+                team_assignment_idx = i
+                break
+        
+        if team_assignment_idx is None:
+            raise HTTPException(status_code=404, detail="Player not found on this team")
+        
+        # Update payment fields in the team assignment
+        payment_fields = ["paymentStatus", "amountPaid", "amountOwed", "paymentNotes", "lastPaymentDate"]
+        for field in payment_fields:
+            if field in data:
+                assignments[team_assignment_idx][field] = data[field]
+        
+        # Also store at user level for convenience
+        user_update = {
+            "teamAssignments": assignments,
+            "updatedAt": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # If this is the primary team, also update user-level payment fields
+        if user.get("teamId") == team_id:
+            for field in payment_fields:
+                if field in data:
+                    user_update[field] = data[field]
+        
+        await db.users.update_one(
+            {"id": player_id},
+            {"$set": user_update}
+        )
+        
+        logger.info(f"✅ Updated payment for player {player_id} on team {team_id}: {data.get('paymentStatus')}")
+        
+        return {
+            "status": "success",
+            "message": "Payment status updated"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error updating player payment: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
