@@ -123,4 +123,4 @@ export const EnhancedImage = ({ src, alt, onError, fallbackSrc, className, ...pr
     );
 };
 
-export default { fixGoogleDriveUrl, EnhancedImage };
+export default { fixGoogleDriveUrl, EnhancedImage, getFullImageUrl };
