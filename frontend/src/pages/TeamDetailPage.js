@@ -122,6 +122,7 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
         ] : []),
         // Coach/Admin only tabs
         ...(isTeamCoachOrAdmin ? [
+            { id: 'admin-hub', label: 'Admin Hub', icon: 'admin', coachOnly: true },
             { id: 'recruiting', label: 'Recruiting', icon: 'add', coachOnly: true },
             { id: 'finance', label: 'Finance', icon: '📊', coachOnly: true },
         ] : []),
