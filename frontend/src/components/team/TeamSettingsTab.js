@@ -323,6 +323,108 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                 </div>
             )}
             
+            {/* Payment Links Section */}
+            {activeSection === 'payments' && (
+                <div className="space-y-6">
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                        <div className="flex items-start gap-3">
+                            <span className="text-2xl">💰</span>
+                            <div>
+                                <p className="text-sm text-green-800 font-medium">Team Payment Settings</p>
+                                <p className="text-xs text-green-700 mt-1">Add payment links so team members can easily pay dues and fees.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Venmo Username</label>
+                            <div className="flex">
+                                <span className="bg-slate-100 px-3 py-2 border border-r-0 border-slate-300 rounded-l-lg text-slate-500">@</span>
+                                <input
+                                    type="text"
+                                    value={paymentLinks.venmo}
+                                    onChange={(e) => setPaymentLinks({...paymentLinks, venmo: e.target.value})}
+                                    placeholder="username"
+                                    className="flex-1 px-3 py-2 border border-slate-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">PayPal.me Link</label>
+                            <input
+                                type="text"
+                                value={paymentLinks.paypal}
+                                onChange={(e) => setPaymentLinks({...paymentLinks, paypal: e.target.value})}
+                                placeholder="paypal.me/username"
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Zelle Email/Phone</label>
+                            <input
+                                type="text"
+                                value={paymentLinks.zelle}
+                                onChange={(e) => setPaymentLinks({...paymentLinks, zelle: e.target.value})}
+                                placeholder="email@example.com or phone"
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Cash App</label>
+                            <div className="flex">
+                                <span className="bg-slate-100 px-3 py-2 border border-r-0 border-slate-300 rounded-l-lg text-slate-500">$</span>
+                                <input
+                                    type="text"
+                                    value={paymentLinks.cashapp}
+                                    onChange={(e) => setPaymentLinks({...paymentLinks, cashapp: e.target.value})}
+                                    placeholder="cashtag"
+                                    className="flex-1 px-3 py-2 border border-slate-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Custom Payment Link */}
+                    <div className="border rounded-lg p-4 bg-slate-50">
+                        <h4 className="font-medium text-slate-800 mb-3">Custom Payment Link</h4>
+                        <div className="space-y-3">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Button Label</label>
+                                <input
+                                    type="text"
+                                    value={paymentLinks.customPaymentLabel}
+                                    onChange={(e) => setPaymentLinks({...paymentLinks, customPaymentLabel: e.target.value})}
+                                    placeholder="e.g., Pay with Stripe"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Payment URL</label>
+                                <input
+                                    type="url"
+                                    value={paymentLinks.customPaymentUrl}
+                                    onChange={(e) => setPaymentLinks({...paymentLinks, customPaymentUrl: e.target.value})}
+                                    placeholder="https://..."
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button
+                        onClick={handleSavePaymentLinks}
+                        disabled={saving}
+                        className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                    >
+                        {saving ? 'Saving...' : 'Save Payment Links'}
+                    </button>
+                </div>
+            )}
+            
             {/* Appearance Section */}
             {activeSection === 'appearance' && (
                 <div className="space-y-6">
