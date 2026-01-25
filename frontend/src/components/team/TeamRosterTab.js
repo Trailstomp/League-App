@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { fixGoogleDriveUrl } from '../../utils/imageUtils';
+import { fixGoogleDriveUrl, getFullImageUrl } from '../../utils/imageUtils';
 import PlayerCardPopup from './PlayerCardPopup';
 import jsPDF from 'jspdf';
 import { getSportConfig } from '../../config/sportsConfig';
