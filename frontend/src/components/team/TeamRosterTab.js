@@ -459,7 +459,7 @@ const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse'
                                         {player.photoUrl ? (
                                             <>
                                                 <img 
-                                                    src={player.photoUrl} 
+                                                    src={getFullImageUrl(player.photoUrl)} 
                                                     alt={player.name}
                                                     className="w-full h-auto max-h-full object-contain"
                                                     style={{ objectPosition: 'center top' }}
