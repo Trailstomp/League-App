@@ -198,7 +198,25 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 
 ## What's Been Implemented
 
-### January 24, 2025 (Current Session)
+### January 25, 2025 (Current Session)
+- **Team Admin Hub Feature (P1):**
+  - Created new TeamAdminHub.js component for centralized team management
+  - **4 Admin Sections:**
+    1. **Overview**: Quick stats dashboard showing total players, payment status breakdown, availability status, and total collected
+    2. **Payment Tracker**: Per-player payment status tracking (Paid/Partial/Unpaid), with amounts owed/paid, last payment date, and notes
+    3. **Availability**: Player availability management (Active/Injured/On Leave/Inactive) with inline dropdown updates
+    4. **Roster Actions**: Bulk actions (Reset All Payments, Activate All Players), communication tools (copy emails for bulk messaging), and CSV exports (Full Roster, Payment Report, Emergency Contacts)
+  - Backend: New `PUT /api/team/{team_id}/player/{player_id}/payment` endpoint for payment updates
+  - Backend: Enhanced `GET /api/team/{team_id}/players` to return payment and availability fields
+  - Backend: Updated `PUT /api/team/{team_id}/player/{player_id}` to support availability updates
+  - All 13 new backend tests passing (100% success rate)
+
+- **Player Pictures Fix (P2):**
+  - Verified fix for player images not appearing on roster cards
+  - Backend static file mount point corrected to `/api/uploads`
+  - Frontend `getFullImageUrl` utility correctly prepends backend URL to relative paths
+
+### January 24, 2025 (Previous Session)
 - **Critical Stats Aggregation Bug Fix (P0):**
   - Fixed team stats not propagating to standings after games marked final
   - Updated `_update_team_season_stats` function to include `goals_for`, `goals_against`, `goal_diff`, `pf`, `pa`, `games_played` fields
