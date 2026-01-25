@@ -120,11 +120,11 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
         ...(isPlayerOrCoach ? [
             { id: 'my-dashboard', label: 'My Dashboard', icon: 'admin', playerOnly: true }
         ] : []),
-        // Coach/Admin only tabs
+        // Coach/Admin only tabs - consolidated admin features
         ...(isTeamCoachOrAdmin ? [
-            { id: 'admin-hub', label: 'Admin Hub', icon: 'admin', coachOnly: true },
-            { id: 'recruiting', label: 'Recruiting', icon: 'add', coachOnly: true },
+            { id: 'admin', label: 'Team Admin', icon: 'admin', coachOnly: true },
             { id: 'finance', label: 'Finance', icon: '📊', coachOnly: true },
+            { id: 'recruiting', label: 'Recruiting', icon: 'add', coachOnly: true },
         ] : []),
         { id: 'settings', label: 'Settings', icon: 'settings', adminOnly: true }
     ];
