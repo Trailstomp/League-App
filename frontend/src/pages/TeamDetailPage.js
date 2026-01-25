@@ -14,7 +14,8 @@ import {
     TeamStatsTab,
     TeamMediaTab,
     TeamContactTab,
-    TeamChatTab
+    TeamChatTab,
+    TeamAdminHub
 } from '../components/team';
 
 const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate, onUserUpdate, sportType = 'lacrosse' }) => {
