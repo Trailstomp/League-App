@@ -205,6 +205,11 @@ async def update_team_player(team_id: str, player_id: str, data: Dict[str, Any])
             assignments[team_assignment_idx]["playerNumber"] = data["jerseyNumber"]
         if "position" in data:
             assignments[team_assignment_idx]["position"] = data["position"]
+        if "availability" in data:
+            assignments[team_assignment_idx]["availability"] = data["availability"]
+            # Also update at user level if this is primary team
+            if user.get("teamId") == team_id:
+                user_update["availability"] = data["availability"]
         
         user_update["teamAssignments"] = assignments
         user_update["updatedAt"] = datetime.now(timezone.utc).isoformat()
