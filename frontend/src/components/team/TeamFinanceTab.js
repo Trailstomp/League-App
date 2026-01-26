@@ -538,13 +538,244 @@ const TeamFinanceTab = ({ team, currentUser }) => {
         </div>
     );
 
+    // Payment badge helper
+    const getPaymentBadge = (status) => {
+        const badges = {
+            paid: <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">Paid</span>,
+            partial: <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">Partial</span>,
+            unpaid: <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs font-medium">Unpaid</span>
+        };
+        return badges[status] || badges.unpaid;
+    };
+
+    // Render Player Payments Sub-Tab
+    const renderPlayerPaymentsTab = () => (
+        <div className="space-y-4">
+            {/* Payment Summary */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="bg-slate-50 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-slate-800">{paymentStats.total}</div>
+                    <div className="text-xs text-slate-500">Total Players</div>
+                </div>
+                <div className="bg-green-50 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-green-600">{paymentStats.paid}</div>
+                    <div className="text-xs text-green-700">Paid</div>
+                </div>
+                <div className="bg-yellow-50 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-yellow-600">{paymentStats.partial}</div>
+                    <div className="text-xs text-yellow-700">Partial</div>
+                </div>
+                <div className="bg-red-50 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-red-600">{paymentStats.unpaid}</div>
+                    <div className="text-xs text-red-700">Unpaid</div>
+                </div>
+            </div>
+
+            {/* Totals */}
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl p-4 text-white">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <div className="text-sm text-green-100">Total Collected</div>
+                        <div className="text-2xl font-bold">${paymentStats.totalPaid.toFixed(2)}</div>
+                    </div>
+                    {paymentStats.totalOwed > 0 && (
+                        <div className="text-right">
+                            <div className="text-sm text-green-100">Outstanding</div>
+                            <div className="text-xl font-semibold">${(paymentStats.totalOwed - paymentStats.totalPaid).toFixed(2)}</div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Filter */}
+            <div className="flex items-center gap-2">
+                <span className="text-sm text-slate-500">Show:</span>
+                {['all', 'paid', 'partial', 'unpaid'].map(f => (
+                    <button
+                        key={f}
+                        onClick={() => setPaymentFilter(f)}
+                        className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                            paymentFilter === f ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                    >
+                        {f.charAt(0).toUpperCase() + f.slice(1)}
+                    </button>
+                ))}
+            </div>
+
+            {/* Player List */}
+            <div className="bg-white border rounded-lg divide-y">
+                {playersLoading ? (
+                    <div className="p-8 text-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div></div>
+                ) : filteredPlayers.length === 0 ? (
+                    <div className="p-6 text-center text-slate-500">No players match filter</div>
+                ) : (
+                    filteredPlayers.map(player => (
+                        <div key={player.id} className="p-4 flex items-center justify-between hover:bg-slate-50">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-200">
+                                    {player.photoUrl ? (
+                                        <img src={getFullImageUrl(player.photoUrl)} alt="" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-slate-500 font-bold">
+                                            {player.name?.charAt(0)}
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <div className="font-medium text-slate-800">{player.name}</div>
+                                    <div className="text-xs text-slate-500">
+                                        {player.amountPaid > 0 && `$${player.amountPaid} paid`}
+                                        {player.amountOwed > 0 && ` / $${player.amountOwed} owed`}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                {getPaymentBadge(player.paymentStatus)}
+                                <button
+                                    onClick={() => { setSelectedPlayer(player); setShowPaymentModal(true); }}
+                                    className="px-3 py-1.5 text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-medium"
+                                >
+                                    Update
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {/* Quick Actions */}
+            <div className="flex gap-2">
+                <button
+                    onClick={() => {
+                        const unpaidEmails = players.filter(p => (!p.paymentStatus || p.paymentStatus === 'unpaid') && p.email).map(p => p.email).join(', ');
+                        navigator.clipboard.writeText(unpaidEmails);
+                        setMessage('✅ Unpaid player emails copied!');
+                        setTimeout(() => setMessage(''), 3000);
+                    }}
+                    className="px-3 py-2 text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg"
+                >
+                    📋 Copy Unpaid Emails
+                </button>
+                <button
+                    onClick={() => {
+                        const csvContent = "Name,Email,Status,Paid,Owed,Notes\n" + 
+                            players.map(p => `"${p.name}","${p.email || ''}","${p.paymentStatus || 'unpaid'}","${p.amountPaid || 0}","${p.amountOwed || 0}","${p.paymentNotes || ''}"`).join("\n");
+                        const blob = new Blob([csvContent], { type: 'text/csv' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${team.name}_payments.csv`;
+                        a.click();
+                        setMessage('✅ Payment report exported!');
+                        setTimeout(() => setMessage(''), 3000);
+                    }}
+                    className="px-3 py-2 text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg"
+                >
+                    📥 Export CSV
+                </button>
+            </div>
+        </div>
+    );
+
+    // Render Payment Links Sub-Tab
+    const renderPaymentLinksTab = () => (
+        <div className="space-y-6">
+            <div>
+                <h3 className="text-xl font-bold text-slate-800">Payment Links</h3>
+                <p className="text-slate-600">Set up payment methods for your team. Players will see these on the team page.</p>
+            </div>
+
+            <div className="bg-white border rounded-lg p-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">💜 Venmo</label>
+                        <input
+                            type="text"
+                            value={paymentLinks.venmo}
+                            onChange={(e) => setPaymentLinks({...paymentLinks, venmo: e.target.value})}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                            placeholder="@username or link"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">💙 PayPal</label>
+                        <input
+                            type="text"
+                            value={paymentLinks.paypal}
+                            onChange={(e) => setPaymentLinks({...paymentLinks, paypal: e.target.value})}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                            placeholder="paypal.me/username or email"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">💚 Cash App</label>
+                        <input
+                            type="text"
+                            value={paymentLinks.cashapp}
+                            onChange={(e) => setPaymentLinks({...paymentLinks, cashapp: e.target.value})}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                            placeholder="$cashtag"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">🏦 Zelle</label>
+                        <input
+                            type="text"
+                            value={paymentLinks.zelle}
+                            onChange={(e) => setPaymentLinks({...paymentLinks, zelle: e.target.value})}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                            placeholder="Email or phone for Zelle"
+                        />
+                    </div>
+                </div>
+
+                <div className="border-t pt-4">
+                    <h4 className="font-medium text-slate-700 mb-3">Custom Payment Link</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm text-slate-600 mb-1">Label</label>
+                            <input
+                                type="text"
+                                value={paymentLinks.customPaymentLabel}
+                                onChange={(e) => setPaymentLinks({...paymentLinks, customPaymentLabel: e.target.value})}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                placeholder="Stripe, Square, etc."
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm text-slate-600 mb-1">URL</label>
+                            <input
+                                type="url"
+                                value={paymentLinks.customPaymentUrl}
+                                onChange={(e) => setPaymentLinks({...paymentLinks, customPaymentUrl: e.target.value})}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                placeholder="https://..."
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="pt-4">
+                    <button
+                        onClick={handleSavePaymentLinks}
+                        disabled={saving}
+                        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                    >
+                        {saving ? 'Saving...' : 'Save Payment Links'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
     return (
         <div className="space-y-6">
             {/* Sub-Tab Navigation */}
-            <div className="flex border-b border-slate-200">
+            <div className="flex border-b border-slate-200 overflow-x-auto">
                 <button
                     onClick={() => setActiveSubTab('transactions')}
-                    className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                    className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
                         activeSubTab === 'transactions'
                             ? 'border-blue-600 text-blue-600'
                             : 'border-transparent text-slate-600 hover:text-slate-800'
@@ -554,13 +785,33 @@ const TeamFinanceTab = ({ team, currentUser }) => {
                 </button>
                 <button
                     onClick={() => setActiveSubTab('fees')}
-                    className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                    className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
                         activeSubTab === 'fees'
                             ? 'border-blue-600 text-blue-600'
                             : 'border-transparent text-slate-600 hover:text-slate-800'
                     }`}
                 >
-                    💰 Fees & Payments
+                    💰 Fees
+                </button>
+                <button
+                    onClick={() => setActiveSubTab('player-payments')}
+                    className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        activeSubTab === 'player-payments'
+                            ? 'border-blue-600 text-blue-600'
+                            : 'border-transparent text-slate-600 hover:text-slate-800'
+                    }`}
+                >
+                    👥 Player Payments
+                </button>
+                <button
+                    onClick={() => setActiveSubTab('payment-links')}
+                    className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                        activeSubTab === 'payment-links'
+                            ? 'border-blue-600 text-blue-600'
+                            : 'border-transparent text-slate-600 hover:text-slate-800'
+                    }`}
+                >
+                    🔗 Payment Links
                 </button>
             </div>
 
@@ -572,7 +823,10 @@ const TeamFinanceTab = ({ team, currentUser }) => {
             )}
 
             {/* Render active sub-tab */}
-            {activeSubTab === 'fees' ? renderFeesTab() : (
+            {activeSubTab === 'fees' && renderFeesTab()}
+            {activeSubTab === 'player-payments' && renderPlayerPaymentsTab()}
+            {activeSubTab === 'payment-links' && renderPaymentLinksTab()}
+            {activeSubTab === 'transactions' && (
             <>
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
