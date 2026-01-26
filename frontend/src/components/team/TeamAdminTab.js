@@ -4,7 +4,7 @@ import { getSportConfig } from '../../config/sportsConfig';
 
 /**
  * TeamAdminTab - Comprehensive team administration for coaches/admins
- * Sections: Players, Payments, Availability
+ * Sections: Players, Availability
  */
 const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' }) => {
     const [activeSection, setActiveSection] = useState('players');
@@ -19,11 +19,7 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
     const [editingPlayer, setEditingPlayer] = useState(null);
     const [availableUsers, setAvailableUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    
-    // Payment state
-    const [showPaymentModal, setShowPaymentModal] = useState(false);
-    const [selectedPlayer, setSelectedPlayer] = useState(null);
-    const [paymentFilter, setPaymentFilter] = useState('all');
+    const [uploadingPhoto, setUploadingPhoto] = useState(false);
     
     // Availability state
     const [availabilityFilter, setAvailabilityFilter] = useState('all');
@@ -33,7 +29,6 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
     
     const sections = [
         { id: 'players', label: 'Manage Players', icon: '👥' },
-        { id: 'payments', label: 'Payment Tracking', icon: '💳' },
         { id: 'availability', label: 'Availability', icon: '📋' }
     ];
 
@@ -58,7 +53,8 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
         try {
             const response = await fetch(`${backendUrl}/api/users`);
             if (response.ok) {
-                const allUsers = await response.json();
+                const data = await response.json();
+                const allUsers = data.users || data || [];
                 const teamPlayerIds = players.map(p => p.id);
                 const available = allUsers.filter(u => !teamPlayerIds.includes(u.id));
                 setAvailableUsers(available);
@@ -132,6 +128,29 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
         }
     };
 
+    // Handle photo upload
+    const handlePhotoUpload = async (file) => {
+        if (!file) return null;
+        setUploadingPhoto(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const response = await fetch(`${backendUrl}/api/upload/image`, {
+                method: 'POST',
+                body: formData
+            });
+            if (response.ok) {
+                const data = await response.json();
+                return data.url || data.filename;
+            }
+        } catch (error) {
+            console.error('Photo upload error:', error);
+        } finally {
+            setUploadingPhoto(false);
+        }
+        return null;
+    };
+
     // Update player details
     const handleUpdatePlayer = async (playerId, updateData) => {
         setSaving(true);
@@ -152,32 +171,6 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
             }
         } catch (error) {
             setMessage('❌ Error updating player');
-        } finally {
-            setSaving(false);
-            setTimeout(() => setMessage(''), 3000);
-        }
-    };
-
-    // Update player payment
-    const updatePlayerPayment = async (playerId, paymentData) => {
-        setSaving(true);
-        try {
-            const response = await fetch(`${backendUrl}/api/team/${team.id}/player/${playerId}/payment`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(paymentData)
-            });
-            
-            if (response.ok) {
-                setMessage('✅ Payment updated!');
-                fetchPlayers();
-                setShowPaymentModal(false);
-                setSelectedPlayer(null);
-            } else {
-                setMessage('❌ Failed to update payment');
-            }
-        } catch (error) {
-            setMessage('❌ Error updating payment');
         } finally {
             setSaving(false);
             setTimeout(() => setMessage(''), 3000);
@@ -208,15 +201,7 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
         }
     };
 
-    // Calculate stats
-    const paymentStats = {
-        total: players.length,
-        paid: players.filter(p => p.paymentStatus === 'paid').length,
-        partial: players.filter(p => p.paymentStatus === 'partial').length,
-        unpaid: players.filter(p => !p.paymentStatus || p.paymentStatus === 'unpaid').length,
-        totalPaid: players.reduce((sum, p) => sum + (p.amountPaid || 0), 0)
-    };
-
+    // Calculate availability stats
     const availabilityStats = {
         active: players.filter(p => !p.availability || p.availability === 'active').length,
         injured: players.filter(p => p.availability === 'injured').length,
@@ -227,9 +212,6 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
     // Filter players
     const getFilteredPlayers = () => {
         let filtered = [...players];
-        if (activeSection === 'payments' && paymentFilter !== 'all') {
-            filtered = filtered.filter(p => (p.paymentStatus || 'unpaid') === paymentFilter);
-        }
         if (activeSection === 'availability' && availabilityFilter !== 'all') {
             filtered = filtered.filter(p => (p.availability || 'active') === availabilityFilter);
         }
@@ -243,15 +225,6 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
     );
 
     // Badge helpers
-    const getPaymentBadge = (status) => {
-        const badges = {
-            paid: <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">Paid</span>,
-            partial: <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">Partial</span>,
-            unpaid: <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs font-medium">Unpaid</span>
-        };
-        return badges[status] || badges.unpaid;
-    };
-
     const getAvailabilityBadge = (availability) => {
         const badges = {
             active: <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">Active</span>,
@@ -260,6 +233,33 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
             inactive: <span className="px-2 py-0.5 bg-slate-200 text-slate-600 rounded-full text-xs font-medium">Inactive</span>
         };
         return badges[availability] || badges.active;
+    };
+
+    // Open edit modal with full player data
+    const openEditModal = (player) => {
+        setEditingPlayer({
+            ...player,
+            jerseyNumber: player.jerseyNumber || player.playerNumber || '',
+            position: typeof player.position === 'object' ? player.position?.name : player.position || '',
+            jerseySize: player.jerseySize || '',
+            funFacts: player.funFacts || '',
+            lacrosseHistory: {
+                highSchool: { teamName: player.lacrosseHistory?.highSchool?.teamName || '', graduationYear: player.lacrosseHistory?.highSchool?.graduationYear || '' },
+                college: { teamName: player.lacrosseHistory?.college?.teamName || '', graduationYear: player.lacrosseHistory?.college?.graduationYear || '' },
+                postGrad: player.lacrosseHistory?.postGrad || []
+            },
+            socialMedia: {
+                instagram: player.socialMedia?.instagram || '',
+                twitter: player.socialMedia?.twitter || '',
+                tiktok: player.socialMedia?.tiktok || '',
+                facebook: player.socialMedia?.facebook || '',
+                linkedin: player.socialMedia?.linkedin || ''
+            },
+            emergencyContactName: player.emergencyContactName || player.emergencyContact?.name || '',
+            emergencyContactPhone: player.emergencyContactPhone || player.emergencyContact?.phone || '',
+            emergencyContactRelationship: player.emergencyContactRelationship || player.emergencyContact?.relationship || ''
+        });
+        setShowEditModal(true);
     };
 
     return (
@@ -273,14 +273,11 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                 
                 {/* Quick Stats */}
                 <div className="flex gap-3 text-sm">
-                    <div className="px-3 py-1.5 bg-green-50 text-green-700 rounded-lg">
-                        <span className="font-bold">{paymentStats.paid}</span> paid
-                    </div>
-                    <div className="px-3 py-1.5 bg-red-50 text-red-700 rounded-lg">
-                        <span className="font-bold">{paymentStats.unpaid}</span> unpaid
-                    </div>
                     <div className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg">
                         <span className="font-bold">{availabilityStats.active}</span> active
+                    </div>
+                    <div className="px-3 py-1.5 bg-orange-50 text-orange-700 rounded-lg">
+                        <span className="font-bold">{availabilityStats.injured}</span> injured
                     </div>
                 </div>
             </div>
@@ -346,7 +343,7 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                                     <tr>
                                         <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase">Player</th>
                                         <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase hidden sm:table-cell">Position</th>
-                                        <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase hidden md:table-cell">Email</th>
+                                        <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase hidden md:table-cell">Contact</th>
                                         <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase">Status</th>
                                         <th className="text-right px-4 py-3 text-xs font-semibold text-slate-600 uppercase">Actions</th>
                                     </tr>
@@ -367,25 +364,24 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                                                     </div>
                                                     <div>
                                                         <div className="font-medium text-slate-800">{player.name}</div>
-                                                        <div className="text-xs text-slate-500">#{player.jerseyNumber || '?'}</div>
+                                                        <div className="text-xs text-slate-500">#{player.jerseyNumber || player.playerNumber || '?'}</div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3 text-sm text-slate-600 hidden sm:table-cell">{typeof player.position === 'object' ? player.position?.name || '-' : player.position || '-'}</td>
-                                            <td className="px-4 py-3 text-sm text-slate-600 hidden md:table-cell">{player.email || '-'}</td>
+                                            <td className="px-4 py-3 text-sm text-slate-600 hidden sm:table-cell">
+                                                {typeof player.position === 'object' ? player.position?.name || '-' : player.position || '-'}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-slate-600 hidden md:table-cell">
+                                                <div>{player.email || '-'}</div>
+                                                {player.phone && <div className="text-xs text-slate-400">{player.phone}</div>}
+                                            </td>
                                             <td className="px-4 py-3">
-                                                <div className="flex flex-col gap-1">
-                                                    {getAvailabilityBadge(player.availability)}
-                                                    {getPaymentBadge(player.paymentStatus)}
-                                                </div>
+                                                {getAvailabilityBadge(player.availability)}
                                             </td>
                                             <td className="px-4 py-3">
                                                 <div className="flex justify-end gap-2">
                                                     <button
-                                                        onClick={() => {
-                                                            setEditingPlayer(player);
-                                                            setShowEditModal(true);
-                                                        }}
+                                                        onClick={() => openEditModal(player)}
                                                         className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
                                                         title="Edit"
                                                     >
@@ -409,121 +405,6 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                                 </tbody>
                             </table>
                         )}
-                    </div>
-                </div>
-            )}
-
-            {/* PAYMENTS SECTION */}
-            {activeSection === 'payments' && (
-                <div className="space-y-4">
-                    {/* Payment Summary */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div className="bg-slate-50 rounded-lg p-4 text-center">
-                            <div className="text-2xl font-bold text-slate-800">{paymentStats.total}</div>
-                            <div className="text-xs text-slate-500">Total Players</div>
-                        </div>
-                        <div className="bg-green-50 rounded-lg p-4 text-center">
-                            <div className="text-2xl font-bold text-green-600">{paymentStats.paid}</div>
-                            <div className="text-xs text-green-700">Paid</div>
-                        </div>
-                        <div className="bg-yellow-50 rounded-lg p-4 text-center">
-                            <div className="text-2xl font-bold text-yellow-600">{paymentStats.partial}</div>
-                            <div className="text-xs text-yellow-700">Partial</div>
-                        </div>
-                        <div className="bg-red-50 rounded-lg p-4 text-center">
-                            <div className="text-2xl font-bold text-red-600">{paymentStats.unpaid}</div>
-                            <div className="text-xs text-red-700">Unpaid</div>
-                        </div>
-                    </div>
-
-                    {/* Filter */}
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-slate-500">Show:</span>
-                        {['all', 'paid', 'partial', 'unpaid'].map(f => (
-                            <button
-                                key={f}
-                                onClick={() => setPaymentFilter(f)}
-                                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
-                                    paymentFilter === f ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                                }`}
-                            >
-                                {f.charAt(0).toUpperCase() + f.slice(1)}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Payment List */}
-                    <div className="bg-white border rounded-lg divide-y">
-                        {filteredPlayers.length === 0 ? (
-                            <div className="p-6 text-center text-slate-500">No players match filter</div>
-                        ) : (
-                            filteredPlayers.map(player => (
-                                <div key={player.id} className="p-4 flex items-center justify-between hover:bg-slate-50">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-200">
-                                            {player.photoUrl ? (
-                                                <img src={getFullImageUrl(player.photoUrl)} alt="" className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-slate-500 font-bold">
-                                                    {player.name?.charAt(0)}
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <div className="font-medium text-slate-800">{player.name}</div>
-                                            <div className="text-xs text-slate-500">
-                                                {player.amountPaid > 0 && `$${player.amountPaid} paid`}
-                                                {player.amountOwed > 0 && ` / $${player.amountOwed} owed`}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        {getPaymentBadge(player.paymentStatus)}
-                                        <button
-                                            onClick={() => {
-                                                setSelectedPlayer(player);
-                                                setShowPaymentModal(true);
-                                            }}
-                                            className="px-3 py-1.5 text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-medium"
-                                        >
-                                            Update
-                                        </button>
-                                    </div>
-                                </div>
-                            ))
-                        )}
-                    </div>
-
-                    {/* Quick Actions */}
-                    <div className="flex gap-2 pt-2">
-                        <button
-                            onClick={() => {
-                                const unpaidEmails = players.filter(p => (!p.paymentStatus || p.paymentStatus === 'unpaid') && p.email).map(p => p.email).join(', ');
-                                navigator.clipboard.writeText(unpaidEmails);
-                                setMessage('✅ Unpaid player emails copied!');
-                                setTimeout(() => setMessage(''), 3000);
-                            }}
-                            className="px-3 py-2 text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg"
-                        >
-                            📋 Copy Unpaid Emails
-                        </button>
-                        <button
-                            onClick={() => {
-                                const csvContent = "Name,Email,Status,Paid,Owed,Notes\n" + 
-                                    players.map(p => `"${p.name}","${p.email || ''}","${p.paymentStatus || 'unpaid'}","${p.amountPaid || 0}","${p.amountOwed || 0}","${p.paymentNotes || ''}"`).join("\n");
-                                const blob = new Blob([csvContent], { type: 'text/csv' });
-                                const url = URL.createObjectURL(blob);
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = `${team.name}_payments.csv`;
-                                a.click();
-                                setMessage('✅ Payment report exported!');
-                                setTimeout(() => setMessage(''), 3000);
-                            }}
-                            className="px-3 py-2 text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg"
-                        >
-                            📥 Export CSV
-                        </button>
                     </div>
                 </div>
             )}
@@ -586,7 +467,7 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                                         </div>
                                         <div>
                                             <div className="font-medium text-slate-800">{player.name}</div>
-                                            <div className="text-xs text-slate-500">#{player.jerseyNumber || '?'} • {typeof player.position === 'object' ? player.position?.name || 'Player' : player.position || 'Player'}</div>
+                                            <div className="text-xs text-slate-500">#{player.jerseyNumber || player.playerNumber || '?'} • {typeof player.position === 'object' ? player.position?.name : player.position || 'Player'}</div>
                                         </div>
                                     </div>
                                     <select
@@ -649,41 +530,73 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                 </div>
             )}
 
-            {/* EDIT PLAYER MODAL */}
+            {/* EDIT PLAYER MODAL - Full Fields */}
             {showEditModal && editingPlayer && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowEditModal(false)}>
-                    <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                        <div className="p-4 border-b flex justify-between items-center sticky top-0 bg-white">
+                    <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                        <div className="p-4 border-b flex justify-between items-center sticky top-0 bg-white z-10">
                             <h3 className="font-bold text-lg">Edit Player</h3>
-                            <button onClick={() => setShowEditModal(false)} className="text-slate-400 hover:text-slate-600">✕</button>
+                            <button onClick={() => setShowEditModal(false)} className="text-slate-400 hover:text-slate-600 text-xl">✕</button>
                         </div>
-                        <div className="p-4 space-y-4">
+                        <div className="p-4 space-y-6">
+                            {/* Photo & Basic Info */}
+                            <div className="flex gap-4">
+                                <div className="flex-shrink-0">
+                                    <div className="w-24 h-24 rounded-full overflow-hidden bg-slate-200 mb-2">
+                                        {editingPlayer.photoUrl ? (
+                                            <img src={getFullImageUrl(editingPlayer.photoUrl)} alt="" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-slate-400 text-3xl font-bold">
+                                                {editingPlayer.name?.charAt(0)}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <label className="block">
+                                        <span className="text-xs text-blue-600 cursor-pointer hover:underline">
+                                            {uploadingPhoto ? 'Uploading...' : 'Change Photo'}
+                                        </span>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={async (e) => {
+                                                const url = await handlePhotoUpload(e.target.files[0]);
+                                                if (url) setEditingPlayer({...editingPlayer, photoUrl: url});
+                                            }}
+                                        />
+                                    </label>
+                                </div>
+                                <div className="flex-1 grid grid-cols-2 gap-3">
+                                    <div className="col-span-2">
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                                        <input type="text" value={editingPlayer.name || ''} onChange={(e) => setEditingPlayer({...editingPlayer, name: e.target.value})} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Jersey #</label>
+                                        <input type="text" value={editingPlayer.jerseyNumber || ''} onChange={(e) => setEditingPlayer({...editingPlayer, jerseyNumber: e.target.value})} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Jersey Size</label>
+                                        <select value={editingPlayer.jerseySize || ''} onChange={(e) => setEditingPlayer({...editingPlayer, jerseySize: e.target.value})} className="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                                            <option value="">Select Size</option>
+                                            <option value="YS">Youth Small</option>
+                                            <option value="YM">Youth Medium</option>
+                                            <option value="YL">Youth Large</option>
+                                            <option value="S">Adult Small</option>
+                                            <option value="M">Adult Medium</option>
+                                            <option value="L">Adult Large</option>
+                                            <option value="XL">Adult XL</option>
+                                            <option value="2XL">Adult 2XL</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Position & Contact */}
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
-                                    <input
-                                        type="text"
-                                        value={editingPlayer.name || ''}
-                                        onChange={(e) => setEditingPlayer({...editingPlayer, name: e.target.value})}
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Jersey #</label>
-                                    <input
-                                        type="text"
-                                        value={editingPlayer.jerseyNumber || ''}
-                                        onChange={(e) => setEditingPlayer({...editingPlayer, jerseyNumber: e.target.value})}
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                                    />
-                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Position</label>
-                                    <select
-                                        value={typeof editingPlayer.position === 'object' ? editingPlayer.position?.name || '' : editingPlayer.position || ''}
-                                        onChange={(e) => setEditingPlayer({...editingPlayer, position: e.target.value})}
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                                    >
+                                    <select value={editingPlayer.position || ''} onChange={(e) => setEditingPlayer({...editingPlayer, position: e.target.value})} className="w-full px-3 py-2 border border-slate-300 rounded-lg">
                                         <option value="">Select Position</option>
                                         {sportConfig.positions.map(pos => (
                                             <option key={pos.id} value={pos.name}>{pos.name}</option>
@@ -692,53 +605,107 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                                    <input
-                                        type="email"
-                                        value={editingPlayer.email || ''}
-                                        onChange={(e) => setEditingPlayer({...editingPlayer, email: e.target.value})}
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                                    />
+                                    <input type="email" value={editingPlayer.email || ''} onChange={(e) => setEditingPlayer({...editingPlayer, email: e.target.value})} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
-                                    <input
-                                        type="tel"
-                                        value={editingPlayer.phone || ''}
-                                        onChange={(e) => setEditingPlayer({...editingPlayer, phone: e.target.value})}
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                                    />
+                                    <input type="tel" value={editingPlayer.phone || ''} onChange={(e) => setEditingPlayer({...editingPlayer, phone: e.target.value})} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Availability</label>
+                                    <select value={editingPlayer.availability || 'active'} onChange={(e) => setEditingPlayer({...editingPlayer, availability: e.target.value})} className="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                                        <option value="active">Active</option>
+                                        <option value="injured">Injured</option>
+                                        <option value="leave">On Leave</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
                                 </div>
                             </div>
-                            
+
+                            {/* Emergency Contact */}
                             <div className="border-t pt-4">
-                                <h4 className="font-medium text-slate-700 mb-3">Emergency Contact</h4>
-                                <div className="grid grid-cols-2 gap-4">
+                                <h4 className="font-medium text-slate-800 mb-3">🚨 Emergency Contact</h4>
+                                <div className="grid grid-cols-3 gap-3">
                                     <div>
                                         <label className="block text-sm text-slate-600 mb-1">Name</label>
-                                        <input
-                                            type="text"
-                                            value={editingPlayer.emergencyContactName || ''}
-                                            onChange={(e) => setEditingPlayer({...editingPlayer, emergencyContactName: e.target.value})}
-                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                                        />
+                                        <input type="text" value={editingPlayer.emergencyContactName || ''} onChange={(e) => setEditingPlayer({...editingPlayer, emergencyContactName: e.target.value})} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                                     </div>
                                     <div>
                                         <label className="block text-sm text-slate-600 mb-1">Phone</label>
-                                        <input
-                                            type="tel"
-                                            value={editingPlayer.emergencyContactPhone || ''}
-                                            onChange={(e) => setEditingPlayer({...editingPlayer, emergencyContactPhone: e.target.value})}
-                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                                        />
+                                        <input type="tel" value={editingPlayer.emergencyContactPhone || ''} onChange={(e) => setEditingPlayer({...editingPlayer, emergencyContactPhone: e.target.value})} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm text-slate-600 mb-1">Relationship</label>
+                                        <input type="text" value={editingPlayer.emergencyContactRelationship || ''} onChange={(e) => setEditingPlayer({...editingPlayer, emergencyContactRelationship: e.target.value})} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder="Parent, Spouse, etc." />
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex gap-3 pt-4 border-t">
-                                <button
-                                    onClick={() => setShowEditModal(false)}
-                                    className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50"
-                                >
+                            {/* Lacrosse History */}
+                            <div className="border-t pt-4">
+                                <h4 className="font-medium text-slate-800 mb-3">🥍 Lacrosse History</h4>
+                                <div className="space-y-3">
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="block text-sm text-slate-600 mb-1">High School Team</label>
+                                            <input type="text" value={editingPlayer.lacrosseHistory?.highSchool?.teamName || ''} onChange={(e) => setEditingPlayer({...editingPlayer, lacrosseHistory: {...editingPlayer.lacrosseHistory, highSchool: {...editingPlayer.lacrosseHistory?.highSchool, teamName: e.target.value}}})} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm text-slate-600 mb-1">HS Grad Year</label>
+                                            <input type="text" value={editingPlayer.lacrosseHistory?.highSchool?.graduationYear || ''} onChange={(e) => setEditingPlayer({...editingPlayer, lacrosseHistory: {...editingPlayer.lacrosseHistory, highSchool: {...editingPlayer.lacrosseHistory?.highSchool, graduationYear: e.target.value}}})} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder="2020" />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="block text-sm text-slate-600 mb-1">College Team</label>
+                                            <input type="text" value={editingPlayer.lacrosseHistory?.college?.teamName || ''} onChange={(e) => setEditingPlayer({...editingPlayer, lacrosseHistory: {...editingPlayer.lacrosseHistory, college: {...editingPlayer.lacrosseHistory?.college, teamName: e.target.value}}})} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm text-slate-600 mb-1">College Grad Year</label>
+                                            <input type="text" value={editingPlayer.lacrosseHistory?.college?.graduationYear || ''} onChange={(e) => setEditingPlayer({...editingPlayer, lacrosseHistory: {...editingPlayer.lacrosseHistory, college: {...editingPlayer.lacrosseHistory?.college, graduationYear: e.target.value}}})} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder="2024" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Social Media */}
+                            <div className="border-t pt-4">
+                                <h4 className="font-medium text-slate-800 mb-3">📱 Social Media</h4>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-sm text-slate-600 mb-1">Instagram</label>
+                                        <input type="text" value={editingPlayer.socialMedia?.instagram || ''} onChange={(e) => setEditingPlayer({...editingPlayer, socialMedia: {...editingPlayer.socialMedia, instagram: e.target.value}})} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder="@username" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm text-slate-600 mb-1">Twitter/X</label>
+                                        <input type="text" value={editingPlayer.socialMedia?.twitter || ''} onChange={(e) => setEditingPlayer({...editingPlayer, socialMedia: {...editingPlayer.socialMedia, twitter: e.target.value}})} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder="@username" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm text-slate-600 mb-1">TikTok</label>
+                                        <input type="text" value={editingPlayer.socialMedia?.tiktok || ''} onChange={(e) => setEditingPlayer({...editingPlayer, socialMedia: {...editingPlayer.socialMedia, tiktok: e.target.value}})} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder="@username" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm text-slate-600 mb-1">Facebook</label>
+                                        <input type="text" value={editingPlayer.socialMedia?.facebook || ''} onChange={(e) => setEditingPlayer({...editingPlayer, socialMedia: {...editingPlayer.socialMedia, facebook: e.target.value}})} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder="Profile URL" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Fun Facts */}
+                            <div className="border-t pt-4">
+                                <h4 className="font-medium text-slate-800 mb-3">🎉 Fun Facts</h4>
+                                <textarea
+                                    value={editingPlayer.funFacts || ''}
+                                    onChange={(e) => setEditingPlayer({...editingPlayer, funFacts: e.target.value})}
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                    rows={3}
+                                    placeholder="Hobbies, favorite teams, fun facts about the player..."
+                                />
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex gap-3 pt-4 border-t sticky bottom-0 bg-white">
+                                <button onClick={() => setShowEditModal(false)} className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50">
                                     Cancel
                                 </button>
                                 <button
@@ -747,9 +714,16 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                                         email: editingPlayer.email,
                                         phone: editingPlayer.phone,
                                         jerseyNumber: editingPlayer.jerseyNumber,
+                                        jerseySize: editingPlayer.jerseySize,
                                         position: editingPlayer.position,
+                                        availability: editingPlayer.availability,
+                                        photoUrl: editingPlayer.photoUrl,
                                         emergencyContactName: editingPlayer.emergencyContactName,
-                                        emergencyContactPhone: editingPlayer.emergencyContactPhone
+                                        emergencyContactPhone: editingPlayer.emergencyContactPhone,
+                                        emergencyContactRelationship: editingPlayer.emergencyContactRelationship,
+                                        lacrosseHistory: editingPlayer.lacrosseHistory,
+                                        socialMedia: editingPlayer.socialMedia,
+                                        funFacts: editingPlayer.funFacts
                                     })}
                                     disabled={saving}
                                     className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
@@ -761,101 +735,6 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                     </div>
                 </div>
             )}
-
-            {/* PAYMENT MODAL */}
-            {showPaymentModal && selectedPlayer && (
-                <PaymentModal
-                    player={selectedPlayer}
-                    onClose={() => { setShowPaymentModal(false); setSelectedPlayer(null); }}
-                    onSave={updatePlayerPayment}
-                    saving={saving}
-                />
-            )}
-        </div>
-    );
-};
-
-// Payment Modal Component
-const PaymentModal = ({ player, onClose, onSave, saving }) => {
-    const [paymentStatus, setPaymentStatus] = useState(player.paymentStatus || 'unpaid');
-    const [amountPaid, setAmountPaid] = useState(player.amountPaid || 0);
-    const [amountOwed, setAmountOwed] = useState(player.amountOwed || 0);
-    const [paymentNotes, setPaymentNotes] = useState(player.paymentNotes || '');
-    const [paymentDate, setPaymentDate] = useState(player.lastPaymentDate || '');
-
-    return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-            <div className="bg-white rounded-xl shadow-xl max-w-md w-full" onClick={e => e.stopPropagation()}>
-                <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="font-bold">Payment - {player.name}</h3>
-                    <button onClick={onClose} className="text-slate-400 hover:text-slate-600">✕</button>
-                </div>
-                <div className="p-4 space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
-                        <select
-                            value={paymentStatus}
-                            onChange={(e) => setPaymentStatus(e.target.value)}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                        >
-                            <option value="unpaid">Unpaid</option>
-                            <option value="partial">Partial</option>
-                            <option value="paid">Paid</option>
-                        </select>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Amount Owed ($)</label>
-                            <input
-                                type="number"
-                                value={amountOwed}
-                                onChange={(e) => setAmountOwed(e.target.value)}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Amount Paid ($)</label>
-                            <input
-                                type="number"
-                                value={amountPaid}
-                                onChange={(e) => setAmountPaid(e.target.value)}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                            />
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Last Payment Date</label>
-                        <input
-                            type="date"
-                            value={paymentDate}
-                            onChange={(e) => setPaymentDate(e.target.value)}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Notes</label>
-                        <textarea
-                            value={paymentNotes}
-                            onChange={(e) => setPaymentNotes(e.target.value)}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
-                            rows={2}
-                            placeholder="Venmo, check #, etc."
-                        />
-                    </div>
-                    <div className="flex gap-3 pt-2">
-                        <button onClick={onClose} className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50">
-                            Cancel
-                        </button>
-                        <button
-                            onClick={() => onSave(player.id, { paymentStatus, amountPaid: parseFloat(amountPaid) || 0, amountOwed: parseFloat(amountOwed) || 0, paymentNotes, lastPaymentDate: paymentDate })}
-                            disabled={saving}
-                            className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-                        >
-                            {saving ? 'Saving...' : 'Save'}
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 };
