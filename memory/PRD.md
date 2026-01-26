@@ -200,6 +200,12 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 ## What's Been Implemented
 
 ### January 26, 2025 (Current Session)
+- **Bug Fix: Team Colors Not Saving (P1):**
+  - **Root Cause**: Team settings (colors, styles, social media) were saved to `league_data.teams` but dashboard-data read from `teams` collection - data was not synced
+  - **Fix**: Updated `PUT /api/league-data/teams/{team_id}` to also update the `teams` collection with style, socialMedia, and paymentLinks data
+  - **Fix**: Updated dashboard-data endpoint to use full `style` object from teams collection if available
+  - **Fix**: Updated image proxy endpoint to support local uploads (`/api/uploads/*`) for logo color extraction, not just Google Drive URLs
+
 - **Bug Fix: White Screen on Edit Player & Stats Tab (P0):**
   - **Root Cause 1 (Frontend)**: `sportConfig.positions` returns objects `{id, name, abbrev}` but TeamAdminTab.js was using them directly as strings in select options, causing React crash
   - **Fix**: Updated position select to use `pos.id` as key and `pos.name` as value/display. Added defensive handling for position display in player list.
