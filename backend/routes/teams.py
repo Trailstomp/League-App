@@ -193,7 +193,8 @@ async def update_team_player(team_id: str, player_id: str, data: Dict[str, Any])
         user_fields = [
             "name", "email", "phone", "photoUrl", 
             "graduationYear", "height", "weight", "school",
-            "emergencyContactName", "emergencyContactPhone"
+            "emergencyContactName", "emergencyContactPhone", "emergencyContactRelationship",
+            "jerseySize", "funFacts", "lacrosseHistory", "socialMedia"
         ]
         
         for field in user_fields:
