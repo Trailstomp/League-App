@@ -7744,11 +7744,15 @@ async def get_team_player_stats(team_id: str, season_id: Optional[str] = None):
         def process_game(team_data, result):
             # Process players
             for player in team_data.get("players", []):
-                pid = player["player_id"]
+                pid = player.get("player_id") or player.get("id")
+                if not pid:
+                    continue  # Skip players without ID
+                pname = player.get("player_name") or player.get("name") or "Unknown"
+                    
                 if pid not in player_stats:
                     player_stats[pid] = {
                         "player_id": pid,
-                        "player_name": player["player_name"],
+                        "player_name": pname,
                         "games_played": 0,
                         "wins": 0,
                         "losses": 0,
@@ -7773,11 +7777,15 @@ async def get_team_player_stats(team_id: str, season_id: Optional[str] = None):
             
             # Process goalies
             for goalie in team_data.get("goalies", []):
-                gid = goalie["player_id"]
+                gid = goalie.get("player_id") or goalie.get("id")
+                if not gid:
+                    continue  # Skip goalies without ID
+                gname = goalie.get("player_name") or goalie.get("name") or "Unknown"
+                
                 if gid not in goalie_stats:
                     goalie_stats[gid] = {
                         "player_id": gid,
-                        "player_name": goalie["player_name"],
+                        "player_name": gname,
                         "games_played": 0,
                         "wins": 0,
                         "losses": 0,
