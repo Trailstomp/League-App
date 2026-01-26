@@ -371,7 +371,7 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3 text-sm text-slate-600 hidden sm:table-cell">{player.position || '-'}</td>
+                                            <td className="px-4 py-3 text-sm text-slate-600 hidden sm:table-cell">{typeof player.position === 'object' ? player.position?.name || '-' : player.position || '-'}</td>
                                             <td className="px-4 py-3 text-sm text-slate-600 hidden md:table-cell">{player.email || '-'}</td>
                                             <td className="px-4 py-3">
                                                 <div className="flex flex-col gap-1">
