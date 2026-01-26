@@ -101,9 +101,90 @@ const TeamFinanceTab = ({ team, currentUser }) => {
         if (team?.id) {
             fetchTransactions();
             loadFees();
+            loadPlayers();
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [team?.id, filter]);
+
+    // Load Players for payment tracking
+    const loadPlayers = async () => {
+        try {
+            setPlayersLoading(true);
+            const response = await fetch(`${backendUrl}/api/team/${team.id}/players`);
+            if (response.ok) {
+                const data = await response.json();
+                setPlayers(data || []);
+            }
+        } catch (error) {
+            console.error('Error loading players:', error);
+        } finally {
+            setPlayersLoading(false);
+        }
+    };
+
+    // Update player payment
+    const updatePlayerPayment = async (playerId, paymentData) => {
+        setSaving(true);
+        try {
+            const response = await fetch(`${backendUrl}/api/team/${team.id}/player/${playerId}/payment`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(paymentData)
+            });
+            
+            if (response.ok) {
+                setMessage('✅ Payment updated!');
+                loadPlayers();
+                setShowPaymentModal(false);
+                setSelectedPlayer(null);
+            } else {
+                setMessage('❌ Failed to update payment');
+            }
+        } catch (error) {
+            setMessage('❌ Error updating payment');
+        } finally {
+            setSaving(false);
+            setTimeout(() => setMessage(''), 3000);
+        }
+    };
+
+    // Save payment links
+    const handleSavePaymentLinks = async () => {
+        setSaving(true);
+        try {
+            const response = await fetch(`${backendUrl}/api/league-data/teams/${team.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paymentLinks })
+            });
+            
+            if (response.ok) {
+                setMessage('✅ Payment links saved!');
+            } else {
+                setMessage('❌ Failed to save payment links');
+            }
+        } catch (error) {
+            setMessage('❌ Error saving payment links');
+        } finally {
+            setSaving(false);
+            setTimeout(() => setMessage(''), 3000);
+        }
+    };
+
+    // Payment stats
+    const paymentStats = {
+        total: players.length,
+        paid: players.filter(p => p.paymentStatus === 'paid').length,
+        partial: players.filter(p => p.paymentStatus === 'partial').length,
+        unpaid: players.filter(p => !p.paymentStatus || p.paymentStatus === 'unpaid').length,
+        totalPaid: players.reduce((sum, p) => sum + (p.amountPaid || 0), 0),
+        totalOwed: players.reduce((sum, p) => sum + (p.amountOwed || 0), 0)
+    };
+
+    // Filter players by payment status
+    const filteredPlayers = paymentFilter === 'all' 
+        ? players 
+        : players.filter(p => (p.paymentStatus || 'unpaid') === paymentFilter);
 
     // Load Fees
     const loadFees = async () => {
