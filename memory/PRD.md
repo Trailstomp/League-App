@@ -199,7 +199,14 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 
 ## What's Been Implemented
 
-### January 25, 2025 (Current Session)
+### January 26, 2025 (Current Session)
+- **Bug Fix: White Screen on Edit Player & Stats Tab (P0):**
+  - **Root Cause 1 (Frontend)**: `sportConfig.positions` returns objects `{id, name, abbrev}` but TeamAdminTab.js was using them directly as strings in select options, causing React crash
+  - **Fix**: Updated position select to use `pos.id` as key and `pos.name` as value/display. Added defensive handling for position display in player list.
+  - **Root Cause 2 (Backend)**: `/api/teams/{team_id}/player-stats` was crashing on missing `player_id` and `result` fields in game data
+  - **Fix**: Made API code defensive with `.get()` and null checks
+
+### January 25, 2025 (Previous Session)
 - **Team Admin Tab Reorganization (P1):**
   - Created new `TeamAdminTab.js` component with cleaner, table-based UI for player management
   - **3 Admin Sections:**
