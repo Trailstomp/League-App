@@ -67,7 +67,9 @@ async def get_team_players(team_id: str):
                 "weight": user.get("weight", ""),
                 "school": user.get("school", ""),
                 "emergencyContactName": user.get("emergencyContactName", ""),
-                "emergencyContactPhone": user.get("emergencyContactPhone", "")
+                "emergencyContactPhone": user.get("emergencyContactPhone", ""),
+                "emergencyContactRelationship": user.get("emergencyContactRelationship", ""),
+                "jerseySize": user.get("jerseySize", "")
             }
             # Get team-specific info from teamAssignments if available
             for assignment in user.get("teamAssignments", []):
