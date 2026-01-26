@@ -1105,6 +1105,74 @@ const TeamFinanceTab = ({ team, currentUser }) => {
             )}
             </>
             )}
+
+            {/* Payment Update Modal */}
+            {showPaymentModal && selectedPlayer && (
+                <PaymentModal
+                    player={selectedPlayer}
+                    onClose={() => { setShowPaymentModal(false); setSelectedPlayer(null); }}
+                    onSave={updatePlayerPayment}
+                    saving={saving}
+                />
+            )}
+        </div>
+    );
+};
+
+// Payment Modal Component
+const PaymentModal = ({ player, onClose, onSave, saving }) => {
+    const [paymentStatus, setPaymentStatus] = useState(player.paymentStatus || 'unpaid');
+    const [amountPaid, setAmountPaid] = useState(player.amountPaid || 0);
+    const [amountOwed, setAmountOwed] = useState(player.amountOwed || 0);
+    const [paymentNotes, setPaymentNotes] = useState(player.paymentNotes || '');
+    const [paymentDate, setPaymentDate] = useState(player.lastPaymentDate || '');
+
+    return (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+            <div className="bg-white rounded-xl shadow-xl max-w-md w-full" onClick={e => e.stopPropagation()}>
+                <div className="p-4 border-b flex justify-between items-center">
+                    <h3 className="font-bold">Payment - {player.name}</h3>
+                    <button onClick={onClose} className="text-slate-400 hover:text-slate-600">✕</button>
+                </div>
+                <div className="p-4 space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                        <select value={paymentStatus} onChange={(e) => setPaymentStatus(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                            <option value="unpaid">Unpaid</option>
+                            <option value="partial">Partial</option>
+                            <option value="paid">Paid</option>
+                        </select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Amount Owed ($)</label>
+                            <input type="number" value={amountOwed} onChange={(e) => setAmountOwed(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Amount Paid ($)</label>
+                            <input type="number" value={amountPaid} onChange={(e) => setAmountPaid(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Last Payment Date</label>
+                        <input type="date" value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Notes</label>
+                        <textarea value={paymentNotes} onChange={(e) => setPaymentNotes(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" rows={2} placeholder="Venmo, check #, etc." />
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                        <button onClick={onClose} className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50">Cancel</button>
+                        <button
+                            onClick={() => onSave(player.id, { paymentStatus, amountPaid: parseFloat(amountPaid) || 0, amountOwed: parseFloat(amountOwed) || 0, paymentNotes, lastPaymentDate: paymentDate })}
+                            disabled={saving}
+                            className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                        >
+                            {saving ? 'Saving...' : 'Save'}
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
