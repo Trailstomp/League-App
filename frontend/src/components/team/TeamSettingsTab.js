@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import YouTubeSettings from '../managers/YouTubeSettings';
 import ImageUploadCrop from '../ImageUploadCrop';
 import { extractThemeColors } from '../../utils/colorExtractor';
 import { fixGoogleDriveUrl } from '../../utils/imageUtils';
 
 /**
- * TeamSettingsTab - Team admin settings for YouTube, Social Media, and Appearance
+ * TeamSettingsTab - Team settings for Social Media (including YouTube) and Appearance
+ * Note: Payment Links moved to Finance tab
  */
 const TeamSettingsTab = ({ team, onTeamUpdate }) => {
-    const [activeSection, setActiveSection] = useState('youtube');
+    const [activeSection, setActiveSection] = useState('social');
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState('');
     const [extractingColors, setExtractingColors] = useState(false);
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
     
-    // Social Media State
+    // Social Media State (includes YouTube channel link)
     const [socialMedia, setSocialMedia] = useState({
         instagram: team.socialMedia?.instagram || '',
         twitter: team.socialMedia?.twitter || '',
@@ -39,51 +39,12 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
         pageBackgroundImage: team.style?.pageBackgroundImage || ''
     });
     
-    // Payment Links State
-    const [paymentLinks, setPaymentLinks] = useState({
-        venmo: team.paymentLinks?.venmo || '',
-        paypal: team.paymentLinks?.paypal || '',
-        zelle: team.paymentLinks?.zelle || '',
-        cashapp: team.paymentLinks?.cashapp || '',
-        stripe: team.paymentLinks?.stripe || '',
-        customPaymentUrl: team.paymentLinks?.customPaymentUrl || '',
-        customPaymentLabel: team.paymentLinks?.customPaymentLabel || ''
-    });
-    
     const sections = [
-        { id: 'youtube', label: 'YouTube Channel', icon: '📺' },
         { id: 'social', label: 'Social Media', icon: '📱' },
-        { id: 'payments', label: 'Payment Links', icon: '💳' },
         { id: 'appearance', label: 'Appearance', icon: '🎨' }
     ];
     
-    // Save payment links
-    const handleSavePaymentLinks = async () => {
-        setSaving(true);
-        setMessage('');
-        try {
-            const response = await fetch(`${backendUrl}/api/league-data/teams/${team.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ paymentLinks })
-            });
-            
-            if (response.ok) {
-                setMessage('✅ Payment links saved!');
-                if (onTeamUpdate) onTeamUpdate();
-            } else {
-                setMessage('❌ Failed to save settings');
-            }
-        } catch (error) {
-            console.error('Error saving payment links:', error);
-            setMessage('❌ Error saving settings');
-        } finally {
-            setSaving(false);
-            setTimeout(() => setMessage(''), 3000);
-        }
-    };
-    
-    // Save social media settings
+    // Save social media
     const handleSaveSocialMedia = async () => {
         setSaving(true);
         setMessage('');
@@ -95,21 +56,19 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
             });
             
             if (response.ok) {
-                setMessage('✅ Social media settings saved!');
-                if (onTeamUpdate) onTeamUpdate();
+                setMessage('✅ Social media links saved!');
             } else {
-                setMessage('❌ Failed to save settings');
+                setMessage('❌ Failed to save');
             }
         } catch (error) {
-            console.error('Error saving social media:', error);
             setMessage('❌ Error saving settings');
         } finally {
             setSaving(false);
-            setTimeout(() => setMessage(''), 3000);
+            setTimeout(() => setMessage(''), 4000);
         }
     };
     
-    // Save appearance settings
+    // Save appearance
     const handleSaveAppearance = async () => {
         setSaving(true);
         setMessage('');
@@ -122,24 +81,31 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
             
             if (response.ok) {
                 setMessage('✅ Appearance settings saved!');
-                if (onTeamUpdate) onTeamUpdate();
             } else {
-                setMessage('❌ Failed to save settings');
+                setMessage('❌ Failed to save');
             }
         } catch (error) {
-            console.error('Error saving appearance:', error);
             setMessage('❌ Error saving settings');
         } finally {
             setSaving(false);
-            setTimeout(() => setMessage(''), 3000);
+            setTimeout(() => setMessage(''), 4000);
         }
     };
     
-    // Extract colors from logo and apply to theme
+    // Handle logo upload
+    const handleLogoUpload = async (url) => {
+        setTeamStyle(prev => ({ ...prev, logoUrl: url }));
+    };
+    
+    // Handle banner upload
+    const handleBannerUpload = async (url) => {
+        setTeamStyle(prev => ({ ...prev, bannerUrl: url }));
+    };
+    
+    // Extract colors from logo
     const handleUseLogoColors = async () => {
         if (!teamStyle.logoUrl) {
             setMessage('❌ Please upload a logo first');
-            setTimeout(() => setMessage(''), 3000);
             return;
         }
         
@@ -147,58 +113,53 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
         setMessage('');
         
         try {
-            // Use the proxy endpoint for CORS-safe image loading
-            const proxyUrl = `${backendUrl}/api/proxy-image?url=${encodeURIComponent(fixGoogleDriveUrl(teamStyle.logoUrl))}`;
-            const colors = await extractThemeColors(proxyUrl);
+            let imageUrl = teamStyle.logoUrl;
             
-            if (colors) {
+            // If it's a relative URL, use the proxy
+            if (imageUrl.startsWith('/api/uploads') || imageUrl.startsWith('http://localhost')) {
+                imageUrl = `${backendUrl}/api/proxy-image?url=${encodeURIComponent(imageUrl)}`;
+            } else if (imageUrl.includes('drive.google.com') || imageUrl.includes('googleusercontent.com')) {
+                const fixedUrl = fixGoogleDriveUrl(imageUrl);
+                imageUrl = `${backendUrl}/api/proxy-image?url=${encodeURIComponent(fixedUrl)}`;
+            }
+            
+            const colors = await extractThemeColors(imageUrl);
+            
+            if (colors && colors.length > 0) {
                 setTeamStyle(prev => ({
                     ...prev,
-                    primaryColor: colors.primaryColor,
-                    accentColor: colors.accentColor,
-                    backgroundColor: colors.backgroundColor,
-                    textColor: colors.textColor
+                    primaryColor: colors[0] || prev.primaryColor,
+                    accentColor: colors[1] || prev.accentColor
                 }));
-                setMessage('✅ Colors extracted from logo! Click "Save Appearance" to apply.');
+                setMessage('✅ Colors extracted from logo!');
             } else {
-                setMessage('❌ Could not extract colors from logo');
+                setMessage('❌ Could not extract colors');
             }
         } catch (error) {
             console.error('Error extracting colors:', error);
             setMessage('❌ Error extracting colors from logo');
         } finally {
             setExtractingColors(false);
-            setTimeout(() => setMessage(''), 5000);
+            setTimeout(() => setMessage(''), 4000);
         }
-    };
-    
-    // Handle logo upload
-    const handleLogoUpload = (url) => {
-        setTeamStyle(prev => ({ ...prev, logoUrl: url }));
-    };
-    
-    // Handle banner upload
-    const handleBannerUpload = (url) => {
-        setTeamStyle(prev => ({ ...prev, bannerUrl: url }));
     };
     
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-slate-800">Team Settings</h2>
-            
-            {/* Section Tabs */}
-            <div className="flex flex-wrap gap-2 border-b pb-2">
+            {/* Section Navigation */}
+            <div className="flex border-b border-slate-200">
                 {sections.map(section => (
                     <button
                         key={section.id}
                         onClick={() => setActiveSection(section.id)}
-                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors ${
+                        className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
                             activeSection === section.id
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                ? 'border-blue-600 text-blue-600'
+                                : 'border-transparent text-slate-600 hover:text-slate-800'
                         }`}
                     >
-                        {section.icon} {section.label}
+                        <span className="mr-1.5">{section.icon}</span>
+                        {section.label}
                     </button>
                 ))}
             </div>
@@ -210,31 +171,18 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                 </div>
             )}
             
-            {/* YouTube Settings Section */}
-            {activeSection === 'youtube' && (
-                <div className="space-y-4">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+            {/* Social Media Section (includes YouTube) */}
+            {activeSection === 'social' && (
+                <div className="space-y-6">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <div className="flex items-start gap-3">
-                            <span className="text-xl">ℹ️</span>
+                            <span className="text-2xl">📱</span>
                             <div>
-                                <p className="text-sm text-blue-800 font-medium">Team YouTube Settings</p>
-                                <p className="text-sm text-blue-700 mt-1">
-                                    Configure a YouTube channel specific to this team. Videos from both the team channel 
-                                    and the league channel will be shown on your team page.
-                                </p>
+                                <p className="text-sm text-blue-800 font-medium">Social Media & YouTube</p>
+                                <p className="text-xs text-blue-700 mt-1">Connect your team&apos;s social accounts. These will be displayed on your team page.</p>
                             </div>
                         </div>
                     </div>
-                    <div className="bg-slate-50 rounded-lg p-4">
-                        <YouTubeSettings teamId={team.id} onSave={() => setMessage('✅ YouTube settings saved!')} />
-                    </div>
-                </div>
-            )}
-            
-            {/* Social Media Section */}
-            {activeSection === 'social' && (
-                <div className="space-y-4">
-                    <p className="text-sm text-slate-600">Connect your team's social media accounts to display on your team page.</p>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -271,7 +219,7 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                                 type="text"
                                 value={socialMedia.facebook}
                                 onChange={(e) => setSocialMedia({...socialMedia, facebook: e.target.value})}
-                                placeholder="facebook.com/..."
+                                placeholder="facebook.com/yourpage"
                                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
@@ -291,14 +239,15 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                         </div>
                         
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">YouTube Channel</label>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">📺 YouTube Channel</label>
                             <input
                                 type="text"
                                 value={socialMedia.youtube}
                                 onChange={(e) => setSocialMedia({...socialMedia, youtube: e.target.value})}
-                                placeholder="youtube.com/..."
+                                placeholder="youtube.com/@yourchannel or channel URL"
                                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
+                            <p className="text-xs text-slate-500 mt-1">Enter your YouTube channel URL to display your videos on the team page</p>
                         </div>
                         
                         <div>
@@ -307,7 +256,7 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                                 type="url"
                                 value={socialMedia.website}
                                 onChange={(e) => setSocialMedia({...socialMedia, website: e.target.value})}
-                                placeholder="https://..."
+                                placeholder="https://yourteam.com"
                                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
@@ -323,331 +272,163 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                 </div>
             )}
             
-            {/* Payment Links Section */}
-            {activeSection === 'payments' && (
-                <div className="space-y-6">
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                        <div className="flex items-start gap-3">
-                            <span className="text-2xl">💰</span>
-                            <div>
-                                <p className="text-sm text-green-800 font-medium">Team Payment Settings</p>
-                                <p className="text-xs text-green-700 mt-1">Add payment links so team members can easily pay dues and fees.</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Venmo Username</label>
-                            <div className="flex">
-                                <span className="bg-slate-100 px-3 py-2 border border-r-0 border-slate-300 rounded-l-lg text-slate-500">@</span>
-                                <input
-                                    type="text"
-                                    value={paymentLinks.venmo}
-                                    onChange={(e) => setPaymentLinks({...paymentLinks, venmo: e.target.value})}
-                                    placeholder="username"
-                                    className="flex-1 px-3 py-2 border border-slate-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                />
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">PayPal.me Link</label>
-                            <input
-                                type="text"
-                                value={paymentLinks.paypal}
-                                onChange={(e) => setPaymentLinks({...paymentLinks, paypal: e.target.value})}
-                                placeholder="paypal.me/username"
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            />
-                        </div>
-                        
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Zelle Email/Phone</label>
-                            <input
-                                type="text"
-                                value={paymentLinks.zelle}
-                                onChange={(e) => setPaymentLinks({...paymentLinks, zelle: e.target.value})}
-                                placeholder="email@example.com or phone"
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            />
-                        </div>
-                        
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Cash App</label>
-                            <div className="flex">
-                                <span className="bg-slate-100 px-3 py-2 border border-r-0 border-slate-300 rounded-l-lg text-slate-500">$</span>
-                                <input
-                                    type="text"
-                                    value={paymentLinks.cashapp}
-                                    onChange={(e) => setPaymentLinks({...paymentLinks, cashapp: e.target.value})}
-                                    placeholder="cashtag"
-                                    className="flex-1 px-3 py-2 border border-slate-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {/* Custom Payment Link */}
-                    <div className="border rounded-lg p-4 bg-slate-50">
-                        <h4 className="font-medium text-slate-800 mb-3">Custom Payment Link</h4>
-                        <div className="space-y-3">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Button Label</label>
-                                <input
-                                    type="text"
-                                    value={paymentLinks.customPaymentLabel}
-                                    onChange={(e) => setPaymentLinks({...paymentLinks, customPaymentLabel: e.target.value})}
-                                    placeholder="e.g., Pay with Stripe"
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Payment URL</label>
-                                <input
-                                    type="url"
-                                    value={paymentLinks.customPaymentUrl}
-                                    onChange={(e) => setPaymentLinks({...paymentLinks, customPaymentUrl: e.target.value})}
-                                    placeholder="https://..."
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button
-                        onClick={handleSavePaymentLinks}
-                        disabled={saving}
-                        className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
-                    >
-                        {saving ? 'Saving...' : 'Save Payment Links'}
-                    </button>
-                </div>
-            )}
-            
             {/* Appearance Section */}
             {activeSection === 'appearance' && (
                 <div className="space-y-6">
-                    <p className="text-sm text-slate-600">Customize your team's colors and branding.</p>
-                    
-                    {/* Team Colors */}
-                    <div className="border rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-4">
-                            <h4 className="font-medium text-slate-800">🎨 Team Colors</h4>
+                    {/* Logo & Banner */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Team Logo</label>
+                            <ImageUploadCrop
+                                currentImage={teamStyle.logoUrl}
+                                onUpload={handleLogoUpload}
+                                aspectRatio={1}
+                                maxWidth={400}
+                            />
                             {teamStyle.logoUrl && (
                                 <button
                                     onClick={handleUseLogoColors}
                                     disabled={extractingColors}
-                                    className="px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm rounded-lg hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 transition-all flex items-center gap-2"
+                                    className="mt-3 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 text-sm font-medium disabled:opacity-50"
                                 >
-                                    {extractingColors ? '⏳ Extracting...' : '🎨 Use Logo Colors'}
+                                    {extractingColors ? 'Extracting...' : '🎨 Extract Colors from Logo'}
                                 </button>
                             )}
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Primary Color</label>
-                                <div className="flex gap-2 items-center">
-                                    <input
-                                        type="color"
-                                        value={teamStyle.primaryColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, primaryColor: e.target.value})}
-                                        className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={teamStyle.primaryColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, primaryColor: e.target.value})}
-                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
-                                        placeholder="#2563eb"
-                                    />
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Accent Color</label>
-                                <div className="flex gap-2 items-center">
-                                    <input
-                                        type="color"
-                                        value={teamStyle.accentColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, accentColor: e.target.value})}
-                                        className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={teamStyle.accentColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, accentColor: e.target.value})}
-                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
-                                        placeholder="#3b82f6"
-                                    />
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Background</label>
-                                <div className="flex gap-2 items-center">
-                                    <input
-                                        type="color"
-                                        value={teamStyle.backgroundColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, backgroundColor: e.target.value})}
-                                        className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={teamStyle.backgroundColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, backgroundColor: e.target.value})}
-                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
-                                        placeholder="#f8fafc"
-                                    />
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Text Color</label>
-                                <div className="flex gap-2 items-center">
-                                    <input
-                                        type="color"
-                                        value={teamStyle.textColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, textColor: e.target.value})}
-                                        className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={teamStyle.textColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, textColor: e.target.value})}
-                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
-                                        placeholder="#1e293b"
-                                    />
-                                </div>
-                            </div>
-                        </div>
                         
-                        {/* Header Text Color - separate row */}
-                        <div className="mt-4 pt-4 border-t">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Header Text Color</label>
-                                    <p className="text-xs text-slate-500 mb-2">Text color on the team banner/header</p>
-                                    <div className="flex gap-2 items-center">
-                                        <input
-                                            type="color"
-                                            value={teamStyle.headerTextColor}
-                                            onChange={(e) => setTeamStyle({...teamStyle, headerTextColor: e.target.value})}
-                                            className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                                        />
-                                        <input
-                                            type="text"
-                                            value={teamStyle.headerTextColor}
-                                            onChange={(e) => setTeamStyle({...teamStyle, headerTextColor: e.target.value})}
-                                            className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
-                                            placeholder="#ffffff"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Team Banner</label>
+                            <ImageUploadCrop
+                                currentImage={teamStyle.bannerUrl}
+                                onUpload={handleBannerUpload}
+                                aspectRatio={3}
+                                maxWidth={1200}
+                            />
                         </div>
                     </div>
                     
-                    {/* Logo & Banner Section */}
-                    <div className="border rounded-lg p-4">
-                        <h4 className="font-medium text-slate-800 mb-4">🖼️ Logo & Banner</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Logo Upload */}
+                    {/* Colors */}
+                    <div className="border-t pt-6">
+                        <h3 className="font-medium text-slate-800 mb-4">Team Colors</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">Team Logo</label>
-                                <ImageUploadCrop
-                                    currentImage={teamStyle.logoUrl ? fixGoogleDriveUrl(teamStyle.logoUrl) : ''}
-                                    onImageSelected={handleLogoUpload}
-                                    aspectRatio={1}
-                                    label="Upload Logo"
-                                    uploadType="team_logo"
-                                    maxSize={5}
-                                    circularCrop={false}
-                                />
-                                <p className="text-xs text-slate-500 mt-2">Square format recommended. Click to upload and crop.</p>
-                                
-                                {/* Alternative: URL input */}
-                                <div className="mt-3">
-                                    <label className="text-xs text-slate-500">Or paste URL:</label>
+                                <label className="block text-sm text-slate-600 mb-1">Primary Color</label>
+                                <div className="flex gap-2">
                                     <input
-                                        type="url"
-                                        value={teamStyle.logoUrl}
-                                        onChange={(e) => setTeamStyle({...teamStyle, logoUrl: e.target.value})}
-                                        placeholder="https://... or Google Drive link"
-                                        className="w-full px-2 py-1 border border-slate-200 rounded text-sm mt-1"
+                                        type="color"
+                                        value={teamStyle.primaryColor}
+                                        onChange={(e) => setTeamStyle({...teamStyle, primaryColor: e.target.value})}
+                                        className="w-12 h-10 rounded border border-slate-300 cursor-pointer"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={teamStyle.primaryColor}
+                                        onChange={(e) => setTeamStyle({...teamStyle, primaryColor: e.target.value})}
+                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg font-mono text-sm"
                                     />
                                 </div>
                             </div>
                             
-                            {/* Banner Upload */}
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">Team Banner</label>
-                                <ImageUploadCrop
-                                    currentImage={teamStyle.bannerUrl ? fixGoogleDriveUrl(teamStyle.bannerUrl) : ''}
-                                    onImageSelected={handleBannerUpload}
-                                    aspectRatio={16/9}
-                                    label="Upload Banner"
-                                    uploadType="team_banner"
-                                    maxSize={10}
-                                    circularCrop={false}
-                                />
-                                <p className="text-xs text-slate-500 mt-2">Wide format (16:9) recommended. Click to upload and crop.</p>
-                                
-                                {/* Alternative: URL input */}
-                                <div className="mt-3">
-                                    <label className="text-xs text-slate-500">Or paste URL:</label>
+                                <label className="block text-sm text-slate-600 mb-1">Accent Color</label>
+                                <div className="flex gap-2">
                                     <input
-                                        type="url"
-                                        value={teamStyle.bannerUrl}
-                                        onChange={(e) => setTeamStyle({...teamStyle, bannerUrl: e.target.value})}
-                                        placeholder="https://... or Google Drive link"
-                                        className="w-full px-2 py-1 border border-slate-200 rounded text-sm mt-1"
+                                        type="color"
+                                        value={teamStyle.accentColor}
+                                        onChange={(e) => setTeamStyle({...teamStyle, accentColor: e.target.value})}
+                                        className="w-12 h-10 rounded border border-slate-300 cursor-pointer"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={teamStyle.accentColor}
+                                        onChange={(e) => setTeamStyle({...teamStyle, accentColor: e.target.value})}
+                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg font-mono text-sm"
                                     />
                                 </div>
                             </div>
                             
-                            {/* Logo Opacity */}
-                            <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Logo Opacity: {(teamStyle.logoOpacity * 100).toFixed(0)}%</label>
-                                <input
-                                    type="range"
-                                    min="0"
-                                    max="1"
-                                    step="0.1"
-                                    value={teamStyle.logoOpacity}
-                                    onChange={(e) => setTeamStyle({...teamStyle, logoOpacity: parseFloat(e.target.value)})}
-                                    className="w-full max-w-xs"
-                                />
+                            <div>
+                                <label className="block text-sm text-slate-600 mb-1">Background Color</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="color"
+                                        value={teamStyle.backgroundColor}
+                                        onChange={(e) => setTeamStyle({...teamStyle, backgroundColor: e.target.value})}
+                                        className="w-12 h-10 rounded border border-slate-300 cursor-pointer"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={teamStyle.backgroundColor}
+                                        onChange={(e) => setTeamStyle({...teamStyle, backgroundColor: e.target.value})}
+                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg font-mono text-sm"
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm text-slate-600 mb-1">Text Color</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="color"
+                                        value={teamStyle.textColor}
+                                        onChange={(e) => setTeamStyle({...teamStyle, textColor: e.target.value})}
+                                        className="w-12 h-10 rounded border border-slate-300 cursor-pointer"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={teamStyle.textColor}
+                                        onChange={(e) => setTeamStyle({...teamStyle, textColor: e.target.value})}
+                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg font-mono text-sm"
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm text-slate-600 mb-1">Header Text Color</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="color"
+                                        value={teamStyle.headerTextColor}
+                                        onChange={(e) => setTeamStyle({...teamStyle, headerTextColor: e.target.value})}
+                                        className="w-12 h-10 rounded border border-slate-300 cursor-pointer"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={teamStyle.headerTextColor}
+                                        onChange={(e) => setTeamStyle({...teamStyle, headerTextColor: e.target.value})}
+                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg font-mono text-sm"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
                     
                     {/* Color Preview */}
-                    <div className="border rounded-lg p-4">
-                        <h4 className="font-medium text-slate-800 mb-4">👁️ Preview</h4>
+                    <div className="border-t pt-6">
+                        <h3 className="font-medium text-slate-800 mb-4">Preview</h3>
                         <div 
-                            className="rounded-lg p-4 border"
-                            style={{ 
-                                backgroundColor: teamStyle.backgroundColor,
-                                color: teamStyle.textColor
-                            }}
+                            className="rounded-xl overflow-hidden border shadow-sm"
+                            style={{ backgroundColor: teamStyle.backgroundColor }}
                         >
-                            <div className="flex items-center gap-3 mb-3">
-                                {teamStyle.logoUrl && (
-                                    <img 
-                                        src={fixGoogleDriveUrl(teamStyle.logoUrl)} 
-                                        alt="Logo preview" 
-                                        className="w-12 h-12 object-contain rounded"
-                                        style={{ opacity: teamStyle.logoOpacity }}
-                                        onError={(e) => e.target.style.display='none'}
-                                    />
-                                )}
-                                <div>
-                                    <h3 className="font-bold text-lg" style={{ color: teamStyle.primaryColor }}>{team.name}</h3>
-                                    <p className="text-sm" style={{ color: teamStyle.accentColor }}>{team.division || 'Division'}</p>
-                                </div>
+                            <div 
+                                className="p-4"
+                                style={{ backgroundColor: teamStyle.primaryColor }}
+                            >
+                                <h4 className="text-lg font-bold" style={{ color: teamStyle.headerTextColor }}>
+                                    {team.name || 'Team Name'}
+                                </h4>
                             </div>
-                            <p className="text-sm">This is how your team's colors will appear on the team page.</p>
+                            <div className="p-4">
+                                <p style={{ color: teamStyle.textColor }}>
+                                    This is sample body text showing how your content will look.
+                                </p>
+                                <button 
+                                    className="mt-3 px-4 py-2 rounded-lg font-medium"
+                                    style={{ backgroundColor: teamStyle.accentColor, color: teamStyle.headerTextColor }}
+                                >
+                                    Sample Button
+                                </button>
+                            </div>
                         </div>
                     </div>
                     
