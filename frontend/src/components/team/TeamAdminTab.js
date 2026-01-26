@@ -586,7 +586,7 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                                         </div>
                                         <div>
                                             <div className="font-medium text-slate-800">{player.name}</div>
-                                            <div className="text-xs text-slate-500">#{player.jerseyNumber || '?'} • {player.position || 'Player'}</div>
+                                            <div className="text-xs text-slate-500">#{player.jerseyNumber || '?'} • {typeof player.position === 'object' ? player.position?.name || 'Player' : player.position || 'Player'}</div>
                                         </div>
                                     </div>
                                     <select
