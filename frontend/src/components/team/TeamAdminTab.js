@@ -680,13 +680,13 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                                 <div>
                                     <label className="block text-sm font-medium text-slate-700 mb-1">Position</label>
                                     <select
-                                        value={editingPlayer.position || ''}
+                                        value={typeof editingPlayer.position === 'object' ? editingPlayer.position?.name || '' : editingPlayer.position || ''}
                                         onChange={(e) => setEditingPlayer({...editingPlayer, position: e.target.value})}
                                         className="w-full px-3 py-2 border border-slate-300 rounded-lg"
                                     >
                                         <option value="">Select Position</option>
                                         {sportConfig.positions.map(pos => (
-                                            <option key={pos} value={pos}>{pos}</option>
+                                            <option key={pos.id} value={pos.name}>{pos.name}</option>
                                         ))}
                                     </select>
                                 </div>
