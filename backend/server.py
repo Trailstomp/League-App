@@ -494,6 +494,22 @@ async def get_dashboard_data():
             formatted_teams = []
             for team in teams_from_collection:
                 team.pop('_id', None)  # Remove MongoDB ID
+                # Use full style object if available, otherwise build from basic fields
+                team_style = team.get("style") if isinstance(team.get("style"), dict) else {
+                    "logoUrl": team.get("logo", ""),
+                    "primaryColor": team.get("color", "#3b82f6"),
+                    "secondaryColor": team.get("secondary_color", ""),
+                    "accentColor": team.get("accent_color", "")
+                }
+                # Ensure all style fields have defaults
+                team_style.setdefault("logoUrl", team.get("logo", ""))
+                team_style.setdefault("primaryColor", team.get("color", "#3b82f6"))
+                team_style.setdefault("secondaryColor", team.get("secondary_color", ""))
+                team_style.setdefault("accentColor", team.get("accent_color", ""))
+                team_style.setdefault("backgroundColor", "#f8fafc")
+                team_style.setdefault("textColor", "#1e293b")
+                team_style.setdefault("headerTextColor", "#ffffff")
+                
                 # Convert new format to old format for compatibility
                 formatted_team = {
                     "id": team.get("id", ""),
@@ -504,13 +520,11 @@ async def get_dashboard_data():
                     "color": team.get("color", "#3b82f6"),
                     "logo": team.get("logo", ""),
                     "active": team.get("active", True),
-                    # Frontend expects style.logoUrl structure
-                    "style": {
-                        "logoUrl": team.get("logo", ""),
-                        "primaryColor": team.get("color", "#3b82f6"),
-                        "secondaryColor": team.get("secondary_color", ""),
-                        "accentColor": team.get("accent_color", "")
-                    },
+                    # Use full style object
+                    "style": team_style,
+                    # Include social media and payment links if available
+                    "socialMedia": team.get("socialMedia", {}),
+                    "paymentLinks": team.get("paymentLinks", {}),
                     # Preserve stat fields from teams collection
                     "wins": team.get("wins", 0),
                     "losses": team.get("losses", 0),
