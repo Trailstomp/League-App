@@ -1506,7 +1506,7 @@ async def upload_player_photo(file: UploadFile = File(...)):
 
 @api_router.put("/league-data/teams/{team_id}")
 async def update_team_data(team_id: str, team_data: Dict[str, Any]):
-    """Update specific team data including logo"""
+    """Update specific team data including logo, style, social media, etc."""
     try:
         # Get current league data
         league_data = await db.league_data.find_one({"id": "main_league"})
@@ -1523,7 +1523,7 @@ async def update_team_data(team_id: str, team_data: Dict[str, Any]):
                 "websiteStyle": {}
             }
         
-        # Find and update the specific team
+        # Find and update the specific team in league_data
         teams = league_data.get("teams", [])
         team_found = False
         
@@ -1532,24 +1532,50 @@ async def update_team_data(team_id: str, team_data: Dict[str, Any]):
                 # Update existing team
                 teams[i] = {**team, **team_data}
                 team_found = True
-                logger.info(f"✅ Updated existing team: {team_id}")
+                logger.info(f"✅ Updated existing team in league_data: {team_id}")
                 break
         
         if not team_found:
             # Add new team
             team_data["id"] = team_id
             teams.append(team_data)
-            logger.info(f"✅ Added new team: {team_id}")
+            logger.info(f"✅ Added new team to league_data: {team_id}")
         
-        # Update the database
+        # Update the league_data database
         league_data["teams"] = teams
         league_data["lastUpdated"] = datetime.utcnow().isoformat()
         
-        result = await db.league_data.replace_one(
+        await db.league_data.replace_one(
             {"id": "main_league"},
             league_data,
             upsert=True
         )
+        
+        # ALSO update the teams collection with style data
+        # This ensures dashboard-data returns the correct styles
+        teams_collection_update = {}
+        
+        if "style" in team_data:
+            style = team_data["style"]
+            teams_collection_update["color"] = style.get("primaryColor", "#3b82f6")
+            teams_collection_update["secondary_color"] = style.get("secondaryColor", "")
+            teams_collection_update["accent_color"] = style.get("accentColor", "")
+            teams_collection_update["logo"] = style.get("logoUrl", "")
+            teams_collection_update["style"] = style  # Store full style object
+        
+        if "socialMedia" in team_data:
+            teams_collection_update["socialMedia"] = team_data["socialMedia"]
+        
+        if "paymentLinks" in team_data:
+            teams_collection_update["paymentLinks"] = team_data["paymentLinks"]
+        
+        if teams_collection_update:
+            teams_collection_update["updatedAt"] = datetime.utcnow().isoformat()
+            await db.teams.update_one(
+                {"id": team_id},
+                {"$set": teams_collection_update}
+            )
+            logger.info(f"✅ Also updated teams collection for: {team_id}")
         
         logger.info(f"✅ Team {team_id} data saved successfully")
         
