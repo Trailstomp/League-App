@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { getFullImageUrl } from '../../utils/imageUtils';
 
 /**
- * TeamFinanceTab - Finance register for tracking team income, expenses, and fees
- * Includes sub-tabs: Transactions | Fees & Payments
+ * TeamFinanceTab - Finance register for tracking team income, expenses, fees, player payments, and payment links
+ * Includes sub-tabs: Transactions | Fees | Player Payments | Payment Links
  */
 const TeamFinanceTab = ({ team, currentUser }) => {
     const [activeSubTab, setActiveSubTab] = useState('transactions');
@@ -25,6 +26,24 @@ const TeamFinanceTab = ({ team, currentUser }) => {
         amount: '',
         dueDate: '',
         description: ''
+    });
+
+    // Player payments state
+    const [players, setPlayers] = useState([]);
+    const [playersLoading, setPlayersLoading] = useState(true);
+    const [paymentFilter, setPaymentFilter] = useState('all');
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedPlayer, setSelectedPlayer] = useState(null);
+
+    // Payment links state
+    const [paymentLinks, setPaymentLinks] = useState({
+        venmo: team?.paymentLinks?.venmo || '',
+        paypal: team?.paymentLinks?.paypal || '',
+        zelle: team?.paymentLinks?.zelle || '',
+        cashapp: team?.paymentLinks?.cashapp || '',
+        stripe: team?.paymentLinks?.stripe || '',
+        customPaymentUrl: team?.paymentLinks?.customPaymentUrl || '',
+        customPaymentLabel: team?.paymentLinks?.customPaymentLabel || ''
     });
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
