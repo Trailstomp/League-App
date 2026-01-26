@@ -1087,20 +1087,49 @@ async def proxy_image(url: str):
         import urllib.request
         import urllib.parse
         
-        # Validate that it's a Google Drive URL for security
-        if "drive.google.com" not in url and "googleusercontent.com" not in url:
-            raise HTTPException(status_code=400, detail="Only Google Drive URLs are supported")
-        
         # Decode URL if it's encoded
         decoded_url = urllib.parse.unquote(url)
         
-        # Fetch the image
-        request = urllib.request.Request(decoded_url)
-        request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+        # Security: Only allow image URLs from trusted sources
+        allowed_domains = [
+            "drive.google.com",
+            "googleusercontent.com",
+            "emergent.host",
+            "localhost",
+            "127.0.0.1"
+        ]
         
-        with urllib.request.urlopen(request) as response:
-            image_data = response.read()
-            content_type = response.headers.get('Content-Type', 'image/jpeg')
+        is_allowed = any(domain in decoded_url for domain in allowed_domains)
+        
+        # Also allow if it's a relative URL (starts with /api/uploads)
+        if decoded_url.startswith("/api/uploads") or decoded_url.startswith("http://localhost"):
+            is_allowed = True
+        
+        if not is_allowed:
+            raise HTTPException(status_code=400, detail="URL domain not allowed. Supported: Google Drive, Emergent hosted images")
+        
+        # Handle relative URLs by prepending the backend URL
+        if decoded_url.startswith("/api/uploads"):
+            # This is a local upload, read directly from disk
+            filename = decoded_url.replace("/api/uploads/", "")
+            file_path = f"/app/uploads/{filename}"
+            if os.path.exists(file_path):
+                with open(file_path, 'rb') as f:
+                    image_data = f.read()
+                # Determine content type from extension
+                ext = filename.split('.')[-1].lower()
+                content_types = {'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png', 'gif': 'image/gif', 'webp': 'image/webp'}
+                content_type = content_types.get(ext, 'image/jpeg')
+            else:
+                raise HTTPException(status_code=404, detail="Image not found")
+        else:
+            # Fetch the image from URL
+            request = urllib.request.Request(decoded_url)
+            request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+            
+            with urllib.request.urlopen(request, timeout=10) as response:
+                image_data = response.read()
+                content_type = response.headers.get('Content-Type', 'image/jpeg')
         
         # Return with proper CORS headers
         from fastapi.responses import Response
