@@ -7807,11 +7807,15 @@ async def get_team_player_stats(team_id: str, season_id: Optional[str] = None):
         
         # Process all games
         for game in games_home:
-            process_game(game["home_team"], game["home_team"]["result"])
+            home_team = game.get("home_team", {})
+            result = home_team.get("result", "")
+            process_game(home_team, result)
         
         for game in games_away:
-            if game.get("away_team"):
-                process_game(game["away_team"], game["away_team"]["result"])
+            away_team = game.get("away_team", {})
+            if away_team:
+                result = away_team.get("result", "")
+                process_game(away_team, result)
         
         # Calculate save percentages
         for goalie in goalie_stats.values():
