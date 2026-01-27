@@ -285,6 +285,38 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
   - Shows "RSVP Confirmed!" page with option to change response
   - Prevents double-submission in React StrictMode
 
+### January 27, 2025 (Current Session)
+- **P0: Join Team Public Page** (NEW):
+  - Created `/join/{team_id}` public page for recruits to request joining a team
+  - New frontend component: `/app/frontend/src/pages/JoinTeamPage.js`
+  - Displays team info (name, division, logo, colors) from GET `/api/teams/{team_id}/public`
+  - Form collects: name, email, phone, position, experience level, message
+  - Submits to POST `/api/teams/{team_id}/join-requests`
+  - Prevents duplicate pending requests from same email
+  - Success page confirms submission and instructs user to check email
+  - Error handling for invalid/non-existent teams
+  - Integrates with existing Team Admin recruiting section to show pending requests
+
+- **P2: Recurring Events Backend Logic** (NEW):
+  - Enhanced `/api/unified-events` POST endpoint to handle recurring events
+  - When `is_recurring=true` with recurrence config, generates multiple event instances
+  - Supported frequencies: daily, weekly, biweekly, monthly
+  - End conditions: count (N occurrences), date (until specific date), never (1 year)
+  - Weekly events can target specific days via `daysOfWeek` array
+  - All instances linked via `parent_event_id` and `recurrence_index`
+  - Recurring events synced to both `unified_events` collection and `leagueSchedule` for ticker
+  - Updated `UnifiedEvent` model with `is_recurring` and `recurrence` fields
+
+- **New Backend Endpoints:**
+  - `GET /api/teams/{team_id}/public` - Public team info (no auth required)
+  - `POST /api/teams/{team_id}/join-requests` - Submit join request (no auth required)
+  - `GET /api/team/{team_id}/requests` - Get pending join requests (for team admins)
+  - `PUT /api/team/{team_id}/requests/{request_id}` - Approve/reject join request
+  - `GET /api/team/{team_id}/invites` - Get sent team invites
+  - `POST /api/team/{team_id}/invite` - Send team invite
+
+- **All tests passed (100% success rate)** - 13/13 backend tests
+
 - **Multi-Sport Support (P2):**
   - Created sportsConfig.js with configurations for Lacrosse, Hockey, Soccer, Volleyball
   - Created SportIcons.js with SVG icons for each sport
