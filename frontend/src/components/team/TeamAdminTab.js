@@ -436,7 +436,7 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                                         <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase">Player</th>
                                         <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase hidden sm:table-cell">Position</th>
                                         <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase hidden md:table-cell">Contact</th>
-                                        <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase">Status</th>
+                                        <th className="text-left px-4 py-3 text-xs font-semibold text-slate-600 uppercase">Availability</th>
                                         <th className="text-right px-4 py-3 text-xs font-semibold text-slate-600 uppercase">Actions</th>
                                     </tr>
                                 </thead>
@@ -468,7 +468,22 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                                                 {player.phone && <div className="text-xs text-slate-400">{player.phone}</div>}
                                             </td>
                                             <td className="px-4 py-3">
-                                                {getAvailabilityBadge(player.availability)}
+                                                <select
+                                                    value={player.availability || 'active'}
+                                                    onChange={(e) => updatePlayerAvailability(player.id, e.target.value)}
+                                                    disabled={saving}
+                                                    className={`px-2 py-1 text-xs font-medium rounded-lg border-0 cursor-pointer ${
+                                                        player.availability === 'injured' ? 'bg-orange-100 text-orange-700' :
+                                                        player.availability === 'leave' ? 'bg-purple-100 text-purple-700' :
+                                                        player.availability === 'inactive' ? 'bg-slate-200 text-slate-600' :
+                                                        'bg-green-100 text-green-700'
+                                                    }`}
+                                                >
+                                                    <option value="active">Active</option>
+                                                    <option value="injured">Injured</option>
+                                                    <option value="leave">On Leave</option>
+                                                    <option value="inactive">Inactive</option>
+                                                </select>
                                             </td>
                                             <td className="px-4 py-3">
                                                 <div className="flex justify-end gap-2">
@@ -500,14 +515,6 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                     </div>
                 </div>
             )}
-
-            {/* AVAILABILITY SECTION */}
-            {activeSection === 'availability' && (
-                <div className="space-y-4">
-                    {/* Availability Summary */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div className="bg-green-50 rounded-lg p-4 text-center">
-                            <div className="text-2xl font-bold text-green-600">{availabilityStats.active}</div>
                             <div className="text-xs text-green-700">Active</div>
                         </div>
                         <div className="bg-orange-50 rounded-lg p-4 text-center">
