@@ -303,29 +303,10 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
         setTimeout(() => setMessage(''), 3000);
     };
 
-    // Calculate availability stats
-    const availabilityStats = {
-        active: players.filter(p => !p.availability || p.availability === 'active').length,
-        injured: players.filter(p => p.availability === 'injured').length,
-        inactive: players.filter(p => p.availability === 'inactive').length,
-        leave: players.filter(p => p.availability === 'leave').length
-    };
-
     const filteredUsers = availableUsers.filter(u => 
         u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         u.email?.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-    // Badge helpers
-    const getAvailabilityBadge = (availability) => {
-        const badges = {
-            active: <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">Active</span>,
-            injured: <span className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full text-xs font-medium">Injured</span>,
-            leave: <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">On Leave</span>,
-            inactive: <span className="px-2 py-0.5 bg-slate-200 text-slate-600 rounded-full text-xs font-medium">Inactive</span>
-        };
-        return badges[availability] || badges.active;
-    };
 
     // Open edit modal with full player data
     const openEditModal = (player) => {
