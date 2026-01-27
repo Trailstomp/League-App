@@ -517,16 +517,6 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
             )}
 
             {/* RECRUITING SECTION */}
-                                        <option value="inactive">Inactive</option>
-                                    </select>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </div>
-            )}
-
-            {/* RECRUITING SECTION */}
             {activeSection === 'recruiting' && (
                 <div className="space-y-6">
                     {/* Invite Link */}
