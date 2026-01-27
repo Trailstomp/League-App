@@ -10,6 +10,7 @@ import RegistrationPage from './pages/RegistrationPage';
 import RSVPHandler from './pages/RSVPHandler';
 import PasswordResetPage from './pages/PasswordResetPage';
 import HelpPage from './pages/HelpPage';
+import JoinTeamPage from './pages/JoinTeamPage';
 import AuthModal, { initialMockUsers } from './components/AuthSystem';
 import OAuthCallback from './components/OAuthCallback';
 import SetupWizard from './components/SetupWizard';

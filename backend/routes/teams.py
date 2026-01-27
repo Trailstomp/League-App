@@ -4,12 +4,16 @@ Teams Router - Handles team-related operations including roster management
 from fastapi import APIRouter, HTTPException
 from typing import Dict, Any, List
 from datetime import datetime, timezone
+import uuid
 import logging
 
 logger = logging.getLogger(__name__)
 
 # Create router
 teams_router = APIRouter(prefix="/team", tags=["teams"])
+
+# Secondary router for /teams prefix endpoints
+teams_public_router = APIRouter(prefix="/teams", tags=["teams-public"])
 
 # This will be set from server.py
 db = None
