@@ -8969,6 +8969,9 @@ class UnifiedEvent(BaseModel):
     is_external: bool = False
     external_url: Optional[str] = ""
     external_organizer: Optional[str] = ""
+    # Recurring event fields
+    is_recurring: bool = False
+    recurrence: Optional[Dict[str, Any]] = None  # {frequency, daysOfWeek, endType, count, endDate}
 
 class EventUpdate(BaseModel):
     title: Optional[str] = None
