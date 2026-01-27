@@ -2444,27 +2444,102 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                     </div>
                 </td>
                 
-                <td className="px-2 py-1 text-xs text-gray-600">{player.position}</td>
+                <td className="hidden md:table-cell px-2 py-1 text-xs text-gray-600">{player.position}</td>
                 
                 {/* Only show stat buttons for ACTIVE players */}
                 {!isInactive ? (
                     <>
+                        {/* Shot Button with Dropdown Menu */}
+                        <td className="px-1 md:px-2 py-1 text-center shot-button-container relative">
+                            <button
+                                onClick={() => setShowShotMenu(showShotMenu === player.id ? null : player.id)}
+                                className="px-3 py-2 bg-yellow-500 text-white rounded font-bold text-sm hover:bg-yellow-600 shadow-sm"
+                            >
+                                Shot
+                            </button>
+                            
+                            {/* Shot Type Dropdown Menu */}
+                            {showShotMenu === player.id && (
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white border border-gray-300 rounded-lg shadow-xl z-50 min-w-[140px]">
+                                    {/* Goal - Stops clocks, counts goal and shot */}
+                                    <button
+                                        onClick={() => {
+                                            // Stop both clocks
+                                            setGameState(prev => ({ ...prev, is_running: false }));
+                                            setShotClock(prev => ({ ...prev, isRunning: false }));
+                                            // Record the shot as a goal
+                                            addShotStat(teamKey, player.id, 'goal');
+                                            setShowShotMenu(null);
+                                        }}
+                                        className="w-full px-4 py-3 text-left hover:bg-green-50 border-b flex items-center gap-2 rounded-t-lg"
+                                    >
+                                        <span className="text-lg">🥅</span>
+                                        <div>
+                                            <div className="font-bold text-green-700">Goal</div>
+                                            <div className="text-xs text-gray-500">Stop clocks</div>
+                                        </div>
+                                    </button>
+                                    
+                                    {/* Save - Restart shot clock, keeps main clock, counts shot and save */}
+                                    <button
+                                        onClick={() => {
+                                            // Reset shot clock only
+                                            setShotClock(prev => ({ 
+                                                ...prev, 
+                                                timeRemaining: prev.duration,
+                                                isRunning: gameState.is_running 
+                                            }));
+                                            // Record the shot as a save
+                                            addShotStat(teamKey, player.id, 'saved');
+                                            setShowShotMenu(null);
+                                        }}
+                                        className="w-full px-4 py-3 text-left hover:bg-purple-50 border-b flex items-center gap-2"
+                                    >
+                                        <span className="text-lg">🧤</span>
+                                        <div>
+                                            <div className="font-bold text-purple-700">Save</div>
+                                            <div className="text-xs text-gray-500">Reset shot clock</div>
+                                        </div>
+                                    </button>
+                                    
+                                    {/* Miss - No clock changes, no stats recorded */}
+                                    <button
+                                        onClick={() => {
+                                            // No clock changes, no shot recorded
+                                            // Just log it as an event
+                                            const playerObj = gameState[teamKey].players.find(p => p.id === player.id);
+                                            const playerName = playerObj ? formatPlayerName(playerObj.name) : 'Unknown';
+                                            addGameEvent(`${playerName} - Shot missed`, 'miss', { teamKey, playerId: player.id, shotType: 'miss', timestamp: formatTime(gameState.time_remaining) });
+                                            setShowShotMenu(null);
+                                        }}
+                                        className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center gap-2 rounded-b-lg"
+                                    >
+                                        <span className="text-lg">❌</span>
+                                        <div>
+                                            <div className="font-bold text-gray-700">Miss</div>
+                                            <div className="text-xs text-gray-500">No stat change</div>
+                                        </div>
+                                    </button>
+                                </div>
+                            )}
+                        </td>
+                        
                         {/* Shots Display */}
-                        <td className="px-2 py-1 text-center">
+                        <td className="px-1 md:px-2 py-1 text-center">
                             <span className="font-bold text-base text-yellow-600">
                                 {player.stats.shots}
                             </span>
                         </td>
                         
                         {/* Goals Display */}
-                        <td className="px-2 py-1 text-center">
+                        <td className="px-1 md:px-2 py-1 text-center">
                             <span className="font-bold text-base text-green-600">
                                 {player.stats.goals}
                             </span>
                         </td>
                         
                         {/* Assists with +/- buttons */}
-                        <td className="px-2 py-1 text-center">
+                        <td className="px-1 md:px-2 py-1 text-center">
                             <div className="flex items-center justify-center gap-1">
                                 <button
                                     onClick={() => {
@@ -2482,17 +2557,17 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                                             }));
                                         }
                                     }}
-                                    className="w-8 h-8 bg-red-100 text-red-600 rounded text-sm font-bold hover:bg-red-200"
+                                    className="w-6 h-6 md:w-8 md:h-8 bg-red-100 text-red-600 rounded text-xs md:text-sm font-bold hover:bg-red-200"
                                     disabled={player.stats.assists <= 0}
                                 >
                                     −
                                 </button>
-                                <span className="w-10 text-center font-bold text-base text-blue-600">
+                                <span className="w-6 md:w-10 text-center font-bold text-base text-blue-600">
                                     {player.stats.assists}
                                 </span>
                                 <button
                                     onClick={() => addStat(teamKey, player.id, 'assists')}
-                                    className="w-8 h-8 bg-blue-100 text-blue-600 rounded text-sm font-bold hover:opacity-80"
+                                    className="w-6 h-6 md:w-8 md:h-8 bg-blue-100 text-blue-600 rounded text-xs md:text-sm font-bold hover:opacity-80"
                                 >
                                     +
                                 </button>
@@ -2500,7 +2575,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                         </td>
                         
                         {/* Penalty Minutes Display */}
-                        <td className="px-2 py-1 text-center">
+                        <td className="px-1 md:px-2 py-1 text-center">
                             <span className="font-bold text-base text-red-600">
                                 {player.stats.penalties}
                             </span>
