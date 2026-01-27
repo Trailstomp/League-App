@@ -112,9 +112,12 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
                 'undefined': 'other'
             };
             
-            // Check both the original type and mapped type
+            // Get the mapped filter key for this event type
             const mappedType = typeMapping[eventType] || 'other';
-            typeAllowed = eventFilters[eventType] || eventFilters[mappedType] || eventFilters['other'] || false;
+            
+            // Only check the specific filter for this event type - don't fall back to 'other'
+            // This ensures practices are hidden when practices filter is false
+            typeAllowed = eventFilters[mappedType] === true;
             
             return inDateRange && typeAllowed;
         });
