@@ -200,24 +200,28 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 ## What's Been Implemented
 
 ### January 26, 2025 (Current Session)
+- **Team Admin Tab - Recruiting Integration (P1):**
+  - Moved Recruiting section into Team Admin tab (3 sections now: Players, Availability, Recruiting)
+  - Removed standalone Recruiting tab from team page
+  - Recruiting features: Invite link, direct email invites, pending requests management, sent invites list
+
+- **Recurring Events Feature (P2):**
+  - Added recurring event options to EventCreator for practices, meetings, and social events
+  - Frequency options: Daily, Weekly (with day selection), Biweekly, Monthly
+  - End options: After X occurrences, On specific date, or Never
+
+- **Bug Fix: Practices Showing on Ticker (P1):**
+  - **Root Cause**: Filter logic had fallback `|| eventFilters['other']` that let practices through even when practices filter was false
+  - **Fix**: Removed fallback - now events only show if their specific filter type is enabled
+
+- **Bug Fix: Ticker Card Borders Not Visible (P1):**
+  - **Root Cause**: Card styles were hardcoded (`bg-slate-800/50`) instead of using websiteStyle colors
+  - **Fix**: Applied `tickerItemColor` and `tickerBorderColor` from websiteStyle with `border-2` class
+
 - **Team Admin Tab Reorganization (P1):**
-  - **TeamAdminTab**: Now contains full player management with all fields (jersey size, lacrosse history, social media, fun facts, emergency contact relationship)
-  - **TeamFinanceTab**: Now has 4 sub-tabs: Transactions, Fees, Player Payments, Payment Links
-  - **TeamSettingsTab**: Simplified to Social Media (with YouTube channel link) and Appearance sections
-  - Moved payment tracking from Admin to Finance tab
-  - Moved payment links from Settings to Finance tab  
-  - Added YouTube channel link to Social Media section (removed separate YouTube settings)
-  - Backend: Enhanced player update endpoint with new fields (jerseySize, funFacts, lacrosseHistory, socialMedia, emergencyContactRelationship)
-  - Backend: Enhanced get_team_players to return all new fields
-
-- **Bug Fix: Team Colors Not Saving (P1):**
-  - **Root Cause**: Team settings were saved to `league_data.teams` collection but `dashboard-data` read from separate `teams` collection
-  - **Fix**: Updated `PUT /api/league-data/teams/{team_id}` to sync both collections
-
-- **Bug Fix: White Screen on Edit Player & Stats Tab (P0):**
-  - **Root Cause 1**: `sportConfig.positions` returns objects but code used them as strings
-  - **Root Cause 2**: `/api/teams/{team_id}/player-stats` crashed on missing fields
-  - **Fix**: Made code defensive with proper object handling and null checks
+  - Full player management with ALL fields (jersey size, lacrosse history, social media, fun facts, emergency contact)
+  - TeamFinanceTab: 4 sub-tabs (Transactions, Fees, Player Payments, Payment Links)
+  - TeamSettingsTab: Simplified to Social Media (with YouTube) and Appearance
 
 ### January 25, 2025 (Previous Session)
 - **Team Admin Tab Reorganization (P1):**
