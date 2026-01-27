@@ -104,6 +104,16 @@ async def health_check():
     except Exception as e:
         return {"status": "unhealthy", "error": str(e)}
 
+# Also expose health at /api/health for routing compatibility
+@app.get("/api/health")
+async def api_health_check():
+    """Health check endpoint under /api prefix for proxy routing"""
+    return {
+        "status": "healthy",
+        "service": "mlbl-backend",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
