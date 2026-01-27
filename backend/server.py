@@ -8536,7 +8536,7 @@ async def get_tournament_bracket(tournament_id: str):
 async def get_leagues():
     """Get all leagues"""
     try:
-        leagues = await db.leagues.find().to_list(None)
+        leagues = await db.leagues.find().to_list(50)  # Limit leagues
         
         # Remove MongoDB _id
         for league in leagues:
@@ -8698,7 +8698,7 @@ async def fix_gallery_urls():
         fixed_count = 0
         
         # Get all galleries
-        galleries = await db.media_galleries.find().to_list(None)
+        galleries = await db.media_galleries.find().to_list(100)  # Limit galleries
         
         for gallery in galleries:
             needs_update = False
