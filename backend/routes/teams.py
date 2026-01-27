@@ -538,7 +538,7 @@ async def handle_join_request(team_id: str, request_id: str, data: Dict[str, Any
                             {"$set": {"teamId": team_id}}
                         )
             else:
-                # Create a new user record (pending activation)
+                # Create a new user record (active since they've been approved)
                 new_user = {
                     "id": str(uuid.uuid4()),
                     "name": join_request.get("name"),
@@ -553,13 +553,14 @@ async def handle_join_request(team_id: str, request_id: str, data: Dict[str, Any
                         "isPrimary": True
                     }],
                     "roles": ["player"],
-                    "status": "pending",  # They'll need to set up their account
+                    "status": "active",  # Set as active so they show up in roster
                     "createdAt": datetime.now(timezone.utc).isoformat(),
                     "updatedAt": datetime.now(timezone.utc).isoformat(),
                     "joinRequestId": request_id
                 }
                 
                 await db.users.insert_one(new_user)
+                logger.info(f"✅ Created new active player: {new_user['name']} ({new_user['id']})")
             
             # Update request status
             await db.join_requests.update_one(
