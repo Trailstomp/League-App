@@ -454,9 +454,14 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         return (
             <div 
                 key={`${event.id}-${index}`}
-                className="flex flex-col bg-slate-800/50 rounded-lg cursor-pointer hover:bg-slate-700/50 transition-colors flex-shrink-0 overflow-hidden"
+                className="flex flex-col rounded-lg cursor-pointer hover:opacity-90 transition-colors flex-shrink-0 overflow-hidden border-2"
                 onClick={() => onEventClick && onEventClick(event)}
-                style={{ minWidth: '200px', maxWidth: '260px' }}
+                style={{ 
+                    minWidth: '200px', 
+                    maxWidth: '260px',
+                    backgroundColor: websiteStyle?.tickerItemColor || '#334155',
+                    borderColor: websiteStyle?.tickerBorderColor || '#475569'
+                }}
                 data-testid={`ticker-event-${event.id}`}
             >
                 {/* Type badge at top */}
