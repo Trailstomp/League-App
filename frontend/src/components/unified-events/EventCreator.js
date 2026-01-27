@@ -16,6 +16,15 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
         groupme_integration: true,
         email_notifications: true,
         auto_create_polls: false,
+        // Recurring event fields
+        is_recurring: false,
+        recurrence: {
+            frequency: 'weekly', // daily, weekly, biweekly, monthly
+            endType: 'count', // count, date, never
+            count: 10,
+            endDate: '',
+            daysOfWeek: [] // For weekly: [0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat]
+        },
         // External event fields
         is_external: false,
         external_url: '',
