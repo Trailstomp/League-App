@@ -21,9 +21,6 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
     const [searchTerm, setSearchTerm] = useState('');
     const [uploadingPhoto, setUploadingPhoto] = useState(false);
     
-    // Availability state
-    const [availabilityFilter, setAvailabilityFilter] = useState('all');
-    
     // Recruiting state
     const [pendingRequests, setPendingRequests] = useState([]);
     const [inviteEmail, setInviteEmail] = useState('');
