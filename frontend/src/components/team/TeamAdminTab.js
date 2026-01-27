@@ -100,9 +100,13 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
     useEffect(() => {
         if (team?.id) {
             fetchPlayers();
+            if (activeSection === 'recruiting') {
+                fetchPendingRequests();
+                fetchSentInvites();
+            }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [team?.id]);
+    }, [team?.id, activeSection]);
 
     useEffect(() => {
         if (showAddModal) {
