@@ -297,6 +297,12 @@ function App() {
       return;
     }
     
+    // Check for team join page URLs
+    if (path.startsWith('/join/')) {
+      setCurrentPage('join-team');
+      return;
+    }
+    
     // Check for RSVP page URLs - redirect to backend
     if (path.startsWith('/rsvp/')) {
       const eventId = path.split('/rsvp/')[1];
@@ -598,6 +604,8 @@ function App() {
         );
       case 'quick-rsvp':
         return <QuickRSVPForm />;
+      case 'join-team':
+        return <JoinTeamPage />;
       case 'password-reset':
         return <PasswordResetPage onComplete={() => setCurrentPage('home')} />;
       case 'player-dashboard':
