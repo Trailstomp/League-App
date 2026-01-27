@@ -394,7 +394,6 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                         <NavItem icon={<LacrosseIcon name="venue" />} label="Home" pageName="home" />
                         <NavItem icon={<LacrosseIcon name="calendar" />} label="Events & Schedule" pageName="events" />
                         <NavItem icon={<LacrosseIcon name="trophy" />} label="Standings" pageName="standings" />
-                        <NavItem icon={<LacrosseIcon name="email" />} label="League Contact" pageName="league_contact" />
                         {currentUser && (
                             <NavItem icon={<span>📊</span>} label="My Dashboard" pageName="player-dashboard" />
                         )}
