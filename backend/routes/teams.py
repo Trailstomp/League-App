@@ -752,6 +752,41 @@ async def submit_join_request(team_id: str, data: Dict[str, Any]):
         
         logger.info(f"✅ New join request from {join_request['name']} for team {team.get('name')}")
         
+        # Send email notifications (async, don't block response)
+        team_name = team.get("name", "Team")
+        user_name = join_request["name"]
+        user_email = join_request["email"]
+        
+        # 1. Send confirmation email to user
+        try:
+            await notify_user_request_received(user_email, user_name, team_name)
+        except Exception as email_err:
+            logger.warning(f"⚠️ Failed to send user confirmation email: {email_err}")
+        
+        # 2. Send notification to team admin(s)
+        try:
+            # Find team admins/coaches
+            team_admins = await db.users.find({
+                "$or": [
+                    {"teamId": team_id, "roles": {"$in": ["coach", "admin", "league_admin"]}},
+                    {"teamAssignments.teamId": team_id, "roles": {"$in": ["coach", "admin", "league_admin"]}}
+                ]
+            }, {"_id": 0, "email": 1, "name": 1}).to_list(10)
+            
+            for admin in team_admins:
+                if admin.get("email"):
+                    await notify_admin_new_request(
+                        admin["email"],
+                        admin.get("name", "Team Admin"),
+                        team_name,
+                        user_name,
+                        user_email,
+                        join_request.get("position", ""),
+                        join_request.get("message", "")
+                    )
+        except Exception as admin_email_err:
+            logger.warning(f"⚠️ Failed to send admin notification email: {admin_email_err}")
+        
         return {
             "status": "success",
             "message": "Join request submitted successfully",
