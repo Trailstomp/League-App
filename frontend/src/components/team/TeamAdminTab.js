@@ -4,7 +4,7 @@ import { getSportConfig } from '../../config/sportsConfig';
 
 /**
  * TeamAdminTab - Comprehensive team administration for coaches/admins
- * Sections: Players, Availability
+ * Sections: Players, Availability, Recruiting
  */
 const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' }) => {
     const [activeSection, setActiveSection] = useState('players');
@@ -24,12 +24,19 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
     // Availability state
     const [availabilityFilter, setAvailabilityFilter] = useState('all');
     
+    // Recruiting state
+    const [pendingRequests, setPendingRequests] = useState([]);
+    const [inviteEmail, setInviteEmail] = useState('');
+    const [inviteMessage, setInviteMessage] = useState('');
+    const [sentInvites, setSentInvites] = useState([]);
+    
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
     const sportConfig = getSportConfig(sportType);
     
     const sections = [
         { id: 'players', label: 'Manage Players', icon: '👥' },
-        { id: 'availability', label: 'Availability', icon: '📋' }
+        { id: 'availability', label: 'Availability', icon: '📋' },
+        { id: 'recruiting', label: 'Recruiting', icon: '📨' }
     ];
 
     // Fetch team players
@@ -45,6 +52,32 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
             console.error('Error fetching players:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Fetch pending join requests
+    const fetchPendingRequests = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/api/team/${team.id}/requests`);
+            if (response.ok) {
+                const data = await response.json();
+                setPendingRequests(data.requests || []);
+            }
+        } catch (error) {
+            console.error('Error fetching requests:', error);
+        }
+    };
+
+    // Fetch sent invites
+    const fetchSentInvites = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/api/team/${team.id}/invites`);
+            if (response.ok) {
+                const data = await response.json();
+                setSentInvites(data.invites || []);
+            }
+        } catch (error) {
+            console.error('Error fetching invites:', error);
         }
     };
 
