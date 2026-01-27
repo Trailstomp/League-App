@@ -35,7 +35,6 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
     
     const sections = [
         { id: 'players', label: 'Manage Players', icon: '👥' },
-        { id: 'availability', label: 'Availability', icon: '📋' },
         { id: 'recruiting', label: 'Recruiting', icon: '📨' }
     ];
 
