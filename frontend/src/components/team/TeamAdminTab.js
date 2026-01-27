@@ -343,16 +343,6 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                     <h2 className="text-2xl font-bold text-slate-800">Team Admin</h2>
                     <p className="text-slate-500 text-sm">{players.length} players on roster</p>
                 </div>
-                
-                {/* Quick Stats */}
-                <div className="flex gap-3 text-sm">
-                    <div className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg">
-                        <span className="font-bold">{availabilityStats.active}</span> active
-                    </div>
-                    <div className="px-3 py-1.5 bg-orange-50 text-orange-700 rounded-lg">
-                        <span className="font-bold">{availabilityStats.injured}</span> injured
-                    </div>
-                </div>
             </div>
 
             {/* Message */}
