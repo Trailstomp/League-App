@@ -594,6 +594,146 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                 </div>
             )}
 
+            {/* RECRUITING SECTION */}
+            {activeSection === 'recruiting' && (
+                <div className="space-y-6">
+                    {/* Invite Link */}
+                    <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white">
+                        <h3 className="text-lg font-semibold mb-2">📨 Team Invite Link</h3>
+                        <p className="text-blue-100 text-sm mb-4">Share this link to let players request to join your team.</p>
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={`${window.location.origin}/join/${team.id}`}
+                                readOnly
+                                className="flex-1 px-3 py-2 rounded-lg bg-white/20 text-white placeholder-blue-200 border border-white/30"
+                            />
+                            <button
+                                onClick={copyInviteLink}
+                                className="px-4 py-2 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50"
+                            >
+                                📋 Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Send Direct Invite */}
+                    <div className="bg-white border rounded-lg p-6">
+                        <h3 className="font-bold text-lg text-slate-800 mb-4">✉️ Send Direct Invite</h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                                <input
+                                    type="email"
+                                    value={inviteEmail}
+                                    onChange={(e) => setInviteEmail(e.target.value)}
+                                    placeholder="player@email.com"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Personal Message (Optional)</label>
+                                <textarea
+                                    value={inviteMessage}
+                                    onChange={(e) => setInviteMessage(e.target.value)}
+                                    placeholder="Hey! We'd love to have you join our team..."
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                    rows={3}
+                                />
+                            </div>
+                            <button
+                                onClick={handleSendInvite}
+                                disabled={saving || !inviteEmail}
+                                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                            >
+                                {saving ? 'Sending...' : 'Send Invite'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Pending Requests */}
+                    <div className="bg-white border rounded-lg overflow-hidden">
+                        <div className="px-4 py-3 bg-slate-50 border-b">
+                            <h3 className="font-semibold text-slate-800">
+                                📥 Pending Join Requests 
+                                {pendingRequests.length > 0 && (
+                                    <span className="ml-2 px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full text-xs">
+                                        {pendingRequests.length}
+                                    </span>
+                                )}
+                            </h3>
+                        </div>
+                        {pendingRequests.length === 0 ? (
+                            <div className="p-6 text-center text-slate-500">
+                                No pending join requests
+                            </div>
+                        ) : (
+                            <div className="divide-y">
+                                {pendingRequests.map(request => (
+                                    <div key={request.id} className="p-4 flex items-center justify-between">
+                                        <div>
+                                            <div className="font-medium text-slate-800">{request.name || request.email}</div>
+                                            <div className="text-sm text-slate-500">{request.email}</div>
+                                            {request.message && (
+                                                <div className="text-sm text-slate-600 mt-1 italic">&quot;{request.message}&quot;</div>
+                                            )}
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => handleJoinRequest(request.id, 'approve')}
+                                                disabled={saving}
+                                                className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 disabled:opacity-50"
+                                            >
+                                                ✓ Approve
+                                            </button>
+                                            <button
+                                                onClick={() => handleJoinRequest(request.id, 'reject')}
+                                                disabled={saving}
+                                                className="px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg text-sm hover:bg-slate-300 disabled:opacity-50"
+                                            >
+                                                ✕ Decline
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Sent Invites */}
+                    <div className="bg-white border rounded-lg overflow-hidden">
+                        <div className="px-4 py-3 bg-slate-50 border-b">
+                            <h3 className="font-semibold text-slate-800">📤 Sent Invites</h3>
+                        </div>
+                        {sentInvites.length === 0 ? (
+                            <div className="p-6 text-center text-slate-500">
+                                No invites sent yet
+                            </div>
+                        ) : (
+                            <div className="divide-y">
+                                {sentInvites.map(invite => (
+                                    <div key={invite.id} className="p-4 flex items-center justify-between">
+                                        <div>
+                                            <div className="font-medium text-slate-800">{invite.email}</div>
+                                            <div className="text-xs text-slate-500">
+                                                Sent {invite.sentAt ? new Date(invite.sentAt).toLocaleDateString() : 'recently'}
+                                            </div>
+                                        </div>
+                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                            invite.status === 'accepted' ? 'bg-green-100 text-green-700' :
+                                            invite.status === 'expired' ? 'bg-slate-100 text-slate-600' :
+                                            'bg-yellow-100 text-yellow-700'
+                                        }`}>
+                                            {invite.status || 'Pending'}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
             {/* ADD PLAYER MODAL */}
             {showAddModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowAddModal(false)}>
