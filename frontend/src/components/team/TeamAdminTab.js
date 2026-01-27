@@ -311,16 +311,6 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
         leave: players.filter(p => p.availability === 'leave').length
     };
 
-    // Filter players
-    const getFilteredPlayers = () => {
-        let filtered = [...players];
-        if (activeSection === 'availability' && availabilityFilter !== 'all') {
-            filtered = filtered.filter(p => (p.availability || 'active') === availabilityFilter);
-        }
-        return filtered;
-    };
-
-    const filteredPlayers = getFilteredPlayers();
     const filteredUsers = availableUsers.filter(u => 
         u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         u.email?.toLowerCase().includes(searchTerm.toLowerCase())
