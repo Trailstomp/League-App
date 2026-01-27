@@ -8213,7 +8213,7 @@ async def recalculate_all_stats():
     """Admin endpoint to recalculate all team and player stats from final games"""
     try:
         # Get all teams
-        teams = await db.teams.find().to_list(None)
+        teams = await db.teams.find().to_list(100)  # Limit teams
         updated_teams = 0
         
         for team in teams:
@@ -8743,7 +8743,7 @@ async def debug_team_ids():
     """Debug team ID mismatches between teams and game stats"""
     try:
         # Get teams from teams collection
-        teams = await db.teams.find().to_list(None)
+        teams = await db.teams.find().to_list(100)  # Limit teams
         team_info = []
         for team in teams:
             team_info.append({
@@ -8753,7 +8753,7 @@ async def debug_team_ids():
             })
         
         # Get unique team IDs from game stats
-        game_stats = await db.game_stats.find().to_list(None)
+        game_stats = await db.game_stats.find().to_list(500)  # Limit game stats
         game_team_ids = set()
         for game in game_stats:
             home_id = game.get("home_team", {}).get("team_id")
@@ -8779,7 +8779,7 @@ async def fix_team_id_mismatches():
     """Fix team ID mismatches in game stats"""
     try:
         # Get all teams to create name->id mapping
-        teams = await db.teams.find().to_list(None)
+        teams = await db.teams.find().to_list(100)  # Limit teams
         name_to_id = {}
         id_to_name = {}
         
@@ -8794,7 +8794,7 @@ async def fix_team_id_mismatches():
             name_to_id[slug] = team_id
         
         # Fix game stats with wrong team IDs
-        game_stats = await db.game_stats.find().to_list(None)
+        game_stats = await db.game_stats.find().to_list(500)  # Limit game stats
         fixed_count = 0
         
         for game in game_stats:
@@ -8999,7 +8999,7 @@ class EventUpdate(BaseModel):
 async def get_unified_events():
     """Get all unified events"""
     try:
-        events = await db.unified_events.find().sort("date", 1).to_list(None)
+        events = await db.unified_events.find().sort("date", 1).to_list(500)  # Limit events
         
         # Remove MongoDB _id field
         for event in events:
