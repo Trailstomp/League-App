@@ -422,6 +422,7 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 ### P0 (Critical)
 - [x] Finance Register - DONE
 - [x] Image Upload with Crop - DONE
+- [x] Join Team Public Page - DONE (Jan 27, 2025)
 
 ### P1 (High Priority)
 - [x] Refactor `server.py` into feature-based routers - IN PROGRESS
@@ -430,15 +431,20 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 
 ### P2 (Medium Priority)
 - [x] Session persistence across navigation and refresh - VERIFIED WORKING
+- [x] Recurring Events Backend Logic - DONE (Jan 27, 2025)
 - [ ] Player card popup improvements
 - [ ] Advanced notification system
 - [ ] Complete YouTube backend integration
 - [ ] Mobile-responsive improvements
+- [ ] Google Drive Integration - Built but awaiting user credentials
+- [ ] Finance Register PDF Export
 
 ### P3 (Future)
 - [ ] OAuth/Social login integration
 - [ ] Offline support / PWA features
 - [x] Financial reports/exports - CSV export added to Team and League Finance
+- [ ] Refactor to `react-router-dom` for better maintainability
+- [ ] Improve Tournament Scoring UI
 
 ## Technical Debt - RESOLVED
 ### Frontend Refactoring (TeamDetailPage.js)
