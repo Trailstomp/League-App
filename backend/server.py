@@ -9010,8 +9010,17 @@ async def get_unified_events():
 
 @api_router.post("/unified-events")
 async def create_unified_event(event: UnifiedEvent):
-    """Create a new unified event"""
+    """Create a new unified event (or multiple for recurring events)"""
     try:
+        # Check if this is a recurring event
+        event_dict = event.dict()
+        is_recurring = event_dict.get("is_recurring", False)
+        recurrence = event_dict.get("recurrence", {})
+        
+        if is_recurring and recurrence and event_dict.get("date"):
+            # Generate recurring event instances
+            return await _create_recurring_events(event_dict, recurrence)
+        
         # Generate ID if not provided
         if not event.id:
             event.id = str(uuid.uuid4())
@@ -9114,6 +9123,183 @@ async def create_unified_event(event: UnifiedEvent):
     except Exception as e:
         logger.error(f"Error creating unified event: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+async def _create_recurring_events(base_event: Dict[str, Any], recurrence: Dict[str, Any]):
+    """
+    Generate and save recurring event instances
+    
+    Args:
+        base_event: The original event data
+        recurrence: {
+            "frequency": "daily" | "weekly" | "biweekly" | "monthly",
+            "daysOfWeek": [0,1,2,3,4,5,6] (0=Sunday for weekly),
+            "endType": "count" | "date" | "never",
+            "count": int,
+            "endDate": "YYYY-MM-DD"
+        }
+    """
+    try:
+        from datetime import datetime, timedelta
+        
+        logger.info(f"📅 Creating recurring events: {recurrence}")
+        
+        frequency = recurrence.get("frequency", "weekly")
+        end_type = recurrence.get("endType", "count")
+        count = recurrence.get("count", 10)
+        end_date_str = recurrence.get("endDate")
+        days_of_week = recurrence.get("daysOfWeek", [])
+        
+        # Parse start date
+        start_date_str = base_event.get("date")
+        if not start_date_str:
+            raise HTTPException(status_code=400, detail="Date is required for recurring events")
+        
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+        
+        # Determine end condition
+        if end_type == "date" and end_date_str:
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+            max_instances = 365  # Safety limit
+        elif end_type == "never":
+            # Generate for 1 year ahead
+            end_date = start_date + timedelta(days=365)
+            max_instances = 52  # ~1 year of weekly events
+        else:  # count
+            end_date = start_date + timedelta(days=365)  # Max 1 year
+            max_instances = count
+        
+        # Generate instances
+        instances = []
+        current_date = start_date
+        parent_id = str(uuid.uuid4())
+        now = datetime.now(timezone.utc).isoformat()
+        
+        while len(instances) < max_instances and current_date <= end_date:
+            # For weekly with specific days, check if this day matches
+            if frequency == "weekly" and days_of_week:
+                # Convert Python weekday (0=Monday) to UI weekday (0=Sunday)
+                ui_weekday = (current_date.weekday() + 1) % 7
+                if ui_weekday not in days_of_week:
+                    current_date += timedelta(days=1)
+                    continue
+            
+            # Create instance
+            instance = {
+                **base_event,
+                "id": str(uuid.uuid4()),
+                "date": current_date.strftime("%Y-%m-%d"),
+                "is_recurring_instance": True,
+                "parent_event_id": parent_id,
+                "recurrence_index": len(instances),
+                "created_at": now,
+                "updated_at": now,
+                "status": "scheduled"
+            }
+            
+            # Add start_datetime
+            if base_event.get("time"):
+                instance["start_datetime"] = f"{instance['date']}T{base_event['time']}:00"
+            else:
+                instance["start_datetime"] = f"{instance['date']}T00:00:00"
+            
+            # Clean up recurrence from instance (don't want nested recurrence)
+            instance.pop("is_recurring", None)
+            instance.pop("recurrence", None)
+            
+            instances.append(instance)
+            
+            # Calculate next occurrence
+            if frequency == "daily":
+                current_date += timedelta(days=1)
+            elif frequency == "weekly":
+                if days_of_week:
+                    current_date += timedelta(days=1)  # Daily check for matching days
+                else:
+                    current_date += timedelta(weeks=1)
+            elif frequency == "biweekly":
+                current_date += timedelta(weeks=2)
+            elif frequency == "monthly":
+                # Add one month
+                month = current_date.month + 1
+                year = current_date.year
+                if month > 12:
+                    month = 1
+                    year += 1
+                try:
+                    current_date = current_date.replace(year=year, month=month)
+                except ValueError:
+                    # Handle end-of-month edge cases (e.g., Jan 31 -> Feb 28)
+                    current_date = current_date.replace(year=year, month=month, day=28)
+            else:
+                current_date += timedelta(weeks=1)  # Default weekly
+        
+        logger.info(f"📅 Generated {len(instances)} recurring event instances")
+        
+        # Save all instances to unified_events collection
+        if instances:
+            await db.unified_events.insert_many(instances)
+            
+            # Also add to leagueSchedule for ticker
+            try:
+                league_doc = await db.league_data.find_one({"id": "main_league"})
+                if not league_doc:
+                    league_doc = {"id": "main_league", "leagueSchedule": []}
+                    await db.league_data.insert_one(league_doc)
+                
+                current_schedule = league_doc.get("leagueSchedule", [])
+                
+                for instance in instances:
+                    schedule_event = {
+                        "id": instance["id"],
+                        "title": instance.get("title", ""),
+                        "type": instance.get("type", "event"),
+                        "event_type": instance.get("type", "event"),
+                        "date": instance.get("date", ""),
+                        "time": instance.get("time", ""),
+                        "location": instance.get("location", ""),
+                        "description": instance.get("description", ""),
+                        "homeTeam": instance.get("teams", [None])[0] if instance.get("teams") else None,
+                        "awayTeam": instance.get("teams", [None, None])[1] if len(instance.get("teams", [])) > 1 else None,
+                        "teams": instance.get("teams", []),
+                        "status": instance.get("status", "scheduled"),
+                        "imageUrl": instance.get("imageUrl", ""),
+                        "is_external": instance.get("is_external", False),
+                        "rsvp_enabled": instance.get("rsvp_enabled", True),
+                        "is_recurring_instance": True,
+                        "parent_event_id": parent_id,
+                        "start_datetime": instance.get("start_datetime"),
+                        "created_at": now,
+                        "updated_at": now
+                    }
+                    current_schedule.append(schedule_event)
+                
+                await db.league_data.update_one(
+                    {"id": "main_league"},
+                    {"$set": {"leagueSchedule": current_schedule}},
+                    upsert=True
+                )
+                logger.info(f"✅ Recurring events added to leagueSchedule for ticker")
+            except Exception as schedule_err:
+                logger.warning(f"Failed to add recurring events to leagueSchedule: {schedule_err}")
+        
+        # Return first instance as the response
+        if instances:
+            first_instance = instances[0]
+            if "_id" in first_instance:
+                del first_instance["_id"]
+            first_instance["recurring_instances_created"] = len(instances)
+            return first_instance
+        
+        raise HTTPException(status_code=400, detail="No recurring instances could be generated")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        logger.error(f"❌ Error creating recurring events: {e}\n{error_details}")
+        raise HTTPException(status_code=500, detail=f"Error creating recurring events: {str(e)}")
 
 @api_router.get("/unified-events/{event_id}")
 async def get_unified_event(event_id: str):
