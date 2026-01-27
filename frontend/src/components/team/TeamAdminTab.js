@@ -238,6 +238,75 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
         }
     };
 
+    // Handle join request (approve/reject)
+    const handleJoinRequest = async (requestId, action) => {
+        setSaving(true);
+        try {
+            const response = await fetch(`${backendUrl}/api/team/${team.id}/requests/${requestId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action }) // 'approve' or 'reject'
+            });
+            
+            if (response.ok) {
+                setMessage(action === 'approve' ? '✅ Player approved and added to team!' : '✅ Request declined');
+                fetchPendingRequests();
+                if (action === 'approve') fetchPlayers();
+            } else {
+                setMessage('❌ Failed to process request');
+            }
+        } catch (error) {
+            setMessage('❌ Error processing request');
+        } finally {
+            setSaving(false);
+            setTimeout(() => setMessage(''), 3000);
+        }
+    };
+
+    // Send invite
+    const handleSendInvite = async () => {
+        if (!inviteEmail) {
+            setMessage('❌ Please enter an email address');
+            return;
+        }
+        
+        setSaving(true);
+        try {
+            const response = await fetch(`${backendUrl}/api/team/${team.id}/invite`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    email: inviteEmail,
+                    message: inviteMessage,
+                    invitedBy: currentUser?.id
+                })
+            });
+            
+            if (response.ok) {
+                setMessage('✅ Invite sent!');
+                setInviteEmail('');
+                setInviteMessage('');
+                fetchSentInvites();
+            } else {
+                const data = await response.json();
+                setMessage(`❌ ${data.detail || 'Failed to send invite'}`);
+            }
+        } catch (error) {
+            setMessage('❌ Error sending invite');
+        } finally {
+            setSaving(false);
+            setTimeout(() => setMessage(''), 3000);
+        }
+    };
+
+    // Copy team invite link
+    const copyInviteLink = () => {
+        const link = `${window.location.origin}/join/${team.id}`;
+        navigator.clipboard.writeText(link);
+        setMessage('✅ Invite link copied to clipboard!');
+        setTimeout(() => setMessage(''), 3000);
+    };
+
     // Calculate availability stats
     const availabilityStats = {
         active: players.filter(p => !p.availability || p.availability === 'active').length,
