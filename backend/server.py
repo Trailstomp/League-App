@@ -414,16 +414,17 @@ async def get_dashboard_data():
     """
     try:
         # Use asyncio.gather to run all database queries in parallel
+        # Added limits to prevent memory issues in production
         league_data_task = db.league_data.find_one({"id": "main_league"})
-        teams_task = db.teams.find().to_list(None)  # Get teams from new collection
+        teams_task = db.teams.find().to_list(100)  # Limit to 100 teams
         galleries_task = get_active_galleries_internal()
         youtube_task = db.youtube_integration.find_one({"id": "main_youtube"})
-        unified_events_task = db.unified_events.find({}, {"_id": 0}).to_list(None)  # Get unified events
+        unified_events_task = db.unified_events.find({}, {"_id": 0}).to_list(500)  # Limit to 500 events
         # Fetch active players from users collection (player role)
         players_task = db.users.find(
             {"status": "active", "$or": [{"roles": "player"}, {"role": "player"}]},
             {"_id": 0, "password": 0}
-        ).to_list(None)
+        ).to_list(1000)  # Limit to 1000 players
         
         # Execute all queries in parallel
         league_data, teams_from_collection, galleries_data, youtube_config, unified_events, active_players = await asyncio.gather(
