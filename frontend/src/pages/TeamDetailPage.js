@@ -124,7 +124,6 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
         ...(isTeamCoachOrAdmin ? [
             { id: 'admin', label: 'Team Admin', icon: 'admin', coachOnly: true },
             { id: 'finance', label: 'Finance', icon: '📊', coachOnly: true },
-            { id: 'recruiting', label: 'Recruiting', icon: 'add', coachOnly: true },
         ] : []),
         { id: 'settings', label: 'Settings', icon: 'settings', adminOnly: true }
     ];
