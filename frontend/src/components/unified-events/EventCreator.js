@@ -566,6 +566,157 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                         </div>
                     )}
 
+                    {/* Recurring Event Options */}
+                    {(formData.type === 'practice' || formData.type === 'meeting' || formData.type === 'social') && (
+                        <div className="mt-6 p-4 bg-blue-50 rounded-lg space-y-4">
+                            <div className="flex items-center gap-3">
+                                <input
+                                    type="checkbox"
+                                    id="is_recurring"
+                                    checked={formData.is_recurring}
+                                    onChange={(e) => handleInputChange('is_recurring', e.target.checked)}
+                                    className="w-5 h-5 text-blue-600 rounded"
+                                />
+                                <label htmlFor="is_recurring" className="font-medium text-gray-800">
+                                    🔄 Make this a recurring event
+                                </label>
+                            </div>
+                            
+                            {formData.is_recurring && (
+                                <div className="ml-8 space-y-4 border-l-2 border-blue-200 pl-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Repeat Frequency
+                                        </label>
+                                        <select
+                                            value={formData.recurrence.frequency}
+                                            onChange={(e) => setFormData(prev => ({
+                                                ...prev,
+                                                recurrence: { ...prev.recurrence, frequency: e.target.value }
+                                            }))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                        >
+                                            <option value="daily">Daily</option>
+                                            <option value="weekly">Weekly</option>
+                                            <option value="biweekly">Every 2 Weeks</option>
+                                            <option value="monthly">Monthly</option>
+                                        </select>
+                                    </div>
+                                    
+                                    {formData.recurrence.frequency === 'weekly' && (
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Repeat On
+                                            </label>
+                                            <div className="flex flex-wrap gap-2">
+                                                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
+                                                    <button
+                                                        key={day}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const days = formData.recurrence.daysOfWeek || [];
+                                                            const newDays = days.includes(index)
+                                                                ? days.filter(d => d !== index)
+                                                                : [...days, index];
+                                                            setFormData(prev => ({
+                                                                ...prev,
+                                                                recurrence: { ...prev.recurrence, daysOfWeek: newDays }
+                                                            }));
+                                                        }}
+                                                        className={`px-3 py-1 rounded-lg text-sm font-medium ${
+                                                            (formData.recurrence.daysOfWeek || []).includes(index)
+                                                                ? 'bg-blue-600 text-white'
+                                                                : 'bg-gray-200 text-gray-700'
+                                                        }`}
+                                                    >
+                                                        {day}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            End Recurrence
+                                        </label>
+                                        <div className="space-y-2">
+                                            <label className="flex items-center gap-2">
+                                                <input
+                                                    type="radio"
+                                                    name="endType"
+                                                    value="count"
+                                                    checked={formData.recurrence.endType === 'count'}
+                                                    onChange={() => setFormData(prev => ({
+                                                        ...prev,
+                                                        recurrence: { ...prev.recurrence, endType: 'count' }
+                                                    }))}
+                                                    className="text-blue-600"
+                                                />
+                                                <span>After</span>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    max="52"
+                                                    value={formData.recurrence.count}
+                                                    onChange={(e) => setFormData(prev => ({
+                                                        ...prev,
+                                                        recurrence: { ...prev.recurrence, count: parseInt(e.target.value) || 10 }
+                                                    }))}
+                                                    className="w-16 px-2 py-1 border border-gray-300 rounded"
+                                                    disabled={formData.recurrence.endType !== 'count'}
+                                                />
+                                                <span>occurrences</span>
+                                            </label>
+                                            <label className="flex items-center gap-2">
+                                                <input
+                                                    type="radio"
+                                                    name="endType"
+                                                    value="date"
+                                                    checked={formData.recurrence.endType === 'date'}
+                                                    onChange={() => setFormData(prev => ({
+                                                        ...prev,
+                                                        recurrence: { ...prev.recurrence, endType: 'date' }
+                                                    }))}
+                                                    className="text-blue-600"
+                                                />
+                                                <span>On date</span>
+                                                <input
+                                                    type="date"
+                                                    value={formData.recurrence.endDate}
+                                                    onChange={(e) => setFormData(prev => ({
+                                                        ...prev,
+                                                        recurrence: { ...prev.recurrence, endDate: e.target.value }
+                                                    }))}
+                                                    className="px-2 py-1 border border-gray-300 rounded"
+                                                    disabled={formData.recurrence.endType !== 'date'}
+                                                />
+                                            </label>
+                                            <label className="flex items-center gap-2">
+                                                <input
+                                                    type="radio"
+                                                    name="endType"
+                                                    value="never"
+                                                    checked={formData.recurrence.endType === 'never'}
+                                                    onChange={() => setFormData(prev => ({
+                                                        ...prev,
+                                                        recurrence: { ...prev.recurrence, endType: 'never' }
+                                                    }))}
+                                                    className="text-blue-600"
+                                                />
+                                                <span>Never (create events indefinitely)</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <p className="text-sm text-blue-700">
+                                        💡 This will create multiple events based on your selection when you save.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {/* Event Image Upload */}
                     <div className="mt-6">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
