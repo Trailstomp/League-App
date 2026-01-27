@@ -321,7 +321,7 @@ async def cleanup_orphaned_data():
     """Clean up galleries and media linked to deleted teams"""
     try:
         # Get all current team IDs
-        teams = await db.teams.find({}, {"id": 1}).to_list(None)
+        teams = await db.teams.find({}, {"id": 1}).to_list(100)
         valid_team_ids = {team["id"] for team in teams}
         valid_team_ids.add(None)  # League-level items have no teamId
         valid_team_ids.add("")    # Some might have empty string
@@ -336,7 +336,7 @@ async def cleanup_orphaned_data():
         # Clean up galleries with orphaned teamIds
         orphan_galleries = await db.galleries_new.find({
             "teamId": {"$nin": list(valid_team_ids), "$ne": None}
-        }).to_list(None)
+        }).to_list(100)
         
         if orphan_galleries:
             gallery_ids = [g["id"] for g in orphan_galleries]
@@ -393,7 +393,7 @@ async def preview_cleanup():
     """Preview what would be cleaned up without actually deleting"""
     try:
         # Get all current team IDs
-        teams = await db.teams.find({}, {"id": 1, "name": 1}).to_list(None)
+        teams = await db.teams.find({}, {"id": 1, "name": 1}).to_list(100)
         valid_team_ids = {team["id"] for team in teams}
         valid_team_ids.add(None)
         valid_team_ids.add("")
@@ -407,7 +407,7 @@ async def preview_cleanup():
         # Find orphaned galleries
         orphan_galleries = await db.galleries_new.find({
             "teamId": {"$nin": list(valid_team_ids), "$ne": None}
-        }, {"_id": 0, "id": 1, "name": 1, "teamId": 1}).to_list(None)
+        }, {"_id": 0, "id": 1, "name": 1, "teamId": 1}).to_list(100)
         preview["orphaned_galleries"] = orphan_galleries
         
         # Find orphaned folder references

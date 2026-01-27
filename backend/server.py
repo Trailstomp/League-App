@@ -7705,8 +7705,8 @@ async def get_team_season_stats(team_id: str, season_id: Optional[str] = None):
             query_away["season_id"] = season_id
         
         # Get all game stats for this team
-        games_home = await db.game_stats.find(query_home).to_list(None)
-        games_away = await db.game_stats.find(query_away).to_list(None)
+        games_home = await db.game_stats.find(query_home).to_list(500)
+        games_away = await db.game_stats.find(query_away).to_list(500)
         
         logger.info(f"📊 Found {len(games_home)} home games and {len(games_away)} away games for team {team_id}")
         
@@ -7805,8 +7805,8 @@ async def get_team_player_stats(team_id: str, season_id: Optional[str] = None):
                 query_away["season_id"] = active_season["id"]
         
         # Get all game stats for this team
-        games_home = await db.game_stats.find(query_home).to_list(None)
-        games_away = await db.game_stats.find(query_away).to_list(None)
+        games_home = await db.game_stats.find(query_home).to_list(500)
+        games_away = await db.game_stats.find(query_away).to_list(500)
         
         player_stats = {}  # player_id -> aggregated stats
         goalie_stats = {}  # goalie_id -> aggregated stats
@@ -7922,7 +7922,7 @@ async def get_player_stats_by_year(player_id: str):
                 {"away_team.players.player_id": player_id}
             ],
             "status": "final"
-        }).to_list(None)
+        }).to_list(500)
         
         # Group stats by year
         stats_by_year = {}
@@ -8020,7 +8020,7 @@ async def get_league_standings(
             query["division_id"] = division_id
         
         # Get teams based on filters
-        teams = await db.teams.find(query).to_list(None)
+        teams = await db.teams.find(query).to_list(500)
         
         standings = []
         for team in teams:
@@ -8223,7 +8223,7 @@ async def recalculate_all_stats():
                 updated_teams += 1
         
         # Get all final games and update player stats
-        final_games = await db.game_stats.find({"status": "final"}).to_list(None)
+        final_games = await db.game_stats.find({"status": "final"}).to_list(500)
         
         # Reset all player stats first
         await db.users.update_many(
@@ -8287,7 +8287,7 @@ async def admin_update_team(team_id: str, data: Dict[str, Any]):
 async def get_seasons(league_id: str = "main_league"):
     """Get all seasons for a league"""
     try:
-        seasons = await db.seasons.find({"league_id": league_id}).sort("start_date", -1).to_list(None)
+        seasons = await db.seasons.find({"league_id": league_id}).sort("start_date", -1).to_list(500)
         
         # Remove MongoDB _id
         for season in seasons:
@@ -8563,7 +8563,7 @@ async def create_league(league: League):
 async def get_league_divisions(league_id: str):
     """Get all divisions for a specific league"""
     try:
-        divisions = await db.divisions.find({"league_id": league_id}).sort("level", 1).to_list(None)
+        divisions = await db.divisions.find({"league_id": league_id}).sort("level", 1).to_list(500)
         
         # Remove MongoDB _id
         for division in divisions:
@@ -8593,7 +8593,7 @@ async def create_division(league_id: str, division: Division):
 async def get_league_teams(league_id: str):
     """Get all teams in a specific league"""
     try:
-        teams = await db.teams.find({"league_id": league_id}).to_list(None)
+        teams = await db.teams.find({"league_id": league_id}).to_list(500)
         
         # Remove MongoDB _id
         for team in teams:
@@ -8609,7 +8609,7 @@ async def get_league_teams(league_id: str):
 async def get_division_teams(division_id: str):
     """Get all teams in a specific division"""
     try:
-        teams = await db.teams.find({"division_id": division_id}).to_list(None)
+        teams = await db.teams.find({"division_id": division_id}).to_list(500)
         
         # Remove MongoDB _id
         for team in teams:
@@ -8626,10 +8626,10 @@ async def get_league_standings_by_divisions(league_id: str, season_id: Optional[
     """Get league standings grouped by divisions"""
     try:
         # Get all teams in this league
-        teams = await db.teams.find({"league_id": league_id}).to_list(None)
+        teams = await db.teams.find({"league_id": league_id}).to_list(500)
         
         # Get all divisions in this league
-        divisions = await db.divisions.find({"league_id": league_id}).sort("level", 1).to_list(None)
+        divisions = await db.divisions.find({"league_id": league_id}).sort("level", 1).to_list(500)
         
         standings_by_division = {}
         
@@ -8919,7 +8919,7 @@ async def get_season_summary(season_id: str):
             raise HTTPException(status_code=404, detail="Season not found")
         
         # Get all games in this season
-        games = await db.game_stats.find({"season_id": season_id, "status": "final"}).to_list(None)
+        games = await db.game_stats.find({"season_id": season_id, "status": "final"}).to_list(500)
         
         total_goals = sum(game["home_team"]["goals_for"] + (game.get("away_team", {}).get("goals_for", 0) or 0) for game in games)
         
@@ -10379,7 +10379,7 @@ async def get_team_coaches(team_id: str):
                 {"teamId": team_id, "roles": "coach"},
                 {"teamId": team_id, "role": "coach"},
             ]
-        }, {"_id": 0, "password": 0}).to_list(None)
+        }, {"_id": 0, "password": 0}).to_list(500)
         
         logger.info(f"📋 Found {len(coaches)} coaches for team {team_id}")
         
@@ -10398,7 +10398,7 @@ async def get_all_coaches():
                 {"roles": "coach"},
                 {"role": "coach"}
             ]
-        }, {"_id": 0, "password": 0}).to_list(None)
+        }, {"_id": 0, "password": 0}).to_list(500)
         
         # Group coaches by team
         coaches_by_team = {}
@@ -10467,7 +10467,7 @@ async def notify_event_coaches(event_id: str, notification: dict):
                 {"teamId": {"$in": team_ids}, "roles": "coach"},
                 {"teamId": {"$in": team_ids}, "role": "coach"},
             ]
-        }, {"_id": 0, "password": 0}).to_list(None)
+        }, {"_id": 0, "password": 0}).to_list(500)
         
         if not coaches:
             return {"success": False, "message": "No coaches found for the event teams"}
@@ -12312,7 +12312,7 @@ async def send_event_sms_notifications(event_id: str, notification_data: Dict[st
         
         # Filter by RSVP status if specified
         if target_users != "all":
-            rsvps = await db.event_rsvps.find({"event_id": event_id}).to_list(None)
+            rsvps = await db.event_rsvps.find({"event_id": event_id}).to_list(500)
             rsvp_emails = []
             for rsvp in rsvps:
                 if target_users == "going" and rsvp.get("response") == "yes":
@@ -12323,7 +12323,7 @@ async def send_event_sms_notifications(event_id: str, notification_data: Dict[st
             if rsvp_emails:
                 users_query["email"] = {"$in": rsvp_emails}
         
-        users = await db.users.find(users_query).to_list(None)
+        users = await db.users.find(users_query).to_list(500)
         
         # Also check league_data.players for legacy phone numbers
         league_doc = await db.league_data.find_one({"id": "main_league"})
@@ -12408,7 +12408,7 @@ async def send_event_sms_notifications(event_id: str, notification_data: Dict[st
 async def get_sms_logs(limit: int = 50):
     """Get SMS notification logs"""
     try:
-        logs = await db.sms_logs.find().sort("sent_at", -1).limit(limit).to_list(None)
+        logs = await db.sms_logs.find().sort("sent_at", -1).limit(limit).to_list(500)
         
         for log in logs:
             log.pop('_id', None)
@@ -12605,7 +12605,7 @@ async def sms_status_callback(request: Request):
 async def get_incoming_sms(limit: int = 50):
     """Get incoming SMS messages"""
     try:
-        messages = await db.sms_incoming.find().sort("received_at", -1).limit(limit).to_list(None)
+        messages = await db.sms_incoming.find().sort("received_at", -1).limit(limit).to_list(500)
         for msg in messages:
             msg.pop('_id', None)
         return {"messages": messages, "count": len(messages)}
@@ -12618,7 +12618,7 @@ async def get_incoming_sms(limit: int = 50):
 async def get_sms_status_history(limit: int = 100):
     """Get SMS delivery status history"""
     try:
-        history = await db.sms_status_history.find().sort("updated_at", -1).limit(limit).to_list(None)
+        history = await db.sms_status_history.find().sort("updated_at", -1).limit(limit).to_list(500)
         for h in history:
             h.pop('_id', None)
         return {"history": history, "count": len(history)}
@@ -12677,7 +12677,7 @@ async def get_collection_data(collection_name: str, limit: int = 100):
     """Get data from a specific collection"""
     try:
         collection = db[collection_name]
-        documents = await collection.find({}, {"_id": 0}).limit(limit).to_list(None)
+        documents = await collection.find({}, {"_id": 0}).limit(limit).to_list(500)
         count = await collection.count_documents({})
         
         return {
