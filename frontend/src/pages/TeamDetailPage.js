@@ -8,7 +8,6 @@ import {
     TeamSettingsTab,
     TeamRosterTab,
     MyDashboardTab,
-    TeamRecruitingTab,
     TeamHomeTab,
     TeamScheduleTab,
     TeamStatsTab,
