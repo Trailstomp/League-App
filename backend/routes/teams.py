@@ -352,3 +352,334 @@ async def update_player_payment(team_id: str, player_id: str, data: Dict[str, An
     except Exception as e:
         logger.error(f"❌ Error updating player payment: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+# ============================================================================
+# Public Team Endpoints (for /join/{team_id} page)
+# ============================================================================
+
+@teams_public_router.get("/{team_id}/public")
+async def get_team_public_info(team_id: str):
+    """Get public team information for the join page (no auth required)"""
+    try:
+        # First check the teams collection
+        team = await db.teams.find_one({"id": team_id}, {"_id": 0})
+        
+        if not team:
+            # Fallback to league_data.teams
+            league_data = await db.league_data.find_one({"id": "main_league"})
+            if league_data and league_data.get("teams"):
+                for t in league_data["teams"]:
+                    if t.get("id") == team_id:
+                        team = t
+                        break
+        
+        if not team:
+            raise HTTPException(status_code=404, detail="Team not found")
+        
+        # Return only public-safe information
+        return {
+            "id": team.get("id"),
+            "name": team.get("name"),
+            "division": team.get("division"),
+            "type": team.get("type"),
+            "style": {
+                "primaryColor": team.get("style", {}).get("primaryColor") or team.get("primaryColor"),
+                "logoUrl": team.get("style", {}).get("logoUrl") or team.get("logoUrl"),
+                "bannerUrl": team.get("style", {}).get("bannerUrl") or team.get("bannerUrl")
+            },
+            "sportType": team.get("sportType")
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error fetching public team info: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@teams_public_router.post("/{team_id}/join-requests")
+async def submit_join_request(team_id: str, data: Dict[str, Any]):
+    """Submit a request to join a team (public endpoint)"""
+    try:
+        # Validate team exists
+        team = await db.teams.find_one({"id": team_id}, {"_id": 0})
+        if not team:
+            league_data = await db.league_data.find_one({"id": "main_league"})
+            if league_data and league_data.get("teams"):
+                team = next((t for t in league_data["teams"] if t.get("id") == team_id), None)
+        
+        if not team:
+            raise HTTPException(status_code=404, detail="Team not found")
+        
+        # Validate required fields
+        if not data.get("name"):
+            raise HTTPException(status_code=400, detail="Name is required")
+        if not data.get("email"):
+            raise HTTPException(status_code=400, detail="Email is required")
+        
+        # Check for duplicate pending request with same email
+        existing_request = await db.join_requests.find_one({
+            "teamId": team_id,
+            "email": data.get("email").lower().strip(),
+            "status": "pending"
+        })
+        
+        if existing_request:
+            raise HTTPException(status_code=400, detail="You already have a pending request for this team")
+        
+        # Create join request
+        join_request = {
+            "id": str(uuid.uuid4()),
+            "teamId": team_id,
+            "teamName": team.get("name"),
+            "name": data.get("name", "").strip(),
+            "email": data.get("email", "").lower().strip(),
+            "phone": data.get("phone", "").strip(),
+            "position": data.get("position", "").strip(),
+            "experience": data.get("experience", ""),
+            "message": data.get("message", "").strip(),
+            "status": "pending",
+            "requestedAt": datetime.now(timezone.utc).isoformat(),
+            "createdAt": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.join_requests.insert_one(join_request)
+        
+        logger.info(f"✅ New join request from {join_request['name']} for team {team.get('name')}")
+        
+        return {
+            "status": "success",
+            "message": "Join request submitted successfully",
+            "requestId": join_request["id"]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error submitting join request: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
+# Team Admin Endpoints for Join Requests (authenticated)
+# ============================================================================
+
+@teams_router.get("/{team_id}/requests")
+async def get_team_join_requests(team_id: str):
+    """Get pending join requests for a team (for team admins)"""
+    try:
+        cursor = db.join_requests.find(
+            {"teamId": team_id, "status": "pending"},
+            {"_id": 0}
+        ).sort("requestedAt", -1)
+        
+        requests = await cursor.to_list(100)
+        
+        logger.info(f"✅ Loaded {len(requests)} pending join requests for team {team_id}")
+        
+        return {"requests": requests}
+        
+    except Exception as e:
+        logger.error(f"❌ Error fetching join requests: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@teams_router.put("/{team_id}/requests/{request_id}")
+async def handle_join_request(team_id: str, request_id: str, data: Dict[str, Any]):
+    """Approve or reject a join request"""
+    try:
+        action = data.get("action")  # 'approve' or 'reject'
+        
+        if action not in ["approve", "reject"]:
+            raise HTTPException(status_code=400, detail="Action must be 'approve' or 'reject'")
+        
+        # Get the request
+        join_request = await db.join_requests.find_one(
+            {"id": request_id, "teamId": team_id},
+            {"_id": 0}
+        )
+        
+        if not join_request:
+            raise HTTPException(status_code=404, detail="Join request not found")
+        
+        if join_request.get("status") != "pending":
+            raise HTTPException(status_code=400, detail="Request has already been processed")
+        
+        if action == "approve":
+            # Check if user already exists with this email
+            existing_user = await db.users.find_one({"email": join_request["email"]}, {"_id": 0})
+            
+            if existing_user:
+                # Add team to existing user
+                user_id = existing_user["id"]
+                existing_assignments = existing_user.get("teamAssignments", [])
+                
+                if not any(a.get("teamId") == team_id for a in existing_assignments):
+                    new_assignment = {
+                        "teamId": team_id,
+                        "position": join_request.get("position", ""),
+                        "playerNumber": "",
+                        "isPrimary": len(existing_assignments) == 0
+                    }
+                    
+                    await db.users.update_one(
+                        {"id": user_id},
+                        {
+                            "$push": {"teamAssignments": new_assignment},
+                            "$set": {"updatedAt": datetime.now(timezone.utc).isoformat()}
+                        }
+                    )
+                    
+                    if len(existing_assignments) == 0:
+                        await db.users.update_one(
+                            {"id": user_id},
+                            {"$set": {"teamId": team_id}}
+                        )
+            else:
+                # Create a new user record (pending activation)
+                new_user = {
+                    "id": str(uuid.uuid4()),
+                    "name": join_request.get("name"),
+                    "email": join_request.get("email"),
+                    "phone": join_request.get("phone", ""),
+                    "position": join_request.get("position", ""),
+                    "teamId": team_id,
+                    "teamAssignments": [{
+                        "teamId": team_id,
+                        "position": join_request.get("position", ""),
+                        "playerNumber": "",
+                        "isPrimary": True
+                    }],
+                    "roles": ["player"],
+                    "status": "pending",  # They'll need to set up their account
+                    "createdAt": datetime.now(timezone.utc).isoformat(),
+                    "updatedAt": datetime.now(timezone.utc).isoformat(),
+                    "joinRequestId": request_id
+                }
+                
+                await db.users.insert_one(new_user)
+            
+            # Update request status
+            await db.join_requests.update_one(
+                {"id": request_id},
+                {
+                    "$set": {
+                        "status": "approved",
+                        "processedAt": datetime.now(timezone.utc).isoformat(),
+                        "processedBy": data.get("processedBy")
+                    }
+                }
+            )
+            
+            logger.info(f"✅ Approved join request {request_id} for {join_request.get('name')}")
+            
+            return {
+                "status": "success",
+                "message": f"Request approved. {join_request.get('name')} has been added to the team."
+            }
+            
+        else:  # reject
+            await db.join_requests.update_one(
+                {"id": request_id},
+                {
+                    "$set": {
+                        "status": "rejected",
+                        "processedAt": datetime.now(timezone.utc).isoformat(),
+                        "processedBy": data.get("processedBy"),
+                        "rejectionReason": data.get("reason", "")
+                    }
+                }
+            )
+            
+            logger.info(f"✅ Rejected join request {request_id}")
+            
+            return {
+                "status": "success",
+                "message": "Request has been declined"
+            }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error processing join request: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@teams_router.get("/{team_id}/invites")
+async def get_team_invites(team_id: str):
+    """Get sent invites for a team"""
+    try:
+        cursor = db.team_invites.find(
+            {"teamId": team_id},
+            {"_id": 0}
+        ).sort("sentAt", -1)
+        
+        invites = await cursor.to_list(100)
+        
+        return {"invites": invites}
+        
+    except Exception as e:
+        logger.error(f"❌ Error fetching team invites: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@teams_router.post("/{team_id}/invite")
+async def send_team_invite(team_id: str, data: Dict[str, Any]):
+    """Send an invite to join a team via email"""
+    try:
+        email = data.get("email", "").lower().strip()
+        
+        if not email:
+            raise HTTPException(status_code=400, detail="Email is required")
+        
+        # Check for existing invite
+        existing_invite = await db.team_invites.find_one({
+            "teamId": team_id,
+            "email": email,
+            "status": "pending"
+        })
+        
+        if existing_invite:
+            raise HTTPException(status_code=400, detail="An invite has already been sent to this email")
+        
+        # Get team info
+        team = await db.teams.find_one({"id": team_id}, {"_id": 0, "name": 1})
+        if not team:
+            league_data = await db.league_data.find_one({"id": "main_league"})
+            if league_data and league_data.get("teams"):
+                team = next((t for t in league_data["teams"] if t.get("id") == team_id), None)
+        
+        team_name = team.get("name") if team else "Team"
+        
+        # Create invite record
+        invite = {
+            "id": str(uuid.uuid4()),
+            "teamId": team_id,
+            "teamName": team_name,
+            "email": email,
+            "message": data.get("message", ""),
+            "invitedBy": data.get("invitedBy"),
+            "status": "pending",
+            "sentAt": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.team_invites.insert_one(invite)
+        
+        # TODO: Actually send the email (integrate with email service)
+        # For now, just record the invite
+        
+        logger.info(f"✅ Team invite created for {email} to join {team_name}")
+        
+        return {
+            "status": "success",
+            "message": f"Invite recorded for {email}",
+            "inviteId": invite["id"]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error sending team invite: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
