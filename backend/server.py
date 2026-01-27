@@ -12585,6 +12585,7 @@ async def create_backup():
 api_router.include_router(finance_router)
 api_router.include_router(locations_router)
 api_router.include_router(teams_router)
+api_router.include_router(teams_public_router)
 api_router.include_router(users_router)
 api_router.include_router(rsvp_router)
 api_router.include_router(drive_router)
