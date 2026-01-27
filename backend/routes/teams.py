@@ -6,6 +6,9 @@ from typing import Dict, Any, List
 from datetime import datetime, timezone
 import uuid
 import logging
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +24,306 @@ db = None
 def set_db(database):
     global db
     db = database
+
+
+async def send_join_request_email(
+    to_email: str,
+    to_name: str,
+    subject: str,
+    html_content: str,
+    text_content: str
+):
+    """Send email notification for join requests"""
+    try:
+        # Get SMTP config from league_data
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        smtp_config = league_data.get("smtpConfig") if league_data else None
+        
+        if not smtp_config or not smtp_config.get("email"):
+            logger.warning("⚠️ Email not configured - skipping notification")
+            return False
+        
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From'] = f"{smtp_config.get('sender_name', 'MLBL')} <{smtp_config['email']}>"
+        msg['To'] = to_email
+        
+        msg.attach(MIMEText(text_content, 'plain'))
+        msg.attach(MIMEText(html_content, 'html'))
+        
+        with smtplib.SMTP(smtp_config['host'], smtp_config.get('port', 587)) as server:
+            server.starttls()
+            server.login(smtp_config['email'], smtp_config['password'])
+            server.send_message(msg)
+        
+        logger.info(f"✅ Email sent to {to_email}")
+        return True
+    except Exception as e:
+        logger.error(f"❌ Failed to send email to {to_email}: {e}")
+        return False
+
+
+async def notify_user_request_received(user_email: str, user_name: str, team_name: str):
+    """Send confirmation email to user when they submit a join request"""
+    subject = f"Request Received - {team_name}"
+    
+    text_content = f"""Hi {user_name}!
+
+We've received your request to join {team_name}!
+
+The team admin will review your request and get back to you soon. You'll receive an email notification when your request is approved.
+
+Thanks for your interest in joining the team!
+
+Best regards,
+{team_name}
+"""
+    
+    html_content = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+        .content {{ background: #f8fafc; padding: 30px; border-radius: 0 0 10px 10px; }}
+        .status-box {{ background: white; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px; }}
+        .footer {{ text-align: center; color: #64748b; font-size: 12px; margin-top: 20px; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📬 Request Received!</h1>
+            <p>{team_name}</p>
+        </div>
+        <div class="content">
+            <p>Hi {user_name}!</p>
+            
+            <p>We've received your request to join <strong>{team_name}</strong>!</p>
+            
+            <div class="status-box">
+                <p style="margin: 0;"><strong>Status:</strong> ⏳ Pending Review</p>
+            </div>
+            
+            <p>The team admin will review your request and get back to you soon. You'll receive an email notification when your request is approved.</p>
+            
+            <p>Thanks for your interest in joining the team!</p>
+            
+            <p>Best regards,<br><strong>{team_name}</strong></p>
+        </div>
+        <div class="footer">
+            <p>This is an automated message. Please do not reply to this email.</p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+    
+    await send_join_request_email(user_email, user_name, subject, html_content, text_content)
+
+
+async def notify_admin_new_request(admin_email: str, admin_name: str, team_name: str, requester_name: str, requester_email: str, position: str, message: str):
+    """Send notification to team admin when a new join request is received"""
+    subject = f"New Join Request - {requester_name} wants to join {team_name}"
+    
+    text_content = f"""Hi {admin_name}!
+
+You have a new request to join {team_name}!
+
+Player Details:
+- Name: {requester_name}
+- Email: {requester_email}
+- Position: {position or 'Not specified'}
+- Message: {message or 'No message'}
+
+Log in to your team admin portal to approve or decline this request.
+
+Best regards,
+{team_name}
+"""
+    
+    html_content = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background: linear-gradient(135deg, #059669, #10b981); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+        .content {{ background: #f8fafc; padding: 30px; border-radius: 0 0 10px 10px; }}
+        .player-card {{ background: white; padding: 20px; margin: 20px 0; border-radius: 8px; border: 1px solid #e2e8f0; }}
+        .player-detail {{ margin: 8px 0; }}
+        .label {{ color: #64748b; font-size: 12px; text-transform: uppercase; }}
+        .value {{ font-weight: 500; }}
+        .message-box {{ background: #f1f5f9; border-left: 4px solid #3b82f6; padding: 15px; margin: 15px 0; border-radius: 4px; font-style: italic; }}
+        .footer {{ text-align: center; color: #64748b; font-size: 12px; margin-top: 20px; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🆕 New Join Request!</h1>
+            <p>{team_name}</p>
+        </div>
+        <div class="content">
+            <p>Hi {admin_name}!</p>
+            
+            <p>Someone wants to join your team!</p>
+            
+            <div class="player-card">
+                <div class="player-detail">
+                    <div class="label">Name</div>
+                    <div class="value">{requester_name}</div>
+                </div>
+                <div class="player-detail">
+                    <div class="label">Email</div>
+                    <div class="value">{requester_email}</div>
+                </div>
+                <div class="player-detail">
+                    <div class="label">Position</div>
+                    <div class="value">{position or 'Not specified'}</div>
+                </div>
+                {f'<div class="message-box">"{message}"</div>' if message else ''}
+            </div>
+            
+            <p>Log in to your <strong>Team Admin → Recruiting</strong> section to approve or decline this request.</p>
+            
+            <p>Best regards,<br><strong>{team_name}</strong></p>
+        </div>
+        <div class="footer">
+            <p>This is an automated notification from your league management system.</p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+    
+    await send_join_request_email(admin_email, admin_name, subject, html_content, text_content)
+
+
+async def notify_user_request_approved(user_email: str, user_name: str, team_name: str):
+    """Send approval notification to user"""
+    subject = f"Welcome to {team_name}! 🎉"
+    
+    text_content = f"""Hi {user_name}!
+
+Great news - your request to join {team_name} has been approved!
+
+You're now officially part of the team. Log in to the league portal to view the team schedule, roster, and more.
+
+See you on the field!
+
+Best regards,
+{team_name}
+"""
+    
+    html_content = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background: linear-gradient(135deg, #059669, #10b981); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+        .content {{ background: #f8fafc; padding: 30px; border-radius: 0 0 10px 10px; }}
+        .status-box {{ background: white; border-left: 4px solid #22c55e; padding: 15px; margin: 20px 0; border-radius: 4px; }}
+        .footer {{ text-align: center; color: #64748b; font-size: 12px; margin-top: 20px; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Welcome to the Team!</h1>
+            <p>{team_name}</p>
+        </div>
+        <div class="content">
+            <p>Hi {user_name}!</p>
+            
+            <p>Great news - your request to join <strong>{team_name}</strong> has been approved!</p>
+            
+            <div class="status-box">
+                <p style="margin: 0;"><strong>Status:</strong> ✅ Approved - You're on the team!</p>
+            </div>
+            
+            <p>You're now officially part of the team. Log in to the league portal to view the team schedule, roster, and more.</p>
+            
+            <p>See you on the field!</p>
+            
+            <p>Best regards,<br><strong>{team_name}</strong></p>
+        </div>
+        <div class="footer">
+            <p>This is an automated message. Please do not reply to this email.</p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+    
+    await send_join_request_email(user_email, user_name, subject, html_content, text_content)
+
+
+async def notify_user_request_rejected(user_email: str, user_name: str, team_name: str, reason: str = ""):
+    """Send rejection notification to user"""
+    subject = f"Update on your {team_name} request"
+    
+    reason_text = f"\n\nReason: {reason}" if reason else ""
+    
+    text_content = f"""Hi {user_name}!
+
+Thank you for your interest in joining {team_name}.
+
+Unfortunately, we're unable to approve your request at this time.{reason_text}
+
+We appreciate your interest and encourage you to check back in the future!
+
+Best regards,
+{team_name}
+"""
+    
+    html_content = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background: linear-gradient(135deg, #64748b, #94a3b8); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+        .content {{ background: #f8fafc; padding: 30px; border-radius: 0 0 10px 10px; }}
+        .status-box {{ background: white; border-left: 4px solid #94a3b8; padding: 15px; margin: 20px 0; border-radius: 4px; }}
+        .footer {{ text-align: center; color: #64748b; font-size: 12px; margin-top: 20px; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Request Update</h1>
+            <p>{team_name}</p>
+        </div>
+        <div class="content">
+            <p>Hi {user_name}!</p>
+            
+            <p>Thank you for your interest in joining <strong>{team_name}</strong>.</p>
+            
+            <div class="status-box">
+                <p style="margin: 0;">Unfortunately, we're unable to approve your request at this time.</p>
+                {f'<p style="margin: 10px 0 0 0; color: #64748b;"><em>{reason}</em></p>' if reason else ''}
+            </div>
+            
+            <p>We appreciate your interest and encourage you to check back in the future!</p>
+            
+            <p>Best regards,<br><strong>{team_name}</strong></p>
+        </div>
+        <div class="footer">
+            <p>This is an automated message. Please do not reply to this email.</p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+    
+    await send_join_request_email(user_email, user_name, subject, html_content, text_content)
 
 
 @teams_router.get("/{team_id}/players")
