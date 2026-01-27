@@ -845,6 +845,10 @@ async def handle_join_request(team_id: str, request_id: str, data: Dict[str, Any
         if join_request.get("status") != "pending":
             raise HTTPException(status_code=400, detail="Request has already been processed")
         
+        team_name = join_request.get("teamName", "Team")
+        user_name = join_request.get("name", "Player")
+        user_email = join_request.get("email")
+        
         if action == "approve":
             # Check if user already exists with this email
             existing_user = await db.users.find_one({"email": join_request["email"]}, {"_id": 0})
@@ -914,6 +918,12 @@ async def handle_join_request(team_id: str, request_id: str, data: Dict[str, Any
             
             logger.info(f"✅ Approved join request {request_id} for {join_request.get('name')}")
             
+            # Send approval email to user
+            try:
+                await notify_user_request_approved(user_email, user_name, team_name)
+            except Exception as email_err:
+                logger.warning(f"⚠️ Failed to send approval email: {email_err}")
+            
             return {
                 "status": "success",
                 "message": f"Request approved. {join_request.get('name')} has been added to the team."
@@ -933,6 +943,12 @@ async def handle_join_request(team_id: str, request_id: str, data: Dict[str, Any
             )
             
             logger.info(f"✅ Rejected join request {request_id}")
+            
+            # Send rejection email to user
+            try:
+                await notify_user_request_rejected(user_email, user_name, team_name, data.get("reason", ""))
+            except Exception as email_err:
+                logger.warning(f"⚠️ Failed to send rejection email: {email_err}")
             
             return {
                 "status": "success",
