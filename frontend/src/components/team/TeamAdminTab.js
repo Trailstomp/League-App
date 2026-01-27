@@ -515,69 +515,8 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                     </div>
                 </div>
             )}
-                            <div className="text-xs text-green-700">Active</div>
-                        </div>
-                        <div className="bg-orange-50 rounded-lg p-4 text-center">
-                            <div className="text-2xl font-bold text-orange-600">{availabilityStats.injured}</div>
-                            <div className="text-xs text-orange-700">Injured</div>
-                        </div>
-                        <div className="bg-purple-50 rounded-lg p-4 text-center">
-                            <div className="text-2xl font-bold text-purple-600">{availabilityStats.leave}</div>
-                            <div className="text-xs text-purple-700">On Leave</div>
-                        </div>
-                        <div className="bg-slate-100 rounded-lg p-4 text-center">
-                            <div className="text-2xl font-bold text-slate-600">{availabilityStats.inactive}</div>
-                            <div className="text-xs text-slate-500">Inactive</div>
-                        </div>
-                    </div>
 
-                    {/* Filter */}
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-slate-500">Show:</span>
-                        {['all', 'active', 'injured', 'leave', 'inactive'].map(f => (
-                            <button
-                                key={f}
-                                onClick={() => setAvailabilityFilter(f)}
-                                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
-                                    availabilityFilter === f ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                                }`}
-                            >
-                                {f === 'leave' ? 'On Leave' : f.charAt(0).toUpperCase() + f.slice(1)}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Availability List */}
-                    <div className="bg-white border rounded-lg divide-y">
-                        {filteredPlayers.length === 0 ? (
-                            <div className="p-6 text-center text-slate-500">No players match filter</div>
-                        ) : (
-                            filteredPlayers.map(player => (
-                                <div key={player.id} className="p-4 flex items-center justify-between hover:bg-slate-50">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-200">
-                                            {player.photoUrl ? (
-                                                <img src={getFullImageUrl(player.photoUrl)} alt="" className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-slate-500 font-bold">
-                                                    {player.name?.charAt(0)}
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <div className="font-medium text-slate-800">{player.name}</div>
-                                            <div className="text-xs text-slate-500">#{player.jerseyNumber || player.playerNumber || '?'} • {typeof player.position === 'object' ? player.position?.name : player.position || 'Player'}</div>
-                                        </div>
-                                    </div>
-                                    <select
-                                        value={player.availability || 'active'}
-                                        onChange={(e) => updatePlayerAvailability(player.id, e.target.value)}
-                                        disabled={saving}
-                                        className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm bg-white"
-                                    >
-                                        <option value="active">Active</option>
-                                        <option value="injured">Injured</option>
-                                        <option value="leave">On Leave</option>
+            {/* RECRUITING SECTION */}
                                         <option value="inactive">Inactive</option>
                                     </select>
                                 </div>
