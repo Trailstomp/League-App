@@ -69,6 +69,15 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                 groupme_integration: editingEvent.groupme_integration || false,
                 email_notifications: editingEvent.email_notifications !== false,
                 auto_create_polls: editingEvent.auto_create_polls || false,
+                // Recurring event fields - ensure defaults exist
+                is_recurring: editingEvent.is_recurring || false,
+                recurrence: editingEvent.recurrence || {
+                    frequency: 'weekly',
+                    endType: 'count',
+                    count: 10,
+                    endDate: '',
+                    daysOfWeek: []
+                },
                 is_external: editingEvent.is_external || false,
                 external_url: editingEvent.external_url || '',
                 external_organizer: editingEvent.external_organizer || '',
