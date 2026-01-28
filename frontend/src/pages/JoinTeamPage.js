@@ -17,6 +17,7 @@ const JoinTeamPage = () => {
         email: '',
         phone: '',
         position: '',
+        desiredNumber: '',
         experience: '',
         message: ''
     });
