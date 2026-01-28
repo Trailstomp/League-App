@@ -145,6 +145,45 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
         }
     };
 
+    // Create a new player and add to team
+    const handleCreateNewPlayer = async () => {
+        if (!newPlayerData.name.trim()) {
+            setMessage('❌ Player name is required');
+            return;
+        }
+        
+        setSaving(true);
+        try {
+            const response = await fetch(`${backendUrl}/api/team/${team.id}/create-player`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: newPlayerData.name.trim(),
+                    email: newPlayerData.email.trim(),
+                    phone: newPlayerData.phone.trim(),
+                    jerseyNumber: newPlayerData.jerseyNumber.trim(),
+                    position: newPlayerData.position.trim()
+                })
+            });
+            
+            if (response.ok) {
+                setMessage('✅ New player created and added to team!');
+                setShowAddModal(false);
+                setNewPlayerData({ name: '', email: '', phone: '', jerseyNumber: '', position: '' });
+                setAddPlayerMode('search');
+                fetchPlayers();
+            } else {
+                const data = await response.json();
+                setMessage(`❌ ${data.detail || 'Failed to create player'}`);
+            }
+        } catch (error) {
+            setMessage('❌ Error creating player');
+        } finally {
+            setSaving(false);
+            setTimeout(() => setMessage(''), 3000);
+        }
+    };
+
     // Remove player from team
     const handleRemovePlayer = async (playerId) => {
         if (!window.confirm('Remove this player from the team?')) return;
