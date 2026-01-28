@@ -20,6 +20,14 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
     const [availableUsers, setAvailableUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [uploadingPhoto, setUploadingPhoto] = useState(false);
+    const [addPlayerMode, setAddPlayerMode] = useState('search'); // 'search' or 'create'
+    const [newPlayerData, setNewPlayerData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        jerseyNumber: '',
+        position: ''
+    });
     
     // Recruiting state
     const [pendingRequests, setPendingRequests] = useState([]);
