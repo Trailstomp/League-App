@@ -591,14 +591,14 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
                                 </label>
                             </div>
                             
-                            {formData.is_recurring && (
+                            {formData.is_recurring && formData.recurrence && (
                                 <div className="ml-8 space-y-4 border-l-2 border-blue-200 pl-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
                                             Repeat Frequency
                                         </label>
                                         <select
-                                            value={formData.recurrence.frequency}
+                                            value={formData.recurrence.frequency || 'weekly'}
                                             onChange={(e) => setFormData(prev => ({
                                                 ...prev,
                                                 recurrence: { ...prev.recurrence, frequency: e.target.value }
