@@ -741,6 +741,7 @@ async def submit_join_request(team_id: str, data: Dict[str, Any]):
             "email": data.get("email", "").lower().strip(),
             "phone": data.get("phone", "").strip(),
             "position": data.get("position", "").strip(),
+            "desiredNumber": data.get("desiredNumber", "").strip(),
             "experience": data.get("experience", ""),
             "message": data.get("message", "").strip(),
             "status": "pending",
