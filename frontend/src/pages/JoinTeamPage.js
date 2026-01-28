@@ -297,6 +297,20 @@ const JoinTeamPage = () => {
                         
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Desired Jersey Number
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.desiredNumber}
+                                onChange={(e) => handleInputChange('desiredNumber', e.target.value)}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                                placeholder="e.g., 7, 23, 99"
+                                data-testid="input-desired-number"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Experience Level
                             </label>
                             <select
