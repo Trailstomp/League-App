@@ -474,6 +474,61 @@ async def add_player_to_team(team_id: str, data: Dict[str, Any]):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
+@teams_router.post("/{team_id}/create-player")
+async def create_team_player(team_id: str, data: Dict[str, Any]):
+    """Create a new player and add them directly to a team (for team admins)"""
+    try:
+        # Validate required fields
+        if not data.get("name"):
+            raise HTTPException(status_code=400, detail="Player name is required")
+        
+        # Check if email already exists (if provided)
+        if data.get("email"):
+            existing_user = await db.users.find_one({"email": data["email"].lower().strip()})
+            if existing_user:
+                raise HTTPException(status_code=400, detail="A user with this email already exists")
+        
+        # Create the new player
+        new_player = {
+            "id": str(uuid.uuid4()),
+            "name": data.get("name", "").strip(),
+            "email": data.get("email", "").lower().strip() if data.get("email") else "",
+            "phone": data.get("phone", "").strip(),
+            "position": data.get("position", "").strip(),
+            "jerseyNumber": data.get("jerseyNumber", "").strip(),
+            "playerNumber": data.get("jerseyNumber", "").strip(),  # Alias for compatibility
+            "teamId": team_id,
+            "teamAssignments": [{
+                "teamId": team_id,
+                "position": data.get("position", "").strip(),
+                "playerNumber": data.get("jerseyNumber", "").strip(),
+                "isPrimary": True
+            }],
+            "roles": ["player"],
+            "status": "active",
+            "createdAt": datetime.now(timezone.utc).isoformat(),
+            "updatedAt": datetime.now(timezone.utc).isoformat(),
+            "createdByTeamAdmin": True
+        }
+        
+        await db.users.insert_one(new_player)
+        
+        logger.info(f"✅ Team admin created new player: {new_player['name']} (#{new_player.get('jerseyNumber', 'N/A')}) for team {team_id}")
+        
+        return {
+            "status": "success",
+            "message": f"Player {new_player['name']} created and added to team",
+            "playerId": new_player["id"]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error creating player: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @teams_router.put("/{team_id}/player/{player_id}")
 async def update_team_player(team_id: str, player_id: str, data: Dict[str, Any]):
     """Update a player's info on a team - coaches can edit all player details"""
