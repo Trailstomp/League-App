@@ -888,11 +888,12 @@ async def handle_join_request(team_id: str, request_id: str, data: Dict[str, Any
                     "email": join_request.get("email"),
                     "phone": join_request.get("phone", ""),
                     "position": join_request.get("position", ""),
+                    "playerNumber": join_request.get("desiredNumber", ""),
                     "teamId": team_id,
                     "teamAssignments": [{
                         "teamId": team_id,
                         "position": join_request.get("position", ""),
-                        "playerNumber": "",
+                        "playerNumber": join_request.get("desiredNumber", ""),
                         "isPrimary": True
                     }],
                     "roles": ["player"],
@@ -903,7 +904,7 @@ async def handle_join_request(team_id: str, request_id: str, data: Dict[str, Any
                 }
                 
                 await db.users.insert_one(new_user)
-                logger.info(f"✅ Created new active player: {new_user['name']} ({new_user['id']})")
+                logger.info(f"✅ Created new active player: {new_user['name']} ({new_user['id']}) - Jersey #{new_user.get('playerNumber', 'N/A')}")
             
             # Update request status
             await db.join_requests.update_one(
