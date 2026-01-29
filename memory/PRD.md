@@ -289,13 +289,18 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 ### January 29, 2025 (Current Session)
 - **Live Scoring UI Improvements (P0):**
   - **Single SHOT Button**: Consolidated 3 separate buttons (Goal/Save/Miss) into one "SHOT" button per team
-  - Clicking SHOT opens a modal with Goal, Saved, and Miss options
-  - **Assist Tracking**: When "Goal" is selected, an "Assist (Optional)" dropdown appears
-  - Assist dropdown filters out the goal scorer (can't assist your own goal)
-  - Assists tracked for individual players (stats.assists incremented)
-  - Assists tracked for teams (team.assists count)
-  - Game event narration includes assist info: "GOAL! Team - #X Player (Assist: #Y Player)"
-  - All 7 features verified by testing agent (100% pass rate)
+  - **Compact Modal**: Horizontal 3-column grid layout for Miss/Save/Goal buttons
+  - **Editable Time**: Added input field to edit timestamp in shot modal
+  - **Assist Tracking**: When "Goal" is selected, an "Assist" dropdown appears to select assisting player
+  - **Team Branding**: Scoreboard and player stats tables now show team logos and use team colors
+  - **Shot Clock Fix**: Missed shots no longer reset the shot clock (only saves and goals do)
+
+- **Payment Tracking Enhancements (P1):**
+  - **Payment Method Selection**: Grid of payment method buttons (Cash, Check, Venmo, PayPal, Zelle, Cash App, Stripe, Other)
+  - **Check Number Field**: Appears only when Check payment method is selected
+  - **Payment Links**: Shows clickable payment link button for digital methods (Venmo, PayPal, etc)
+  - **Backend Support**: Updated endpoint to store paymentMethod and checkNumber fields
+  - All 9 backend tests passing (100% success rate)
 
 ### January 27, 2025 (Previous Session)
 - **P0: Join Team Public Page** (NEW):
