@@ -2398,10 +2398,30 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                         </div>
 
                         {/* Away Team: Score (Right) */}
-                        <div className="flex-1 flex items-center justify-center bg-red-50 rounded-xl p-4 min-w-[120px]">
+                        <div 
+                            className="flex-1 flex items-center justify-center rounded-xl p-4 min-w-[120px]"
+                            style={{ backgroundColor: `${gameState.away_team.color || '#ef4444'}15` }}
+                        >
                             <div className="text-center">
-                                <div className="text-sm font-bold text-red-800 truncate">{gameState.away_team.name}</div>
-                                <div className="text-5xl md:text-6xl font-bold text-red-600">{gameState.away_team.score}</div>
+                                {gameState.away_team.logo && (
+                                    <img 
+                                        src={gameState.away_team.logo.startsWith('http') ? gameState.away_team.logo : `${backendUrl}${gameState.away_team.logo}`}
+                                        alt={gameState.away_team.name}
+                                        className="w-12 h-12 mx-auto mb-2 rounded-full object-cover bg-white p-1 shadow"
+                                    />
+                                )}
+                                <div 
+                                    className="text-sm font-bold truncate"
+                                    style={{ color: gameState.away_team.color || '#991b1b' }}
+                                >
+                                    {gameState.away_team.name}
+                                </div>
+                                <div 
+                                    className="text-5xl md:text-6xl font-bold"
+                                    style={{ color: gameState.away_team.color || '#ef4444' }}
+                                >
+                                    {gameState.away_team.score}
+                                </div>
                             </div>
                         </div>
                     </div>
