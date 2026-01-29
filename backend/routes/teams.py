@@ -396,6 +396,10 @@ async def get_team_players(team_id: str):
                         player["paymentNotes"] = assignment["paymentNotes"]
                     if "lastPaymentDate" in assignment:
                         player["lastPaymentDate"] = assignment["lastPaymentDate"]
+                    if "paymentMethod" in assignment:
+                        player["paymentMethod"] = assignment["paymentMethod"]
+                    if "checkNumber" in assignment:
+                        player["checkNumber"] = assignment["checkNumber"]
                     if "availability" in assignment:
                         player["availability"] = assignment["availability"]
                     break
