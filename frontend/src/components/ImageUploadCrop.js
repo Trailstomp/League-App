@@ -96,6 +96,12 @@ const ImageUploadCrop = ({
             console.error('🖼️ Missing imageRef or completedCrop');
             return null;
         }
+        
+        // Ensure we have valid crop dimensions
+        if (!completedCrop.width || !completedCrop.height || completedCrop.width <= 0 || completedCrop.height <= 0) {
+            console.error('🖼️ Invalid crop dimensions:', completedCrop);
+            return null;
+        }
 
         const image = imageRef.current;
         const canvas = document.createElement('canvas');
@@ -113,8 +119,11 @@ const ImageUploadCrop = ({
         console.log('🖼️ Crop area:', completedCrop);
 
         // Set canvas size to cropped area (at natural resolution)
-        canvas.width = completedCrop.width * scaleX;
-        canvas.height = completedCrop.height * scaleY;
+        const canvasWidth = Math.floor(completedCrop.width * scaleX);
+        const canvasHeight = Math.floor(completedCrop.height * scaleY);
+        
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
         
         // Check if canvas has valid dimensions
         if (canvas.width <= 0 || canvas.height <= 0) {
@@ -125,14 +134,14 @@ const ImageUploadCrop = ({
         // Draw cropped portion
         ctx.drawImage(
             image,
-            completedCrop.x * scaleX,
-            completedCrop.y * scaleY,
-            completedCrop.width * scaleX,
-            completedCrop.height * scaleY,
+            Math.floor(completedCrop.x * scaleX),
+            Math.floor(completedCrop.y * scaleY),
+            canvasWidth,
+            canvasHeight,
             0,
             0,
-            canvas.width,
-            canvas.height
+            canvasWidth,
+            canvasHeight
         );
 
         // Convert to blob
@@ -142,6 +151,7 @@ const ImageUploadCrop = ({
                 if (blob) {
                     resolve(blob);
                 } else {
+                    console.error('🖼️ canvas.toBlob returned null');
                     resolve(null);
                 }
             }, 'image/jpeg', 0.9);
