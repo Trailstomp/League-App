@@ -2248,33 +2248,18 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                             </label>
                         </div>
 
-                        {/* Away Team: Action Buttons - 3 Shot Buttons + Penalty */}
+                        {/* Away Team: Action Buttons - Single Shot Button + Penalty */}
                         <div className="flex flex-col gap-2">
                             <div className="text-xs font-bold text-center text-gray-600 uppercase">{gameState.away_team.name}</div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 justify-center">
                                 <button
-                                    onClick={() => openTeamShotModalWithType('away_team', 'goal')}
-                                    className="w-16 h-16 md:w-20 md:h-20 bg-green-500 hover:bg-green-600 text-white rounded-xl font-bold flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105"
-                                    title="Goal - select player"
+                                    onClick={() => openTeamShotModal('away_team')}
+                                    className="w-20 h-20 md:w-24 md:h-24 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105"
+                                    title="Record Shot"
+                                    data-testid="away-shot-btn"
                                 >
-                                    <span className="text-2xl md:text-3xl">🥅</span>
-                                    <span className="text-xs md:text-sm font-bold">GOAL</span>
-                                </button>
-                                <button
-                                    onClick={() => openTeamShotModalWithType('away_team', 'saved')}
-                                    className="w-16 h-16 md:w-20 md:h-20 bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-bold flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105"
-                                    title="Save - select player"
-                                >
-                                    <span className="text-2xl md:text-3xl">🧤</span>
-                                    <span className="text-xs md:text-sm font-bold">SAVE</span>
-                                </button>
-                                <button
-                                    onClick={() => openTeamShotModalWithType('away_team', 'miss')}
-                                    className="w-16 h-16 md:w-20 md:h-20 bg-yellow-500 hover:bg-yellow-600 text-white rounded-xl font-bold flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105"
-                                    title="Miss - select player"
-                                >
-                                    <span className="text-2xl md:text-3xl">❌</span>
-                                    <span className="text-xs md:text-sm font-bold">MISS</span>
+                                    <span className="text-3xl md:text-4xl">🏒</span>
+                                    <span className="text-sm md:text-base font-bold">SHOT</span>
                                 </button>
                             </div>
                             <div className="flex gap-2 justify-center">
@@ -2282,6 +2267,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                                     onClick={() => openTeamPenaltyModal('away_team')}
                                     className="flex-1 h-10 bg-red-500 hover:bg-red-600 text-white rounded-lg font-bold flex items-center justify-center gap-1 shadow transition-transform hover:scale-105"
                                     title="Record Penalty"
+                                    data-testid="away-penalty-btn"
                                 >
                                     <span>⚠️</span>
                                     <span className="text-sm">Penalty</span>
@@ -2290,6 +2276,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                                     onClick={() => callTimeout('away')}
                                     className="flex-1 h-10 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold flex items-center justify-center gap-1 shadow transition-transform hover:scale-105"
                                     title={`Timeout (${timeouts.away} remaining)`}
+                                    data-testid="away-timeout-btn"
                                 >
                                     <span>⏸️</span>
                                     <span className="text-sm">TO ({timeouts.away})</span>
