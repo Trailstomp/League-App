@@ -99,7 +99,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
     const [teamShotInput, setTeamShotInput] = useState({
         playerId: 'unknown',
         shotType: '',
-        timestamp: ''
+        timestamp: '',
+        assistPlayerId: null // Player who assisted the goal
     });
     
     // Event editing state
