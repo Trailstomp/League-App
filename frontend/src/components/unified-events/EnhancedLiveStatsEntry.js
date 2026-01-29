@@ -2464,14 +2464,18 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                             {/* Shot Type Dropdown Menu */}
                             {showShotMenu === player.id && (
                                 <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white border border-gray-300 rounded-lg shadow-xl z-50 min-w-[140px]">
-                                    {/* Goal - Stops clocks, counts goal and shot */}
+                                    {/* Goal - Stops clocks, shows assist picker */}
                                     <button
                                         onClick={() => {
                                             // Stop both clocks
                                             setGameState(prev => ({ ...prev, is_running: false }));
                                             setShotClock(prev => ({ ...prev, isRunning: false }));
-                                            // Record the shot as a goal
-                                            addShotStat(teamKey, player.id, 'goal');
+                                            // Show assist picker
+                                            setShowAssistPicker({
+                                                teamKey,
+                                                scorerId: player.id,
+                                                scorerName: `#${player.number} ${player.name}`
+                                            });
                                             setShowShotMenu(null);
                                         }}
                                         className="w-full px-4 py-3 text-left hover:bg-green-50 border-b flex items-center gap-2 rounded-t-lg"
