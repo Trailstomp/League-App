@@ -751,10 +751,11 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
     };
 
     // Enhanced stat adding with shot types (miss, saved, goal)
-    const addShotStat = (teamKey, playerId, shotType) => {
+    const addShotStat = (teamKey, playerId, shotType, assistPlayerId = null) => {
         // shotType: 'miss', 'saved', 'goal'
         const player = gameState[teamKey].players.find(p => p.id === playerId);
         const teamName = gameState[teamKey].name;
+        const assistPlayer = assistPlayerId ? gameState[teamKey].players.find(p => p.id === assistPlayerId) : null;
         
         // Update game state
         setGameState(prev => {
@@ -779,6 +780,16 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                         
                         return { ...p, stats: newStats };
                     }
+                    // Add assist to the assisting player
+                    if (assistPlayerId && p.id === assistPlayerId && shotType === 'goal') {
+                        return {
+                            ...p,
+                            stats: {
+                                ...p.stats,
+                                assists: (p.stats.assists || 0) + 1
+                            }
+                        };
+                    }
                     return p;
                 })
             };
@@ -786,6 +797,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
             // Update team score and goalie stats for goals
             if (shotType === 'goal') {
                 newState[teamKey].score = prev[teamKey].score + 1;
+                
+                // Update team assists count
+                newState[teamKey].assists = (prev[teamKey].assists || 0) + (assistPlayerId ? 1 : 0);
                 
                 // Update opposing goalie's goals against
                 const opposingTeamKey = teamKey === 'home_team' ? 'away' : 'home';
@@ -847,13 +861,22 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                 eventType = 'shot';
             } else if (shotType === 'goal') {
                 eventText = `🚨 GOAL! ${teamName} - #${player.number} ${player.name} scores!`;
+                if (assistPlayer) {
+                    eventText += ` (Assist: #${assistPlayer.number} ${assistPlayer.name})`;
+                }
                 if (activeGoalie) {
                     eventText += ` (Against ${opposingTeamName} Goalie #${activeGoalie.number} ${activeGoalie.name})`;
                 }
                 eventType = 'goal';
             }
             
-            addGameEvent(eventText, eventType, { teamKey, playerId, shotType, timestamp: formatTime(gameState.time_remaining) });
+            addGameEvent(eventText, eventType, { 
+                teamKey, 
+                playerId, 
+                shotType, 
+                assistPlayerId: assistPlayerId || null,
+                timestamp: formatTime(gameState.time_remaining) 
+            });
         }
     };
 
