@@ -2271,10 +2271,30 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                 <div className="px-4 py-4 bg-gray-50 mt-2">
                     <div className="flex items-stretch justify-between gap-4 max-w-7xl mx-auto">
                         {/* Home Team: Score (Left) */}
-                        <div className="flex-1 flex items-center justify-center bg-blue-50 rounded-xl p-4 min-w-[120px]">
+                        <div 
+                            className="flex-1 flex items-center justify-center rounded-xl p-4 min-w-[120px]"
+                            style={{ backgroundColor: `${gameState.home_team.color || '#3b82f6'}15` }}
+                        >
                             <div className="text-center">
-                                <div className="text-sm font-bold text-blue-800 truncate">{gameState.home_team.name}</div>
-                                <div className="text-5xl md:text-6xl font-bold text-blue-600">{gameState.home_team.score}</div>
+                                {gameState.home_team.logo && (
+                                    <img 
+                                        src={gameState.home_team.logo.startsWith('http') ? gameState.home_team.logo : `${backendUrl}${gameState.home_team.logo}`}
+                                        alt={gameState.home_team.name}
+                                        className="w-12 h-12 mx-auto mb-2 rounded-full object-cover bg-white p-1 shadow"
+                                    />
+                                )}
+                                <div 
+                                    className="text-sm font-bold truncate"
+                                    style={{ color: gameState.home_team.color || '#1e40af' }}
+                                >
+                                    {gameState.home_team.name}
+                                </div>
+                                <div 
+                                    className="text-5xl md:text-6xl font-bold"
+                                    style={{ color: gameState.home_team.color || '#3b82f6' }}
+                                >
+                                    {gameState.home_team.score}
+                                </div>
                             </div>
                         </div>
 
