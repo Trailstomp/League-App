@@ -115,25 +115,29 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
         try {
             let imageUrl = teamStyle.logoUrl;
             
-            // If it's a relative URL, use the proxy
-            if (imageUrl.startsWith('/api/uploads') || imageUrl.startsWith('http://localhost')) {
+            // If it's a relative URL, make it absolute
+            if (imageUrl.startsWith('/api/uploads')) {
+                imageUrl = `${backendUrl}${imageUrl}`;
+            } else if (imageUrl.startsWith('http://localhost')) {
                 imageUrl = `${backendUrl}/api/proxy-image?url=${encodeURIComponent(imageUrl)}`;
             } else if (imageUrl.includes('drive.google.com') || imageUrl.includes('googleusercontent.com')) {
                 const fixedUrl = fixGoogleDriveUrl(imageUrl);
                 imageUrl = `${backendUrl}/api/proxy-image?url=${encodeURIComponent(fixedUrl)}`;
             }
             
+            console.log('🎨 Extracting colors from:', imageUrl);
             const colors = await extractThemeColors(imageUrl);
+            console.log('🎨 Extracted colors:', colors);
             
-            if (colors && colors.length > 0) {
+            if (colors && colors.primaryColor) {
                 setTeamStyle(prev => ({
                     ...prev,
-                    primaryColor: colors[0] || prev.primaryColor,
-                    accentColor: colors[1] || prev.accentColor
+                    primaryColor: colors.primaryColor || prev.primaryColor,
+                    accentColor: colors.accentColor || prev.accentColor
                 }));
                 setMessage('✅ Colors extracted from logo!');
             } else {
-                setMessage('❌ Could not extract colors');
+                setMessage('❌ Could not extract colors - try a different image');
             }
         } catch (error) {
             console.error('Error extracting colors:', error);
