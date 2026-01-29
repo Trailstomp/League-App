@@ -676,7 +676,7 @@ async def update_player_payment(team_id: str, player_id: str, data: Dict[str, An
             raise HTTPException(status_code=404, detail="Player not found on this team")
         
         # Update payment fields in the team assignment
-        payment_fields = ["paymentStatus", "amountPaid", "amountOwed", "paymentNotes", "lastPaymentDate"]
+        payment_fields = ["paymentStatus", "amountPaid", "amountOwed", "paymentNotes", "lastPaymentDate", "paymentMethod", "checkNumber"]
         for field in payment_fields:
             if field in data:
                 assignments[team_assignment_idx][field] = data[field]
@@ -698,7 +698,7 @@ async def update_player_payment(team_id: str, player_id: str, data: Dict[str, An
             {"$set": user_update}
         )
         
-        logger.info(f"✅ Updated payment for player {player_id} on team {team_id}: {data.get('paymentStatus')}")
+        logger.info(f"✅ Updated payment for player {player_id} on team {team_id}: {data.get('paymentStatus')} via {data.get('paymentMethod', 'unknown')}")
         
         return {
             "status": "success",
