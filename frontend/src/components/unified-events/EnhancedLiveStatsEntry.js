@@ -89,6 +89,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
     // Shot type selector state
     const [showShotMenu, setShowShotMenu] = useState(null); // stores player id when menu is open
     
+    // Assist picker state for goals
+    const [showAssistPicker, setShowAssistPicker] = useState(null); // {teamKey, scorerId, scorerName}
+    
     // Team shot modal state
     const [showTeamShotModal, setShowTeamShotModal] = useState(false);
     const [teamShotModalTeam, setTeamShotModalTeam] = useState(null); // 'home_team' or 'away_team'
