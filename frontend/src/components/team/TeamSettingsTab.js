@@ -281,7 +281,7 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                             <label className="block text-sm font-medium text-slate-700 mb-2">Team Logo</label>
                             <ImageUploadCrop
                                 currentImage={teamStyle.logoUrl}
-                                onUpload={handleLogoUpload}
+                                onImageSelected={handleLogoUpload}
                                 aspectRatio={1}
                                 maxWidth={400}
                             />
@@ -300,7 +300,7 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                             <label className="block text-sm font-medium text-slate-700 mb-2">Team Banner</label>
                             <ImageUploadCrop
                                 currentImage={teamStyle.bannerUrl}
-                                onUpload={handleBannerUpload}
+                                onImageSelected={handleBannerUpload}
                                 aspectRatio={3}
                                 maxWidth={1200}
                             />
