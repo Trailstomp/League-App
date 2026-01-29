@@ -954,6 +954,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
         const teamKey = teamShotModalTeam;
         const playerId = teamShotInput.playerId;
         const shotType = teamShotInput.shotType;
+        const assistPlayerId = teamShotInput.assistPlayerId;
 
         // Handle shot clock based on shot type
         if (shotType === 'saved') {
@@ -984,6 +985,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
             const opposingTeamName = gameState[opposingTeamKey].name;
             const opposingGoalieKey = teamKey === 'home_team' ? 'away' : 'home';
             const activeGoalie = gameState.goalies[opposingGoalieKey].find(g => g.active);
+            const assistPlayer = assistPlayerId ? gameState[teamKey].players.find(p => p.id === assistPlayerId) : null;
 
             setGameState(prev => {
                 const newState = { ...prev };
@@ -991,6 +993,30 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                 // Update team score for goals
                 if (shotType === 'goal') {
                     newState[teamKey].score = prev[teamKey].score + 1;
+                    
+                    // Track team assists
+                    if (assistPlayerId) {
+                        newState[teamKey].assists = (prev[teamKey].assists || 0) + 1;
+                    }
+
+                    // Update assisting player's stats
+                    if (assistPlayerId) {
+                        newState[teamKey] = {
+                            ...newState[teamKey],
+                            players: prev[teamKey].players.map(p => {
+                                if (p.id === assistPlayerId) {
+                                    return {
+                                        ...p,
+                                        stats: {
+                                            ...p.stats,
+                                            assists: (p.stats.assists || 0) + 1
+                                        }
+                                    };
+                                }
+                                return p;
+                            })
+                        };
+                    }
 
                     // Update opposing goalie's goals against
                     newState.goalies = {
@@ -1043,21 +1069,24 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                 eventType = 'shot';
             } else if (shotType === 'goal') {
                 eventText = `🚨 GOAL! ${teamName} - Unknown Player scores!`;
+                if (assistPlayer) {
+                    eventText += ` (Assist: #${assistPlayer.number} ${assistPlayer.name})`;
+                }
                 if (activeGoalie) {
                     eventText += ` (Against ${opposingTeamName} Goalie #${activeGoalie.number} ${activeGoalie.name})`;
                 }
                 eventType = 'goal';
             }
             
-            addGameEvent(eventText, eventType, { teamKey, playerId: 'unknown', shotType, timestamp: teamShotInput.timestamp });
+            addGameEvent(eventText, eventType, { teamKey, playerId: 'unknown', shotType, assistPlayerId, timestamp: teamShotInput.timestamp });
         } else {
-            // Handle known player shot using existing function
-            addShotStat(teamKey, playerId, shotType);
+            // Handle known player shot using existing function (with assist)
+            addShotStat(teamKey, playerId, shotType, assistPlayerId);
         }
 
         // Close modal and reset shot clock
         setShowTeamShotModal(false);
-        setTeamShotInput({ playerId: 'unknown', shotType: '', timestamp: '' });
+        setTeamShotInput({ playerId: 'unknown', shotType: '', timestamp: '', assistPlayerId: null });
         resetShotClock();
     };
 
