@@ -1119,22 +1119,94 @@ const TeamFinanceTab = ({ team, currentUser }) => {
     );
 };
 
-// Payment Modal Component
-const PaymentModal = ({ player, onClose, onSave, saving }) => {
+// Payment Modal Component with Payment Method Selection
+const PaymentModal = ({ player, onClose, onSave, saving, paymentLinks = {} }) => {
     const [paymentStatus, setPaymentStatus] = useState(player.paymentStatus || 'unpaid');
     const [amountPaid, setAmountPaid] = useState(player.amountPaid || 0);
     const [amountOwed, setAmountOwed] = useState(player.amountOwed || 0);
     const [paymentNotes, setPaymentNotes] = useState(player.paymentNotes || '');
-    const [paymentDate, setPaymentDate] = useState(player.lastPaymentDate || '');
+    const [paymentDate, setPaymentDate] = useState(player.lastPaymentDate || new Date().toISOString().split('T')[0]);
+    const [paymentMethod, setPaymentMethod] = useState(player.paymentMethod || '');
+    const [checkNumber, setCheckNumber] = useState(player.checkNumber || '');
+
+    const paymentMethods = [
+        { id: 'cash', label: 'Cash', icon: '💵' },
+        { id: 'check', label: 'Check', icon: '📝' },
+        { id: 'venmo', label: 'Venmo', icon: '💜', link: paymentLinks.venmo },
+        { id: 'paypal', label: 'PayPal', icon: '🅿️', link: paymentLinks.paypal },
+        { id: 'zelle', label: 'Zelle', icon: '💳', link: paymentLinks.zelle },
+        { id: 'cashapp', label: 'Cash App', icon: '💚', link: paymentLinks.cashapp },
+        { id: 'stripe', label: 'Card (Stripe)', icon: '💳', link: paymentLinks.stripe },
+        { id: 'other', label: 'Other', icon: '📋' }
+    ];
+
+    // Filter to only show methods that have links configured (for digital) or always show cash/check/other
+    const availableMethods = paymentMethods.filter(m => 
+        ['cash', 'check', 'other'].includes(m.id) || m.link
+    );
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-            <div className="bg-white rounded-xl shadow-xl max-w-md w-full" onClick={e => e.stopPropagation()}>
-                <div className="p-4 border-b flex justify-between items-center">
-                    <h3 className="font-bold">Payment - {player.name}</h3>
+            <div className="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                <div className="p-4 border-b flex justify-between items-center sticky top-0 bg-white">
+                    <h3 className="font-bold">Record Payment - {player.name}</h3>
                     <button onClick={onClose} className="text-slate-400 hover:text-slate-600">✕</button>
                 </div>
                 <div className="p-4 space-y-4">
+                    {/* Payment Method Selection */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Payment Method</label>
+                        <div className="grid grid-cols-3 gap-2">
+                            {availableMethods.map(method => (
+                                <button
+                                    key={method.id}
+                                    type="button"
+                                    onClick={() => setPaymentMethod(method.id)}
+                                    className={`p-2 rounded-lg border-2 text-center transition-all ${
+                                        paymentMethod === method.id
+                                            ? 'border-green-500 bg-green-50'
+                                            : 'border-slate-200 hover:border-slate-300'
+                                    }`}
+                                >
+                                    <div className="text-xl">{method.icon}</div>
+                                    <div className="text-xs font-medium">{method.label}</div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Check Number (only for check payments) */}
+                    {paymentMethod === 'check' && (
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Check Number</label>
+                            <input 
+                                type="text" 
+                                value={checkNumber} 
+                                onChange={(e) => setCheckNumber(e.target.value)} 
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                placeholder="Check #"
+                            />
+                        </div>
+                    )}
+
+                    {/* Payment Link Button (for digital payments) */}
+                    {paymentMethod && !['cash', 'check', 'other'].includes(paymentMethod) && (
+                        <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <p className="text-sm text-blue-700 mb-2">
+                                Send this link to the player to pay via {paymentMethods.find(m => m.id === paymentMethod)?.label}:
+                            </p>
+                            <a 
+                                href={paymentMethods.find(m => m.id === paymentMethod)?.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
+                            >
+                                Open Payment Link →
+                            </a>
+                        </div>
+                    )}
+
+                    {/* Status */}
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
                         <select value={paymentStatus} onChange={(e) => setPaymentStatus(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg">
@@ -1143,32 +1215,56 @@ const PaymentModal = ({ player, onClose, onSave, saving }) => {
                             <option value="paid">Paid</option>
                         </select>
                     </div>
+
+                    {/* Amounts */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">Amount Owed ($)</label>
-                            <input type="number" value={amountOwed} onChange={(e) => setAmountOwed(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
+                            <input type="number" step="0.01" value={amountOwed} onChange={(e) => setAmountOwed(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">Amount Paid ($)</label>
-                            <input type="number" value={amountPaid} onChange={(e) => setAmountPaid(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
+                            <input type="number" step="0.01" value={amountPaid} onChange={(e) => setAmountPaid(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                         </div>
                     </div>
+
+                    {/* Payment Date */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Last Payment Date</label>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Payment Date</label>
                         <input type="date" value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                     </div>
+
+                    {/* Notes */}
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">Notes</label>
-                        <textarea value={paymentNotes} onChange={(e) => setPaymentNotes(e.target.value)} className="w-full px-3 py-2 border border-slate-300 rounded-lg" rows={2} placeholder="Venmo, check #, etc." />
+                        <textarea 
+                            value={paymentNotes} 
+                            onChange={(e) => setPaymentNotes(e.target.value)} 
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg" 
+                            rows={2} 
+                            placeholder="Additional notes..."
+                        />
                     </div>
+
+                    {/* Action Buttons */}
                     <div className="flex gap-3 pt-2">
-                        <button onClick={onClose} className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50">Cancel</button>
+                        <button onClick={onClose} className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50">
+                            Cancel
+                        </button>
                         <button
-                            onClick={() => onSave(player.id, { paymentStatus, amountPaid: parseFloat(amountPaid) || 0, amountOwed: parseFloat(amountOwed) || 0, paymentNotes, lastPaymentDate: paymentDate })}
+                            onClick={() => onSave(player.id, { 
+                                paymentStatus, 
+                                amountPaid: parseFloat(amountPaid) || 0, 
+                                amountOwed: parseFloat(amountOwed) || 0, 
+                                paymentNotes, 
+                                lastPaymentDate: paymentDate,
+                                paymentMethod,
+                                checkNumber: paymentMethod === 'check' ? checkNumber : ''
+                            })}
                             disabled={saving}
                             className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
                         >
-                            {saving ? 'Saving...' : 'Save'}
+                            {saving ? 'Saving...' : 'Save Payment'}
                         </button>
                     </div>
                 </div>
