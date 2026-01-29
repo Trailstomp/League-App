@@ -286,7 +286,18 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
   - Shows "RSVP Confirmed!" page with option to change response
   - Prevents double-submission in React StrictMode
 
-### January 27, 2025 (Current Session)
+### January 29, 2025 (Current Session)
+- **Live Scoring UI Improvements (P0):**
+  - **Single SHOT Button**: Consolidated 3 separate buttons (Goal/Save/Miss) into one "SHOT" button per team
+  - Clicking SHOT opens a modal with Goal, Saved, and Miss options
+  - **Assist Tracking**: When "Goal" is selected, an "Assist (Optional)" dropdown appears
+  - Assist dropdown filters out the goal scorer (can't assist your own goal)
+  - Assists tracked for individual players (stats.assists incremented)
+  - Assists tracked for teams (team.assists count)
+  - Game event narration includes assist info: "GOAL! Team - #X Player (Assist: #Y Player)"
+  - All 7 features verified by testing agent (100% pass rate)
+
+### January 27, 2025 (Previous Session)
 - **P0: Join Team Public Page** (NEW):
   - Created `/join/{team_id}` public page for recruits to request joining a team
   - New frontend component: `/app/frontend/src/pages/JoinTeamPage.js`
