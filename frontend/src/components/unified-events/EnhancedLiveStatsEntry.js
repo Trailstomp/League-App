@@ -887,7 +887,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
         setTeamShotInput({
             playerId: 'unknown',
             shotType: '',
-            timestamp: formatTime(gameState.time_remaining)
+            timestamp: formatTime(gameState.time_remaining),
+            assistPlayerId: null
         });
         setShowTeamShotModal(true);
     };
@@ -898,7 +899,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
         setTeamShotInput({
             playerId: 'unknown',
             shotType: shotType,
-            timestamp: formatTime(gameState.time_remaining)
+            timestamp: formatTime(gameState.time_remaining),
+            assistPlayerId: null
         });
         // If goal type, pause the game clock
         if (shotType === 'goal' && gameState.is_running && stopClockOnGoal) {
