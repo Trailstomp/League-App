@@ -1733,47 +1733,66 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
 
         const teamKey = teamShotModalTeam;
         const teamName = gameState[teamKey].name;
+        const teamColor = gameState[teamKey].color || (teamKey === 'home_team' ? '#3b82f6' : '#ef4444');
+        const teamLogo = gameState[teamKey].logo;
         const teamPlayers = gameState[teamKey].players
             .filter(p => p.active)
             .sort((a, b) => parseInt(a.number) - parseInt(b.number)); // Sort by number
 
         return (
-            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-                <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
-                    <h3 className="text-xl font-bold mb-4">Record Shot - {teamName}</h3>
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full overflow-hidden">
+                    {/* Team Header with Logo & Colors */}
+                    <div 
+                        className="p-3 flex items-center gap-3"
+                        style={{ backgroundColor: teamColor }}
+                    >
+                        {teamLogo && (
+                            <img 
+                                src={teamLogo.startsWith('http') ? teamLogo : `${backendUrl}${teamLogo}`} 
+                                alt={teamName}
+                                className="w-10 h-10 rounded-full object-cover bg-white p-0.5"
+                            />
+                        )}
+                        <h3 className="text-lg font-bold text-white flex-1">{teamName}</h3>
+                        <button 
+                            onClick={() => {
+                                setShowTeamShotModal(false);
+                                setTeamShotInput({ playerId: 'unknown', shotType: '', timestamp: '', assistPlayerId: null });
+                            }}
+                            className="text-white/80 hover:text-white text-xl"
+                        >
+                            ✕
+                        </button>
+                    </div>
                     
-                    {/* Shot Type Selection - MOVED TO TOP */}
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium mb-2">Shot Type</label>
-                        <div className="space-y-2">
+                    <div className="p-4 space-y-3">
+                        {/* Shot Type - Compact Horizontal Buttons */}
+                        <div className="grid grid-cols-3 gap-2">
                             <button
                                 onClick={() => setTeamShotInput(prev => ({ ...prev, shotType: 'miss', assistPlayerId: null }))}
-                                className={`w-full px-4 py-3 rounded-lg border-2 flex items-center gap-3 ${
+                                className={`p-3 rounded-lg border-2 flex flex-col items-center justify-center transition-all ${
                                     teamShotInput.shotType === 'miss'
-                                        ? 'border-red-500 bg-red-50'
-                                        : 'border-gray-300 hover:bg-gray-50'
+                                        ? 'border-yellow-500 bg-yellow-50 scale-105'
+                                        : 'border-gray-200 hover:border-yellow-300 hover:bg-yellow-50/50'
                                 }`}
+                                data-testid="shot-type-miss"
                             >
                                 <span className="text-2xl">❌</span>
-                                <div className="text-left">
-                                    <div className="font-bold">Miss</div>
-                                    <div className="text-xs text-gray-600">Shot misses the goal</div>
-                                </div>
+                                <span className="text-xs font-bold mt-1">MISS</span>
                             </button>
 
                             <button
                                 onClick={() => setTeamShotInput(prev => ({ ...prev, shotType: 'saved', assistPlayerId: null }))}
-                                className={`w-full px-4 py-3 rounded-lg border-2 flex items-center gap-3 ${
+                                className={`p-3 rounded-lg border-2 flex flex-col items-center justify-center transition-all ${
                                     teamShotInput.shotType === 'saved'
-                                        ? 'border-blue-500 bg-blue-50'
-                                        : 'border-gray-300 hover:bg-gray-50'
+                                        ? 'border-blue-500 bg-blue-50 scale-105'
+                                        : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
                                 }`}
+                                data-testid="shot-type-saved"
                             >
-                                <span className="text-2xl">✋</span>
-                                <div className="text-left">
-                                    <div className="font-bold">Saved</div>
-                                    <div className="text-xs text-gray-600">Shot on goal - saved by goalie</div>
-                                </div>
+                                <span className="text-2xl">🧤</span>
+                                <span className="text-xs font-bold mt-1">SAVE</span>
                             </button>
 
                             <button
@@ -1785,39 +1804,50 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                                         addGameEvent('⏸️ GAME PAUSED (Goal scored)', 'game_pause');
                                     }
                                 }}
-                                className={`w-full px-4 py-3 rounded-lg border-2 flex items-center gap-3 ${
+                                className={`p-3 rounded-lg border-2 flex flex-col items-center justify-center transition-all ${
                                     teamShotInput.shotType === 'goal'
-                                        ? 'border-green-500 bg-green-50'
-                                        : 'border-gray-300 hover:bg-gray-50'
+                                        ? 'border-green-500 bg-green-50 scale-105'
+                                        : 'border-gray-200 hover:border-green-300 hover:bg-green-50/50'
                                 }`}
+                                data-testid="shot-type-goal"
                             >
                                 <span className="text-2xl">🚨</span>
-                                <div className="text-left flex-1">
-                                    <div className="font-bold">Goal</div>
-                                    <div className="text-xs text-gray-600">Shot scores! (Stops game clock)</div>
-                                </div>
+                                <span className="text-xs font-bold mt-1">GOAL</span>
                             </button>
                         </div>
-                    </div>
-                    
-                    {/* Player Selection (Scorer) */}
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium mb-2">
-                            {teamShotInput.shotType === 'goal' ? 'Goal Scorer' : 'Player'}
-                        </label>
-                        <select
-                            value={teamShotInput.playerId}
-                            onChange={(e) => setTeamShotInput(prev => ({ ...prev, playerId: e.target.value }))}
-                            className="w-full px-3 py-2 border rounded"
-                            data-testid="shot-player-select"
-                        >
-                            <option value="unknown">Unknown Player</option>
-                            {teamPlayers.map(player => (
-                                <option key={player.id} value={player.id}>
-                                    #{player.number} {player.name}
-                                </option>
-                            ))}
-                        </select>
+
+                        {/* Player & Time Row - Compact */}
+                        <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">
+                                    {teamShotInput.shotType === 'goal' ? 'Scorer' : 'Player'}
+                                </label>
+                                <select
+                                    value={teamShotInput.playerId}
+                                    onChange={(e) => setTeamShotInput(prev => ({ ...prev, playerId: e.target.value }))}
+                                    className="w-full px-2 py-2 border rounded-lg text-sm"
+                                    data-testid="shot-player-select"
+                                >
+                                    <option value="unknown">Unknown</option>
+                                    {teamPlayers.map(player => (
+                                        <option key={player.id} value={player.id}>
+                                            #{player.number} {player.name.split(' ').pop()}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Time</label>
+                                <input
+                                    type="text"
+                                    value={teamShotInput.timestamp}
+                                    onChange={(e) => setTeamShotInput(prev => ({ ...prev, timestamp: e.target.value }))}
+                                    className="w-full px-2 py-2 border rounded-lg text-sm font-mono text-center"
+                                    placeholder="MM:SS"
+                                    data-testid="shot-time-input"
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     {/* Assist Picker - Only shown when goal is selected */}
