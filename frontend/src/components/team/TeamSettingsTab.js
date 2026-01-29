@@ -287,7 +287,7 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                                 currentImage={teamStyle.logoUrl}
                                 onImageSelected={handleLogoUpload}
                                 aspectRatio={1}
-                                maxWidth={400}
+                                uploadType="logo"
                             />
                             {teamStyle.logoUrl && (
                                 <button
@@ -306,7 +306,7 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                                 currentImage={teamStyle.bannerUrl}
                                 onImageSelected={handleBannerUpload}
                                 aspectRatio={3}
-                                maxWidth={1200}
+                                uploadType="banner"
                             />
                         </div>
                     </div>
