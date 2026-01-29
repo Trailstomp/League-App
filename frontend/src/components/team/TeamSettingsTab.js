@@ -95,11 +95,36 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
     // Handle logo upload
     const handleLogoUpload = async (url) => {
         setTeamStyle(prev => ({ ...prev, logoUrl: url }));
+        // Auto-save after upload
+        await saveTeamStyle({ ...teamStyle, logoUrl: url });
     };
     
     // Handle banner upload
     const handleBannerUpload = async (url) => {
         setTeamStyle(prev => ({ ...prev, bannerUrl: url }));
+        // Auto-save after upload
+        await saveTeamStyle({ ...teamStyle, bannerUrl: url });
+    };
+    
+    // Helper to save team style
+    const saveTeamStyle = async (styleData) => {
+        try {
+            const response = await fetch(`${backendUrl}/api/league-data/teams/${team.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ style: styleData })
+            });
+            
+            if (response.ok) {
+                setMessage('✅ Image saved!');
+            } else {
+                setMessage('⚠️ Image uploaded but failed to save to team');
+            }
+        } catch (error) {
+            console.error('Error saving team style:', error);
+            setMessage('⚠️ Image uploaded but failed to save');
+        }
+        setTimeout(() => setMessage(''), 3000);
     };
     
     // Extract colors from logo
