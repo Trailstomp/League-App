@@ -1848,7 +1848,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                                 />
                             </div>
                         </div>
-                    </div>
 
                         {/* Assist Picker - Compact, only shown when goal is selected */}
                         {teamShotInput.shotType === 'goal' && (
