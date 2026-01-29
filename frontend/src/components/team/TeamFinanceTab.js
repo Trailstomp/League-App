@@ -1113,6 +1113,7 @@ const TeamFinanceTab = ({ team, currentUser }) => {
                     onClose={() => { setShowPaymentModal(false); setSelectedPlayer(null); }}
                     onSave={updatePlayerPayment}
                     saving={saving}
+                    paymentLinks={paymentLinks}
                 />
             )}
         </div>
