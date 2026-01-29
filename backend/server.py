@@ -1319,15 +1319,15 @@ async def upload_general_image(
                     perm_response = await client.post(permission_url, headers=headers, json=permission_data)
                     
                     if perm_response.status_code not in [200, 201]:
-                        logger.warning(f"⚠️ Failed to set public permission for file {file_id}: {perm_response.status_code}")
-                        # Don't fail the upload, but log the warning
+                        logger.warning(f"⚠️ Failed to set public permission for file {file_id}: {perm_response.status_code} - {perm_response.text}")
+                        # Since permission failed, use proxy URL instead
+                        public_url = f"https://lh3.googleusercontent.com/d/{file_id}"
                     else:
                         logger.info(f"✅ File {file_id} made public")
+                        # Use the direct lh3 URL which is more reliable than drive.google.com/uc
+                        public_url = f"https://lh3.googleusercontent.com/d/{file_id}"
                     
-                    # Generate public URL
-                    public_url = f"https://drive.google.com/uc?id={file_id}&export=view"
-                    
-                    logger.info(f"✅ Image uploaded to Google Drive: {file_id}")
+                    logger.info(f"✅ Image uploaded to Google Drive: {file_id}, URL: {public_url}")
                     
                     return {
                         "url": public_url,
