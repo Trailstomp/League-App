@@ -1084,10 +1084,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
             addShotStat(teamKey, playerId, shotType, assistPlayerId);
         }
 
-        // Close modal and reset shot clock
+        // Close modal - only reset shot clock for saves and goals (not misses)
         setShowTeamShotModal(false);
         setTeamShotInput({ playerId: 'unknown', shotType: '', timestamp: '', assistPlayerId: null });
-        resetShotClock();
+        // Shot clock already handled above for saves/goals - misses don't affect it
     };
 
 
