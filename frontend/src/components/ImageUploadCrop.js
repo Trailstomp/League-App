@@ -128,11 +128,17 @@ const ImageUploadCrop = ({
     }, [completedCrop]);
 
     const handleCropConfirm = async () => {
+        console.log('🖼️ Starting crop confirmation...');
+        console.log('🖼️ completedCrop:', completedCrop);
+        console.log('🖼️ imageRef.current:', imageRef.current ? 'exists' : 'null');
+        
         setError('');
         setUploading(true);
 
         try {
             const croppedBlob = await getCroppedImage();
+            console.log('🖼️ croppedBlob:', croppedBlob ? `${croppedBlob.size} bytes` : 'null');
+            
             if (!croppedBlob) {
                 setError('Failed to crop image');
                 setUploading(false);
@@ -144,10 +150,14 @@ const ImageUploadCrop = ({
             formData.append('file', croppedBlob, `${uploadType}_${Date.now()}.jpg`);
             formData.append('type', uploadType);
 
+            console.log('🖼️ Uploading to:', `${backendUrl}/api/upload/image`);
+            
             const response = await fetch(`${backendUrl}/api/upload/image`, {
                 method: 'POST',
                 body: formData
             });
+
+            console.log('🖼️ Upload response status:', response.status);
 
             if (!response.ok) {
                 const data = await response.json();
@@ -155,9 +165,15 @@ const ImageUploadCrop = ({
             }
 
             const data = await response.json();
+            console.log('🖼️ Upload successful:', data);
             const imageUrl = data.url;
             
             // Call the callback with the new URL
+            console.log('🖼️ Calling onImageSelected with:', imageUrl);
+            if (typeof onImageSelected !== 'function') {
+                console.error('🖼️ ERROR: onImageSelected is not a function!', onImageSelected);
+                throw new Error('Callback function not provided');
+            }
             onImageSelected(imageUrl, croppedBlob);
             
             // Close modal
