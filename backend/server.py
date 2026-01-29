@@ -1307,16 +1307,22 @@ async def upload_general_image(
                     response = await client.post(upload_url, headers=headers, files=files_data)
                     
                     if response.status_code not in [200, 201]:
-                        logger.error(f"Google Drive upload failed: {response.status_code}")
+                        logger.error(f"Google Drive upload failed: {response.status_code} - {response.text}")
                         raise Exception("Drive upload failed")
                     
                     result = response.json()
                     file_id = result.get("id")
                     
-                    # Make file public
+                    # Make file public - this is CRITICAL for the URL to work
                     permission_url = f"https://www.googleapis.com/drive/v3/files/{file_id}/permissions"
                     permission_data = {"role": "reader", "type": "anyone"}
-                    await client.post(permission_url, headers=headers, json=permission_data)
+                    perm_response = await client.post(permission_url, headers=headers, json=permission_data)
+                    
+                    if perm_response.status_code not in [200, 201]:
+                        logger.warning(f"⚠️ Failed to set public permission for file {file_id}: {perm_response.status_code}")
+                        # Don't fail the upload, but log the warning
+                    else:
+                        logger.info(f"✅ File {file_id} made public")
                     
                     # Generate public URL
                     public_url = f"https://drive.google.com/uc?id={file_id}&export=view"
