@@ -96,7 +96,8 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 
 ### Live Scoring
 - [x] Real-time game scoring with shot tracking
-- [x] Three-button shot system (Goal, Save, Miss)
+- [x] **Single SHOT button** - Consolidated Goal/Save/Miss into one button that opens a modal
+- [x] **Assist Tracking** - When recording a goal, option to select assisting player
 - [x] Player roster display with clickable photo popups
 - [x] Shot clock with disable option
 - [x] YouTube feed integration
