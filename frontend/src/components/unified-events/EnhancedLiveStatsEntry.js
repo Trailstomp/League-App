@@ -1850,64 +1850,59 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                         </div>
                     </div>
 
-                    {/* Assist Picker - Only shown when goal is selected */}
-                    {teamShotInput.shotType === 'goal' && (
-                        <div className="mb-4 p-3 bg-green-50 rounded-lg border border-green-200">
-                            <label className="block text-sm font-medium mb-2 text-green-800">
-                                🎯 Assist (Optional)
-                            </label>
-                            <select
-                                value={teamShotInput.assistPlayerId || ''}
-                                onChange={(e) => setTeamShotInput(prev => ({ 
-                                    ...prev, 
-                                    assistPlayerId: e.target.value || null 
-                                }))}
-                                className="w-full px-3 py-2 border border-green-300 rounded bg-white"
-                                data-testid="assist-player-select"
-                            >
-                                <option value="">No Assist</option>
-                                {teamPlayers
-                                    .filter(p => p.id !== teamShotInput.playerId) // Exclude the scorer
-                                    .map(player => (
-                                        <option key={player.id} value={player.id}>
-                                            #{player.number} {player.name}
-                                        </option>
-                                    ))
-                                }
-                            </select>
-                            <div className="text-xs text-green-600 mt-1">
-                                Select the player who passed to the goal scorer
+                        {/* Assist Picker - Compact, only shown when goal is selected */}
+                        {teamShotInput.shotType === 'goal' && (
+                            <div className="p-2 bg-green-50 rounded-lg border border-green-200">
+                                <label className="block text-xs font-medium text-green-700 mb-1">🎯 Assist</label>
+                                <select
+                                    value={teamShotInput.assistPlayerId || ''}
+                                    onChange={(e) => setTeamShotInput(prev => ({ 
+                                        ...prev, 
+                                        assistPlayerId: e.target.value || null 
+                                    }))}
+                                    className="w-full px-2 py-2 border border-green-300 rounded-lg text-sm bg-white"
+                                    data-testid="assist-player-select"
+                                >
+                                    <option value="">No Assist</option>
+                                    {teamPlayers
+                                        .filter(p => p.id !== teamShotInput.playerId)
+                                        .map(player => (
+                                            <option key={player.id} value={player.id}>
+                                                #{player.number} {player.name.split(' ').pop()}
+                                            </option>
+                                        ))
+                                    }
+                                </select>
                             </div>
+                        )}
+
+                        {/* Period Display - Compact */}
+                        <div className="text-center text-xs text-gray-500">
+                            {gameState.game_settings.periodName} {gameState.current_period}
                         </div>
-                    )}
 
-                    {/* Timestamp Display */}
-                    <div className="mb-4 p-3 bg-gray-100 rounded text-center">
-                        <div className="text-sm text-gray-600">Time</div>
-                        <div className="font-mono font-bold text-lg">{teamShotInput.timestamp}</div>
-                        <div className="text-xs text-gray-500">{gameState.game_settings.periodName} {gameState.current_period}</div>
-                    </div>
-
-                    {/* Buttons */}
-                    <div className="flex gap-3">
-                        <button
-                            onClick={() => {
-                                setShowTeamShotModal(false);
-                                setTeamShotInput({ playerId: 'unknown', shotType: '', timestamp: '', assistPlayerId: null });
-                            }}
-                            className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-                            data-testid="shot-modal-cancel"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={submitTeamShot}
-                            disabled={!teamShotInput.shotType}
-                            className="flex-1 px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                            data-testid="shot-modal-submit"
-                        >
-                            Record {teamShotInput.shotType === 'goal' ? 'Goal' : 'Shot'}
-                        </button>
+                        {/* Action Buttons */}
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => {
+                                    setShowTeamShotModal(false);
+                                    setTeamShotInput({ playerId: 'unknown', shotType: '', timestamp: '', assistPlayerId: null });
+                                }}
+                                className="flex-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium"
+                                data-testid="shot-modal-cancel"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={submitTeamShot}
+                                disabled={!teamShotInput.shotType}
+                                className="flex-1 px-3 py-2 text-white rounded-lg text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                style={{ backgroundColor: teamShotInput.shotType ? teamColor : '#9ca3af' }}
+                                data-testid="shot-modal-submit"
+                            >
+                                {teamShotInput.shotType === 'goal' ? '🚨 GOAL!' : teamShotInput.shotType === 'saved' ? '🧤 SAVE' : teamShotInput.shotType === 'miss' ? '❌ MISS' : 'Select Type'}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
