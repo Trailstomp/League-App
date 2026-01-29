@@ -88,7 +88,14 @@ const ImageUploadCrop = ({
     }, [aspectRatio]);
 
     const getCroppedImage = useCallback(async () => {
-        if (!imageRef.current || !completedCrop) return null;
+        console.log('🖼️ getCroppedImage called');
+        console.log('🖼️ imageRef.current:', imageRef.current);
+        console.log('🖼️ completedCrop:', completedCrop);
+        
+        if (!imageRef.current || !completedCrop) {
+            console.error('🖼️ Missing imageRef or completedCrop');
+            return null;
+        }
 
         const image = imageRef.current;
         const canvas = document.createElement('canvas');
@@ -97,10 +104,23 @@ const ImageUploadCrop = ({
         // Calculate scale between displayed and natural image size
         const scaleX = image.naturalWidth / image.width;
         const scaleY = image.naturalHeight / image.height;
+        
+        console.log('🖼️ Image dimensions:', { 
+            natural: { w: image.naturalWidth, h: image.naturalHeight },
+            displayed: { w: image.width, h: image.height },
+            scale: { x: scaleX, y: scaleY }
+        });
+        console.log('🖼️ Crop area:', completedCrop);
 
         // Set canvas size to cropped area (at natural resolution)
         canvas.width = completedCrop.width * scaleX;
         canvas.height = completedCrop.height * scaleY;
+        
+        // Check if canvas has valid dimensions
+        if (canvas.width <= 0 || canvas.height <= 0) {
+            console.error('🖼️ Invalid canvas dimensions:', { w: canvas.width, h: canvas.height });
+            return null;
+        }
 
         // Draw cropped portion
         ctx.drawImage(
@@ -118,6 +138,7 @@ const ImageUploadCrop = ({
         // Convert to blob
         return new Promise((resolve) => {
             canvas.toBlob((blob) => {
+                console.log('🖼️ Canvas blob created:', blob ? `${blob.size} bytes` : 'null');
                 if (blob) {
                     resolve(blob);
                 } else {
