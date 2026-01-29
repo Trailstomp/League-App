@@ -2787,23 +2787,32 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                 
                 {/* Active Players */}
                 <div>
-                    <div className="flex items-center justify-between mb-4">
+                    <div 
+                        className="flex items-center justify-between mb-4 p-3 rounded-lg"
+                        style={{ backgroundColor: `${teamData.color || '#3b82f6'}15` }}
+                    >
                         <h3 className="text-lg font-semibold flex items-center gap-3">
                             {teamData.logo && (
                                 <img 
-                                    src={teamData.logo} 
+                                    src={teamData.logo.startsWith('http') ? teamData.logo : `${backendUrl}${teamData.logo}`} 
                                     alt={teamData.name}
-                                    className="w-6 h-6 object-cover rounded"
+                                    className="w-8 h-8 object-cover rounded-full bg-white p-0.5 shadow"
                                 />
                             )}
-                            {teamData.name} - Active Players ({activePlayers.length})
+                            <span style={{ color: teamData.color || '#1e40af' }}>
+                                {teamData.name}
+                            </span>
+                            <span className="text-gray-500 font-normal text-sm">
+                                ({activePlayers.length} active)
+                            </span>
                         </h3>
                         <button
                             onClick={() => {
                                 setAddPlayerTeam(teamKey);
                                 setShowAddPlayerModal(true);
                             }}
-                            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm"
+                            className="px-4 py-2 text-white rounded-lg font-medium text-sm hover:opacity-90"
+                            style={{ backgroundColor: teamData.color || '#3b82f6' }}
                         >
                             ➕ Add Player
                         </button>
@@ -2811,7 +2820,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                     
                     <div className="overflow-x-auto -mx-2 md:mx-0">
                         <table className="min-w-full bg-white border rounded-lg text-xs md:text-sm">
-                            <thead className="bg-gray-50">
+                            <thead style={{ backgroundColor: `${teamData.color || '#3b82f6'}15` }}>
                                 <tr>
                                     <th className="px-1 md:px-2 py-1 text-left text-xs font-medium text-gray-700">✓</th>
                                     <SortableHeader column="number">#</SortableHeader>
