@@ -4,8 +4,8 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
     console.log('🎬 LiveSpectatorView RENDERING with event:', event?.id, event?.title);
     
     const [liveData, setLiveData] = useState({
-        home_team: { name: '', logo: '', score: 0, color: '#3b82f6', banner: null, font: 'Inter, sans-serif' },
-        away_team: { name: '', logo: '', score: 0, color: '#ef4444', banner: null, font: 'Inter, sans-serif' },
+        home_team: { name: '', logo: '', score: 0, color: '#3b82f6', banner: null, font: 'Inter, sans-serif', players: [] },
+        away_team: { name: '', logo: '', score: 0, color: '#ef4444', banner: null, font: 'Inter, sans-serif', players: [] },
         time_remaining: '15:00',
         current_period: 1,
         home_players: [],
@@ -16,47 +16,11 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
         gameEvents: []
     });
 
-    const [liveViewSettings, setLiveViewSettings] = useState({
-        backgroundType: 'banners',
-        bannerOpacity: 0.3,
-        useTeamFonts: true
-    });
-
-    const [chat, setChat] = useState({
-        messages: [],
-        newMessage: ''
-    });
-
-    const [mediaUpload, setMediaUpload] = useState({
-        uploading: false,
-        files: [],
-        preview: null
-    });
-
+    const [activeTab, setActiveTab] = useState('stream'); // stream, events, stats
+    const [showChat, setShowChat] = useState(false);
+    const [chat, setChat] = useState({ messages: [], newMessage: '' });
     const chatEndRef = useRef(null);
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
-
-    // Fetch website style settings for live view
-    useEffect(() => {
-        const fetchWebsiteStyle = async () => {
-            try {
-                const response = await fetch(`${backendUrl}/api/league-data`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.websiteStyle) {
-                        setLiveViewSettings({
-                            backgroundType: data.websiteStyle.liveViewBackgroundType || 'banners',
-                            bannerOpacity: data.websiteStyle.liveViewBannerOpacity || 0.3,
-                            useTeamFonts: data.websiteStyle.liveViewUseTeamFonts !== false
-                        });
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching website style:', error);
-            }
-        };
-        fetchWebsiteStyle();
-    }, [backendUrl]);
 
     // Initialize game data with team colors and fonts
     useEffect(() => {
@@ -67,60 +31,44 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
             setLiveData(prev => ({
                 ...prev,
                 home_team: {
+                    ...prev.home_team,
                     name: homeTeam?.name || 'Home Team',
                     logo: homeTeam?.style?.logoUrl || null,
                     color: homeTeam?.style?.primaryColor || '#3b82f6',
                     banner: homeTeam?.style?.bannerUrl || null,
                     font: homeTeam?.style?.font || 'Inter, sans-serif',
-                    score: 0
                 },
                 away_team: {
+                    ...prev.away_team,
                     name: awayTeam?.name || 'Away Team',
                     logo: awayTeam?.style?.logoUrl || null,
                     color: awayTeam?.style?.accentColor || awayTeam?.style?.primaryColor || '#ef4444',
                     banner: awayTeam?.style?.bannerUrl || null,
                     font: awayTeam?.style?.font || 'Inter, sans-serif',
-                    score: 0
                 }
             }));
-
-            // Load chat history
             loadChatMessages();
         }
     }, [event, teams]);
 
-    // Auto-scroll chat to bottom
+    // Auto-scroll chat
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [chat.messages]);
 
-    // Poll for live updates every 3 seconds
+    // Poll for live updates
     useEffect(() => {
-        console.log('🔄 Setting up polling for event:', event.id);
-        
-        const pollInterval = setInterval(() => {
-            console.log('📡 Polling for updates, event ID:', event.id);
-            fetchLiveUpdates();
-        }, 3000);
-
-        // Initial fetch
+        const pollInterval = setInterval(() => fetchLiveUpdates(), 3000);
         fetchLiveUpdates();
-
-        return () => {
-            console.log('🛑 Cleaning up polling for event:', event.id);
-            clearInterval(pollInterval);
-        };
-    }, [event.id]); // Changed to event.id to avoid recreating on every event object change
+        return () => clearInterval(pollInterval);
+    }, [event.id]);
 
     const loadChatMessages = async () => {
         try {
             const response = await fetch(`${backendUrl}/api/events/${event.id}/chat`);
             if (response.ok) {
                 const data = await response.json();
-                setChat(prev => ({
-                    ...prev,
-                    messages: data.messages || []
-                }));
+                setChat(prev => ({ ...prev, messages: data.messages || [] }));
             }
         } catch (error) {
             console.error('Error loading chat:', error);
@@ -128,19 +76,12 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
     };
 
     const fetchLiveUpdates = async () => {
-        console.log('📊 Fetching live updates for event:', event.id);
         try {
-            // Fetch event data which has the most recent scores in unified_events.scores
             const eventResponse = await fetch(`${backendUrl}/api/unified-events/${event.id}`);
-            console.log('📥 Event response status:', eventResponse.status);
             if (eventResponse.ok) {
                 const eventData = await eventResponse.json();
-                console.log('📥 Event data received:', eventData);
                 
-                // PRIMARY SOURCE: unified_events.scores (most up-to-date)
                 if (eventData.scores && eventData.scores.home_team && eventData.scores.away_team) {
-                    console.log('✅ Using scores from unified_events.scores');
-                    
                     const homeStats = calculateTeamStats(eventData.scores.home_team.players || []);
                     const awayStats = calculateTeamStats(eventData.scores.away_team.players || []);
                     
@@ -148,11 +89,13 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                         ...prev,
                         home_team: { 
                             ...prev.home_team, 
-                            score: eventData.scores.home_team.score || 0 
+                            score: eventData.scores.home_team.score || 0,
+                            players: eventData.scores.home_team.players || []
                         },
                         away_team: { 
                             ...prev.away_team, 
-                            score: eventData.scores.away_team.score || 0 
+                            score: eventData.scores.away_team.score || 0,
+                            players: eventData.scores.away_team.players || []
                         },
                         home_players: (eventData.scores.home_team.players || [])
                             .filter(p => p.stats && (p.stats.goals > 0 || p.stats.assists > 0))
@@ -166,87 +109,64 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                         away_stats: awayStats,
                         time_remaining: eventData.scores.time_remaining || '15:00',
                         current_period: eventData.scores.current_period || 1,
-                        penalties: eventData.scores.penalties || { home: [], away: [] }, // Extract penalties
-                        gameEvents: eventData.scores.gameEvents || [] // Extract game events
+                        penalties: eventData.scores.penalties || { home: [], away: [] },
+                        gameEvents: eventData.scores.gameEvents || []
                     }));
-                    
-                    console.log('✅ Live data updated from unified_events');
-                    return; // Exit early, we got the data we need
+                    return;
                 }
             }
 
-            // FALLBACK: Try game_stats collection (legacy/backup)
-            try {
-                console.log('📊 Fallback: Fetching from game_stats collection');
-                const statsResponse = await fetch(`${backendUrl}/api/events/${event.id}/game-stats`);
-                console.log('📥 Stats response status:', statsResponse.status);
-                if (statsResponse.ok) {
-                    const statsData = await statsResponse.json();
-                    console.log('📥 Stats data received:', statsData);
+            // Fallback to game_stats
+            const statsResponse = await fetch(`${backendUrl}/api/events/${event.id}/game-stats`);
+            if (statsResponse.ok) {
+                const statsData = await statsResponse.json();
+                let latestStats = statsData.stats || (Array.isArray(statsData) ? statsData[statsData.length - 1] : null);
+                
+                if (latestStats?.home_team && latestStats?.away_team) {
+                    const homeStats = calculateTeamStats(latestStats.home_team.players || []);
+                    const awayStats = calculateTeamStats(latestStats.away_team.players || []);
                     
-                    // Handle both old array format and new object format
-                    let latestStats = null;
-                    if (statsData.stats) {
-                        latestStats = statsData.stats;
-                        console.log('✅ Using stats from stats.stats');
-                    } else if (Array.isArray(statsData) && statsData.length > 0) {
-                        latestStats = statsData[statsData.length - 1];
-                        console.log('✅ Using stats from array');
-                    }
-                    
-                    if (latestStats && latestStats.home_team && latestStats.away_team) {
-                        console.log('✅ Found valid stats from game_stats, updating live data');
-                        const homeStats = calculateTeamStats(latestStats.home_team.players || []);
-                        const awayStats = calculateTeamStats(latestStats.away_team.players || []);
-                        
-                        console.log('📊 Home stats:', homeStats, 'Away stats:', awayStats);
-                        
-                        setLiveData(prev => ({
-                            ...prev,
-                            home_team: { 
-                                ...prev.home_team, 
-                                score: latestStats.home_team.score || 0 
-                            },
-                            away_team: { 
-                                ...prev.away_team, 
-                                score: latestStats.away_team.score || 0 
-                            },
-                            home_players: (latestStats.home_team.players || [])
-                                .filter(p => p.stats && (p.stats.goals > 0 || p.stats.assists > 0))
-                                .sort((a, b) => (b.stats.goals || 0) - (a.stats.goals || 0))
-                                .slice(0, 5),
-                            away_players: (latestStats.away_team.players || [])
-                                .filter(p => p.stats && (p.stats.goals > 0 || p.stats.assists > 0))
-                                .sort((a, b) => (b.stats.goals || 0) - (a.stats.goals || 0))
-                                .slice(0, 5),
-                            home_stats: homeStats,
-                            away_stats: awayStats,
-                            time_remaining: latestStats.time_remaining || '15:00',
-                            current_period: latestStats.current_period || 1,
-                            penalties: latestStats.penalties || { home: [], away: [] }, // Extract penalties from fallback
-                            gameEvents: latestStats.gameEvents || [] // Extract game events from fallback
-                        }));
-                    } else {
-                        console.log('⚠️ No valid stats found in game_stats response');
-                    }
+                    setLiveData(prev => ({
+                        ...prev,
+                        home_team: { 
+                            ...prev.home_team, 
+                            score: latestStats.home_team.score || 0,
+                            players: latestStats.home_team.players || []
+                        },
+                        away_team: { 
+                            ...prev.away_team, 
+                            score: latestStats.away_team.score || 0,
+                            players: latestStats.away_team.players || []
+                        },
+                        home_players: (latestStats.home_team.players || [])
+                            .filter(p => p.stats && (p.stats.goals > 0 || p.stats.assists > 0))
+                            .sort((a, b) => (b.stats.goals || 0) - (a.stats.goals || 0))
+                            .slice(0, 5),
+                        away_players: (latestStats.away_team.players || [])
+                            .filter(p => p.stats && (p.stats.goals > 0 || p.stats.assists > 0))
+                            .sort((a, b) => (b.stats.goals || 0) - (a.stats.goals || 0))
+                            .slice(0, 5),
+                        home_stats: homeStats,
+                        away_stats: awayStats,
+                        time_remaining: latestStats.time_remaining || '15:00',
+                        current_period: latestStats.current_period || 1,
+                        penalties: latestStats.penalties || { home: [], away: [] },
+                        gameEvents: latestStats.gameEvents || []
+                    }));
                 }
-            } catch (statsError) {
-                console.log('⚠️ No game stats in game_stats collection:', statsError);
             }
         } catch (error) {
-            console.error('❌ Error fetching live updates:', error);
+            console.error('Error fetching live updates:', error);
         }
     };
 
     const calculateTeamStats = (players) => {
-        return players.reduce((acc, player) => {
-            return {
-                goals: acc.goals + (player.stats?.goals || 0),
-                shots: acc.shots + (player.stats?.shots || 0),
-                assists: acc.assists + (player.stats?.assists || 0),
-                penalties: acc.penalties + (player.stats?.penalties || 0)
-            };
-        }, { goals: 0, shots: 0, assists: 0, penalties: 0 });
+        return players.reduce((acc, player) => ({
+            goals: acc.goals + (player.stats?.goals || 0),
+            shots: acc.shots + (player.stats?.shots || 0),
+            assists: acc.assists + (player.stats?.assists || 0),
+            penalties: acc.penalties + (player.stats?.penalties || 0)
+        }), { goals: 0, shots: 0, assists: 0, penalties: 0 });
     };
 
     const handleSendMessage = async () => {
@@ -258,24 +178,12 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                 timestamp: new Date().toISOString(),
                 type: 'user'
             };
-
-            // Optimistically add message
-            setChat(prev => ({
-                ...prev,
-                messages: [...prev.messages, newMsg],
-                newMessage: ''
-            }));
-
+            setChat(prev => ({ ...prev, messages: [...prev.messages, newMsg], newMessage: '' }));
             try {
                 await fetch(`${backendUrl}/api/events/${event.id}/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: chat.newMessage,
-                        event_id: event.id,
-                        timestamp: new Date().toISOString(),
-                        user_name: 'Spectator'
-                    })
+                    body: JSON.stringify({ message: chat.newMessage, event_id: event.id, timestamp: new Date().toISOString(), user_name: 'Spectator' })
                 });
             } catch (error) {
                 console.error('Error sending message:', error);
@@ -283,546 +191,448 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
         }
     };
 
-    const handleFileSelect = (e) => {
-        const files = Array.from(e.target.files);
-        if (files.length > 0) {
-            const file = files[0];
-            
-            if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    setMediaUpload(prev => ({
-                        ...prev,
-                        preview: { url: e.target.result, type: file.type, name: file.name },
-                        files: [file]
-                    }));
-                };
-                reader.readAsDataURL(file);
-            }
+    const formatTime = (timestamp) => new Date(timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    const getImageUrl = (url) => {
+        if (!url) return null;
+        if (url.startsWith('http')) return url;
+        return `${backendUrl}${url}`;
+    };
+
+    // Find player by ID or number
+    const findPlayer = (playerId, teamKey) => {
+        const team = liveData[teamKey];
+        if (!team?.players) return null;
+        return team.players.find(p => p.id === playerId || String(p.number) === String(playerId));
+    };
+
+    // Parse player info from event text
+    const parsePlayerFromEvent = (eventItem) => {
+        const teamKey = eventItem.data?.teamKey;
+        if (eventItem.data?.playerId && eventItem.data.playerId !== 'unknown') {
+            return { player: findPlayer(eventItem.data.playerId, teamKey), teamKey };
         }
-    };
-
-    const handleUploadMedia = async () => {
-        if (mediaUpload.files.length === 0) return;
-
-        setMediaUpload(prev => ({ ...prev, uploading: true }));
-
-        try {
-            const formData = new FormData();
-            mediaUpload.files.forEach(file => {
-                formData.append('files', file);
-            });
-
-            const response = await fetch(`${backendUrl}/api/events/${event.id}/media`, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                
-                // Add system message to chat
-                const newMsg = {
-                    id: Date.now(),
-                    user_name: 'System',
-                    message: `📷 Media uploaded: ${mediaUpload.preview.name}`,
-                    timestamp: new Date().toISOString(),
-                    type: 'media'
-                };
-
-                setChat(prev => ({
-                    ...prev,
-                    messages: [...prev.messages, newMsg]
-                }));
-
-                setMediaUpload({
-                    uploading: false,
-                    files: [],
-                    preview: null
-                });
-
-                alert('Media uploaded successfully!');
-            } else {
-                alert('Upload failed. Please try again.');
-            }
-        } catch (error) {
-            console.error('Error uploading media:', error);
-            alert('Upload error: ' + error.message);
-        } finally {
-            setMediaUpload(prev => ({ ...prev, uploading: false }));
+        // Try to parse "#X Name" from text
+        const match = eventItem.text?.match(/#(\d+)\s+(\w+)/);
+        if (match) {
+            const homePlayer = liveData.home_team.players?.find(p => String(p.number) === match[1]);
+            if (homePlayer) return { player: homePlayer, teamKey: 'home_team' };
+            const awayPlayer = liveData.away_team.players?.find(p => String(p.number) === match[1]);
+            if (awayPlayer) return { player: awayPlayer, teamKey: 'away_team' };
         }
+        return { player: null, teamKey };
     };
 
-    const formatTime = (timestamp) => {
-        const date = new Date(timestamp);
-        return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    };
-
-    const formatTimeSeconds = (seconds) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-    };
-
-    const formatPlayerName = (name) => {
-        // Convert "First Last" to "Last, First"
-        if (!name) return '';
-        const parts = name.trim().split(' ');
-        if (parts.length >= 2) {
-            const lastName = parts[parts.length - 1];
-            const firstName = parts.slice(0, -1).join(' ');
-            return `${lastName}, ${firstName}`;
-        }
-        return name;
-    };
-
-    const getBackgroundStyle = () => {
-        if (liveData.home_team.banner || liveData.away_team.banner) {
-            return {
-                background: `linear-gradient(to right, 
-                    ${liveData.home_team.color}aa 0%, 
-                    ${liveData.home_team.color}ee 25%,
-                    ${liveData.away_team.color}ee 75%,
-                    ${liveData.away_team.color}aa 100%)`
-            };
-        }
-        return {
-            background: `linear-gradient(to right, ${liveData.home_team.color}, ${liveData.away_team.color})`
-        };
-    };
-
-    // Render Active Penalties Box (similar to scoring page)
-    const renderActivePenalties = () => {
-        const homePenalties = liveData.penalties?.home || [];
-        const awayPenalties = liveData.penalties?.away || [];
-        const totalPenalties = homePenalties.length + awayPenalties.length;
-        
-        if (totalPenalties === 0) return null;
-        
-        // Determine Man Up / Penalty Kill status
-        const homeManDown = homePenalties.length > awayPenalties.length;
-        const awayManDown = awayPenalties.length > homePenalties.length;
-        
-        return (
-            <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-4">
-                <h3 className="text-lg font-bold mb-3 text-gray-800">⚠️ Active Penalties</h3>
-                
-                {/* Man Up / Penalty Kill Indicators */}
-                {(homeManDown || awayManDown) && (
-                    <div className="flex justify-between mb-3 font-bold text-sm">
-                        <div className={homeManDown ? 'text-red-600' : 'text-green-600'}>
-                            {liveData.home_team.name}: {homeManDown ? '🛡️ PENALTY KILL' : '⚡ MAN UP'}
-                        </div>
-                        <div className={awayManDown ? 'text-red-600' : 'text-green-600'}>
-                            {liveData.away_team.name}: {awayManDown ? '🛡️ PENALTY KILL' : '⚡ MAN UP'}
-                        </div>
-                    </div>
-                )}
-                
-                {/* Penalties List */}
-                <div className="space-y-2">
-                    {homePenalties.map(penalty => (
-                        <div 
-                            key={penalty.id} 
-                            className={`p-2 rounded ${
-                                penalty.timeRemaining <= 10 ? 'bg-red-200 animate-pulse' : 'bg-white'
-                            } border border-gray-300`}
-                        >
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <span className="font-bold">{liveData.home_team.name}</span>
-                                    <span className="mx-2">-</span>
-                                    <span>#{penalty.playerNumber} {penalty.playerName}</span>
-                                </div>
-                                <div className="text-right">
-                                    <div className={`text-xl font-bold font-mono ${
-                                        penalty.timeRemaining <= 10 ? 'text-red-600' : 'text-gray-800'
-                                    }`}>
-                                        {formatTimeSeconds(penalty.timeRemaining)}
-                                    </div>
-                                    <div className="text-xs text-gray-600">{penalty.type}</div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                    
-                    {awayPenalties.map(penalty => (
-                        <div 
-                            key={penalty.id} 
-                            className={`p-2 rounded ${
-                                penalty.timeRemaining <= 10 ? 'bg-red-200 animate-pulse' : 'bg-white'
-                            } border border-gray-300`}
-                        >
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <span className="font-bold">{liveData.away_team.name}</span>
-                                    <span className="mx-2">-</span>
-                                    <span>#{penalty.playerNumber} {penalty.playerName}</span>
-                                </div>
-                                <div className="text-right">
-                                    <div className={`text-xl font-bold font-mono ${
-                                        penalty.timeRemaining <= 10 ? 'text-red-600' : 'text-gray-800'
-                                    }`}>
-                                        {formatTimeSeconds(penalty.timeRemaining)}
-                                    </div>
-                                    <div className="text-xs text-gray-600">{penalty.type}</div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+    // Player avatar component
+    const PlayerAvatar = ({ player, teamColor, size = 'md' }) => {
+        const sizeClasses = size === 'sm' ? 'w-6 h-6 text-xs' : size === 'lg' ? 'w-12 h-12 text-lg' : 'w-8 h-8 text-sm';
+        if (!player) return null;
+        return player.photoUrl ? (
+            <img 
+                src={getImageUrl(player.photoUrl)}
+                alt={player.name}
+                className={`${sizeClasses} rounded-full object-cover border-2 flex-shrink-0`}
+                style={{ borderColor: teamColor }}
+            />
+        ) : (
+            <div 
+                className={`${sizeClasses} rounded-full flex items-center justify-center text-white font-bold flex-shrink-0`}
+                style={{ backgroundColor: teamColor }}
+            >
+                {player.number}
             </div>
         );
     };
 
+    // Get sorted events (most recent first)
+    const getSortedEvents = () => {
+        return [...(liveData.gameEvents || [])].sort((a, b) => {
+            // Sort by timestamp descending if available
+            if (a.timestamp && b.timestamp) {
+                return new Date(b.timestamp) - new Date(a.timestamp);
+            }
+            // Otherwise by period then time
+            if (b.period !== a.period) return (b.period || 0) - (a.period || 0);
+            return (b.timeInSeconds || 0) - (a.timeInSeconds || 0);
+        }).slice(0, 20);
+    };
+
+    const homeColor = liveData.home_team.color;
+    const awayColor = liveData.away_team.color;
+
     return (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-95 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg shadow-2xl max-w-7xl w-full h-[95vh] flex flex-col">
-                {/* Header with Split Team Banners */}
-                <div className="rounded-t-lg flex-shrink-0 relative overflow-hidden">
-                    <div className="flex relative">
-                        {/* Home Team Side - Left 50% */}
-                        <div 
-                            className="flex-1 relative overflow-hidden"
-                            style={{
-                                backgroundColor: liveViewSettings.backgroundType === 'banners' && liveData.home_team.banner
-                                    ? 'transparent'
-                                    : liveViewSettings.backgroundType === 'gradient'
-                                    ? 'transparent'
-                                    : liveData.home_team.color,
-                                backgroundImage: liveViewSettings.backgroundType === 'banners' && liveData.home_team.banner
-                                    ? `linear-gradient(rgba(0, 0, 0, ${liveViewSettings.bannerOpacity}), rgba(0, 0, 0, ${liveViewSettings.bannerOpacity})), url(${liveData.home_team.banner})`
-                                    : liveViewSettings.backgroundType === 'gradient'
-                                    ? `linear-gradient(to right, ${liveData.home_team.color}, ${liveData.home_team.color}dd)`
-                                    : 'none',
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center'
-                            }}
-                        >
-                            <div className="p-6 text-white relative z-10">
-                                <div className="flex items-center gap-4">
-                                    {liveData.home_team.logo && (
-                                        <img 
-                                            src={liveData.home_team.logo} 
-                                            alt={liveData.home_team.name}
-                                            className="w-16 h-16 object-cover rounded-lg border-4 border-white shadow-lg"
-                                        />
-                                    )}
-                                    <div style={{ fontFamily: liveViewSettings.useTeamFonts ? liveData.home_team.font : 'Inter, sans-serif' }}>
-                                        <div className="text-xl font-bold">{liveData.home_team.name}</div>
-                                        <div className="text-5xl font-bold text-white drop-shadow-lg">{liveData.home_team.score}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Center Clock - Floating Over Both Sides */}
-                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30">
-                            <div className="text-center px-8 py-3 bg-black bg-opacity-60 backdrop-blur-sm rounded-lg border-2 border-white shadow-2xl">
-                                <div className="text-5xl font-bold text-white font-mono">{liveData.time_remaining}</div>
-                                <div className="text-sm text-white mt-1">Period {liveData.current_period}</div>
-                            </div>
-                        </div>
-
-                        {/* Away Team Side - Right 50% */}
-                        <div 
-                            className="flex-1 relative overflow-hidden"
-                            style={{
-                                backgroundColor: liveViewSettings.backgroundType === 'banners' && liveData.away_team.banner
-                                    ? 'transparent'
-                                    : liveViewSettings.backgroundType === 'gradient'
-                                    ? 'transparent'
-                                    : liveData.away_team.color,
-                                backgroundImage: liveViewSettings.backgroundType === 'banners' && liveData.away_team.banner
-                                    ? `linear-gradient(rgba(0, 0, 0, ${liveViewSettings.bannerOpacity}), rgba(0, 0, 0, ${liveViewSettings.bannerOpacity})), url(${liveData.away_team.banner})`
-                                    : liveViewSettings.backgroundType === 'gradient'
-                                    ? `linear-gradient(to left, ${liveData.away_team.color}, ${liveData.away_team.color}dd)`
-                                    : 'none',
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center'
-                            }}
-                        >
-                            <div className="p-6 text-white relative z-10">
-                                <div className="flex items-center gap-4 justify-end">
-                                    <div className="text-right" style={{ fontFamily: liveViewSettings.useTeamFonts ? liveData.away_team.font : 'Inter, sans-serif' }}>
-                                        <div className="text-xl font-bold">{liveData.away_team.name}</div>
-                                        <div className="text-5xl font-bold text-white drop-shadow-lg">{liveData.away_team.score}</div>
-                                    </div>
-                                    {liveData.away_team.logo && (
-                                        <img 
-                                            src={liveData.away_team.logo} 
-                                            alt={liveData.away_team.name}
-                                            className="w-16 h-16 object-cover rounded-lg border-4 border-white shadow-lg"
-                                        />
-                                    )}
-                                </div>
-                            </div>
-                        </div>
+        <div className="fixed inset-0 bg-black z-50 flex flex-col">
+            {/* Header with Team Banners */}
+            <div className="relative flex-shrink-0">
+                {/* Background Banners */}
+                <div className="absolute inset-0 flex">
+                    <div 
+                        className="w-1/2 bg-cover bg-center"
+                        style={{ 
+                            backgroundImage: liveData.home_team.banner ? `url(${getImageUrl(liveData.home_team.banner)})` : 'none',
+                            backgroundColor: homeColor
+                        }}
+                    >
+                        <div className="w-full h-full" style={{ backgroundColor: `${homeColor}cc` }} />
                     </div>
+                    <div 
+                        className="w-1/2 bg-cover bg-center"
+                        style={{ 
+                            backgroundImage: liveData.away_team.banner ? `url(${getImageUrl(liveData.away_team.banner)})` : 'none',
+                            backgroundColor: awayColor
+                        }}
+                    >
+                        <div className="w-full h-full" style={{ backgroundColor: `${awayColor}cc` }} />
+                    </div>
+                </div>
 
-                    {/* Top Bar with Title and Close Button */}
-                    <div className="absolute top-0 left-0 right-0 z-20 px-6 py-3 bg-gradient-to-b from-black/70 to-transparent">
-                        <div className="flex items-center justify-between">
-                            <h2 className="text-sm font-bold text-white drop-shadow-lg">
-                                {tournamentMatch ? (
-                                    <>🔴 LIVE: {event.title} - Round {tournamentMatch.roundIndex + 1}</>
-                                ) : (
-                                    <>🔴 LIVE: {event.title}</>
-                                )}
-                            </h2>
-                            <div className="flex items-center gap-4">
-                                <div className="text-xs bg-black bg-opacity-40 px-3 py-1 rounded text-white">
-                                    Polling: {liveData.home_team.score}-{liveData.away_team.score}
+                {/* Top Bar */}
+                <div className="relative z-20 p-3 flex items-center justify-between bg-gradient-to-b from-black/70 to-transparent">
+                    <div className="flex items-center gap-3">
+                        <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+                            🔴 LIVE
+                        </span>
+                        <span className="text-white font-medium">{event.title}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setShowChat(!showChat)}
+                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                                showChat ? 'bg-blue-600 text-white' : 'bg-white/20 text-white hover:bg-white/30'
+                            }`}
+                        >
+                            💬 Chat
+                        </button>
+                        <button
+                            onClick={onClose}
+                            className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                </div>
+
+                {/* Scoreboard */}
+                <div className="relative z-10 px-6 py-4">
+                    <div className="max-w-4xl mx-auto grid grid-cols-3 gap-4 items-center">
+                        {/* Home Team */}
+                        <div className="flex items-center gap-4">
+                            {liveData.home_team.logo ? (
+                                <img 
+                                    src={getImageUrl(liveData.home_team.logo)}
+                                    alt={liveData.home_team.name}
+                                    className="w-16 h-16 rounded-full object-cover bg-white p-1 shadow-lg"
+                                />
+                            ) : (
+                                <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white" style={{ backgroundColor: homeColor }}>
+                                    {liveData.home_team.name?.[0]}
                                 </div>
-                                <button
-                                    onClick={onClose}
-                                    className="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg font-medium transition text-white text-sm"
-                                >
-                                    ✕ Close
-                                </button>
+                            )}
+                            <div>
+                                <div className="text-white font-bold text-lg">{liveData.home_team.name}</div>
+                                <div className="text-5xl font-bold text-white drop-shadow-lg">{liveData.home_team.score}</div>
+                            </div>
+                        </div>
+
+                        {/* Clock */}
+                        <div className="text-center bg-black/50 backdrop-blur rounded-xl py-3 px-6">
+                            <div className="text-4xl font-mono font-bold text-white">{liveData.time_remaining}</div>
+                            <div className="text-sm text-gray-300">Period {liveData.current_period}</div>
+                        </div>
+
+                        {/* Away Team */}
+                        <div className="flex items-center gap-4 justify-end flex-row-reverse">
+                            {liveData.away_team.logo ? (
+                                <img 
+                                    src={getImageUrl(liveData.away_team.logo)}
+                                    alt={liveData.away_team.name}
+                                    className="w-16 h-16 rounded-full object-cover bg-white p-1 shadow-lg"
+                                />
+                            ) : (
+                                <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white" style={{ backgroundColor: awayColor }}>
+                                    {liveData.away_team.name?.[0]}
+                                </div>
+                            )}
+                            <div className="text-right">
+                                <div className="text-white font-bold text-lg">{liveData.away_team.name}</div>
+                                <div className="text-5xl font-bold text-white drop-shadow-lg">{liveData.away_team.score}</div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {/* Main Content Area - Split View */}
-                <div className="flex-1 flex overflow-hidden">
-                    {/* Left Side - Stats */}
-                    <div className="w-2/3 p-6 overflow-y-auto border-r">
-                        <h3 className="text-2xl font-bold mb-4">📊 Live Game Stats</h3>
-                        
-                        {/* Active Penalties */}
-                        {renderActivePenalties()}
-                        
-                        {/* Team Stats Comparison */}
-                        <div className="grid grid-cols-2 gap-4 mb-6">
-                            {/* Home Team Stats */}
-                            <div className="bg-blue-50 rounded-lg p-4 border-2" style={{ borderColor: liveData.home_team.color }}>
-                                <h4 className="font-bold text-lg mb-3" style={{ color: liveData.home_team.color }}>
-                                    {liveData.home_team.name}
-                                </h4>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between">
-                                        <span className="font-medium">Goals:</span>
-                                        <span className="text-xl font-bold">{liveData.home_stats.goals}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-medium">Shots:</span>
-                                        <span className="text-xl font-bold">{liveData.home_stats.shots}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-medium">Assists:</span>
-                                        <span className="text-xl font-bold">{liveData.home_stats.assists}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-medium">Penalties:</span>
-                                        <span className="text-xl font-bold">{liveData.home_stats.penalties}</span>
-                                    </div>
-                                </div>
-                            </div>
+            {/* Tab Navigation */}
+            <div className="bg-gray-900 border-t border-gray-700 flex-shrink-0">
+                <div className="max-w-4xl mx-auto flex">
+                    {[
+                        { id: 'stream', label: '📺 Stream' },
+                        { id: 'events', label: '📋 Events' },
+                        { id: 'stats', label: '📊 Stats' }
+                    ].map(tab => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex-1 px-4 py-3 text-sm font-medium transition-all ${
+                                activeTab === tab.id
+                                    ? 'text-white bg-gray-800 border-b-2 border-blue-500'
+                                    : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                            }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
 
-                            {/* Away Team Stats */}
-                            <div className="bg-red-50 rounded-lg p-4 border-2" style={{ borderColor: liveData.away_team.color }}>
-                                <h4 className="font-bold text-lg mb-3" style={{ color: liveData.away_team.color }}>
-                                    {liveData.away_team.name}
-                                </h4>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between">
-                                        <span className="font-medium">Goals:</span>
-                                        <span className="text-xl font-bold">{liveData.away_stats.goals}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-medium">Shots:</span>
-                                        <span className="text-xl font-bold">{liveData.away_stats.shots}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-medium">Assists:</span>
-                                        <span className="text-xl font-bold">{liveData.away_stats.assists}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="font-medium">Penalties:</span>
-                                        <span className="text-xl font-bold">{liveData.away_stats.penalties}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Game Events / Narration */}
-                        {liveData.gameEvents && liveData.gameEvents.length > 0 && (
-                            <div className="mt-6">
-                                <h4 className="text-lg font-bold mb-3">📋 Game Events</h4>
-                                <div className="bg-gray-50 rounded-lg border-2 border-gray-200 p-4 max-h-96 overflow-y-auto">
-                                    <div className="space-y-2">
-                                        {liveData.gameEvents
-                                            .sort((a, b) => {
-                                                // Sort by period (desc) then by timeInSeconds (desc)
-                                                if (b.period !== a.period) return b.period - a.period;
-                                                return (b.timeInSeconds || 0) - (a.timeInSeconds || 0);
-                                            })
-                                            .map((evt, idx) => (
-                                            <div 
-                                                key={idx} 
-                                                className={`p-3 rounded border-l-4 ${
-                                                    evt.type === 'goal' ? 'bg-green-50 border-green-500' :
-                                                    evt.type === 'penalty' ? 'bg-yellow-50 border-yellow-500' :
-                                                    evt.type === 'shot' ? 'bg-blue-50 border-blue-400' :
-                                                    evt.type === 'save' ? 'bg-cyan-50 border-cyan-400' :
-                                                    evt.type === 'shot_miss' ? 'bg-gray-50 border-gray-400' :
-                                                    'bg-white border-gray-300'
-                                                }`}
-                                            >
-                                                <div className="flex items-start justify-between gap-3">
-                                                    <div className="flex-1">
-                                                        <div className="font-medium text-sm">{evt.text}</div>
-                                                    </div>
-                                                    <div className="text-xs text-gray-600 whitespace-nowrap">
-                                                        <div className="font-mono font-bold">{evt.time}</div>
-                                                        <div>P{evt.period}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Top Players */}
-                        {(liveData.home_players.length > 0 || liveData.away_players.length > 0) && (
-                            <div>
-                                <h4 className="text-lg font-bold mb-3">⭐ Top Performers</h4>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <h5 className="font-semibold mb-2" style={{ color: liveData.home_team.color }}>
-                                            {liveData.home_team.name}
-                                        </h5>
-                                        {liveData.home_players.map((player, idx) => (
-                                            <div key={idx} className="bg-gray-50 rounded p-2 mb-2 text-sm">
-                                                <div className="font-medium">#{player.number} {formatPlayerName(player.name)}</div>
-                                                <div className="text-xs text-gray-600">
-                                                    G:{player.stats?.goals || 0} A:{player.stats?.assists || 0}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div>
-                                        <h5 className="font-semibold mb-2" style={{ color: liveData.away_team.color }}>
-                                            {liveData.away_team.name}
-                                        </h5>
-                                        {liveData.away_players.map((player, idx) => (
-                                            <div key={idx} className="bg-gray-50 rounded p-2 mb-2 text-sm">
-                                                <div className="font-medium">#{player.number} {formatPlayerName(player.name)}</div>
-                                                <div className="text-xs text-gray-600">
-                                                    G:{player.stats?.goals || 0} A:{player.stats?.assists || 0}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {liveData.home_players.length === 0 && (
-                            <div className="text-center py-8 text-gray-500">
-                                <div className="text-4xl mb-2">⏳</div>
-                                <p>Game stats will appear here once the game starts...</p>
-                            </div>
-                        )}
-
-                        {/* Media Upload Section */}
-                        <div className="mt-6 pt-6 border-t">
-                            <h4 className="text-lg font-bold mb-3">📸 Share Photos/Videos</h4>
-                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-                                <input
-                                    type="file"
-                                    accept="image/*,video/*"
-                                    onChange={handleFileSelect}
-                                    className="hidden"
-                                    id="media-upload-spectator"
-                                />
-                                <label htmlFor="media-upload-spectator" className="cursor-pointer">
-                                    <div className="text-3xl mb-2">📷</div>
-                                    <div className="text-sm font-medium text-gray-700">Click to upload media</div>
-                                </label>
-                            </div>
-
-                            {mediaUpload.preview && (
-                                <div className="mt-4">
-                                    {mediaUpload.preview.type.startsWith('image/') ? (
-                                        <img 
-                                            src={mediaUpload.preview.url} 
-                                            alt="Preview"
-                                            className="max-w-full h-auto rounded mb-2"
+            {/* Main Content */}
+            <div className="flex-1 flex overflow-hidden bg-gray-900">
+                {/* Content Area */}
+                <div className="flex-1 overflow-y-auto p-4">
+                    <div className="max-w-4xl mx-auto">
+                        {/* Stream Tab */}
+                        {activeTab === 'stream' && (
+                            <div className="space-y-4">
+                                {/* YouTube Embed */}
+                                <div className="bg-black rounded-xl overflow-hidden aspect-video">
+                                    {event.youtubeUrl ? (
+                                        <iframe
+                                            src={`https://www.youtube.com/embed/${
+                                                event.youtubeUrl.includes('watch?v=') 
+                                                    ? event.youtubeUrl.split('watch?v=')[1].split('&')[0]
+                                                    : event.youtubeUrl.includes('youtu.be/')
+                                                    ? event.youtubeUrl.split('youtu.be/')[1].split('?')[0]
+                                                    : event.youtubeUrl.split('/').pop()
+                                            }?autoplay=1`}
+                                            title="Live Stream"
+                                            className="w-full h-full"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
                                         />
                                     ) : (
-                                        <video 
-                                            src={mediaUpload.preview.url} 
-                                            controls
-                                            className="max-w-full h-auto rounded mb-2"
-                                        />
+                                        <div className="w-full h-full flex flex-col items-center justify-center text-gray-500">
+                                            <span className="text-6xl mb-4">📺</span>
+                                            <p className="text-lg">No Livestream Available</p>
+                                            <p className="text-sm">Add a YouTube URL to the event to enable streaming</p>
+                                        </div>
                                     )}
-                                    <button
-                                        onClick={handleUploadMedia}
-                                        disabled={mediaUpload.uploading}
-                                        className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium transition disabled:opacity-50"
-                                    >
-                                        {mediaUpload.uploading ? '⏳ Uploading...' : '📤 Upload'}
-                                    </button>
                                 </div>
-                            )}
-                        </div>
-                    </div>
 
-                    {/* Right Side - Live Chat */}
-                    <div className="w-1/3 flex flex-col bg-gray-50">
-                        <div className="p-4 border-b bg-white">
-                            <h3 className="text-xl font-bold">💬 Live Chat</h3>
+                                {/* Quick Stats */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-4 rounded-xl" style={{ backgroundColor: `${homeColor}20` }}>
+                                        <div className="flex items-center gap-3 mb-3">
+                                            {liveData.home_team.logo && (
+                                                <img src={getImageUrl(liveData.home_team.logo)} alt="" className="w-8 h-8 rounded-full object-cover" />
+                                            )}
+                                            <span className="text-white font-bold">{liveData.home_team.name}</span>
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-2 text-center text-sm">
+                                            <div className="bg-black/30 rounded p-2">
+                                                <div className="text-white font-bold">{liveData.home_stats.shots}</div>
+                                                <div className="text-gray-400 text-xs">Shots</div>
+                                            </div>
+                                            <div className="bg-black/30 rounded p-2">
+                                                <div className="text-white font-bold">{liveData.home_stats.goals}</div>
+                                                <div className="text-gray-400 text-xs">Goals</div>
+                                            </div>
+                                            <div className="bg-black/30 rounded p-2">
+                                                <div className="text-white font-bold">{liveData.home_stats.assists}</div>
+                                                <div className="text-gray-400 text-xs">Assists</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 rounded-xl" style={{ backgroundColor: `${awayColor}20` }}>
+                                        <div className="flex items-center gap-3 mb-3 justify-end">
+                                            <span className="text-white font-bold">{liveData.away_team.name}</span>
+                                            {liveData.away_team.logo && (
+                                                <img src={getImageUrl(liveData.away_team.logo)} alt="" className="w-8 h-8 rounded-full object-cover" />
+                                            )}
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-2 text-center text-sm">
+                                            <div className="bg-black/30 rounded p-2">
+                                                <div className="text-white font-bold">{liveData.away_stats.shots}</div>
+                                                <div className="text-gray-400 text-xs">Shots</div>
+                                            </div>
+                                            <div className="bg-black/30 rounded p-2">
+                                                <div className="text-white font-bold">{liveData.away_stats.goals}</div>
+                                                <div className="text-gray-400 text-xs">Goals</div>
+                                            </div>
+                                            <div className="bg-black/30 rounded p-2">
+                                                <div className="text-white font-bold">{liveData.away_stats.assists}</div>
+                                                <div className="text-gray-400 text-xs">Assists</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Events Tab - Most Recent First */}
+                        {activeTab === 'events' && (
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-white font-bold text-lg">📋 Live Event Tracker</h3>
+                                    <span className="text-gray-400 text-xs">Most recent first</span>
+                                </div>
+                                
+                                {getSortedEvents().length > 0 ? (
+                                    getSortedEvents().map((evt, idx) => {
+                                        const { player, teamKey } = parsePlayerFromEvent(evt);
+                                        const teamColor = teamKey === 'home_team' ? homeColor : awayColor;
+                                        const assistPlayer = evt.data?.assistPlayerId ? findPlayer(evt.data.assistPlayerId, teamKey) : null;
+                                        
+                                        return (
+                                            <div 
+                                                key={evt.id || idx}
+                                                className={`p-4 rounded-xl ${idx === 0 ? 'bg-blue-900/40 border border-blue-500/50' : 'bg-gray-800'}`}
+                                            >
+                                                <div className="flex items-start gap-3">
+                                                    <span className="text-2xl">
+                                                        {evt.type === 'goal' ? '🚨' : 
+                                                         evt.type === 'shot' || evt.type === 'shot_saved' ? '🧤' :
+                                                         evt.type === 'shot_miss' ? '❌' :
+                                                         evt.type?.includes('penalty') ? '⚠️' : '📋'}
+                                                    </span>
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-2 flex-wrap">
+                                                            {player && (
+                                                                <>
+                                                                    <PlayerAvatar player={player} teamColor={teamColor} />
+                                                                    <span className="text-white font-medium">
+                                                                        #{player.number} {player.name}
+                                                                    </span>
+                                                                </>
+                                                            )}
+                                                            {evt.type === 'goal' && (
+                                                                <span className="px-2 py-0.5 bg-green-600 text-white text-xs font-bold rounded">GOAL!</span>
+                                                            )}
+                                                            {assistPlayer && (
+                                                                <span className="text-gray-400 text-sm flex items-center gap-1">
+                                                                    (Assist: <PlayerAvatar player={assistPlayer} teamColor={teamColor} size="sm" />
+                                                                    #{assistPlayer.number} {assistPlayer.name?.split(' ').pop()})
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        {!player && <span className="text-white">{evt.text}</span>}
+                                                        <div className="text-gray-500 text-xs mt-1">
+                                                            {evt.time} • Period {evt.period}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <div className="text-center py-12 text-gray-500">
+                                        <span className="text-4xl block mb-2">📋</span>
+                                        <p>No events recorded yet</p>
+                                        <p className="text-sm">Events will appear here as the game progresses</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Stats Tab */}
+                        {activeTab === 'stats' && (
+                            <div className="space-y-6">
+                                <h3 className="text-white font-bold text-lg">📊 Top Performers</h3>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* Home Team */}
+                                    <div className="p-4 rounded-xl" style={{ backgroundColor: `${homeColor}15` }}>
+                                        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
+                                            {liveData.home_team.logo && (
+                                                <img src={getImageUrl(liveData.home_team.logo)} alt="" className="w-10 h-10 rounded-full object-cover" />
+                                            )}
+                                            <span className="text-white font-bold text-lg">{liveData.home_team.name}</span>
+                                        </div>
+                                        <div className="space-y-3">
+                                            {liveData.home_players.length > 0 ? liveData.home_players.map(player => (
+                                                <div key={player.id} className="flex items-center gap-3">
+                                                    <PlayerAvatar player={player} teamColor={homeColor} size="lg" />
+                                                    <div className="flex-1">
+                                                        <div className="text-white font-medium">#{player.number} {player.name}</div>
+                                                        <div className="text-gray-400 text-sm">{player.position || ''}</div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <div className="text-white font-bold">{player.stats?.goals || 0}G {player.stats?.assists || 0}A</div>
+                                                    </div>
+                                                </div>
+                                            )) : (
+                                                <p className="text-gray-500 text-center py-4">No scoring yet</p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Away Team */}
+                                    <div className="p-4 rounded-xl" style={{ backgroundColor: `${awayColor}15` }}>
+                                        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
+                                            {liveData.away_team.logo && (
+                                                <img src={getImageUrl(liveData.away_team.logo)} alt="" className="w-10 h-10 rounded-full object-cover" />
+                                            )}
+                                            <span className="text-white font-bold text-lg">{liveData.away_team.name}</span>
+                                        </div>
+                                        <div className="space-y-3">
+                                            {liveData.away_players.length > 0 ? liveData.away_players.map(player => (
+                                                <div key={player.id} className="flex items-center gap-3">
+                                                    <PlayerAvatar player={player} teamColor={awayColor} size="lg" />
+                                                    <div className="flex-1">
+                                                        <div className="text-white font-medium">#{player.number} {player.name}</div>
+                                                        <div className="text-gray-400 text-sm">{player.position || ''}</div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <div className="text-white font-bold">{player.stats?.goals || 0}G {player.stats?.assists || 0}A</div>
+                                                    </div>
+                                                </div>
+                                            )) : (
+                                                <p className="text-gray-500 text-center py-4">No scoring yet</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Chat Panel (Collapsible) */}
+                {showChat && (
+                    <div className="w-80 bg-gray-800 border-l border-gray-700 flex flex-col flex-shrink-0">
+                        <div className="p-3 border-b border-gray-700">
+                            <h3 className="text-white font-bold">💬 Live Chat</h3>
                         </div>
-                        
-                        {/* Messages */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                        <div className="flex-1 overflow-y-auto p-3 space-y-2">
                             {chat.messages.map(msg => (
-                                <div
-                                    key={msg.id}
-                                    className={`flex ${msg.type === 'system' || msg.type === 'media' ? 'justify-center' : 'justify-start'}`}
-                                >
-                                    <div className={`max-w-[85%] px-3 py-2 rounded-lg ${
-                                        msg.type === 'system'
-                                            ? 'bg-blue-100 text-blue-800 text-sm'
-                                            : msg.type === 'media'
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-white shadow border'
+                                <div key={msg.id} className={msg.type === 'system' ? 'text-center' : ''}>
+                                    <div className={`inline-block max-w-full text-sm ${
+                                        msg.type === 'system' ? 'bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-xs' :
+                                        'bg-gray-700 text-white p-2 rounded-lg'
                                     }`}>
-                                        <div className="font-semibold text-sm">{msg.user_name}</div>
-                                        <div className="text-sm">{msg.message}</div>
-                                        <div className="text-xs text-gray-500 mt-1">{formatTime(msg.timestamp)}</div>
+                                        {msg.type !== 'system' && <div className="text-xs text-gray-400 mb-0.5">{msg.user_name}</div>}
+                                        <p>{msg.message}</p>
                                     </div>
                                 </div>
                             ))}
                             <div ref={chatEndRef} />
                         </div>
-
-                        {/* Message Input */}
-                        <div className="p-4 border-t bg-white flex-shrink-0">
+                        <div className="p-3 border-t border-gray-700">
                             <div className="flex gap-2">
                                 <input
                                     type="text"
                                     value={chat.newMessage}
                                     onChange={(e) => setChat(prev => ({ ...prev, newMessage: e.target.value }))}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                                    className="flex-1 px-3 py-2 bg-gray-700 text-white rounded-lg text-sm"
                                     placeholder="Type a message..."
-                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
-                                <button
-                                    onClick={handleSendMessage}
-                                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition"
-                                >
+                                <button onClick={handleSendMessage} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">
                                     Send
                                 </button>
                             </div>
                         </div>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );
