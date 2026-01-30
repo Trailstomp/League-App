@@ -302,6 +302,15 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
   - **Backend Support**: Updated endpoint to store paymentMethod and checkNumber fields
   - All 9 backend tests passing (100% success rate)
 
+- **Live Spectator View Redesign (P1):**
+  - **Livestreaming Support**: Added YouTube embed area at top of Stream tab for live game broadcasts
+  - **Tabbed Interface**: Stream, Events, Stats tabs for organized viewing experience
+  - **Events Most Recent First**: Event tracker now shows most recent events at the top
+  - **Collapsible Chat**: Chat moved to collapsible side panel (click "Chat" button to toggle)
+  - **Team Branding Throughout**: Team logos, colors, and banners displayed prominently in header and stats
+  - **Player Photos**: Circular player photos shown next to player names in events and stats tabs
+  - **PlayerAvatar Component**: Reusable component shows player photo or jersey number fallback
+
 ### January 27, 2025 (Previous Session)
 - **P0: Join Team Public Page** (NEW):
   - Created `/join/{team_id}` public page for recruits to request joining a team
