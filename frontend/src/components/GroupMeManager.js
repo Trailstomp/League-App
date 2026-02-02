@@ -188,6 +188,8 @@ const GroupMeManager = () => {
             
             const updateData = {
                 name: newChannelForm.name,
+                channel_type: newChannelForm.channel_type,
+                team_id: newChannelForm.team_id || null,
                 notification_settings: newChannelForm.notification_settings
             };
             
