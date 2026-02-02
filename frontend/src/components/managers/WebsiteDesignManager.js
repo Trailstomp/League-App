@@ -2879,6 +2879,62 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                     </div>
                 </div>
             </div>
+
+            {/* Reinstall Instructions */}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-6">
+                <div className="flex items-start gap-3">
+                    <span className="text-2xl">📲</span>
+                    <div className="flex-1">
+                        <h4 className="font-semibold text-amber-900 text-lg">How to Update / Reinstall the App</h4>
+                        <p className="text-sm text-amber-800 mt-1">
+                            After changing app settings (icon, name, colors), users need to reinstall the app to see the changes on their home screen.
+                        </p>
+                        
+                        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="bg-white/60 rounded-lg p-3">
+                                <div className="font-medium text-amber-900 mb-2">📱 iOS (iPhone/iPad)</div>
+                                <ol className="list-decimal list-inside space-y-1 text-sm text-amber-800">
+                                    <li>Delete app from home screen</li>
+                                    <li>Open Safari → visit website</li>
+                                    <li>Tap Share button (box with arrow)</li>
+                                    <li>Tap "Add to Home Screen"</li>
+                                </ol>
+                            </div>
+                            
+                            <div className="bg-white/60 rounded-lg p-3">
+                                <div className="font-medium text-amber-900 mb-2">🤖 Android</div>
+                                <ol className="list-decimal list-inside space-y-1 text-sm text-amber-800">
+                                    <li>Long-press app icon → Uninstall</li>
+                                    <li>Open Chrome → visit website</li>
+                                    <li>Tap menu (3 dots)</li>
+                                    <li>Tap "Install app"</li>
+                                </ol>
+                            </div>
+                            
+                            <div className="bg-white/60 rounded-lg p-3">
+                                <div className="font-medium text-amber-900 mb-2">💻 Desktop (Chrome)</div>
+                                <ol className="list-decimal list-inside space-y-1 text-sm text-amber-800">
+                                    <li>Go to chrome://apps</li>
+                                    <li>Right-click app → Remove</li>
+                                    <li>Visit website in Chrome</li>
+                                    <li>Click install icon in address bar</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div className="flex items-center gap-2 text-blue-800">
+                                <span>💡</span>
+                                <span className="font-medium">Tip:</span>
+                            </div>
+                            <p className="text-sm text-blue-700 mt-1">
+                                Share these instructions with your league members after updating the app icon or name. 
+                                The install banner will automatically appear for users who haven't installed the app yet.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 
