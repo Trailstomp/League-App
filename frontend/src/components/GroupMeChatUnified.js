@@ -350,7 +350,14 @@ const GroupMeChatUnified = ({ teamId = null, channelType = "all", currentUser })
                                     <div>No messages yet. Be the first to send a message!</div>
                                 </div>
                             ) : (
-                                messages.map((message, index) => (
+                                [...messages]
+                                    .sort((a, b) => {
+                                        // Sort newest first
+                                        const timeA = a.created_at ? new Date(a.created_at * 1000).getTime() : 0;
+                                        const timeB = b.created_at ? new Date(b.created_at * 1000).getTime() : 0;
+                                        return timeB - timeA;
+                                    })
+                                    .map((message, index) => (
                                     <div key={message.id || index} className="flex items-start space-x-3">
                                         <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-white text-sm font-semibold">
                                             {getInitials(message.sender_name || 'Unknown')}
@@ -369,35 +376,6 @@ const GroupMeChatUnified = ({ teamId = null, channelType = "all", currentUser })
                                     </div>
                                 ))
                             )}
-                        </div>
-
-                        {/* Message Input */}
-                        <div className="p-4 bg-white border-t">
-                            <div className="flex space-x-3">
-                                <div className="flex-1">
-                                    <textarea
-                                        value={newMessage}
-                                        onChange={(e) => setNewMessage(e.target.value)}
-                                        onKeyPress={handleKeyPress}
-                                        placeholder={`Message ${selectedChannel.name}...`}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                                        rows="1"
-                                        style={{ minHeight: '44px', maxHeight: '120px' }}
-                                        disabled={sending}
-                                    />
-                                </div>
-                                <button
-                                    onClick={sendMessage}
-                                    disabled={sending || !newMessage.trim()}
-                                    className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                                        sending || !newMessage.trim()
-                                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                            : 'bg-blue-600 text-white hover:bg-blue-700'
-                                    }`}
-                                >
-                                    {sending ? '📤' : '➤'}
-                                </button>
-                            </div>
                         </div>
                     </>
                 ) : (
