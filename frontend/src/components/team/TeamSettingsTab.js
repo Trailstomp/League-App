@@ -340,65 +340,38 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                     {/* Colors */}
                     <div className="border-t pt-6">
                         <h3 className="font-medium text-slate-800 mb-4">Team Colors</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            <div>
-                                <label className="block text-sm text-slate-600 mb-1">Primary Color</label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="color"
-                                        value={teamStyle.primaryColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, primaryColor: e.target.value})}
-                                        className="w-12 h-10 rounded border border-slate-300 cursor-pointer"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={teamStyle.primaryColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, primaryColor: e.target.value})}
-                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg font-mono text-sm"
-                                    />
-                                </div>
-                            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <AdvancedColorPicker
+                                label="Primary Color"
+                                color={teamStyle.primaryColor}
+                                onChange={(color) => setTeamStyle({...teamStyle, primaryColor: color})}
+                            />
                             
-                            <div>
-                                <label className="block text-sm text-slate-600 mb-1">Accent Color</label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="color"
-                                        value={teamStyle.accentColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, accentColor: e.target.value})}
-                                        className="w-12 h-10 rounded border border-slate-300 cursor-pointer"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={teamStyle.accentColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, accentColor: e.target.value})}
-                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg font-mono text-sm"
-                                    />
-                                </div>
-                            </div>
+                            <AdvancedColorPicker
+                                label="Accent Color"
+                                color={teamStyle.accentColor}
+                                onChange={(color) => setTeamStyle({...teamStyle, accentColor: color})}
+                            />
                             
-                            <div>
-                                <label className="block text-sm text-slate-600 mb-1">Background Color</label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="color"
-                                        value={teamStyle.backgroundColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, backgroundColor: e.target.value})}
-                                        className="w-12 h-10 rounded border border-slate-300 cursor-pointer"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={teamStyle.backgroundColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, backgroundColor: e.target.value})}
-                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg font-mono text-sm"
-                                    />
-                                </div>
-                            </div>
+                            <AdvancedColorPicker
+                                label="Background Color"
+                                color={teamStyle.backgroundColor}
+                                onChange={(color) => setTeamStyle({...teamStyle, backgroundColor: color})}
+                            />
                             
-                            <div>
-                                <label className="block text-sm text-slate-600 mb-1">Text Color</label>
-                                <div className="flex gap-2">
-                                    <input
+                            <AdvancedColorPicker
+                                label="Text Color"
+                                color={teamStyle.textColor}
+                                onChange={(color) => setTeamStyle({...teamStyle, textColor: color})}
+                            />
+                            
+                            <AdvancedColorPicker
+                                label="Header Text Color"
+                                color={teamStyle.headerTextColor}
+                                onChange={(color) => setTeamStyle({...teamStyle, headerTextColor: color})}
+                            />
+                        </div>
+                    </div>
                                         type="color"
                                         value={teamStyle.textColor}
                                         onChange={(e) => setTeamStyle({...teamStyle, textColor: e.target.value})}
