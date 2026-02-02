@@ -572,45 +572,48 @@ const GroupMeManager = () => {
                         />
                     </div>
 
-                    {!editingChannel && (
-                        <>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Channel Type
-                                </label>
-                                <select
-                                    value={newChannelForm.channel_type}
-                                    onChange={(e) => setNewChannelForm({...newChannelForm, channel_type: e.target.value})}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="team">Team Channel</option>
-                                    <option value="league">League-wide Channel</option>
-                                </select>
-                            </div>
+                    {/* Channel Type - Show for both create and edit */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Channel Type
+                        </label>
+                        <select
+                            value={newChannelForm.channel_type}
+                            onChange={(e) => setNewChannelForm({...newChannelForm, channel_type: e.target.value, team_id: e.target.value === 'league' ? '' : newChannelForm.team_id})}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="team">Team Channel</option>
+                            <option value="league">League-wide Channel</option>
+                        </select>
+                    </div>
 
-                            {newChannelForm.channel_type === 'team' && (
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Select Team
-                                    </label>
-                                    <select
-                                        value={newChannelForm.team_id}
-                                        onChange={(e) => setNewChannelForm({...newChannelForm, team_id: e.target.value})}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        required
-                                    >
-                                        <option value="">Select a team...</option>
-                                        {teams
-                                            .sort((a, b) => a.name.localeCompare(b.name))
-                                            .map((team) => (
-                                                <option key={team.id} value={team.id}>
-                                                    {team.name}
-                                                </option>
-                                            ))}
-                                    </select>
-                                </div>
+                    {/* Team Selector - Show for both create and edit when type is 'team' */}
+                    {newChannelForm.channel_type === 'team' && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Assign to Team
+                            </label>
+                            <select
+                                value={newChannelForm.team_id}
+                                onChange={(e) => setNewChannelForm({...newChannelForm, team_id: e.target.value})}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required={!editingChannel}
+                            >
+                                <option value="">Select a team...</option>
+                                {teams
+                                    .sort((a, b) => a.name.localeCompare(b.name))
+                                    .map((team) => (
+                                        <option key={team.id} value={team.id}>
+                                            {team.name}
+                                        </option>
+                                    ))}
+                            </select>
+                            {editingChannel && (
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Change the team this GroupMe channel is associated with
+                                </p>
                             )}
-                        </>
+                        </div>
                     )}
 
                     {!editingChannel && (
