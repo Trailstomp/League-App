@@ -301,7 +301,36 @@ const GroupMeChatUnified = ({ teamId = null, channelType = "all", currentUser })
                             </div>
                         </div>
 
-                        {/* Messages Area */}
+                        {/* Message Input - AT TOP */}
+                        <div className="p-4 bg-white border-b">
+                            <div className="flex space-x-3">
+                                <div className="flex-1">
+                                    <textarea
+                                        value={newMessage}
+                                        onChange={(e) => setNewMessage(e.target.value)}
+                                        onKeyPress={handleKeyPress}
+                                        placeholder={`Message ${selectedChannel.name}...`}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                        rows="1"
+                                        style={{ minHeight: '44px', maxHeight: '120px' }}
+                                        disabled={sending}
+                                    />
+                                </div>
+                                <button
+                                    onClick={sendMessage}
+                                    disabled={sending || !newMessage.trim()}
+                                    className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                                        sending || !newMessage.trim()
+                                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                                    }`}
+                                >
+                                    {sending ? '📤' : '➤'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Messages Area - Newest First */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
                             {error && (
                                 <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
