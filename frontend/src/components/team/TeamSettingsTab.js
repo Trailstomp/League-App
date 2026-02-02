@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ImageUploadCrop from '../ImageUploadCrop';
 import { extractThemeColors } from '../../utils/colorExtractor';
 import { fixGoogleDriveUrl } from '../../utils/imageUtils';
+import AdvancedColorPicker from '../AdvancedColorPicker';
 
 /**
  * TeamSettingsTab - Team settings for Social Media (including YouTube) and Appearance
