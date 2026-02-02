@@ -372,39 +372,6 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                             />
                         </div>
                     </div>
-                                        type="color"
-                                        value={teamStyle.textColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, textColor: e.target.value})}
-                                        className="w-12 h-10 rounded border border-slate-300 cursor-pointer"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={teamStyle.textColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, textColor: e.target.value})}
-                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg font-mono text-sm"
-                                    />
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label className="block text-sm text-slate-600 mb-1">Header Text Color</label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="color"
-                                        value={teamStyle.headerTextColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, headerTextColor: e.target.value})}
-                                        className="w-12 h-10 rounded border border-slate-300 cursor-pointer"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={teamStyle.headerTextColor}
-                                        onChange={(e) => setTeamStyle({...teamStyle, headerTextColor: e.target.value})}
-                                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg font-mono text-sm"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     
                     {/* Color Preview */}
                     <div className="border-t pt-6">
