@@ -311,6 +311,13 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
   - **Player Photos**: Circular player photos shown next to player names in events and stats tabs
   - **PlayerAvatar Component**: Reusable component shows player photo or jersey number fallback
 
+- **PWA App Icon & Reinstall Feature (P1):**
+  - **App Icon Upload**: Added file upload button in Admin → Mobile App Settings to upload custom app icon
+  - **App Name/Short Name**: Editable fields for app name shown in install prompts and home screen
+  - **Theme Colors**: Customizable theme and background colors for the PWA
+  - **Install Banner**: Customizable install banner that prompts users to add app to home screen
+  - **Reinstall Instructions**: Added comprehensive instructions for iOS, Android, and Desktop on how to update/reinstall the app after changing settings
+
 ### January 27, 2025 (Previous Session)
 - **P0: Join Team Public Page** (NEW):
   - Created `/join/{team_id}` public page for recruits to request joining a team
