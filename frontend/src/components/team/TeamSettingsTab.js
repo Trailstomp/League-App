@@ -82,10 +82,16 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
             
             if (response.ok) {
                 setMessage('✅ Appearance settings saved!');
+                // Refresh parent data
+                if (onTeamUpdate) {
+                    onTeamUpdate();
+                }
             } else {
-                setMessage('❌ Failed to save');
+                const errorData = await response.json().catch(() => ({}));
+                setMessage(`❌ Failed to save: ${errorData.detail || 'Unknown error'}`);
             }
         } catch (error) {
+            console.error('Error saving appearance:', error);
             setMessage('❌ Error saving settings');
         } finally {
             setSaving(false);
