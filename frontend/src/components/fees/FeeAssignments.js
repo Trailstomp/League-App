@@ -2,6 +2,15 @@ import React, { useState } from 'react';
 
 const FeeAssignments = ({ assignments, fees, teams, players, currentUser, onRefresh, canManage }) => {
     const [showAssignModal, setShowAssignModal] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedAssignment, setSelectedAssignment] = useState(null);
+    const [paymentForm, setPaymentForm] = useState({
+        amount: '',
+        method: 'cash',
+        checkNumber: '',
+        notes: '',
+        date: new Date().toISOString().split('T')[0]
+    });
     const [selectedFee, setSelectedFee] = useState('');
     const [selectedPlayers, setSelectedPlayers] = useState([]);
     const [selectedTeams, setSelectedTeams] = useState([]);
@@ -9,8 +18,54 @@ const FeeAssignments = ({ assignments, fees, teams, players, currentUser, onRefr
     const [installments, setInstallments] = useState(3);
     const [filter, setFilter] = useState('all');
     const [assigning, setAssigning] = useState(false);
+    const [processing, setProcessing] = useState(false);
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+    
+    const openPaymentModal = (assignment) => {
+        setSelectedAssignment(assignment);
+        setPaymentForm({
+            amount: assignment.amount_due || 0,
+            method: 'cash',
+            checkNumber: '',
+            notes: '',
+            date: new Date().toISOString().split('T')[0]
+        });
+        setShowPaymentModal(true);
+    };
+    
+    const handleRecordPayment = async () => {
+        if (!selectedAssignment || !paymentForm.amount) return;
+        
+        setProcessing(true);
+        try {
+            const response = await fetch(`${backendUrl}/api/fee-assignments/${selectedAssignment.id}/payment`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: parseFloat(paymentForm.amount),
+                    payment_method: paymentForm.method,
+                    check_number: paymentForm.method === 'check' ? paymentForm.checkNumber : null,
+                    notes: paymentForm.notes,
+                    payment_date: paymentForm.date,
+                    recorded_by: currentUser?.id || 'system'
+                })
+            });
+            
+            if (response.ok) {
+                setShowPaymentModal(false);
+                setSelectedAssignment(null);
+                onRefresh();
+            } else {
+                const error = await response.json();
+                alert(`Error: ${error.detail || 'Failed to record payment'}`);
+            }
+        } catch (error) {
+            console.error('Error recording payment:', error);
+            alert('Error recording payment');
+        }
+        setProcessing(false);
+    };
     
     const handleAssign = async () => {
         if (!selectedFee) return;
