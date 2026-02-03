@@ -11579,6 +11579,37 @@ async def get_fee_assignment(assignment_id: str):
         logger.error(f"Error getting assignment: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/fee-assignments/{assignment_id}/payment")
+async def record_assignment_payment(assignment_id: str, payment_data: Dict[str, Any]):
+    """Record a payment for a specific fee assignment"""
+    try:
+        amount = float(payment_data.get("amount", 0))
+        payment_method = payment_data.get("payment_method", "cash")
+        recorded_by = payment_data.get("recorded_by", "system")
+        payment_date = payment_data.get("payment_date")
+        notes = payment_data.get("notes")
+        check_number = payment_data.get("check_number")
+        
+        # Add check number to notes if provided
+        if check_number:
+            notes = f"Check #{check_number}" + (f" - {notes}" if notes else "")
+        
+        payment = await fee_service.record_payment(
+            assignment_id=assignment_id,
+            amount=amount,
+            payment_method=payment_method,
+            recorded_by=recorded_by,
+            payment_date=payment_date,
+            notes=notes
+        )
+        
+        return {"status": "success", "payment": payment}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error recording payment: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Payments
 @api_router.post("/payments")
 async def record_payment(payment_data: Dict[str, Any]):
