@@ -346,6 +346,147 @@ const FeeAssignments = ({ assignments, fees, teams, players, currentUser, onRefr
                     </div>
                 </div>
             )}
+            
+            {/* Payment Modal */}
+            {showPaymentModal && selectedAssignment && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+                        <div className="p-6 border-b">
+                            <h2 className="text-xl font-bold text-slate-800">Record Payment</h2>
+                            <p className="text-sm text-slate-600 mt-1">
+                                {selectedAssignment.player_name || selectedAssignment.team_name} - {selectedAssignment.fee_name}
+                            </p>
+                        </div>
+                        
+                        <div className="p-6 space-y-4">
+                            {/* Amount Summary */}
+                            <div className="p-4 bg-slate-50 rounded-lg">
+                                <div className="flex justify-between text-sm">
+                                    <span>Total Amount:</span>
+                                    <span className="font-medium">${selectedAssignment.total_amount?.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between text-sm mt-1">
+                                    <span>Already Paid:</span>
+                                    <span className="text-green-600">${selectedAssignment.amount_paid?.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between text-sm mt-1 font-medium">
+                                    <span>Remaining Due:</span>
+                                    <span className="text-amber-600">${selectedAssignment.amount_due?.toLocaleString()}</span>
+                                </div>
+                            </div>
+                            
+                            {/* Payment Amount */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Payment Amount *</label>
+                                <div className="relative">
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={paymentForm.amount}
+                                        onChange={(e) => setPaymentForm({...paymentForm, amount: e.target.value})}
+                                        className="w-full pl-8 pr-3 py-2 border border-slate-300 rounded-lg"
+                                        placeholder="0.00"
+                                    />
+                                </div>
+                                <div className="flex gap-2 mt-2">
+                                    <button
+                                        onClick={() => setPaymentForm({...paymentForm, amount: selectedAssignment.amount_due})}
+                                        className="text-xs px-2 py-1 bg-slate-100 rounded hover:bg-slate-200"
+                                    >
+                                        Pay Full Balance
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            {/* Payment Method */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Payment Method</label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {[
+                                        { id: 'cash', label: 'Cash', icon: '💵' },
+                                        { id: 'check', label: 'Check', icon: '📝' },
+                                        { id: 'venmo', label: 'Venmo', icon: '💜' },
+                                        { id: 'paypal', label: 'PayPal', icon: '🅿️' },
+                                        { id: 'zelle', label: 'Zelle', icon: '💳' },
+                                        { id: 'other', label: 'Other', icon: '📋' }
+                                    ].map(method => (
+                                        <button
+                                            key={method.id}
+                                            type="button"
+                                            onClick={() => setPaymentForm({...paymentForm, method: method.id})}
+                                            className={`p-2 rounded-lg border-2 text-center transition-all ${
+                                                paymentForm.method === method.id
+                                                    ? 'border-green-500 bg-green-50'
+                                                    : 'border-slate-200 hover:border-slate-300'
+                                            }`}
+                                        >
+                                            <div className="text-lg">{method.icon}</div>
+                                            <div className="text-xs font-medium">{method.label}</div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            {/* Check Number (for check payments) */}
+                            {paymentForm.method === 'check' && (
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Check Number</label>
+                                    <input
+                                        type="text"
+                                        value={paymentForm.checkNumber}
+                                        onChange={(e) => setPaymentForm({...paymentForm, checkNumber: e.target.value})}
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                        placeholder="Check #"
+                                    />
+                                </div>
+                            )}
+                            
+                            {/* Payment Date */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Payment Date</label>
+                                <input
+                                    type="date"
+                                    value={paymentForm.date}
+                                    onChange={(e) => setPaymentForm({...paymentForm, date: e.target.value})}
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                />
+                            </div>
+                            
+                            {/* Notes */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Notes (optional)</label>
+                                <textarea
+                                    value={paymentForm.notes}
+                                    onChange={(e) => setPaymentForm({...paymentForm, notes: e.target.value})}
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                    rows={2}
+                                    placeholder="Any additional notes..."
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="p-6 border-t flex justify-end gap-3">
+                            <button
+                                onClick={() => {
+                                    setShowPaymentModal(false);
+                                    setSelectedAssignment(null);
+                                }}
+                                className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleRecordPayment}
+                                disabled={processing || !paymentForm.amount || parseFloat(paymentForm.amount) <= 0}
+                                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                            >
+                                {processing ? 'Processing...' : '💳 Record Payment'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
