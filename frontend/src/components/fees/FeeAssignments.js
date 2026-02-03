@@ -163,6 +163,7 @@ const FeeAssignments = ({ assignments, fees, teams, players, currentUser, onRefr
                                 <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase">Due</th>
                                 <th className="px-4 py-3 text-center text-xs font-medium text-slate-500 uppercase">Status</th>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Due Date</th>
+                                <th className="px-4 py-3 text-center text-xs font-medium text-slate-500 uppercase">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200">
@@ -196,6 +197,19 @@ const FeeAssignments = ({ assignments, fees, teams, players, currentUser, onRefr
                                     </td>
                                     <td className="px-4 py-3 text-sm text-slate-600">
                                         {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : '-'}
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        {assignment.status !== 'paid' && assignment.status !== 'waived' && (
+                                            <button
+                                                onClick={() => openPaymentModal(assignment)}
+                                                className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700"
+                                            >
+                                                💳 Pay
+                                            </button>
+                                        )}
+                                        {assignment.status === 'paid' && (
+                                            <span className="text-green-600 text-sm">✓ Paid</span>
+                                        )}
                                     </td>
                                 </tr>
                             ))}
