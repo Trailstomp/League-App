@@ -137,7 +137,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
     
     // Calculate statistics - use players array for accurate count
     const stats = {
-        totalTeams: teams.length,
+        totalTeams: teams.filter(t => !t.isExternal).length,
         activeEvents: events ? events.length : 0,
         totalPlayers: players.length
     };
