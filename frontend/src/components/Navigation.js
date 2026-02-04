@@ -7,10 +7,11 @@ import { fixGoogleDriveUrl } from '../utils/imageUtils';
 const TeamsByDivision = ({ teams, websiteStyle, isCollapsed, onNavigate, onMobileClose }) => {
     const [collapsedDivisions, setCollapsedDivisions] = useState(new Set());
 
-    // Group teams by division with specific order: Field, Box, External, then others
+    // Filter out external teams and group by division
     const groupTeamsByDivision = () => {
         const grouped = {};
-        teams.forEach(team => {
+        const internalTeams = teams.filter(t => !t.isExternal);
+        internalTeams.forEach(team => {
             const division = team.division || 'Field';
             if (!grouped[division]) grouped[division] = [];
             grouped[division].push(team);
