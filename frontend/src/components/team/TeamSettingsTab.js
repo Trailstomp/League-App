@@ -323,6 +323,13 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
             {/* Appearance Section */}
             {activeSection === 'appearance' && (
                 <div className="space-y-6">
+                    {/* Message Display */}
+                    {message && (
+                        <div className={`p-4 rounded-lg ${message.includes('✅') ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+                            {message}
+                        </div>
+                    )}
+                    
                     {/* Logo & Banner */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
