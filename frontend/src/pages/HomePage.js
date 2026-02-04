@@ -142,12 +142,13 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
         totalPlayers: players.length
     };
 
-    // Group teams by division
+    // Group teams by division (excluding external teams)
     const teamsByDivision = useMemo(() => {
-        const field = teams.filter(t => t.division === 'Field').sort((a, b) => a.name.localeCompare(b.name));
-        const box = teams.filter(t => t.division === 'Box').sort((a, b) => a.name.localeCompare(b.name));
-        const other = teams.filter(t => !t.division || (t.division !== 'Field' && t.division !== 'Box')).sort((a, b) => a.name.localeCompare(b.name));
-        return { field, box, other, all: teams.slice().sort((a, b) => a.name.localeCompare(b.name)) };
+        const internalTeams = teams.filter(t => !t.isExternal);
+        const field = internalTeams.filter(t => t.division === 'Field').sort((a, b) => a.name.localeCompare(b.name));
+        const box = internalTeams.filter(t => t.division === 'Box').sort((a, b) => a.name.localeCompare(b.name));
+        const other = internalTeams.filter(t => !t.division || (t.division !== 'Field' && t.division !== 'Box')).sort((a, b) => a.name.localeCompare(b.name));
+        return { field, box, other, all: internalTeams.slice().sort((a, b) => a.name.localeCompare(b.name)) };
     }, [teams]);
 
     // Get teams to display based on active tab
