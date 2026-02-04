@@ -71,16 +71,27 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
     
     // Save appearance
     const handleSaveAppearance = async () => {
+        console.log('🎨 Save Appearance clicked');
+        console.log('Team ID:', team?.id);
+        console.log('Team Style:', teamStyle);
+        
         setSaving(true);
         setMessage('');
         try {
-            const response = await fetch(`${backendUrl}/api/league-data/teams/${team.id}`, {
+            const url = `${backendUrl}/api/league-data/teams/${team.id}`;
+            console.log('🔄 Saving to:', url);
+            
+            const response = await fetch(url, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ style: teamStyle })
             });
             
+            console.log('📡 Response status:', response.status);
+            
             if (response.ok) {
+                const data = await response.json();
+                console.log('✅ Save successful:', data);
                 setMessage('✅ Appearance settings saved!');
                 // Refresh parent data
                 if (onTeamUpdate) {
@@ -88,10 +99,11 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                 }
             } else {
                 const errorData = await response.json().catch(() => ({}));
+                console.error('❌ Save failed:', errorData);
                 setMessage(`❌ Failed to save: ${errorData.detail || 'Unknown error'}`);
             }
         } catch (error) {
-            console.error('Error saving appearance:', error);
+            console.error('❌ Error saving appearance:', error);
             setMessage('❌ Error saving settings');
         } finally {
             setSaving(false);
