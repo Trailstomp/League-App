@@ -7183,6 +7183,69 @@ async def handle_rsvp_link_click(request: Request, event: str = None, choice: st
             </body></html>
         """)
 
+@api_router.post("/events")
+async def create_event(event_data: Dict[str, Any]):
+    """Create a new event (simple endpoint for team schedule)"""
+    try:
+        # Generate ID if not provided
+        if not event_data.get('id'):
+            event_data['id'] = f"event_{int(datetime.now().timestamp() * 1000)}"
+        
+        # Set timestamps
+        now = datetime.now(timezone.utc).isoformat()
+        event_data['created_at'] = now
+        event_data['updated_at'] = now
+        
+        # Ensure proper structure
+        if not event_data.get('status'):
+            event_data['status'] = 'scheduled'
+        
+        logger.info(f"📅 Creating event: {event_data.get('title')} for team(s): {event_data.get('teamIds', [])}")
+        
+        # Add to leagueSchedule in league_data
+        league_doc = await db.league_data.find_one({"id": "main_league"})
+        if not league_doc:
+            league_doc = {"id": "main_league", "leagueSchedule": []}
+            await db.league_data.insert_one(league_doc)
+        
+        current_schedule = league_doc.get("leagueSchedule", [])
+        
+        # Format for leagueSchedule compatibility
+        schedule_event = {
+            "id": event_data['id'],
+            "title": event_data.get("title", ""),
+            "type": event_data.get("type", "event"),
+            "date": event_data.get("date", ""),
+            "time": event_data.get("time", ""),
+            "location": event_data.get("location", ""),
+            "description": event_data.get("description", ""),
+            "homeTeam": event_data.get("homeTeam"),
+            "awayTeam": event_data.get("awayTeam"),
+            "teams": event_data.get("teamIds", []),
+            "teamIds": event_data.get("teamIds", []),
+            "status": event_data.get("status", "scheduled"),
+            "createdBy": event_data.get("createdBy"),
+            "created_at": now,
+            "updated_at": now
+        }
+        
+        current_schedule.append(schedule_event)
+        
+        # Update the schedule
+        await db.league_data.update_one(
+            {"id": "main_league"},
+            {"$set": {"leagueSchedule": current_schedule, "lastUpdated": now}}
+        )
+        
+        logger.info(f"✅ Event created: {schedule_event['id']}")
+        return schedule_event
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error creating event: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/events/{event_id}/rsvp")
 async def create_or_update_rsvp(event_id: str, rsvp_data: Dict[str, Any]):
     """Create or update an RSVP for an event"""
