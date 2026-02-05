@@ -255,6 +255,31 @@ function App() {
     setCache(CACHE_KEYS.USER, updatedUser); // Persist to localStorage
   };
 
+  // Handle team update - refresh team data from server
+  const handleTeamUpdate = async (teamId) => {
+    console.log('🏆 Team update triggered for:', teamId);
+    try {
+      const response = await fetch(`${backendUrl}/api/league-data/teams/${teamId}`);
+      if (response.ok) {
+        const updatedTeam = await response.json();
+        console.log('✅ Team data refreshed:', updatedTeam.name);
+        setTeams(prevTeams => {
+          const newTeams = prevTeams.map(t => t.id === teamId ? updatedTeam : t);
+          setCache(CACHE_KEYS.TEAMS, newTeams);
+          return newTeams;
+        });
+        // Also update selectedTeam if it's the same team
+        if (selectedTeam?.id === teamId) {
+          setSelectedTeam(updatedTeam);
+        }
+      } else {
+        console.error('❌ Failed to refresh team data');
+      }
+    } catch (error) {
+      console.error('❌ Error refreshing team:', error);
+    }
+  };
+
   const handleLogout = () => {
     console.log('🔐 User logged out');
     setCurrentUser(null);
