@@ -200,7 +200,32 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 
 ## What's Been Implemented
 
-### January 26, 2025 (Current Session)
+### February 5, 2025 (Current Session)
+- **Bug Fix: External Teams Hidden from UI (P0):**
+  - Filtered external teams (`isExternal=true`) from HomePage team cards and Navigation sidebar
+  - Teams with `isExternal` flag now only appear in scheduling dropdowns, not public display
+  - Files modified: `HomePage.js`, `Navigation.js`
+
+- **Bug Fix: Team Settings Save (P0):**
+  - Added `handleTeamUpdate` function in App.js to refresh team data after settings save
+  - Created `GET /api/league-data/teams/{team_id}` endpoint to fetch single team data
+  - Fixed prop chain: App.js → TeamDetailPage → TeamSettingsTab now correctly refreshes team data
+  - Success message "✅ Appearance settings saved!" now displays reliably
+
+- **Bug Fix: GroupMeChat Component (P0):**
+  - Fixed duplicate code at end of GroupMeChat.js file
+  - Input box positioned at top of chat (lines 294-328)
+  - Messages sorted newest first using `sort((a,b) => timeB - timeA)`
+
+- **Feature: Event Creation from Team Schedule Tab (P1):**
+  - Added "Create Event" button visible to coaches/admins on team schedule page
+  - New form allows creating: Practice, Game, Tournament, Meeting, Other events
+  - Game events support opponent team selection
+  - Created `POST /api/events` endpoint for simple event creation
+  - Events automatically added to league schedule and appear in ticker
+  - Added `handleEventsUpdate` function in App.js to refresh events after creation
+
+### January 26, 2025 (Previous Session)
 - **Team Admin Tab - Recruiting Integration (P1):**
   - Moved Recruiting section into Team Admin tab (3 sections now: Players, Availability, Recruiting)
   - Removed standalone Recruiting tab from team page
