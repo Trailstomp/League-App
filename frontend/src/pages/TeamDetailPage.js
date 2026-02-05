@@ -17,7 +17,7 @@ import {
     TeamAdminTab
 } from '../components/team';
 
-const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate, onUserUpdate, onTeamUpdate, sportType = 'lacrosse' }) => {
+const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate, onUserUpdate, onTeamUpdate, onEventsUpdate, sportType = 'lacrosse' }) => {
     const [activeTab, setActiveTab] = useState(() => {
         // Check if user has a default tab for this team
         if (currentUser?.defaultLandingPage?.type === 'team' && 
