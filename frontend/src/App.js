@@ -647,6 +647,7 @@ function App() {
             currentUser={currentUser}
             onNavigate={handleNavigate}
             onUserUpdate={handleUserUpdate}
+            onTeamUpdate={handleTeamUpdate}
             sportType={websiteStyle?.sportType || 'lacrosse'}
           />
         );
