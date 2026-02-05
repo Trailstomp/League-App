@@ -390,16 +390,3 @@ const GroupMeChat = ({ teamId = null, channelType = "all", showAllChannels = tru
 };
 
 export default GroupMeChat;
-                </div>
-            )}
-
-            {!selectedChannel && channels.length > 0 && (
-                <div className="p-8 text-center text-gray-500">
-                    <p>Select a channel to view messages</p>
-                </div>
-            )}
-        </div>
-    );
-};
-
-export default GroupMeChat;
