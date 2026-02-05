@@ -1564,6 +1564,34 @@ async def upload_player_photo(file: UploadFile = File(...)):
         logger.error(f"❌ Error uploading player photo: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/league-data/teams/{team_id}")
+async def get_single_team(team_id: str):
+    """Get a single team by ID with all its data."""
+    try:
+        # First check the teams collection (primary source)
+        team = await db.teams.find_one({"id": team_id}, {"_id": 0})
+        
+        if team:
+            logger.info(f"✅ Found team in teams collection: {team_id}")
+            return team
+        
+        # Fallback: Check league_data
+        league_data = await db.league_data.find_one({"id": "main_league"})
+        if league_data:
+            teams = league_data.get("teams", [])
+            for t in teams:
+                if t.get("id") == team_id:
+                    logger.info(f"✅ Found team in league_data: {team_id}")
+                    return t
+        
+        raise HTTPException(status_code=404, detail=f"Team not found: {team_id}")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error getting team: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.put("/league-data/teams/{team_id}")
 async def update_team_data(team_id: str, team_data: Dict[str, Any]):
     """Update specific team data including logo, style, social media, etc."""
