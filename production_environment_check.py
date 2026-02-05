@@ -6,7 +6,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from environment - PRODUCTION URL
-BACKEND_URL = "https://leagueportal.preview.emergentagent.com/api"
+BACKEND_URL = "https://gameday-14.preview.emergentagent.com/api"
 
 def check_multiple_environments():
     """Check if there are multiple environments that might have different data"""
@@ -14,7 +14,7 @@ def check_multiple_environments():
     
     # Check different possible URLs
     urls_to_check = [
-        "https://leagueportal.preview.emergentagent.com/api",
+        "https://gameday-14.preview.emergentagent.com/api",
         "https://team-lax-portal.emergent.host/api",
         "http://localhost:8001/api"
     ]
