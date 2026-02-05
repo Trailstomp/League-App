@@ -280,6 +280,24 @@ function App() {
     }
   };
 
+  // Handle events refresh - reload events from server
+  const handleEventsUpdate = async () => {
+    console.log('📅 Refreshing events from server...');
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/dashboard-data`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.leagueSchedule && Array.isArray(data.leagueSchedule)) {
+          setEvents(data.leagueSchedule);
+          setCache(CACHE_KEYS.EVENTS, data.leagueSchedule);
+          console.log('✅ Events refreshed:', data.leagueSchedule.length);
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error refreshing events:', error);
+    }
+  };
+
   const handleLogout = () => {
     console.log('🔐 User logged out');
     setCurrentUser(null);
