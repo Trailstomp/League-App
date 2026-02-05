@@ -259,7 +259,7 @@ function App() {
   const handleTeamUpdate = async (teamId) => {
     console.log('🏆 Team update triggered for:', teamId);
     try {
-      const response = await fetch(`${backendUrl}/api/league-data/teams/${teamId}`);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/league-data/teams/${teamId}`);
       if (response.ok) {
         const updatedTeam = await response.json();
         console.log('✅ Team data refreshed:', updatedTeam.name);
