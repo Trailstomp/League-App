@@ -198,9 +198,25 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 ### Image Upload
 - `POST /api/upload/image` - Upload and crop images (logos, banners)
 
+### Division Management
+- `GET /api/divisions` - Get all divisions
+- `POST /api/divisions` - Create new division
+- `PUT /api/divisions/{division_id}` - Update division
+- `DELETE /api/divisions/{division_id}` - Delete division (validates no teams assigned)
+
 ## What's Been Implemented
 
-### February 5, 2025 (Current Session)
+### February 6, 2025 (Current Session)
+- **Feature: Division Manager (P1):**
+  - Created DivisionManager component for league admins to manage divisions
+  - Added to Admin Page under "League Management > Divisions" tab
+  - Full CRUD operations: Create, Read, Update, Delete divisions
+  - Division fields: name, level (sort order), color, description
+  - Delete validation prevents removing divisions with assigned teams
+  - TeamManager now loads divisions from API dynamically instead of hardcoded values
+  - Files: `DivisionManager.js`, `AdminPage.js`, `TeamManager.js`, `server.py`
+
+### February 5, 2025 (Previous Session)
 - **Bug Fix: External Teams Hidden from UI (P0):**
   - Filtered external teams (`isExternal=true`) from HomePage team cards and Navigation sidebar
   - Teams with `isExternal` flag now only appear in scheduling dropdowns, not public display
@@ -225,7 +241,7 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
   - Events automatically added to league schedule and appear in ticker
   - Added `handleEventsUpdate` function in App.js to refresh events after creation
 
-### January 26, 2025 (Previous Session)
+### January 26, 2025
 - **Team Admin Tab - Recruiting Integration (P1):**
   - Moved Recruiting section into Team Admin tab (3 sections now: Players, Availability, Recruiting)
   - Removed standalone Recruiting tab from team page
