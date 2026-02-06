@@ -8666,6 +8666,138 @@ async def create_league(league: League):
         logger.error(f"Error creating league: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/divisions")
+async def get_all_divisions():
+    """Get all divisions (not league-specific)"""
+    try:
+        divisions = await db.divisions.find({}).sort("level", 1).to_list(500)
+        
+        # If no divisions in database, extract from teams
+        if not divisions:
+            league_data = await db.league_data.find_one({"id": "main_league"})
+            teams = league_data.get("teams", []) if league_data else []
+            
+            # Also check teams collection
+            teams_collection = await db.teams.find({}).to_list(500)
+            all_teams = teams + [t for t in teams_collection if t.get('id') not in [x.get('id') for x in teams]]
+            
+            # Extract unique divisions from teams
+            unique_divisions = {}
+            for team in all_teams:
+                div_name = team.get("division")
+                if div_name and div_name not in unique_divisions:
+                    unique_divisions[div_name] = {
+                        "id": f"div_{div_name.lower().replace(' ', '_')}",
+                        "name": div_name,
+                        "level": len(unique_divisions) + 1,
+                        "color": "#3b82f6",
+                        "teamCount": 0
+                    }
+                if div_name:
+                    unique_divisions[div_name]["teamCount"] = unique_divisions[div_name].get("teamCount", 0) + 1
+            
+            divisions = list(unique_divisions.values())
+        
+        # Remove MongoDB _id
+        for division in divisions:
+            if "_id" in division:
+                del division["_id"]
+        
+        return {"divisions": divisions}
+    except Exception as e:
+        logger.error(f"Error getting divisions: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/divisions")
+async def create_division_general(division_data: Dict[str, Any]):
+    """Create a new division"""
+    try:
+        # Generate ID if not provided
+        if not division_data.get('id'):
+            division_data['id'] = f"div_{int(datetime.now().timestamp() * 1000)}"
+        
+        # Set timestamps
+        now = datetime.now(timezone.utc).isoformat()
+        division_data['createdAt'] = division_data.get('createdAt', now)
+        division_data['updatedAt'] = now
+        
+        # Ensure required fields
+        if not division_data.get('name'):
+            raise HTTPException(status_code=400, detail="Division name is required")
+        
+        # Check for duplicate name
+        existing = await db.divisions.find_one({"name": division_data['name']})
+        if existing:
+            raise HTTPException(status_code=400, detail=f"Division '{division_data['name']}' already exists")
+        
+        # Insert division
+        await db.divisions.insert_one(division_data)
+        
+        # Remove _id before returning
+        division_data.pop('_id', None)
+        
+        logger.info(f"✅ Created division: {division_data['name']}")
+        return {"status": "success", "division": division_data}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating division: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/divisions/{division_id}")
+async def update_division(division_id: str, division_data: Dict[str, Any]):
+    """Update a division"""
+    try:
+        # Set updated timestamp
+        division_data['updatedAt'] = datetime.now(timezone.utc).isoformat()
+        
+        # Update division
+        result = await db.divisions.update_one(
+            {"id": division_id},
+            {"$set": division_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail=f"Division not found: {division_id}")
+        
+        logger.info(f"✅ Updated division: {division_id}")
+        return {"status": "success", "division_id": division_id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating division: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/divisions/{division_id}")
+async def delete_division(division_id: str):
+    """Delete a division"""
+    try:
+        # Check if any teams use this division
+        division = await db.divisions.find_one({"id": division_id})
+        if division:
+            div_name = division.get('name')
+            # Check teams collection
+            teams_with_division = await db.teams.find({"division": div_name}).to_list(100)
+            if teams_with_division:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Cannot delete: {len(teams_with_division)} team(s) are assigned to this division"
+                )
+        
+        # Delete division
+        result = await db.divisions.delete_one({"id": division_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail=f"Division not found: {division_id}")
+        
+        logger.info(f"✅ Deleted division: {division_id}")
+        return {"status": "success", "message": "Division deleted"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting division: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/leagues/{league_id}/divisions")
 async def get_league_divisions(league_id: str):
     """Get all divisions for a specific league"""
