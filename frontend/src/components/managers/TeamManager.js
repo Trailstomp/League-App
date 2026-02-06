@@ -373,7 +373,8 @@ const TeamFormModal = ({
     activeTab,
     setActiveTab,
     uploadingLogo,
-    setUploadingLogo
+    setUploadingLogo,
+    divisions = []
 }) => {
     const tabs = [
         { id: 'basic', label: 'Basic Info', icon: 'teams' },
