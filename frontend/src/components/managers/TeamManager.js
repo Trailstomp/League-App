@@ -498,15 +498,27 @@ const BasicInfoTab = ({ editingTeam, handleInputChange, seasons, currentSeason }
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Division *</label>
                 <select 
-                    value={editingTeam?.division || 'Field'} 
+                    value={editingTeam?.division || ''} 
                     onChange={e => handleInputChange('division', e.target.value)} 
                     className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                 >
-                    <option value="Field">Field Lacrosse</option>
-                    <option value="Box">Box Lacrosse</option>
-                    <option value="External">External Team</option>
+                    <option value="">Select Division...</option>
+                    {divisions.length > 0 ? (
+                        divisions.map(div => (
+                            <option key={div.id || div.name} value={div.name}>
+                                {div.name}
+                            </option>
+                        ))
+                    ) : (
+                        <>
+                            <option value="Field">Field Lacrosse</option>
+                            <option value="Box">Box Lacrosse</option>
+                        </>
+                    )}
+                    <option value="External">External Team (for scheduling only)</option>
                 </select>
+                <p className="text-xs text-slate-500 mt-1">Manage divisions in Admin → Divisions</p>
             </div>
             
             <div>
