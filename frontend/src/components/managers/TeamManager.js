@@ -38,10 +38,30 @@ const TeamManager = ({ teams, setTeams, websiteStyle = {}, seasons = [], current
     const [cropImageUrl, setCropImageUrl] = useState('');
     const [cropTargetField, setCropTargetField] = useState('');
     const [uploadingLogo, setUploadingLogo] = useState(false);
+    const [divisions, setDivisions] = useState([]);
 
     // Get form background color from website style or default
     const formBackgroundColor = websiteStyle?.formBackgroundColor || '#f8fafc';
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+    // Load divisions from API
+    useEffect(() => {
+        const loadDivisions = async () => {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/divisions`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setDivisions(data.divisions || []);
+                }
+            } catch (error) {
+                console.error('Error loading divisions:', error);
+                // Fallback: extract from teams
+                const uniqueDivisions = [...new Set(teams.map(t => t.division).filter(Boolean))];
+                setDivisions(uniqueDivisions.map(name => ({ name, id: name })));
+            }
+        };
+        loadDivisions();
+    }, [BACKEND_URL, teams]);
 
     const handleInputChange = useCallback((field, value) => {
         setEditingTeam(prev => ({...prev, [field]: value}));
