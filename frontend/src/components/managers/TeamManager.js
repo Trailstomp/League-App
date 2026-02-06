@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { LacrosseIcon } from '../LacrosseIcons';
 import AdvancedColorPicker from '../AdvancedColorPicker';
 import ColorExtractor from '../ColorExtractor';
