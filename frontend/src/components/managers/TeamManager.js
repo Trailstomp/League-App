@@ -482,7 +482,7 @@ const TeamFormModal = ({
 };
 
 // Basic Info Tab
-const BasicInfoTab = ({ editingTeam, handleInputChange, seasons, currentSeason }) => (
+const BasicInfoTab = ({ editingTeam, handleInputChange, seasons, currentSeason, divisions = [] }) => (
     <div className="space-y-4">
         <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Team Name *</label>
