@@ -1,6 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
-import GameTicker from '../components/GameTicker';
 import TeamGalleryDisplay from '../components/TeamGalleryDisplay';
 import YouTubeGallery from '../components/YouTubeGallery';
 import EventDetailModal from '../scheduling/components/EventDetailModal';
@@ -8,7 +7,6 @@ import TeamDetailModal from '../teams/components/TeamDetailModal';
 import NewsDisplay from '../components/NewsDisplay';
 import { fixGoogleDriveUrl } from '../utils/imageUtils';
 import CachedImage from '../components/CachedImage';
-import { SkeletonTeamCard } from '../components/Skeleton';
 
 // Team Card Component
 const TeamCard = ({ team, onNavigate }) => {
@@ -26,8 +24,9 @@ const TeamCard = ({ team, onNavigate }) => {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             title="Click for team details"
+            data-testid={`team-card-${team.id}`}
         >
-            {/* Large Logo Area - 70% of card */}
+            {/* Large Logo Area */}
             <div 
                 className="relative w-full flex items-center justify-center p-6"
                 style={{ 
@@ -39,7 +38,6 @@ const TeamCard = ({ team, onNavigate }) => {
                     backgroundPosition: 'center'
                 }}
             >
-                {/* Background overlay if image exists */}
                 {team.style?.cardBackgroundImage && (
                     <div 
                         className="absolute inset-0"
@@ -47,7 +45,6 @@ const TeamCard = ({ team, onNavigate }) => {
                     />
                 )}
                 
-                {/* Team Logo - Large & Centered */}
                 <div className="relative z-10 w-full h-full flex items-center justify-center">
                     {team.style?.logoUrl ? (
                         <CachedImage 
@@ -95,47 +92,72 @@ const TeamCard = ({ team, onNavigate }) => {
                         </div>
                     )}
                 </div>
-                
-                {/* Record Badge - Top Right */}
-                <div 
-                    className="absolute top-3 right-3 px-3 py-1 rounded-full text-sm font-bold shadow-lg"
-                    style={{ 
-                        backgroundColor: team.style?.primaryColor || '#2563eb',
-                        color: 'white'
-                    }}
-                >
-                    {team.wins || 0}-{team.losses || 0}{team.ties ? `-${team.ties}` : ''}
-                </div>
             </div>
-            
-            {/* Info Footer - Clean & Minimal */}
+
+            {/* Team Name Bar */}
             <div 
-                className="px-4 py-3 border-t"
+                className="py-3 px-4 text-center"
                 style={{ 
                     backgroundColor: team.style?.primaryColor || '#2563eb',
-                    borderColor: team.style?.accentColor || team.style?.primaryColor || '#2563eb'
+                    color: team.style?.textColor || '#ffffff'
                 }}
             >
-                <h3 className="font-bold text-lg text-center text-white truncate drop-shadow-sm">
-                    {team.name}
-                </h3>
-                <p className="text-center text-white/80 text-sm">
-                    {team.division || 'Division'}
-                </p>
+                <h3 className="font-bold text-sm truncate drop-shadow-sm">{team.name}</h3>
+                {team.division && (
+                    <p className="text-xs opacity-80">{team.division}</p>
+                )}
             </div>
         </div>
     );
 };
+
+// Join Us Card Component
+const JoinUsCard = ({ type, icon, title, description, onClick }) => (
+    <div 
+        onClick={onClick}
+        className="bg-white rounded-xl border-2 border-slate-200 p-6 hover:border-blue-400 hover:shadow-lg transition-all cursor-pointer group"
+        data-testid={`join-as-${type}`}
+    >
+        <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">{icon}</div>
+        <h3 className="text-lg font-bold text-slate-800 mb-2">{title}</h3>
+        <p className="text-sm text-slate-600">{description}</p>
+        <div className="mt-4 text-blue-600 font-medium text-sm group-hover:text-blue-700">
+            Learn more →
+        </div>
+    </div>
+);
 
 const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvents, websiteStyle = {}, onNavigate }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showEventModal, setShowEventModal] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [showTeamModal, setShowTeamModal] = useState(false);
-    const [activeTab, setActiveTab] = useState('teams'); // 'teams', 'media'
-    const [activeTeamTab, setActiveTeamTab] = useState('all'); // 'all', 'field', 'box', 'other'
+    const [activeTab, setActiveTab] = useState('welcome'); // 'welcome', 'teams', 'media'
+    const [activeTeamTab, setActiveTeamTab] = useState('all');
+    const [welcomeMessage, setWelcomeMessage] = useState(null);
+    const [loadingWelcome, setLoadingWelcome] = useState(true);
     
-    // Calculate statistics - use players array for accurate count
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+    
+    // Load welcome message
+    useEffect(() => {
+        const loadWelcomeMessage = async () => {
+            try {
+                const response = await fetch(`${backendUrl}/api/league-settings/welcome-message`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setWelcomeMessage(data);
+                }
+            } catch (error) {
+                console.error('Error loading welcome message:', error);
+            } finally {
+                setLoadingWelcome(false);
+            }
+        };
+        loadWelcomeMessage();
+    }, [backendUrl]);
+    
+    // Calculate statistics
     const stats = {
         totalTeams: teams.filter(t => !t.isExternal).length,
         activeEvents: events ? events.length : 0,
@@ -145,20 +167,36 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
     // Group teams by division (excluding external teams)
     const teamsByDivision = useMemo(() => {
         const internalTeams = teams.filter(t => !t.isExternal);
-        const field = internalTeams.filter(t => t.division === 'Field').sort((a, b) => a.name.localeCompare(b.name));
-        const box = internalTeams.filter(t => t.division === 'Box').sort((a, b) => a.name.localeCompare(b.name));
-        const other = internalTeams.filter(t => !t.division || (t.division !== 'Field' && t.division !== 'Box')).sort((a, b) => a.name.localeCompare(b.name));
-        return { field, box, other, all: internalTeams.slice().sort((a, b) => a.name.localeCompare(b.name)) };
+        const grouped = {};
+        
+        internalTeams.forEach(team => {
+            const division = team.division || 'Other';
+            if (!grouped[division]) {
+                grouped[division] = [];
+            }
+            grouped[division].push(team);
+        });
+        
+        // Sort each division's teams
+        Object.keys(grouped).forEach(div => {
+            grouped[div].sort((a, b) => a.name.localeCompare(b.name));
+        });
+        
+        return {
+            ...grouped,
+            all: internalTeams.slice().sort((a, b) => a.name.localeCompare(b.name))
+        };
     }, [teams]);
+
+    // Get unique divisions
+    const divisions = useMemo(() => {
+        return Object.keys(teamsByDivision).filter(d => d !== 'all');
+    }, [teamsByDivision]);
 
     // Get teams to display based on active tab
     const displayTeams = useMemo(() => {
-        switch(activeTeamTab) {
-            case 'field': return teamsByDivision.field;
-            case 'box': return teamsByDivision.box;
-            case 'other': return teamsByDivision.other;
-            default: return teamsByDivision.all;
-        }
+        if (activeTeamTab === 'all') return teamsByDivision.all || [];
+        return teamsByDivision[activeTeamTab] || [];
     }, [activeTeamTab, teamsByDivision]);
 
     // Event handlers
@@ -202,6 +240,12 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
         ));
     };
 
+    const handleJoinClick = (type) => {
+        // Navigate to teams tab so users can find a team to contact
+        setActiveTab('teams');
+        // Could also show a modal with more info
+    };
+
     return (
         <div className="space-y-6 p-4" style={{ backgroundColor: 'transparent', minHeight: '100%' }}>
             {/* Quick Stats */}
@@ -221,7 +265,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                         <LacrosseIcon name="calendar" style={{fontSize: '32px'}} className="text-green-500 mr-4" />
                         <div>
                             <div className="text-2xl font-bold text-slate-800">{stats.activeEvents}</div>
-                            <div className="text-sm text-slate-600">Active Events</div>
+                            <div className="text-sm text-slate-600">Scheduled Events</div>
                         </div>
                     </div>
                 </div>
@@ -241,29 +285,123 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
             <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm">
                 {/* Tab Navigation */}
                 <div className="border-b border-slate-200">
-                    <div className="flex">
+                    <div className="flex overflow-x-auto">
+                        <button
+                            onClick={() => setActiveTab('welcome')}
+                            className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
+                                activeTab === 'welcome' 
+                                    ? 'border-b-2 border-blue-500 text-blue-600 bg-blue-50/50' 
+                                    : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
+                            }`}
+                            data-testid="welcome-tab"
+                        >
+                            🏠 Welcome
+                        </button>
                         <button
                             onClick={() => setActiveTab('teams')}
-                            className={`px-6 py-3 text-sm font-medium transition-colors ${
+                            className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
                                 activeTab === 'teams' 
                                     ? 'border-b-2 border-blue-500 text-blue-600 bg-blue-50/50' 
                                     : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
                             }`}
+                            data-testid="teams-tab"
                         >
-                            🏆 Teams ({teams.length})
+                            🏆 Teams ({stats.totalTeams})
                         </button>
                         <button
                             onClick={() => setActiveTab('media')}
-                            className={`px-6 py-3 text-sm font-medium transition-colors ${
+                            className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
                                 activeTab === 'media' 
                                     ? 'border-b-2 border-blue-500 text-blue-600 bg-blue-50/50' 
                                     : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
                             }`}
+                            data-testid="media-tab"
                         >
                             📸 Media & Videos
                         </button>
                     </div>
                 </div>
+
+                {/* Welcome Tab Content */}
+                {activeTab === 'welcome' && (
+                    <div className="p-6 space-y-8">
+                        {/* Welcome Message Section */}
+                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+                            <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center">
+                                <span className="mr-3">👋</span>
+                                {welcomeMessage?.title || 'Welcome to Our League!'}
+                            </h2>
+                            {loadingWelcome ? (
+                                <div className="animate-pulse h-20 bg-slate-200 rounded"></div>
+                            ) : welcomeMessage?.content ? (
+                                <div 
+                                    className="prose prose-slate max-w-none text-slate-700"
+                                    dangerouslySetInnerHTML={{ __html: welcomeMessage.content.replace(/\n/g, '<br/>') }}
+                                />
+                            ) : (
+                                <p className="text-slate-600 leading-relaxed">
+                                    Welcome to our league community! We&apos;re excited to have you here. 
+                                    Whether you&apos;re a player looking to join a team, a coach organizing your roster, 
+                                    or a fan following the action, you&apos;ve come to the right place.
+                                </p>
+                            )}
+                            {currentUser?.roles?.includes('admin') && (
+                                <button 
+                                    onClick={() => onNavigate && onNavigate('admin')}
+                                    className="mt-4 text-sm text-blue-600 hover:text-blue-800 underline"
+                                >
+                                    Edit welcome message (Admin)
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Join Us Section */}
+                        <div>
+                            <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                                <span className="mr-3">🤝</span>
+                                Want to Join Us?
+                            </h2>
+                            <p className="text-slate-600 mb-6">
+                                Interested in being part of our league? Choose how you&apos;d like to get involved:
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <JoinUsCard 
+                                    type="player"
+                                    icon="🏃"
+                                    title="Join as a Player"
+                                    description="Looking to play? Browse our teams and contact a coach to inquire about joining their roster."
+                                    onClick={() => handleJoinClick('player')}
+                                />
+                                <JoinUsCard 
+                                    type="team"
+                                    icon="🏆"
+                                    title="Register a Team"
+                                    description="Have a team? Contact our league administrators to register your team for the upcoming season."
+                                    onClick={() => handleJoinClick('team')}
+                                />
+                                <JoinUsCard 
+                                    type="other"
+                                    icon="🙋"
+                                    title="Volunteer or Sponsor"
+                                    description="Want to help out as a referee, volunteer, or sponsor? We'd love to hear from you!"
+                                    onClick={() => handleJoinClick('other')}
+                                />
+                            </div>
+                            <p className="text-sm text-slate-500 mt-4 text-center">
+                                Click on any option above, then visit a team&apos;s page to find coach contact information.
+                            </p>
+                        </div>
+
+                        {/* League News Section */}
+                        <div>
+                            <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                                <span className="mr-3">📰</span>
+                                League News & Announcements
+                            </h2>
+                            <NewsDisplay maxItems={5} showTeamFilter={true} />
+                        </div>
+                    </div>
+                )}
 
                 {/* Teams Tab Content */}
                 {activeTab === 'teams' && (
@@ -278,44 +416,29 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                                 }`}
                             >
-                                All Teams ({teamsByDivision.all.length})
+                                All Teams ({teamsByDivision.all?.length || 0})
                             </button>
-                            {teamsByDivision.field.length > 0 && (
+                            {divisions.map(division => (
                                 <button
-                                    onClick={() => setActiveTeamTab('field')}
+                                    key={division}
+                                    onClick={() => setActiveTeamTab(division)}
                                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                                        activeTeamTab === 'field'
-                                            ? 'bg-green-600 text-white'
-                                            : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                        activeTeamTab === division
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
                                     }`}
                                 >
-                                    🌿 Field ({teamsByDivision.field.length})
+                                    {division} ({teamsByDivision[division]?.length || 0})
                                 </button>
-                            )}
-                            {teamsByDivision.box.length > 0 && (
-                                <button
-                                    onClick={() => setActiveTeamTab('box')}
-                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                                        activeTeamTab === 'box'
-                                            ? 'bg-orange-600 text-white'
-                                            : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-                                    }`}
-                                >
-                                    📦 Box ({teamsByDivision.box.length})
-                                </button>
-                            )}
-                            {teamsByDivision.other.length > 0 && (
-                                <button
-                                    onClick={() => setActiveTeamTab('other')}
-                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                                        activeTeamTab === 'other'
-                                            ? 'bg-purple-600 text-white'
-                                            : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-                                    }`}
-                                >
-                                    ⭐ Other ({teamsByDivision.other.length})
-                                </button>
-                            )}
+                            ))}
+                        </div>
+
+                        {/* Info Banner for joining */}
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+                            <p className="text-amber-800 text-sm">
+                                <span className="font-semibold">💡 Want to join a team?</span> Click on any team below to view their page, 
+                                where you can find coach contact information and send them an email directly.
+                            </p>
                         </div>
 
                         {/* Teams Grid */}
@@ -345,9 +468,6 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                     </div>
                 )}
             </div>
-
-            {/* League News - Always visible */}
-            <NewsDisplay maxItems={3} showTeamFilter={true} />
 
             {/* Event Detail Modal */}
             {showEventModal && selectedEvent && (
