@@ -2,40 +2,45 @@ import React, { useState, useEffect } from 'react';
 
 const TeamContactTab = ({ team }) => {
     const [teamLocations, setTeamLocations] = useState([]);
-    const [apiIntegrations, setApiIntegrations] = useState({});
+    const [coaches, setCoaches] = useState([]);
     const [loadingLocations, setLoadingLocations] = useState(true);
+    const [loadingCoaches, setLoadingCoaches] = useState(true);
 
-    // Load team locations from API
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+
+    // Load team locations and coaches from API
     useEffect(() => {
-        const loadTeamLocations = async () => {
+        const loadTeamData = async () => {
             try {
                 setLoadingLocations(true);
+                setLoadingCoaches(true);
                 
                 // Load team-specific locations
-                const locationsResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/locations?team_id=${team.id}`);
+                const locationsResponse = await fetch(`${backendUrl}/api/locations?team_id=${team.id}`);
                 if (locationsResponse.ok) {
                     const locationsData = await locationsResponse.json();
                     setTeamLocations(locationsData);
                 }
 
-                // Load API integrations for Google Maps
-                const apiResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/api-integrations`);
-                if (apiResponse.ok) {
-                    const apiData = await apiResponse.json();
-                    setApiIntegrations(apiData);
+                // Load team coaches
+                const coachesResponse = await fetch(`${backendUrl}/api/teams/${team.id}/coaches`);
+                if (coachesResponse.ok) {
+                    const coachesData = await coachesResponse.json();
+                    setCoaches(coachesData.coaches || []);
                 }
                 
             } catch (error) {
-                console.error('❌ Error loading team locations:', error);
+                console.error('❌ Error loading team data:', error);
             } finally {
                 setLoadingLocations(false);
+                setLoadingCoaches(false);
             }
         };
 
         if (team.id) {
-            loadTeamLocations();
+            loadTeamData();
         }
-    }, [team.id]);
+    }, [team.id, backendUrl]);
 
     const getLocationTypeIcon = (types) => {
         if (!types || types.length === 0) return '📍';
@@ -57,6 +62,19 @@ const TeamContactTab = ({ team }) => {
     <div className="space-y-6">
         <h2 className="text-2xl font-bold text-slate-800">Contact Information</h2>
         
+        {/* Join This Team Banner */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-start space-x-3">
+                <span className="text-2xl">👋</span>
+                <div>
+                    <h3 className="font-semibold text-slate-800">Interested in Joining {team.name}?</h3>
+                    <p className="text-sm text-slate-600 mt-1">
+                        Contact one of our coaches below via email to inquire about joining the team!
+                    </p>
+                </div>
+            </div>
+        </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-slate-50 p-6 rounded-lg">
                 <h3 className="text-lg font-semibold text-slate-800 mb-3">Team Details</h3>
@@ -73,29 +91,88 @@ const TeamContactTab = ({ team }) => {
                         <label className="text-sm font-medium text-slate-600">Home Field</label>
                         <div className="text-slate-800">{team.homeField || 'TBD'}</div>
                     </div>
+                    {team.contactEmail && (
+                        <div>
+                            <label className="text-sm font-medium text-slate-600">Team Email</label>
+                            <div>
+                                <a 
+                                    href={`mailto:${team.contactEmail}?subject=Inquiry about ${team.name}`}
+                                    className="text-blue-600 hover:text-blue-800 hover:underline"
+                                    data-testid="team-contact-email"
+                                >
+                                    {team.contactEmail}
+                                </a>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
             
             <div className="bg-slate-50 p-6 rounded-lg">
                 <h3 className="text-lg font-semibold text-slate-800 mb-3">Coaching Staff</h3>
-                <div className="space-y-3">
-                    <div>
-                        <label className="text-sm font-medium text-slate-600">Head Coach</label>
-                        <div className="text-slate-800">{team.coach || 'TBD'}</div>
+                {loadingCoaches ? (
+                    <div className="animate-pulse space-y-3">
+                        <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                        <div className="h-4 bg-slate-200 rounded w-1/2"></div>
                     </div>
-                    <div>
-                        <label className="text-sm font-medium text-slate-600">Contact Email</label>
-                        <div className="text-slate-800">
-                            {team.contactEmail ? (
-                                <a href={`mailto:${team.contactEmail}`} className="text-blue-600 hover:text-blue-800">
-                                    {team.contactEmail}
-                                </a>
-                            ) : (
-                                'Not provided'
-                            )}
-                        </div>
+                ) : coaches.length > 0 ? (
+                    <div className="space-y-4">
+                        {coaches.map((coach, index) => (
+                            <div key={coach.id || index} className="border-b border-slate-200 last:border-0 pb-3 last:pb-0">
+                                <div className="font-medium text-slate-800">
+                                    {coach.name || coach.firstName + ' ' + coach.lastName}
+                                </div>
+                                <div className="text-sm text-slate-600">
+                                    {coach.role || 'Coach'}
+                                </div>
+                                {coach.email && (
+                                    <a 
+                                        href={`mailto:${coach.email}?subject=Inquiry about joining ${team.name}`}
+                                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline flex items-center mt-1"
+                                        data-testid={`coach-email-${index}`}
+                                    >
+                                        <span className="mr-1">✉️</span>
+                                        {coach.email}
+                                    </a>
+                                )}
+                                {coach.phone && (
+                                    <a 
+                                        href={`tel:${coach.phone}`}
+                                        className="text-sm text-slate-600 hover:text-slate-800 flex items-center mt-1"
+                                    >
+                                        <span className="mr-1">📱</span>
+                                        {coach.phone}
+                                    </a>
+                                )}
+                            </div>
+                        ))}
                     </div>
-                </div>
+                ) : (
+                    <div className="space-y-3">
+                        {team.coach && (
+                            <div>
+                                <label className="text-sm font-medium text-slate-600">Head Coach</label>
+                                <div className="text-slate-800">{team.coach}</div>
+                            </div>
+                        )}
+                        {team.contactEmail && (
+                            <div>
+                                <label className="text-sm font-medium text-slate-600">Contact</label>
+                                <div>
+                                    <a 
+                                        href={`mailto:${team.contactEmail}?subject=Inquiry about joining ${team.name}`}
+                                        className="text-blue-600 hover:text-blue-800 hover:underline"
+                                    >
+                                        {team.contactEmail}
+                                    </a>
+                                </div>
+                            </div>
+                        )}
+                        {!team.coach && !team.contactEmail && (
+                            <p className="text-slate-500 text-sm">No coaching information available</p>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
 
