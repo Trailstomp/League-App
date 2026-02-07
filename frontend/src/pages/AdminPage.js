@@ -556,6 +556,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <LocationManager teams={teams} currentUser={currentUser} />;
             case 'news':
                 return <NewsManager teams={teams} currentUser={currentUser} />;
+            case 'welcome-message':
+                return <WelcomeMessageManager currentUser={currentUser} />;
             case 'api-integrations':
                 return <APIIntegrationsManager />;
             case 'groupme':
