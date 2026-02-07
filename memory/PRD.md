@@ -204,9 +204,38 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 - `PUT /api/divisions/{division_id}` - Update division
 - `DELETE /api/divisions/{division_id}` - Delete division (validates no teams assigned)
 
+### League Settings
+- `GET /api/league-settings/welcome-message` - Get welcome message
+- `PUT /api/league-settings/welcome-message` - Update welcome message (admin only)
+
 ## What's Been Implemented
 
-### February 6, 2025 (Current Session)
+### February 7, 2025 (Current Session)
+- **Feature: Redesigned HomePage with Welcome Tab:**
+  - Added new "Welcome" tab as default landing page (left of Teams tab)
+  - Welcome Message section with editable title and content by admins
+  - "Want to Join Us?" section with 3 cards: Join as Player, Register a Team, Volunteer/Sponsor
+  - Moved League News to Welcome tab
+  - Teams tab now shows division-based filters and helpful banner about contacting teams
+  - Files: `HomePage.js` (complete rewrite)
+
+- **Feature: Welcome Message Manager (Admin):**
+  - New WelcomeMessageManager component for admins to customize welcome message
+  - Added to Admin Page under "Content > Welcome Message" tab
+  - Real-time preview of changes
+  - Backend endpoints for GET/PUT welcome message
+  - Files: `WelcomeMessageManager.js`, `AdminPage.js`, `server.py`
+
+- **Enhancement: Team Contact Page:**
+  - Added "Interested in Joining [Team]?" banner
+  - Shows coaching staff with clickable email links (mailto:)
+  - Improved layout with loading states
+  - Files: `TeamContactTab.js`
+
+- **Bug Fix: TeamManager divisions prop:**
+  - Fixed `divisions is not defined` error by passing prop to BasicInfoTab component
+
+### February 6, 2025 (Previous Session)
 - **Feature: Division Manager (P1):**
   - Created DivisionManager component for league admins to manage divisions
   - Added to Admin Page under "League Management > Divisions" tab
@@ -216,7 +245,7 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
   - TeamManager now loads divisions from API dynamically instead of hardcoded values
   - Files: `DivisionManager.js`, `AdminPage.js`, `TeamManager.js`, `server.py`
 
-### February 5, 2025 (Previous Session)
+### February 5, 2025
 - **Bug Fix: External Teams Hidden from UI (P0):**
   - Filtered external teams (`isExternal=true`) from HomePage team cards and Navigation sidebar
   - Teams with `isExternal` flag now only appear in scheduling dropdowns, not public display
