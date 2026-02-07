@@ -422,6 +422,7 @@ const TeamFormModal = ({
                                 handleInputChange={handleInputChange}
                                 seasons={seasons}
                                 currentSeason={currentSeason}
+                                divisions={divisions}
                             />
                             
                             {/* Form Actions for Basic Tab Only */}
