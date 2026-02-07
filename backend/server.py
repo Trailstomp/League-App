@@ -8798,6 +8798,46 @@ async def delete_division(division_id: str):
         logger.error(f"Error deleting division: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ===== LEAGUE SETTINGS ENDPOINTS =====
+
+@api_router.get("/league-settings/welcome-message")
+async def get_welcome_message():
+    """Get the league welcome message"""
+    try:
+        settings = await db.league_settings.find_one({"type": "welcome_message"}, {"_id": 0})
+        if settings:
+            return settings
+        return {"type": "welcome_message", "title": "", "content": ""}
+    except Exception as e:
+        logger.error(f"Error getting welcome message: {e}")
+        return {"type": "welcome_message", "title": "", "content": ""}
+
+@api_router.put("/league-settings/welcome-message")
+async def update_welcome_message(data: Dict[str, Any]):
+    """Update the league welcome message (admin only)"""
+    try:
+        now = datetime.now(timezone.utc).isoformat()
+        
+        update_data = {
+            "type": "welcome_message",
+            "title": data.get("title", "Welcome to Our League!"),
+            "content": data.get("content", ""),
+            "updatedAt": now,
+            "updatedBy": data.get("updatedBy")
+        }
+        
+        await db.league_settings.update_one(
+            {"type": "welcome_message"},
+            {"$set": update_data},
+            upsert=True
+        )
+        
+        logger.info("✅ Welcome message updated")
+        return {"status": "success", "message": "Welcome message updated"}
+    except Exception as e:
+        logger.error(f"Error updating welcome message: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/leagues/{league_id}/divisions")
 async def get_league_divisions(league_id: str):
     """Get all divisions for a specific league"""
