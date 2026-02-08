@@ -232,6 +232,14 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
   - Improved layout with loading states
   - Files: `TeamContactTab.js`
 
+- **Feature: Events View Toggle (Compact/Detailed/Calendar):**
+  - Added view mode toggle to Events page: Compact, Detailed, Calendar
+  - **Compact view (default):** Clean row-based list with date, time, title, status - easier to scan
+  - **Detailed view:** Original card layout with full event details
+  - **Calendar view:** Monthly calendar visualization
+  - Compact row includes quick action buttons for Live View, Enter Scores, Manage Bracket
+  - Files: `EventsList.js`, `CompactEventCards.js`
+
 - **Bug Fix: TeamManager divisions prop:**
   - Fixed `divisions is not defined` error by passing prop to BasicInfoTab component
 
