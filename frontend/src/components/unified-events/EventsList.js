@@ -696,24 +696,34 @@ const EventsList = ({
                                                 {getEventTypeIcon(event.type)}
                                             </span>
                                             <div className="relative">
-                                                <button
-                                                    onClick={() => setChangingStatus(event.id === changingStatus ? null : event.id)}
-                                                    className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)} cursor-pointer hover:opacity-80`}
-                                                >
-                                                    {event.status.replace('_', ' ').toUpperCase()} ▼
-                                                </button>
-                                                {changingStatus === event.id && (
-                                                    <div className="absolute left-0 mt-1 bg-white rounded-lg shadow-lg border z-10 py-1 min-w-[120px]">
-                                                        {['scheduled', 'in_progress', 'completed', 'cancelled'].map(status => (
-                                                            <button
-                                                                key={status}
-                                                                onClick={() => handleStatusChange(event.id, status)}
-                                                                className="w-full text-left px-3 py-2 hover:bg-gray-100 text-xs sm:text-sm"
-                                                            >
-                                                                {status.replace('_', ' ')}
-                                                            </button>
-                                                        ))}
-                                                    </div>
+                                                {/* Status - Only clickable for admins/coaches */}
+                                                {canManageEvent(event) ? (
+                                                    <>
+                                                        <button
+                                                            onClick={() => setChangingStatus(event.id === changingStatus ? null : event.id)}
+                                                            className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)} cursor-pointer hover:opacity-80`}
+                                                        >
+                                                            {event.status.replace('_', ' ').toUpperCase()} ▼
+                                                        </button>
+                                                        {changingStatus === event.id && (
+                                                            <div className="absolute left-0 mt-1 bg-white rounded-lg shadow-lg border z-10 py-1 min-w-[120px]">
+                                                                {['scheduled', 'in_progress', 'completed', 'cancelled'].map(status => (
+                                                                    <button
+                                                                        key={status}
+                                                                        onClick={() => handleStatusChange(event.id, status)}
+                                                                        className="w-full text-left px-3 py-2 hover:bg-gray-100 text-xs sm:text-sm"
+                                                                    >
+                                                                        {status.replace('_', ' ')}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    /* Read-only status for regular users */
+                                                    <span className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)}`}>
+                                                        {event.status.replace('_', ' ').toUpperCase()}
+                                                    </span>
                                                 )}
                                             </div>
                                         </div>
