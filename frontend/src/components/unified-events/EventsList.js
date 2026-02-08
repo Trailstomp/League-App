@@ -459,32 +459,64 @@ const EventsList = ({
                 </div>
             </div>
 
-            {/* Events List - Mobile Optimized Cards */}
+            {/* Events Display Area */}
             <div className="flex-1 overflow-y-auto p-3 sm:p-6">
-                {displayedEvents.length === 0 ? (
-                    <div className="text-center py-12">
-                        <div className="text-4xl mb-4">{timeFilter === 'upcoming' ? '🗓️' : '📜'}</div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">
-                            {timeFilter === 'upcoming' ? 'No Upcoming Events' : 'No Past Events'}
-                        </h3>
-                        <p className="text-gray-600 mb-6">
-                            {timeFilter === 'upcoming' 
-                                ? 'Create a new event to get started'
-                                : 'Past events will appear here after they occur'
-                            }
-                        </p>
-                        {timeFilter === 'upcoming' && (
-                            <button
-                                onClick={onCreateEvent}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                            >
-                                Create Event
-                            </button>
-                        )}
-                    </div>
-                ) : (
-                    <div className="space-y-3 sm:space-y-4">
-                        {displayedEvents.map((event, index) => (
+                {/* Calendar View */}
+                {viewMode === 'calendar' && (
+                    <AdvancedEventCalendar 
+                        leagueSchedule={displayedEvents}
+                        teams={teams}
+                        onEventClick={(event) => onEventSelect && onEventSelect(event)}
+                        currentUser={currentUser}
+                    />
+                )}
+
+                {/* Compact or Detailed View */}
+                {viewMode !== 'calendar' && (
+                    <>
+                        {displayedEvents.length === 0 ? (
+                            <div className="text-center py-12">
+                                <div className="text-4xl mb-4">{timeFilter === 'upcoming' ? '🗓️' : '📜'}</div>
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                    {timeFilter === 'upcoming' ? 'No Upcoming Events' : 'No Past Events'}
+                                </h3>
+                                <p className="text-gray-600 mb-6">
+                                    {timeFilter === 'upcoming' 
+                                        ? 'Create a new event to get started'
+                                        : 'Past events will appear here after they occur'
+                                    }
+                                </p>
+                                {timeFilter === 'upcoming' && (
+                                    <button
+                                        onClick={onCreateEvent}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    >
+                                        Create Event
+                                    </button>
+                                )}
+                            </div>
+                        ) : viewMode === 'compact' ? (
+                            /* Compact List View */
+                            <div className="bg-white rounded-lg border divide-y divide-slate-100">
+                                {displayedEvents.map((event) => (
+                                    <CompactEventRow 
+                                        key={event.id}
+                                        event={event}
+                                        teams={teams}
+                                        currentUser={currentUser}
+                                        onEventSelect={onEventSelect}
+                                        onEnterScoring={onEnterScoring}
+                                        onViewLive={onViewLive}
+                                        onManageTournament={onManageTournament}
+                                        getEventTypeIcon={getEventTypeIcon}
+                                        getStatusColor={getStatusColor}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            /* Detailed View - Original Cards */
+                            <div className="space-y-3 sm:space-y-4">
+                                {displayedEvents.map((event, index) => (
                             <div
                                 key={event.id}
                                 className="bg-white/90 backdrop-blur-sm rounded-lg shadow border hover:shadow-md transition-shadow relative"
