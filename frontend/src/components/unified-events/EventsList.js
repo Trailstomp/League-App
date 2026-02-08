@@ -2,6 +2,116 @@ import React, { useState, useMemo } from 'react';
 import EventRSVPDashboard from '../EventRSVPDashboard';
 import AdvancedEventCalendar from '../../scheduling/components/EventCalendar';
 
+// Compact Event Row Component for list view
+const CompactEventRow = ({ 
+    event, 
+    teams, 
+    currentUser, 
+    onEventSelect, 
+    onEnterScoring, 
+    onViewLive, 
+    onManageTournament,
+    getEventTypeIcon,
+    getStatusColor 
+}) => {
+    const formatDate = (dateString) => {
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                weekday: 'short', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        } catch {
+            return dateString || 'TBD';
+        }
+    };
+
+    const formatTime = (dateString) => {
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit', 
+                hour12: true 
+            });
+        } catch {
+            return 'TBD';
+        }
+    };
+
+    const eventDate = new Date(event.start_datetime || event.date);
+    const isPast = eventDate < new Date();
+    const isAdmin = currentUser?.role === 'admin';
+    const isGame = event.type === 'regular_game' || event.type === 'game' || event.type === 'tournament';
+
+    return (
+        <div 
+            className={`flex items-center gap-3 p-3 hover:bg-slate-50 cursor-pointer transition-colors ${isPast ? 'opacity-60' : ''}`}
+            onClick={() => onEventSelect && onEventSelect(event)}
+            data-testid={`compact-event-${event.id}`}
+        >
+            {/* Type Icon */}
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl bg-slate-100 flex-shrink-0">
+                {getEventTypeIcon(event.type)}
+            </div>
+
+            {/* Date/Time Column */}
+            <div className="w-24 flex-shrink-0 text-center">
+                <div className="text-sm font-medium text-slate-800">{formatDate(event.start_datetime || event.date)}</div>
+                <div className="text-xs text-slate-500">{formatTime(event.start_datetime || event.date)}</div>
+            </div>
+
+            {/* Event Info */}
+            <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(event.status)}`}>
+                        {event.status?.replace('_', ' ') || 'scheduled'}
+                    </span>
+                    <h4 className="font-medium text-slate-800 truncate">{event.title}</h4>
+                </div>
+                {event.location && (
+                    <p className="text-xs text-slate-500 truncate mt-0.5">📍 {event.location}</p>
+                )}
+            </div>
+
+            {/* Quick Actions */}
+            <div className="flex items-center gap-1 flex-shrink-0">
+                {/* Live View Button */}
+                {isGame && (event.status === 'in_progress' || event.status === 'scheduled') && onViewLive && (
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onViewLive(event); }}
+                        className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
+                        title="Live View"
+                    >
+                        📺
+                    </button>
+                )}
+                {/* Enter Scoring */}
+                {isAdmin && isGame && onEnterScoring && (
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onEnterScoring(event); }}
+                        className="px-2 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700"
+                        title="Enter Scores"
+                    >
+                        📊
+                    </button>
+                )}
+                {/* Tournament Bracket */}
+                {event.type === 'tournament' && onManageTournament && (
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onManageTournament(event); }}
+                        className="px-2 py-1 text-xs bg-orange-600 text-white rounded hover:bg-orange-700"
+                        title="Manage Bracket"
+                    >
+                        🏅
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+};
+
 const EventsList = ({ 
     events, 
     teams, 
