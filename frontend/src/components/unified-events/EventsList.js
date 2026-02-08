@@ -483,8 +483,12 @@ const EventsList = ({
     };
 
     const canManageEvent = (event) => {
-        // Allow admins or event creators to manage events
-        return currentUser?.role === 'admin' || event.created_by === currentUser?.id;
+        // Only allow admins or coaches to manage events
+        if (!currentUser) return false;
+        const isAdmin = currentUser.role === 'admin' || currentUser.roles?.includes('admin');
+        const isCoach = currentUser.role === 'coach' || currentUser.roles?.includes('coach');
+        const isCreator = event.created_by === currentUser.id;
+        return isAdmin || isCoach || isCreator;
     };
 
     if (loading) {
