@@ -382,6 +382,43 @@ const EventsList = ({
             <div className="bg-white/90 backdrop-blur-sm border-b px-4 py-3 sm:px-6 sm:py-4">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 sm:justify-between">
                     <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+                        {/* View Mode Toggle */}
+                        <div className="flex bg-slate-100 rounded-lg p-1">
+                            <button
+                                onClick={() => setViewMode('compact')}
+                                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                                    viewMode === 'compact'
+                                        ? 'bg-white text-blue-600 shadow-sm'
+                                        : 'text-slate-600 hover:text-slate-800'
+                                }`}
+                                data-testid="compact-view-btn"
+                            >
+                                ☰ Compact
+                            </button>
+                            <button
+                                onClick={() => setViewMode('detailed')}
+                                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                                    viewMode === 'detailed'
+                                        ? 'bg-white text-blue-600 shadow-sm'
+                                        : 'text-slate-600 hover:text-slate-800'
+                                }`}
+                                data-testid="detailed-view-btn"
+                            >
+                                ▦ Detailed
+                            </button>
+                            <button
+                                onClick={() => setViewMode('calendar')}
+                                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                                    viewMode === 'calendar'
+                                        ? 'bg-white text-blue-600 shadow-sm'
+                                        : 'text-slate-600 hover:text-slate-800'
+                                }`}
+                                data-testid="calendar-view-btn"
+                            >
+                                📅 Calendar
+                            </button>
+                        </div>
+
                         {/* Status Filter */}
                         <div className="flex items-center gap-2">
                             <label className="text-xs sm:text-sm font-medium text-gray-700">Status:</label>
