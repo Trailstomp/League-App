@@ -8822,6 +8822,12 @@ async def update_welcome_message(data: Dict[str, Any]):
             "type": "welcome_message",
             "title": data.get("title", "Welcome to Our League!"),
             "content": data.get("content", ""),
+            "backgroundColor": data.get("backgroundColor", "#eff6ff"),
+            "textColor": data.get("textColor", "#1e293b"),
+            "titleColor": data.get("titleColor", "#1e40af"),
+            "fontFamily": data.get("fontFamily", "Inter, system-ui, sans-serif"),
+            "imageUrl": data.get("imageUrl", ""),
+            "imagePosition": data.get("imagePosition", "right"),
             "updatedAt": now,
             "updatedBy": data.get("updatedBy")
         }
