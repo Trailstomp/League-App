@@ -40,9 +40,22 @@ const CompactEventRow = ({
         }
     };
 
+    // Get team info for the event
+    const getEventTeams = () => {
+        const eventTeamIds = event.teams || event.teamIds || [];
+        if (event.homeTeam) eventTeamIds.push(event.homeTeam);
+        if (event.awayTeam) eventTeamIds.push(event.awayTeam);
+        
+        const uniqueIds = [...new Set(eventTeamIds)];
+        return uniqueIds.map(id => teams.find(t => t.id === id)).filter(Boolean).slice(0, 2);
+    };
+
+    const eventTeams = getEventTeams();
     const eventDate = new Date(event.start_datetime || event.date);
     const isPast = eventDate < new Date();
-    const isAdmin = currentUser?.role === 'admin';
+    const isAdmin = currentUser?.role === 'admin' || currentUser?.roles?.includes('admin');
+    const isCoach = currentUser?.role === 'coach' || currentUser?.roles?.includes('coach');
+    const canManage = isAdmin || isCoach;
     const isGame = event.type === 'regular_game' || event.type === 'game' || event.type === 'tournament';
 
     return (
@@ -51,9 +64,38 @@ const CompactEventRow = ({
             onClick={() => onEventSelect && onEventSelect(event)}
             data-testid={`compact-event-${event.id}`}
         >
-            {/* Type Icon */}
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl bg-slate-100 flex-shrink-0">
-                {getEventTypeIcon(event.type)}
+            {/* Team Logo(s) or Type Icon */}
+            <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
+                {eventTeams.length > 0 ? (
+                    <div className="flex -space-x-2">
+                        {eventTeams.map((team, idx) => (
+                            team.style?.logoUrl ? (
+                                <img 
+                                    key={team.id}
+                                    src={team.style.logoUrl}
+                                    alt={team.name}
+                                    className="w-10 h-10 rounded-full object-contain bg-white border-2 border-white shadow-sm"
+                                    style={{ zIndex: eventTeams.length - idx }}
+                                />
+                            ) : (
+                                <div 
+                                    key={team.id}
+                                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold border-2 border-white shadow-sm"
+                                    style={{ 
+                                        backgroundColor: team.style?.primaryColor || '#3b82f6',
+                                        zIndex: eventTeams.length - idx 
+                                    }}
+                                >
+                                    {team.name?.charAt(0) || '?'}
+                                </div>
+                            )
+                        ))}
+                    </div>
+                ) : (
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl bg-slate-100">
+                        {getEventTypeIcon(event.type)}
+                    </div>
+                )}
             </div>
 
             {/* Date/Time Column */}
@@ -70,44 +112,53 @@ const CompactEventRow = ({
                     </span>
                     <h4 className="font-medium text-slate-800 truncate">{event.title}</h4>
                 </div>
-                {event.location && (
-                    <p className="text-xs text-slate-500 truncate mt-0.5">📍 {event.location}</p>
-                )}
+                <div className="flex items-center gap-2 mt-0.5">
+                    {eventTeams.length > 0 && (
+                        <span className="text-xs text-slate-600">
+                            {eventTeams.map(t => t.name).join(' vs ')}
+                        </span>
+                    )}
+                    {event.location && (
+                        <span className="text-xs text-slate-500 truncate">📍 {event.location}</span>
+                    )}
+                </div>
             </div>
 
-            {/* Quick Actions */}
-            <div className="flex items-center gap-1 flex-shrink-0">
-                {/* Live View Button */}
-                {isGame && (event.status === 'in_progress' || event.status === 'scheduled') && onViewLive && (
-                    <button
-                        onClick={(e) => { e.stopPropagation(); onViewLive(event); }}
-                        className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
-                        title="Live View"
-                    >
-                        📺
-                    </button>
-                )}
-                {/* Enter Scoring */}
-                {isAdmin && isGame && onEnterScoring && (
-                    <button
-                        onClick={(e) => { e.stopPropagation(); onEnterScoring(event); }}
-                        className="px-2 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700"
-                        title="Enter Scores"
-                    >
-                        📊
-                    </button>
-                )}
-                {/* Tournament Bracket */}
-                {event.type === 'tournament' && onManageTournament && (
-                    <button
-                        onClick={(e) => { e.stopPropagation(); onManageTournament(event); }}
-                        className="px-2 py-1 text-xs bg-orange-600 text-white rounded hover:bg-orange-700"
-                        title="Manage Bracket"
-                    >
-                        🏅
-                    </button>
-                )}
-            </div>
+            {/* Quick Actions - Only for admins/coaches */}
+            {canManage && (
+                <div className="flex items-center gap-1 flex-shrink-0">
+                    {/* Live View Button */}
+                    {isGame && (event.status === 'in_progress' || event.status === 'scheduled') && onViewLive && (
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onViewLive(event); }}
+                            className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
+                            title="Live View"
+                        >
+                            📺
+                        </button>
+                    )}
+                    {/* Enter Scoring */}
+                    {isGame && onEnterScoring && (
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onEnterScoring(event); }}
+                            className="px-2 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700"
+                            title="Enter Scores"
+                        >
+                            📊
+                        </button>
+                    )}
+                    {/* Tournament Bracket */}
+                    {event.type === 'tournament' && onManageTournament && (
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onManageTournament(event); }}
+                            className="px-2 py-1 text-xs bg-orange-600 text-white rounded hover:bg-orange-700"
+                            title="Manage Bracket"
+                        >
+                            🏅
+                        </button>
+                    )}
+                </div>
+            )}
         </div>
     );
 };
