@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import EventRSVPDashboard from '../EventRSVPDashboard';
+import AdvancedEventCalendar from '../../scheduling/components/EventCalendar';
 
 const EventsList = ({ 
     events, 
