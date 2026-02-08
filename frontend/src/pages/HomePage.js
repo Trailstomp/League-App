@@ -326,32 +326,80 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                 {activeTab === 'welcome' && (
                     <div className="p-6 space-y-8">
                         {/* Welcome Message Section */}
-                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
-                            <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center">
-                                <span className="mr-3">👋</span>
-                                {welcomeMessage?.title || 'Welcome to Our League!'}
-                            </h2>
+                        <div 
+                            className="rounded-xl p-6 border relative overflow-hidden"
+                            style={{ 
+                                backgroundColor: welcomeMessage?.backgroundColor || '#eff6ff',
+                                fontFamily: welcomeMessage?.fontFamily || 'Inter, system-ui, sans-serif'
+                            }}
+                        >
+                            {/* Background Image */}
+                            {welcomeMessage?.imageUrl && welcomeMessage?.imagePosition === 'background' && (
+                                <div 
+                                    className="absolute inset-0 opacity-20"
+                                    style={{
+                                        backgroundImage: `url(${welcomeMessage.imageUrl})`,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center'
+                                    }}
+                                />
+                            )}
+
                             {loadingWelcome ? (
                                 <div className="animate-pulse h-20 bg-slate-200 rounded"></div>
-                            ) : welcomeMessage?.content ? (
-                                <div 
-                                    className="prose prose-slate max-w-none text-slate-700"
-                                    dangerouslySetInnerHTML={{ __html: welcomeMessage.content.replace(/\n/g, '<br/>') }}
-                                />
                             ) : (
-                                <p className="text-slate-600 leading-relaxed">
-                                    Welcome to our league community! We&apos;re excited to have you here. 
-                                    Whether you&apos;re a player looking to join a team, a coach organizing your roster, 
-                                    or a fan following the action, you&apos;ve come to the right place.
-                                </p>
-                            )}
-                            {currentUser?.roles?.includes('admin') && (
-                                <button 
-                                    onClick={() => onNavigate && onNavigate('admin')}
-                                    className="mt-4 text-sm text-blue-600 hover:text-blue-800 underline"
-                                >
-                                    Edit welcome message (Admin)
-                                </button>
+                                <div className={`relative z-10 flex ${
+                                    welcomeMessage?.imagePosition === 'top' ? 'flex-col' :
+                                    welcomeMessage?.imagePosition === 'left' ? 'flex-row-reverse' :
+                                    'flex-row'
+                                } gap-6`}>
+                                    {/* Content */}
+                                    <div className="flex-1">
+                                        <h2 
+                                            className="text-2xl font-bold mb-4 flex items-center"
+                                            style={{ color: welcomeMessage?.titleColor || '#1e40af' }}
+                                        >
+                                            <span className="mr-3">👋</span>
+                                            {welcomeMessage?.title || 'Welcome to Our League!'}
+                                        </h2>
+                                        {welcomeMessage?.content ? (
+                                            <div 
+                                                className="prose max-w-none leading-relaxed"
+                                                style={{ color: welcomeMessage?.textColor || '#1e293b' }}
+                                                dangerouslySetInnerHTML={{ __html: welcomeMessage.content.replace(/\n/g, '<br/>') }}
+                                            />
+                                        ) : (
+                                            <p style={{ color: welcomeMessage?.textColor || '#1e293b' }}>
+                                                Welcome to our league community! We&apos;re excited to have you here. 
+                                                Whether you&apos;re a player looking to join a team, a coach organizing your roster, 
+                                                or a fan following the action, you&apos;ve come to the right place.
+                                            </p>
+                                        )}
+                                        {currentUser?.roles?.includes('admin') && (
+                                            <button 
+                                                onClick={() => onNavigate && onNavigate('admin')}
+                                                className="mt-4 text-sm text-blue-600 hover:text-blue-800 underline"
+                                            >
+                                                Edit welcome message (Admin)
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {/* Image (if not background) */}
+                                    {welcomeMessage?.imageUrl && welcomeMessage?.imagePosition !== 'background' && (
+                                        <div className={`flex-shrink-0 ${
+                                            welcomeMessage?.imagePosition === 'top' ? 'w-full' : 'w-48 md:w-64'
+                                        }`}>
+                                            <img 
+                                                src={welcomeMessage.imageUrl} 
+                                                alt="Welcome"
+                                                className={`rounded-lg shadow-lg object-cover ${
+                                                    welcomeMessage?.imagePosition === 'top' ? 'w-full h-48 md:h-64' : 'w-48 md:w-64 h-48 md:h-64'
+                                                }`}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
                             )}
                         </div>
 
