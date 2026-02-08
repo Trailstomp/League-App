@@ -700,6 +700,8 @@ const EventsList = ({
                             </div>
                         ))}
                     </div>
+                        )}
+                    </>
                 )}
             </div>
 
