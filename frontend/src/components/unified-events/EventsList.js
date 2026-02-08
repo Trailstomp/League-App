@@ -17,6 +17,7 @@ const EventsList = ({
     const [filter, setFilter] = useState('active'); // active (excludes canceled/archived), all, scheduled, in_progress, completed, canceled, archived
     const [sortBy, setSortBy] = useState('date'); // date, title, type
     const [timeFilter, setTimeFilter] = useState('upcoming'); // upcoming, past
+    const [viewMode, setViewMode] = useState('compact'); // compact, detailed, calendar
     const [sendingNotifications, setSendingNotifications] = useState({});
     const [viewingRSVPs, setViewingRSVPs] = useState(null);
     const [changingStatus, setChangingStatus] = useState(null);
