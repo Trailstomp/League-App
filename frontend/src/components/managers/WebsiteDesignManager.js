@@ -548,6 +548,245 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         }, 1500);
     }, []);
 
+    // Templates Section
+    const renderTemplatesSection = () => (
+        <div className="space-y-6">
+            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 rounded-lg border border-indigo-200">
+                <h3 className="text-lg font-semibold text-indigo-800 mb-2">💾 Design Templates</h3>
+                <p className="text-indigo-600 text-sm">Save your current design as a template or load a previously saved one</p>
+            </div>
+
+            {/* Template Message */}
+            {templateMessage && (
+                <div className={`p-4 rounded-lg ${templateMessage.startsWith('✅') ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
+                    {templateMessage}
+                </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex gap-4">
+                <button
+                    onClick={() => setShowSaveTemplateModal(true)}
+                    className="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+                >
+                    💾 Save Current Design as Template
+                </button>
+                <button
+                    onClick={() => {
+                        loadTemplates();
+                        setShowLoadTemplateModal(true);
+                    }}
+                    className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                >
+                    📂 Load Saved Template
+                </button>
+            </div>
+
+            {/* Saved Templates List */}
+            <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+                <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
+                    <h4 className="font-semibold text-slate-800">Saved Templates ({savedTemplates.length})</h4>
+                </div>
+                
+                {savedTemplates.length > 0 ? (
+                    <div className="divide-y divide-slate-100">
+                        {savedTemplates.map(template => (
+                            <div key={template.id} className="p-4 hover:bg-slate-50 flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    {/* Template Preview Colors */}
+                                    <div className="flex -space-x-1">
+                                        <div 
+                                            className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
+                                            style={{ backgroundColor: template.style?.primaryColor || '#3b82f6' }}
+                                            title="Primary Color"
+                                        />
+                                        <div 
+                                            className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
+                                            style={{ backgroundColor: template.style?.accentColor || '#10b981' }}
+                                            title="Accent Color"
+                                        />
+                                        <div 
+                                            className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
+                                            style={{ backgroundColor: template.style?.navBackgroundColor || '#ffffff' }}
+                                            title="Nav Background"
+                                        />
+                                    </div>
+                                    <div>
+                                        <h5 className="font-medium text-slate-800">{template.name}</h5>
+                                        <p className="text-xs text-slate-500">
+                                            Created: {new Date(template.createdAt).toLocaleDateString()}
+                                            {template.style?.sportType && ` • ${template.style.sportType}`}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => loadTemplate(template)}
+                                        className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-sm font-medium"
+                                    >
+                                        Load
+                                    </button>
+                                    <button
+                                        onClick={() => deleteTemplate(template.id)}
+                                        className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm font-medium"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="p-8 text-center text-slate-500">
+                        <div className="text-4xl mb-4">📁</div>
+                        <p>No saved templates yet</p>
+                        <p className="text-sm mt-1">Save your current design to create your first template</p>
+                    </div>
+                )}
+            </div>
+
+            {/* What Gets Saved Info */}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <h4 className="font-medium text-amber-800 mb-2">📋 What Gets Saved in a Template</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm text-amber-700">
+                    <span>✓ Sport Type</span>
+                    <span>✓ All Colors</span>
+                    <span>✓ Fonts & Sizes</span>
+                    <span>✓ Logo & Images</span>
+                    <span>✓ Banner Settings</span>
+                    <span>✓ Navigation Style</span>
+                    <span>✓ Menu Settings</span>
+                    <span>✓ PWA Settings</span>
+                    <span>✓ Live View Style</span>
+                </div>
+            </div>
+
+            {/* Save Template Modal */}
+            {showSaveTemplateModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                        <h3 className="text-xl font-bold text-slate-800 mb-4">💾 Save Design Template</h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Template Name</label>
+                                <input
+                                    type="text"
+                                    value={newTemplateName}
+                                    onChange={(e) => setNewTemplateName(e.target.value)}
+                                    placeholder="e.g., Dark Theme, Summer Season, Tournament Mode..."
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    autoFocus
+                                />
+                            </div>
+                            
+                            {/* Preview of what will be saved */}
+                            <div className="bg-slate-50 rounded-lg p-3">
+                                <p className="text-sm text-slate-600 mb-2">Preview:</p>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex -space-x-1">
+                                        <div 
+                                            className="w-6 h-6 rounded-full border-2 border-white"
+                                            style={{ backgroundColor: editingStyle.primaryColor || '#3b82f6' }}
+                                        />
+                                        <div 
+                                            className="w-6 h-6 rounded-full border-2 border-white"
+                                            style={{ backgroundColor: editingStyle.accentColor || '#10b981' }}
+                                        />
+                                    </div>
+                                    <span className="text-sm text-slate-700" style={{ fontFamily: editingStyle.navFont }}>
+                                        {editingStyle.navLeagueName || 'Your League'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    onClick={() => {
+                                        setShowSaveTemplateModal(false);
+                                        setNewTemplateName('');
+                                    }}
+                                    className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={saveTemplate}
+                                    disabled={!newTemplateName.trim()}
+                                    className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+                                >
+                                    Save Template
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Load Template Modal */}
+            {showLoadTemplateModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+                        <div className="p-4 border-b flex justify-between items-center">
+                            <h3 className="text-xl font-bold text-slate-800">📂 Load Design Template</h3>
+                            <button
+                                onClick={() => setShowLoadTemplateModal(false)}
+                                className="text-slate-500 hover:text-slate-700 text-2xl"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className="p-4 overflow-y-auto max-h-[60vh]">
+                            {savedTemplates.length > 0 ? (
+                                <div className="grid gap-3">
+                                    {savedTemplates.map(template => (
+                                        <div 
+                                            key={template.id} 
+                                            onClick={() => loadTemplate(template)}
+                                            className="p-4 border border-slate-200 rounded-lg hover:border-indigo-400 hover:bg-indigo-50 cursor-pointer transition-all"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className="flex -space-x-1">
+                                                    <div 
+                                                        className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
+                                                        style={{ backgroundColor: template.style?.primaryColor || '#3b82f6' }}
+                                                    />
+                                                    <div 
+                                                        className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
+                                                        style={{ backgroundColor: template.style?.accentColor || '#10b981' }}
+                                                    />
+                                                    <div 
+                                                        className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
+                                                        style={{ backgroundColor: template.style?.bannerBackgroundColor || '#1e40af' }}
+                                                    />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h4 className="font-semibold text-slate-800">{template.name}</h4>
+                                                    <p className="text-sm text-slate-500">
+                                                        {template.style?.sportType || 'lacrosse'} • 
+                                                        {new Date(template.createdAt).toLocaleDateString()}
+                                                    </p>
+                                                </div>
+                                                <div className="text-indigo-600 font-medium">
+                                                    Click to Load →
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-8 text-slate-500">
+                                    <div className="text-4xl mb-4">📁</div>
+                                    <p>No saved templates</p>
+                                    <p className="text-sm mt-1">Save your current design first to create templates</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+
     // Sport Type Section
     const renderSportSection = () => {
         const availableSports = getAvailableSports();
