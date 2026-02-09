@@ -3522,6 +3522,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
                 {/* Section Content */}
                 <div className="p-6">
+                    {activeSection === 'templates' && renderTemplatesSection()}
                     {activeSection === 'sport' && renderSportSection()}
                     {activeSection === 'navigation' && renderNavigationSection()}
                     {activeSection === 'banner' && renderBannerSection()}
