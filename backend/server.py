@@ -8666,6 +8666,51 @@ async def create_league(league: League):
         logger.error(f"Error creating league: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ==================== DESIGN TEMPLATES ====================
+
+@api_router.get("/design-templates")
+async def get_design_templates():
+    """Get all saved design templates"""
+    try:
+        templates = await db.design_templates.find({}, {"_id": 0}).sort("createdAt", -1).to_list(100)
+        return {"templates": templates}
+    except Exception as e:
+        logger.error(f"Error fetching design templates: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/design-templates")
+async def save_design_template(template_data: Dict[str, Any]):
+    """Save a new design template"""
+    try:
+        import uuid
+        template = {
+            "id": str(uuid.uuid4()),
+            "name": template_data.get("name", "Untitled"),
+            "style": template_data.get("style", {}),
+            "createdAt": template_data.get("createdAt", datetime.now(timezone.utc).isoformat()),
+        }
+        await db.design_templates.insert_one(template)
+        return {"status": "success", "template": {k: v for k, v in template.items() if k != "_id"}}
+    except Exception as e:
+        logger.error(f"Error saving design template: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/design-templates/{template_id}")
+async def delete_design_template(template_id: str):
+    """Delete a design template"""
+    try:
+        result = await db.design_templates.delete_one({"id": template_id})
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Template not found")
+        return {"status": "success", "message": "Template deleted"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting design template: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ==================== DIVISIONS ====================
+
 @api_router.get("/divisions")
 async def get_all_divisions():
     """Get all divisions (not league-specific)"""
