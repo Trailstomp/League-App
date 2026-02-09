@@ -209,8 +209,8 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                     ? `${websiteStyle.primaryColor || '#3b82f6'}${Math.round((websiteStyle.buttonTransparency || 0.9) * 255).toString(16).padStart(2, '0')}` 
                     : `${websiteStyle.menuBackgroundColor || 'transparent'}${Math.round((websiteStyle.buttonTransparency || 0.7) * 255).toString(16).padStart(2, '0')}`,
                 border: currentPage === pageName 
-                    ? `2px solid ${websiteStyle.primaryColor || '#3b82f6'}` 
-                    : `1px solid ${websiteStyle.menuTextColor || '#e2e8f0'}40`
+                    ? `2px solid ${websiteStyle.navButtonBorderColor || websiteStyle.primaryColor || '#3b82f6'}` 
+                    : `2px solid ${websiteStyle.navButtonBorderColor || websiteStyle.accentColor || '#e2e8f0'}`
             }}
             title={isCollapsed ? label : ''}
         >
