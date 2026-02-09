@@ -585,8 +585,27 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
   - `users.py` (361 lines) - User authentication and management
 
 ### Remaining Technical Debt
-- `server.py` still large (~12.2K lines) - duplicate endpoints remain, need removal
+- `server.py` still large (~13K lines) - duplicate endpoints remain, need removal
 - Could extract additional routers: events, media, groupme, payments
+
+## Recently Completed (Feb 2026)
+- **P0 Fix**: TeamManager.js `divisions is not defined` bug - verified FIXED (divisions prop chain correct through all components)
+- **Design Templates System**: Full backend CRUD (GET/POST/DELETE /api/design-templates) + frontend UI in WebsiteDesignManager.js (save/load/delete templates with color previews)
+- **Join Request Flow**: Verified end-to-end working - public join page, request submission, admin pending list, approve/reject actions (endpoints in routes/teams.py)
+
+## Backlog / Upcoming
+- P1: Add email/notification for team admins when new join requests arrive
+- P2: "Next steps" guide for new users after setup wizard
+- P2: Backend refactoring - consolidate legacy endpoints in server.py
+- P2: Google Drive integration (user credentials needed)
+- P2: Finance Register PDF Export
+- P3: Refactor routing to react-router-dom
+- P3: Improve tournament scoring UI
+
+## Known Issues
+- Production deployment broken (DNS/infrastructure - user must fix)
+- Email notifications failing (SMTP auth - user must provide valid credentials)
+- Google Drive integration pending user API credentials
 
 ## 3rd Party Integrations
 - Twilio (SMS notifications)
