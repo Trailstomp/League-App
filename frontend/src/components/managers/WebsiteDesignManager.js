@@ -55,6 +55,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         menuTextColor: websiteStyle.menuTextColor || '#374151',
         menuFont: websiteStyle.menuFont || 'Inter, sans-serif',
         menuFontSize: websiteStyle.menuFontSize || '16px',
+        navButtonBorderColor: websiteStyle.navButtonBorderColor || websiteStyle.accentColor || '#3b82f6',
         
         // Live View Settings - with websiteStyle fallbacks
         liveViewBackgroundType: websiteStyle.liveViewBackgroundType || 'banners',
