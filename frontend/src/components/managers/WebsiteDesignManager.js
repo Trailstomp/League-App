@@ -357,6 +357,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                     // Navigation zone - ENHANCED: propagate to sidebar  
                     navBackgroundColor: hexColors[2] || '#ffffff',
                     navTextColor: hexColors[0] || '#374151',
+                    navButtonBorderColor: hexColors[1] || hexColors[0] || '#3b82f6',
                     
                     // Menu/Sidebar zone - AUTO-PROPAGATE from nav logo
                     menuBackgroundColor: hexColors[2] || '#ffffff',
@@ -384,6 +385,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                     navBackground: newState.navBackgroundColor,
                     menuBackground: newState.menuBackgroundColor,
                     menuText: newState.menuTextColor,
+                    navButtonBorder: newState.navButtonBorderColor,
                     pwaTheme: newState.pwaThemeColor
                 });
                 
