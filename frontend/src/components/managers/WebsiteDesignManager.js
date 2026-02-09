@@ -929,6 +929,48 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         </span>
                     </div>
                 </div>
+
+                {/* Nav Button Border Color */}
+                <div className="mb-6">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Navigation Button Border Color</label>
+                    <div className="flex items-center space-x-3">
+                        <input
+                            type="color"
+                            value={editingStyle.navButtonBorderColor || editingStyle.accentColor || '#3b82f6'}
+                            onChange={(e) => updateStyle({ navButtonBorderColor: e.target.value })}
+                            className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                        />
+                        <input
+                            type="text"
+                            value={editingStyle.navButtonBorderColor || editingStyle.accentColor || '#3b82f6'}
+                            onChange={(e) => {
+                                if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                    updateStyle({ navButtonBorderColor: e.target.value });
+                                }
+                            }}
+                            className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
+                            placeholder="#3b82f6"
+                        />
+                        <button
+                            onClick={() => {
+                                if (editingStyle.navLogoUrl) {
+                                    setExtractImageUrl(editingStyle.navLogoUrl);
+                                    setShowColorExtractor(true);
+                                }
+                            }}
+                            disabled={!editingStyle.navLogoUrl}
+                            className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                                editingStyle.navLogoUrl 
+                                    ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' 
+                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            }`}
+                            title={editingStyle.navLogoUrl ? 'Extract colors from logo' : 'Upload a logo first'}
+                        >
+                            🎨 From Logo
+                        </button>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1">Border color for navigation menu buttons. Click "From Logo" to extract accent colors.</p>
+                </div>
             </div>
         </div>
     );
