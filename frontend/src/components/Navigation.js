@@ -266,32 +266,34 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                     borderColor: websiteStyle.navBorderColor || '#e2e8f0'
                 }}
             >
-                <div className="h-full flex flex-col items-center justify-center p-4">
+                <div className="h-full flex flex-col items-center justify-center p-2">
                     {!isCollapsed && (
-                        <div className="flex flex-col items-center w-full space-y-3">
-                            {/* Large Logo */}
-                            <div className="flex items-center justify-center">
+                        <div className="flex flex-col items-center w-full h-full">
+                            {/* Large Logo - fills available space */}
+                            <div className="flex-1 flex items-center justify-center w-full">
                                 {websiteStyle.navLogoUrl ? (
                                     <CachedImage 
                                         src={websiteStyle.navLogoUrl} 
                                         alt="League Logo" 
                                         className="object-contain drop-shadow-lg"
                                         style={{
-                                            width: '140px',
-                                            height: '140px',
-                                            filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))'
+                                            maxWidth: '100%',
+                                            maxHeight: websiteStyle.navLeagueName ? '150px' : '180px',
+                                            width: 'auto',
+                                            height: 'auto',
+                                            filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))'
                                         }}
                                         fallback={
                                             <div 
                                                 className="flex items-center justify-center rounded-2xl"
                                                 style={{
-                                                    width: '140px',
-                                                    height: '140px',
+                                                    width: '160px',
+                                                    height: '160px',
                                                     background: `linear-gradient(135deg, ${websiteStyle.primaryColor || '#2563eb'} 0%, ${websiteStyle.accentColor || '#3b82f6'} 100%)`,
                                                     boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
                                                 }}
                                             >
-                                                <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '4rem' }}>
+                                                <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '5rem' }}>
                                                     🥍
                                                 </span>
                                             </div>
@@ -301,31 +303,33 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                     <div 
                                         className="flex items-center justify-center rounded-2xl"
                                         style={{
-                                            width: '140px',
-                                            height: '140px',
+                                            width: '160px',
+                                            height: '160px',
                                             background: `linear-gradient(135deg, ${websiteStyle.primaryColor || '#2563eb'} 0%, ${websiteStyle.accentColor || '#3b82f6'} 100%)`,
                                             boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
                                         }}
                                     >
-                                        <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '4rem' }}>
+                                        <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '5rem' }}>
                                             🥍
                                         </span>
                                     </div>
                                 )}
                             </div>
                             
-                            {/* League Name */}
-                            <h1 
-                                className="text-center font-bold leading-tight"
-                                style={{
-                                    fontFamily: websiteStyle.navFont || 'Inter, sans-serif',
-                                    fontSize: '18px',
-                                    color: websiteStyle.navTextColor || '#1f2937',
-                                    wordWrap: 'break-word'
-                                }}
-                            >
-                                {websiteStyle.navLeagueName || 'Lacrosse League'}
-                            </h1>
+                            {/* League Name - only if set */}
+                            {websiteStyle.navLeagueName && (
+                                <h1 
+                                    className="text-center font-bold leading-tight mt-1 px-2"
+                                    style={{
+                                        fontFamily: websiteStyle.navFont || 'Inter, sans-serif',
+                                        fontSize: '16px',
+                                        color: websiteStyle.navTextColor || '#1f2937',
+                                        wordWrap: 'break-word'
+                                    }}
+                                >
+                                    {websiteStyle.navLeagueName}
+                                </h1>
+                            )}
                         </div>
                     )}
                     
