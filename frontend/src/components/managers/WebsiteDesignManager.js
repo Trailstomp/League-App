@@ -90,8 +90,103 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
     const [cropImageUrl, setCropImageUrl] = useState('');
     const [cropTarget, setCropTarget] = useState('banner');
     const [cropTargetType, setCropTargetType] = useState('banner');
+    
+    // Template management state
+    const [savedTemplates, setSavedTemplates] = useState([]);
+    const [showSaveTemplateModal, setShowSaveTemplateModal] = useState(false);
+    const [showLoadTemplateModal, setShowLoadTemplateModal] = useState(false);
+    const [newTemplateName, setNewTemplateName] = useState('');
+    const [templateMessage, setTemplateMessage] = useState('');
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+
+    // Load saved templates on mount
+    useEffect(() => {
+        loadTemplates();
+    }, []);
+
+    const loadTemplates = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/api/design-templates`);
+            if (response.ok) {
+                const data = await response.json();
+                setSavedTemplates(data.templates || []);
+            }
+        } catch (error) {
+            console.error('Error loading templates:', error);
+        }
+    };
+
+    const saveTemplate = async () => {
+        if (!newTemplateName.trim()) {
+            setTemplateMessage('❌ Please enter a template name');
+            return;
+        }
+
+        try {
+            const templateData = {
+                name: newTemplateName.trim(),
+                style: { ...editingStyle },
+                createdAt: new Date().toISOString()
+            };
+
+            const response = await fetch(`${backendUrl}/api/design-templates`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(templateData)
+            });
+
+            if (response.ok) {
+                setTemplateMessage('✅ Template saved successfully!');
+                setNewTemplateName('');
+                setShowSaveTemplateModal(false);
+                loadTemplates();
+            } else {
+                setTemplateMessage('❌ Failed to save template');
+            }
+        } catch (error) {
+            console.error('Error saving template:', error);
+            setTemplateMessage('❌ Error saving template');
+        }
+        setTimeout(() => setTemplateMessage(''), 3000);
+    };
+
+    const loadTemplate = (template) => {
+        if (window.confirm(`Load "${template.name}" template? This will replace your current design settings.`)) {
+            setEditingStyle(prev => ({
+                ...prev,
+                ...template.style
+            }));
+            setShowLoadTemplateModal(false);
+            setTemplateMessage(`✅ Loaded "${template.name}" template`);
+            // Trigger save after loading
+            setTimeout(() => handleSave(), 500);
+        }
+        setTimeout(() => setTemplateMessage(''), 3000);
+    };
+
+    const deleteTemplate = async (templateId) => {
+        if (!window.confirm('Are you sure you want to delete this template?')) return;
+
+        try {
+            const response = await fetch(`${backendUrl}/api/design-templates/${templateId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                setTemplateMessage('✅ Template deleted');
+                loadTemplates();
+            } else {
+                setTemplateMessage('❌ Failed to delete template');
+            }
+        } catch (error) {
+            console.error('Error deleting template:', error);
+            setTemplateMessage('❌ Error deleting template');
+        }
+        setTimeout(() => setTemplateMessage(''), 3000);
+    };
 
     const designSections = [
+        { id: 'templates', label: 'Design Templates', icon: 'customize', description: 'Save and load design presets' },
         { id: 'sport', label: 'Sport Type', icon: 'trophy', description: 'Choose your league sport for icons and scoring' },
         { id: 'navigation', label: 'Navigation & Sidebar', icon: 'players', description: 'Header navigation, sidebar, and menu styling' },
         { id: 'banner', label: 'Top Banner', icon: 'image', description: 'Main banner/hero section' },
