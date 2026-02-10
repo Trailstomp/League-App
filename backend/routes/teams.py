@@ -823,15 +823,30 @@ async def submit_join_request(team_id: str, data: Dict[str, Any]):
         except Exception as email_err:
             logger.warning(f"⚠️ Failed to send user confirmation email: {email_err}")
         
-        # 2. Send notification to team admin(s)
+        # 2. Send notification to team admin(s) and coaches
         try:
-            # Find team admins/coaches
+            # Find team admins/coaches - check both 'roles' (array) and 'role' (string) fields
+            admin_roles = ["coach", "admin", "league_admin"]
             team_admins = await db.users.find({
                 "$or": [
-                    {"teamId": team_id, "roles": {"$in": ["coach", "admin", "league_admin"]}},
-                    {"teamAssignments.teamId": team_id, "roles": {"$in": ["coach", "admin", "league_admin"]}}
+                    {"teamId": team_id, "roles": {"$in": admin_roles}},
+                    {"teamId": team_id, "role": {"$in": admin_roles}},
+                    {"teamAssignments.teamId": team_id, "roles": {"$in": admin_roles}},
+                    {"teamAssignments.teamId": team_id, "role": {"$in": admin_roles}},
+                    {"role": "admin"},
+                    {"roles": {"$in": ["admin"]}}
                 ]
-            }, {"_id": 0, "email": 1, "name": 1}).to_list(10)
+            }, {"_id": 0, "email": 1, "name": 1}).to_list(20)
+            
+            # Deduplicate by email
+            seen_emails = set()
+            unique_admins = []
+            for admin in team_admins:
+                email = admin.get("email", "").lower()
+                if email and email not in seen_emails:
+                    seen_emails.add(email)
+                    unique_admins.append(admin)
+            team_admins = unique_admins
             
             for admin in team_admins:
                 if admin.get("email"):
