@@ -596,7 +596,8 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 - **Email Notifications for Join Requests**: Fixed admin notification query (checks both `role` and `roles` fields, deduplicates by email)
 - **Help Index Clickable Links**: Quick links navigate to doc sections; admin email mailto link added
 - **Mobile Stats Layout**: Homepage stats (Teams/Events/Players) always display in single row
-- **Next Steps Guide**: Post-setup wizard completion screen guides new admins through 6 key actions (divisions, teams, recruiting, events, design, email). Emails attempted to all team coaches + league admins on new request, and to player on approve/reject
+- **Next Steps Guide**: Post-setup wizard completion screen guides new admins through 6 key actions (divisions, teams, recruiting, events, design, email)
+- **Consolidated Team Admin Tab**: Moved all team-level admin tools (Settings, Finance, Roster Hub) into the Team Admin tab. Coaches/admins now manage everything team-specific from one place. Removed separate Finance and Settings top-level tabs.. Emails attempted to all team coaches + league admins on new request, and to player on approve/reject
 
 ## Backlog / Upcoming
 - P1: Get valid SMTP credentials configured for email notifications to actually deliver
