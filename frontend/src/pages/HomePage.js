@@ -248,34 +248,34 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
 
     return (
         <div className="space-y-6 p-4" style={{ backgroundColor: 'transparent', minHeight: '100%' }}>
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white/90 rounded-lg shadow-sm border p-6 backdrop-blur-sm">
-                    <div className="flex items-center">
-                        <LacrosseIcon name="teams" style={{fontSize: '32px'}} className="text-blue-500 mr-4" />
-                        <div>
-                            <div className="text-2xl font-bold text-slate-800">{stats.totalTeams}</div>
-                            <div className="text-sm text-slate-600">Total Teams</div>
+            {/* Quick Stats - always single row, compact on mobile */}
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                <div className="bg-white/90 rounded-lg shadow-sm border px-3 py-2 sm:p-4 backdrop-blur-sm">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <LacrosseIcon name="teams" style={{fontSize: '20px'}} className="text-blue-500 hidden sm:block" />
+                        <div className="min-w-0">
+                            <div className="text-lg sm:text-2xl font-bold text-slate-800">{stats.totalTeams}</div>
+                            <div className="text-xs sm:text-sm text-slate-600 truncate">Teams</div>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm p-6">
-                    <div className="flex items-center">
-                        <LacrosseIcon name="calendar" style={{fontSize: '32px'}} className="text-green-500 mr-4" />
-                        <div>
-                            <div className="text-2xl font-bold text-slate-800">{stats.activeEvents}</div>
-                            <div className="text-sm text-slate-600">Scheduled Events</div>
+                <div className="bg-white/90 rounded-lg shadow-sm border px-3 py-2 sm:p-4 backdrop-blur-sm">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <LacrosseIcon name="calendar" style={{fontSize: '20px'}} className="text-green-500 hidden sm:block" />
+                        <div className="min-w-0">
+                            <div className="text-lg sm:text-2xl font-bold text-slate-800">{stats.activeEvents}</div>
+                            <div className="text-xs sm:text-sm text-slate-600 truncate">Events</div>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm p-6">
-                    <div className="flex items-center">
-                        <LacrosseIcon name="players" style={{fontSize: '32px'}} className="text-purple-500 mr-4" />
-                        <div>
-                            <div className="text-2xl font-bold text-slate-800">{stats.totalPlayers}</div>
-                            <div className="text-sm text-slate-600">Total Players</div>
+                <div className="bg-white/90 rounded-lg shadow-sm border px-3 py-2 sm:p-4 backdrop-blur-sm">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <LacrosseIcon name="players" style={{fontSize: '20px'}} className="text-purple-500 hidden sm:block" />
+                        <div className="min-w-0">
+                            <div className="text-lg sm:text-2xl font-bold text-slate-800">{stats.totalPlayers}</div>
+                            <div className="text-xs sm:text-sm text-slate-600 truncate">Players</div>
                         </div>
                     </div>
                 </div>
