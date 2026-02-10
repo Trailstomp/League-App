@@ -669,6 +669,7 @@ Once approved, you'll:
         { id: 'admin', label: 'Admin Guide', icon: '👑' },
         { id: 'leagueAdmin', label: 'League Admin Guide', icon: '🏅' },
         { id: 'coach', label: 'Coach Guide', icon: '🏃' },
+        { id: 'recruitment', label: 'Player Recruitment', icon: '🤝' },
         { id: 'player', label: 'Player Guide', icon: '🎮' },
         { id: 'guest', label: 'Guest Guide', icon: '👀' },
         { id: 'reference', label: 'Quick Reference', icon: '📋' }
