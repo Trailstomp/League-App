@@ -24,6 +24,7 @@ Welcome to the Help Center! Select a guide from the sidebar to get started.
 ### By Task
 - **Setting up the league** → Setup Guide
 - **Managing rosters** → Coach Guide
+- **Recruiting new players** → Player Recruitment Guide
 - **Viewing stats** → Player Guide
 - **Understanding features** → Feature Brochure
 
