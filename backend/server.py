@@ -531,6 +531,7 @@ async def get_dashboard_data():
                     "color": team.get("color", "#3b82f6"),
                     "logo": team.get("logo", ""),
                     "active": team.get("active", True),
+                    "isExternal": team.get("isExternal", False),
                     # Use full style object
                     "style": team_style,
                     # Include social media and payment links if available
