@@ -469,6 +469,129 @@ The scrolling ticker shows:
 3. Wait for admin approval
             `
         },
+        recruitment: {
+            title: '🤝 Player Recruitment',
+            icon: '🤝',
+            content: `
+# Player Recruitment & Join Requests
+
+This guide covers the complete workflow for recruiting new players to your team — from sharing a join link to approving requests.
+
+---
+
+## Overview
+
+The recruitment flow has three steps:
+
+1. **Share** a public join link for your team
+2. **Prospective player** fills out the join request form
+3. **Coach/Admin** reviews and approves or declines the request
+
+When a request is submitted, team admins and coaches receive an **email notification** automatically. When a decision is made, the player receives an email with the result.
+
+---
+
+## For Coaches / Team Admins
+
+### Finding Your Team's Join Link
+
+Your team has a public join page at:
+
+\`your-league-url/join/your-team-id\`
+
+For example: \`https://yourleague.com/join/eagles_01\`
+
+You can share this link on social media, flyers, or via email.
+
+### Viewing Join Requests
+
+1. Navigate to your **Team Page**
+2. Go to the **Admin** tab
+3. Find the **Recruiting** section
+4. Pending requests appear with a badge count
+
+### Approving a Request
+
+1. In the Recruiting section, find the player's request
+2. Review their details (name, email, position, experience, message)
+3. Click **Approve**
+4. The player is automatically:
+   - Added to your team roster
+   - Given the "player" role
+   - Sent an approval email notification
+
+### Declining a Request
+
+1. Click **Decline** on the request
+2. Optionally provide a reason
+3. The player receives a polite declination email
+
+### Sending Invites
+
+You can also proactively invite players:
+
+1. Go to the **Recruiting** section of the Admin tab
+2. Enter the player's **email address**
+3. Add a personal message (optional)
+4. Click **Send Invite**
+5. The player receives an email with instructions to join
+
+---
+
+## For League Admins
+
+### Managing Requests Across Teams
+
+League admins can view and process join requests for any team by navigating to that team's Admin tab.
+
+### Inviting Entire Teams
+
+League admins can invite teams to join the league:
+
+1. Go to **Admin Portal → Team Invites**
+2. Enter the team name and contact details
+3. Send the invitation
+
+---
+
+## For Players (Prospective)
+
+### Requesting to Join a Team
+
+1. Open the join link shared by your coach or team
+2. Fill out the form:
+   - **Name** (required)
+   - **Email** (required)
+   - **Phone**
+   - **Preferred Position** (Attack, Midfield, Defense, Goalie, etc.)
+   - **Desired Jersey Number**
+   - **Experience Level**
+   - **Personal Message**
+3. Click **Submit Request**
+4. You'll receive a confirmation email
+5. Wait for the team admin to review your request
+
+### After Approval
+
+Once approved, you'll:
+- Receive an email notification
+- Be added to the team roster automatically
+- Be able to log in and see your team page, schedule, and RSVP to events
+
+---
+
+## Email Notifications
+
+| Event | Who Gets Notified |
+|-------|-------------------|
+| New join request submitted | Team coaches, team admins, league admins |
+| Request approved | The requesting player |
+| Request declined | The requesting player |
+| Invite sent | The invited player |
+
+**Note:** Email notifications require SMTP settings to be configured in Admin Portal → Communications → Email Hub.
+            `
+        },
         reference: {
             title: '📋 Quick Reference',
             icon: '📋',
