@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { getFullImageUrl } from '../../utils/imageUtils';
 import { getSportConfig } from '../../config/sportsConfig';
+import TeamSettingsTab from './TeamSettingsTab';
+import TeamFinanceTab from './TeamFinanceTab';
+import TeamAdminHub from './TeamAdminHub';
 
 /**
  * TeamAdminTab - Comprehensive team administration for coaches/admins
- * Sections: Players, Availability, Recruiting
+ * Sections: Players, Recruiting, Roster Hub, Finance, Settings
  */
 const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' }) => {
     const [activeSection, setActiveSection] = useState('players');
@@ -20,7 +23,7 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
     const [availableUsers, setAvailableUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [uploadingPhoto, setUploadingPhoto] = useState(false);
-    const [addPlayerMode, setAddPlayerMode] = useState('search'); // 'search' or 'create'
+    const [addPlayerMode, setAddPlayerMode] = useState('search');
     const [newPlayerData, setNewPlayerData] = useState({
         name: '',
         email: '',
@@ -39,8 +42,11 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
     const sportConfig = getSportConfig(sportType);
     
     const sections = [
-        { id: 'players', label: 'Manage Players', icon: '👥' },
-        { id: 'recruiting', label: 'Recruiting', icon: '📨' }
+        { id: 'players', label: 'Players', icon: '👥' },
+        { id: 'recruiting', label: 'Recruiting', icon: '📨' },
+        { id: 'roster-hub', label: 'Roster Hub', icon: '📊' },
+        { id: 'finance', label: 'Finance', icon: '💰' },
+        { id: 'settings', label: 'Settings', icon: '⚙️' }
     ];
 
     // Fetch team players
