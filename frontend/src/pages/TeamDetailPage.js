@@ -121,10 +121,8 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
         ] : []),
         // Coach/Admin only tabs - consolidated admin features
         ...(isTeamCoachOrAdmin ? [
-            { id: 'admin', label: 'Team Admin', icon: 'admin', coachOnly: true },
-            { id: 'finance', label: 'Finance', icon: '📊', coachOnly: true },
-        ] : []),
-        { id: 'settings', label: 'Settings', icon: 'settings', adminOnly: true }
+            { id: 'admin', label: 'Team Admin', icon: 'admin', coachOnly: true }
+        ] : [])
     ];
 
     const teamStyle = team.style || {};
