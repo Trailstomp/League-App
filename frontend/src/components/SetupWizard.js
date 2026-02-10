@@ -137,8 +137,8 @@ const SetupWizard = ({ onComplete }) => {
                 method: 'POST'
             });
 
-            // Notify parent component
-            onComplete(wizardData);
+            // Show next steps guide before finishing
+            setShowNextSteps(true);
 
         } catch (err) {
             setError(err.message);
