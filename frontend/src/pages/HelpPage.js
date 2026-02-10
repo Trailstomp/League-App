@@ -197,6 +197,23 @@ As an **Admin**, you have complete control over the league management system.
 
 ---
 
+## Player Recruitment
+
+### Reviewing Join Requests
+When a prospective player submits a join request, you'll receive an email notification.
+
+1. Navigate to the team's page → **Admin** tab → **Recruiting** section
+2. Review the pending request (name, email, position, experience)
+3. Click **Approve** to add them to the roster, or **Decline**
+4. The player gets an email with the result
+
+### Team Join Links
+Each team has a public join page at \`/join/{team-id}\`. Share this link to collect player applications.
+
+See the **Player Recruitment** guide for the full workflow.
+
+---
+
 ## Ticker Configuration
 - **Look-back days**: Past events to show
 - **Look-forward days**: Future events to display
