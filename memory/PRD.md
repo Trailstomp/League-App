@@ -589,12 +589,14 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 - Could extract additional routers: events, media, groupme, payments
 
 ## Recently Completed (Feb 2026)
-- **P0 Fix**: TeamManager.js `divisions is not defined` bug - verified FIXED (divisions prop chain correct through all components)
-- **Design Templates System**: Full backend CRUD (GET/POST/DELETE /api/design-templates) + frontend UI in WebsiteDesignManager.js (save/load/delete templates with color previews)
-- **Join Request Flow**: Verified end-to-end working - public join page, request submission, admin pending list, approve/reject actions (endpoints in routes/teams.py)
+- **P0 Fix**: TeamManager.js `divisions is not defined` bug - verified FIXED
+- **Design Templates System**: Full backend CRUD + frontend UI (save/load/delete templates)
+- **Join Request Flow**: Verified end-to-end working (submit → admin notify → approve/reject → player notify)
+- **Help Docs Updated**: Added Player Recruitment guide, updated Admin/Coach/Brochure/Reference docs
+- **Email Notifications for Join Requests**: Fixed admin notification query (checks both `role` and `roles` fields, deduplicates by email). Emails attempted to all team coaches + league admins on new request, and to player on approve/reject
 
 ## Backlog / Upcoming
-- P1: Add email/notification for team admins when new join requests arrive
+- P1: Get valid SMTP credentials configured for email notifications to actually deliver
 - P2: "Next steps" guide for new users after setup wizard
 - P2: Backend refactoring - consolidate legacy endpoints in server.py
 - P2: Google Drive integration (user credentials needed)
