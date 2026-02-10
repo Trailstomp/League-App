@@ -314,6 +314,8 @@ As a **Coach**, you manage your team's roster, events, and settings.
 ✅ Create team events (practices, meetings)
 ✅ Score your team's games
 ✅ Manage team settings
+✅ Recruit new players via join requests
+✅ Send player invites via email
 
 ---
 
