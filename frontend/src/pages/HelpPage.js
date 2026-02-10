@@ -23,29 +23,7 @@ const HelpPage = () => {
         index: {
             title: '📚 Documentation Index',
             icon: '📚',
-            content: `
-# League Management Portal Documentation
-
-Welcome to the Help Center! Select a guide from the sidebar to get started.
-
-## Quick Links
-
-### By Role
-- **Admins** → Admin Guide or League Admin Guide
-- **Coaches** → Coach / Team Admin Guide  
-- **Players** → Player Guide
-- **Visitors** → Guest Guide
-
-### By Task
-- **Setting up the league** → Setup Guide
-- **Managing rosters** → Coach Guide
-- **Recruiting new players** → Player Recruitment Guide
-- **Viewing stats** → Player Guide
-- **Understanding features** → Feature Brochure
-
-## Need Help?
-Contact your league administrator for assistance.
-            `
+            content: '__INDEX__'
         },
         brochure: {
             title: '🥍 Feature Brochure',
