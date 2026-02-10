@@ -1012,6 +1012,21 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                     </div>
                 </div>
             )}
+
+            {/* Roster Hub Section - Payment Tracker & Availability */}
+            {activeSection === 'roster-hub' && (
+                <TeamAdminHub team={team} currentUser={currentUser} onTeamUpdate={onTeamUpdate} />
+            )}
+
+            {/* Finance Section */}
+            {activeSection === 'finance' && (
+                <TeamFinanceTab team={team} currentUser={currentUser} />
+            )}
+
+            {/* Settings Section */}
+            {activeSection === 'settings' && (
+                <TeamSettingsTab team={team} onTeamUpdate={onTeamUpdate} />
+            )}
         </div>
     );
 };
