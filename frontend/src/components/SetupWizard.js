@@ -438,6 +438,54 @@ const SetupWizard = ({ onComplete }) => {
         }
     };
 
+    const nextSteps = [
+        { icon: '🏟️', title: 'Create Divisions', desc: 'Organize teams into divisions (e.g. Youth, Adult, Premier)', where: 'Admin Portal → League Management → Divisions' },
+        { icon: '👥', title: 'Add Teams', desc: 'Create your league\'s teams and assign them to divisions', where: 'Admin Portal → League Management → Teams' },
+        { icon: '🤝', title: 'Recruit Players', desc: 'Share your team\'s join link so players can request to join', where: 'Team Page → Admin → Recruiting' },
+        { icon: '📅', title: 'Schedule Events', desc: 'Create games, practices, and team events', where: 'Admin Portal → League Management → Events' },
+        { icon: '🎨', title: 'Customize Your Site', desc: 'Set colors, fonts, logos, and welcome message', where: 'Admin Portal → Settings → Website Design' },
+        { icon: '📧', title: 'Set Up Email', desc: 'Configure SMTP so players get notifications', where: 'Admin Portal → Communications → Email Hub' },
+    ];
+
+    if (showNextSteps) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+                <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden" data-testid="next-steps-guide">
+                    <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-6 text-center">
+                        <div className="text-4xl mb-2">🎉</div>
+                        <h1 className="text-2xl font-bold mb-1">Your League is Live!</h1>
+                        <p className="text-green-100">Here's what to do next to get everything running</p>
+                    </div>
+
+                    <div className="px-6 py-5 max-h-[60vh] overflow-y-auto">
+                        <div className="space-y-3">
+                            {nextSteps.map((step, i) => (
+                                <div key={i} className="flex gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors">
+                                    <div className="text-2xl flex-shrink-0">{step.icon}</div>
+                                    <div className="min-w-0">
+                                        <div className="font-semibold text-gray-800">{step.title}</div>
+                                        <div className="text-sm text-gray-600">{step.desc}</div>
+                                        <div className="text-xs text-blue-600 mt-1 font-medium">{step.where}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="px-6 py-4 bg-gray-50 border-t flex flex-col sm:flex-row gap-3">
+                        <button
+                            onClick={() => onComplete(wizardData)}
+                            className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold text-center"
+                            data-testid="go-to-dashboard-btn"
+                        >
+                            Go to Dashboard →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden">
