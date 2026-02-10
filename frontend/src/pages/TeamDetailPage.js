@@ -4,8 +4,6 @@ import { fixGoogleDriveUrl } from '../utils/imageUtils';
 import CachedImage from '../components/CachedImage';
 // Import all team tab components
 import {
-    TeamFinanceTab,
-    TeamSettingsTab,
     TeamRosterTab,
     MyDashboardTab,
     TeamHomeTab,
