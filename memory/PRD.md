@@ -600,7 +600,6 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 
 ## Backlog / Upcoming
 - P1: Get valid SMTP credentials configured for email notifications to actually deliver
-- P2: "Next steps" guide for new users after setup wizard
 - P2: Backend refactoring - consolidate legacy endpoints in server.py
 - P2: Google Drive integration (user credentials needed)
 - P2: Finance Register PDF Export
