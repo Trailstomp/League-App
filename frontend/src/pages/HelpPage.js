@@ -1,8 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const HelpPage = () => {
     const [activeDoc, setActiveDoc] = useState('index');
     const [searchTerm, setSearchTerm] = useState('');
+    const [adminEmail, setAdminEmail] = useState('');
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+
+    useEffect(() => {
+        const fetchAdminEmail = async () => {
+            try {
+                const res = await fetch(`${backendUrl}/api/league-data`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setAdminEmail(data.smtpConfig?.email || '');
+                }
+            } catch (e) { /* silent */ }
+        };
+        fetchAdminEmail();
+    }, [backendUrl]);
 
     const docs = {
         index: {
