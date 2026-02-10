@@ -650,6 +650,8 @@ Once approved, you'll:
 | Manage team roster | ✅ | ✅ | ✅* | ❌ | ❌ |
 | Create events | ✅ | ✅ | ✅* | ❌ | ❌ |
 | Live scoring | ✅ | ✅ | ✅* | ❌ | ❌ |
+| Approve join requests | ✅ | ✅ | ✅* | ❌ | ❌ |
+| Send player invites | ✅ | ✅ | ✅* | ❌ | ❌ |
 | User management | ✅ | ⚠️ | ❌ | ❌ | ❌ |
 | System settings | ✅ | ❌ | ❌ | ❌ | ❌ |
 
