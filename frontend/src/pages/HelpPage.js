@@ -365,6 +365,29 @@ As a **Coach**, you manage your team's roster, events, and settings.
 ### Ending the Game
 1. Verify final score
 2. Click **"Mark as Final"**
+
+---
+
+## Recruiting New Players
+
+### Sharing Your Join Link
+Your team's public join page is at \`/join/{your-team-id}\`. Share this link on social media, in emails, or on flyers.
+
+### Reviewing Join Requests
+1. Go to your team page → **Admin** tab
+2. Open the **Recruiting** section
+3. Pending requests show with a badge count
+4. Review each request and click **Approve** or **Decline**
+5. Approved players are auto-added to your roster
+
+### Sending Invites
+1. In the Recruiting section, enter a player's email
+2. Add an optional personal message
+3. Click **Send Invite**
+
+You'll also receive **email notifications** whenever a new join request comes in.
+
+See the **Player Recruitment** guide for the complete workflow.
             `
         },
         player: {
