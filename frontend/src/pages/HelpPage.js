@@ -901,11 +901,48 @@ Once approved, you'll:
                     {/* Content */}
                     <div className="flex-1">
                         <div className="bg-white rounded-xl shadow-sm border p-6 sm:p-8">
-                            <div 
-                                id="doc-content"
-                                className="prose prose-slate max-w-none"
-                                dangerouslySetInnerHTML={{ __html: renderMarkdown(docs[activeDoc].content) }}
-                            />
+                            {activeDoc === 'index' ? (
+                                <div id="doc-content" className="prose prose-slate max-w-none" data-testid="help-index">
+                                    <h1 style={{ color: '#1e3a8a' }}>League Management Portal Documentation</h1>
+                                    <p>Welcome to the Help Center! Click any guide below to get started.</p>
+
+                                    <h2 style={{ color: '#1e3a8a', marginTop: 30 }}>Quick Links</h2>
+
+                                    <h3 style={{ color: '#1e40af' }}>By Role</h3>
+                                    <ul>
+                                        <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('admin')}>Admins</button> — Admin Guide or <button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('leagueAdmin')}>League Admin Guide</button></li>
+                                        <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('coach')}>Coaches</button> — Coach / Team Admin Guide</li>
+                                        <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('player')}>Players</button> — Player Guide</li>
+                                        <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('guest')}>Visitors</button> — Guest Guide</li>
+                                    </ul>
+
+                                    <h3 style={{ color: '#1e40af' }}>By Task</h3>
+                                    <ul>
+                                        <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('setup')}>Setting up the league</button> — Setup Guide</li>
+                                        <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('coach')}>Managing rosters</button> — Coach Guide</li>
+                                        <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('recruitment')}>Recruiting new players</button> — Player Recruitment Guide</li>
+                                        <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('player')}>Viewing stats</button> — Player Guide</li>
+                                        <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('brochure')}>Understanding features</button> — Feature Brochure</li>
+                                    </ul>
+
+                                    <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '30px 0' }} />
+
+                                    <h2 style={{ color: '#1e3a8a', marginTop: 30 }}>Need Help?</h2>
+                                    {adminEmail ? (
+                                        <p>Contact your league administrator at{' '}
+                                            <a href={`mailto:${adminEmail}`} className="text-blue-600 hover:text-blue-800 underline font-semibold" data-testid="admin-email-link">{adminEmail}</a>
+                                        </p>
+                                    ) : (
+                                        <p>Contact your league administrator for assistance.</p>
+                                    )}
+                                </div>
+                            ) : (
+                                <div 
+                                    id="doc-content"
+                                    className="prose prose-slate max-w-none"
+                                    dangerouslySetInnerHTML={{ __html: renderMarkdown(docs[activeDoc].content) }}
+                                />
+                            )}
                         </div>
                     </div>
                 </div>
