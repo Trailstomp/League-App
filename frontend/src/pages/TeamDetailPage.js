@@ -287,9 +287,7 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
                 {activeTab === 'media' && <TeamMediaTab team={team} />}
                 {activeTab === 'contact' && <TeamContactTab team={team} />}
                 {activeTab === 'my-dashboard' && <MyDashboardTab team={team} currentUser={currentUser} />}
-                {activeTab === 'admin' && <TeamAdminTab team={team} currentUser={currentUser} onTeamUpdate={onUserUpdate} sportType={sportType} />}
-                {activeTab === 'finance' && <TeamFinanceTab team={team} currentUser={currentUser} />}
-                {activeTab === 'settings' && <TeamSettingsTab team={team} onTeamUpdate={() => onTeamUpdate && onTeamUpdate(team.id)} />}
+                {activeTab === 'admin' && <TeamAdminTab team={team} currentUser={currentUser} onTeamUpdate={onTeamUpdate} sportType={sportType} />}
             </div>
         </div>
     );
