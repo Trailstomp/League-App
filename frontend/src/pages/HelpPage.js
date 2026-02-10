@@ -88,6 +88,13 @@ Contact your league administrator for assistance.
 - **Coach/Team Admin** - Team-specific controls
 - **Player** - Personal dashboard and stats
 - **Guest** - Public viewing access
+
+### 🤝 Player Recruitment
+- **Public Join Pages** - Shareable links for prospective players
+- **Join Request Forms** - Collect player info, position, experience
+- **Admin Approval Flow** - Review, approve, or decline requests
+- **Email Notifications** - Automatic alerts to coaches and admins on new requests
+- **Player Invites** - Proactively invite players via email
             `
         },
         setup: {
