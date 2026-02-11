@@ -589,6 +589,14 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 - Could extract additional routers: events, media, groupme, payments
 
 ## Recently Completed (Feb 2026)
+- **P1 Feature: Admin Recruiting Manager UI** (Feb 11, 2026):
+  - New "Recruiting" tab group in Admin Portal with "Join Requests" sub-tab
+  - Stats cards showing pending counts for Team Registrations, Player Applications, Volunteer Signups
+  - Filter by status (Pending, Approved, Rejected, All)
+  - Expandable detail cards for each submission with all form data
+  - Approve/Reject action buttons with status updates
+  - Direct contact links (email/phone) for each submission
+  - Created `/app/frontend/src/components/managers/RecruitingManager.js`
 - **P0 Feature: Advanced "Join Us" Forms & Notification System** (Feb 11, 2026):
   - **Team Registration Form**: New team registration with team name, contact info, lacrosse type (field/box/both), preferred division, logo URL, home field location, roster size, comments
   - **Player Application Form**: Players apply to a specific team with their info, position, experience level, age, previous teams
