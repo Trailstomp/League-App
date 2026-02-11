@@ -200,7 +200,9 @@ const GroupMeManager = () => {
                 name: newChannelForm.name,
                 channel_type: newChannelForm.channel_type,
                 team_id: newChannelForm.team_id || null,
-                notification_settings: newChannelForm.notification_settings
+                team_ids: newChannelForm.team_ids || [],
+                notification_settings: newChannelForm.notification_settings,
+                access_roles: newChannelForm.access_roles || ['admin', 'coach', 'player']
             };
             
             const response = await fetch(`${backendUrl}/api/groupme/channels/${editingChannel.id}`, {
@@ -218,8 +220,10 @@ const GroupMeManager = () => {
                     groupme_group_id: '',
                     channel_type: 'team',
                     team_id: '',
+                    team_ids: [],
                     existing_bot_id: '',
-                    notification_settings: {}
+                    notification_settings: {},
+                    access_roles: ['admin', 'coach', 'player']
                 });
                 setEditingChannel(null);
                 await loadChannels();
