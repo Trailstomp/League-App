@@ -381,7 +381,7 @@ async def get_league_data():
                 "leagueSchedule": [],
                 "leagueInfo": {},
                 "websiteStyle": {},
-                "lastUpdated": datetime.utcnow()
+                "lastUpdated": datetime.now(timezone.utc)
             }
     except Exception as e:
         logger.error(f"Error fetching league data: {e}")
@@ -393,7 +393,7 @@ async def update_league_data(league_data: Dict[str, Any]):
     try:
         # Ensure the data has the required ID
         league_data["id"] = "main_league"
-        league_data["lastUpdated"] = datetime.utcnow().isoformat()
+        league_data["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # Update the database
         league_data.pop('_id', None)
@@ -466,7 +466,7 @@ async def get_dashboard_data():
                 "leagueSchedule": [],
                 "leagueInfo": {},
                 "websiteStyle": {},
-                "lastUpdated": datetime.utcnow().isoformat()
+                "lastUpdated": datetime.now(timezone.utc).isoformat()
             }
         
         # Process unified events - merge with leagueSchedule
@@ -577,7 +577,7 @@ async def get_dashboard_data():
                 "playlistIds": [],
                 "enabled": False,
                 "teamOverrides": {},
-                "lastUpdated": datetime.utcnow().isoformat()
+                "lastUpdated": datetime.now(timezone.utc).isoformat()
             }
         
         # Process active players from users collection
@@ -641,7 +641,7 @@ async def get_dashboard_data():
             **league_data,  # teams, players, events, websiteStyle, etc.
             "galleries": galleries_data.get("galleries", []),
             "youtubeConfig": youtube_config,
-            "loadedAt": datetime.utcnow().isoformat()
+            "loadedAt": datetime.now(timezone.utc).isoformat()
         }
         
         logger.info(f"✅ Dashboard data loaded: {len(dashboard_data.get('teams', []))} teams, {len(dashboard_data.get('players', []))} players, {len(dashboard_data.get('galleries', []))} galleries, YouTube: {'enabled' if youtube_config.get('enabled') else 'disabled'}")
@@ -655,7 +655,7 @@ async def get_dashboard_data():
 async def get_active_galleries_internal():
     """Internal function to get active galleries (for parallel execution)"""
     try:
-        current_time = datetime.utcnow()
+        current_time = datetime.now(timezone.utc)
         
         query = {
             "status": "active",
@@ -689,12 +689,12 @@ async def update_teams(teams_data: List[Dict[str, Any]]):
             league_doc = {
                 "id": "main_league",
                 "teams": [],
-                "lastUpdated": datetime.utcnow().isoformat()
+                "lastUpdated": datetime.now(timezone.utc).isoformat()
             }
         
         # Update the teams field
         league_doc["teams"] = teams_data
-        league_doc["lastUpdated"] = datetime.utcnow().isoformat()
+        league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # Save back to database
         league_data.pop('_id', None)
@@ -793,12 +793,12 @@ async def update_players(players_data: List[Dict[str, Any]]):
             league_doc = {
                 "id": "main_league",
                 "players": [],
-                "lastUpdated": datetime.utcnow().isoformat()
+                "lastUpdated": datetime.now(timezone.utc).isoformat()
             }
         
         # Update the players field
         league_doc["players"] = players_data
-        league_doc["lastUpdated"] = datetime.utcnow().isoformat()
+        league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # Save back to database
         league_data.pop('_id', None)
@@ -832,12 +832,12 @@ async def update_seasons(seasons_data: List[Dict[str, Any]]):
             league_doc = {
                 "id": "main_league",
                 "seasons": [],
-                "lastUpdated": datetime.utcnow().isoformat()
+                "lastUpdated": datetime.now(timezone.utc).isoformat()
             }
         
         # Update the seasons field
         league_doc["seasons"] = seasons_data
-        league_doc["lastUpdated"] = datetime.utcnow().isoformat()
+        league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # Save back to database
         league_data.pop('_id', None)
@@ -871,12 +871,12 @@ async def update_league_schedule(schedule_data: List[Dict[str, Any]]):
             league_doc = {
                 "id": "main_league",
                 "leagueSchedule": [],
-                "lastUpdated": datetime.utcnow().isoformat()
+                "lastUpdated": datetime.now(timezone.utc).isoformat()
             }
         
         # Update the leagueSchedule field
         league_doc["leagueSchedule"] = schedule_data
-        league_doc["lastUpdated"] = datetime.utcnow().isoformat()
+        league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # Save back to database
         league_data.pop('_id', None)
@@ -1002,12 +1002,12 @@ async def update_live_view_settings(settings_data: Dict[str, Any]):
             league_doc = {
                 "id": "main_league",
                 "liveViewSettings": {},
-                "lastUpdated": datetime.utcnow().isoformat()
+                "lastUpdated": datetime.now(timezone.utc).isoformat()
             }
         
         # Update the liveViewSettings field
         league_doc["liveViewSettings"] = settings_data
-        league_doc["lastUpdated"] = datetime.utcnow().isoformat()
+        league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # Save back to database
         league_data.pop('_id', None)
@@ -1041,12 +1041,12 @@ async def update_news_items(news_data: List[Dict[str, Any]]):
             league_doc = {
                 "id": "main_league",
                 "newsItems": [],
-                "lastUpdated": datetime.utcnow().isoformat()
+                "lastUpdated": datetime.now(timezone.utc).isoformat()
             }
         
         # Update the newsItems field
         league_doc["newsItems"] = news_data
-        league_doc["lastUpdated"] = datetime.utcnow().isoformat()
+        league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # Save back to database
         league_data.pop('_id', None)
@@ -1350,7 +1350,7 @@ async def upload_general_image(
                 access_token = await get_fresh_access_token(google_drive_config, refresh_token)
                 
                 # Create unique filename
-                timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+                timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
                 extension = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
                 filename = f"{type}_{timestamp}.{extension}"
                 
@@ -1417,7 +1417,7 @@ async def upload_general_image(
         upload_dir = "/app/uploads"
         os.makedirs(upload_dir, exist_ok=True)
         
-        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         extension = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
         filename = f"{type}_{timestamp}.{extension}"
         filepath = os.path.join(upload_dir, filename)
@@ -2044,7 +2044,7 @@ async def upload_and_create_gallery(
                         "googleDriveId": drive_file_id,
                         "type": "image" if file.content_type.startswith("image/") else "video" if file.content_type.startswith("video/") else "file",
                         "size": len(file_content),
-                        "uploadedAt": datetime.utcnow().isoformat()
+                        "uploadedAt": datetime.now(timezone.utc).isoformat()
                     }
                     
                     uploaded_media_items.append(media_item)
@@ -2145,8 +2145,8 @@ async def upload_and_create_gallery(
                 "teamId": team_id,
                 "selectedTeams": selected_teams,
                 "mediaItems": uploaded_media_items if 'uploaded_media_items' in locals() else [],
-                "createdAt": datetime.utcnow().isoformat(),
-                "updatedAt": datetime.utcnow().isoformat()
+                "createdAt": datetime.now(timezone.utc).isoformat(),
+                "updatedAt": datetime.now(timezone.utc).isoformat()
             }
             
             await db.galleries_new.insert_one(basic_gallery)
@@ -2236,8 +2236,8 @@ async def test_gallery_creation():
             "visibility": "public",
             "teamId": None,
             "mediaItems": [],
-            "createdAt": datetime.utcnow().isoformat(),
-            "updatedAt": datetime.utcnow().isoformat()
+            "createdAt": datetime.now(timezone.utc).isoformat(),
+            "updatedAt": datetime.now(timezone.utc).isoformat()
         }
         
         logger.info(f"🧪 Test data created: {test_data}")
@@ -2289,8 +2289,8 @@ async def create_gallery_new(gallery_data: Dict[str, Any]):
             "googleDriveFolderId": gallery_data.get("googleDriveFolderId"),
             "expirationDate": gallery_data.get("expirationDate"),
             "mediaItems": gallery_data.get("mediaItems", []),
-            "createdAt": datetime.utcnow().isoformat(),
-            "updatedAt": datetime.utcnow().isoformat()
+            "createdAt": datetime.now(timezone.utc).isoformat(),
+            "updatedAt": datetime.now(timezone.utc).isoformat()
         }
         
         logger.info(f"📡 Gallery dict before insert: {gallery_dict}")
@@ -2360,7 +2360,7 @@ async def get_youtube_config():
                 "showRecentVideos": True,
                 "maxVideos": 12,
                 "teamOverrides": {},
-                "lastUpdated": datetime.utcnow().isoformat()
+                "lastUpdated": datetime.now(timezone.utc).isoformat()
             }
     except Exception as e:
         logger.error(f"Error fetching YouTube config: {e}")
@@ -2370,7 +2370,7 @@ async def get_youtube_config():
 async def save_youtube_config(data: Dict[str, Any]):
     """Save YouTube integration configuration"""
     try:
-        data["lastUpdated"] = datetime.utcnow().isoformat()
+        data["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # If apiKey is empty string or None, preserve existing key
         if not data.get('apiKey'):
@@ -2515,7 +2515,7 @@ async def get_team_youtube_config(team_id: str):
 async def update_team_youtube_config(team_id: str, config: Dict[str, Any]):
     """Update YouTube configuration for a specific team"""
     try:
-        config['lastUpdated'] = datetime.utcnow().isoformat()
+        config['lastUpdated'] = datetime.now(timezone.utc).isoformat()
         
         result = await db.teams.update_one(
             {"id": team_id},
@@ -2550,7 +2550,7 @@ async def get_cloud_storage():
                 "maxFileSize": 1000,
                 "allowedFileTypes": ["jpg", "jpeg", "png", "gif", "mp4", "mov", "avi"],
                 "teamOverrides": {},
-                "lastUpdated": datetime.utcnow().isoformat()
+                "lastUpdated": datetime.now(timezone.utc).isoformat()
             }
     except Exception as e:
         logger.error(f"Error fetching cloud storage config: {e}")
@@ -2561,7 +2561,7 @@ async def save_cloud_storage(data: Dict[str, Any]):
     """Save cloud storage configuration"""
     try:
         logger.info("💾 Saving cloud storage configuration...")
-        data["lastUpdated"] = datetime.utcnow()
+        data["lastUpdated"] = datetime.now(timezone.utc)
         
         await db.cloud_storage.replace_one(
             {"id": "main_cloud_storage"},
@@ -2702,7 +2702,7 @@ async def complete_google_drive_auth(data: Dict[str, Any]):
             config["googleDrive"]["accessToken"] = access_token
             config["googleDrive"]["folderId"] = folder_id
             config["googleDrive"]["enabled"] = True
-            config["lastUpdated"] = datetime.utcnow()
+            config["lastUpdated"] = datetime.now(timezone.utc)
             
             await db.cloud_storage.replace_one(
                 {"id": "main_cloud_storage"},
@@ -2778,7 +2778,7 @@ async def process_google_credentials_file(file: UploadFile = File(...)):
         config["googleDrive"]["clientSecret"] = client_secret
         backend_url = os.environ.get('BACKEND_URL', 'http://localhost:8001')
         config["googleDrive"]["redirectUri"] = redirect_uris[0] if redirect_uris else f"{backend_url}/api/google-reauth/callback"
-        config["lastUpdated"] = datetime.utcnow()
+        config["lastUpdated"] = datetime.now(timezone.utc)
         
         # Save to database
         await db.cloud_storage.replace_one(
@@ -3021,7 +3021,7 @@ async def fix_google_drive_urls():
             if needs_update:
                 # Update the gallery in the appropriate collection
                 gallery['mediaItems'] = updated_media_items
-                gallery['updatedAt'] = datetime.utcnow().isoformat()
+                gallery['updatedAt'] = datetime.now(timezone.utc).isoformat()
                 
                 # Get the gallery ID (could be 'id' or '_id')
                 gallery_id = gallery.get('id') or str(gallery.get('_id'))
@@ -3122,7 +3122,7 @@ async def update_gallery(gallery_id: str, gallery_data: Dict[str, Any]):
     try:
         logger.info(f"📝 Updating gallery: {gallery_id}")
         
-        gallery_data["updatedAt"] = datetime.utcnow().isoformat()
+        gallery_data["updatedAt"] = datetime.now(timezone.utc).isoformat()
         gallery_data.pop("_id", None)  # Remove MongoDB _id if present
         
         result = await db.galleries_new.replace_one(
@@ -3229,7 +3229,7 @@ async def update_gallery_status(
         
         update_data = {
             "status": status,
-            "updatedAt": datetime.utcnow().isoformat()
+            "updatedAt": datetime.now(timezone.utc).isoformat()
         }
         
         # Parse and validate expiration date if provided
@@ -3363,7 +3363,7 @@ async def add_images_to_gallery(
                         "googleDriveId": drive_file_id,
                         "type": "image" if file.content_type.startswith("image/") else "video" if file.content_type.startswith("video/") else "file",
                         "size": len(file_content),
-                        "uploadedAt": datetime.utcnow().isoformat()
+                        "uploadedAt": datetime.now(timezone.utc).isoformat()
                     }
                     
                     uploaded_media_items.append(media_item)
@@ -3389,7 +3389,7 @@ async def add_images_to_gallery(
             {
                 "$set": {
                     "mediaItems": all_media_items,
-                    "updatedAt": datetime.utcnow().isoformat()
+                    "updatedAt": datetime.now(timezone.utc).isoformat()
                 }
             }
         )
@@ -3436,7 +3436,7 @@ async def remove_image_from_gallery(gallery_id: str, image_id: str):
         
         # Update the gallery
         gallery['mediaItems'] = updated_media_items
-        gallery['updatedAt'] = datetime.utcnow().isoformat()
+        gallery['updatedAt'] = datetime.now(timezone.utc).isoformat()
         
         result = await db.galleries_new.replace_one(
             {"id": gallery_id},
@@ -3467,7 +3467,7 @@ async def get_active_galleries():
     """Get only active galleries (not hidden/archived and not expired)"""
     try:
         logger.info("📡 Getting active galleries only...")
-        current_time = datetime.utcnow()
+        current_time = datetime.now(timezone.utc)
         
         # Query for active galleries that are not expired
         query = {
@@ -3833,8 +3833,8 @@ async def create_groupme_channel(
             "team_id": team_id,
             "is_active": True,
             "notification_settings": settings,
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
         await db.groupme_channels.insert_one(channel)
@@ -4135,7 +4135,7 @@ async def _process_rsvp_button_vote(webhook_data: dict, channel: dict, poll_atta
             "user_id": user_id,
             "response": rsvp_response,
             "user_name": user_name,
-            "updated_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
             "via_groupme": True,
             "via_button": True
         }
@@ -4148,7 +4148,7 @@ async def _process_rsvp_button_vote(webhook_data: dict, channel: dict, poll_atta
             action = "updated"
         else:
             rsvp_record['id'] = str(uuid.uuid4())
-            rsvp_record['created_at'] = datetime.utcnow().isoformat()
+            rsvp_record['created_at'] = datetime.now(timezone.utc).isoformat()
             await db.event_rsvps.insert_one(rsvp_record)
             action = "recorded"
         
@@ -4229,7 +4229,7 @@ async def _check_for_rsvp_keywords(text: str, webhook_data: dict, channel: dict)
             "user_id": user_id,
             "response": rsvp_response,
             "user_name": user_name,
-            "updated_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
             "via_groupme": True
         }
         
@@ -4241,7 +4241,7 @@ async def _check_for_rsvp_keywords(text: str, webhook_data: dict, channel: dict)
             action = "updated"
         else:
             rsvp_record['id'] = str(uuid.uuid4())
-            rsvp_record['created_at'] = datetime.utcnow().isoformat()
+            rsvp_record['created_at'] = datetime.now(timezone.utc).isoformat()
             await db.event_rsvps.insert_one(rsvp_record)
             action = "recorded"
         
@@ -4291,7 +4291,7 @@ async def _handle_rsvp_command(command_parts: list, webhook_data: dict, channel:
     db_response = response_map[response]
     
     # Find next upcoming event
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     
     if channel["channel_type"] == "team":
         # Team-specific events
@@ -4324,7 +4324,7 @@ async def _handle_rsvp_command(command_parts: list, webhook_data: dict, channel:
         "user_name": user_name,
         "user_avatar_url": webhook_data.get("avatar_url"),
         "response": db_response,
-        "response_time": datetime.utcnow().isoformat(),
+        "response_time": datetime.now(timezone.utc).isoformat(),
         "message_id": message_data["id"]
     }
     
@@ -4350,7 +4350,7 @@ async def _handle_rsvp_command(command_parts: list, webhook_data: dict, channel:
 async def _handle_schedule_command(webhook_data: dict, channel: dict):
     """Handle schedule command"""
     
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     
     if channel["channel_type"] == "team":
         events_cursor = db.events.find({
@@ -4571,7 +4571,7 @@ async def broadcast_groupme_message(request_data: Dict[str, Any]):
             # Check for duplicate first to prevent re-timing issues
             if success:
                 # Create a unique identifier based on channel, text, and rough time window
-                recent_time = datetime.utcnow().timestamp() - 5  # Within last 5 seconds
+                recent_time = datetime.now(timezone.utc).timestamp() - 5  # Within last 5 seconds
                 
                 existing_msg = await db.groupme_messages.find_one({
                     "channel_id": channel["id"],
@@ -4588,7 +4588,7 @@ async def broadcast_groupme_message(request_data: Dict[str, Any]):
                         "name": "League Bot",
                         "sender_type": "bot",
                         "sender_id": channel["groupme_bot_id"],
-                        "created_at": int(datetime.utcnow().timestamp()),
+                        "created_at": int(datetime.now(timezone.utc).timestamp()),
                         "system": False,
                         "sent_by_bot": True
                     }
@@ -4600,7 +4600,7 @@ async def broadcast_groupme_message(request_data: Dict[str, Any]):
                 "channel_id": channel["id"],
                 "notification_type": notification_type,
                 "message_text": message,
-                "sent_at": datetime.utcnow().isoformat(),
+                "sent_at": datetime.now(timezone.utc).isoformat(),
                 "delivery_status": "sent" if success else "failed"
             }
             await db.groupme_notifications.insert_one(notification)
@@ -4689,7 +4689,7 @@ async def get_groupme_dashboard_stats():
         })
         
         # Count messages from last 24 hours
-        yesterday = (datetime.utcnow() - timedelta(days=1)).isoformat()
+        yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).isoformat()
         recent_messages = await db.groupme_messages.count_documents({
             "created_at": {"$gt": yesterday}
         })
@@ -4822,7 +4822,7 @@ async def send_event_notification(
             "channel_ids": channel_ids_list,
             "message": base_message,
             "include_rsvp": include_rsvp,
-            "sent_at": datetime.utcnow().isoformat(),
+            "sent_at": datetime.now(timezone.utc).isoformat(),
             "success_channels": success_channels,
             "failed_channels": failed_channels,
             "total_sent": len(success_channels)
@@ -5214,7 +5214,7 @@ async def send_enhanced_event_notification(
             "rsvp_url": rsvp_url,
             "channel_ids": channel_ids_list,
             "message": message,
-            "sent_at": datetime.utcnow().isoformat(),
+            "sent_at": datetime.now(timezone.utc).isoformat(),
             "success_channels": success_channels,
             "failed_channels": failed_channels,
             "total_sent": len(success_channels)
@@ -5399,7 +5399,7 @@ async def submit_quick_rsvp(request_data: dict):
             "notes": notes,
             "source": source,
             "channel_id": channel_id,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "groupme_user_id": f"web_form_{user_name.lower().replace(' ', '_')}",
             "groupme_user_name": user_name
         }
@@ -5417,7 +5417,7 @@ async def submit_quick_rsvp(request_data: dict):
                 {"$set": {
                     "response": response,
                     "notes": notes,
-                    "updated_at": datetime.utcnow().isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
                     "source": source
                 }}
             )
@@ -6022,9 +6022,9 @@ async def create_document(collection_name: str, document: dict):
         
         # Add timestamps if not present
         if "created_at" not in document:
-            document["created_at"] = datetime.utcnow().isoformat()
+            document["created_at"] = datetime.now(timezone.utc).isoformat()
         if "updated_at" not in document:
-            document["updated_at"] = datetime.utcnow().isoformat()
+            document["updated_at"] = datetime.now(timezone.utc).isoformat()
             
         result = await collection.insert_one(document)
         return {"message": "Document created successfully", "id": str(result.inserted_id)}
@@ -6039,7 +6039,7 @@ async def update_document(collection_name: str, document_id: str, document: dict
         collection = db[collection_name]
         
         # Update timestamp
-        document["updated_at"] = datetime.utcnow().isoformat()
+        document["updated_at"] = datetime.now(timezone.utc).isoformat()
         
         # Try to find by id field first, then by _id
         query = {"id": document_id}
@@ -7119,7 +7119,7 @@ async def handle_rsvp_link_click(request: Request, event: str = None, choice: st
         
         # Try to get actual username from GroupMe or use a better default
         user_name = "Team Member"  # Better default fallback
-        user_id = gmid or f"web_user_{int(datetime.utcnow().timestamp())}"
+        user_id = gmid or f"web_user_{int(datetime.now(timezone.utc).timestamp())}"
         
         # Check if GroupMe user agent to identify if it's from GroupMe app
         user_agent = request.headers.get("user-agent", "").lower()
@@ -7156,7 +7156,7 @@ async def handle_rsvp_link_click(request: Request, event: str = None, choice: st
             "user_id": user_id,
             "response": response,
             "user_name": user_name,
-            "updated_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
             "via_link": True
         }
         
@@ -7168,7 +7168,7 @@ async def handle_rsvp_link_click(request: Request, event: str = None, choice: st
             action = "updated"
         else:
             rsvp_record['id'] = str(uuid.uuid4())
-            rsvp_record['created_at'] = datetime.utcnow().isoformat()
+            rsvp_record['created_at'] = datetime.now(timezone.utc).isoformat()
             await db.event_rsvps.insert_one(rsvp_record)
             action = "recorded"
         
@@ -7479,7 +7479,7 @@ async def send_event_notification_v2(event_id: str, notification_data: Dict[str,
                     # Save to messages collection - check for duplicates first
                     if success:
                         # Check if this exact event notification was recently sent
-                        recent_time = datetime.utcnow().timestamp() - 10  # Within last 10 seconds
+                        recent_time = datetime.now(timezone.utc).timestamp() - 10  # Within last 10 seconds
                         
                         existing_msg = await db.groupme_messages.find_one({
                             "channel_id": channel_id,
@@ -7495,7 +7495,7 @@ async def send_event_notification_v2(event_id: str, notification_data: Dict[str,
                                 "text": formatted_message,
                                 "name": "Event Notification",
                                 "sender_type": "bot",
-                                "created_at": int(datetime.utcnow().timestamp()),
+                                "created_at": int(datetime.now(timezone.utc).timestamp()),
                                 "event_id": event_id,
                                 "notification_type": notification_type
                             }
@@ -7508,7 +7508,7 @@ async def send_event_notification_v2(event_id: str, notification_data: Dict[str,
             "notification_type": notification_type,
             "message": message,
             "channels_sent": sent_channels,
-            "sent_at": datetime.utcnow().isoformat()
+            "sent_at": datetime.now(timezone.utc).isoformat()
         }
         await db.event_notifications.insert_one(notification_log)
         
@@ -7560,7 +7560,7 @@ async def update_user_comm_preferences(user_id: str, preferences: Dict[str, Any]
     """Update user's communication preferences"""
     try:
         preferences['user_id'] = user_id
-        preferences['updated_at'] = datetime.utcnow().isoformat()
+        preferences['updated_at'] = datetime.now(timezone.utc).isoformat()
         
         await db.user_preferences.update_one(
             {"user_id": user_id},
@@ -12143,7 +12143,7 @@ async def create_stripe_checkout(checkout_data: Dict[str, Any], request: Request
             "currency": assignment.get("currency", "USD"),
             "status": "pending",
             "payment_method": "stripe",
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         })
         
         return {"checkout_url": session.url, "session_id": session.session_id}
