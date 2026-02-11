@@ -494,6 +494,12 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
             ]
         },
         {
+            groupName: '📥 Recruiting',
+            tabs: [
+                { id: 'recruiting', label: 'Join Requests', icon: '📬' },
+            ]
+        },
+        {
             groupName: '👥 People',
             tabs: [
                 { id: 'users', label: 'Users', icon: 'admin' },
