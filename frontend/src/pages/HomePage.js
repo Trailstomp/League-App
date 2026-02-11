@@ -8,6 +8,9 @@ import SponsorsDisplay from '../components/SponsorsDisplay';
 import NewsDisplay from '../components/NewsDisplay';
 import { fixGoogleDriveUrl } from '../utils/imageUtils';
 import CachedImage from '../components/CachedImage';
+import TeamRegistrationForm from '../components/joinus/TeamRegistrationForm';
+import PlayerApplicationForm from '../components/joinus/PlayerApplicationForm';
+import VolunteerSignupForm from '../components/joinus/VolunteerSignupForm';
 
 // Team Card Component
 const TeamCard = ({ team, onNavigate }) => {
