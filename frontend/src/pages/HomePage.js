@@ -137,6 +137,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
     const [activeTeamTab, setActiveTeamTab] = useState('all');
     const [welcomeMessage, setWelcomeMessage] = useState(null);
     const [loadingWelcome, setLoadingWelcome] = useState(true);
+    const [adminEmail, setAdminEmail] = useState('');
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
     
