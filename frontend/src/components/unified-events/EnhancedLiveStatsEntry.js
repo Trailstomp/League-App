@@ -2121,11 +2121,11 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
             />
 
             {/* Event Title Bar */}
-            <div className="bg-white px-2 md:px-4 py-1 md:py-2 border-b border-gray-200">
+            <div className="bg-gray-900 px-2 md:px-4 py-1 md:py-2 border-b border-gray-700">
                 <div className="text-center flex items-center justify-center gap-2">
                     <span className="text-lg md:text-2xl">{sportConfig.icon}</span>
-                    <h2 className="text-sm md:text-lg font-bold text-gray-800">{event?.title || 'Live Game Scoring'}</h2>
-                    <span className="text-xs md:text-sm text-gray-500">({sportConfig.name})</span>
+                    <h2 className="text-sm md:text-lg font-bold text-white">{event?.title || 'Live Game Scoring'}</h2>
+                    <span className="text-xs md:text-sm text-gray-400">({sportConfig.name})</span>
                 </div>
             </div>
 
