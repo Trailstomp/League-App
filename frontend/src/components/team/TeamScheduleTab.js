@@ -1,326 +1,350 @@
-import React, { useState } from 'react';
-import { LacrosseIcon } from '../LacrosseIcons';
+import React, { useState, useEffect } from 'react';
+import EventCreator from '../unified-events/EventCreator';
+import EventsList from '../unified-events/EventsList';
+import ScoringSelector from '../unified-events/ScoringSelector';
+import EnhancedLiveStatsEntry from '../unified-events/EnhancedLiveStatsEntry';
+import QuickScoreEntry from '../unified-events/QuickScoreEntry';
+import LiveSpectatorView from '../../pages/LiveSpectatorView';
 
-const TeamScheduleTab = ({ team, events = [], teams = [], currentUser, onEventsUpdate }) => {
-    const [showCreateForm, setShowCreateForm] = useState(false);
-    const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState('');
-    
+/**
+ * TeamScheduleTab - Uses the same UI as EventManager but filtered for a specific team
+ * Only league admins or team admins/coaches can CRUD events
+ */
+const TeamScheduleTab = ({ team, events = [], teams = [], currentUser, onEventsUpdate, sportType = 'lacrosse' }) => {
+    const [teamEvents, setTeamEvents] = useState([]);
+    const [activeView, setActiveView] = useState('list');
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [showSpectatorView, setShowSpectatorView] = useState(false);
+
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
-    
-    // Check if user can create events (admin or coach for this team)
-    const canCreateEvents = currentUser && (
+
+    // Check if user can manage events (league admin or team admin/coach)
+    const canManageEvents = currentUser && (
+        currentUser.role === 'admin' ||
         currentUser.roles?.includes('admin') ||
+        currentUser.roles?.includes('league_admin') ||
         (currentUser.roles?.includes('coach') && (
+            currentUser.teamId === team?.id ||
+            currentUser.teamAssignments?.some(a => a.teamId === team?.id)
+        )) ||
+        (currentUser.roles?.includes('team_admin') && (
             currentUser.teamId === team?.id ||
             currentUser.teamAssignments?.some(a => a.teamId === team?.id)
         ))
     );
-    
-    // Filter events for this team
-    const teamEvents = events.filter(event => 
-        (event.teams?.includes(team.id) || 
-        event.teamIds?.includes(team.id) ||
-        event.homeTeam === team.id || 
-        event.awayTeam === team.id ||
-        event.team_id === team.id) &&
-        event.status !== 'canceled' &&
-        event.status !== 'cancelled' &&
-        event.status !== 'archived'
-    );
 
-    // Sort by date
-    const sortedEvents = [...teamEvents].sort((a, b) => {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        return dateA - dateB;
-    });
+    // Filter and sort events for this team
+    useEffect(() => {
+        const filtered = events.filter(event => 
+            event.teams?.includes(team.id) || 
+            event.teamIds?.includes(team.id) ||
+            event.homeTeam === team.id || 
+            event.awayTeam === team.id ||
+            event.team_id === team.id
+        );
 
-    // New event form state
-    const [newEvent, setNewEvent] = useState({
-        title: '',
-        type: 'practice',
-        date: '',
-        time: '',
-        location: '',
-        description: '',
-        homeTeam: team?.id || '',
-        awayTeam: ''
-    });
+        // Sort by date (upcoming first)
+        const sorted = [...filtered].sort((a, b) => {
+            const dateA = new Date(a.start_datetime || a.date || '1970-01-01');
+            const dateB = new Date(b.start_datetime || b.date || '1970-01-01');
+            return dateA - dateB;
+        });
 
-    const handleInputChange = (field, value) => {
-        setNewEvent(prev => ({ ...prev, [field]: value }));
-    };
+        setTeamEvents(sorted);
+    }, [events, team.id]);
 
-    const handleCreateEvent = async () => {
-        if (!newEvent.title || !newEvent.date) {
-            setMessage('❌ Please fill in title and date');
-            setTimeout(() => setMessage(''), 3000);
-            return;
-        }
-
-        setSaving(true);
-        setMessage('');
-
+    // Load events from backend
+    const loadEvents = async () => {
         try {
-            // Build the event object - using unified events format
-            const eventToCreate = {
-                title: newEvent.title,
-                type: newEvent.type,
-                date: newEvent.date,
-                time: newEvent.time,
-                location: newEvent.location,
-                description: newEvent.description,
-                teamIds: newEvent.type === 'game' && newEvent.awayTeam 
-                    ? [newEvent.homeTeam, newEvent.awayTeam]
-                    : [team.id],
-                teams: newEvent.type === 'game' && newEvent.awayTeam 
-                    ? [newEvent.homeTeam, newEvent.awayTeam]
-                    : [team.id],
-                homeTeam: newEvent.type === 'game' ? newEvent.homeTeam : null,
-                awayTeam: newEvent.type === 'game' ? newEvent.awayTeam : null,
-                createdBy: currentUser?.id,
-                status: 'scheduled'
-            };
-
-            console.log('📅 Creating unified event:', eventToCreate);
-
-            // Save to unified events endpoint
-            const response = await fetch(`${backendUrl}/api/unified-events`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(eventToCreate)
-            });
-
+            setLoading(true);
+            const response = await fetch(`${backendUrl}/api/unified-events`);
             if (response.ok) {
-                const savedEvent = await response.json();
-                console.log('✅ Event created:', savedEvent);
-                setMessage('✅ Event created successfully!');
+                const data = await response.json();
+                // Filter for this team
+                const allEvents = data.events || [];
+                const filtered = allEvents.filter(event => 
+                    event.teams?.includes(team.id) || 
+                    event.teamIds?.includes(team.id) ||
+                    event.homeTeam === team.id || 
+                    event.awayTeam === team.id ||
+                    event.team_id === team.id
+                );
+                setTeamEvents(filtered);
                 
-                // Reset form
-                setNewEvent({
-                    title: '',
-                    type: 'practice',
-                    date: '',
-                    time: '',
-                    location: '',
-                    description: '',
-                    homeTeam: team?.id || '',
-                    awayTeam: ''
-                });
-                setShowCreateForm(false);
-                
-                // Notify parent to refresh events
+                // Also notify parent to refresh
                 if (onEventsUpdate) {
                     onEventsUpdate();
                 }
-            } else {
-                const errorData = await response.json().catch(() => ({}));
-                console.error('❌ Failed to create event:', errorData);
-                setMessage(`❌ Failed to create: ${errorData.detail || 'Unknown error'}`);
             }
         } catch (error) {
-            console.error('❌ Error creating event:', error);
-            setMessage('❌ Error creating event');
+            console.error('Error loading events:', error);
         } finally {
-            setSaving(false);
-            setTimeout(() => setMessage(''), 4000);
+            setLoading(false);
         }
     };
 
-    // Get other teams for game opponent selection
-    const otherTeams = (teams || []).filter(t => t.id !== team?.id && !t.isExternal);
+    // Handle event creation
+    const handleEventCreated = async (newEvent) => {
+        // Ensure the team is included in the event
+        const eventWithTeam = {
+            ...newEvent,
+            teams: newEvent.teams?.includes(team.id) ? newEvent.teams : [...(newEvent.teams || []), team.id],
+            teamIds: newEvent.teamIds?.includes(team.id) ? newEvent.teamIds : [...(newEvent.teamIds || []), team.id]
+        };
+
+        try {
+            const response = await fetch(`${backendUrl}/api/unified-events`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(eventWithTeam)
+            });
+
+            if (response.ok) {
+                await loadEvents();
+                setActiveView('list');
+            }
+        } catch (error) {
+            console.error('Error creating event:', error);
+        }
+    };
+
+    // Handle event update
+    const handleEventUpdated = async (updatedEvent) => {
+        try {
+            const response = await fetch(`${backendUrl}/api/unified-events/${updatedEvent.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedEvent)
+            });
+
+            if (response.ok) {
+                await loadEvents();
+                setActiveView('list');
+                setSelectedEvent(null);
+            }
+        } catch (error) {
+            console.error('Error updating event:', error);
+        }
+    };
+
+    // Handle event deletion
+    const handleEventDeleted = async (eventId) => {
+        if (!window.confirm('Are you sure you want to delete this event?')) return;
+
+        try {
+            const response = await fetch(`${backendUrl}/api/unified-events/${eventId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                await loadEvents();
+                setActiveView('list');
+                setSelectedEvent(null);
+            }
+        } catch (error) {
+            console.error('Error deleting event:', error);
+        }
+    };
+
+    // Render content based on active view
+    const renderContent = () => {
+        // Spectator view modal
+        if (showSpectatorView && selectedEvent) {
+            return (
+                <LiveSpectatorView
+                    event={selectedEvent}
+                    teams={teams}
+                    onClose={() => {
+                        setShowSpectatorView(false);
+                        setSelectedEvent(null);
+                    }}
+                    sportType={sportType}
+                />
+            );
+        }
+
+        switch (activeView) {
+            case 'create':
+                return (
+                    <EventCreator
+                        teams={teams}
+                        currentUser={currentUser}
+                        onEventCreated={handleEventCreated}
+                        onCancel={() => setActiveView('list')}
+                        defaultTeamId={team.id}
+                        sportType={sportType}
+                    />
+                );
+
+            case 'edit':
+                return selectedEvent ? (
+                    <EventCreator
+                        teams={teams}
+                        currentUser={currentUser}
+                        event={selectedEvent}
+                        onEventCreated={handleEventUpdated}
+                        onCancel={() => {
+                            setActiveView('list');
+                            setSelectedEvent(null);
+                        }}
+                        sportType={sportType}
+                    />
+                ) : null;
+
+            case 'scoring-selector':
+                return selectedEvent ? (
+                    <ScoringSelector
+                        event={selectedEvent}
+                        teams={teams}
+                        currentUser={currentUser}
+                        onSelectMethod={(method) => {
+                            if (method === 'live-stats') {
+                                setActiveView('live-stats');
+                            } else if (method === 'quick-score') {
+                                setActiveView('quick-score');
+                            }
+                        }}
+                        onBack={() => {
+                            setActiveView('list');
+                            setSelectedEvent(null);
+                        }}
+                        sportType={sportType}
+                    />
+                ) : null;
+
+            case 'live-stats':
+                return selectedEvent ? (
+                    <EnhancedLiveStatsEntry
+                        event={selectedEvent}
+                        teams={teams}
+                        currentUser={currentUser}
+                        onBack={() => setActiveView('scoring-selector')}
+                        onComplete={() => {
+                            loadEvents();
+                            setActiveView('list');
+                            setSelectedEvent(null);
+                        }}
+                        sportType={sportType}
+                    />
+                ) : null;
+
+            case 'quick-score':
+                return selectedEvent ? (
+                    <QuickScoreEntry
+                        event={selectedEvent}
+                        teams={teams}
+                        currentUser={currentUser}
+                        onBack={() => setActiveView('scoring-selector')}
+                        onComplete={() => {
+                            loadEvents();
+                            setActiveView('list');
+                            setSelectedEvent(null);
+                        }}
+                        sportType={sportType}
+                    />
+                ) : null;
+
+            case 'list':
+            default:
+                return (
+                    <EventsList
+                        events={teamEvents}
+                        teams={teams}
+                        currentUser={currentUser}
+                        loading={loading}
+                        canManage={canManageEvents}
+                        onEventSelect={(event) => {
+                            setSelectedEvent(event);
+                            if (canManageEvents) {
+                                setActiveView('edit');
+                            } else {
+                                // Non-admins see spectator view
+                                setShowSpectatorView(true);
+                            }
+                        }}
+                        onStartScoring={(event) => {
+                            setSelectedEvent(event);
+                            setActiveView('scoring-selector');
+                        }}
+                        onViewLive={(event) => {
+                            setSelectedEvent(event);
+                            setShowSpectatorView(true);
+                        }}
+                        onDeleteEvent={canManageEvents ? handleEventDeleted : null}
+                        onRefresh={loadEvents}
+                        sportType={sportType}
+                    />
+                );
+        }
+    };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6" data-testid="team-schedule-tab">
+            {/* Header */}
             <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-slate-800">Schedule</h2>
-                {canCreateEvents && (
+                <div>
+                    <h2 className="text-2xl font-bold text-slate-800">Team Schedule</h2>
+                    <p className="text-sm text-slate-600 mt-1">
+                        {teamEvents.length} event{teamEvents.length !== 1 ? 's' : ''} for {team.name}
+                    </p>
+                </div>
+
+                {/* Action Buttons - Only for admins/coaches */}
+                {activeView === 'list' && (
+                    <div className="flex gap-3">
+                        {canManageEvents && (
+                            <button
+                                onClick={() => setActiveView('create')}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                                data-testid="create-team-event-btn"
+                            >
+                                ➕ Create Event
+                            </button>
+                        )}
+                        <button
+                            onClick={loadEvents}
+                            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium"
+                            disabled={loading}
+                        >
+                            🔄 Refresh
+                        </button>
+                    </div>
+                )}
+
+                {/* Back button for other views */}
+                {activeView !== 'list' && (
                     <button
-                        onClick={() => setShowCreateForm(!showCreateForm)}
-                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        data-testid="create-event-btn"
+                        onClick={() => {
+                            setActiveView('list');
+                            setSelectedEvent(null);
+                        }}
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium"
                     >
-                        <span className="mr-2">{showCreateForm ? '✕' : '+'}</span>
-                        {showCreateForm ? 'Cancel' : 'Create Event'}
+                        ← Back to Schedule
                     </button>
                 )}
             </div>
 
-            {/* Message */}
-            {message && (
-                <div className={`p-3 rounded-lg ${message.startsWith('✅') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                    {message}
-                </div>
-            )}
+            {/* Content */}
+            {renderContent()}
 
-            {/* Create Event Form */}
-            {showCreateForm && canCreateEvents && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6" data-testid="create-event-form">
-                    <h3 className="text-lg font-semibold text-slate-800 mb-4">Create New Event</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Event Type */}
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Event Type *</label>
-                            <select
-                                value={newEvent.type}
-                                onChange={(e) => handleInputChange('type', e.target.value)}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                data-testid="event-type-select"
-                            >
-                                <option value="practice">Practice</option>
-                                <option value="game">Game</option>
-                                <option value="tournament">Tournament</option>
-                                <option value="meeting">Team Meeting</option>
-                                <option value="event">Other Event</option>
-                            </select>
-                        </div>
-
-                        {/* Title */}
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Title *</label>
-                            <input
-                                type="text"
-                                value={newEvent.title}
-                                onChange={(e) => handleInputChange('title', e.target.value)}
-                                placeholder={newEvent.type === 'practice' ? 'Team Practice' : newEvent.type === 'game' ? 'Game vs ...' : 'Event Title'}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                data-testid="event-title-input"
-                            />
-                        </div>
-
-                        {/* Date */}
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Date *</label>
-                            <input
-                                type="date"
-                                value={newEvent.date}
-                                onChange={(e) => handleInputChange('date', e.target.value)}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                data-testid="event-date-input"
-                            />
-                        </div>
-
-                        {/* Time */}
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Time</label>
-                            <input
-                                type="time"
-                                value={newEvent.time}
-                                onChange={(e) => handleInputChange('time', e.target.value)}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                data-testid="event-time-input"
-                            />
-                        </div>
-
-                        {/* Opponent (for games) */}
-                        {newEvent.type === 'game' && (
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Opponent Team</label>
-                                <select
-                                    value={newEvent.awayTeam}
-                                    onChange={(e) => handleInputChange('awayTeam', e.target.value)}
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    data-testid="opponent-select"
-                                >
-                                    <option value="">Select opponent...</option>
-                                    {otherTeams.map(t => (
-                                        <option key={t.id} value={t.id}>{t.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        )}
-
-                        {/* Location */}
-                        <div className={newEvent.type === 'game' ? '' : 'md:col-span-2'}>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Location</label>
-                            <input
-                                type="text"
-                                value={newEvent.location}
-                                onChange={(e) => handleInputChange('location', e.target.value)}
-                                placeholder="Enter location"
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                data-testid="event-location-input"
-                            />
-                        </div>
-
-                        {/* Description */}
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
-                            <textarea
-                                value={newEvent.description}
-                                onChange={(e) => handleInputChange('description', e.target.value)}
-                                placeholder="Optional notes..."
-                                rows={2}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                data-testid="event-description-input"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="mt-4 flex justify-end space-x-3">
+            {/* Empty state */}
+            {activeView === 'list' && teamEvents.length === 0 && !loading && (
+                <div className="text-center py-16 bg-slate-50 rounded-xl">
+                    <div className="text-6xl mb-4">📅</div>
+                    <h3 className="text-xl font-semibold text-slate-700 mb-2">No Events Scheduled</h3>
+                    <p className="text-slate-600 mb-6">
+                        {canManageEvents 
+                            ? "Create your first event to get started"
+                            : "No upcoming events for this team"}
+                    </p>
+                    {canManageEvents && (
                         <button
-                            onClick={() => setShowCreateForm(false)}
-                            className="px-4 py-2 text-slate-600 hover:text-slate-800"
+                            onClick={() => setActiveView('create')}
+                            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
                         >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={handleCreateEvent}
-                            disabled={saving || !newEvent.title || !newEvent.date}
-                            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
-                            data-testid="save-event-btn"
-                        >
-                            {saving ? 'Creating...' : 'Create Event'}
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Events List */}
-            {sortedEvents.length > 0 ? (
-                <div className="space-y-4">
-                    {sortedEvents.map(event => (
-                        <div key={event.id} className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50" data-testid={`event-card-${event.id}`}>
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <h3 className="font-semibold text-slate-800">{event.title}</h3>
-                                    <p className="text-sm text-slate-600">
-                                        {event.date ? new Date(event.date).toLocaleDateString() : 'TBD'} 
-                                        {event.time ? ` at ${event.time}` : ''}
-                                    </p>
-                                    {event.location && (
-                                        <p className="text-sm text-slate-500">{event.location}</p>
-                                    )}
-                                </div>
-                                <div className="text-right">
-                                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                        event.type === 'game' ? 'bg-red-100 text-red-800' :
-                                        event.type === 'practice' ? 'bg-blue-100 text-blue-800' :
-                                        event.type === 'tournament' ? 'bg-purple-100 text-purple-800' :
-                                        event.type === 'meeting' ? 'bg-yellow-100 text-yellow-800' :
-                                        'bg-slate-100 text-slate-800'
-                                    }`}>
-                                        {event.type || 'Event'}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <div className="bg-slate-50 p-8 rounded-lg text-center text-slate-500">
-                    <LacrosseIcon name="calendar" style={{fontSize: '48px'}} className="mx-auto mb-4" />
-                    <h3 className="text-lg font-medium mb-2">No scheduled events</h3>
-                    <p>Check back later for upcoming games and practices</p>
-                    {canCreateEvents && (
-                        <button
-                            onClick={() => setShowCreateForm(true)}
-                            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                            data-testid="create-first-event-btn"
-                        >
-                            Create First Event
+                            ➕ Create First Event
                         </button>
                     )}
                 </div>
