@@ -2089,110 +2089,36 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
 
     // Fixed sticky header with split team banners, clock, scores, and goalies
     const renderStickyHeader = () => (
-        <div className="fixed top-0 left-0 right-0 z-50 shadow-md bg-white">
-            {/* Split Banner Header - Responsive */}
-            <div className="flex flex-col md:flex-row relative">
-                {/* Home Team Side */}
-                <div 
-                    className="flex-1 relative overflow-hidden"
-                    style={{
-                        backgroundColor: liveViewSettings.backgroundType === 'banners' && gameState.home_team.banner
-                            ? 'transparent'
-                            : liveViewSettings.backgroundType === 'gradient'
-                            ? 'transparent'
-                            : gameState.home_team.color || '#3b82f6',
-                        backgroundImage: liveViewSettings.backgroundType === 'banners' && gameState.home_team.banner
-                            ? `linear-gradient(rgba(0, 0, 0, ${liveViewSettings.bannerOpacity}), rgba(0, 0, 0, ${liveViewSettings.bannerOpacity})), url(${gameState.home_team.banner})`
-                            : liveViewSettings.backgroundType === 'gradient'
-                            ? `linear-gradient(to right, ${gameState.home_team.color}, ${gameState.home_team.color}dd)`
-                            : 'none',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center'
-                    }}
-                >
-                    <div className="p-2 md:p-4 text-white relative z-10">
-                        <div className="flex items-center gap-2 md:gap-3 justify-center md:justify-start">
-                            {gameState.home_team.logo && (
-                                <img 
-                                    src={gameState.home_team.logo} 
-                                    alt={gameState.home_team.name}
-                                    className="w-8 h-8 md:w-12 md:h-12 object-cover rounded-lg border-2 border-white shadow-lg"
-                                />
-                            )}
-                            <div style={{ fontFamily: liveViewSettings.useTeamFonts ? gameState.home_team.font : 'Inter, sans-serif' }}>
-                                <div className="text-xs md:text-sm font-medium">{gameState.home_team.name}</div>
-                                <div className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg">{gameState.home_team.score}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Center Clock & Period - Absolute on desktop, separate row on mobile */}
-                <div className="md:absolute md:left-1/2 md:top-1/2 md:transform md:-translate-x-1/2 md:-translate-y-1/2 z-30 bg-black bg-opacity-60 backdrop-blur-sm">
-                    <div className="flex flex-col items-center gap-1 p-2 md:gap-2 md:p-3">
-                        {/* Timer - Clickable */}
-                        <div 
-                            className={`px-3 py-1 md:px-6 md:py-2 rounded-lg border-2 cursor-pointer hover:opacity-90 transition ${
-                                gameState.is_running 
-                                    ? 'bg-green-600 border-green-400' 
-                                    : 'bg-red-600 border-red-400'
-                            }`}
-                            onClick={() => {
-                                setManualTimeInputs({
-                                    minutes: Math.floor(gameState.time_remaining / 60).toString(),
-                                    seconds: (gameState.time_remaining % 60).toString(),
-                                    period: gameState.current_period.toString()
-                                });
-                                setShowTimeEditor(true);
-                            }}
-                            title="Click to edit time"
-                        >
-                            <div className="text-xl md:text-3xl font-bold text-white font-mono">
-                                {formatTime(gameState.time_remaining)}
-                            </div>
-                        </div>
-                        {/* Period */}
-                        <div className="px-2 py-0.5 md:px-4 md:py-1 rounded text-white text-xs md:text-sm font-medium">
-                            {gameState.game_settings.periodName} {gameState.current_period} of {gameState.game_settings.periods}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Away Team Side */}
-                <div 
-                    className="flex-1 relative overflow-hidden"
-                    style={{
-                        backgroundColor: liveViewSettings.backgroundType === 'banners' && gameState.away_team.banner
-                            ? 'transparent'
-                            : liveViewSettings.backgroundType === 'gradient'
-                            ? 'transparent'
-                            : gameState.away_team.color || '#ef4444',
-                        backgroundImage: liveViewSettings.backgroundType === 'banners' && gameState.away_team.banner
-                            ? `linear-gradient(rgba(0, 0, 0, ${liveViewSettings.bannerOpacity}), rgba(0, 0, 0, ${liveViewSettings.bannerOpacity})), url(${gameState.away_team.banner})`
-                            : liveViewSettings.backgroundType === 'gradient'
-                            ? `linear-gradient(to left, ${gameState.away_team.color}, ${gameState.away_team.color}dd)`
-                            : 'none',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center'
-                    }}
-                >
-                    <div className="p-2 md:p-4 text-white relative z-10">
-                        <div className="flex items-center gap-2 md:gap-3 justify-center md:justify-end">
-                            <div className="text-right md:order-1" style={{ fontFamily: liveViewSettings.useTeamFonts ? gameState.away_team.font : 'Inter, sans-serif' }}>
-                                <div className="text-xs md:text-sm font-medium">{gameState.away_team.name}</div>
-                                <div className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg">{gameState.away_team.score}</div>
-                            </div>
-                            {gameState.away_team.logo && (
-                                <img 
-                                    src={gameState.away_team.logo} 
-                                    alt={gameState.away_team.name}
-                                    className="w-8 h-8 md:w-12 md:h-12 object-cover rounded-lg border-2 border-white shadow-lg md:order-2"
-                                />
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div className="fixed top-0 left-0 right-0 z-50 shadow-md bg-black">
+            {/* Analog Scoreboard - Compact for Scorer */}
+            <AnalogScoreboard
+                homeTeam={{
+                    name: gameState.home_team.name,
+                    score: gameState.home_team.score,
+                    logo: gameState.home_team.logo,
+                    color: gameState.home_team.color || '#3b82f6'
+                }}
+                awayTeam={{
+                    name: gameState.away_team.name,
+                    score: gameState.away_team.score,
+                    logo: gameState.away_team.logo,
+                    color: gameState.away_team.color || '#ef4444'
+                }}
+                timeRemaining={formatTime(gameState.time_remaining)}
+                currentPeriod={gameState.current_period}
+                periodName={gameState.game_settings.periodName}
+                isLive={gameStarted}
+                isPaused={!gameState.is_running && gameStarted}
+                compact={true}
+                onTimeClick={() => {
+                    setManualTimeInputs({
+                        minutes: Math.floor(gameState.time_remaining / 60).toString(),
+                        seconds: (gameState.time_remaining % 60).toString(),
+                        period: gameState.current_period.toString()
+                    });
+                    setShowTimeEditor(true);
+                }}
+            />
 
             {/* Event Title Bar */}
             <div className="bg-white px-2 md:px-4 py-1 md:py-2 border-b border-gray-200">
