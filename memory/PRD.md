@@ -603,11 +603,26 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 
 ## Backlog / Upcoming
 - P1: Get valid SMTP credentials configured for email notifications to actually deliver
-- P2: Backend refactoring - consolidate legacy endpoints in server.py
+- P2: Continue backend refactoring (events/scheduling block still in server.py)
 - P2: Google Drive integration (user credentials needed)
 - P2: Finance Register PDF Export
 - P3: Refactor routing to react-router-dom
 - P3: Improve tournament scoring UI
+
+## Backend Architecture (Post-Refactoring)
+- server.py: 8,615 lines (down from 13,221 — 35% reduction)
+- routes/media.py: 2,365 lines (galleries, YouTube, uploads, proxy-image, cloud storage)
+- routes/groupme.py: 1,542 lines (GroupMe channels, messages, broadcasting, notifications)
+- routes/communication.py: 793 lines (SMTP email config, SMS/Twilio, webhooks)
+- routes/teams.py: 1,116 lines (team CRUD, join requests, invites)
+- routes/cleanup.py: 996 lines
+- routes/users.py: 459 lines
+- routes/drive.py: 428 lines
+- routes/finance.py: 314 lines
+- routes/setup.py: 243 lines
+- routes/events.py: 202 lines (placeholder — main events still in server.py)
+- routes/locations.py: 140 lines
+- routes/rsvp.py: 121 lines
 
 ## Known Issues
 - Production deployment broken (DNS/infrastructure - user must fix)
