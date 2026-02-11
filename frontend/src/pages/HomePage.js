@@ -4,7 +4,7 @@ import TeamGalleryDisplay from '../components/TeamGalleryDisplay';
 import YouTubeGallery from '../components/YouTubeGallery';
 import EventDetailModal from '../scheduling/components/EventDetailModal';
 import TeamDetailModal from '../teams/components/TeamDetailModal';
-import NewsDisplay from '../components/NewsDisplay';
+import SponsorsDisplay from '../components/SponsorsDisplay';
 import { fixGoogleDriveUrl } from '../utils/imageUtils';
 import CachedImage from '../components/CachedImage';
 
