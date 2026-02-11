@@ -9,7 +9,7 @@ const SponsorsDisplay = ({ teamId = null, currentUser = null, editable = false }
     const [saving, setSaving] = useState(false);
     const [form, setForm] = useState({
         name: '', message: '', imageUrl: '', websiteUrl: '',
-        socials: { facebook: '', instagram: '', twitter: '', linkedin: '' }
+        socials: { facebook: '', instagram: '', twitter: '', linkedin: '', youtube: '' }
     });
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
 
