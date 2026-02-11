@@ -396,12 +396,15 @@ const EventManager = ({ teams, currentUser, onEventUpdate, initialEvents, onNavi
                     
                     {activeView === 'list' && (
                         <div className="flex gap-3">
-                            <button
-                                onClick={() => setActiveView('create')}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
-                            >
-                                ➕ Create Event
-                            </button>
+                            {(currentUser?.role === 'admin' || currentUser?.roles?.includes('admin') || currentUser?.roles?.includes('coach')) && (
+                                <button
+                                    onClick={() => setActiveView('create')}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                                    data-testid="create-event-btn"
+                                >
+                                    ➕ Create Event
+                                </button>
+                            )}
                             <button
                                 onClick={loadEvents}
                                 className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium"
