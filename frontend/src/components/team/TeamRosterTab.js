@@ -630,7 +630,7 @@ const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse'
                 </div>
             )}
                 </>
-            )}
+                )}
 
             {/* Player Detail Modal */}
             {selectedPlayer && (
