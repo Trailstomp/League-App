@@ -1042,6 +1042,15 @@ const GroupMeManager = () => {
         );
     }
 
+    // Show create/edit view as a full page when active
+    if (activeView === 'create-channel') {
+        return (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {renderCreateChannel()}
+            </div>
+        );
+    }
+
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* Navigation Tabs */}
@@ -1054,7 +1063,10 @@ const GroupMeManager = () => {
                     ].map((tab) => (
                         <button
                             key={tab.id}
-                            onClick={() => setActiveView(tab.id)}
+                            onClick={() => {
+                                setActiveView(tab.id);
+                                setEditingChannel(null); // Clear editing state when switching tabs
+                            }}
                             className={`py-2 px-1 border-b-2 font-medium text-sm ${
                                 activeView === tab.id
                                     ? 'border-blue-500 text-blue-600'
