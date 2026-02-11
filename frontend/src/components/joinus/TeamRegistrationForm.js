@@ -45,6 +45,61 @@ const TeamRegistrationForm = ({ onBack, onSuccess }) => {
         setError('');
     };
     
+    const handleLogoUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            setError('Please select an image file (PNG, JPG, etc.)');
+            return;
+        }
+        
+        // Validate file size (5MB limit)
+        if (file.size > 5 * 1024 * 1024) {
+            setError('Logo file must be less than 5MB');
+            return;
+        }
+        
+        setUploadingLogo(true);
+        setError('');
+        
+        try {
+            const uploadFormData = new FormData();
+            uploadFormData.append('file', file);
+            uploadFormData.append('type', 'team_registration_logo');
+            
+            const res = await fetch(`${backendUrl}/api/upload/image`, {
+                method: 'POST',
+                body: uploadFormData
+            });
+            
+            const data = await res.json();
+            
+            if (!res.ok) {
+                throw new Error(data.detail || 'Failed to upload logo');
+            }
+            
+            // Set the logo URL from the response
+            setFormData(prev => ({ ...prev, logo_url: data.url }));
+        } catch (err) {
+            setError(err.message || 'Failed to upload logo');
+        } finally {
+            setUploadingLogo(false);
+            // Reset file input
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        }
+    };
+    
+    const removeLogo = () => {
+        setFormData(prev => ({ ...prev, logo_url: '' }));
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
