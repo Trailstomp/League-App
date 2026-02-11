@@ -51,8 +51,10 @@ async def create_groupme_channel(
     groupme_group_id: str = Form(...),
     channel_type: str = Form(...),  # 'league' or 'team'
     team_id: Optional[str] = Form(None),
+    team_ids: Optional[str] = Form(None),  # JSON array of team IDs for multi-select
     existing_bot_id: Optional[str] = Form(None),  # Allow existing bot ID
-    notification_settings: Optional[str] = Form("{}")  # JSON string
+    notification_settings: Optional[str] = Form("{}"),  # JSON string
+    access_roles: Optional[str] = Form('["admin", "coach", "player"]')  # JSON array of roles
 ):
     """Create a new GroupMe channel configuration"""
     
@@ -60,25 +62,32 @@ async def create_groupme_channel(
         # Get GroupMe service with stored credentials
         groupme_service = await get_groupme_service()
         
-        # Parse notification settings
+        # Parse notification settings and access roles
         import json
         settings = json.loads(notification_settings) if notification_settings else {}
+        roles = json.loads(access_roles) if access_roles else ["admin", "coach", "player"]
+        parsed_team_ids = json.loads(team_ids) if team_ids else []
+        
+        # Use team_ids if provided, otherwise use single team_id
+        if not parsed_team_ids and team_id:
+            parsed_team_ids = [team_id]
         
         # Validate channel type
         if channel_type not in ["league", "team"]:
             raise HTTPException(status_code=400, detail="channel_type must be 'league' or 'team'")
         
-        # Validate team exists if team channel
+        # Validate teams exist if team channel
         if channel_type == "team":
-            if not team_id:
-                raise HTTPException(status_code=400, detail="team_id required for team channels")
+            if not parsed_team_ids:
+                raise HTTPException(status_code=400, detail="At least one team_id required for team channels")
             
-            # Check if team exists in league_data
+            # Check if teams exist
             league_doc = await db.league_data.find_one({"id": "main_league"})
             if league_doc and league_doc.get("teams"):
-                team = next((t for t in league_doc["teams"] if t.get("id") == team_id), None)
-                if not team:
-                    raise HTTPException(status_code=404, detail="Team not found")
+                for tid in parsed_team_ids:
+                    team = next((t for t in league_doc["teams"] if t.get("id") == tid), None)
+                    if not team:
+                        raise HTTPException(status_code=404, detail=f"Team {tid} not found")
             else:
                 raise HTTPException(status_code=404, detail="No teams found in league data")
         
