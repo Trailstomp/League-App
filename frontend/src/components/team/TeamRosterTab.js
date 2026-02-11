@@ -11,6 +11,7 @@ const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse'
     const [selectedPlayer, setSelectedPlayer] = useState(null);
     const [isFlipped, setIsFlipped] = useState(false);
     const [teamPlayers, setTeamPlayers] = useState([]);
+    const [coaches, setCoaches] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
