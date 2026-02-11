@@ -136,7 +136,8 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
     const [showEventModal, setShowEventModal] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [showTeamModal, setShowTeamModal] = useState(false);
-    const [activeTab, setActiveTab] = useState('welcome'); // 'welcome', 'teams', 'media'
+    const [activeTab, setActiveTab] = useState('welcome'); // 'welcome', 'join', 'teams', 'media', 'sponsors'
+    const [activeJoinForm, setActiveJoinForm] = useState(null); // 'team', 'player', 'volunteer', or null for landing
     const [activeTeamTab, setActiveTeamTab] = useState('all');
     const [welcomeMessage, setWelcomeMessage] = useState(null);
     const [loadingWelcome, setLoadingWelcome] = useState(true);
