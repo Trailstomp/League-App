@@ -61,8 +61,10 @@ const GroupMeChat = ({ teamId = null, channelType = "all", showAllChannels = tru
             return true;
         }
 
-        // Check role-based access
-        const channelRoles = channel.access_roles || ['admin', 'coach', 'player'];
+        // Check role-based access - default to all roles if not set
+        const channelRoles = Array.isArray(channel.access_roles) && channel.access_roles.length > 0 
+            ? channel.access_roles 
+            : ['admin', 'coach', 'player'];
         const hasRoleAccess = userRoles.some(role => channelRoles.includes(role));
         
         if (!hasRoleAccess) {
@@ -77,11 +79,17 @@ const GroupMeChat = ({ teamId = null, channelType = "all", showAllChannels = tru
         }
 
         // For team channels, check if user is on one of the channel's teams
-        const channelTeamIds = channel.team_ids || (channel.team_id ? [channel.team_id] : []);
+        // Handle undefined, null, or empty array for team_ids
+        let channelTeamIds = [];
+        if (Array.isArray(channel.team_ids) && channel.team_ids.length > 0) {
+            channelTeamIds = channel.team_ids;
+        } else if (channel.team_id) {
+            channelTeamIds = [channel.team_id];
+        }
         
         if (channelTeamIds.length === 0) {
-            // No teams assigned - shouldn't happen but allow if user has role access
-            console.log(`⚠️ Channel has no teams, allowing role-based access: ${channel.name}`);
+            // No teams assigned to this team channel - legacy channel, allow role-based access
+            console.log(`⚠️ Team channel has no teams assigned, allowing role-based access: ${channel.name}`);
             return true;
         }
 
