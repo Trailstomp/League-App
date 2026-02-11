@@ -295,6 +295,17 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             🏠 Welcome
                         </button>
                         <button
+                            onClick={() => setActiveTab('join')}
+                            className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
+                                activeTab === 'join' 
+                                    ? 'border-b-2 border-blue-500 text-blue-600 bg-blue-50/50' 
+                                    : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
+                            }`}
+                            data-testid="join-tab"
+                        >
+                            🤝 Join Us
+                        </button>
+                        <button
                             onClick={() => setActiveTab('teams')}
                             className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
                                 activeTab === 'teams' 
