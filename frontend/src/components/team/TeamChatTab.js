@@ -1,7 +1,7 @@
 import React from 'react';
 import GroupMeChat from '../GroupMeChat';
 
-const TeamChatTab = ({ team }) => {
+const TeamChatTab = ({ team, currentUser }) => {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -12,7 +12,7 @@ const TeamChatTab = ({ team }) => {
                 </div>
             </div>
             
-            <GroupMeChat teamId={team.id} channelType="team" />
+            <GroupMeChat teamId={team.id} channelType="team" currentUser={currentUser} />
             
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <div className="flex items-start">
