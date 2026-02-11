@@ -324,32 +324,67 @@ const TeamRegistrationForm = ({ onBack, onSuccess }) => {
                     </div>
                 </div>
                 
-                {/* Logo URL */}
+                {/* Logo Upload */}
                 <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Team Logo URL (Optional)
+                        Team Logo (Optional)
                     </label>
-                    <div className="flex gap-2">
-                        <input
-                            type="url"
-                            name="logo_url"
-                            value={formData.logo_url}
-                            onChange={handleChange}
-                            className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                            placeholder="https://example.com/logo.png"
-                            data-testid="logo-url-input"
-                        />
-                    </div>
-                    <p className="mt-1 text-xs text-slate-500">Paste a link to your team's logo image</p>
-                    {formData.logo_url && (
-                        <div className="mt-2">
+                    
+                    {/* Hidden file input */}
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        className="hidden"
+                        data-testid="logo-file-input"
+                    />
+                    
+                    {formData.logo_url ? (
+                        /* Logo Preview */
+                        <div className="flex items-center gap-4 p-4 border-2 border-green-200 bg-green-50 rounded-lg">
                             <img 
                                 src={formData.logo_url} 
-                                alt="Logo preview" 
-                                className="w-20 h-20 object-contain border rounded-lg"
-                                onError={(e) => e.target.style.display = 'none'}
+                                alt="Team logo preview" 
+                                className="w-20 h-20 object-contain bg-white rounded-lg border"
                             />
+                            <div className="flex-1">
+                                <p className="text-sm font-medium text-green-800">Logo uploaded!</p>
+                                <p className="text-xs text-green-600 mt-1">Click remove to change</p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={removeLogo}
+                                className="p-2 text-red-500 hover:bg-red-100 rounded-lg transition-colors"
+                                title="Remove logo"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
                         </div>
+                    ) : (
+                        /* Upload Button */
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploadingLogo}
+                            className="w-full p-6 border-2 border-dashed border-slate-300 rounded-lg hover:border-green-400 hover:bg-green-50 transition-all flex flex-col items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-testid="logo-upload-btn"
+                        >
+                            {uploadingLogo ? (
+                                <>
+                                    <Loader2 className="w-8 h-8 text-green-500 animate-spin" />
+                                    <span className="text-sm text-slate-600">Uploading...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center">
+                                        <Image className="w-6 h-6 text-slate-400" />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-700">Click to upload team logo</span>
+                                    <span className="text-xs text-slate-500">PNG, JPG up to 5MB</span>
+                                </>
+                            )}
+                        </button>
                     )}
                 </div>
                 
