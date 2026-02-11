@@ -7614,6 +7614,7 @@ async def create_recurring_event(event_data: Dict[str, Any]):
         league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # Save to database
+        league_doc.pop('_id', None)
         await db.league_data.replace_one(
             {"id": "main_league"},
             league_doc,
