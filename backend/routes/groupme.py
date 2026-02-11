@@ -140,7 +140,9 @@ async def create_groupme_channel(
             "groupme_group_id": groupme_group_id,
             "groupme_bot_id": bot_id,
             "channel_type": channel_type,
-            "team_id": team_id,
+            "team_id": parsed_team_ids[0] if parsed_team_ids else None,  # Keep for backwards compat
+            "team_ids": parsed_team_ids,  # New multi-team support
+            "access_roles": roles,  # New role-based access
             "is_active": True,
             "notification_settings": settings,
             "created_at": datetime.now(timezone.utc).isoformat(),
