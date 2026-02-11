@@ -63,9 +63,8 @@ const TeamScheduleTab = ({ team, events = [], teams = [], currentUser, onEventsU
         setMessage('');
 
         try {
-            // Build the event object
+            // Build the event object - using unified events format
             const eventToCreate = {
-                id: `event_${Date.now()}`,
                 title: newEvent.title,
                 type: newEvent.type,
                 date: newEvent.date,
@@ -75,17 +74,19 @@ const TeamScheduleTab = ({ team, events = [], teams = [], currentUser, onEventsU
                 teamIds: newEvent.type === 'game' && newEvent.awayTeam 
                     ? [newEvent.homeTeam, newEvent.awayTeam]
                     : [team.id],
+                teams: newEvent.type === 'game' && newEvent.awayTeam 
+                    ? [newEvent.homeTeam, newEvent.awayTeam]
+                    : [team.id],
                 homeTeam: newEvent.type === 'game' ? newEvent.homeTeam : null,
                 awayTeam: newEvent.type === 'game' ? newEvent.awayTeam : null,
                 createdBy: currentUser?.id,
-                createdAt: new Date().toISOString(),
                 status: 'scheduled'
             };
 
-            console.log('📅 Creating event:', eventToCreate);
+            console.log('📅 Creating unified event:', eventToCreate);
 
-            // Save to backend
-            const response = await fetch(`${backendUrl}/api/events`, {
+            // Save to unified events endpoint
+            const response = await fetch(`${backendUrl}/api/unified-events`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(eventToCreate)
