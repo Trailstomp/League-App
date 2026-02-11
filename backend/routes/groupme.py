@@ -22,7 +22,7 @@ def set_db(database):
 
 # Import needed classes
 try:
-    from services.api_integrations import APIIntegrationsService
+    from services.api_integrations_service import APIIntegrationsService
     from services.groupme_service import SimpleGroupMeService
 except ImportError:
     # Fallback imports
