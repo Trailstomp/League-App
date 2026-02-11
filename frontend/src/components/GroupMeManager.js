@@ -451,8 +451,8 @@ const GroupMeManager = () => {
                             </svg>
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600">Notifications Sent</p>
-                            <p className="text-2xl font-semibold text-gray-900">{dashboardStats.notifications_sent || 0}</p>
+                            <p className="text-sm font-medium text-gray-600">League Channels</p>
+                            <p className="text-2xl font-semibold text-gray-900">{localStats.league_channels}</p>
                         </div>
                     </div>
                 </div>
@@ -463,19 +463,24 @@ const GroupMeManager = () => {
                 <div className="flex items-center justify-between">
                     <div>
                         <h3 className="text-lg font-medium text-gray-900">Integration Status</h3>
-                        <p className="text-sm text-gray-600">GroupMe integration is currently {dashboardStats.integration_status || 'inactive'}</p>
+                        <p className="text-sm text-gray-600">
+                            {localStats.active_channels > 0 
+                                ? `${localStats.active_channels} channel(s) active and ready` 
+                                : 'No active channels configured'}
+                        </p>
                     </div>
                     <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        dashboardStats.integration_status === 'active' 
+                        localStats.active_channels > 0 
                             ? 'bg-green-100 text-green-800' 
-                            : 'bg-red-100 text-red-800'
+                            : 'bg-yellow-100 text-yellow-800'
                     }`}>
-                        {dashboardStats.integration_status === 'active' ? 'Active' : 'Inactive'}
+                        {localStats.active_channels > 0 ? 'Active' : 'Setup Required'}
                     </div>
                 </div>
             </div>
         </div>
     );
+    };
 
     const renderChannels = () => (
         <div className="space-y-6">
