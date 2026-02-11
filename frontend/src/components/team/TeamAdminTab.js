@@ -4,6 +4,7 @@ import { getSportConfig } from '../../config/sportsConfig';
 import TeamSettingsTab from './TeamSettingsTab';
 import TeamFinanceTab from './TeamFinanceTab';
 import TeamAdminHub from './TeamAdminHub';
+import TeamLocationsManager from './TeamLocationsManager';
 
 /**
  * TeamAdminTab - Comprehensive team administration for coaches/admins
