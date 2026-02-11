@@ -15,8 +15,10 @@ const GroupMeManager = () => {
         groupme_group_id: '',
         channel_type: 'team',
         team_id: '',
+        team_ids: [], // Multi-select for teams
         existing_bot_id: '', // Add bot ID field
-        notification_settings: {}
+        notification_settings: {},
+        access_roles: ['admin', 'coach', 'player'] // Who can access this channel
     });
 
     const [editingChannel, setEditingChannel] = useState(null);
