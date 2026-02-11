@@ -589,6 +589,16 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 - Could extract additional routers: events, media, groupme, payments
 
 ## Recently Completed (Feb 2026)
+- **P0 Feature: Advanced "Join Us" Forms & Notification System** (Feb 11, 2026):
+  - **Team Registration Form**: New team registration with team name, contact info, lacrosse type (field/box/both), preferred division, logo URL, home field location, roster size, comments
+  - **Player Application Form**: Players apply to a specific team with their info, position, experience level, age, previous teams
+  - **Volunteer Signup Form**: Volunteer registration with interests (referee, scorekeeper, coach, event help, admin, sponsor, photography, medical), availability, experience
+  - **In-App Notification System**: Admins/coaches receive notifications when forms are submitted with links to review
+  - **Email Notifications**: Confirmation emails sent to submitters; notification emails sent to admins/coaches (requires SMTP config)
+  - Backend: Created `/app/backend/routes/joinus.py` with endpoints for all 3 forms + notification CRUD
+  - Frontend: Created 3 form components in `/app/frontend/src/components/joinus/`
+  - Frontend: Created NotificationBell component for in-app notifications
+  - All 28 backend tests passed (100%)
 - **P0 Fix**: TeamManager.js `divisions is not defined` bug - verified FIXED
 - **Design Templates System**: Full backend CRUD + frontend UI (save/load/delete templates)
 - **Join Request Flow**: Verified end-to-end working (submit → admin notify → approve/reject → player notify)
@@ -604,6 +614,7 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 
 ## Backlog / Upcoming
 - P1: Get valid SMTP credentials configured for email notifications to actually deliver
+- P1: Add admin UI to review/approve/reject team registrations, player applications, and volunteer signups
 - P2: Continue backend refactoring (events/scheduling block still in server.py)
 - P2: Google Drive integration (user credentials needed)
 - P2: Finance Register PDF Export
@@ -611,7 +622,8 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 - P3: Improve tournament scoring UI
 
 ## Backend Architecture (Post-Refactoring)
-- server.py: 8,615 lines (down from 13,221 — 35% reduction)
+- server.py: 8,618 lines (down from 13,221 — 35% reduction)
+- routes/joinus.py: ~700 lines (NEW - team registration, player applications, volunteer signups, notifications)
 - routes/media.py: 2,365 lines (galleries, YouTube, uploads, proxy-image, cloud storage)
 - routes/groupme.py: 1,542 lines (GroupMe channels, messages, broadcasting, notifications)
 - routes/communication.py: 793 lines (SMTP email config, SMS/Twilio, webhooks)
@@ -624,6 +636,22 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 - routes/events.py: 202 lines (placeholder — main events still in server.py)
 - routes/locations.py: 140 lines
 - routes/rsvp.py: 121 lines
+
+## New MongoDB Collections (Feb 11, 2026)
+- `team_registrations`: Stores team registration submissions with status tracking
+- `player_applications`: Stores player application submissions with team reference
+- `volunteer_signups`: Stores volunteer signup submissions
+- `notifications`: In-app notifications for users (admins/coaches)
+
+## Key API Endpoints (Join Us Feature)
+- `POST /api/join-us/team-registration`: Submit new team registration
+- `POST /api/join-us/player-application`: Submit player application to a team
+- `POST /api/join-us/volunteer-signup`: Submit volunteer signup
+- `GET /api/join-us/registrations`: Get all team registrations (admin)
+- `GET /api/join-us/applications`: Get all player applications (admin/coach)
+- `GET /api/join-us/volunteers`: Get all volunteer signups (admin)
+- `GET /api/join-us/notifications/{user_id}`: Get notifications for a user
+- `PUT /api/join-us/notifications/{notification_id}/read`: Mark notification as read
 
 ## Known Issues
 - Production deployment broken (DNS/infrastructure - user must fix)
@@ -639,3 +667,4 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 - GroupMe (Chat)
 - react-image-crop (Image cropping)
 - colorthief (Color extraction)
+- lucide-react (Icons for forms and notifications)
