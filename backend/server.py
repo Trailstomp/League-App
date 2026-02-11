@@ -396,6 +396,7 @@ async def update_league_data(league_data: Dict[str, Any]):
         league_data["lastUpdated"] = datetime.utcnow().isoformat()
         
         # Update the database
+        league_data.pop('_id', None)
         result = await db.league_data.replace_one(
             {"id": "main_league"},
             league_data,
