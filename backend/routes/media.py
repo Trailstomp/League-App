@@ -2,7 +2,7 @@
 Media Router - Handles galleries, YouTube, uploads, proxy-image, cloud storage
 Extracted from server.py during backend refactoring
 """
-from fastapi import APIRouter, HTTPException, File, UploadFile
+from fastapi import APIRouter, HTTPException, File, UploadFile, Form
 from fastapi.responses import Response, JSONResponse
 from typing import Dict, Any, Optional, List
 from datetime import datetime, timezone
