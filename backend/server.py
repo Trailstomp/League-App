@@ -31,7 +31,7 @@ from googleapiclient.errors import HttpError
 from routes import finance_router, locations_router, teams_router, teams_public_router, users_router, rsvp_router, drive_router, cleanup_router, set_finance_db, set_locations_db, set_teams_db, set_users_db, set_rsvp_db, set_drive_db, set_cleanup_db
 from routes.setup import setup_router, set_setup_db
 from routes.media import media_router, set_db as set_media_db
-from routes.groupme import groupme_router, set_db as set_groupme_db
+from routes.groupme import groupme_router, set_db as set_groupme_db, set_groupme_service_class
 from routes.communication import comms_router, set_db as set_comms_db
 from routes.joinus import joinus_router, set_db as set_joinus_db
 
