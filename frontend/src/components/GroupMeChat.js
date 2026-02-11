@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const GroupMeChat = ({ teamId = null, channelType = "all", showAllChannels = true }) => {
+const GroupMeChat = ({ teamId = null, channelType = "all", showAllChannels = true, currentUser = null }) => {
     const [channels, setChannels] = useState([]);
     const [selectedChannel, setSelectedChannel] = useState(null);
     const [messages, setMessages] = useState([]);
@@ -11,9 +11,94 @@ const GroupMeChat = ({ teamId = null, channelType = "all", showAllChannels = tru
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
+    // Get user's roles - normalize to array
+    const getUserRoles = () => {
+        if (!currentUser) return [];
+        const roles = [];
+        if (currentUser.role) roles.push(currentUser.role);
+        if (Array.isArray(currentUser.roles)) {
+            currentUser.roles.forEach(r => {
+                if (!roles.includes(r)) roles.push(r);
+            });
+        }
+        return roles;
+    };
+
+    // Get user's team IDs
+    const getUserTeamIds = () => {
+        if (!currentUser) return [];
+        const teamIds = [];
+        if (currentUser.teamId) teamIds.push(currentUser.teamId);
+        if (Array.isArray(currentUser.teamAssignments)) {
+            currentUser.teamAssignments.forEach(ta => {
+                if (ta.teamId && !teamIds.includes(ta.teamId)) {
+                    teamIds.push(ta.teamId);
+                }
+            });
+        }
+        // Also include the current teamId prop if viewing a specific team
+        if (teamId && !teamIds.includes(teamId)) {
+            teamIds.push(teamId);
+        }
+        return teamIds;
+    };
+
+    // Check if user can access a channel
+    const canAccessChannel = (channel) => {
+        // If no user, no access (unless channel explicitly allows anonymous)
+        if (!currentUser) {
+            console.log(`🚫 No user - denying access to channel: ${channel.name}`);
+            return false;
+        }
+
+        const userRoles = getUserRoles();
+        const userTeamIds = getUserTeamIds();
+        const isAdmin = userRoles.includes('admin') || userRoles.includes('league_admin');
+
+        // Admins can see all channels
+        if (isAdmin) {
+            console.log(`✅ Admin access to channel: ${channel.name}`);
+            return true;
+        }
+
+        // Check role-based access
+        const channelRoles = channel.access_roles || ['admin', 'coach', 'player'];
+        const hasRoleAccess = userRoles.some(role => channelRoles.includes(role));
+        
+        if (!hasRoleAccess) {
+            console.log(`🚫 No role access to channel: ${channel.name} (user roles: ${userRoles}, channel roles: ${channelRoles})`);
+            return false;
+        }
+
+        // For league-wide channels, role access is enough
+        if (channel.channel_type === 'league') {
+            console.log(`✅ League channel access: ${channel.name}`);
+            return true;
+        }
+
+        // For team channels, check if user is on one of the channel's teams
+        const channelTeamIds = channel.team_ids || (channel.team_id ? [channel.team_id] : []);
+        
+        if (channelTeamIds.length === 0) {
+            // No teams assigned - shouldn't happen but allow if user has role access
+            console.log(`⚠️ Channel has no teams, allowing role-based access: ${channel.name}`);
+            return true;
+        }
+
+        const hasTeamAccess = channelTeamIds.some(ctid => userTeamIds.includes(ctid));
+        
+        if (!hasTeamAccess) {
+            console.log(`🚫 No team access to channel: ${channel.name} (user teams: ${userTeamIds}, channel teams: ${channelTeamIds})`);
+            return false;
+        }
+
+        console.log(`✅ Team + role access to channel: ${channel.name}`);
+        return true;
+    };
+
     useEffect(() => {
         loadChannels();
-    }, [teamId, channelType]);
+    }, [teamId, channelType, currentUser]);
 
     useEffect(() => {
         if (selectedChannel) {
@@ -25,6 +110,8 @@ const GroupMeChat = ({ teamId = null, channelType = "all", showAllChannels = tru
         try {
             setLoading(true);
             console.log('🔍 Loading GroupMe channels...');
+            console.log('🔍 Current user:', currentUser);
+            
             const response = await fetch(`${backendUrl}/api/groupme/channels?active_only=true`);
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -33,43 +120,49 @@ const GroupMeChat = ({ teamId = null, channelType = "all", showAllChannels = tru
             console.log('🔍 Raw channels data:', data);
             
             let allChannels = data.channels || [];
-            console.log('🔍 All channels found:', allChannels.length, allChannels);
+            console.log('🔍 All channels found:', allChannels.length);
             
-            // If showAllChannels is true, show all channels but prioritize current team's channel
-            if (showAllChannels) {
-                // Sort channels: current team's channel first, then league channels, then other teams
-                allChannels = allChannels.sort((a, b) => {
-                    // Current team's channel first
-                    if (teamId && a.team_id === teamId) return -1;
-                    if (teamId && b.team_id === teamId) return 1;
-                    // Then league channels
-                    if (a.channel_type === 'league') return -1;
-                    if (b.channel_type === 'league') return 1;
-                    // Then alphabetically
-                    return (a.name || '').localeCompare(b.name || '');
-                });
-            } else {
-                // Original filtering behavior
-                if (teamId && channelType === "team") {
-                    allChannels = allChannels.filter(c => c.team_id === teamId);
-                } else if (channelType === "league") {
-                    allChannels = allChannels.filter(c => c.channel_type === "league");
-                }
-            }
+            // Filter channels based on user permissions
+            let accessibleChannels = allChannels.filter(channel => canAccessChannel(channel));
+            console.log('🔍 Accessible channels after filtering:', accessibleChannels.length);
             
-            setChannels(allChannels);
-            console.log('🔍 Channels set:', allChannels.length, allChannels);
+            // Sort channels: current team's channel first, then league channels, then other teams
+            accessibleChannels = accessibleChannels.sort((a, b) => {
+                // Current team's channel first
+                const aTeamIds = a.team_ids || (a.team_id ? [a.team_id] : []);
+                const bTeamIds = b.team_ids || (b.team_id ? [b.team_id] : []);
+                
+                if (teamId && aTeamIds.includes(teamId)) return -1;
+                if (teamId && bTeamIds.includes(teamId)) return 1;
+                // Then league channels
+                if (a.channel_type === 'league') return -1;
+                if (b.channel_type === 'league') return 1;
+                // Then alphabetically
+                return (a.name || '').localeCompare(b.name || '');
+            });
+            
+            setChannels(accessibleChannels);
+            console.log('🔍 Channels set:', accessibleChannels.length);
             
             // Auto-select the current team's channel or first channel if available
-            if (allChannels.length > 0 && !selectedChannel) {
-                const teamChannel = teamId ? allChannels.find(c => c.team_id === teamId) : null;
-                setSelectedChannel(teamChannel || allChannels[0]);
-                console.log('🔍 Auto-selected channel:', teamChannel || allChannels[0]);
+            if (accessibleChannels.length > 0 && !selectedChannel) {
+                const teamChannel = teamId ? accessibleChannels.find(c => {
+                    const cTeamIds = c.team_ids || (c.team_id ? [c.team_id] : []);
+                    return cTeamIds.includes(teamId);
+                }) : null;
+                setSelectedChannel(teamChannel || accessibleChannels[0]);
+                console.log('🔍 Auto-selected channel:', teamChannel || accessibleChannels[0]);
             }
             
-            if (allChannels.length === 0) {
-                setError('No GroupMe channels available');
-                console.log('🔍 No channels available');
+            if (accessibleChannels.length === 0) {
+                if (!currentUser) {
+                    setError('Please log in to view team chat channels');
+                } else {
+                    setError('No GroupMe channels available for your team');
+                }
+                console.log('🔍 No accessible channels');
+            } else {
+                setError('');
             }
         } catch (error) {
             console.error('Failed to load channels:', error);
