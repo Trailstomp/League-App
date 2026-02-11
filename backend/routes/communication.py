@@ -3,6 +3,7 @@ Communication Router - Handles SMTP email config, SMS/Twilio, webhooks
 Extracted from server.py during backend refactoring
 """
 from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel
 from typing import Dict, Any, Optional, List
 from datetime import datetime, timezone
 import uuid
@@ -19,6 +20,11 @@ db = None
 def set_db(database):
     global db
     db = database
+
+class SMSRequest(BaseModel):
+    to_numbers: List[str]
+    message: str
+    event_id: Optional[str] = None
 
 # SMTP EMAIL CONFIGURATION
 # ============================================================================
