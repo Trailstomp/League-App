@@ -27,6 +27,7 @@ import DataCleanupManager from '../components/managers/DataCleanupManager';
 import DataHealthWidget from '../components/DataHealthWidget';
 import DivisionManager from '../components/managers/DivisionManager';
 import WelcomeMessageManager from '../components/managers/WelcomeMessageManager';
+import RecruitingManager from '../components/managers/RecruitingManager';
 
 // Team Invites Manager Component for League Admins
 const TeamInvitesManager = ({ currentUser }) => {
