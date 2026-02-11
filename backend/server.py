@@ -1660,7 +1660,7 @@ async def get_single_team(team_id: str):
 async def update_team_data(team_id: str, team_data: Dict[str, Any]):
     """Update specific team data including logo, style, social media, etc."""
     try:
-        # Get current league data
+        # Update the team in league_data using $set to avoid _id conflicts
         league_data = await db.league_data.find_one({"id": "main_league"})
         if not league_data:
             league_data = {
@@ -1681,30 +1681,27 @@ async def update_team_data(team_id: str, team_data: Dict[str, Any]):
         
         for i, team in enumerate(teams):
             if team.get("id") == team_id:
-                # Update existing team
                 teams[i] = {**team, **team_data}
                 team_found = True
-                logger.info(f"✅ Updated existing team in league_data: {team_id}")
+                logger.info(f"Updated existing team in league_data: {team_id}")
                 break
         
         if not team_found:
-            # Add new team
             team_data["id"] = team_id
             teams.append(team_data)
-            logger.info(f"✅ Added new team to league_data: {team_id}")
+            logger.info(f"Added new team to league_data: {team_id}")
         
-        # Update the league_data database
-        league_data["teams"] = teams
-        league_data["lastUpdated"] = datetime.utcnow().isoformat()
-        
-        await db.league_data.replace_one(
+        # Use $set instead of replace_one to avoid _id conflicts
+        await db.league_data.update_one(
             {"id": "main_league"},
-            league_data,
+            {"$set": {
+                "teams": teams,
+                "lastUpdated": datetime.now(timezone.utc).isoformat()
+            }},
             upsert=True
         )
         
         # ALSO update the teams collection with style data
-        # This ensures dashboard-data returns the correct styles
         teams_collection_update = {}
         
         if "style" in team_data:
@@ -1722,14 +1719,14 @@ async def update_team_data(team_id: str, team_data: Dict[str, Any]):
             teams_collection_update["paymentLinks"] = team_data["paymentLinks"]
         
         if teams_collection_update:
-            teams_collection_update["updatedAt"] = datetime.utcnow().isoformat()
+            teams_collection_update["updatedAt"] = datetime.now(timezone.utc).isoformat()
             await db.teams.update_one(
                 {"id": team_id},
                 {"$set": teams_collection_update}
             )
-            logger.info(f"✅ Also updated teams collection for: {team_id}")
+            logger.info(f"Also updated teams collection for: {team_id}")
         
-        logger.info(f"✅ Team {team_id} data saved successfully")
+        logger.info(f"Team {team_id} data saved successfully")
         
         return {
             "status": "success",
@@ -1738,7 +1735,7 @@ async def update_team_data(team_id: str, team_data: Dict[str, Any]):
         }
         
     except Exception as e:
-        logger.error(f"❌ Error updating team {team_id}: {e}")
+        logger.error(f"Error updating team {team_id}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # Gallery endpoints moved to bottom of file to avoid duplicates
