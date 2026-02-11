@@ -35,7 +35,7 @@ def set_groupme_service_class(cls):
 
 async def get_groupme_service():
     """Get GroupMe service with stored credentials"""
-    if not APIIntegrationsService or not SimpleGroupMeService:
+    if not APIIntegrationsService:
         raise HTTPException(status_code=500, detail="GroupMe services not available")
     
     service = APIIntegrationsService(db)
@@ -48,7 +48,23 @@ async def get_groupme_service():
     if not access_token:
         raise HTTPException(status_code=400, detail="GroupMe access token not found in configuration.")
     
-    return SimpleGroupMeService(access_token)
+    if _SimpleGroupMeServiceClass:
+        return _SimpleGroupMeServiceClass(access_token)
+    
+    # Fallback: create a minimal service inline
+    class MinimalGroupMeService:
+        def __init__(self, token):
+            self.access_token = token
+            self.base_url = "https://api.groupme.com/v3"
+        async def create_bot(self, group_id, bot_name, callback_url):
+            import urllib.request
+            url = f"{self.base_url}/bots?token={self.access_token}"
+            data = {"bot": {"name": bot_name, "group_id": group_id, "callback_url": callback_url}}
+            request = urllib.request.Request(url, json.dumps(data).encode(), {"Content-Type": "application/json"})
+            with urllib.request.urlopen(request) as response:
+                return json.loads(response.read().decode())
+    
+    return MinimalGroupMeService(access_token)
 
 # GroupMe webhook secret
 GROUPME_WEBHOOK_SECRET = os.environ.get("GROUPME_WEBHOOK_SECRET", "")
