@@ -589,6 +589,14 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 - Could extract additional routers: events, media, groupme, payments
 
 ## Recently Completed (Feb 2026)
+- **Bug Fixes & Enhancements - GroupMe, Events, Team Schedule** (Feb 11, 2026):
+  - **GroupMe Edit Button Fix**: Fixed `handleEditChannel` to correctly switch to edit form (was using wrong `activeView` value)
+  - **GroupMe Multi-Team Selection**: Added checkbox list for selecting multiple teams per channel
+  - **GroupMe Access Roles**: Added role-based access control (Admin, Coach, Player checkboxes) - only selected roles see the channel
+  - **GroupMe Channels Table**: Now shows Teams column with multi-team badges and Access column with role icons
+  - **Event Manager Permissions**: Create Event button only visible to admin/coach users
+  - **Event Click Behavior**: Non-admin users clicking an event now see spectator view instead of edit form
+  - **Team Schedule Sync Fix**: Events created from Team Schedule tab now use `/api/unified-events` endpoint so they sync to main Events tab
 - **P1 Feature: Admin Recruiting Manager UI** (Feb 11, 2026):
   - New "Recruiting" tab group in Admin Portal with "Join Requests" sub-tab
   - Stats cards showing pending counts for Team Registrations, Player Applications, Volunteer Signups
