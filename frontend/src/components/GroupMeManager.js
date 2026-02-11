@@ -37,6 +37,13 @@ const GroupMeManager = () => {
         loadInitialData();
     }, []);
 
+    // Auto-load available GroupMe groups when entering create-channel view
+    useEffect(() => {
+        if (activeView === 'create-channel' && !editingChannel && availableGroups.length === 0) {
+            loadAvailableGroups();
+        }
+    }, [activeView]);
+
     const loadInitialData = async () => {
         setLoading(true);
         try {
