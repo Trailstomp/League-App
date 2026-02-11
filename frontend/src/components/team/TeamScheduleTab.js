@@ -253,7 +253,6 @@ const TeamScheduleTab = ({ team, events = [], teams = [], currentUser, onEventsU
                         teams={teams}
                         currentUser={currentUser}
                         loading={loading}
-                        canManage={canManageEvents}
                         onEventSelect={(event) => {
                             setSelectedEvent(event);
                             if (canManageEvents) {
@@ -263,7 +262,7 @@ const TeamScheduleTab = ({ team, events = [], teams = [], currentUser, onEventsU
                                 setShowSpectatorView(true);
                             }
                         }}
-                        onStartScoring={(event) => {
+                        onEnterScoring={(event) => {
                             setSelectedEvent(event);
                             setActiveView('scoring-selector');
                         }}
@@ -271,9 +270,7 @@ const TeamScheduleTab = ({ team, events = [], teams = [], currentUser, onEventsU
                             setSelectedEvent(event);
                             setShowSpectatorView(true);
                         }}
-                        onDeleteEvent={canManageEvents ? handleEventDeleted : null}
                         onRefresh={loadEvents}
-                        sportType={sportType}
                     />
                 );
         }
