@@ -14,6 +14,7 @@ import {
     TeamChatTab,
     TeamAdminTab
 } from '../components/team';
+import SponsorsDisplay from '../components/SponsorsDisplay';
 
 const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate, onUserUpdate, onTeamUpdate, onEventsUpdate, sportType = 'lacrosse' }) => {
     const [activeTab, setActiveTab] = useState(() => {
