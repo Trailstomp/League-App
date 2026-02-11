@@ -92,7 +92,6 @@ set_cleanup_db(db)
 set_setup_db(db)
 set_media_db(db)
 set_groupme_db(db)
-set_groupme_service_class(SimpleGroupMeService)
 set_comms_db(db)
 set_joinus_db(db)
 
