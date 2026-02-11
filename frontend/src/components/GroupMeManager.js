@@ -131,6 +131,9 @@ const GroupMeManager = () => {
             formData.append('name', newChannelForm.name);
             formData.append('groupme_group_id', newChannelForm.groupme_group_id);
             formData.append('channel_type', newChannelForm.channel_type);
+            if (newChannelForm.team_ids && newChannelForm.team_ids.length > 0) {
+                formData.append('team_ids', JSON.stringify(newChannelForm.team_ids));
+            }
             if (newChannelForm.team_id) {
                 formData.append('team_id', newChannelForm.team_id);
             }
@@ -138,6 +141,7 @@ const GroupMeManager = () => {
                 formData.append('existing_bot_id', newChannelForm.existing_bot_id);
             }
             formData.append('notification_settings', JSON.stringify(newChannelForm.notification_settings));
+            formData.append('access_roles', JSON.stringify(newChannelForm.access_roles));
 
             const response = await fetch(`${backendUrl}/api/groupme/channels`, {
                 method: 'POST',
@@ -152,8 +156,10 @@ const GroupMeManager = () => {
                     groupme_group_id: '',
                     channel_type: 'team',
                     team_id: '',
+                    team_ids: [],
                     existing_bot_id: '',
-                    notification_settings: {}
+                    notification_settings: {},
+                    access_roles: ['admin', 'coach', 'player']
                 });
                 await loadChannels();
                 await loadDashboardStats();
