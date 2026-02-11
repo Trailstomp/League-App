@@ -23,11 +23,15 @@ def set_db(database):
 # Import needed classes
 try:
     from services.api_integrations_service import APIIntegrationsService
-    from services.groupme_service import SimpleGroupMeService
 except ImportError:
-    # Fallback imports
     APIIntegrationsService = None
-    SimpleGroupMeService = None
+
+# SimpleGroupMeService is defined in server.py and injected via set_groupme_service
+_SimpleGroupMeServiceClass = None
+
+def set_groupme_service_class(cls):
+    global _SimpleGroupMeServiceClass
+    _SimpleGroupMeServiceClass = cls
 
 async def get_groupme_service():
     """Get GroupMe service with stored credentials"""
