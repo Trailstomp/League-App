@@ -559,6 +559,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <TeamManager teams={teams} setTeams={handleTeamsChange} websiteStyle={{}} seasons={seasons} currentSeason={seasons.find(s => s.status === 'active')?.id || null} />;
             case 'team-invites':
                 return <TeamInvitesManager currentUser={currentUser} />;
+            case 'recruiting':
+                return <RecruitingManager currentUser={currentUser} teams={teams} />;
             case 'locations':
                 return <LocationManager teams={teams} currentUser={currentUser} />;
             case 'news':
