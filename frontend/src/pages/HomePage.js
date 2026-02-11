@@ -450,81 +450,108 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
 
                 {/* Join Us Tab Content */}
                 {activeTab === 'join' && (
-                    <div className="p-6 space-y-8" data-testid="join-us-page">
-                        <div className="text-center max-w-2xl mx-auto">
-                            <h2 className="text-2xl font-bold text-slate-800 mb-2">Get Involved</h2>
-                            <p className="text-slate-600">Whether you want to play, lead a team, volunteer, or just connect — there's a place for you here.</p>
-                        </div>
+                    <div className="p-6" data-testid="join-us-page">
+                        {/* Show specific form if selected */}
+                        {activeJoinForm === 'team' && (
+                            <TeamRegistrationForm 
+                                onBack={() => setActiveJoinForm(null)}
+                                onSuccess={() => {}}
+                            />
+                        )}
+                        
+                        {activeJoinForm === 'player' && (
+                            <PlayerApplicationForm 
+                                onBack={() => setActiveJoinForm(null)}
+                                onSuccess={() => {}}
+                            />
+                        )}
+                        
+                        {activeJoinForm === 'volunteer' && (
+                            <VolunteerSignupForm 
+                                onBack={() => setActiveJoinForm(null)}
+                                onSuccess={() => {}}
+                            />
+                        )}
+                        
+                        {/* Show landing page if no form selected */}
+                        {!activeJoinForm && (
+                            <div className="space-y-8">
+                                <div className="text-center max-w-2xl mx-auto">
+                                    <h2 className="text-2xl font-bold text-slate-800 mb-2">Get Involved</h2>
+                                    <p className="text-slate-600">Whether you want to play, lead a team, volunteer, or just connect — there's a place for you here.</p>
+                                </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
-                            {/* Join as Player */}
-                            <div
-                                className="bg-white rounded-xl border-2 border-slate-200 p-6 hover:border-blue-400 hover:shadow-lg transition-all cursor-pointer group"
-                                onClick={() => setActiveTab('teams')}
-                                data-testid="join-as-player"
-                            >
-                                <div className="flex items-center gap-4 mb-3">
-                                    <div className="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🏃</div>
-                                    <div>
-                                        <h3 className="text-lg font-bold text-slate-800">Join as a Player</h3>
-                                        <p className="text-sm text-blue-600 font-medium">Browse teams →</p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
+                                    {/* Join as Player */}
+                                    <div
+                                        className="bg-white rounded-xl border-2 border-slate-200 p-6 hover:border-blue-400 hover:shadow-lg transition-all cursor-pointer group"
+                                        onClick={() => setActiveJoinForm('player')}
+                                        data-testid="join-as-player"
+                                    >
+                                        <div className="flex items-center gap-4 mb-3">
+                                            <div className="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🏃</div>
+                                            <div>
+                                                <h3 className="text-lg font-bold text-slate-800">Join as a Player</h3>
+                                                <p className="text-sm text-blue-600 font-medium">Apply now →</p>
+                                            </div>
+                                        </div>
+                                        <p className="text-sm text-slate-600">Looking to play? Submit an application to join one of our teams. Coaches will review and get back to you.</p>
+                                    </div>
+
+                                    {/* Register a Team */}
+                                    <div
+                                        className="bg-white rounded-xl border-2 border-slate-200 p-6 hover:border-green-400 hover:shadow-lg transition-all cursor-pointer group"
+                                        onClick={() => setActiveJoinForm('team')}
+                                        data-testid="join-as-team"
+                                    >
+                                        <div className="flex items-center gap-4 mb-3">
+                                            <div className="w-14 h-14 rounded-xl bg-green-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🏆</div>
+                                            <div>
+                                                <h3 className="text-lg font-bold text-slate-800">Register a Team</h3>
+                                                <p className="text-sm text-green-600 font-medium">Get started →</p>
+                                            </div>
+                                        </div>
+                                        <p className="text-sm text-slate-600">Have a team ready to play? Register your team for the upcoming season. League admins will review your application.</p>
+                                    </div>
+
+                                    {/* Volunteer or Sponsor */}
+                                    <div
+                                        className="bg-white rounded-xl border-2 border-slate-200 p-6 hover:border-amber-400 hover:shadow-lg transition-all cursor-pointer group"
+                                        onClick={() => setActiveJoinForm('volunteer')}
+                                        data-testid="join-as-volunteer"
+                                    >
+                                        <div className="flex items-center gap-4 mb-3">
+                                            <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🙋</div>
+                                            <div>
+                                                <h3 className="text-lg font-bold text-slate-800">Volunteer or Sponsor</h3>
+                                                <p className="text-sm text-amber-600 font-medium">Sign up →</p>
+                                            </div>
+                                        </div>
+                                        <p className="text-sm text-slate-600">Want to help as a referee, scorekeeper, or sponsor? Sign up and we'll reach out with opportunities.</p>
+                                    </div>
+
+                                    {/* Contact the League */}
+                                    <div
+                                        className="bg-white rounded-xl border-2 border-slate-200 p-6 hover:border-purple-400 hover:shadow-lg transition-all cursor-pointer group"
+                                        onClick={() => adminEmail ? window.location.href = `mailto:${adminEmail}?subject=League%20Inquiry` : null}
+                                        data-testid="contact-league"
+                                    >
+                                        <div className="flex items-center gap-4 mb-3">
+                                            <div className="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">📬</div>
+                                            <div>
+                                                <h3 className="text-lg font-bold text-slate-800">Contact the League</h3>
+                                                {adminEmail ? (
+                                                    <p className="text-sm text-purple-600 font-medium">{adminEmail}</p>
+                                                ) : (
+                                                    <p className="text-sm text-purple-600 font-medium">Send a message →</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <p className="text-sm text-slate-600">Questions? Just want to say hello? Reach out to our league administrator directly.</p>
                                     </div>
                                 </div>
-                                <p className="text-sm text-slate-600">Looking to play? Browse our teams, find one that fits, and submit a join request directly from their page.</p>
                             </div>
-
-                            {/* Register a Team */}
-                            <div
-                                className="bg-white rounded-xl border-2 border-slate-200 p-6 hover:border-green-400 hover:shadow-lg transition-all cursor-pointer group"
-                                onClick={() => adminEmail ? window.location.href = `mailto:${adminEmail}?subject=Team%20Registration%20Inquiry` : setActiveTab('teams')}
-                                data-testid="join-as-team"
-                            >
-                                <div className="flex items-center gap-4 mb-3">
-                                    <div className="w-14 h-14 rounded-xl bg-green-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🏆</div>
-                                    <div>
-                                        <h3 className="text-lg font-bold text-slate-800">Register a Team</h3>
-                                        <p className="text-sm text-green-600 font-medium">Contact us →</p>
-                                    </div>
-                                </div>
-                                <p className="text-sm text-slate-600">Have a team ready to play? Reach out to our league admins to get registered for the upcoming season.</p>
-                            </div>
-
-                            {/* Volunteer or Sponsor */}
-                            <div
-                                className="bg-white rounded-xl border-2 border-slate-200 p-6 hover:border-amber-400 hover:shadow-lg transition-all cursor-pointer group"
-                                onClick={() => setActiveTab('sponsors')}
-                                data-testid="join-as-volunteer"
-                            >
-                                <div className="flex items-center gap-4 mb-3">
-                                    <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🙋</div>
-                                    <div>
-                                        <h3 className="text-lg font-bold text-slate-800">Volunteer or Sponsor</h3>
-                                        <p className="text-sm text-amber-600 font-medium">See sponsors →</p>
-                                    </div>
-                                </div>
-                                <p className="text-sm text-slate-600">Want to help as a referee, volunteer, or sponsor the league? We'd love to have your support.</p>
-                            </div>
-
-                            {/* Contact the League */}
-                            <div
-                                className="bg-white rounded-xl border-2 border-slate-200 p-6 hover:border-purple-400 hover:shadow-lg transition-all cursor-pointer group"
-                                onClick={() => adminEmail ? window.location.href = `mailto:${adminEmail}?subject=League%20Inquiry` : null}
-                                data-testid="contact-league"
-                            >
-                                <div className="flex items-center gap-4 mb-3">
-                                    <div className="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">📬</div>
-                                    <div>
-                                        <h3 className="text-lg font-bold text-slate-800">Contact the League</h3>
-                                        {adminEmail ? (
-                                            <p className="text-sm text-purple-600 font-medium">{adminEmail}</p>
-                                        ) : (
-                                            <p className="text-sm text-purple-600 font-medium">Send a message →</p>
-                                        )}
-                                    </div>
-                                </div>
-                                <p className="text-sm text-slate-600">Questions? Just want to say hello? Reach out to our league administrator directly.</p>
-                            </div>
-                        </div>
+                        )}
                     </div>
                 )}
 
