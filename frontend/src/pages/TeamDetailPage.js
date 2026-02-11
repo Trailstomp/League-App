@@ -112,6 +112,7 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
         { id: 'stats', label: 'Stats', icon: 'trophy' },
         { id: 'chat', label: 'Team Chat', icon: 'email' },
         { id: 'media', label: 'Photos & Vids', icon: 'view' },
+        { id: 'sponsors', label: 'Sponsors', icon: 'trophy' },
         { id: 'contact', label: 'Contact', icon: 'email' },
         // Player/Coach personal dashboard tab
         ...(isPlayerOrCoach ? [
