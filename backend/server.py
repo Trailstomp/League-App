@@ -32,6 +32,7 @@ from routes import finance_router, locations_router, teams_router, teams_public_
 from routes.setup import setup_router, set_setup_db
 from routes.media import media_router, set_db as set_media_db
 from routes.groupme import groupme_router, set_db as set_groupme_db
+from routes.communication import comms_router, set_db as set_comms_db
 
 
 ROOT_DIR = Path(__file__).parent
