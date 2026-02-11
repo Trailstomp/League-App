@@ -510,6 +510,14 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                         <YouTubeGallery title="League YouTube Videos" />
                     </div>
                 )}
+
+                {activeTab === 'sponsors' && (
+                    <div className="p-6">
+                        <h2 className="text-xl font-bold text-slate-800 mb-4">Friends & Sponsors</h2>
+                        <p className="text-sm text-slate-600 mb-6">Thank you to the friends and sponsors who make our league possible!</p>
+                        <SponsorsDisplay currentUser={currentUser} editable={true} />
+                    </div>
+                )}
             </div>
 
             {/* Event Detail Modal */}
