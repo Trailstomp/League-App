@@ -30,6 +30,7 @@ from googleapiclient.errors import HttpError
 # Import feature-based routers
 from routes import finance_router, locations_router, teams_router, teams_public_router, users_router, rsvp_router, drive_router, cleanup_router, set_finance_db, set_locations_db, set_teams_db, set_users_db, set_rsvp_db, set_drive_db, set_cleanup_db
 from routes.setup import setup_router, set_setup_db
+from routes.media import media_router, set_db as set_media_db
 
 
 ROOT_DIR = Path(__file__).parent
