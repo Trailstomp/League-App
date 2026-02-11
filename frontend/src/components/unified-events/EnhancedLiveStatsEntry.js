@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getSportConfig } from '../../config/sportsConfig';
+import AnalogScoreboard from '../AnalogScoreboard';
 
 const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel, sportType = 'lacrosse' }) => {
     // Get sport-specific configuration
