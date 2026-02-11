@@ -1079,6 +1079,82 @@ async def get_news_items():
         logger.error(f"❌ Error fetching news items: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ==================== SPONSORS ====================
+
+@api_router.get("/sponsors")
+async def get_league_sponsors():
+    """Get all league-level sponsors"""
+    try:
+        sponsors = await db.sponsors.find({"scope": "league"}, {"_id": 0}).sort("order", 1).to_list(100)
+        return {"sponsors": sponsors}
+    except Exception as e:
+        logger.error(f"Error fetching league sponsors: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/sponsors")
+async def create_sponsor(data: Dict[str, Any]):
+    """Create a league or team sponsor"""
+    try:
+        import uuid
+        sponsor = {
+            "id": str(uuid.uuid4()),
+            "name": data.get("name", ""),
+            "message": data.get("message", ""),
+            "imageUrl": data.get("imageUrl", ""),
+            "websiteUrl": data.get("websiteUrl", ""),
+            "socials": data.get("socials", {}),
+            "scope": data.get("scope", "league"),
+            "teamId": data.get("teamId"),
+            "order": data.get("order", 0),
+            "active": True,
+            "createdAt": datetime.now(timezone.utc).isoformat()
+        }
+        await db.sponsors.insert_one(sponsor)
+        return {"status": "success", "sponsor": {k: v for k, v in sponsor.items() if k != "_id"}}
+    except Exception as e:
+        logger.error(f"Error creating sponsor: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.put("/sponsors/{sponsor_id}")
+async def update_sponsor(sponsor_id: str, data: Dict[str, Any]):
+    """Update a sponsor"""
+    try:
+        update_fields = {k: v for k, v in data.items() if k not in ["id", "_id"]}
+        update_fields["updatedAt"] = datetime.now(timezone.utc).isoformat()
+        result = await db.sponsors.update_one({"id": sponsor_id}, {"$set": update_fields})
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Sponsor not found")
+        return {"status": "success"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating sponsor: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/sponsors/{sponsor_id}")
+async def delete_sponsor(sponsor_id: str):
+    """Delete a sponsor"""
+    try:
+        result = await db.sponsors.delete_one({"id": sponsor_id})
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Sponsor not found")
+        return {"status": "success"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting sponsor: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/teams/{team_id}/sponsors")
+async def get_team_sponsors(team_id: str):
+    """Get sponsors for a specific team"""
+    try:
+        sponsors = await db.sponsors.find({"teamId": team_id}, {"_id": 0}).sort("order", 1).to_list(100)
+        return {"sponsors": sponsors}
+    except Exception as e:
+        logger.error(f"Error fetching team sponsors: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/proxy-image")
 async def proxy_image(url: str):
     """Proxy images to avoid CORS issues for color extraction"""
