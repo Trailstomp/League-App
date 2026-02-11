@@ -61,8 +61,10 @@ const GroupMeChatUnified = ({ teamId = null, channelType = "all", currentUser })
         // Admins can see all channels
         if (userIsAdmin) return true;
 
-        // Check role-based access
-        const channelRoles = channel.access_roles || ['admin', 'coach', 'player'];
+        // Check role-based access - default to all roles if not set
+        const channelRoles = Array.isArray(channel.access_roles) && channel.access_roles.length > 0 
+            ? channel.access_roles 
+            : ['admin', 'coach', 'player'];
         const hasRoleAccess = userRoles.some(role => channelRoles.includes(role));
         
         if (!hasRoleAccess) return false;
@@ -71,9 +73,14 @@ const GroupMeChatUnified = ({ teamId = null, channelType = "all", currentUser })
         if (channel.channel_type === 'league') return true;
 
         // For team channels, check if user is on one of the channel's teams
-        const channelTeamIds = channel.team_ids || (channel.team_id ? [channel.team_id] : []);
+        let channelTeamIds = [];
+        if (Array.isArray(channel.team_ids) && channel.team_ids.length > 0) {
+            channelTeamIds = channel.team_ids;
+        } else if (channel.team_id) {
+            channelTeamIds = [channel.team_id];
+        }
         
-        if (channelTeamIds.length === 0) return true;
+        if (channelTeamIds.length === 0) return true; // Legacy channel without team assignment
 
         return channelTeamIds.some(ctid => userTeamIds.includes(ctid));
     };
