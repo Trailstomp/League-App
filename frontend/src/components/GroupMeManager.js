@@ -1073,6 +1073,7 @@ const GroupMeManager = () => {
                             onClick={() => {
                                 setActiveView(tab.id);
                                 setEditingChannel(null); // Clear editing state when switching tabs
+                                setError(''); // Clear stale errors when switching tabs
                             }}
                             className={`py-2 px-1 border-b-2 font-medium text-sm ${
                                 activeView === tab.id
