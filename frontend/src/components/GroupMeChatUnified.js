@@ -19,9 +19,68 @@ const GroupMeChatUnified = ({ teamId = null, channelType = "all", currentUser })
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
+    // Get user's roles - normalize to array
+    const getUserRoles = () => {
+        if (!currentUser) return [];
+        const roles = [];
+        if (currentUser.role) roles.push(currentUser.role);
+        if (Array.isArray(currentUser.roles)) {
+            currentUser.roles.forEach(r => {
+                if (!roles.includes(r)) roles.push(r);
+            });
+        }
+        return roles;
+    };
+
+    // Get user's team IDs
+    const getUserTeamIds = () => {
+        if (!currentUser) return [];
+        const teamIds = [];
+        if (currentUser.teamId) teamIds.push(currentUser.teamId);
+        if (Array.isArray(currentUser.teamAssignments)) {
+            currentUser.teamAssignments.forEach(ta => {
+                if (ta.teamId && !teamIds.includes(ta.teamId)) {
+                    teamIds.push(ta.teamId);
+                }
+            });
+        }
+        if (teamId && !teamIds.includes(teamId)) {
+            teamIds.push(teamId);
+        }
+        return teamIds;
+    };
+
+    // Check if user can access a channel
+    const canAccessChannel = (channel) => {
+        if (!currentUser) return false;
+
+        const userRoles = getUserRoles();
+        const userTeamIds = getUserTeamIds();
+        const userIsAdmin = userRoles.includes('admin') || userRoles.includes('league_admin');
+
+        // Admins can see all channels
+        if (userIsAdmin) return true;
+
+        // Check role-based access
+        const channelRoles = channel.access_roles || ['admin', 'coach', 'player'];
+        const hasRoleAccess = userRoles.some(role => channelRoles.includes(role));
+        
+        if (!hasRoleAccess) return false;
+
+        // For league-wide channels, role access is enough
+        if (channel.channel_type === 'league') return true;
+
+        // For team channels, check if user is on one of the channel's teams
+        const channelTeamIds = channel.team_ids || (channel.team_id ? [channel.team_id] : []);
+        
+        if (channelTeamIds.length === 0) return true;
+
+        return channelTeamIds.some(ctid => userTeamIds.includes(ctid));
+    };
+
     useEffect(() => {
         loadChannels();
-    }, [teamId, channelType]);
+    }, [teamId, channelType, currentUser]);
 
     useEffect(() => {
         if (selectedChannel) {
@@ -47,12 +106,20 @@ const GroupMeChatUnified = ({ teamId = null, channelType = "all", currentUser })
             
             let filteredChannels = data.channels || [];
             
-            // Filter channels based on context
-            if (teamId && channelType === "team") {
-                filteredChannels = filteredChannels.filter(c => c.team_id === teamId);
-            } else if (channelType === "league") {
-                filteredChannels = filteredChannels.filter(c => c.channel_type === "league");
-            }
+            // Filter channels based on user permissions
+            filteredChannels = filteredChannels.filter(channel => canAccessChannel(channel));
+            
+            // Sort: team channels first, then league channels
+            filteredChannels.sort((a, b) => {
+                const aTeamIds = a.team_ids || (a.team_id ? [a.team_id] : []);
+                const bTeamIds = b.team_ids || (b.team_id ? [b.team_id] : []);
+                
+                if (teamId && aTeamIds.includes(teamId)) return -1;
+                if (teamId && bTeamIds.includes(teamId)) return 1;
+                if (a.channel_type === 'league') return -1;
+                if (b.channel_type === 'league') return 1;
+                return (a.name || '').localeCompare(b.name || '');
+            });
             
             setChannels(filteredChannels);
             
