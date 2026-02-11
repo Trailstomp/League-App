@@ -209,41 +209,43 @@ const SponsorsDisplay = ({ teamId = null, currentUser = null, editable = false }
 
             {/* Sponsors Grid */}
             {sponsors.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                     {sponsors.map(sponsor => (
                         <div key={sponsor.id} className="bg-white rounded-xl border shadow-sm overflow-hidden hover:shadow-md transition-shadow" data-testid={`sponsor-card-${sponsor.id}`}>
+                            {/* Large Logo */}
                             {sponsor.imageUrl && (
-                                <div className="h-32 bg-slate-50 flex items-center justify-center p-4">
+                                <div className="aspect-square bg-slate-50 flex items-center justify-center p-3">
                                     <CachedImage src={sponsor.imageUrl} alt={sponsor.name} className="max-h-full max-w-full object-contain" />
                                 </div>
                             )}
-                            <div className="p-4">
-                                <h4 className="font-semibold text-slate-800 text-base">{sponsor.name}</h4>
+                            <div className="p-3">
+                                <h4 className="font-semibold text-slate-800 text-sm truncate">{sponsor.name}</h4>
                                 {sponsor.message && (
-                                    <p className="text-sm text-slate-600 mt-1 line-clamp-3">{sponsor.message}</p>
+                                    <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{sponsor.message}</p>
                                 )}
 
-                                {/* Links */}
-                                <div className="flex flex-wrap items-center gap-2 mt-3">
+                                {/* Icon links row */}
+                                <div className="flex items-center gap-1.5 mt-2">
                                     {sponsor.websiteUrl && (
                                         <a href={sponsor.websiteUrl} target="_blank" rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-medium hover:bg-blue-100">
-                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                                            Website
+                                            className="p-1.5 rounded-full hover:bg-slate-100 text-slate-500 hover:text-blue-600 transition-colors"
+                                            title="Website">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" /></svg>
                                         </a>
                                     )}
                                     {Object.entries(sponsor.socials || {}).filter(([, v]) => v).map(([key, url]) => (
                                         <a key={key} href={url} target="_blank" rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium hover:opacity-80"
-                                            style={{ backgroundColor: socialIcons[key]?.color + '15', color: socialIcons[key]?.color }}>
-                                            {socialIcons[key]?.label || key}
+                                            className="p-1.5 rounded-full hover:bg-slate-100 transition-colors"
+                                            style={{ color: socialIcons[key]?.color }}
+                                            title={socialIcons[key]?.label || key}>
+                                            {socialIcons[key]?.icon || <span className="text-xs">{key}</span>}
                                         </a>
                                     ))}
                                 </div>
 
                                 {/* Admin controls */}
                                 {canEdit && (
-                                    <div className="flex gap-2 mt-3 pt-3 border-t">
+                                    <div className="flex gap-2 mt-2 pt-2 border-t">
                                         <button onClick={() => handleEdit(sponsor)} className="text-xs text-blue-600 hover:text-blue-800 font-medium">Edit</button>
                                         <button onClick={() => handleDelete(sponsor.id)} className="text-xs text-red-600 hover:text-red-800 font-medium">Remove</button>
                                     </div>
