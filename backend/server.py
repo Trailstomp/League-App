@@ -87,6 +87,7 @@ set_rsvp_db(db)
 set_drive_db(db)
 set_cleanup_db(db)
 set_setup_db(db)
+set_media_db(db)
 
 # Create the main app without a prefix
 app = FastAPI()
