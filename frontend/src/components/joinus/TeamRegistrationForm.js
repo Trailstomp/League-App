@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Upload, Loader2 } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ChevronLeft, Upload, Loader2, X, Image } from 'lucide-react';
 
 const TeamRegistrationForm = ({ onBack, onSuccess }) => {
     const [formData, setFormData] = useState({
@@ -16,8 +16,10 @@ const TeamRegistrationForm = ({ onBack, onSuccess }) => {
     });
     const [divisions, setDivisions] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [uploadingLogo, setUploadingLogo] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
+    const fileInputRef = useRef(null);
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
     
