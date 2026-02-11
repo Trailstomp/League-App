@@ -143,6 +143,8 @@ async def startup_event():
     logger.info("🚀 MLBL Backend starting up...")
     logger.info(f"📁 Uploads directory: {UPLOADS_DIR}")
     logger.info(f"🗄️ Database: {os.environ.get('DB_NAME', 'mlbl_database')}")
+    # Inject SimpleGroupMeService into groupme router
+    set_groupme_service_class(SimpleGroupMeService)
     logger.info("✅ Backend startup complete")
 
 
