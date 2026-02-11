@@ -593,42 +593,89 @@ const GroupMeManager = () => {
                         </label>
                         <select
                             value={newChannelForm.channel_type}
-                            onChange={(e) => setNewChannelForm({...newChannelForm, channel_type: e.target.value, team_id: e.target.value === 'league' ? '' : newChannelForm.team_id})}
+                            onChange={(e) => setNewChannelForm({...newChannelForm, channel_type: e.target.value, team_id: e.target.value === 'league' ? '' : newChannelForm.team_id, team_ids: e.target.value === 'league' ? [] : newChannelForm.team_ids})}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                            <option value="team">Team Channel</option>
+                            <option value="team">Team Channel(s)</option>
                             <option value="league">League-wide Channel</option>
                         </select>
                     </div>
 
-                    {/* Team Selector - Show for both create and edit when type is 'team' */}
+                    {/* Team Multi-Select - Show for both create and edit when type is 'team' */}
                     {newChannelForm.channel_type === 'team' && (
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Assign to Team
+                                Assign to Teams (Select multiple)
                             </label>
-                            <select
-                                value={newChannelForm.team_id}
-                                onChange={(e) => setNewChannelForm({...newChannelForm, team_id: e.target.value})}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                required={!editingChannel}
-                            >
-                                <option value="">Select a team...</option>
+                            <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-md p-3 bg-gray-50">
                                 {teams
                                     .sort((a, b) => a.name.localeCompare(b.name))
                                     .map((team) => (
-                                        <option key={team.id} value={team.id}>
-                                            {team.name}
-                                        </option>
+                                        <label key={team.id} className="flex items-center p-2 hover:bg-white rounded cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={newChannelForm.team_ids?.includes(team.id)}
+                                                onChange={(e) => {
+                                                    const newTeamIds = e.target.checked
+                                                        ? [...(newChannelForm.team_ids || []), team.id]
+                                                        : (newChannelForm.team_ids || []).filter(id => id !== team.id);
+                                                    setNewChannelForm({
+                                                        ...newChannelForm, 
+                                                        team_ids: newTeamIds,
+                                                        team_id: newTeamIds[0] || '' // Keep first for backwards compat
+                                                    });
+                                                }}
+                                                className="mr-3 h-4 w-4 text-blue-600 rounded"
+                                            />
+                                            <span className="text-sm">{team.name}</span>
+                                        </label>
                                     ))}
-                            </select>
+                            </div>
+                            {newChannelForm.team_ids?.length > 0 && (
+                                <p className="text-xs text-gray-500 mt-2">
+                                    {newChannelForm.team_ids.length} team(s) selected
+                                </p>
+                            )}
                             {editingChannel && (
                                 <p className="text-xs text-gray-500 mt-1">
-                                    Change the team this GroupMe channel is associated with
+                                    Select which teams have access to this GroupMe channel
                                 </p>
                             )}
                         </div>
                     )}
+
+                    {/* Access Roles */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Who Can Access This Channel?
+                        </label>
+                        <div className="space-y-2 border border-gray-300 rounded-md p-3 bg-gray-50">
+                            {[
+                                { value: 'admin', label: 'League Admins', icon: '👑' },
+                                { value: 'coach', label: 'Team Coaches', icon: '📋' },
+                                { value: 'player', label: 'Players', icon: '🏃' }
+                            ].map((role) => (
+                                <label key={role.value} className="flex items-center p-2 hover:bg-white rounded cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={newChannelForm.access_roles?.includes(role.value)}
+                                        onChange={(e) => {
+                                            const newRoles = e.target.checked
+                                                ? [...(newChannelForm.access_roles || []), role.value]
+                                                : (newChannelForm.access_roles || []).filter(r => r !== role.value);
+                                            setNewChannelForm({...newChannelForm, access_roles: newRoles});
+                                        }}
+                                        className="mr-3 h-4 w-4 text-blue-600 rounded"
+                                    />
+                                    <span className="mr-2">{role.icon}</span>
+                                    <span className="text-sm">{role.label}</span>
+                                </label>
+                            ))}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                            Only users with selected roles will see this channel
+                        </p>
+                    </div>
 
                     {!editingChannel && (
                         <div>
