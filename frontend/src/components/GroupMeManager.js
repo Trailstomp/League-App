@@ -494,7 +494,7 @@ const GroupMeManager = () => {
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-900">GroupMe Channels</h2>
                 <button
-                    onClick={() => setActiveView('create-channel')}
+                    onClick={() => { setError(''); setActiveView('create-channel'); }}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                     Add Channel
