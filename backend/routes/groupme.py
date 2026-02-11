@@ -2,7 +2,7 @@
 GroupMe Router - Handles GroupMe integration, channels, messages, broadcasting, notifications
 Extracted from server.py during backend refactoring
 """
-from fastapi import APIRouter, HTTPException, Form
+from fastapi import APIRouter, HTTPException, Form, Request
 from typing import Dict, Any, Optional, List
 from datetime import datetime, timezone
 import uuid
