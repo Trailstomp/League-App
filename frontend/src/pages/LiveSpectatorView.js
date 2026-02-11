@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import AnalogScoreboard from '../components/AnalogScoreboard';
 
 const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
     console.log('🎬 LiveSpectatorView RENDERING with event:', event?.id, event?.title);
