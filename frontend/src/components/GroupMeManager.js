@@ -675,7 +675,8 @@ const GroupMeManager = () => {
                             </label>
                             <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-md p-3 bg-gray-50">
                                 {teams
-                                    .sort((a, b) => a.name.localeCompare(b.name))
+                                    .filter(team => team && team.name)
+                                    .sort((a, b) => (a.name || '').localeCompare(b.name || ''))
                                     .map((team) => (
                                         <label key={team.id} className="flex items-center p-2 hover:bg-white rounded cursor-pointer">
                                             <input
