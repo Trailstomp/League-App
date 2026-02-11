@@ -77,9 +77,22 @@ const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse'
     useEffect(() => {
         if (team?.id) {
             fetchTeamPlayers();
+            fetchCoaches();
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [team?.id, players]);
+
+    const fetchCoaches = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/api/teams/${team.id}/coaches`);
+            if (response.ok) {
+                const data = await response.json();
+                setCoaches(data.coaches || []);
+            }
+        } catch (e) {
+            console.error('Error fetching coaches:', e);
+        }
+    };
 
     // Fetch available users for adding to team
     const fetchAvailableUsers = async () => {
