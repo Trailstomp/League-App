@@ -330,7 +330,16 @@ const GroupMeManager = () => {
         }
     };
 
-    const renderDashboard = () => (
+    const renderDashboard = () => {
+        // Calculate stats from local channels data for more accuracy
+        const localStats = {
+            active_channels: channels.filter(c => c.is_active).length,
+            team_channels: channels.filter(c => c.channel_type === 'team').length,
+            league_channels: channels.filter(c => c.channel_type === 'league').length,
+            recent_messages: dashboardStats.recent_messages || 0
+        };
+        
+        return (
         <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900">GroupMe Integration Dashboard</h2>
             
@@ -349,24 +358,29 @@ const GroupMeManager = () => {
                     </button>
                 </div>
                 
-                {error && (
-                    <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                        <div className="flex items-start">
-                            <span className="text-red-500 mr-2">❌</span>
+                {/* Show success if we have channels, regardless of API test */}
+                {channels.length > 0 && (
+                    <div className="p-4 bg-green-50 border border-green-200 rounded-lg mb-4">
+                        <div className="flex items-center">
+                            <span className="text-green-500 mr-2">✅</span>
                             <div>
-                                <p className="text-sm font-medium text-red-800">Configuration Issue</p>
-                                <p className="text-sm text-red-700 mt-1">{error}</p>
-                                {error.includes('GROUPME_ACCESS_TOKEN') && (
-                                    <div className="mt-2 text-xs text-red-600">
-                                        <p><strong>To fix:</strong></p>
-                                        <ol className="list-decimal list-inside mt-1 space-y-1">
-                                            <li>Go to <a href="https://dev.groupme.com/" target="_blank" rel="noopener noreferrer" className="underline">https://dev.groupme.com/</a></li>
-                                            <li>Create an application and get your Access Token</li>
-                                            <li>Add GROUPME_ACCESS_TOKEN to your environment variables</li>
-                                            <li>Restart your backend server</li>
-                                        </ol>
-                                    </div>
-                                )}
+                                <p className="text-sm font-medium text-green-800">Channels Active</p>
+                                <p className="text-sm text-green-700">You have {localStats.active_channels} active GroupMe channel(s) configured</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                
+                {error && (
+                    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <div className="flex items-start">
+                            <span className="text-yellow-500 mr-2">⚠️</span>
+                            <div>
+                                <p className="text-sm font-medium text-yellow-800">API Configuration Note</p>
+                                <p className="text-sm text-yellow-700 mt-1">{error}</p>
+                                <p className="text-xs text-yellow-600 mt-2">
+                                    Note: Your existing channels still work. This only affects discovering new GroupMe groups.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -377,7 +391,7 @@ const GroupMeManager = () => {
                         <div className="flex items-center">
                             <span className="text-green-500 mr-2">✅</span>
                             <div>
-                                <p className="text-sm font-medium text-green-800">Configuration Working</p>
+                                <p className="text-sm font-medium text-green-800">API Configuration Working</p>
                                 <p className="text-sm text-green-700">Found {availableGroups.length} GroupMe groups available</p>
                             </div>
                         </div>
@@ -396,7 +410,7 @@ const GroupMeManager = () => {
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-600">Active Channels</p>
-                            <p className="text-2xl font-semibold text-gray-900">{dashboardStats.active_channels || 0}</p>
+                            <p className="text-2xl font-semibold text-gray-900">{localStats.active_channels}</p>
                         </div>
                     </div>
                 </div>
@@ -410,7 +424,7 @@ const GroupMeManager = () => {
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-600">Recent Messages</p>
-                            <p className="text-2xl font-semibold text-gray-900">{dashboardStats.recent_messages || 0}</p>
+                            <p className="text-2xl font-semibold text-gray-900">{localStats.recent_messages}</p>
                         </div>
                     </div>
                 </div>
@@ -424,7 +438,7 @@ const GroupMeManager = () => {
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-600">Team Channels</p>
-                            <p className="text-2xl font-semibold text-gray-900">{dashboardStats.team_channels || 0}</p>
+                            <p className="text-2xl font-semibold text-gray-900">{localStats.team_channels}</p>
                         </div>
                     </div>
                 </div>
