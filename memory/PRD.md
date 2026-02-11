@@ -600,6 +600,7 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 - **Consolidated Team Admin Tab**: Moved all team-level admin tools into Team Admin tab. Coaches/admins manage everything team-specific from one place.
 - **Friends & Sponsors**: New tab on homepage and team pages with full CRUD — sponsors with name, message, image, website URL, and social links.
 - **Roster Coaches-First Layout**: Team roster now shows coaching staff section above players grid when coaches exist.
+- **Team Locations**: Full location management per team — coaches/admins can add/edit/delete locations (name, address, type, indoor/outdoor, surface, notes) from Team Admin > Locations. Team Home tab shows embedded Google Maps with Get Directions buttons for each location.
 
 ## Backlog / Upcoming
 - P1: Get valid SMTP credentials configured for email notifications to actually deliver
