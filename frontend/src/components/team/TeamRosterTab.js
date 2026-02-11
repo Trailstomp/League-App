@@ -457,9 +457,50 @@ const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse'
                 <div className="flex items-center justify-center py-12">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                 </div>
-            ) : teamPlayers.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
-                    {teamPlayers.map((player) => {
+            ) : (
+                <>
+                    {/* Coaching Staff Section */}
+                    {coaches.length > 0 && (
+                        <div className="mb-6" data-testid="coaches-section">
+                            <h3 className="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                                <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6z"/></svg>
+                                Coaching Staff
+                            </h3>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+                                {coaches.map(coach => (
+                                    <div key={coach.id || coach.email} className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl overflow-hidden shadow-sm border border-amber-200">
+                                        <div className="relative h-40 bg-gradient-to-br from-amber-100 to-orange-100 overflow-hidden flex items-center justify-center">
+                                            {coach.photoUrl ? (
+                                                <img src={getFullImageUrl(coach.photoUrl)} alt={coach.name} className="w-full h-full object-cover" onError={e => { e.target.style.display = 'none'; }} />
+                                            ) : (
+                                                <div className="w-16 h-16 rounded-full bg-amber-200 flex items-center justify-center">
+                                                    <span className="text-2xl font-bold text-amber-700">{(coach.name || '?')[0]}</span>
+                                                </div>
+                                            )}
+                                            <div className="absolute top-2 right-2 bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full font-medium">Coach</div>
+                                        </div>
+                                        <div className="p-3 text-center">
+                                            <div className="font-semibold text-slate-800 text-sm truncate">{coach.name}</div>
+                                            {coach.title && <div className="text-xs text-amber-600 mt-0.5">{coach.title}</div>}
+                                            {coach.email && <div className="text-xs text-slate-500 mt-0.5 truncate">{coach.email}</div>}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Players Section */}
+                    {teamPlayers.length > 0 ? (
+                        <>
+                            {coaches.length > 0 && (
+                                <h3 className="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                                    <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/></svg>
+                                    Players
+                                </h3>
+                            )}
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+                                {teamPlayers.map((player) => {
                         const teamInfo = getPlayerTeamInfo(player);
                         return (
                             <div 
