@@ -5,6 +5,7 @@ import YouTubeGallery from '../components/YouTubeGallery';
 import EventDetailModal from '../scheduling/components/EventDetailModal';
 import TeamDetailModal from '../teams/components/TeamDetailModal';
 import SponsorsDisplay from '../components/SponsorsDisplay';
+import NewsDisplay from '../components/NewsDisplay';
 import { fixGoogleDriveUrl } from '../utils/imageUtils';
 import CachedImage from '../components/CachedImage';
 
