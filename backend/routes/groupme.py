@@ -20,6 +20,35 @@ def set_db(database):
     global db
     db = database
 
+# Import needed classes
+try:
+    from services.api_integrations import APIIntegrationsService
+    from services.groupme_service import SimpleGroupMeService
+except ImportError:
+    # Fallback imports
+    APIIntegrationsService = None
+    SimpleGroupMeService = None
+
+async def get_groupme_service():
+    """Get GroupMe service with stored credentials"""
+    if not APIIntegrationsService or not SimpleGroupMeService:
+        raise HTTPException(status_code=500, detail="GroupMe services not available")
+    
+    service = APIIntegrationsService(db)
+    credentials = await service.get_groupme_credentials()
+    
+    if not credentials:
+        raise HTTPException(status_code=400, detail="GroupMe not configured. Please configure GroupMe integration in API settings.")
+    
+    access_token = credentials.get("access_token")
+    if not access_token:
+        raise HTTPException(status_code=400, detail="GroupMe access token not found in configuration.")
+    
+    return SimpleGroupMeService(access_token)
+
+# GroupMe webhook secret
+GROUPME_WEBHOOK_SECRET = os.environ.get("GROUPME_WEBHOOK_SECRET", "")
+
 @groupme_router.get("/groupme/groups")
 async def list_available_groupme_groups():
     """Get available GroupMe groups for configuration"""
