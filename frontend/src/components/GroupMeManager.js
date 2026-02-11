@@ -1082,7 +1082,6 @@ const GroupMeManager = () => {
             {/* Content */}
             {activeView === 'dashboard' && renderDashboard()}
             {activeView === 'channels' && renderChannels()}
-            {activeView === 'create-channel' && renderCreateChannel()}
             {activeView === 'broadcast' && renderBroadcast()}
         </div>
     );
