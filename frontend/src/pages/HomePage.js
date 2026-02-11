@@ -257,9 +257,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
     };
 
     const handleJoinClick = (type) => {
-        // Navigate to teams tab so users can find a team to contact
-        setActiveTab('teams');
-        // Could also show a modal with more info
+        setActiveTab('join');
     };
 
     return (
