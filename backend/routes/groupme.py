@@ -108,11 +108,7 @@ async def create_groupme_channel(
     """Create a new GroupMe channel configuration"""
     
     try:
-        # Get GroupMe service with stored credentials
-        groupme_service = await get_groupme_service()
-        
         # Parse notification settings and access roles
-        import json
         settings = json.loads(notification_settings) if notification_settings else {}
         roles = json.loads(access_roles) if access_roles else ["admin", "coach", "player"]
         parsed_team_ids = json.loads(team_ids) if team_ids else []
@@ -149,7 +145,6 @@ async def create_groupme_channel(
         if existing:
             channel_description = f"{channel_type} channel"
             if channel_type == "team" and team_id:
-                # Get team name for better error message from league_data
                 league_doc = await db.league_data.find_one({"id": "main_league"})
                 if league_doc and league_doc.get("teams"):
                     team = next((t for t in league_doc["teams"] if t.get("id") == team_id), None)
@@ -165,11 +160,12 @@ async def create_groupme_channel(
         
         # Handle bot creation or use existing bot
         if existing_bot_id:
-            # Use existing bot ID
+            # Use existing bot ID - no need to call GroupMe API
             bot_id = existing_bot_id
             logger.info(f"Using existing bot ID: {bot_id}")
         else:
-            # Create bot using the service
+            # Need GroupMe API service to create bot
+            groupme_service = await get_groupme_service()
             bot_name = f"{name} League Bot"
             callback_url = f"{os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')}/api/groupme/webhook"
             
