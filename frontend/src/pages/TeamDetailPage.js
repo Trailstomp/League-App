@@ -285,6 +285,13 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
                 {activeTab === 'stats' && <TeamStatsTab team={team} events={events} />}
                 {activeTab === 'chat' && <TeamChatTab team={team} />}
                 {activeTab === 'media' && <TeamMediaTab team={team} />}
+                {activeTab === 'sponsors' && (
+                    <div className="bg-white rounded-lg shadow-sm border p-6">
+                        <h2 className="text-xl font-bold text-slate-800 mb-1">Friends & Sponsors</h2>
+                        <p className="text-sm text-slate-500 mb-5">Supporters and partners of {team.name}</p>
+                        <SponsorsDisplay teamId={team.id} currentUser={currentUser} editable={isTeamCoachOrAdmin} />
+                    </div>
+                )}
                 {activeTab === 'contact' && <TeamContactTab team={team} />}
                 {activeTab === 'my-dashboard' && <MyDashboardTab team={team} currentUser={currentUser} />}
                 {activeTab === 'admin' && <TeamAdminTab team={team} currentUser={currentUser} onTeamUpdate={onTeamUpdate} sportType={sportType} />}
