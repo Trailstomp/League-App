@@ -158,6 +158,20 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
         };
         loadWelcomeMessage();
     }, [backendUrl]);
+
+    // Load admin email
+    useEffect(() => {
+        const fetchAdminEmail = async () => {
+            try {
+                const res = await fetch(`${backendUrl}/api/league-data`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setAdminEmail(data.smtpConfig?.email || '');
+                }
+            } catch (e) { /* silent */ }
+        };
+        fetchAdminEmail();
+    }, [backendUrl]);
     
     // Calculate statistics
     const stats = {
