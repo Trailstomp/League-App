@@ -94,93 +94,61 @@ const TeamHomeTab = ({ team, teams, events, onNavigate }) => {
                         {teamLocations.map(location => (
                             <div 
                                 key={location.id} 
-                                className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                                className="bg-white border border-slate-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
                             >
-                                <div className="flex items-start justify-between mb-3">
-                                    <div className="flex-1">
-                                        <div className="flex items-center mb-2">
-                                            <span className="text-xl mr-2">{getLocationTypeIcon(location.types)}</span>
-                                            <h4 className="font-semibold text-slate-800">{location.name}</h4>
-                                        </div>
-                                        
-                                        {/* Multiple type badges */}
-                                        <div className="flex flex-wrap gap-1 mb-2">
-                                            {location.types && location.types.map((type, index) => (
-                                                <span key={index} className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                    {type.replace('_', ' ')}
-                                                </span>
-                                            ))}
-                                            {(!location.types || location.types.length === 0) && (
-                                                <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                                                    location
-                                                </span>
-                                            )}
-                                        </div>
-                                        
-                                        <div className="space-y-1 text-sm text-slate-600">
-                                            {location.address && (
-                                                <div 
-                                                    className="flex items-center cursor-pointer hover:text-blue-600"
-                                                    onClick={() => openGoogleMaps(location.address)}
-                                                    title="Click to open in Google Maps"
-                                                >
-                                                    📍 {location.address}
-                                                </div>
-                                            )}
-                                            
-                                            <div className="flex items-center space-x-4">
-                                                <span className={`flex items-center ${location.indoor ? 'text-orange-600' : 'text-green-600'}`}>
-                                                    {location.indoor ? '🏢 Indoor' : '🌤️ Outdoor'}
-                                                </span>
-                                                <span className="flex items-center">
-                                                    {getSurfaceIcon(location.surface)} {location.surface?.replace('_', ' ') || 'grass'}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        
-                                        {location.description && (
-                                            <p className="text-sm text-slate-500 mt-2">{location.description}</p>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Google Maps Preview with Satellite */}
-                                {getMapImageUrl(location.address) && (
-                                    <div className="mt-3">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                            <div 
-                                                className="cursor-pointer rounded-lg overflow-hidden border border-slate-200"
-                                                onClick={() => openGoogleMaps(location.address)}
-                                                title="Click to open in Google Maps"
-                                            >
-                                                <div className="text-xs text-slate-500 bg-slate-50 px-2 py-1 border-b">📍 Street View</div>
-                                                <img 
-                                                    src={getMapImageUrl(location.address, false)} 
-                                                    alt={`Street map of ${location.name}`}
-                                                    className="w-full h-24 object-cover hover:opacity-90 transition-opacity"
-                                                    onError={(e) => {
-                                                        e.target.style.display = 'none';
-                                                    }}
-                                                />
-                                            </div>
-                                            <div 
-                                                className="cursor-pointer rounded-lg overflow-hidden border border-slate-200"
-                                                onClick={() => openGoogleMaps(location.address)}
-                                                title="Click to open in Google Maps"
-                                            >
-                                                <div className="text-xs text-slate-500 bg-slate-50 px-2 py-1 border-b">🛰️ Satellite</div>
-                                                <img 
-                                                    src={getMapImageUrl(location.address, true)} 
-                                                    alt={`Satellite view of ${location.name}`}
-                                                    className="w-full h-24 object-cover hover:opacity-90 transition-opacity"
-                                                    onError={(e) => {
-                                                        e.target.style.display = 'none';
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
+                                {/* Embedded Map */}
+                                {location.address && (
+                                    <div className="h-40">
+                                        <iframe
+                                            title={location.name}
+                                            src={`https://maps.google.com/maps?q=${encodeURIComponent(location.address)}&output=embed`}
+                                            className="w-full h-full border-0"
+                                            allowFullScreen
+                                            loading="lazy"
+                                        />
                                     </div>
                                 )}
+                                <div className="p-4">
+                                    <div className="flex items-center mb-2">
+                                        <span className="text-xl mr-2">{getLocationTypeIcon(location.types)}</span>
+                                        <h4 className="font-semibold text-slate-800">{location.name}</h4>
+                                    </div>
+                                    
+                                    {/* Type badges */}
+                                    <div className="flex flex-wrap gap-1 mb-2">
+                                        {location.types && location.types.map((type, index) => (
+                                            <span key={index} className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                {type.replace(/_/g, ' ')}
+                                            </span>
+                                        ))}
+                                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${location.indoor ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}>
+                                            {location.indoor ? 'Indoor' : 'Outdoor'}
+                                        </span>
+                                        {location.surface && (
+                                            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                                                {location.surface.replace(/_/g, ' ')}
+                                            </span>
+                                        )}
+                                    </div>
+                                    
+                                    {location.address && (
+                                        <p className="text-sm text-slate-600 mb-1">{location.address}</p>
+                                    )}
+                                    {location.notes && (
+                                        <p className="text-sm text-slate-500 italic mb-2">{location.notes}</p>
+                                    )}
+                                    
+                                    <a
+                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700"
+                                        data-testid={`directions-btn-${location.id}`}
+                                    >
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                        Get Directions
+                                    </a>
+                                </div>
                             </div>
                         ))}
                     </div>
