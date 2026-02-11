@@ -6,7 +6,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from environment - PRODUCTION URL
-BACKEND_URL = "https://join-us-workflow.preview.emergentagent.com/api"
+BACKEND_URL = "https://league-manager-35.preview.emergentagent.com/api"
 
 def check_player_photo_sizes():
     """Check if player photos are causing BSON issues"""
