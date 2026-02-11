@@ -370,7 +370,7 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onEventCreated, onCan
             }
             
             // Generate event ID
-            const eventId = editingEvent?.id || `${formData.type}_${Date.now()}`;
+            const eventId = eventToEdit?.id || `${formData.type}_${Date.now()}`;
             
             // Generate bracket for tournament events with at least 2 teams
             let bracket = null;
@@ -391,7 +391,12 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onEventCreated, onCan
             
             console.log('📤 Final event data to send:', JSON.stringify(eventData, null, 2));
             
-            await onEventCreate(eventData);
+            // Support both callback names
+            if (onEventCreate) {
+                await onEventCreate(eventData);
+            } else if (onEventCreated) {
+                await onEventCreated(eventData);
+            }
             
         } catch (error) {
             console.error('❌ Error creating event:', error);
@@ -406,11 +411,11 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onEventCreated, onCan
             {/* Header */}
             <div className="max-w-4xl mx-auto mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">
-                    {editingEvent ? 'Edit Event' : 'Create New Event'}
+                    {eventToEdit ? 'Edit Event' : 'Create New Event'}
                 </h2>
-                {editingEvent && (
+                {eventToEdit && (
                     <p className="text-gray-600 mt-1">
-                        Editing: {editingEvent.title}
+                        Editing: {eventToEdit.title}
                     </p>
                 )}
             </div>
