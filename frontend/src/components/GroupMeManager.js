@@ -487,7 +487,10 @@ const GroupMeManager = () => {
                                 Type
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Team
+                                Teams
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Access
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Status
@@ -498,7 +501,15 @@ const GroupMeManager = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {channels.map((channel) => (
+                        {channels.map((channel) => {
+                            // Get team names from team_ids or team_id
+                            const teamIds = channel.team_ids || (channel.team_id ? [channel.team_id] : []);
+                            const teamNames = teamIds.map(tid => {
+                                const t = teams.find(tm => tm.id === tid);
+                                return t?.name || tid;
+                            });
+                            
+                            return (
                             <tr key={channel.id}>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="text-sm font-medium text-gray-900">{channel.name}</div>
@@ -513,8 +524,36 @@ const GroupMeManager = () => {
                                         {channel.channel_type}
                                     </span>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {channel.team_name || 'N/A'}
+                                <td className="px-6 py-4 text-sm text-gray-900">
+                                    {channel.channel_type === 'league' ? (
+                                        <span className="text-purple-600 font-medium">All Teams</span>
+                                    ) : teamNames.length > 0 ? (
+                                        <div className="flex flex-wrap gap-1">
+                                            {teamNames.slice(0, 3).map((name, i) => (
+                                                <span key={i} className="inline-block bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-xs">
+                                                    {name}
+                                                </span>
+                                            ))}
+                                            {teamNames.length > 3 && (
+                                                <span className="text-gray-500 text-xs">+{teamNames.length - 3} more</span>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <span className="text-gray-400">No teams</span>
+                                    )}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs">
+                                    <div className="flex gap-1">
+                                        {(channel.access_roles || ['admin', 'coach', 'player']).map(role => (
+                                            <span key={role} className={`px-1.5 py-0.5 rounded ${
+                                                role === 'admin' ? 'bg-amber-100 text-amber-700' :
+                                                role === 'coach' ? 'bg-green-100 text-green-700' :
+                                                'bg-gray-100 text-gray-600'
+                                            }`}>
+                                                {role === 'admin' ? '👑' : role === 'coach' ? '📋' : '🏃'}
+                                            </span>
+                                        ))}
+                                    </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
