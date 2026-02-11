@@ -61,41 +61,41 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onEventCreated, onCan
                 type: eventToEdit.type || 'regular_game',
                 title: eventToEdit.title || '',
                 description: eventToEdit.description || '',
-                date: editingEvent.date || '',
-                time: editingEvent.time || '',
-                location: editingEvent.location || '',
-                locationId: editingEvent.locationId || '',
-                imageUrl: editingEvent.imageUrl || '',
+                date: eventToEdit.date || '',
+                time: eventToEdit.time || '',
+                location: eventToEdit.location || '',
+                locationId: eventToEdit.locationId || '',
+                imageUrl: eventToEdit.imageUrl || '',
                 imageFile: null,
-                teams: editingEvent.teams || [],
-                rsvp_enabled: editingEvent.rsvp_enabled !== false,
-                groupme_integration: editingEvent.groupme_integration || false,
-                email_notifications: editingEvent.email_notifications !== false,
-                auto_create_polls: editingEvent.auto_create_polls || false,
+                teams: eventToEdit.teams || [],
+                rsvp_enabled: eventToEdit.rsvp_enabled !== false,
+                groupme_integration: eventToEdit.groupme_integration || false,
+                email_notifications: eventToEdit.email_notifications !== false,
+                auto_create_polls: eventToEdit.auto_create_polls || false,
                 // Recurring event fields - ensure defaults exist
-                is_recurring: editingEvent.is_recurring || false,
-                recurrence: editingEvent.recurrence || {
+                is_recurring: eventToEdit.is_recurring || false,
+                recurrence: eventToEdit.recurrence || {
                     frequency: 'weekly',
                     endType: 'count',
                     count: 10,
                     endDate: '',
                     daysOfWeek: []
                 },
-                is_external: editingEvent.is_external || false,
-                external_url: editingEvent.external_url || '',
-                external_organizer: editingEvent.external_organizer || '',
-                tournament_config: editingEvent.tournament_config || {
+                is_external: eventToEdit.is_external || false,
+                external_url: eventToEdit.external_url || '',
+                external_organizer: eventToEdit.external_organizer || '',
+                tournament_config: eventToEdit.tournament_config || {
                     format: 'single_elimination',
                     seeding_method: 'league_rankings',
                     auto_advance: true,
                     allow_bracket_editing: true
                 }
             });
-            if (editingEvent.imageUrl) {
-                setImagePreview(editingEvent.imageUrl);
+            if (eventToEdit.imageUrl) {
+                setImagePreview(eventToEdit.imageUrl);
             }
         }
-    }, [editingEvent]);
+    }, [eventToEdit]);
 
     const loadLocations = async () => {
         try {
