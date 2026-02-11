@@ -8606,6 +8606,7 @@ api_router.include_router(users_router)
 api_router.include_router(rsvp_router)
 api_router.include_router(drive_router)
 api_router.include_router(cleanup_router)
+api_router.include_router(joinus_router)
 
 # Setup router - for first-time setup wizard
 app.include_router(setup_router)
