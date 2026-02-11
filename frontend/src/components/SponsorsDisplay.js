@@ -84,7 +84,7 @@ const SponsorsDisplay = ({ teamId = null, currentUser = null, editable = false }
             message: sponsor.message || '',
             imageUrl: sponsor.imageUrl || '',
             websiteUrl: sponsor.websiteUrl || '',
-            socials: sponsor.socials || { facebook: '', instagram: '', twitter: '', linkedin: '' }
+            socials: sponsor.socials || { facebook: '', instagram: '', twitter: '', linkedin: '', youtube: '' }
         });
         setEditingSponsor(sponsor);
         setShowForm(true);
