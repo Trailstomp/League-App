@@ -42,7 +42,7 @@ const SponsorsDisplay = ({ teamId = null, currentUser = null, editable = false }
     };
 
     const resetForm = () => {
-        setForm({ name: '', message: '', imageUrl: '', websiteUrl: '', socials: { facebook: '', instagram: '', twitter: '', linkedin: '' } });
+        setForm({ name: '', message: '', imageUrl: '', websiteUrl: '', socials: { facebook: '', instagram: '', twitter: '', linkedin: '', youtube: '' } });
         setEditingSponsor(null);
         setShowForm(false);
     };
