@@ -422,41 +422,15 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             )}
                         </div>
 
-                        {/* Join Us Section */}
-                        <div>
-                            <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
-                                <span className="mr-3">🤝</span>
-                                Want to Join Us?
-                            </h2>
-                            <p className="text-slate-600 mb-6">
-                                Interested in being part of our league? Choose how you&apos;d like to get involved:
-                            </p>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <JoinUsCard 
-                                    type="player"
-                                    icon="🏃"
-                                    title="Join as a Player"
-                                    description="Looking to play? Browse our teams and contact a coach to inquire about joining their roster."
-                                    onClick={() => handleJoinClick('player')}
-                                />
-                                <JoinUsCard 
-                                    type="team"
-                                    icon="🏆"
-                                    title="Register a Team"
-                                    description="Have a team? Contact our league administrators to register your team for the upcoming season."
-                                    onClick={() => handleJoinClick('team')}
-                                />
-                                <JoinUsCard 
-                                    type="other"
-                                    icon="🙋"
-                                    title="Volunteer or Sponsor"
-                                    description="Want to help out as a referee, volunteer, or sponsor? We'd love to hear from you!"
-                                    onClick={() => handleJoinClick('other')}
-                                />
-                            </div>
-                            <p className="text-sm text-slate-500 mt-4 text-center">
-                                Click on any option above, then visit a team&apos;s page to find coach contact information.
-                            </p>
+                        {/* Join Us CTA Button */}
+                        <div className="text-center py-4">
+                            <button
+                                onClick={() => setActiveTab('join')}
+                                className="inline-flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-base font-semibold shadow-md hover:shadow-lg"
+                                data-testid="join-us-cta-btn"
+                            >
+                                🤝 Want to Get Involved? Join Us!
+                            </button>
                         </div>
 
                         {/* League News Section */}
