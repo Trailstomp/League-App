@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEvent }) => {
+const EventCreator = ({ teams, currentUser, onEventCreate, onEventCreated, onCancel, editingEvent, event, defaultTeamId, sportType }) => {
+    // Support both old prop name (editingEvent) and new (event)
+    const eventToEdit = editingEvent || event;
+    
     const [formData, setFormData] = useState({
         type: 'regular_game', // regular_game, tournament, practice, social, external
         title: '',
@@ -11,7 +14,7 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
         locationId: '', // Reference to saved location
         imageUrl: '',
         imageFile: null, // For file upload
-        teams: [], // Optional for all event types now
+        teams: defaultTeamId ? [defaultTeamId] : [], // Pre-select default team if provided
         rsvp_enabled: true,
         groupme_integration: true,
         email_notifications: true,
@@ -52,12 +55,12 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onCancel, editingEven
 
     // Populate form when editing an existing event
     useEffect(() => {
-        if (editingEvent) {
-            console.log('📝 Loading event for editing:', editingEvent);
+        if (eventToEdit) {
+            console.log('📝 Loading event for editing:', eventToEdit);
             setFormData({
-                type: editingEvent.type || 'regular_game',
-                title: editingEvent.title || '',
-                description: editingEvent.description || '',
+                type: eventToEdit.type || 'regular_game',
+                title: eventToEdit.title || '',
+                description: eventToEdit.description || '',
                 date: editingEvent.date || '',
                 time: editingEvent.time || '',
                 location: editingEvent.location || '',
