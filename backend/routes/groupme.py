@@ -190,7 +190,7 @@ async def create_groupme_channel(
 
 # GroupMe Integration Endpoints
 GROUPME_ACCESS_TOKEN = os.environ.get('GROUPME_ACCESS_TOKEN')
-GROUPME_WEBHOOK_SECRET = os.environ.get('GROUPME_WEBHOOK_SECRET')
+# GROUPME_WEBHOOK_SECRET already defined above
 
 @groupme_router.get("/groupme/channels")
 async def list_groupme_channels(
