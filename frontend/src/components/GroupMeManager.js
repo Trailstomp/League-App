@@ -174,10 +174,12 @@ const GroupMeManager = () => {
             groupme_group_id: channel.groupme_group_id,
             channel_type: channel.channel_type,
             team_id: channel.team_id || '',
+            team_ids: channel.team_ids || (channel.team_id ? [channel.team_id] : []),
             existing_bot_id: channel.groupme_bot_id || '',
-            notification_settings: channel.notification_settings || {}
+            notification_settings: channel.notification_settings || {},
+            access_roles: channel.access_roles || ['admin', 'coach', 'player']
         });
-        setActiveView('create');
+        setActiveView('create-channel');
     };
 
     const handleUpdateChannel = async (e) => {
