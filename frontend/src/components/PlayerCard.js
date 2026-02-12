@@ -49,6 +49,7 @@ const PlayerCard = ({ player, team, currentUser, onUpdate, showEditButton = true
         gamesPlayed: player.gamesPlayed || 0,
         goals: player.goals || 0,
         assists: player.assists || 0,
+        faceoffs: player.faceoffs || 0,
         groundBalls: player.groundBalls || 0,
         saves: player.saves || 0,
         shotPercentage: player.shotPercentage || 0
