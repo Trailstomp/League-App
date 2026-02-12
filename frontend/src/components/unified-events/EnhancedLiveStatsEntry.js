@@ -1587,8 +1587,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                 case 'assists':
                 case 'shots':
                 case 'penalties':
-                    aValue = a.stats[sortConfig.column];
-                    bValue = b.stats[sortConfig.column];
+                case 'faceoffs':
+                case 'groundBalls':
+                    aValue = a.stats[sortConfig.column] || 0;
+                    bValue = b.stats[sortConfig.column] || 0;
                     break;
                 default:
                     return 0;
