@@ -1379,7 +1379,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
             name: `${newPlayerInput.firstName} ${newPlayerInput.lastName}`,
             position: newPlayerInput.position,
             active: true,
-            stats: { goals: 0, assists: 0, shots: 0, penalties: 0 }
+            stats: { goals: 0, assists: 0, shots: 0, penalties: 0, faceoffs: 0, groundBalls: 0 }
         };
 
         setGameState(prev => ({
