@@ -12,21 +12,10 @@
 | `BACKEND_URL` | Backend API URL | `https://yourdomain.com` |
 | `STRIPE_API_KEY` | Stripe API key | `sk_live_xxx` |
 
-### Important: FRONTEND_URL for Production
-When deploying to production, **you must set `FRONTEND_URL`** in `/app/backend/.env` to your production domain.
-
 ---
 
 ## Original Problem Statement
-Create a comprehensive league management portal for **multiple sports** (Lacrosse, Hockey, Soccer, Volleyball) with features for:
-- Team management with rosters and player assignments
-- Event scheduling and RSVP management  
-- Live game scoring with real-time player stats (sport-specific)
-- Admin tools for league administration
-- Player dashboard for individual stats and team info
-- Payment processing for fees
-- Finance tracking for income and expenses
-- **Multi-sport support** with configurable positions and scoring
+Create a comprehensive league management portal for **multiple sports** (Lacrosse, Hockey, Soccer, Volleyball) with features for team management, event scheduling, live game scoring, admin tools, player dashboards, payment processing, and finance tracking.
 
 ## User Personas
 - **League Admin**: Full control over all teams, events, finances, and settings
@@ -53,47 +42,56 @@ Create a comprehensive league management portal for **multiple sports** (Lacross
 - [x] Friends & Sponsors feature
 - [x] Team locations with maps
 
-### Recent Completions (Feb 11, 2025)
-- [x] **P0: Analog Scoreboard** - Replaced old scoreboard in LiveSpectatorView and EnhancedLiveStatsEntry with LED-style AnalogScoreboard component (dark metallic design, blinking colon clock, team colors, shot clock, period display)
-- [x] **P1: GroupMe Channel Creation Fix** - Fixed broken service import path (api_integrations -> api_integrations_service), made channel creation with existing bot ID work without requiring GroupMe API credentials, auto-load available groups on create view, fixed team sorting null-safety bug
-- [x] **TeamScheduleTab refactor** - Uses unified EventManager component
+### Recent Completions (Feb 11-12, 2025)
+- [x] **P0: Analog Scoreboard** - LED-style scoreboard in LiveSpectatorView and EnhancedLiveStatsEntry
+- [x] **P1: GroupMe Channel Creation Fix** - Fixed broken imports, existing bot ID bypass, auto-load groups
+- [x] **Lacrosse Stats Enhancement** - Added face-off wins (FO), ground balls (GB), and "Players On Field" tracking at goal time
 
-## Pending Issues
-- GroupMe dashboard/stats endpoint returns 520 timeout intermittently (minor)
-- Email notifications require SMTP credentials (MOCKED)
+### Lacrosse Live Scoring Stats (NEW - Feb 12, 2025)
+- [x] **Face-off Wins (FO)** - Per-player +/- tracking in live scoring table
+- [x] **Ground Balls (GB)** - Per-player +/- tracking in live scoring table
+- [x] **Players On Field at Goal** - Optional picker after each goal to record which players were on field for scoring team and defending team (for line analysis)
+- [x] **Stats carry over** - FO, GB, assists all aggregate to:
+  - Team player stats (`/api/teams/{id}/player-stats`)
+  - Player stats by year (`/api/players/{id}/stats-by-year`)
+  - Individual player profiles (`_update_player_stats_from_game`)
+  - Player cards display (PlayerCard.js)
+- [x] **Spectator View** - Shows FO and GB in quick stats grid and top performers
+- [x] **Game Event Narration** - FO wins and GB pickups logged in event feed
 
 ## Architecture
 ```
 /app
   backend/
     routes/
-      groupme.py       # GroupMe integration (fixed imports, service injection)
+      groupme.py       # GroupMe integration
       joinus.py        # Join Us form submissions
-      communication.py # Communication routes
     services/
-      api_integrations_service.py  # API integrations
-      groupme_service.py           # GroupMe service (has sqlalchemy dep issue)
-    server.py          # Main server, SimpleGroupMeService class
+      api_integrations_service.py
+      groupme_service.py
+    server.py          # Main server (includes stat aggregation endpoints)
   frontend/
     src/
+      config/sportsConfig.js   # Sport-specific stats config (lacrosse: FO, GB added)
       components/
-        AnalogScoreboard.js        # LED-style scoreboard (NEW)
-        GroupMeManager.js          # GroupMe admin (FIXED)
-        joinus/                    # Join Us forms
-        managers/RecruitingManager.js
+        AnalogScoreboard.js    # LED-style scoreboard
+        PlayerCard.js          # Player display (shows FO, GB, saves)
         unified-events/
-          EnhancedLiveStatsEntry.js # Scorer view (uses compact AnalogScoreboard)
+          EnhancedLiveStatsEntry.js  # Live scoring (FO/GB columns, on-field picker)
           EventManager.js
       pages/
-        LiveSpectatorView.js       # Spectator view (uses AnalogScoreboard)
-        AdminPage.js
-        HomePage.js
+        LiveSpectatorView.js   # Spectator view (FO/GB in quick stats)
 ```
+
+## Pending Issues
+- GroupMe dashboard/stats endpoint returns 520 timeout intermittently (minor)
+- Email notifications require SMTP credentials (MOCKED)
 
 ## Upcoming Tasks
 - **P2**: Configure SMTP credentials for email notifications
 - **P2**: Continue refactoring monolithic server.py into modular routes
 - **P3**: Tournament scoring UI improvements
+- **Future**: Hockey-specific stats (user mentioned wanting to add hockey stats)
 
 ## 3rd Party Integrations
 - Google Auth (Emergent-managed)
