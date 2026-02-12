@@ -29,7 +29,7 @@ export const SPORT_CONFIG = {
             { id: 'lsm', name: 'Long Stick Midfield', abbrev: 'LSM' }
         ],
         stats: {
-            offensive: ['goals', 'assists', 'shots', 'groundBalls'],
+            offensive: ['goals', 'assists', 'shots', 'groundBalls', 'faceoffs'],
             defensive: ['saves', 'causedTurnovers', 'groundBalls'],
             goalie: ['saves', 'goalsAllowed', 'savePercentage']
         },
