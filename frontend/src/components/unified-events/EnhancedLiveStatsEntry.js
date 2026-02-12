@@ -119,6 +119,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
     const [eventFilter, setEventFilter] = useState('all');
     const [eventSortOrder, setEventSortOrder] = useState('newest'); // 'newest' or 'oldest'
     
+    // Players on field picker state (shown after a goal is scored)
+    const [showOnFieldPicker, setShowOnFieldPicker] = useState(null); // { goalEventId, scoringTeamKey, defendingTeamKey }
+    const [onFieldSelections, setOnFieldSelections] = useState({ scoring: [], defending: [] });
+    
     // Close shot menu when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
