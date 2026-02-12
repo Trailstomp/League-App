@@ -1765,6 +1765,129 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
     };
 
     // Render Team Shot Modal
+    // Render "Players On Field" picker modal (shown after a goal)
+    const renderOnFieldPicker = () => {
+        if (!showOnFieldPicker) return null;
+        
+        const { scoringTeamKey, defendingTeamKey } = showOnFieldPicker;
+        const scoringTeam = gameState[scoringTeamKey];
+        const defendingTeam = gameState[defendingTeamKey];
+        const scoringPlayers = scoringTeam.players.filter(p => p.active);
+        const defendingPlayers = defendingTeam.players.filter(p => p.active);
+        
+        const togglePlayer = (side, playerId) => {
+            setOnFieldSelections(prev => ({
+                ...prev,
+                [side]: prev[side].includes(playerId)
+                    ? prev[side].filter(id => id !== playerId)
+                    : [...prev[side], playerId]
+            }));
+        };
+        
+        const handleConfirm = () => {
+            // Find the most recent goal event and attach the on-field data
+            setGameEvents(prev => {
+                const updated = [...prev];
+                const goalEvent = updated.find(e => e.type === 'goal');
+                if (goalEvent) {
+                    goalEvent.metadata = {
+                        ...goalEvent.metadata,
+                        playersOnField: {
+                            scoring: onFieldSelections.scoring,
+                            defending: onFieldSelections.defending,
+                            scoringTeamKey,
+                            defendingTeamKey
+                        }
+                    };
+                }
+                return updated;
+            });
+            setShowOnFieldPicker(null);
+        };
+        
+        const PlayerCheckbox = ({ player, side, teamColor }) => (
+            <label 
+                key={player.id}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all ${
+                    onFieldSelections[side].includes(player.id) 
+                        ? 'bg-opacity-20 border-2' 
+                        : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'
+                }`}
+                style={onFieldSelections[side].includes(player.id) ? { 
+                    backgroundColor: `${teamColor}20`, 
+                    borderColor: teamColor 
+                } : {}}
+            >
+                <input
+                    type="checkbox"
+                    checked={onFieldSelections[side].includes(player.id)}
+                    onChange={() => togglePlayer(side, player.id)}
+                    className="rounded"
+                />
+                <span className="text-sm font-mono font-bold w-6">#{player.number}</span>
+                <span className="text-sm">{player.name}</span>
+                <span className="text-xs text-gray-500 ml-auto">{player.position}</span>
+            </label>
+        );
+        
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="on-field-picker-modal">
+                <div className="bg-white rounded-xl p-5 max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto shadow-2xl">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-bold text-gray-800">Players On Field At Goal</h3>
+                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Optional</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">
+                        Select which players were on the field when the goal was scored. Pre-filled with active players — uncheck any who were on the bench.
+                    </p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Scoring Team */}
+                        <div>
+                            <div className="flex items-center gap-2 mb-2 pb-2 border-b-2" style={{ borderColor: scoringTeam.color || '#3b82f6' }}>
+                                <span className="text-sm font-bold" style={{ color: scoringTeam.color }}>{scoringTeam.name}</span>
+                                <span className="text-xs text-green-600 bg-green-100 px-1.5 py-0.5 rounded">Scored</span>
+                                <span className="text-xs text-gray-500 ml-auto">{onFieldSelections.scoring.length} selected</span>
+                            </div>
+                            <div className="space-y-1 max-h-48 overflow-y-auto">
+                                {scoringPlayers.map(p => <PlayerCheckbox key={p.id} player={p} side="scoring" teamColor={scoringTeam.color || '#3b82f6'} />)}
+                            </div>
+                        </div>
+                        
+                        {/* Defending Team */}
+                        <div>
+                            <div className="flex items-center gap-2 mb-2 pb-2 border-b-2" style={{ borderColor: defendingTeam.color || '#ef4444' }}>
+                                <span className="text-sm font-bold" style={{ color: defendingTeam.color }}>{defendingTeam.name}</span>
+                                <span className="text-xs text-red-600 bg-red-100 px-1.5 py-0.5 rounded">Scored On</span>
+                                <span className="text-xs text-gray-500 ml-auto">{onFieldSelections.defending.length} selected</span>
+                            </div>
+                            <div className="space-y-1 max-h-48 overflow-y-auto">
+                                {defendingPlayers.map(p => <PlayerCheckbox key={p.id} player={p} side="defending" teamColor={defendingTeam.color || '#ef4444'} />)}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="flex justify-end gap-3 mt-5 pt-4 border-t">
+                        <button
+                            onClick={() => setShowOnFieldPicker(null)}
+                            className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 text-sm"
+                            data-testid="on-field-skip-btn"
+                        >
+                            Skip
+                        </button>
+                        <button
+                            onClick={handleConfirm}
+                            className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium text-sm"
+                            data-testid="on-field-confirm-btn"
+                        >
+                            Confirm Players On Field
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     const renderTeamShotModal = () => {
         if (!showTeamShotModal || !teamShotModalTeam) return null;
 
