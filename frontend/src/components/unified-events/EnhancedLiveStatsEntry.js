@@ -1117,7 +1117,13 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
 
         // Add game event for assists
         if (player && statType === 'assists') {
-            addGameEvent(`🎯 ${teamName} - #${player.number} ${player.name} with an assist`, 'assist');
+            addGameEvent(`🎯 ${teamName} - #${player.number} ${player.name} with an assist`, 'assist', { teamKey, playerId, timestamp: formatTime(gameState.time_remaining) });
+        }
+        if (player && statType === 'faceoffs') {
+            addGameEvent(`🤝 ${teamName} - #${player.number} ${player.name} wins face-off`, 'faceoff', { teamKey, playerId, timestamp: formatTime(gameState.time_remaining) });
+        }
+        if (player && statType === 'groundBalls') {
+            addGameEvent(`⬇️ ${teamName} - #${player.number} ${player.name} ground ball`, 'ground_ball', { teamKey, playerId, timestamp: formatTime(gameState.time_remaining) });
         }
     };
 
