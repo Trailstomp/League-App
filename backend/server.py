@@ -4158,6 +4158,8 @@ async def get_team_player_stats(team_id: str, season_id: Optional[str] = None):
                         "ties": 0,
                         "shots": 0,
                         "goals": 0,
+                        "assists": 0,
+                        "faceoffs": 0,
                         "ground_balls": 0
                     }
                 
@@ -4172,7 +4174,9 @@ async def get_team_player_stats(team_id: str, season_id: Optional[str] = None):
                 
                 player_stats[pid]["shots"] += player.get("shots", 0)
                 player_stats[pid]["goals"] += player.get("goals", 0)
-                player_stats[pid]["ground_balls"] += player.get("ground_balls", 0)
+                player_stats[pid]["assists"] += player.get("assists", 0)
+                player_stats[pid]["faceoffs"] += player.get("faceoffs", 0)
+                player_stats[pid]["ground_balls"] += player.get("ground_balls", player.get("groundBalls", 0))
             
             # Process goalies
             for goalie in team_data.get("goalies", []):
