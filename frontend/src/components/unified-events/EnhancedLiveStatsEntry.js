@@ -598,7 +598,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                         score: 0,
                         players: homeData.players.map(p => ({
                             ...p,
-                            stats: { goals: 0, assists: 0, shots: 0, penalties: 0 }
+                            stats: { goals: 0, assists: 0, shots: 0, penalties: 0, faceoffs: 0, groundBalls: 0 }
                         }))
                     },
                     away_team: {
@@ -611,7 +611,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                         score: 0,
                         players: awayData.players.map(p => ({
                             ...p,
-                            stats: { goals: 0, assists: 0, shots: 0, penalties: 0 }
+                            stats: { goals: 0, assists: 0, shots: 0, penalties: 0, faceoffs: 0, groundBalls: 0 }
                         }))
                     },
                     goalies: {
