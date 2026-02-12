@@ -503,8 +503,14 @@ const PlayerCard = ({ player, team, currentUser, onUpdate, showEditButton = true
                                         <div className="text-[10px] text-slate-500 uppercase">Points</div>
                                     </div>
                                 </div>
-                                {(playerStats.groundBalls > 0 || playerStats.saves > 0) && (
-                                    <div className="grid grid-cols-2 gap-2 text-center mt-2">
+                                {(playerStats.faceoffs > 0 || playerStats.groundBalls > 0 || playerStats.saves > 0) && (
+                                    <div className="grid grid-cols-3 gap-2 text-center mt-2">
+                                        {playerStats.faceoffs > 0 && (
+                                            <div className="bg-white rounded p-1.5 shadow-sm">
+                                                <div className="text-lg font-bold" style={{ color: teamColor }}>{playerStats.faceoffs}</div>
+                                                <div className="text-[10px] text-slate-500 uppercase">Face-Offs</div>
+                                            </div>
+                                        )}
                                         {playerStats.groundBalls > 0 && (
                                             <div className="bg-white rounded p-1.5 shadow-sm">
                                                 <div className="text-lg font-bold" style={{ color: teamColor }}>{playerStats.groundBalls}</div>
