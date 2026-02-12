@@ -2792,6 +2792,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                                     <SortableHeader column="shots">S</SortableHeader>
                                     <SortableHeader column="goals">G</SortableHeader>
                                     <SortableHeader column="assists">A</SortableHeader>
+                                    <SortableHeader column="faceoffs">FO</SortableHeader>
+                                    <SortableHeader column="groundBalls">GB</SortableHeader>
                                     <SortableHeader column="penalties">PIM</SortableHeader>
                                 </tr>
                             </thead>
