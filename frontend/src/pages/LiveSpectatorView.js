@@ -526,6 +526,10 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                                                     </div>
                                                     <div className="text-right">
                                                         <div className="text-white font-bold">{player.stats?.goals || 0}G {player.stats?.assists || 0}A</div>
+                                                        <div className="text-gray-500 text-xs">
+                                                            {(player.stats?.faceoffs || 0) > 0 && `${player.stats.faceoffs}FO `}
+                                                            {(player.stats?.groundBalls || 0) > 0 && `${player.stats.groundBalls}GB`}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             )) : (
@@ -552,6 +556,10 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                                                     </div>
                                                     <div className="text-right">
                                                         <div className="text-white font-bold">{player.stats?.goals || 0}G {player.stats?.assists || 0}A</div>
+                                                        <div className="text-gray-500 text-xs">
+                                                            {(player.stats?.faceoffs || 0) > 0 && `${player.stats.faceoffs}FO `}
+                                                            {(player.stats?.groundBalls || 0) > 0 && `${player.stats.groundBalls}GB`}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             )) : (
