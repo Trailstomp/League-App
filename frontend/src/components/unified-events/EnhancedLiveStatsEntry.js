@@ -2673,6 +2673,78 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                             </div>
                         </td>
                         
+                        {/* Face-off Wins with +/- buttons */}
+                        <td className="px-1 md:px-2 py-1 text-center">
+                            <div className="flex items-center justify-center gap-1">
+                                <button
+                                    onClick={() => {
+                                        if ((player.stats.faceoffs || 0) > 0) {
+                                            setGameState(prev => ({
+                                                ...prev,
+                                                [teamKey]: {
+                                                    ...prev[teamKey],
+                                                    players: prev[teamKey].players.map(p => 
+                                                        p.id === player.id 
+                                                            ? { ...p, stats: { ...p.stats, faceoffs: (p.stats.faceoffs || 0) - 1 } }
+                                                            : p
+                                                    )
+                                                }
+                                            }));
+                                        }
+                                    }}
+                                    className="w-6 h-6 bg-red-100 text-red-600 rounded text-xs font-bold hover:bg-red-200"
+                                    disabled={(player.stats.faceoffs || 0) <= 0}
+                                >
+                                    −
+                                </button>
+                                <span className="w-6 text-center font-bold text-base text-orange-600">
+                                    {player.stats.faceoffs || 0}
+                                </span>
+                                <button
+                                    onClick={() => addStat(teamKey, player.id, 'faceoffs')}
+                                    className="w-6 h-6 bg-orange-100 text-orange-600 rounded text-xs font-bold hover:opacity-80"
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </td>
+                        
+                        {/* Ground Balls with +/- buttons */}
+                        <td className="px-1 md:px-2 py-1 text-center">
+                            <div className="flex items-center justify-center gap-1">
+                                <button
+                                    onClick={() => {
+                                        if ((player.stats.groundBalls || 0) > 0) {
+                                            setGameState(prev => ({
+                                                ...prev,
+                                                [teamKey]: {
+                                                    ...prev[teamKey],
+                                                    players: prev[teamKey].players.map(p => 
+                                                        p.id === player.id 
+                                                            ? { ...p, stats: { ...p.stats, groundBalls: (p.stats.groundBalls || 0) - 1 } }
+                                                            : p
+                                                    )
+                                                }
+                                            }));
+                                        }
+                                    }}
+                                    className="w-6 h-6 bg-red-100 text-red-600 rounded text-xs font-bold hover:bg-red-200"
+                                    disabled={(player.stats.groundBalls || 0) <= 0}
+                                >
+                                    −
+                                </button>
+                                <span className="w-6 text-center font-bold text-base text-teal-600">
+                                    {player.stats.groundBalls || 0}
+                                </span>
+                                <button
+                                    onClick={() => addStat(teamKey, player.id, 'groundBalls')}
+                                    className="w-6 h-6 bg-teal-100 text-teal-600 rounded text-xs font-bold hover:opacity-80"
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </td>
+                        
                         {/* Penalty Minutes Display */}
                         <td className="px-1 md:px-2 py-1 text-center">
                             <span className="font-bold text-base text-red-600">
