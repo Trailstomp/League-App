@@ -1097,6 +1097,19 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
             }
             
             addGameEvent(eventText, eventType, { teamKey, playerId: 'unknown', shotType, assistPlayerId, timestamp: teamShotInput.timestamp });
+            
+            // Show optional "players on field" picker after a goal (unknown player path)
+            if (shotType === 'goal') {
+                const opposingTeamKey = teamKey === 'home_team' ? 'away_team' : 'home_team';
+                const activeScoringPlayers = gameState[teamKey].players.filter(p => p.active).map(p => p.id);
+                const activeDefendingPlayers = gameState[opposingTeamKey].players.filter(p => p.active).map(p => p.id);
+                setOnFieldSelections({ scoring: activeScoringPlayers, defending: activeDefendingPlayers });
+                setShowOnFieldPicker({ 
+                    goalEventId: Date.now(), 
+                    scoringTeamKey: teamKey, 
+                    defendingTeamKey: opposingTeamKey 
+                });
+            }
         } else {
             // Handle known player shot using existing function (with assist)
             addShotStat(teamKey, playerId, shotType, assistPlayerId);
