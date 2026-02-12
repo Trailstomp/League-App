@@ -166,8 +166,10 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
             goals: acc.goals + (player.stats?.goals || 0),
             shots: acc.shots + (player.stats?.shots || 0),
             assists: acc.assists + (player.stats?.assists || 0),
-            penalties: acc.penalties + (player.stats?.penalties || 0)
-        }), { goals: 0, shots: 0, assists: 0, penalties: 0 });
+            penalties: acc.penalties + (player.stats?.penalties || 0),
+            faceoffs: acc.faceoffs + (player.stats?.faceoffs || 0),
+            groundBalls: acc.groundBalls + (player.stats?.groundBalls || 0)
+        }), { goals: 0, shots: 0, assists: 0, penalties: 0, faceoffs: 0, groundBalls: 0 });
     };
 
     const handleSendMessage = async () => {
