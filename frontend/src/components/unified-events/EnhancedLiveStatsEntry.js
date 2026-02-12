@@ -883,6 +883,19 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                 assistPlayerId: assistPlayerId || null,
                 timestamp: formatTime(gameState.time_remaining) 
             });
+            
+            // Show optional "players on field" picker after a goal
+            if (shotType === 'goal') {
+                const opposingTeamKey = teamKey === 'home_team' ? 'away_team' : 'home_team';
+                const activeScoringPlayers = gameState[teamKey].players.filter(p => p.active).map(p => p.id);
+                const activeDefendingPlayers = gameState[opposingTeamKey].players.filter(p => p.active).map(p => p.id);
+                setOnFieldSelections({ scoring: activeScoringPlayers, defending: activeDefendingPlayers });
+                setShowOnFieldPicker({ 
+                    goalEventId: Date.now(), 
+                    scoringTeamKey: teamKey, 
+                    defendingTeamKey: opposingTeamKey 
+                });
+            }
         }
     };
 
