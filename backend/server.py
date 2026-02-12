@@ -4468,6 +4468,8 @@ async def _update_player_stats_from_game(game_stats: Dict[str, Any]):
             assists = stats.get('assists', 0)
             shots = stats.get('shots', 0)
             penalties = stats.get('penalties', 0)
+            faceoffs = stats.get('faceoffs', 0)
+            ground_balls = stats.get('groundBalls', stats.get('ground_balls', 0))
             
             # Update user's stats - increment totals
             await db.users.update_one(
@@ -4478,11 +4480,13 @@ async def _update_player_stats_from_game(game_stats: Dict[str, Any]):
                         "assists": assists,
                         "shots": shots,
                         "penalties": penalties,
+                        "faceoffs": faceoffs,
+                        "groundBalls": ground_balls,
                         "gamesPlayed": 1
                     }
                 }
             )
-            logger.info(f"📊 Updated stats for player {player_id}: +{goals}G +{assists}A")
+            logger.info(f"📊 Updated stats for player {player_id}: +{goals}G +{assists}A +{faceoffs}FO +{ground_balls}GB")
         
         # Process away team players
         away_team = game_stats.get('away_team', {})
@@ -4498,6 +4502,8 @@ async def _update_player_stats_from_game(game_stats: Dict[str, Any]):
             assists = stats.get('assists', 0)
             shots = stats.get('shots', 0)
             penalties = stats.get('penalties', 0)
+            faceoffs = stats.get('faceoffs', 0)
+            ground_balls = stats.get('groundBalls', stats.get('ground_balls', 0))
             
             # Update user's stats - increment totals
             await db.users.update_one(
@@ -4508,11 +4514,13 @@ async def _update_player_stats_from_game(game_stats: Dict[str, Any]):
                         "assists": assists,
                         "shots": shots,
                         "penalties": penalties,
+                        "faceoffs": faceoffs,
+                        "groundBalls": ground_balls,
                         "gamesPlayed": 1
                     }
                 }
             )
-            logger.info(f"📊 Updated stats for player {player_id}: +{goals}G +{assists}A")
+            logger.info(f"📊 Updated stats for player {player_id}: +{goals}G +{assists}A +{faceoffs}FO +{ground_balls}GB")
         
         # Process goalies
         goalies = game_stats.get('goalies', {})
