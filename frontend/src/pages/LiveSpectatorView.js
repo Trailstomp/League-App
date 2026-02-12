@@ -380,18 +380,26 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                                             )}
                                             <span className="text-white font-bold">{liveData.home_team.name}</span>
                                         </div>
-                                        <div className="grid grid-cols-3 gap-2 text-center text-sm">
+                                        <div className="grid grid-cols-5 gap-2 text-center text-sm">
                                             <div className="bg-black/30 rounded p-2">
                                                 <div className="text-white font-bold">{liveData.home_stats.shots}</div>
-                                                <div className="text-gray-400 text-xs">Shots</div>
+                                                <div className="text-gray-400 text-xs">SOG</div>
                                             </div>
                                             <div className="bg-black/30 rounded p-2">
                                                 <div className="text-white font-bold">{liveData.home_stats.goals}</div>
-                                                <div className="text-gray-400 text-xs">Goals</div>
+                                                <div className="text-gray-400 text-xs">G</div>
                                             </div>
                                             <div className="bg-black/30 rounded p-2">
                                                 <div className="text-white font-bold">{liveData.home_stats.assists}</div>
-                                                <div className="text-gray-400 text-xs">Assists</div>
+                                                <div className="text-gray-400 text-xs">A</div>
+                                            </div>
+                                            <div className="bg-black/30 rounded p-2">
+                                                <div className="text-white font-bold">{liveData.home_stats.faceoffs || 0}</div>
+                                                <div className="text-gray-400 text-xs">FO</div>
+                                            </div>
+                                            <div className="bg-black/30 rounded p-2">
+                                                <div className="text-white font-bold">{liveData.home_stats.groundBalls || 0}</div>
+                                                <div className="text-gray-400 text-xs">GB</div>
                                             </div>
                                         </div>
                                     </div>
@@ -402,18 +410,26 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                                                 <img src={getImageUrl(liveData.away_team.logo)} alt="" className="w-8 h-8 rounded-full object-cover" />
                                             )}
                                         </div>
-                                        <div className="grid grid-cols-3 gap-2 text-center text-sm">
+                                        <div className="grid grid-cols-5 gap-2 text-center text-sm">
                                             <div className="bg-black/30 rounded p-2">
                                                 <div className="text-white font-bold">{liveData.away_stats.shots}</div>
-                                                <div className="text-gray-400 text-xs">Shots</div>
+                                                <div className="text-gray-400 text-xs">SOG</div>
                                             </div>
                                             <div className="bg-black/30 rounded p-2">
                                                 <div className="text-white font-bold">{liveData.away_stats.goals}</div>
-                                                <div className="text-gray-400 text-xs">Goals</div>
+                                                <div className="text-gray-400 text-xs">G</div>
                                             </div>
                                             <div className="bg-black/30 rounded p-2">
                                                 <div className="text-white font-bold">{liveData.away_stats.assists}</div>
-                                                <div className="text-gray-400 text-xs">Assists</div>
+                                                <div className="text-gray-400 text-xs">A</div>
+                                            </div>
+                                            <div className="bg-black/30 rounded p-2">
+                                                <div className="text-white font-bold">{liveData.away_stats.faceoffs || 0}</div>
+                                                <div className="text-gray-400 text-xs">FO</div>
+                                            </div>
+                                            <div className="bg-black/30 rounded p-2">
+                                                <div className="text-white font-bold">{liveData.away_stats.groundBalls || 0}</div>
+                                                <div className="text-gray-400 text-xs">GB</div>
                                             </div>
                                         </div>
                                     </div>
