@@ -4278,6 +4278,7 @@ async def get_player_stats_by_year(player_id: str):
                     "goals": 0,
                     "assists": 0,
                     "shots": 0,
+                    "faceoffs": 0,
                     "groundBalls": 0,
                     "wins": 0,
                     "losses": 0,
