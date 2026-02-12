@@ -4301,7 +4301,8 @@ async def get_player_stats_by_year(player_id: str):
                     stats_by_year[year]["goals"] += player.get("goals", 0)
                     stats_by_year[year]["assists"] += player.get("assists", 0)
                     stats_by_year[year]["shots"] += player.get("shots", 0)
-                    stats_by_year[year]["groundBalls"] += player.get("ground_balls", 0)
+                    stats_by_year[year]["faceoffs"] += player.get("faceoffs", 0)
+                    stats_by_year[year]["groundBalls"] += player.get("ground_balls", player.get("groundBalls", 0))
                     break
             
             # Check away team
@@ -4321,7 +4322,8 @@ async def get_player_stats_by_year(player_id: str):
                         stats_by_year[year]["goals"] += player.get("goals", 0)
                         stats_by_year[year]["assists"] += player.get("assists", 0)
                         stats_by_year[year]["shots"] += player.get("shots", 0)
-                        stats_by_year[year]["groundBalls"] += player.get("ground_balls", 0)
+                        stats_by_year[year]["faceoffs"] += player.get("faceoffs", 0)
+                        stats_by_year[year]["groundBalls"] += player.get("ground_balls", player.get("groundBalls", 0))
                         break
         
         # Sort by year descending
