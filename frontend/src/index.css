@@ -120,6 +120,8 @@ code {
 /* Input text color - controlled by league/team style settings */
 :root {
     --input-text-color: #1e293b;
+    --secondary-text-color: #64748b;
+    --accent-text-color: initial;
 }
 
 input, textarea, select, [contenteditable],
