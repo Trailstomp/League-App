@@ -2265,6 +2265,39 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                     </div>
                 </div>
 
+                {/* Input Text Color */}
+                <div className="mt-4">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Input / Form Text Color</label>
+                    <p className="text-xs text-slate-500 mb-2">Controls the text color inside input fields, dropdowns, and text areas</p>
+                    <div className="flex items-center space-x-3">
+                        <input
+                            type="color"
+                            value={editingStyle.inputTextColor || '#1e293b'}
+                            onChange={(e) => updateStyle({ inputTextColor: e.target.value })}
+                            className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                        />
+                        <input
+                            type="text"
+                            value={editingStyle.inputTextColor || '#1e293b'}
+                            onChange={(e) => {
+                                if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                                    updateStyle({ inputTextColor: e.target.value });
+                                }
+                            }}
+                            className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500"
+                            placeholder="#1e293b"
+                        />
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                        {['#000000', '#1e293b', '#374151', '#6b7280'].map(c => (
+                            <button key={c} onClick={() => updateStyle({ inputTextColor: c })}
+                                className={`w-6 h-6 rounded border-2 ${editingStyle.inputTextColor === c ? 'border-teal-500' : 'border-slate-300'}`}
+                                style={{ backgroundColor: c }} title={c}
+                            />
+                        ))}
+                    </div>
+                </div>
+
                 {/* Card Heading Color */}
                 <div className="mt-4">
                     <label className="block text-sm font-medium text-slate-700 mb-2">Card Heading Color</label>
