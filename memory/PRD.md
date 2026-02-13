@@ -12,48 +12,23 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Recruiting module (auto-creates teams/players on approval)
 - [x] Email module (compose, recipients, history, team-level SMTP)
 
-### Documents / File Manager (NEW - Feb 13, 2025)
-- [x] **Dual Provider Support** - Google Drive and OneDrive/Office 365
-- [x] **League-Level Storage** - Uses existing Cloud Storage config (Google Drive)
-- [x] **Team-Level Storage** - Each team can configure their own provider (Google Drive or OneDrive)
-- [x] **File Browser** - Browse folders/files with breadcrumb navigation, search
-- [x] **CRUD Operations** - Upload files (50MB max), create folders, delete files/folders
-- [x] **Open in Provider** - Click to open files in Google Drive/OneDrive web UI
-- [x] **Storage Settings** - Per-team provider selection with credential fields
-- [x] **Admin Access** - Admin Portal → Content → Documents
-- [x] **Team Coach Access** - Team Admin → Documents section
-- [x] **Graceful Fallback** - Team storage falls back to league storage if not configured
+### Documents / File Manager (Feb 13, 2025)
+- [x] Dual provider: Google Drive + OneDrive/Office 365
+- [x] File browser: folders, upload, download, create, delete
+- [x] **"Use League Connection" option** — teams choose to share league's Google Drive/OneDrive or connect their own
+- [x] Team-level storage config with provider selection
+- [x] Media uploads (`/upload/image`) accept `team_id` to use team storage
+- [x] Admin Portal → Content → Documents
+- [x] Team Admin → Documents section
 
 ### DB Collections
-- `team_storage_configs` - Per-team storage provider config (google_drive or onedrive credentials)
-- `email_history` - Sent email log
-- `team_smtp_configs` - Per-team SMTP credentials
-
-## Architecture
-```
-/app
-  backend/
-    routes/
-      documents.py     # NEW: File manager API (config, list, upload, create folder, delete)
-      communication.py # Email compose, SMTP config, team SMTP
-      joinus.py        # Recruiting
-      groupme.py       # GroupMe
-    server.py
-  frontend/
-    src/
-      components/
-        managers/
-          FileManager.js      # NEW: File browser + storage settings
-          EmailComposer.js    # Email compose/history/settings
-        team/
-          TeamAdminTab.js     # Team admin (Players, Recruiting, Email, Documents, Locations, etc.)
-      pages/
-        AdminPage.js          # Admin portal (Documents under Content)
-```
+- `team_storage_configs` - Per-team: `use_league` flag, provider choice, credentials
+- `cloud_storage` - League-level Google Drive config
+- `email_history`, `team_smtp_configs` - Email module
 
 ## Pending
-- Google Drive needs OAuth refresh token to fully work (user must complete auth flow)
-- OneDrive requires Azure AD app registration credentials
+- Google Drive needs OAuth refresh token to fully work
+- OneDrive requires Azure AD credentials
 - Email sending requires valid SMTP credentials
 
 ## Upcoming Tasks
