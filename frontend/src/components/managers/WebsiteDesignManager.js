@@ -615,7 +615,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                 {savedTemplates.length > 0 ? (
                     <div className="divide-y divide-slate-100">
                         {savedTemplates.map(template => (
-                            <div key={template.id} className="p-4 hover:bg-slate-50 flex items-center justify-between">
+                            <div key={template.id} className={`p-4 hover:bg-slate-50 flex items-center justify-between ${template.id === activeTemplateId ? 'bg-blue-50 border-l-4 border-blue-500' : ''}`}>
                                 <div className="flex items-center gap-4">
                                     {/* Template Preview Colors */}
                                     <div className="flex -space-x-1">
@@ -636,22 +636,43 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                                         />
                                     </div>
                                     <div>
-                                        <h5 className="font-medium text-slate-800">{template.name}</h5>
+                                        <h5 className="font-medium text-slate-800">
+                                            {template.name}
+                                            {template.id === activeTemplateId && (
+                                                <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">Active</span>
+                                            )}
+                                        </h5>
                                         <p className="text-xs text-slate-500">
                                             Created: {new Date(template.createdAt).toLocaleDateString()}
-                                            {template.style?.sportType && ` • ${template.style.sportType}`}
+                                            {template.updatedAt && ` · Updated: ${new Date(template.updatedAt).toLocaleDateString()}`}
+                                            {template.style?.sportType && ` · ${template.style.sportType}`}
                                         </p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
+                                    {template.id === activeTemplateId && (
+                                        <button
+                                            onClick={() => {
+                                                setSaveMode('update');
+                                                setShowSaveTemplateModal(true);
+                                            }}
+                                            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium"
+                                            data-testid={`update-template-${template.id}`}
+                                        >
+                                            Update
+                                        </button>
+                                    )}
                                     <button
                                         onClick={() => loadTemplate(template)}
-                                        className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-sm font-medium"
+                                        className="px-3 py-1 bg-slate-100 text-slate-700 rounded hover:bg-slate-200 text-sm font-medium"
                                     >
                                         Load
                                     </button>
                                     <button
-                                        onClick={() => deleteTemplate(template.id)}
+                                        onClick={() => {
+                                            deleteTemplate(template.id);
+                                            if (template.id === activeTemplateId) setActiveTemplateId(null);
+                                        }}
                                         className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm font-medium"
                                     >
                                         Delete
