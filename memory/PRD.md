@@ -1,100 +1,57 @@
 # League Management Portal - Product Requirements Document
 
-## Deployment Configuration
-
-### Required Environment Variables (Backend)
-
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `MONGO_URL` | MongoDB connection string | `mongodb://localhost:27017` |
-| `DB_NAME` | Database name | `mlbl_database` |
-| `FRONTEND_URL` | **Production URL for RSVP links** | `https://yourdomain.com` |
-| `BACKEND_URL` | Backend API URL | `https://yourdomain.com` |
-| `STRIPE_API_KEY` | Stripe API key | `sk_live_xxx` |
-
----
-
 ## Original Problem Statement
-Create a comprehensive league management portal for **multiple sports** (Lacrosse, Hockey, Soccer, Volleyball) with features for team management, event scheduling, live game scoring, admin tools, player dashboards, payment processing, and finance tracking.
-
-## User Personas
-- **League Admin**: Full control over all teams, events, finances, and settings
-- **Team Admin/Coach**: Manage their team's roster, events, finances, and settings
-- **Player**: View their stats, team info, and respond to events
-- **Guest**: Browse public team and event information
+Comprehensive league management portal for multiple sports with team management, event scheduling, live scoring, admin tools, player dashboards, payment processing, and finance tracking.
 
 ## What's Been Implemented
 
 ### Core Features (Complete)
-- [x] Team creation, editing, division-based organization
-- [x] Team styling (colors, logos, banners), image upload with crop
-- [x] Roster Management, multi-team player support
+- [x] Team management (create, edit, divisions, styling, logos, rosters)
 - [x] Finance tab (income/expenses, CSV export, league-wide view)
-- [x] Player profiles, import tool, role-based access
-- [x] PWA conversion
-- [x] Event scheduling, RSVP management
-- [x] Live game scoring with real-time stats
-- [x] Tournament support
-- [x] GroupMe integration with access controls
-- [x] "Join Us" workflow (Team Registration, Player Application, Volunteer Signup)
-- [x] Recruiting Manager admin panel
-- [x] File upload for team logos
-- [x] Friends & Sponsors feature
-- [x] Team locations with maps
+- [x] Player profiles, import tool, role-based access, PWA
+- [x] Event scheduling, RSVP management, live game scoring
+- [x] Tournament support, GroupMe integration
+- [x] "Join Us" workflow, Friends & Sponsors, team locations
 
-### Recent Completions (Feb 11-12, 2025)
-- [x] **P0: Analog Scoreboard** - LED-style scoreboard in LiveSpectatorView and EnhancedLiveStatsEntry
-- [x] **P1: GroupMe Channel Creation Fix** - Fixed broken imports, existing bot ID bypass, auto-load groups
-- [x] **Lacrosse Stats Enhancement** - Added face-off wins (FO), ground balls (GB), and "Players On Field" tracking at goal time
-
-### Lacrosse Live Scoring Stats (NEW - Feb 12, 2025)
-- [x] **Face-off Wins (FO)** - Per-player +/- tracking in live scoring table
-- [x] **Ground Balls (GB)** - Per-player +/- tracking in live scoring table
-- [x] **Players On Field at Goal** - Optional picker after each goal to record which players were on field for scoring team and defending team (for line analysis)
-- [x] **Stats carry over** - FO, GB, assists all aggregate to:
-  - Team player stats (`/api/teams/{id}/player-stats`)
-  - Player stats by year (`/api/players/{id}/stats-by-year`)
-  - Individual player profiles (`_update_player_stats_from_game`)
-  - Player cards display (PlayerCard.js)
-- [x] **Spectator View** - Shows FO and GB in quick stats grid and top performers
-- [x] **Game Event Narration** - FO wins and GB pickups logged in event feed
+### Recent Completions (Feb 12, 2025)
+- [x] **Analog Scoreboard** - LED-style scoreboard in LiveSpectatorView and EnhancedLiveStatsEntry
+- [x] **GroupMe Channel Creation Fix** - Fixed imports, existing bot ID bypass
+- [x] **Lacrosse Stats** - Face-off wins, ground balls, players-on-field tracking at goals
+- [x] **Transparent popup fix** - Fixed broken goal assist picker flow
+- [x] **Recruiting Module Overhaul**:
+  - Team registration approval auto-creates team in league + coach user account
+  - Player application approval auto-creates player user + adds to team roster
+  - Unified recruiting in admin (renamed from "Join Requests")
+  - Team-level recruiting tab shows player applications with approve/decline
+  - Success messages confirm team/player creation on approval
 
 ## Architecture
 ```
 /app
   backend/
     routes/
+      joinus.py        # Recruiting endpoints (auto-create team/player on approval)
       groupme.py       # GroupMe integration
-      joinus.py        # Join Us form submissions
-    services/
-      api_integrations_service.py
-      groupme_service.py
-    server.py          # Main server (includes stat aggregation endpoints)
+    server.py          # Main server
   frontend/
     src/
-      config/sportsConfig.js   # Sport-specific stats config (lacrosse: FO, GB added)
       components/
-        AnalogScoreboard.js    # LED-style scoreboard
-        PlayerCard.js          # Player display (shows FO, GB, saves)
-        unified-events/
-          EnhancedLiveStatsEntry.js  # Live scoring (FO/GB columns, on-field picker)
-          EventManager.js
+        managers/RecruitingManager.js  # Admin recruiting dashboard
+        team/TeamRecruitingTab.js      # Team-level player apps + invites
+        unified-events/EnhancedLiveStatsEntry.js  # Live scoring
       pages/
-        LiveSpectatorView.js   # Spectator view (FO/GB in quick stats)
+        AdminPage.js   # Admin portal (recruiting tab)
 ```
 
 ## Pending Issues
-- GroupMe dashboard/stats endpoint returns 520 timeout intermittently (minor)
 - Email notifications require SMTP credentials (MOCKED)
+- GroupMe dashboard/stats endpoint 520 timeout (minor)
 
 ## Upcoming Tasks
 - **P2**: Configure SMTP credentials for email notifications
-- **P2**: Continue refactoring monolithic server.py into modular routes
+- **P2**: Continue refactoring monolithic server.py
 - **P3**: Tournament scoring UI improvements
-- **Future**: Hockey-specific stats (user mentioned wanting to add hockey stats)
+- **Future**: Hockey-specific stats
 
 ## 3rd Party Integrations
-- Google Auth (Emergent-managed)
-- Google Maps (embedded iframes)
-- MongoDB (primary database)
-- GroupMe (access controls, bot management)
+- Google Auth (Emergent-managed), Google Maps, MongoDB, GroupMe
