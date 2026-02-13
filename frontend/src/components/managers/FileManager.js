@@ -383,7 +383,53 @@ const FileManager = ({ currentUser, teamId = null, teamName = null }) => {
                     
                     {teamId && (
                         <>
-                            {/* Provider Selection */}
+                            {/* Use League or Own */}
+                            <div className="space-y-3">
+                                <label className="block text-sm font-medium text-slate-700">Storage Connection</label>
+                                
+                                <div className="grid grid-cols-1 gap-3">
+                                    <button
+                                        onClick={() => setUseLeague(true)}
+                                        className={`p-4 rounded-lg border-2 text-left transition-all ${useLeague ? 'border-green-500 bg-green-50' : 'border-slate-200 hover:border-slate-300'}`}
+                                        data-testid="use-league-btn"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${useLeague ? 'border-green-600' : 'border-slate-300'}`}>
+                                                {useLeague && <div className="w-2.5 h-2.5 rounded-full bg-green-600" />}
+                                            </div>
+                                            <div>
+                                                <div className="font-medium text-slate-800">Use League Connection</div>
+                                                <div className="text-xs text-slate-500 mt-0.5">
+                                                    {config?.league_available
+                                                        ? `League has ${config.league_provider === 'google_drive' ? 'Google Drive' : 'OneDrive'} configured — your team will share it`
+                                                        : 'League storage not yet configured by admin'
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                    
+                                    <button
+                                        onClick={() => setUseLeague(false)}
+                                        className={`p-4 rounded-lg border-2 text-left transition-all ${!useLeague ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300'}`}
+                                        data-testid="use-own-btn"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${!useLeague ? 'border-blue-600' : 'border-slate-300'}`}>
+                                                {!useLeague && <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />}
+                                            </div>
+                                            <div>
+                                                <div className="font-medium text-slate-800">Use Team's Own Connection</div>
+                                                <div className="text-xs text-slate-500 mt-0.5">Connect your own Google Drive or OneDrive account</div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            {/* Provider Selection — only if using own */}
+                            {!useLeague && (
+                            <>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-2">Storage Provider</label>
                                 <div className="grid grid-cols-2 gap-3">
