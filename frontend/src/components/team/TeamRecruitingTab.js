@@ -5,10 +5,13 @@ import React, { useState, useEffect } from 'react';
  */
 const TeamRecruitingTab = ({ team, currentUser }) => {
     const [invites, setInvites] = useState([]);
+    const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showInviteForm, setShowInviteForm] = useState(false);
     const [sending, setSending] = useState(false);
     const [message, setMessage] = useState('');
+    const [actionLoading, setActionLoading] = useState(null);
+    const [activeSection, setActiveSection] = useState('applications'); // 'applications' or 'invites'
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -21,23 +24,56 @@ const TeamRecruitingTab = ({ team, currentUser }) => {
     const backendUrl = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
     useEffect(() => {
-        loadInvites();
+        loadAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [team.id]);
 
-    const loadInvites = async () => {
+    const loadAll = async () => {
+        setLoading(true);
         try {
-            setLoading(true);
-            const response = await fetch(`${backendUrl}/api/team/${team.id}/invites`);
-            if (response.ok) {
-                const data = await response.json();
+            const [invRes, appRes] = await Promise.all([
+                fetch(`${backendUrl}/api/team/${team.id}/invites`).catch(() => null),
+                fetch(`${backendUrl}/api/join-us/applications?team_id=${team.id}`).catch(() => null)
+            ]);
+            if (invRes?.ok) {
+                const data = await invRes.json();
                 setInvites(data.invites || []);
             }
+            if (appRes?.ok) {
+                const data = await appRes.json();
+                setApplications(data.applications || []);
+            }
         } catch (error) {
-            console.error('Error loading invites:', error);
+            console.error('Error loading recruiting data:', error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleApplicationAction = async (appId, newStatus) => {
+        setActionLoading(appId);
+        try {
+            const res = await fetch(`${backendUrl}/api/join-us/applications/${appId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+            if (res.ok) {
+                const result = await res.json();
+                setApplications(prev => prev.map(a => a.id === appId ? { ...a, status: newStatus } : a));
+                if (newStatus === 'approved' && result.added_to_team) {
+                    setMessage('Player approved and added to roster!');
+                } else if (newStatus === 'rejected') {
+                    setMessage('Application declined.');
+                }
+                setTimeout(() => setMessage(''), 4000);
+            }
+        } catch (e) {
+            console.error('Error:', e);
+        } finally {
+            setActionLoading(null);
+        }
+    };
     };
 
     const handleSendInvite = async (e) => {
