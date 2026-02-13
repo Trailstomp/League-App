@@ -178,9 +178,11 @@ async def upload_league_logo(file: UploadFile = File(...)):
 @media_router.post("/upload/image")
 async def upload_general_image(
     file: UploadFile = File(...),
-    type: str = Form("general")
+    type: str = Form("general"),
+    team_id: str = Form(None)
 ):
-    """Upload an image (event, team, etc.) to Google Drive or local storage"""
+    """Upload an image (event, team, etc.) to Google Drive or local storage.
+    If team_id is provided, uses team's storage config (or league fallback)."""
     try:
         # Read file content
         content = await file.read()
@@ -195,11 +197,25 @@ async def upload_general_image(
         if not content_type or not content_type.startswith("image/"):
             raise HTTPException(status_code=400, detail="Invalid file type. Only images are allowed")
         
-        # Try Google Drive upload first
-        try:
+        # Resolve storage config: team-level first, then league-level
+        google_drive_config = None
+        
+        if team_id:
+            team_storage = await db.team_storage_configs.find_one({"team_id": team_id}, {"_id": 0})
+            if team_storage and team_storage.get("provider") == "google_drive" and not team_storage.get("use_league"):
+                gd = team_storage.get("google_drive", {})
+                if gd.get("refreshToken"):
+                    google_drive_config = gd
+        
+        # Fallback to league storage
+        if not google_drive_config:
             config = await db.cloud_storage.find_one({"id": "main_cloud_storage"})
-            
             if config and config.get("googleDrive", {}).get("refreshToken"):
+                google_drive_config = config["googleDrive"]
+        
+        # Try Google Drive upload
+        try:
+            if google_drive_config:
                 google_drive_config = config["googleDrive"]
                 refresh_token = google_drive_config["refreshToken"]
                 main_folder_id = google_drive_config.get("folderId")
