@@ -262,6 +262,7 @@ const AccountSettings = ({ currentUser, onUserUpdate }) => {
             <div className="flex border-b border-slate-200">
                 {[
                     { id: 'profile', label: 'Profile', icon: <User className="w-4 h-4" /> },
+                    { id: 'appearance', label: 'Appearance', icon: <Palette className="w-4 h-4" /> },
                     { id: 'notifications', label: 'Notifications', icon: <Bell className="w-4 h-4" /> },
                     { id: 'security', label: 'Security', icon: <Shield className="w-4 h-4" /> }
                 ].map(tab => (
