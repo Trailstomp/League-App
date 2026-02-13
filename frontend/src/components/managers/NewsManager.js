@@ -354,7 +354,7 @@ const NewsManager = ({ teams = [], currentUser }) => {
                                 setCropImageUrl('');
                                 setCropTargetField('');
                             }}
-                            targetType="banner" // 16:9 aspect ratio good for news images
+                            targetType="square" // 1:1 square aspect ratio for news images
                         />
                     </div>
                 </div>
