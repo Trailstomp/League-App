@@ -82,6 +82,9 @@ const Layout = ({
             if (websiteStyle.mainTextColor) {
                 root.style.setProperty('--main-text-color', websiteStyle.mainTextColor);
             }
+            if (websiteStyle.inputTextColor) {
+                root.style.setProperty('--input-text-color', websiteStyle.inputTextColor);
+            }
 
             // Apply banner background to body if banner image
             if (websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage) {
