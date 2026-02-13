@@ -11,6 +11,8 @@ import RSVPHandler from './pages/RSVPHandler';
 import PasswordResetPage from './pages/PasswordResetPage';
 import HelpPage from './pages/HelpPage';
 import JoinTeamPage from './pages/JoinTeamPage';
+import SetPasswordPage from './components/SetPasswordPage';
+import AccountSettings from './components/AccountSettings';
 import AuthModal, { initialMockUsers } from './components/AuthSystem';
 import OAuthCallback from './components/OAuthCallback';
 import SetupWizard from './components/SetupWizard';
