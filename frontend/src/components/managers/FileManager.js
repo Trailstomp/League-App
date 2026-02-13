@@ -175,14 +175,16 @@ const FileManager = ({ currentUser, teamId = null, teamName = null }) => {
     const handleSaveSettings = async () => {
         setSavingSettings(true);
         try {
+            const payload = { team_id: teamId, use_league: useLeague };
+            if (!useLeague) {
+                payload.provider = settingsProvider;
+                payload[settingsProvider] = settingsConfig[settingsProvider];
+            }
+            
             const res = await fetch(`${backendUrl}/api/documents/config`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    team_id: teamId,
-                    provider: settingsProvider,
-                    [settingsProvider]: settingsConfig[settingsProvider]
-                })
+                body: JSON.stringify(payload)
             });
             if (res.ok) {
                 setResult({ type: 'success', message: 'Storage settings saved!' });
