@@ -29,6 +29,7 @@ import DivisionManager from '../components/managers/DivisionManager';
 import WelcomeMessageManager from '../components/managers/WelcomeMessageManager';
 import RecruitingManager from '../components/managers/RecruitingManager';
 import EmailComposer from '../components/managers/EmailComposer';
+import FileManager from '../components/managers/FileManager';
 
 // Team Invites Manager Component for League Admins
 const TeamInvitesManager = ({ currentUser }) => {
