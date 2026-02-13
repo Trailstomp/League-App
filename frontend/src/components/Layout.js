@@ -126,23 +126,54 @@ const Layout = ({
                 document.body.style.setProperty('--banner-bg-image', `url(${websiteStyle.bannerBackgroundImage})`);
             }
             
-            // Update browser favicon to use the league's logo
+            // Update browser favicon to use the league's logo (with cache busting)
             const logoUrl = websiteStyle.pwaIconUrl || websiteStyle.navLogoUrl || websiteStyle.logoUrl;
             if (logoUrl) {
+                const cacheBuster = `?v=${Date.now()}`;
+                const faviconUrl = logoUrl.includes('?') ? `${logoUrl}&_cb=${Date.now()}` : `${logoUrl}${cacheBuster}`;
+                
                 const existingFavicon = document.querySelector('link[rel="icon"]');
                 if (existingFavicon) {
-                    existingFavicon.href = logoUrl;
+                    existingFavicon.href = faviconUrl;
                 } else {
                     const link = document.createElement('link');
                     link.rel = 'icon';
                     link.type = 'image/png';
-                    link.href = logoUrl;
+                    link.href = faviconUrl;
                     document.head.appendChild(link);
                 }
                 // Also update apple-touch-icon
                 const appleIcon = document.querySelector('link[rel="apple-touch-icon"]');
                 if (appleIcon) {
-                    appleIcon.href = logoUrl;
+                    appleIcon.href = faviconUrl;
+                }
+                
+                // Update PWA manifest dynamically for icon refresh
+                try {
+                    const manifestBlob = new Blob([JSON.stringify({
+                        short_name: websiteStyle.navLeagueName || 'League',
+                        name: websiteStyle.bannerTitle || websiteStyle.navLeagueName || 'League Portal',
+                        icons: [
+                            { src: logoUrl, sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+                            { src: logoUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+                        ],
+                        start_url: '/',
+                        display: 'standalone',
+                        theme_color: websiteStyle.primaryColor || '#1e40af',
+                        background_color: websiteStyle.mainBgColor || '#f8fafc'
+                    })], { type: 'application/json' });
+                    const manifestUrl = URL.createObjectURL(manifestBlob);
+                    let manifestLink = document.querySelector('link[rel="manifest"]');
+                    if (manifestLink) {
+                        manifestLink.href = manifestUrl;
+                    } else {
+                        manifestLink = document.createElement('link');
+                        manifestLink.rel = 'manifest';
+                        manifestLink.href = manifestUrl;
+                        document.head.appendChild(manifestLink);
+                    }
+                } catch (e) {
+                    console.warn('Could not update manifest:', e);
                 }
             }
         };
