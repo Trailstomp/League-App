@@ -50,8 +50,11 @@ const RecruitingManager = ({ currentUser, teams = [] }) => {
         }
     };
     
+    const [successMsg, setSuccessMsg] = useState('');
+    
     const updateStatus = async (type, id, newStatus) => {
         setActionLoading(id);
+        setSuccessMsg('');
         try {
             const endpoint = type === 'registration' 
                 ? `/api/join-us/registrations/${id}`
@@ -66,14 +69,27 @@ const RecruitingManager = ({ currentUser, teams = [] }) => {
             });
             
             if (res.ok) {
+                const result = await res.json();
                 // Update local state
                 if (type === 'registration') {
                     setRegistrations(prev => prev.map(r => r.id === id ? { ...r, status: newStatus } : r));
+                    if (newStatus === 'approved' && result.created_team_id) {
+                        setSuccessMsg(`Team created and added to the league! The primary contact has been set up as team coach.`);
+                    }
                 } else if (type === 'application') {
                     setApplications(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a));
+                    if (newStatus === 'approved' && result.added_to_team) {
+                        setSuccessMsg(`Player has been added to the team roster!`);
+                    }
                 } else {
                     setVolunteers(prev => prev.map(v => v.id === id ? { ...v, status: newStatus } : v));
                 }
+                
+                if (newStatus === 'rejected') {
+                    setSuccessMsg(`Request has been declined.`);
+                }
+                
+                setTimeout(() => setSuccessMsg(''), 5000);
             }
         } catch (e) {
             console.error('Error updating status:', e);
