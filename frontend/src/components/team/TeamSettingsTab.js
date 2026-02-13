@@ -32,6 +32,7 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
         backgroundColor: team.style?.backgroundColor || '#f8fafc',
         textColor: team.style?.textColor || '#1e293b',
         headerTextColor: team.style?.headerTextColor || '#ffffff',
+        inputTextColor: team.style?.inputTextColor || '#1e293b',
         logoUrl: team.style?.logoUrl || '',
         bannerUrl: team.style?.bannerUrl || '',
         logoOpacity: team.style?.logoOpacity || 1,
