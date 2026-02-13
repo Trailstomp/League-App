@@ -114,6 +114,12 @@ const Layout = ({
             if (websiteStyle.inputTextColor) {
                 root.style.setProperty('--input-text-color', websiteStyle.inputTextColor);
             }
+            if (websiteStyle.secondaryTextColor) {
+                root.style.setProperty('--secondary-text-color', websiteStyle.secondaryTextColor);
+            }
+            if (websiteStyle.accentTextColor) {
+                root.style.setProperty('--accent-text-color', websiteStyle.accentTextColor);
+            }
 
             // Apply banner background to body if banner image
             if (websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage) {
