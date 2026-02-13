@@ -122,6 +122,7 @@ code {
     --input-text-color: #1e293b;
 }
 
-input, textarea, select, [contenteditable] {
-    color: var(--input-text-color, #1e293b);
+input, textarea, select, [contenteditable],
+main input, main textarea, main select, main [contenteditable] {
+    color: var(--input-text-color, #1e293b) !important;
 }
