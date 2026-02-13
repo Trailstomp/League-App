@@ -99,12 +99,20 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
     const [showLoadTemplateModal, setShowLoadTemplateModal] = useState(false);
     const [newTemplateName, setNewTemplateName] = useState('');
     const [templateMessage, setTemplateMessage] = useState('');
-    const [saveMode, setSaveMode] = useState('new'); // 'new' or 'update'
+    const [saveMode, setSaveMode] = useState('new');
+    
+    // Cycling config state
+    const [cyclingConfig, setCyclingConfig] = useState({
+        enabled: false, mode: 'fixed', templatePool: [], defaultTemplateId: null
+    });
+    const [savingCycling, setSavingCycling] = useState(false);
+    
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
 
-    // Load saved templates on mount
+    // Load saved templates and cycling config on mount
     useEffect(() => {
         loadTemplates();
+        loadCyclingConfig();
     }, []);
 
     const loadTemplates = async () => {
