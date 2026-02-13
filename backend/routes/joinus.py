@@ -1220,6 +1220,78 @@ async def update_player_application(application_id: str, data: Dict[str, Any]):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@joinus_router.post("/set-password")
+async def set_password_from_token(data: Dict[str, Any]):
+    """Set password for a newly created user via token from recruitment approval"""
+    try:
+        import hashlib
+        token = data.get("token", "").strip()
+        password = data.get("password", "").strip()
+        
+        if not token:
+            raise HTTPException(status_code=400, detail="Token is required")
+        if not password or len(password) < 6:
+            raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+        
+        user = await db.users.find_one({"passwordToken": token}, {"_id": 0})
+        if not user:
+            raise HTTPException(status_code=404, detail="Invalid or expired token")
+        
+        password_hash = hashlib.sha256(password.encode()).hexdigest()
+        
+        await db.users.update_one(
+            {"passwordToken": token},
+            {
+                "$set": {
+                    "password": password_hash,
+                    "status": "active",
+                    "passwordSetAt": datetime.now(timezone.utc).isoformat()
+                },
+                "$unset": {
+                    "passwordToken": "",
+                    "passwordTokenExpiry": ""
+                }
+            }
+        )
+        
+        logger.info(f"✅ Password set for user {user.get('email')}")
+        return {
+            "status": "success",
+            "message": "Password set successfully! You can now log in.",
+            "user": {
+                "id": user.get("id"),
+                "name": user.get("name"),
+                "email": user.get("email"),
+                "role": user.get("role")
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error setting password: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@joinus_router.get("/set-password/{token}")
+async def validate_password_token(token: str):
+    """Validate a password setup token"""
+    try:
+        user = await db.users.find_one({"passwordToken": token}, {"_id": 0, "password": 0})
+        if not user:
+            raise HTTPException(status_code=404, detail="Invalid or expired token")
+        return {
+            "valid": True,
+            "name": user.get("name"),
+            "email": user.get("email"),
+            "role": user.get("role"),
+            "teamName": user.get("teamName")
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @joinus_router.get("/volunteers")
 async def get_all_volunteer_signups(status: str = None):
     """Get all volunteer signups (admin only)"""
