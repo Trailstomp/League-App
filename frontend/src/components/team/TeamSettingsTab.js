@@ -396,6 +396,12 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                                 color={teamStyle.headerTextColor}
                                 onChange={(color) => setTeamStyle({...teamStyle, headerTextColor: color})}
                             />
+                            
+                            <AdvancedColorPicker
+                                label="Input / Form Text Color"
+                                color={teamStyle.inputTextColor}
+                                onChange={(color) => setTeamStyle({...teamStyle, inputTextColor: color})}
+                            />
                         </div>
                     </div>
                     
@@ -414,10 +420,20 @@ const TeamSettingsTab = ({ team, onTeamUpdate }) => {
                                     {team.name || 'Team Name'}
                                 </h4>
                             </div>
-                            <div className="p-4">
+                            <div className="p-4 space-y-3">
                                 <p style={{ color: teamStyle.textColor }}>
                                     This is sample body text showing how your content will look.
                                 </p>
+                                <div>
+                                    <label className="block text-xs font-medium mb-1" style={{ color: teamStyle.textColor }}>Sample Input Field</label>
+                                    <input 
+                                        type="text" 
+                                        readOnly 
+                                        value="Text inside an input box" 
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                                        style={{ color: teamStyle.inputTextColor, backgroundColor: '#ffffff' }}
+                                    />
+                                </div>
                                 <button 
                                     className="mt-3 px-4 py-2 rounded-lg font-medium"
                                     style={{ backgroundColor: teamStyle.accentColor, color: teamStyle.headerTextColor }}
