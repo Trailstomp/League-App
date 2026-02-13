@@ -116,3 +116,12 @@ code {
     @apply bg-background text-foreground;
     }
 }
+
+/* Input text color - controlled by league/team style settings */
+:root {
+    --input-text-color: #1e293b;
+}
+
+input, textarea, select, [contenteditable] {
+    color: var(--input-text-color, #1e293b);
+}
