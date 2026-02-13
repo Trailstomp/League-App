@@ -37,6 +37,11 @@ main [class*="rounded-lg"][class*="border"] {
   color: var(--card-text-color, #374151);
 }
 
+/* Ensure inputs always use their own color, not card text color */
+main input, main textarea, main select {
+  color: var(--input-text-color, #1e293b) !important;
+}
+
 /* Card Headings */
 main h1, main h2, main h3, main h4, main h5, main h6,
 main .text-slate-800,
