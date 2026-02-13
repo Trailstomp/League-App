@@ -120,37 +120,58 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
     };
 
     const saveTemplate = async () => {
-        if (!newTemplateName.trim()) {
-            setTemplateMessage('❌ Please enter a template name');
+        if (saveMode === 'new' && !newTemplateName.trim()) {
+            setTemplateMessage('Please enter a template name');
             return;
         }
 
         try {
-            const templateData = {
-                name: newTemplateName.trim(),
-                style: { ...editingStyle },
-                createdAt: new Date().toISOString()
-            };
+            if (saveMode === 'update' && activeTemplateId) {
+                // Update existing template
+                const response = await fetch(`${backendUrl}/api/design-templates/${activeTemplateId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ style: { ...editingStyle } })
+                });
 
-            const response = await fetch(`${backendUrl}/api/design-templates`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(templateData)
-            });
-
-            if (response.ok) {
-                setTemplateMessage('✅ Template saved successfully!');
-                setNewTemplateName('');
-                setShowSaveTemplateModal(false);
-                loadTemplates();
+                if (response.ok) {
+                    const activeTemplate = savedTemplates.find(t => t.id === activeTemplateId);
+                    setTemplateMessage(`Updated "${activeTemplate?.name || 'template'}" with current settings`);
+                    setShowSaveTemplateModal(false);
+                    loadTemplates();
+                } else {
+                    setTemplateMessage('Failed to update template');
+                }
             } else {
-                setTemplateMessage('❌ Failed to save template');
+                // Save as new template
+                const templateData = {
+                    name: newTemplateName.trim(),
+                    style: { ...editingStyle },
+                    createdAt: new Date().toISOString()
+                };
+
+                const response = await fetch(`${backendUrl}/api/design-templates`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(templateData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    setActiveTemplateId(result.template?.id);
+                    setTemplateMessage(`Saved "${newTemplateName.trim()}" as new template`);
+                    setNewTemplateName('');
+                    setShowSaveTemplateModal(false);
+                    loadTemplates();
+                } else {
+                    setTemplateMessage('Failed to save template');
+                }
             }
         } catch (error) {
             console.error('Error saving template:', error);
-            setTemplateMessage('❌ Error saving template');
+            setTemplateMessage('Error saving template');
         }
-        setTimeout(() => setTemplateMessage(''), 3000);
+        setTimeout(() => setTemplateMessage(''), 4000);
     };
 
     const loadTemplate = (template) => {
