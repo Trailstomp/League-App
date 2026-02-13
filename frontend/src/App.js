@@ -714,6 +714,16 @@ function App() {
             users={players}
           />
         );
+      case 'tournaments':
+        return (
+          <TournamentPage
+            events={events}
+            teams={teams}
+            currentUser={currentUser}
+            onNavigate={handleNavigate}
+            setEvents={setEvents}
+          />
+        );
       case 'help':
         return <HelpPage />;
       default:

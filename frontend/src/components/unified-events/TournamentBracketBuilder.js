@@ -65,6 +65,7 @@ const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack, onLiveView, 
         const rounds = [];
         let currentTeams = [...teamList];
         let roundNumber = 1;
+        const totalRounds = Math.ceil(Math.log2(teamList.length));
         while (currentTeams.length > 1) {
             const matches = [];
             const count = Math.floor(currentTeams.length / 2);
@@ -76,7 +77,7 @@ const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack, onLiveView, 
                     score1: null, score2: null, winner: null, status: 'pending'
                 });
             }
-            rounds.push({ round: roundNumber, name: getRoundName(roundNumber, rounds.length + 1), matches });
+            rounds.push({ round: roundNumber, name: getRoundName(roundNumber, totalRounds), matches });
             currentTeams = new Array(count).fill(null);
             roundNumber++;
         }
@@ -565,7 +566,7 @@ const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack, onLiveView, 
                             <p className="text-xs text-white/40 mt-0.5">
                                 {bracketData.format === 'single_elimination' ? 'Single Elimination' : 'Double Elimination'}
                                 <span className="mx-2 text-white/15">|</span>
-                                {bracketData.teams.length} Teams
+                                {bracketData.teams.length || bracketData.rounds[0]?.matches?.length * 2 || 0} Teams
                                 <span className="mx-2 text-white/15">|</span>
                                 {bracketData.rounds.length} Rounds
                             </p>
