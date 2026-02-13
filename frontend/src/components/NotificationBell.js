@@ -1,279 +1,183 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, Check, Trash2, X } from 'lucide-react';
+import { Bell, X } from 'lucide-react';
 
 const NotificationBell = ({ currentUser, onNavigate }) => {
-    const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
-    const [isOpen, setIsOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const dropdownRef = useRef(null);
+    const [notifications, setNotifications] = useState([]);
+    const [showPanel, setShowPanel] = useState(false);
+    const [showToast, setShowToast] = useState(null);
+    const panelRef = useRef(null);
+    const prevCountRef = useRef(0);
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
     
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsOpen(false);
-            }
-        };
-        
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-    
-    // Fetch unread count
+    // Poll for new notifications
     useEffect(() => {
         if (!currentUser?.id) return;
         
-        const fetchUnreadCount = async () => {
+        const checkNotifications = async () => {
             try {
                 const res = await fetch(`${backendUrl}/api/join-us/notifications/${currentUser.id}/count`);
                 if (res.ok) {
                     const data = await res.json();
-                    setUnreadCount(data.unread_count || 0);
+                    const newCount = data.unread_count || 0;
+                    
+                    // Show toast if count increased
+                    if (newCount > prevCountRef.current && prevCountRef.current >= 0) {
+                        const nRes = await fetch(`${backendUrl}/api/join-us/notifications/${currentUser.id}?unread_only=true`);
+                        if (nRes.ok) {
+                            const nData = await nRes.json();
+                            const latest = nData.notifications?.[0];
+                            if (latest && prevCountRef.current > 0) {
+                                setShowToast({ title: latest.title, message: latest.message });
+                                setTimeout(() => setShowToast(null), 5000);
+                            }
+                        }
+                    }
+                    
+                    prevCountRef.current = newCount;
+                    setUnreadCount(newCount);
                 }
-            } catch (e) {
-                console.error('Error fetching notification count:', e);
-            }
+            } catch (e) { /* silent */ }
         };
         
-        fetchUnreadCount();
-        // Poll every 30 seconds
-        const interval = setInterval(fetchUnreadCount, 30000);
+        checkNotifications();
+        const interval = setInterval(checkNotifications, 30000);
         return () => clearInterval(interval);
-    }, [backendUrl, currentUser?.id]);
+    }, [currentUser?.id, backendUrl]);
     
-    // Fetch notifications when dropdown opens
+    // Close panel on outside click
     useEffect(() => {
-        if (!isOpen || !currentUser?.id) return;
-        
-        const fetchNotifications = async () => {
-            setLoading(true);
-            try {
-                const res = await fetch(`${backendUrl}/api/join-us/notifications/${currentUser.id}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setNotifications(data.notifications || []);
-                }
-            } catch (e) {
-                console.error('Error fetching notifications:', e);
-            } finally {
-                setLoading(false);
+        const handleClick = (e) => {
+            if (panelRef.current && !panelRef.current.contains(e.target)) {
+                setShowPanel(false);
             }
         };
-        
-        fetchNotifications();
-    }, [isOpen, backendUrl, currentUser?.id]);
+        if (showPanel) document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, [showPanel]);
     
-    const markAsRead = async (notificationId) => {
+    const loadNotifications = async () => {
         try {
-            const res = await fetch(`${backendUrl}/api/join-us/notifications/${notificationId}/read`, {
-                method: 'PUT'
-            });
-            
+            const res = await fetch(`${backendUrl}/api/join-us/notifications/${currentUser.id}`);
             if (res.ok) {
-                setNotifications(prev => 
-                    prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
-                );
-                setUnreadCount(prev => Math.max(0, prev - 1));
+                const data = await res.json();
+                setNotifications(data.notifications || []);
             }
-        } catch (e) {
-            console.error('Error marking notification as read:', e);
-        }
+        } catch (e) { console.error(e); }
     };
     
-    const markAllAsRead = async () => {
+    const markRead = async (id) => {
         try {
-            const res = await fetch(`${backendUrl}/api/join-us/notifications/${currentUser.id}/read-all`, {
-                method: 'PUT'
-            });
-            
-            if (res.ok) {
-                setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-                setUnreadCount(0);
-            }
-        } catch (e) {
-            console.error('Error marking all notifications as read:', e);
-        }
+            await fetch(`${backendUrl}/api/join-us/notifications/${id}/read`, { method: 'PUT' });
+            setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+            setUnreadCount(prev => Math.max(0, prev - 1));
+        } catch (e) { console.error(e); }
     };
     
-    const deleteNotification = async (notificationId) => {
-        try {
-            const res = await fetch(`${backendUrl}/api/join-us/notifications/${notificationId}`, {
-                method: 'DELETE'
-            });
-            
-            if (res.ok) {
-                const notification = notifications.find(n => n.id === notificationId);
-                setNotifications(prev => prev.filter(n => n.id !== notificationId));
-                if (!notification?.read) {
-                    setUnreadCount(prev => Math.max(0, prev - 1));
-                }
-            }
-        } catch (e) {
-            console.error('Error deleting notification:', e);
-        }
+    const markAllRead = async () => {
+        const unread = notifications.filter(n => !n.read);
+        await Promise.all(unread.map(n => 
+            fetch(`${backendUrl}/api/join-us/notifications/${n.id}/read`, { method: 'PUT' }).catch(() => {})
+        ));
+        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+        setUnreadCount(0);
     };
     
-    const handleNotificationClick = (notification) => {
-        if (!notification.read) {
-            markAsRead(notification.id);
-        }
-        
-        if (notification.link && onNavigate) {
-            // Parse the link and navigate
-            if (notification.link.startsWith('/team/')) {
-                const teamId = notification.link.split('/')[2].split('?')[0];
-                onNavigate('team', teamId);
-            } else if (notification.link.startsWith('/admin')) {
-                onNavigate('admin');
-            }
-        }
-        
-        setIsOpen(false);
+    const handleBellClick = () => {
+        if (!showPanel) loadNotifications();
+        setShowPanel(!showPanel);
     };
     
-    const getNotificationIcon = (type) => {
-        switch (type) {
-            case 'team_registration':
-                return '🏆';
-            case 'player_application':
-                return '🏃';
-            case 'volunteer_signup':
-                return '🙋';
-            default:
-                return '📬';
-        }
-    };
-    
-    const formatTime = (dateString) => {
-        const date = new Date(dateString);
+    const formatTime = (dateStr) => {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
         const now = new Date();
-        const diff = now - date;
-        
-        const minutes = Math.floor(diff / 60000);
-        const hours = Math.floor(diff / 3600000);
-        const days = Math.floor(diff / 86400000);
-        
-        if (minutes < 1) return 'Just now';
-        if (minutes < 60) return `${minutes}m ago`;
-        if (hours < 24) return `${hours}h ago`;
-        if (days < 7) return `${days}d ago`;
-        return date.toLocaleDateString();
+        const diff = (now - d) / 1000;
+        if (diff < 60) return 'Just now';
+        if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     };
     
-    if (!currentUser?.id) return null;
+    if (!currentUser) return null;
     
     return (
-        <div className="relative" ref={dropdownRef}>
+        <>
             {/* Bell Button */}
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
-                data-testid="notification-bell"
-            >
-                <Bell className="w-5 h-5" />
-                {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                    </span>
-                )}
-            </button>
-            
-            {/* Dropdown */}
-            {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden z-50">
-                    {/* Header */}
-                    <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-                        <h3 className="font-semibold text-slate-800">Notifications</h3>
-                        <div className="flex items-center gap-2">
+            <div className="relative" ref={panelRef}>
+                <button
+                    onClick={handleBellClick}
+                    className="relative p-2 rounded-lg hover:bg-white/10 transition-colors"
+                    data-testid="notification-bell"
+                >
+                    <Bell className="w-5 h-5" />
+                    {unreadCount > 0 && (
+                        <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                    )}
+                </button>
+                
+                {/* Dropdown Panel */}
+                {showPanel && (
+                    <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-2xl border border-slate-200 z-50 overflow-hidden" data-testid="notification-panel">
+                        <div className="px-4 py-3 bg-slate-50 border-b flex items-center justify-between">
+                            <h3 className="font-semibold text-slate-800 text-sm">Notifications</h3>
                             {unreadCount > 0 && (
-                                <button
-                                    onClick={markAllAsRead}
-                                    className="text-xs text-blue-600 hover:text-blue-800"
-                                >
+                                <button onClick={markAllRead} className="text-xs text-blue-600 hover:text-blue-800 font-medium">
                                     Mark all read
                                 </button>
                             )}
-                            <button
-                                onClick={() => setIsOpen(false)}
-                                className="p-1 text-slate-400 hover:text-slate-600"
-                            >
-                                <X className="w-4 h-4" />
-                            </button>
                         </div>
-                    </div>
-                    
-                    {/* Notifications List */}
-                    <div className="max-h-96 overflow-y-auto">
-                        {loading ? (
-                            <div className="p-4 text-center text-slate-500">
-                                Loading...
-                            </div>
-                        ) : notifications.length === 0 ? (
-                            <div className="p-8 text-center">
-                                <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                    <Bell className="w-6 h-6 text-slate-400" />
-                                </div>
-                                <p className="text-slate-500">No notifications yet</p>
-                            </div>
-                        ) : (
-                            notifications.map(notification => (
-                                <div
-                                    key={notification.id}
-                                    className={`px-4 py-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer transition-colors ${
-                                        !notification.read ? 'bg-blue-50/50' : ''
-                                    }`}
-                                    onClick={() => handleNotificationClick(notification)}
-                                >
-                                    <div className="flex items-start gap-3">
-                                        <span className="text-xl mt-1">
-                                            {getNotificationIcon(notification.type)}
-                                        </span>
-                                        <div className="flex-1 min-w-0">
-                                            <p className={`text-sm ${!notification.read ? 'font-semibold text-slate-800' : 'text-slate-700'}`}>
-                                                {notification.title}
-                                            </p>
-                                            <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                                                {notification.message}
-                                            </p>
-                                            <p className="text-xs text-slate-400 mt-1">
-                                                {formatTime(notification.created_at)}
-                                            </p>
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            {!notification.read && (
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        markAsRead(notification.id);
-                                                    }}
-                                                    className="p-1 text-slate-400 hover:text-green-600"
-                                                    title="Mark as read"
-                                                >
-                                                    <Check className="w-4 h-4" />
-                                                </button>
-                                            )}
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    deleteNotification(notification.id);
-                                                }}
-                                                className="p-1 text-slate-400 hover:text-red-600"
-                                                title="Delete"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
+                        
+                        <div className="max-h-80 overflow-y-auto">
+                            {notifications.length > 0 ? (
+                                notifications.slice(0, 20).map(n => (
+                                    <div 
+                                        key={n.id} 
+                                        className={`px-4 py-3 border-b border-slate-100 hover:bg-slate-50 cursor-pointer ${!n.read ? 'bg-blue-50/50' : ''}`}
+                                        onClick={() => { markRead(n.id); if (n.link && onNavigate) onNavigate(n.link); }}
+                                    >
+                                        <div className="flex items-start gap-2">
+                                            {!n.read && <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />}
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium text-slate-800 truncate">{n.title}</p>
+                                                <p className="text-xs text-slate-500 line-clamp-2">{n.message}</p>
+                                                <p className="text-xs text-slate-400 mt-1">{formatTime(n.created_at)}</p>
+                                            </div>
                                         </div>
                                     </div>
+                                ))
+                            ) : (
+                                <div className="p-6 text-center text-slate-500">
+                                    <Bell className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+                                    <p className="text-sm">No notifications</p>
                                 </div>
-                            ))
-                        )}
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+            
+            {/* Toast Popup */}
+            {showToast && (
+                <div className="fixed top-4 right-4 z-[100]" data-testid="notification-toast">
+                    <div className="bg-white rounded-xl shadow-2xl border border-slate-200 p-4 max-w-sm flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                            <Bell className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-slate-800">{showToast.title}</p>
+                            <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{showToast.message}</p>
+                        </div>
+                        <button onClick={() => setShowToast(null)} className="text-slate-400 hover:text-slate-600 flex-shrink-0">
+                            <X className="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 };
 
