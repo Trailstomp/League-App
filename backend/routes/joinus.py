@@ -1173,6 +1173,7 @@ async def update_player_application(application_id: str, data: Dict[str, Any]):
                     logger.info(f"✅ Added existing user '{player_name}' to team '{team_name}'")
             else:
                 # Create new user as player
+                password_token = str(uuid.uuid4())
                 new_user = {
                     "id": str(uuid.uuid4()),
                     "name": player_name,
@@ -1182,7 +1183,7 @@ async def update_player_application(application_id: str, data: Dict[str, Any]):
                     "roles": ["player"],
                     "teamId": team_id,
                     "teamName": team_name,
-                    "status": "active",
+                    "status": "pending_password",
                     "position": position,
                     "teamAssignments": [{
                         "teamId": team_id,
@@ -1190,11 +1191,14 @@ async def update_player_application(application_id: str, data: Dict[str, Any]):
                         "position": position,
                         "isPrimary": True
                     }],
+                    "passwordToken": password_token,
+                    "passwordTokenExpiry": datetime.now(timezone.utc).isoformat(),
                     "createdAt": datetime.now(timezone.utc).isoformat(),
                     "approvedAt": datetime.now(timezone.utc).isoformat()
                 }
                 await db.users.insert_one(new_user)
-                logger.info(f"✅ Created new player '{player_name}' and added to team '{team_name}'")
+                update_fields["password_token"] = password_token
+                logger.info(f"✅ Created new player '{player_name}' with password setup token")
             
             update_fields["added_to_team"] = True
         
