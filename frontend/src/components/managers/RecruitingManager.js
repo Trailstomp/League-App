@@ -6,7 +6,7 @@ import { Check, X, Mail, Phone, MapPin, Users, Calendar, Eye, ChevronDown, Chevr
  * team registrations, player applications, and volunteer signups
  */
 const RecruitingManager = ({ currentUser, teams = [] }) => {
-    const [activeSubTab, setActiveSubTab] = useState('teams'); // 'teams', 'players', 'volunteers'
+    const [activeSubTab, setActiveSubTab] = useState('teams'); // 'teams', 'players', 'volunteers', 'invite'
     const [registrations, setRegistrations] = useState([]);
     const [applications, setApplications] = useState([]);
     const [volunteers, setVolunteers] = useState([]);
@@ -14,6 +14,12 @@ const RecruitingManager = ({ currentUser, teams = [] }) => {
     const [actionLoading, setActionLoading] = useState(null);
     const [expandedId, setExpandedId] = useState(null);
     const [statusFilter, setStatusFilter] = useState('pending');
+    
+    // Invite form state
+    const [inviteForm, setInviteForm] = useState({
+        name: '', email: '', phone: '', role: 'player', teamId: '', position: '', message: ''
+    });
+    const [sendingInvite, setSendingInvite] = useState(false);
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
     
