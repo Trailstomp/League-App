@@ -566,6 +566,7 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                             </table>
                         )}
                     </div>
+                    </div>
                     )}
                     
                     {/* Payments, Availability, Roster Actions Sub-tabs */}
