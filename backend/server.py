@@ -4926,6 +4926,8 @@ async def save_design_template(template_data: Dict[str, Any]):
             "id": str(uuid.uuid4()),
             "name": template_data.get("name", "Untitled"),
             "style": template_data.get("style", {}),
+            "inRotation": template_data.get("inRotation", False),
+            "visibleToUsers": template_data.get("visibleToUsers", True),
             "createdAt": template_data.get("createdAt", datetime.now(timezone.utc).isoformat()),
         }
         await db.design_templates.insert_one(template)
