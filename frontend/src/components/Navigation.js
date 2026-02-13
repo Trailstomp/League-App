@@ -374,13 +374,16 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 </div>
                 
                 {!isCollapsed && currentUser && (
-                    <div className="absolute bottom-4 left-4 right-14">
-                        <p className="text-sm text-slate-600 truncate">
-                            Welcome, {currentUser.name}
-                        </p>
-                        <p className="text-xs text-blue-600 truncate">
-                            {(currentUser.roles || [currentUser.role]).filter(Boolean).join(', ')}
-                        </p>
+                    <div className="absolute bottom-4 left-4 right-14 flex items-center gap-2">
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm text-slate-600 truncate">
+                                Welcome, {currentUser.name}
+                            </p>
+                            <p className="text-xs text-blue-600 truncate">
+                                {(currentUser.roles || [currentUser.role]).filter(Boolean).join(', ')}
+                            </p>
+                        </div>
+                        <NotificationBell currentUser={currentUser} onNavigate={onNavigate} />
                     </div>
                 )}
                 {!isCollapsed && !currentUser && (
