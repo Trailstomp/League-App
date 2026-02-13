@@ -57,6 +57,30 @@ main .text-gray-600 {
   color: var(--card-text-color, #374151);
 }
 
+/* Secondary/muted text - subtitles, descriptions, labels */
+main .text-slate-500,
+main .text-gray-500,
+main .text-slate-400,
+main .text-gray-400 {
+  color: var(--secondary-text-color, #64748b) !important;
+}
+
+/* Accent/info text in descriptions */
+main .text-indigo-600,
+main .text-indigo-800,
+main .text-purple-600,
+main .text-purple-800,
+main .text-blue-600,
+main .text-blue-800,
+main .text-green-600,
+main .text-green-800,
+main .text-amber-600,
+main .text-amber-800,
+main .text-teal-600,
+main .text-teal-800 {
+  color: var(--accent-text-color) !important;
+}
+
 main p, main span, main div {
   color: inherit;
 }
