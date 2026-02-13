@@ -4948,6 +4948,31 @@ async def delete_design_template(template_id: str):
         logger.error(f"Error deleting design template: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.put("/design-templates/{template_id}")
+async def update_design_template(template_id: str, template_data: Dict[str, Any]):
+    """Update an existing design template with new settings"""
+    try:
+        update_fields = {
+            "style": template_data.get("style", {}),
+            "updatedAt": datetime.now(timezone.utc).isoformat()
+        }
+        if "name" in template_data:
+            update_fields["name"] = template_data["name"]
+        
+        result = await db.design_templates.update_one(
+            {"id": template_id},
+            {"$set": update_fields}
+        )
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Template not found")
+        
+        return {"status": "success", "message": "Template updated"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating design template: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # ==================== DIVISIONS ====================
 
 @api_router.get("/divisions")
