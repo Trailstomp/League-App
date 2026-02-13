@@ -171,7 +171,8 @@ const TeamAdminHub = ({ team, currentUser, onTeamUpdate, defaultSection = null }
                 </div>
             )}
 
-            {/* Section Tabs */}
+            {/* Section Tabs - hidden when embedded with a specific default section */}
+            {!defaultSection && (
             <div className="flex flex-wrap gap-2 border-b pb-2">
                 {sections.map(section => (
                     <button
@@ -187,6 +188,7 @@ const TeamAdminHub = ({ team, currentUser, onTeamUpdate, defaultSection = null }
                     </button>
                 ))}
             </div>
+            )}
 
             {/* Overview Section */}
             {activeSection === 'overview' && (
