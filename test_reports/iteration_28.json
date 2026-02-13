@@ -1,0 +1,52 @@
+{
+  "summary": "Tested 'Use League Connection' storage feature for team file management. Backend: 12/12 tests passed - all /api/documents/config endpoints work correctly with use_league flag. Frontend: Code review verified FileManager.js shows correct radio buttons for 'Use League Connection' vs 'Use Team's Own Connection', provider picker appears only when using own connection. Media upload endpoint accepts team_id parameter.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_use_league_storage.py",
+    "/app/test_reports/pytest/pytest_use_league_storage.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "documents.py lines 29-49: _get_storage_config correctly handles use_league flag - if team has use_league=true, it skips team config and falls back to league-level storage",
+    "documents.py lines 93-145: GET /api/documents/config returns both use_league and league_available fields for team-level queries",
+    "documents.py lines 148-204: POST /api/documents/config correctly validates team_id required, saves use_league flag, and stores provider config when use_league=false",
+    "media.py lines 178-316: POST /api/upload/image accepts team_id Form param and resolves team storage before falling back to league storage",
+    "FileManager.js lines 42-46: State management correct with useLeague state, settingsProvider, and settingsConfig",
+    "FileManager.js lines 391-427: Radio button UI for 'Use League Connection' and 'Use Team's Own Connection' implemented correctly with proper styling and data-testid attributes",
+    "FileManager.js lines 431-511: Provider selection (Google Drive / OneDrive) and credential fields only visible when useLeague=false"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_use_league_storage.py"
+  ],
+  "success_rate": {
+    "backend": "100% (12/12 tests passed)",
+    "frontend": "Code review verified - unable to complete full UI testing due to browser stability issues"
+  },
+  "test_credentials": "Admin user via localStorage: mlbl_current_user with roles=['admin','coach'], teamAssignments for Eagles",
+  "seed_data_creation": "Created TEST_league_*, TEST_gdrive_*, TEST_onedrive_* prefixed storage configs during testing",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Use League Connection feature fully tested via backend tests. Test data: eagles_01 has google_drive config with use_league=false, hawks_01 has use_league=true. League-level Google Drive is NOT fully configured (no refresh token) so league_available=false. The FileManager component is rendered in Team Admin -> Documents tab (accessible via team page -> Team Admin tab -> Documents sub-tab). Frontend browser testing encountered stability issues but code review confirms correct implementation.",
+  "verified_features": {
+    "GET_documents_config_league_level": "PASS - Returns league_available status",
+    "GET_documents_config_team_id": "PASS - Returns use_league and league_available fields",
+    "GET_documents_config_use_league_true_team": "PASS - hawks_01 returns use_league=true",
+    "POST_documents_config_use_league_true": "PASS - Saves use_league=true correctly",
+    "POST_documents_config_use_league_false_google_drive": "PASS - Saves own google_drive config",
+    "POST_documents_config_use_league_false_onedrive": "PASS - Saves own onedrive config",
+    "POST_documents_config_validates_team_id": "PASS - Returns 400 if team_id missing",
+    "POST_documents_config_validates_provider": "PASS - Returns 400 for invalid provider",
+    "GET_documents_files_use_league_fallback": "PASS - Falls back to league storage when use_league=true",
+    "POST_upload_image_accepts_team_id": "PASS - team_id form param works",
+    "POST_upload_image_backwards_compatible": "PASS - Works without team_id"
+  },
+  "mocked_integrations_note": "Google Drive and OneDrive APIs require real OAuth tokens. File operations will fail without valid credentials - endpoints handle this gracefully."
+}
