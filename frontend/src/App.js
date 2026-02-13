@@ -348,6 +348,18 @@ function App() {
       return;
     }
     
+    // Check for set-password URLs (from recruitment approval)
+    if (path.startsWith('/set-password')) {
+      setCurrentPage('set-password');
+      return;
+    }
+    
+    // Check for account settings
+    if (path === '/account' || path === '/account-settings') {
+      setCurrentPage('account-settings');
+      return;
+    }
+    
     // Check for RSVP page URLs - redirect to backend
     if (path.startsWith('/rsvp/')) {
       const eventId = path.split('/rsvp/')[1];
