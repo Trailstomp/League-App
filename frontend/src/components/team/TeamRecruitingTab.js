@@ -74,7 +74,6 @@ const TeamRecruitingTab = ({ team, currentUser }) => {
             setActionLoading(null);
         }
     };
-    };
 
     const handleSendInvite = async (e) => {
         e.preventDefault();
