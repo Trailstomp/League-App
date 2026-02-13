@@ -13,7 +13,8 @@ import FileManager from '../managers/FileManager';
  * Sections: Players, Recruiting, Roster Hub, Finance, Settings
  */
 const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' }) => {
-    const [activeSection, setActiveSection] = useState('players');
+    const [activeSection, setActiveSection] = useState('roster');
+    const [rosterSubTab, setRosterSubTab] = useState('players'); // 'players', 'payments', 'availability', 'roster-actions'
     const [players, setPlayers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState('');
