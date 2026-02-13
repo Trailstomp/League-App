@@ -70,6 +70,32 @@ const AccountSettings = ({ currentUser, onUserUpdate }) => {
     
     useEffect(() => { if (currentUser?.id) loadCommPrefs(); }, [currentUser?.id]);
     
+    useEffect(() => {
+        if (currentUser?.id) {
+            // Load visible templates
+            fetch(`${backendUrl}/api/design-templates`).then(r => r.json()).then(d => {
+                setAvailableTemplates((d.templates || []).filter(t => t.visibleToUsers !== false));
+            }).catch(() => {});
+            // Load user's pinned preference
+            fetch(`${backendUrl}/api/users/${currentUser.id}/template-preference`).then(r => r.json()).then(d => {
+                setPinnedTemplateId(d.pinnedTemplateId || null);
+            }).catch(() => {});
+        }
+    }, [currentUser?.id]);
+    
+    const handleSaveThemePref = async (templateId) => {
+        setPinnedTemplateId(templateId);
+        try {
+            await fetch(`${backendUrl}/api/users/${currentUser.id}/template-preference`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pinnedTemplateId: templateId })
+            });
+            setResult({ type: 'success', message: templateId ? 'Theme pinned!' : 'Using rotation mode' });
+            setTimeout(() => setResult(null), 3000);
+        } catch (e) { console.error(e); }
+    };
+    
     const handleSaveProfile = async () => {
         setSaving(true);
         try {
