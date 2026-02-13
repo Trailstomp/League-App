@@ -2681,18 +2681,21 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                             {/* Shot Type Dropdown Menu */}
                             {showShotMenu === player.id && (
                                 <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white border border-gray-300 rounded-lg shadow-xl z-50 min-w-[140px]">
-                                    {/* Goal - Stops clocks, shows assist picker */}
+                                    {/* Goal - Stops clocks, opens team shot modal with player pre-selected */}
                                     <button
                                         onClick={() => {
                                             // Stop both clocks
                                             setGameState(prev => ({ ...prev, is_running: false }));
                                             setShotClock(prev => ({ ...prev, isRunning: false }));
-                                            // Show assist picker
-                                            setShowAssistPicker({
-                                                teamKey,
-                                                scorerId: player.id,
-                                                scorerName: `#${player.number} ${player.name}`
+                                            // Open team shot modal pre-configured with this player and goal type
+                                            setTeamShotModalTeam(teamKey);
+                                            setTeamShotInput({
+                                                playerId: player.id,
+                                                shotType: 'goal',
+                                                timestamp: formatTime(gameState.time_remaining),
+                                                assistPlayerId: null
                                             });
+                                            setShowTeamShotModal(true);
                                             setShowShotMenu(null);
                                         }}
                                         className="w-full px-4 py-3 text-left hover:bg-green-50 border-b flex items-center gap-2 rounded-t-lg"
