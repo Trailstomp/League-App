@@ -10,56 +10,53 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Finance, player profiles, PWA, GroupMe, "Join Us" workflow
 - [x] Analog scoreboard, lacrosse stats (FO, GB, players on field)
 - [x] Recruiting module (auto-creates teams/players on approval)
+- [x] Email module (compose, recipients, history, team-level SMTP)
 
-### Email Module (NEW - Feb 13, 2025)
-- [x] **Email Composer** - Full compose UI with subject, body, rich HTML email delivery
-- [x] **Recipient Picker** - Select by team group, individual members, or add custom emails
-- [x] **Quick Templates** - Announcement, Practice Update, Game Reminder, Welcome
-- [x] **Email History** - Log of all sent emails with delivery status
-- [x] **Team-Level SMTP** - Each team can configure their own email (team@team.com)
-- [x] **League-Level SMTP** - Falls back to league email if team doesn't have own
-- [x] **Admin Access** - Admin Portal → Communications → Email
-- [x] **Team Coach Access** - Team Admin → Email section
-- [x] **Works with existing** event notification system (unchanged)
+### Documents / File Manager (NEW - Feb 13, 2025)
+- [x] **Dual Provider Support** - Google Drive and OneDrive/Office 365
+- [x] **League-Level Storage** - Uses existing Cloud Storage config (Google Drive)
+- [x] **Team-Level Storage** - Each team can configure their own provider (Google Drive or OneDrive)
+- [x] **File Browser** - Browse folders/files with breadcrumb navigation, search
+- [x] **CRUD Operations** - Upload files (50MB max), create folders, delete files/folders
+- [x] **Open in Provider** - Click to open files in Google Drive/OneDrive web UI
+- [x] **Storage Settings** - Per-team provider selection with credential fields
+- [x] **Admin Access** - Admin Portal → Content → Documents
+- [x] **Team Coach Access** - Team Admin → Documents section
+- [x] **Graceful Fallback** - Team storage falls back to league storage if not configured
+
+### DB Collections
+- `team_storage_configs` - Per-team storage provider config (google_drive or onedrive credentials)
+- `email_history` - Sent email log
+- `team_smtp_configs` - Per-team SMTP credentials
 
 ## Architecture
 ```
 /app
   backend/
     routes/
-      communication.py  # SMTP config, email compose, recipients, history, team SMTP
-      joinus.py         # Recruiting endpoints
-      groupme.py        # GroupMe integration
-    services/
-      smtp_email_service.py  # SMTP sending engine
+      documents.py     # NEW: File manager API (config, list, upload, create folder, delete)
+      communication.py # Email compose, SMTP config, team SMTP
+      joinus.py        # Recruiting
+      groupme.py       # GroupMe
     server.py
   frontend/
     src/
       components/
         managers/
-          EmailComposer.js       # NEW: Full email module (compose, history, settings)
-          RecruitingManager.js   # Admin recruiting dashboard
-          CommunicationHub.js    # Email config hub (SMTP/Google)
+          FileManager.js      # NEW: File browser + storage settings
+          EmailComposer.js    # Email compose/history/settings
         team/
-          TeamAdminTab.js        # Team admin (includes Email section)
-          TeamRecruitingTab.js   # Team-level recruiting
+          TeamAdminTab.js     # Team admin (Players, Recruiting, Email, Documents, Locations, etc.)
       pages/
-        AdminPage.js            # Admin portal (Email under Communications)
+        AdminPage.js          # Admin portal (Documents under Content)
 ```
 
-## DB Collections
-- `email_history` - Sent email log (subject, recipients, status, timestamps)
-- `team_smtp_configs` - Per-team SMTP credentials (team_id, email, password, host, port)
-- `team_registrations`, `player_applications`, `volunteer_signups` - Recruiting
-
-## Pending Issues
-- Email sending requires valid SMTP credentials (preview env has placeholder)
-- GroupMe dashboard/stats endpoint 520 timeout (minor)
+## Pending
+- Google Drive needs OAuth refresh token to fully work (user must complete auth flow)
+- OneDrive requires Azure AD app registration credentials
+- Email sending requires valid SMTP credentials
 
 ## Upcoming Tasks
-- P2: Continue refactoring monolithic server.py
+- P2: Continue server.py refactoring
 - P3: Tournament scoring UI improvements
 - Future: Hockey-specific stats
-
-## 3rd Party Integrations
-- Google Auth, Google Maps, MongoDB, GroupMe, SMTP Email
