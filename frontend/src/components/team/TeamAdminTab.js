@@ -1053,11 +1053,6 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                 <TeamLocationsManager team={team} />
             )}
 
-            {/* Roster Hub Section - Payment Tracker & Availability */}
-            {activeSection === 'roster-hub' && (
-                <TeamAdminHub team={team} currentUser={currentUser} onTeamUpdate={onTeamUpdate} />
-            )}
-
             {/* Finance Section */}
             {activeSection === 'finance' && (
                 <TeamFinanceTab team={team} currentUser={currentUser} />
