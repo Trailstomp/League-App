@@ -42,6 +42,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         mainTextColor: websiteStyle.mainTextColor || '#374151',
         mainFont: websiteStyle.mainFont || 'Inter, sans-serif',
         mainFontSize: websiteStyle.mainFontSize || '16px',
+        inputTextColor: websiteStyle.inputTextColor || '#1e293b',
         
         // Content Area Zone (the "white" area) - with websiteStyle fallbacks
         contentBackgroundType: websiteStyle.contentBackgroundType || 'color',
