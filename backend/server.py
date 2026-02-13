@@ -4973,6 +4973,137 @@ async def update_design_template(template_id: str, template_data: Dict[str, Any]
         logger.error(f"Error updating design template: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@api_router.get("/design-templates/cycling-config")
+async def get_cycling_config():
+    """Get template cycling configuration"""
+    try:
+        config = await db.template_cycling.find_one({"id": "main"}, {"_id": 0})
+        if not config:
+            return {
+                "enabled": False,
+                "mode": "fixed",  # fixed, random, daily, weekly, per_session
+                "templatePool": [],  # template IDs in rotation
+                "defaultTemplateId": None
+            }
+        return config
+    except Exception as e:
+        logger.error(f"Error getting cycling config: {e}")
+        return {"enabled": False, "mode": "fixed", "templatePool": [], "defaultTemplateId": None}
+
+
+@api_router.post("/design-templates/cycling-config")
+async def save_cycling_config(data: Dict[str, Any]):
+    """Save template cycling configuration"""
+    try:
+        config = {
+            "id": "main",
+            "enabled": data.get("enabled", False),
+            "mode": data.get("mode", "fixed"),
+            "templatePool": data.get("templatePool", []),
+            "defaultTemplateId": data.get("defaultTemplateId"),
+            "updatedAt": datetime.now(timezone.utc).isoformat()
+        }
+        await db.template_cycling.update_one(
+            {"id": "main"}, {"$set": config}, upsert=True
+        )
+        return {"status": "success"}
+    except Exception as e:
+        logger.error(f"Error saving cycling config: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/design-templates/active")
+async def get_active_template(user_id: str = None):
+    """Get the active template based on cycling config and user preference"""
+    try:
+        import hashlib
+        
+        # Check user preference first
+        if user_id:
+            user_pref = await db.user_preferences.find_one({"userId": user_id}, {"_id": 0})
+            if user_pref and user_pref.get("pinnedTemplateId"):
+                pinned = await db.design_templates.find_one(
+                    {"id": user_pref["pinnedTemplateId"]}, {"_id": 0}
+                )
+                if pinned:
+                    return {"template": pinned, "source": "user_pinned"}
+        
+        # Get cycling config
+        config = await db.template_cycling.find_one({"id": "main"}, {"_id": 0})
+        if not config or not config.get("enabled") or config.get("mode") == "fixed":
+            # Return default or none
+            default_id = config.get("defaultTemplateId") if config else None
+            if default_id:
+                tmpl = await db.design_templates.find_one({"id": default_id}, {"_id": 0})
+                if tmpl:
+                    return {"template": tmpl, "source": "default"}
+            return {"template": None, "source": "none"}
+        
+        # Get templates in the pool
+        pool_ids = config.get("templatePool", [])
+        if not pool_ids:
+            return {"template": None, "source": "empty_pool"}
+        
+        pool = await db.design_templates.find(
+            {"id": {"$in": pool_ids}}, {"_id": 0}
+        ).to_list(100)
+        
+        if not pool:
+            return {"template": None, "source": "empty_pool"}
+        
+        mode = config.get("mode", "random")
+        
+        if mode == "random":
+            import random
+            selected = random.choice(pool)
+        elif mode == "daily":
+            day_hash = int(hashlib.md5(str(datetime.now(timezone.utc).date()).encode()).hexdigest(), 16)
+            selected = pool[day_hash % len(pool)]
+        elif mode == "weekly":
+            week_num = datetime.now(timezone.utc).isocalendar()[1]
+            selected = pool[week_num % len(pool)]
+        elif mode == "per_session":
+            import random
+            selected = random.choice(pool)
+        else:
+            selected = pool[0]
+        
+        return {"template": selected, "source": f"cycling_{mode}"}
+    
+    except Exception as e:
+        logger.error(f"Error getting active template: {e}")
+        return {"template": None, "source": "error"}
+
+
+@api_router.post("/users/{user_id}/template-preference")
+async def save_user_template_preference(user_id: str, data: Dict[str, Any]):
+    """Save user's template preference (pin a template or opt into cycling)"""
+    try:
+        await db.user_preferences.update_one(
+            {"userId": user_id},
+            {"$set": {
+                "userId": user_id,
+                "pinnedTemplateId": data.get("pinnedTemplateId"),  # null = use cycling
+                "updatedAt": datetime.now(timezone.utc).isoformat()
+            }},
+            upsert=True
+        )
+        return {"status": "success"}
+    except Exception as e:
+        logger.error(f"Error saving template preference: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/users/{user_id}/template-preference")
+async def get_user_template_preference(user_id: str):
+    """Get user's template preference"""
+    try:
+        pref = await db.user_preferences.find_one({"userId": user_id}, {"_id": 0})
+        return {"pinnedTemplateId": pref.get("pinnedTemplateId") if pref else None}
+    except Exception as e:
+        return {"pinnedTemplateId": None}
+
 # ==================== DIVISIONS ====================
 
 @api_router.get("/divisions")
