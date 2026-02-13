@@ -216,7 +216,6 @@ async def upload_general_image(
         # Try Google Drive upload
         try:
             if google_drive_config:
-                google_drive_config = config["googleDrive"]
                 refresh_token = google_drive_config["refreshToken"]
                 main_folder_id = google_drive_config.get("folderId")
                 
