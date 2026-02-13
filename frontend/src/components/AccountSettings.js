@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { User, Camera, Mail, Phone, Bell, Shield, Save, Loader2, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { User, Camera, Mail, Phone, Bell, Shield, Save, Loader2, CheckCircle, Eye, EyeOff, Palette } from 'lucide-react';
 
 const AccountSettings = ({ currentUser, onUserUpdate }) => {
     const [activeTab, setActiveTab] = useState('profile');
@@ -7,6 +7,10 @@ const AccountSettings = ({ currentUser, onUserUpdate }) => {
     const [saving, setSaving] = useState(false);
     const [result, setResult] = useState(null);
     const [uploading, setUploading] = useState(false);
+    
+    // Theme preference state
+    const [availableTemplates, setAvailableTemplates] = useState([]);
+    const [pinnedTemplateId, setPinnedTemplateId] = useState(null);
     
     // Profile form
     const [profile, setProfile] = useState({
