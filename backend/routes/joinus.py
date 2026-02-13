@@ -1119,20 +1119,91 @@ async def get_all_player_applications(team_id: str = None, status: str = None):
 
 @joinus_router.put("/applications/{application_id}")
 async def update_player_application(application_id: str, data: Dict[str, Any]):
-    """Update a player application status (admin/coach only)"""
+    """Update a player application status (admin/coach only). Auto-adds player to team on approval."""
     try:
+        new_status = data.get("status")
+        
+        # Fetch the application first
+        application = await db.player_applications.find_one({"id": application_id}, {"_id": 0})
+        if not application:
+            raise HTTPException(status_code=404, detail="Application not found")
+        
         update_fields = {k: v for k, v in data.items() if k not in ["id", "_id"]}
         update_fields["updated_at"] = datetime.now(timezone.utc).isoformat()
         
-        result = await db.player_applications.update_one(
+        # If approving, auto-add the player to the team
+        if new_status == "approved" and application.get("status") != "approved":
+            team_id = application.get("team_id")
+            team_name = application.get("team_name", "")
+            player_email = application.get("email", "").lower()
+            player_name = application.get("name", "New Player")
+            position = application.get("position", "")
+            
+            # Get team name from DB if not in application
+            if not team_name and team_id:
+                team_doc = await db.teams.find_one({"id": team_id})
+                if team_doc:
+                    team_name = team_doc.get("name", "")
+            
+            existing_user = await db.users.find_one({"email": player_email})
+            
+            if existing_user:
+                # Check if already assigned to this team
+                assignments = existing_user.get("teamAssignments", [])
+                already_on_team = any(a.get("teamId") == team_id for a in assignments)
+                
+                if not already_on_team:
+                    new_assignment = {
+                        "teamId": team_id,
+                        "teamName": team_name,
+                        "position": position,
+                        "isPrimary": len(assignments) == 0
+                    }
+                    roles = list(set(existing_user.get("roles", []) + ["player"]))
+                    update_data = {
+                        "$push": {"teamAssignments": new_assignment},
+                        "$set": {"roles": roles}
+                    }
+                    # Set primary team if user doesn't have one
+                    if not existing_user.get("teamId"):
+                        update_data["$set"]["teamId"] = team_id
+                        update_data["$set"]["teamName"] = team_name
+                    
+                    await db.users.update_one({"email": player_email}, update_data)
+                    logger.info(f"✅ Added existing user '{player_name}' to team '{team_name}'")
+            else:
+                # Create new user as player
+                new_user = {
+                    "id": str(uuid.uuid4()),
+                    "name": player_name,
+                    "email": player_email,
+                    "phone": application.get("phone", ""),
+                    "role": "player",
+                    "roles": ["player"],
+                    "teamId": team_id,
+                    "teamName": team_name,
+                    "status": "active",
+                    "position": position,
+                    "teamAssignments": [{
+                        "teamId": team_id,
+                        "teamName": team_name,
+                        "position": position,
+                        "isPrimary": True
+                    }],
+                    "createdAt": datetime.now(timezone.utc).isoformat(),
+                    "approvedAt": datetime.now(timezone.utc).isoformat()
+                }
+                await db.users.insert_one(new_user)
+                logger.info(f"✅ Created new player '{player_name}' and added to team '{team_name}'")
+            
+            update_fields["added_to_team"] = True
+        
+        await db.player_applications.update_one(
             {"id": application_id},
             {"$set": update_fields}
         )
         
-        if result.matched_count == 0:
-            raise HTTPException(status_code=404, detail="Application not found")
-        
-        return {"status": "success"}
+        return {"status": "success", "added_to_team": update_fields.get("added_to_team", False)}
         
     except HTTPException:
         raise
