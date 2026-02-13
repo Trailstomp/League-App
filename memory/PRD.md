@@ -12,58 +12,45 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Recruiting module (auto-creates teams/players on approval)
 - [x] Email module (compose, recipients, history, team-level SMTP)
 
-### Documents / File Manager (Feb 13, 2025)
+### Documents / File Manager
 - [x] Dual provider: Google Drive + OneDrive/Office 365
 - [x] File browser: folders, upload, download, create, delete
 - [x] "Use League Connection" option for teams
-- [x] Team-level storage config with provider selection
-- [x] Media uploads accept team_id to use team storage
-- [x] Admin Portal → Content → Documents
-- [x] Team Admin → Documents section
 
 ### Design & Theming System
-- [x] CSS variables for dynamic theming (--primary-color, --accent-color, --secondary-text-color, etc.)
-- [x] Design template system with cycling (random, daily)
-- [x] "Update Active Template" functionality
+- [x] CSS variables for dynamic theming
+- [x] Design template cycling (random, daily)
 - [x] Input text color, secondary text color, accent color pickers
-- [x] Dynamic favicon using league logo
+- [x] Dynamic favicon with cache-busting (?v=timestamp)
+- [x] Dynamic PWA manifest generated from league logo (blob URL)
 
-### Tournament Scoring UI Redesign (Feb 13, 2025)
+### Tournament Scoring UI (Feb 13, 2026)
 - [x] Horizontal bracket layout with CSS connector lines between rounds
 - [x] Redesigned compact match cards with team logos, seed numbers, scores
-- [x] Champion trophy badge at end of bracket
-- [x] Floating action toolbar on hover (Edit Score, Live Score, Watch)
-- [x] Modernized Games List view
-- [x] Dark tournament-themed background (#0b0f19)
-- [x] Proper round naming (Semifinals, Quarterfinals, Final, etc.)
-- [x] Spectator bracket view (TournamentPage) wired to App.js routes
-- [x] Auto-advance winners toggle
-- [x] Tab switching between Bracket and Games List views
+- [x] Champion trophy badge, floating action toolbar, Games List view
+- [x] Dark tournament-themed background, proper round naming
+
+### Mobile Experience (Feb 13, 2026)
+- [x] Compact mobile ticker strip (48px) below mobile header
+- [x] Single-line scrolling game scores (ESPN-style)
+- [x] Proper content padding (56px header + 48px ticker = 104px)
+
+### Bug Fixes (Feb 13, 2026)
+- [x] Fixed news creation/deletion bug: `league_data` → `league_doc` typo in POST /api/league-data/newsItems
+- [x] Changed news image format from banner (16:9) to square (1:1) crop + display
+- [x] Added `square` aspect ratio option to SimpleCropTool
+- [x] Favicon cache busting to force latest logo
 
 ### User Account & Onboarding
-- [x] User account settings page (profile edit, photo upload)
-- [x] Set password flow for newly recruited users
-- [x] NotificationBell component for new message alerts
+- [x] User account settings page, set password flow
+- [x] NotificationBell for new message alerts
 
 ### Recruitment System
 - [x] Automated recruitment: approve → auto-create team/player
-- [x] Proactive "Recruit & Invite" form in league admin
-- [x] Consolidated recruiting UI
-
-### Other Features
-- [x] Merged "Roster Hub" and "Players" tabs into single "Roster" module
-- [x] Photorealistic lacrosse icon pack (replaced emojis)
-- [x] GroupMe integration bug fixes
-
-### DB Collections
-- `team_storage_configs` - Per-team: use_league flag, provider choice, credentials
-- `cloud_storage` - League-level Google Drive config
-- `email_history`, `team_smtp_configs` - Email module
-- `design_templates` - Template cycling with inRotation/visibleToUsers flags
-- `league_data.websiteStyle` - inputTextColor, secondaryTextColor, accentColor
+- [x] Proactive "Recruit & Invite" form
 
 ## Pending
-- Google Drive needs OAuth refresh token to fully work
+- Google Drive needs OAuth refresh token
 - OneDrive requires Azure AD credentials
 - Email sending requires valid SMTP credentials
 
@@ -88,22 +75,17 @@ Comprehensive league management portal for multiple sports with team management,
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
+│   │   │   ├── EventsTicker.js         # MODIFIED: Added compact prop for mobile
+│   │   │   ├── Layout.js               # MODIFIED: Mobile ticker, favicon cache bust, dynamic manifest
+│   │   │   ├── SimpleCropTool.js       # MODIFIED: Added square aspect ratio
+│   │   │   ├── NewsDisplay.js          # MODIFIED: Square image display
+│   │   │   ├── managers/NewsManager.js # MODIFIED: Square crop for news images
 │   │   │   ├── unified-events/
-│   │   │   │   ├── TournamentBracketBuilder.js  # REDESIGNED - bracket visualization
-│   │   │   │   └── EventManager.js
-│   │   │   ├── managers/
-│   │   │   │   ├── RecruitingManager.js
-│   │   │   │   └── WebsiteDesignManager.js
-│   │   │   ├── AnalogScoreboard.js
-│   │   │   ├── EmailComposer.js
-│   │   │   ├── FileManager.js
-│   │   │   └── NotificationBell.js
+│   │   │   │   └── TournamentBracketBuilder.js  # REDESIGNED
+│   │   │   └── ...
 │   │   ├── pages/
-│   │   │   ├── TournamentPage.js  # REDESIGNED - spectator bracket view
-│   │   │   ├── UserAccountSettings.js
-│   │   │   └── SetPasswordPage.js
-│   │   ├── App.js
-│   │   └── Layout.js
+│   │   │   └── TournamentPage.js  # REDESIGNED
+│   │   └── App.js
 └── memory/
     └── PRD.md
 ```
@@ -113,3 +95,8 @@ Comprehensive league management portal for multiple sports with team management,
 - Backend: Python, FastAPI, Pydantic
 - Database: MongoDB
 - Auth: Emergent-managed Google Auth
+
+### Key API Endpoints
+- POST /api/league-data/newsItems - Create/update news items (BUG FIXED)
+- GET /api/league-data/newsItems - Get news items
+- GET /api/unified-events - Get all events
