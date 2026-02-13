@@ -529,6 +529,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         {
             groupName: '📸 Content',
             tabs: [
+                { id: 'documents', label: 'Documents', icon: 'backup' },
                 { id: 'welcome-message', label: 'Welcome Message', icon: '👋' },
                 { id: 'news', label: 'News', icon: '📰' },
                 { id: 'media', label: 'Gallery', icon: 'view' },
