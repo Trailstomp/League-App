@@ -120,7 +120,7 @@ const TeamRecruitingTab = ({ team, currentUser }) => {
                     position: '',
                     message: ''
                 });
-                loadInvites();
+                loadAll();
             } else {
                 setMessage(`❌ ${data.detail || data.message || 'Failed to send invite'}`);
             }
@@ -141,7 +141,7 @@ const TeamRecruitingTab = ({ team, currentUser }) => {
             
             if (response.ok) {
                 setMessage('✅ Invite resent!');
-                loadInvites();
+                loadAll();
             } else {
                 setMessage('❌ Failed to resend invite');
             }
@@ -161,7 +161,7 @@ const TeamRecruitingTab = ({ team, currentUser }) => {
             
             if (response.ok) {
                 setMessage('✅ Invite cancelled');
-                loadInvites();
+                loadAll();
             } else {
                 setMessage('❌ Failed to cancel invite');
             }
