@@ -566,6 +566,12 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                             </table>
                         )}
                     </div>
+                    )}
+                    
+                    {/* Payments, Availability, Roster Actions Sub-tabs */}
+                    {(rosterSubTab === 'payments' || rosterSubTab === 'availability' || rosterSubTab === 'roster-actions') && (
+                        <TeamAdminHub team={team} currentUser={currentUser} onTeamUpdate={onTeamUpdate} defaultSection={rosterSubTab} />
+                    )}
                 </div>
             )}
 
