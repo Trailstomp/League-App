@@ -243,7 +243,21 @@ const RecruitingManager = ({ currentUser, teams = [] }) => {
             )}
             
             {/* Stats Cards */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-4 gap-4">
+                <div 
+                    onClick={() => setActiveSubTab('invite')}
+                    className={`p-4 rounded-xl cursor-pointer transition-all ${
+                        activeSubTab === 'invite' ? 'bg-indigo-100 border-2 border-indigo-500' : 'bg-white border border-slate-200 hover:border-indigo-300'
+                    }`}
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="text-2xl">📨</div>
+                        <div>
+                            <div className="text-sm text-slate-600">Recruit & Invite</div>
+                            <div className="text-xl font-bold text-indigo-600">Send Invites</div>
+                        </div>
+                    </div>
+                </div>
                 <div 
                     onClick={() => setActiveSubTab('teams')}
                     className={`p-4 rounded-xl cursor-pointer transition-all ${
