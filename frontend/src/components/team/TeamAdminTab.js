@@ -5,6 +5,7 @@ import TeamSettingsTab from './TeamSettingsTab';
 import TeamFinanceTab from './TeamFinanceTab';
 import TeamAdminHub from './TeamAdminHub';
 import TeamLocationsManager from './TeamLocationsManager';
+import EmailComposer from '../managers/EmailComposer';
 
 /**
  * TeamAdminTab - Comprehensive team administration for coaches/admins
