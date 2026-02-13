@@ -1039,6 +1039,11 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                 <EmailComposer currentUser={currentUser} teamId={team.id} teamName={team.name} />
             )}
 
+            {/* Documents Section */}
+            {activeSection === 'documents' && (
+                <FileManager currentUser={currentUser} teamId={team.id} teamName={team.name} />
+            )}
+
             {/* Settings Section */}
             {activeSection === 'settings' && (
                 <TeamSettingsTab team={team} onTeamUpdate={onTeamUpdate} />
