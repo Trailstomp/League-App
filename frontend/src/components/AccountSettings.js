@@ -332,6 +332,61 @@ const AccountSettings = ({ currentUser, onUserUpdate }) => {
                 </div>
             )}
             
+            {/* APPEARANCE TAB */}
+            {activeTab === 'appearance' && (
+                <div className="bg-white rounded-xl border p-6 space-y-5">
+                    <div>
+                        <h4 className="font-medium text-slate-800 mb-1">Theme Preference</h4>
+                        <p className="text-sm text-slate-500">Pin your favorite theme or let the league rotation surprise you</p>
+                    </div>
+                    
+                    {/* Surprise Me / Rotation Option */}
+                    <label 
+                        className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                            !pinnedTemplateId ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-slate-300'
+                        }`}
+                        onClick={() => handleSaveThemePref(null)}
+                    >
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${!pinnedTemplateId ? 'border-indigo-600' : 'border-slate-300'}`}>
+                            {!pinnedTemplateId && <div className="w-2.5 h-2.5 rounded-full bg-indigo-600" />}
+                        </div>
+                        <div>
+                            <div className="font-medium text-slate-800">Surprise Me</div>
+                            <div className="text-xs text-slate-500">Use the league's rotating themes</div>
+                        </div>
+                    </label>
+                    
+                    {/* Available Templates */}
+                    {availableTemplates.length > 0 ? (
+                        <div className="space-y-2">
+                            <p className="text-sm font-medium text-slate-700">Or pin a specific theme:</p>
+                            {availableTemplates.map(t => (
+                                <label
+                                    key={t.id}
+                                    className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                                        pinnedTemplateId === t.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300'
+                                    }`}
+                                    onClick={() => handleSaveThemePref(t.id)}
+                                >
+                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${pinnedTemplateId === t.id ? 'border-blue-600' : 'border-slate-300'}`}>
+                                        {pinnedTemplateId === t.id && <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />}
+                                    </div>
+                                    <div className="flex -space-x-1 flex-shrink-0">
+                                        <div className="w-6 h-6 rounded-full border-2 border-white" style={{ backgroundColor: t.style?.primaryColor || '#3b82f6' }} />
+                                        <div className="w-6 h-6 rounded-full border-2 border-white" style={{ backgroundColor: t.style?.accentColor || '#10b981' }} />
+                                    </div>
+                                    <span className="text-sm font-medium text-slate-700">{t.name}</span>
+                                </label>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-sm text-slate-500 bg-slate-50 rounded-lg p-4 text-center">
+                            No themes available yet. The league admin will set up design templates.
+                        </div>
+                    )}
+                </div>
+            )}
+            
             {/* NOTIFICATIONS TAB */}
             {activeTab === 'notifications' && (
                 <div className="bg-white rounded-xl border p-6 space-y-4">
