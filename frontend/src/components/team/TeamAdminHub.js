@@ -5,8 +5,8 @@ import { getFullImageUrl } from '../../utils/imageUtils';
  * TeamAdminHub - Centralized admin dashboard for team managers
  * Features: Player management, payment tracking, availability, quick actions
  */
-const TeamAdminHub = ({ team, currentUser, onTeamUpdate }) => {
-    const [activeSection, setActiveSection] = useState('overview');
+const TeamAdminHub = ({ team, currentUser, onTeamUpdate, defaultSection = null }) => {
+    const [activeSection, setActiveSection] = useState(defaultSection || 'overview');
     const [players, setPlayers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState('');
