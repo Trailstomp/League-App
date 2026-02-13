@@ -94,10 +94,12 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
     
     // Template management state
     const [savedTemplates, setSavedTemplates] = useState([]);
+    const [activeTemplateId, setActiveTemplateId] = useState(null);
     const [showSaveTemplateModal, setShowSaveTemplateModal] = useState(false);
     const [showLoadTemplateModal, setShowLoadTemplateModal] = useState(false);
     const [newTemplateName, setNewTemplateName] = useState('');
     const [templateMessage, setTemplateMessage] = useState('');
+    const [saveMode, setSaveMode] = useState('new'); // 'new' or 'update'
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
 
     // Load saved templates on mount
