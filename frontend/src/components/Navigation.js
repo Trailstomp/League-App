@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LacrosseIcon } from './LacrosseIcons';
 import CachedImage from './CachedImage';
 import { fixGoogleDriveUrl } from '../utils/imageUtils';
+import NotificationBell from './NotificationBell';
 
 // Teams grouped by division component
 const TeamsByDivision = ({ teams, websiteStyle, isCollapsed, onNavigate, onMobileClose }) => {
