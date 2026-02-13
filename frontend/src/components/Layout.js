@@ -343,38 +343,36 @@ const Layout = ({
 
             {/* Mobile Header - Simplified with logo and league name */}
             {isMobileView && (
-                <div 
-                    className="fixed top-0 left-0 right-0 z-50 shadow-md"
-                    style={{
-                        height: '70px',
-                        backgroundColor: websiteStyle.bannerBackgroundType === 'image' ? 'transparent' : (websiteStyle.bannerBackgroundColor || websiteStyle.primaryColor || '#1e40af'),
-                        backgroundImage: websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage 
-                            ? `url(${websiteStyle.bannerBackgroundImage})` 
-                            : 'none',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center'
-                    }}
-                >
-                    {/* Overlay for image backgrounds */}
-                    {websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage && (
-                        <div className="absolute inset-0 bg-black bg-opacity-40 z-0"></div>
-                    )}
-                    
-                    <div className="flex items-center justify-between h-full px-4 relative z-10">
-                        {/* Logo and League Name */}
-                        <div className="flex items-center space-x-3">
+                <div className="fixed top-0 left-0 right-0 z-50 shadow-md">
+                    {/* Mobile banner bar */}
+                    <div
+                        className="flex items-center justify-between px-4 relative"
+                        style={{
+                            height: '56px',
+                            backgroundColor: websiteStyle.bannerBackgroundType === 'image' ? 'transparent' : (websiteStyle.bannerBackgroundColor || websiteStyle.primaryColor || '#1e40af'),
+                            backgroundImage: websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage 
+                                ? `url(${websiteStyle.bannerBackgroundImage})` 
+                                : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}
+                    >
+                        {websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage && (
+                            <div className="absolute inset-0 bg-black bg-opacity-40 z-0"></div>
+                        )}
+                        <div className="flex items-center space-x-3 relative z-10">
                             {websiteStyle.navLogoUrl ? (
                                 <CachedImage 
                                     src={websiteStyle.navLogoUrl} 
                                     alt="Logo" 
-                                    className="w-10 h-10 object-contain rounded-lg"
-                                    fallback={<span className="text-2xl">🥍</span>}
+                                    className="w-9 h-9 object-contain rounded-lg"
+                                    fallback={<span className="text-xl">🥍</span>}
                                 />
                             ) : (
-                                <span className="text-2xl">🥍</span>
+                                <span className="text-xl">🥍</span>
                             )}
                             <h1 
-                                className="text-lg font-bold truncate max-w-[200px]"
+                                className="text-base font-bold truncate max-w-[180px]"
                                 style={{
                                     fontFamily: websiteStyle.bannerFont || 'Inter, sans-serif',
                                     color: websiteStyle.bannerTextColor || '#ffffff'
@@ -383,11 +381,9 @@ const Layout = ({
                                 {websiteStyle.navLeagueName || websiteStyle.bannerTitle || 'League'}
                             </h1>
                         </div>
-                        
-                        {/* Menu Button for full navigation */}
                         <button
                             onClick={() => setIsMobileMenuOpen(true)}
-                            className="p-2 rounded-lg transition-colors"
+                            className="p-2 rounded-lg transition-colors relative z-10"
                             style={{
                                 backgroundColor: 'rgba(255,255,255,0.2)',
                                 color: websiteStyle.bannerTextColor || '#ffffff'
@@ -398,6 +394,20 @@ const Layout = ({
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         </button>
+                    </div>
+
+                    {/* Mobile Ticker - compact scrolling strip */}
+                    <div
+                        className="w-full overflow-hidden"
+                        style={{ height: '48px', backgroundColor: '#1e293b' }}
+                    >
+                        <EventsTicker 
+                            events={events}
+                            teams={teams}
+                            websiteStyle={websiteStyle}
+                            onEventClick={onEventClick}
+                            onTeamClick={onTeamClick}
+                        />
                     </div>
                 </div>
             )}
