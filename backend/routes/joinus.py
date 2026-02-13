@@ -1059,6 +1059,7 @@ async def update_team_registration(registration_id: str, data: Dict[str, Any]):
                 )
             else:
                 # Create new user as coach
+                password_token = str(uuid.uuid4())
                 new_user = {
                     "id": str(uuid.uuid4()),
                     "name": registration.get("primary_contact_name", "Team Admin"),
@@ -1068,16 +1069,19 @@ async def update_team_registration(registration_id: str, data: Dict[str, Any]):
                     "roles": ["coach"],
                     "teamId": team_id,
                     "teamName": team_name,
-                    "status": "active",
+                    "status": "pending_password",
                     "teamAssignments": [{
                         "teamId": team_id,
                         "teamName": team_name,
                         "position": "Coach",
                         "isPrimary": True
                     }],
+                    "passwordToken": password_token,
+                    "passwordTokenExpiry": datetime.now(timezone.utc).isoformat(),
                     "createdAt": datetime.now(timezone.utc).isoformat()
                 }
                 await db.users.insert_one(new_user)
+                update_fields["password_token"] = password_token
             
             update_fields["created_team_id"] = team_id
             logger.info(f"✅ Auto-created team '{team_name}' (ID: {team_id}) from registration approval")
