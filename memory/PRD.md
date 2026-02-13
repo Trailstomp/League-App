@@ -6,52 +6,60 @@ Comprehensive league management portal for multiple sports with team management,
 ## What's Been Implemented
 
 ### Core Features (Complete)
-- [x] Team management (create, edit, divisions, styling, logos, rosters)
-- [x] Finance tab (income/expenses, CSV export, league-wide view)
-- [x] Player profiles, import tool, role-based access, PWA
-- [x] Event scheduling, RSVP management, live game scoring
-- [x] Tournament support, GroupMe integration
-- [x] "Join Us" workflow, Friends & Sponsors, team locations
+- [x] Team management, event scheduling, live game scoring, tournaments
+- [x] Finance, player profiles, PWA, GroupMe, "Join Us" workflow
+- [x] Analog scoreboard, lacrosse stats (FO, GB, players on field)
+- [x] Recruiting module (auto-creates teams/players on approval)
 
-### Recent Completions (Feb 12, 2025)
-- [x] **Analog Scoreboard** - LED-style scoreboard in LiveSpectatorView and EnhancedLiveStatsEntry
-- [x] **GroupMe Channel Creation Fix** - Fixed imports, existing bot ID bypass
-- [x] **Lacrosse Stats** - Face-off wins, ground balls, players-on-field tracking at goals
-- [x] **Transparent popup fix** - Fixed broken goal assist picker flow
-- [x] **Recruiting Module Overhaul**:
-  - Team registration approval auto-creates team in league + coach user account
-  - Player application approval auto-creates player user + adds to team roster
-  - Unified recruiting in admin (renamed from "Join Requests")
-  - Team-level recruiting tab shows player applications with approve/decline
-  - Success messages confirm team/player creation on approval
+### Email Module (NEW - Feb 13, 2025)
+- [x] **Email Composer** - Full compose UI with subject, body, rich HTML email delivery
+- [x] **Recipient Picker** - Select by team group, individual members, or add custom emails
+- [x] **Quick Templates** - Announcement, Practice Update, Game Reminder, Welcome
+- [x] **Email History** - Log of all sent emails with delivery status
+- [x] **Team-Level SMTP** - Each team can configure their own email (team@team.com)
+- [x] **League-Level SMTP** - Falls back to league email if team doesn't have own
+- [x] **Admin Access** - Admin Portal → Communications → Email
+- [x] **Team Coach Access** - Team Admin → Email section
+- [x] **Works with existing** event notification system (unchanged)
 
 ## Architecture
 ```
 /app
   backend/
     routes/
-      joinus.py        # Recruiting endpoints (auto-create team/player on approval)
-      groupme.py       # GroupMe integration
-    server.py          # Main server
+      communication.py  # SMTP config, email compose, recipients, history, team SMTP
+      joinus.py         # Recruiting endpoints
+      groupme.py        # GroupMe integration
+    services/
+      smtp_email_service.py  # SMTP sending engine
+    server.py
   frontend/
     src/
       components/
-        managers/RecruitingManager.js  # Admin recruiting dashboard
-        team/TeamRecruitingTab.js      # Team-level player apps + invites
-        unified-events/EnhancedLiveStatsEntry.js  # Live scoring
+        managers/
+          EmailComposer.js       # NEW: Full email module (compose, history, settings)
+          RecruitingManager.js   # Admin recruiting dashboard
+          CommunicationHub.js    # Email config hub (SMTP/Google)
+        team/
+          TeamAdminTab.js        # Team admin (includes Email section)
+          TeamRecruitingTab.js   # Team-level recruiting
       pages/
-        AdminPage.js   # Admin portal (recruiting tab)
+        AdminPage.js            # Admin portal (Email under Communications)
 ```
 
+## DB Collections
+- `email_history` - Sent email log (subject, recipients, status, timestamps)
+- `team_smtp_configs` - Per-team SMTP credentials (team_id, email, password, host, port)
+- `team_registrations`, `player_applications`, `volunteer_signups` - Recruiting
+
 ## Pending Issues
-- Email notifications require SMTP credentials (MOCKED)
+- Email sending requires valid SMTP credentials (preview env has placeholder)
 - GroupMe dashboard/stats endpoint 520 timeout (minor)
 
 ## Upcoming Tasks
-- **P2**: Configure SMTP credentials for email notifications
-- **P2**: Continue refactoring monolithic server.py
-- **P3**: Tournament scoring UI improvements
-- **Future**: Hockey-specific stats
+- P2: Continue refactoring monolithic server.py
+- P3: Tournament scoring UI improvements
+- Future: Hockey-specific stats
 
 ## 3rd Party Integrations
-- Google Auth (Emergent-managed), Google Maps, MongoDB, GroupMe
+- Google Auth, Google Maps, MongoDB, GroupMe, SMTP Email
