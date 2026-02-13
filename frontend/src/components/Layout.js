@@ -399,7 +399,7 @@ const Layout = ({
                     {/* Mobile Ticker - compact scrolling strip */}
                     <div
                         className="w-full overflow-hidden"
-                        style={{ height: '48px', backgroundColor: '#1e293b' }}
+                        style={{ height: '48px', backgroundColor: websiteStyle?.tickerColor || '#1e293b' }}
                     >
                         <EventsTicker 
                             events={events}
@@ -407,6 +407,7 @@ const Layout = ({
                             websiteStyle={websiteStyle}
                             onEventClick={onEventClick}
                             onTeamClick={onTeamClick}
+                            compact={true}
                         />
                     </div>
                 </div>
