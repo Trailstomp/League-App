@@ -500,7 +500,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         let homeTeamId = event.homeTeam || (typeof teamsArray[0] === 'string' ? teamsArray[0] : teamsArray[0]?.teamId) || event.scores?.home_team?.id;
         let awayTeamId = event.awayTeam || (typeof teamsArray[1] === 'string' ? teamsArray[1] : teamsArray[1]?.teamId) || event.scores?.away_team?.id;
         const isGame = event.type === 'game' || event.type === 'regular_game' || (hasScores && homeTeamId && awayTeamId);
-        const statusStyle = getEventStatusStyle(event);
+        const statusStyle = getStatusStyle(event.status);
 
         if (isGame && (homeTeamId || awayTeamId)) {
             return (
@@ -523,7 +523,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
             );
         }
 
-        const typeStyle = getEventTypeStyle(event);
+        const typeStyle = getEventTypeStyle(event.type);
         return (
             <div
                 key={`${event.id}-${index}`}
