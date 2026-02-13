@@ -150,38 +150,44 @@ async def save_docs_config(data: Dict[str, Any]):
     """Save team-level document storage configuration"""
     try:
         team_id = data.get("team_id")
-        provider = data.get("provider")  # "google_drive" or "onedrive"
+        provider = data.get("provider")  # "google_drive", "onedrive", or None if use_league
+        use_league = data.get("use_league", False)
         
         if not team_id:
             raise HTTPException(status_code=400, detail="team_id is required")
-        if provider not in ["google_drive", "onedrive"]:
-            raise HTTPException(status_code=400, detail="provider must be 'google_drive' or 'onedrive'")
         
         config = {
             "team_id": team_id,
-            "provider": provider,
+            "use_league": use_league,
             "configured_at": datetime.now(timezone.utc).isoformat()
         }
         
-        if provider == "google_drive":
-            gd = data.get("google_drive", {})
-            config["google_drive"] = {
-                "clientId": gd.get("clientId", ""),
-                "clientSecret": gd.get("clientSecret", ""),
-                "refreshToken": gd.get("refreshToken", ""),
-                "folderId": gd.get("folderId", ""),
-                "folderName": gd.get("folderName", "Team Documents")
-            }
-        elif provider == "onedrive":
-            od = data.get("onedrive", {})
-            config["onedrive"] = {
-                "clientId": od.get("clientId", ""),
-                "clientSecret": od.get("clientSecret", ""),
-                "tenantId": od.get("tenantId", ""),
-                "refreshToken": od.get("refreshToken", ""),
-                "folderId": od.get("folderId", ""),
-                "folderName": od.get("folderName", "Team Documents")
-            }
+        if use_league:
+            config["provider"] = None
+        elif provider not in ["google_drive", "onedrive"]:
+            raise HTTPException(status_code=400, detail="provider must be 'google_drive' or 'onedrive'")
+        else:
+            config["provider"] = provider
+            
+            if provider == "google_drive":
+                gd = data.get("google_drive", {})
+                config["google_drive"] = {
+                    "clientId": gd.get("clientId", ""),
+                    "clientSecret": gd.get("clientSecret", ""),
+                    "refreshToken": gd.get("refreshToken", ""),
+                    "folderId": gd.get("folderId", ""),
+                    "folderName": gd.get("folderName", "Team Documents")
+                }
+            elif provider == "onedrive":
+                od = data.get("onedrive", {})
+                config["onedrive"] = {
+                    "clientId": od.get("clientId", ""),
+                    "clientSecret": od.get("clientSecret", ""),
+                    "tenantId": od.get("tenantId", ""),
+                    "refreshToken": od.get("refreshToken", ""),
+                    "folderId": od.get("folderId", ""),
+                    "folderName": od.get("folderName", "Team Documents")
+                }
         
         await db.team_storage_configs.update_one(
             {"team_id": team_id},
@@ -189,7 +195,8 @@ async def save_docs_config(data: Dict[str, Any]):
             upsert=True
         )
         
-        return {"status": "success", "message": f"{provider} configuration saved for team"}
+        msg = "Using league storage connection" if use_league else f"{provider} configuration saved for team"
+        return {"status": "success", "message": msg}
     except HTTPException:
         raise
     except Exception as e:
