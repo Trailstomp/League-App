@@ -152,7 +152,8 @@ const NewsDisplay = ({ teamId = null, maxItems = 5, showTeamFilter = false }) =>
                                     <CachedImage 
                                         src={item.imageUrl} 
                                         alt={item.heading}
-                                        className="w-full h-48 object-cover rounded-lg hover:opacity-90 transition-opacity"
+                                        className="w-full aspect-square object-cover rounded-lg hover:opacity-90 transition-opacity"
+                                        style={{ maxHeight: '300px' }}
                                     />
                                 </div>
                             )}
