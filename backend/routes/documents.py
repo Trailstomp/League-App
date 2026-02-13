@@ -94,6 +94,11 @@ async def _gdrive_request(method: str, url: str, token: str, **kwargs):
 async def get_docs_config(team_id: str = None):
     """Get document storage configuration"""
     try:
+        # Always check league-level availability
+        league_config = await db.cloud_storage.find_one({"id": "main_cloud_storage"}, {"_id": 0})
+        league_available = bool(league_config and league_config.get("googleDrive", {}).get("refreshToken"))
+        league_provider = "google_drive" if league_available else None
+        
         if team_id:
             config = await db.team_storage_configs.find_one({"team_id": team_id}, {"_id": 0})
             if config:
@@ -104,24 +109,40 @@ async def get_docs_config(team_id: str = None):
                     config["google_drive"]["refreshToken"] = "••••configured••••"
                 if config.get("onedrive", {}).get("clientSecret"):
                     config["onedrive"]["clientSecret"] = "••••••••"
-                return {"configured": True, **config}
-            return {"configured": False, "team_id": team_id, "provider": None}
+                if config.get("onedrive", {}).get("refreshToken"):
+                    config["onedrive"]["refreshToken"] = "••••configured••••"
+                
+                is_using_league = config.get("use_league", False)
+                has_own = bool(config.get("provider")) and not is_using_league
+                
+                return {
+                    "configured": has_own or (is_using_league and league_available),
+                    "use_league": is_using_league,
+                    "provider": league_provider if is_using_league else config.get("provider"),
+                    "league_available": league_available,
+                    "league_provider": league_provider,
+                    **{k: v for k, v in config.items() if k not in ["_id"]}
+                }
+            return {
+                "configured": league_available,  # falls back to league
+                "team_id": team_id,
+                "provider": league_provider,
+                "use_league": league_available,  # default: use league if available
+                "league_available": league_available,
+                "league_provider": league_provider
+            }
         
         # League level
-        league_config = await db.cloud_storage.find_one({"id": "main_cloud_storage"}, {"_id": 0})
-        if league_config:
-            gd = league_config.get("googleDrive", {})
-            has_gdrive = bool(gd.get("refreshToken"))
-            return {
-                "configured": has_gdrive,
-                "provider": "google_drive" if has_gdrive else None,
-                "google_drive_email": gd.get("email", ""),
-                "google_drive_folder": gd.get("folderName", "")
-            }
-        return {"configured": False, "provider": None}
+        return {
+            "configured": league_available,
+            "provider": league_provider,
+            "league_available": league_available,
+            "google_drive_email": league_config.get("googleDrive", {}).get("email", "") if league_config else "",
+            "google_drive_folder": league_config.get("googleDrive", {}).get("folderName", "") if league_config else ""
+        }
     except Exception as e:
         logger.error(f"Error getting docs config: {e}")
-        return {"configured": False, "provider": None}
+        return {"configured": False, "provider": None, "league_available": False}
 
 
 @docs_router.post("/documents/config")
