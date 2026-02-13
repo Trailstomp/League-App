@@ -325,6 +325,128 @@ const RecruitingManager = ({ currentUser, teams = [] }) => {
                 </div>
             </div>
             
+            {/* INVITE TAB */}
+            {activeSubTab === 'invite' && (
+                <div className="bg-white border border-slate-200 rounded-xl p-6">
+                    <h3 className="text-lg font-bold text-slate-800 mb-1">Recruit & Invite</h3>
+                    <p className="text-sm text-slate-500 mb-5">Send invites to players, coaches, or volunteers to join the league</p>
+                    
+                    <form onSubmit={handleSendInvite} className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Name *</label>
+                                <input
+                                    type="text"
+                                    value={inviteForm.name}
+                                    onChange={e => setInviteForm(prev => ({...prev, name: e.target.value}))}
+                                    placeholder="Full name"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                    required
+                                    data-testid="invite-name"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Email *</label>
+                                <input
+                                    type="email"
+                                    value={inviteForm.email}
+                                    onChange={e => setInviteForm(prev => ({...prev, email: e.target.value}))}
+                                    placeholder="email@example.com"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                    required
+                                    data-testid="invite-email"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                                <input
+                                    type="tel"
+                                    value={inviteForm.phone}
+                                    onChange={e => setInviteForm(prev => ({...prev, phone: e.target.value}))}
+                                    placeholder="555-123-4567"
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Role</label>
+                                <select
+                                    value={inviteForm.role}
+                                    onChange={e => setInviteForm(prev => ({...prev, role: e.target.value}))}
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                    data-testid="invite-role"
+                                >
+                                    <option value="player">Player</option>
+                                    <option value="coach">Coach</option>
+                                    <option value="volunteer">Volunteer</option>
+                                    <option value="referee">Referee</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Assign to Team</label>
+                                <select
+                                    value={inviteForm.teamId}
+                                    onChange={e => setInviteForm(prev => ({...prev, teamId: e.target.value}))}
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                    data-testid="invite-team"
+                                >
+                                    <option value="">League-wide (no specific team)</option>
+                                    {teams.filter(t => t.name).sort((a,b) => (a.name||'').localeCompare(b.name||'')).map(t => (
+                                        <option key={t.id} value={t.id}>{t.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            {inviteForm.role === 'player' && (
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Position</label>
+                                    <select
+                                        value={inviteForm.position}
+                                        onChange={e => setInviteForm(prev => ({...prev, position: e.target.value}))}
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Select position...</option>
+                                        <option value="Attack">Attack</option>
+                                        <option value="Midfield">Midfield</option>
+                                        <option value="Defense">Defense</option>
+                                        <option value="Goalie">Goalie</option>
+                                        <option value="FOGO">FOGO</option>
+                                        <option value="LSM">LSM</option>
+                                    </select>
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Personal Message</label>
+                            <textarea
+                                value={inviteForm.message}
+                                onChange={e => setInviteForm(prev => ({...prev, message: e.target.value}))}
+                                placeholder="Add a personal note to the invite..."
+                                rows={3}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        
+                        <div className="flex justify-end">
+                            <button
+                                type="submit"
+                                disabled={sendingInvite || !inviteForm.name.trim() || !inviteForm.email.trim()}
+                                className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2"
+                                data-testid="send-invite-btn"
+                            >
+                                {sendingInvite ? (
+                                    <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</>
+                                ) : (
+                                    <><Mail className="w-4 h-4" /> Send Invite</>
+                                )}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+            
+            {/* APPLICATIONS/REGISTRATIONS TABS */}
+            {activeSubTab !== 'invite' && (
+            <>
             {/* Filter */}
             <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-slate-800">
