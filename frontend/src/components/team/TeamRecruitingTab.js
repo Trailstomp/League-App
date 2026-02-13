@@ -182,13 +182,16 @@ const TeamRecruitingTab = ({ team, currentUser }) => {
         }
     };
 
+    const pendingApps = applications.filter(a => a.status === 'pending');
+    const processedApps = applications.filter(a => a.status !== 'pending');
+
     return (
         <div className="space-y-6">
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
                     <h2 className="text-2xl font-bold text-slate-800">Recruiting</h2>
-                    <p className="text-sm text-slate-600">Invite new players to join your team</p>
+                    <p className="text-sm text-slate-600">Manage player applications and send invites</p>
                 </div>
                 <button
                     onClick={() => setShowInviteForm(true)}
@@ -203,22 +206,116 @@ const TeamRecruitingTab = ({ team, currentUser }) => {
 
             {/* Message */}
             {message && (
-                <div className={`p-3 rounded-lg ${message.startsWith('✅') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                <div className={`p-3 rounded-lg ${message.includes('approved') || message.includes('added') ? 'bg-green-100 text-green-800' : message.includes('declined') ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                     {message}
                 </div>
             )}
+            
+            {/* Section Tabs */}
+            <div className="flex border-b border-slate-200">
+                <button
+                    onClick={() => setActiveSection('applications')}
+                    className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+                        activeSection === 'applications' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'
+                    }`}
+                >
+                    Player Applications {pendingApps.length > 0 && <span className="ml-1 px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs">{pendingApps.length}</span>}
+                </button>
+                <button
+                    onClick={() => setActiveSection('invites')}
+                    className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+                        activeSection === 'invites' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'
+                    }`}
+                >
+                    Sent Invites ({invites.length})
+                </button>
+            </div>
 
-            {/* Pending Invites */}
-            <div className="bg-white rounded-lg border overflow-hidden">
-                <div className="px-4 py-3 bg-slate-50 border-b">
-                    <h3 className="font-semibold text-slate-800">📨 Sent Invites</h3>
+            {loading ? (
+                <div className="flex items-center justify-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                 </div>
-                
-                {loading ? (
-                    <div className="flex items-center justify-center py-12">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                    </div>
-                ) : invites.length > 0 ? (
+            ) : (
+                <>
+                    {/* Player Applications Section */}
+                    {activeSection === 'applications' && (
+                        <div className="bg-white rounded-lg border overflow-hidden">
+                            <div className="px-4 py-3 bg-slate-50 border-b">
+                                <h3 className="font-semibold text-slate-800">Player Applications</h3>
+                                <p className="text-xs text-slate-500">Players who applied to join {team.name} via Join Us</p>
+                            </div>
+                            
+                            {pendingApps.length > 0 && (
+                                <div className="divide-y">
+                                    {pendingApps.map(app => (
+                                        <div key={app.id} className="p-4 bg-yellow-50/50">
+                                            <div className="flex justify-between items-start">
+                                                <div className="space-y-1">
+                                                    <h4 className="font-medium text-slate-800">{app.name}</h4>
+                                                    <p className="text-sm text-slate-500">{app.email}{app.phone ? ` | ${app.phone}` : ''}</p>
+                                                    {app.position && <p className="text-sm text-slate-600">Position: <span className="font-medium">{app.position}</span></p>}
+                                                    {app.experience_level && <p className="text-sm text-slate-600">Experience: <span className="font-medium">{app.experience_level}</span></p>}
+                                                    {app.comments && <p className="text-sm text-slate-500 italic mt-1">"{app.comments}"</p>}
+                                                    <p className="text-xs text-slate-400">Applied {new Date(app.created_at).toLocaleDateString()}</p>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => handleApplicationAction(app.id, 'approved')}
+                                                        disabled={actionLoading === app.id}
+                                                        className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 disabled:opacity-50"
+                                                        data-testid={`approve-app-${app.id}`}
+                                                    >
+                                                        {actionLoading === app.id ? '...' : 'Approve'}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleApplicationAction(app.id, 'rejected')}
+                                                        disabled={actionLoading === app.id}
+                                                        className="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg text-sm hover:bg-red-200 disabled:opacity-50"
+                                                        data-testid={`reject-app-${app.id}`}
+                                                    >
+                                                        Decline
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            {processedApps.length > 0 && (
+                                <div className="divide-y">
+                                    {processedApps.map(app => (
+                                        <div key={app.id} className="p-4 opacity-70">
+                                            <div className="flex justify-between items-center">
+                                                <div>
+                                                    <span className="font-medium text-slate-700">{app.name}</span>
+                                                    <span className="text-sm text-slate-500 ml-2">{app.email}</span>
+                                                    {app.position && <span className="text-sm text-slate-500 ml-2">({app.position})</span>}
+                                                </div>
+                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                    app.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                                }`}>{app.status}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            {applications.length === 0 && (
+                                <div className="p-8 text-center text-slate-500">
+                                    <p className="text-lg mb-1">No player applications yet</p>
+                                    <p className="text-sm">Players can apply via the "Join Us" page on your league site</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Invites Section */}
+                    {activeSection === 'invites' && (
+                        <div className="bg-white rounded-lg border overflow-hidden">
+                            <div className="px-4 py-3 bg-slate-50 border-b">
+                                <h3 className="font-semibold text-slate-800">Sent Invites</h3>
+                            </div>
                     <div className="divide-y">
                         {invites.map((invite) => (
                             <div key={invite.id} className="p-4 hover:bg-slate-50">
