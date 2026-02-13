@@ -90,6 +90,26 @@ const Layout = ({
             if (websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage) {
                 document.body.style.setProperty('--banner-bg-image', `url(${websiteStyle.bannerBackgroundImage})`);
             }
+            
+            // Update browser favicon to use the league's logo
+            const logoUrl = websiteStyle.pwaIconUrl || websiteStyle.navLogoUrl || websiteStyle.logoUrl;
+            if (logoUrl) {
+                const existingFavicon = document.querySelector('link[rel="icon"]');
+                if (existingFavicon) {
+                    existingFavicon.href = logoUrl;
+                } else {
+                    const link = document.createElement('link');
+                    link.rel = 'icon';
+                    link.type = 'image/png';
+                    link.href = logoUrl;
+                    document.head.appendChild(link);
+                }
+                // Also update apple-touch-icon
+                const appleIcon = document.querySelector('link[rel="apple-touch-icon"]');
+                if (appleIcon) {
+                    appleIcon.href = logoUrl;
+                }
+            }
         };
 
         applyGlobalStyling();
