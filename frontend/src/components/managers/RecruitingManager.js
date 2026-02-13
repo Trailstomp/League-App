@@ -104,6 +104,73 @@ const RecruitingManager = ({ currentUser, teams = [] }) => {
         }
     };
     
+    const handleSendInvite = async (e) => {
+        e.preventDefault();
+        if (!inviteForm.name.trim() || !inviteForm.email.trim()) {
+            setSuccessMsg(''); 
+            return;
+        }
+        
+        setSendingInvite(true);
+        try {
+            // If a team is selected, send as a team invite
+            if (inviteForm.teamId) {
+                const res = await fetch(`${backendUrl}/api/team/${inviteForm.teamId}/invites`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: inviteForm.name.trim(),
+                        email: inviteForm.email.trim(),
+                        phone: inviteForm.phone.trim(),
+                        position: inviteForm.role === 'coach' ? 'Coach' : inviteForm.position,
+                        method: 'email',
+                        message: inviteForm.message,
+                        teamId: inviteForm.teamId,
+                        teamName: teams.find(t => t.id === inviteForm.teamId)?.name || '',
+                        invitedBy: currentUser?.name || 'League Admin',
+                        invitedById: currentUser?.id,
+                        role: inviteForm.role
+                    })
+                });
+                
+                if (res.ok) {
+                    const teamName = teams.find(t => t.id === inviteForm.teamId)?.name || 'team';
+                    setSuccessMsg(`Invite sent to ${inviteForm.name} for ${teamName} as ${inviteForm.role}!`);
+                    setInviteForm({ name: '', email: '', phone: '', role: 'player', teamId: '', position: '', message: '' });
+                } else {
+                    const err = await res.json();
+                    setSuccessMsg(err.detail || 'Failed to send invite');
+                }
+            } else {
+                // General league invite via email compose
+                const res = await fetch(`${backendUrl}/api/email/compose`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to_emails: [inviteForm.email.trim()],
+                        subject: `You're Invited to Join the League!`,
+                        body: `Hi ${inviteForm.name},\n\n${inviteForm.message || `We'd love to have you join our league as a ${inviteForm.role}!`}\n\nVisit our website to sign up and learn more.\n\nBest regards,\n${currentUser?.name || 'League Admin'}`,
+                        sender_name: currentUser?.name || 'League Admin'
+                    })
+                });
+                
+                if (res.ok) {
+                    setSuccessMsg(`Recruitment email sent to ${inviteForm.name}!`);
+                    setInviteForm({ name: '', email: '', phone: '', role: 'player', teamId: '', position: '', message: '' });
+                } else {
+                    const err = await res.json();
+                    setSuccessMsg(err.detail || 'Failed to send email');
+                }
+            }
+            setTimeout(() => setSuccessMsg(''), 5000);
+        } catch (e) {
+            console.error('Error sending invite:', e);
+            setSuccessMsg('Error sending invite');
+        } finally {
+            setSendingInvite(false);
+        }
+    };
+    
     const formatDate = (dateStr) => {
         if (!dateStr) return 'N/A';
         return new Date(dateStr).toLocaleDateString('en-US', {
