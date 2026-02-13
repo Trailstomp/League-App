@@ -1061,7 +1061,7 @@ async def update_news_items(news_data: List[Dict[str, Any]]):
         league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # Save back to database
-        league_data.pop('_id', None)
+        league_doc.pop('_id', None)
         result = await db.league_data.replace_one(
             {"id": "main_league"},
             league_doc,
