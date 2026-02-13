@@ -39,6 +39,7 @@ const FileManager = ({ currentUser, teamId = null, teamName = null }) => {
     
     // Settings state
     const [settingsProvider, setSettingsProvider] = useState('google_drive');
+    const [useLeague, setUseLeague] = useState(true);
     const [settingsConfig, setSettingsConfig] = useState({
         google_drive: { clientId: '', clientSecret: '', refreshToken: '', folderId: '', folderName: '' },
         onedrive: { clientId: '', clientSecret: '', tenantId: '', refreshToken: '', folderId: '', folderName: '' }
