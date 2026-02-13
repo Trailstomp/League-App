@@ -180,12 +180,12 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                 ...prev,
                 ...template.style
             }));
+            setActiveTemplateId(template.id);
             setShowLoadTemplateModal(false);
-            setTemplateMessage(`✅ Loaded "${template.name}" template`);
-            // Trigger save after loading
+            setTemplateMessage(`Loaded "${template.name}" — it is now the active template`);
             setTimeout(() => handleSave(), 500);
         }
-        setTimeout(() => setTemplateMessage(''), 3000);
+        setTimeout(() => setTemplateMessage(''), 4000);
     };
 
     const deleteTemplate = async (templateId) => {
