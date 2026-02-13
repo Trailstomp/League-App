@@ -114,9 +114,12 @@ const PHOTO_MAP = {
 export const LacrosseIcons = EMOJI_ICONS;
 
 // Component that renders photo-realistic icon or emoji fallback
-export const LacrosseIcon = ({ name, className = "", size = 20, usePhoto = true, ...props }) => {
+export const LacrosseIcon = ({ name, className = "", size, usePhoto = true, style, ...props }) => {
     const photoKey = PHOTO_MAP[name];
     const photoUrl = photoKey ? PHOTO_ICONS[photoKey] : null;
+    
+    // Parse size from style.fontSize if not explicitly set
+    const iconSize = size || (style?.fontSize ? parseInt(style.fontSize) : 20);
     
     if (usePhoto && photoUrl) {
         return (
@@ -124,7 +127,7 @@ export const LacrosseIcon = ({ name, className = "", size = 20, usePhoto = true,
                 src={photoUrl} 
                 alt={name} 
                 className={`lacrosse-icon-img inline-block object-contain ${className}`}
-                style={{ width: size, height: size, ...props.style }}
+                style={{ width: iconSize, height: iconSize, verticalAlign: 'middle', ...style, fontSize: undefined }}
                 loading="lazy"
                 {...props}
             />
@@ -133,7 +136,7 @@ export const LacrosseIcon = ({ name, className = "", size = 20, usePhoto = true,
     
     // Emoji fallback
     return (
-        <span className={`lacrosse-icon ${className}`} {...props}>
+        <span className={`lacrosse-icon ${className}`} style={style} {...props}>
             {EMOJI_ICONS[name] || '❓'}
         </span>
     );
