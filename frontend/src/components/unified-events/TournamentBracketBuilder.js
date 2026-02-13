@@ -39,7 +39,12 @@ const TournamentBracketBuilder = ({ event, teams, onUpdate, onBack, onLiveView, 
             if (event.teams && event.teams.length >= 4 && !event.bracket) {
                 generateBracket(event.teams);
             } else if (event.bracket) {
-                setBracketData(prev => ({ ...prev, rounds: event.bracket.rounds || [] }));
+                // Recalculate round names in case they were generated with old logic
+                const loadedRounds = (event.bracket.rounds || []).map((round, i, arr) => ({
+                    ...round,
+                    name: getRoundName(i + 1, arr.length)
+                }));
+                setBracketData(prev => ({ ...prev, rounds: loadedRounds }));
             }
         }
     }, [event]);
