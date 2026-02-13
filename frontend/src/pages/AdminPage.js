@@ -518,8 +518,9 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         {
             groupName: '📢 Communications',
             tabs: [
+                { id: 'email', label: 'Email', icon: 'email' },
                 { id: 'coach-notify', label: 'Team Coaches', icon: '👨‍🏫' },
-                { id: 'communications', label: 'Email Hub', icon: 'email' },
+                { id: 'communications', label: 'Email Config', icon: 'settings' },
                 { id: 'sms', label: 'SMS (Twilio)', icon: '📱' },
                 { id: 'groupme', label: 'GroupMe', icon: '💬' },
             ]
