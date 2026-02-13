@@ -127,6 +127,58 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         }
     };
 
+    const loadCyclingConfig = async () => {
+        try {
+            const res = await fetch(`${backendUrl}/api/design-templates/cycling-config`);
+            if (res.ok) setCyclingConfig(await res.json());
+        } catch (e) { console.error('Error loading cycling config:', e); }
+    };
+
+    const saveCyclingConfig = async () => {
+        setSavingCycling(true);
+        try {
+            const res = await fetch(`${backendUrl}/api/design-templates/cycling-config`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(cyclingConfig)
+            });
+            if (res.ok) {
+                setTemplateMessage('Cycling settings saved!');
+            }
+        } catch (e) { console.error(e); }
+        finally { setSavingCycling(false); setTimeout(() => setTemplateMessage(''), 3000); }
+    };
+
+    const toggleTemplateInRotation = async (templateId, inRotation) => {
+        // Update template flag
+        try {
+            await fetch(`${backendUrl}/api/design-templates/${templateId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ inRotation })
+            });
+            // Update pool
+            setCyclingConfig(prev => {
+                const pool = inRotation 
+                    ? [...new Set([...prev.templatePool, templateId])]
+                    : prev.templatePool.filter(id => id !== templateId);
+                return { ...prev, templatePool: pool };
+            });
+            setSavedTemplates(prev => prev.map(t => t.id === templateId ? { ...t, inRotation } : t));
+        } catch (e) { console.error(e); }
+    };
+
+    const toggleTemplateVisibility = async (templateId, visibleToUsers) => {
+        try {
+            await fetch(`${backendUrl}/api/design-templates/${templateId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ visibleToUsers })
+            });
+            setSavedTemplates(prev => prev.map(t => t.id === templateId ? { ...t, visibleToUsers } : t));
+        } catch (e) { console.error(e); }
+    };
+
     const saveTemplate = async () => {
         if (saveMode === 'new' && !newTemplateName.trim()) {
             setTemplateMessage('Please enter a template name');
