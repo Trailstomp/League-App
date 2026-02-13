@@ -686,6 +686,8 @@ const RecruitingManager = ({ currentUser, teams = [] }) => {
                     ))
                 )}
             </div>
+            </>
+            )}
         </div>
     );
 };
