@@ -750,19 +750,115 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                 )}
             </div>
 
-            {/* What Gets Saved Info */}
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <h4 className="font-medium text-amber-800 mb-2">📋 What Gets Saved in a Template</h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm text-amber-700">
-                    <span>✓ Sport Type</span>
-                    <span>✓ All Colors</span>
-                    <span>✓ Fonts & Sizes</span>
-                    <span>✓ Logo & Images</span>
-                    <span>✓ Banner Settings</span>
-                    <span>✓ Navigation Style</span>
-                    <span>✓ Menu Settings</span>
-                    <span>✓ PWA Settings</span>
-                    <span>✓ Live View Style</span>
+            {/* Template Cycling Configuration */}
+            <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+                <div className="bg-gradient-to-r from-violet-50 to-indigo-50 px-4 py-3 border-b border-slate-200">
+                    <h4 className="font-semibold text-indigo-800">Template Cycling</h4>
+                    <p className="text-xs text-indigo-600">Automatically rotate designs for visitors</p>
+                </div>
+                <div className="p-4 space-y-4">
+                    {/* Enable Toggle */}
+                    <label className="flex items-center justify-between p-3 bg-slate-50 rounded-lg cursor-pointer">
+                        <div>
+                            <span className="font-medium text-slate-800">Enable Template Cycling</span>
+                            <p className="text-xs text-slate-500">Visitors will see different designs based on the rotation mode</p>
+                        </div>
+                        <div className={`relative w-11 h-6 rounded-full transition-colors ${cyclingConfig.enabled ? 'bg-indigo-600' : 'bg-slate-300'}`} 
+                             onClick={() => setCyclingConfig(prev => ({...prev, enabled: !prev.enabled}))}>
+                            <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${cyclingConfig.enabled ? 'left-[22px]' : 'left-0.5'}`} />
+                        </div>
+                    </label>
+                    
+                    {cyclingConfig.enabled && (
+                        <>
+                            {/* Rotation Mode */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Rotation Mode</label>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                    {[
+                                        { id: 'random', label: 'Random', desc: 'Different each visit' },
+                                        { id: 'daily', label: 'Daily', desc: 'Changes each day' },
+                                        { id: 'weekly', label: 'Weekly', desc: 'Changes each week' },
+                                        { id: 'per_session', label: 'Per Session', desc: 'Changes each login' }
+                                    ].map(m => (
+                                        <button key={m.id} onClick={() => setCyclingConfig(prev => ({...prev, mode: m.id}))}
+                                            className={`p-3 rounded-lg border-2 text-left transition-all ${cyclingConfig.mode === m.id ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200 hover:border-slate-300'}`}>
+                                            <div className="font-medium text-sm text-slate-800">{m.label}</div>
+                                            <div className="text-xs text-slate-500">{m.desc}</div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            {/* Templates in Rotation */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                    Templates in Rotation ({cyclingConfig.templatePool.length} selected)
+                                </label>
+                                <div className="space-y-2 max-h-48 overflow-y-auto border rounded-lg p-2 bg-slate-50">
+                                    {savedTemplates.map(t => (
+                                        <label key={t.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                                            <input type="checkbox" 
+                                                checked={cyclingConfig.templatePool.includes(t.id)}
+                                                onChange={e => toggleTemplateInRotation(t.id, e.target.checked)}
+                                                className="rounded text-indigo-600" />
+                                            <div className="flex -space-x-1 flex-shrink-0">
+                                                <div className="w-5 h-5 rounded-full border border-white" style={{ backgroundColor: t.style?.primaryColor || '#3b82f6' }} />
+                                                <div className="w-5 h-5 rounded-full border border-white" style={{ backgroundColor: t.style?.accentColor || '#10b981' }} />
+                                            </div>
+                                            <span className="text-sm text-slate-700">{t.name}</span>
+                                            {cyclingConfig.defaultTemplateId === t.id && (
+                                                <span className="text-xs bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded ml-auto">Default</span>
+                                            )}
+                                        </label>
+                                    ))}
+                                    {savedTemplates.length === 0 && (
+                                        <p className="text-sm text-slate-500 text-center py-4">Save some templates first to add them to the rotation</p>
+                                    )}
+                                </div>
+                            </div>
+                            
+                            {/* Default Template */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Default Template (fallback)</label>
+                                <select value={cyclingConfig.defaultTemplateId || ''} onChange={e => setCyclingConfig(prev => ({...prev, defaultTemplateId: e.target.value || null}))}
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                                    <option value="">None (use current design)</option>
+                                    {savedTemplates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                                </select>
+                            </div>
+                            
+                            {/* User Visibility */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">User Visibility</label>
+                                <p className="text-xs text-slate-500 mb-2">Control which templates users can see and pin as their preference</p>
+                                <div className="space-y-2 border rounded-lg p-2 bg-slate-50">
+                                    {savedTemplates.map(t => (
+                                        <label key={t.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-4 h-4 rounded-full" style={{ backgroundColor: t.style?.primaryColor || '#3b82f6' }} />
+                                                <span className="text-sm text-slate-700">{t.name}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xs text-slate-500">{t.visibleToUsers !== false ? 'Visible' : 'Hidden'}</span>
+                                                <div className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${t.visibleToUsers !== false ? 'bg-green-500' : 'bg-slate-300'}`}
+                                                     onClick={(e) => { e.preventDefault(); toggleTemplateVisibility(t.id, t.visibleToUsers === false); }}>
+                                                    <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${t.visibleToUsers !== false ? 'left-[18px]' : 'left-0.5'}`} />
+                                                </div>
+                                            </div>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        </>
+                    )}
+                    
+                    <div className="flex justify-end">
+                        <button onClick={saveCyclingConfig} disabled={savingCycling}
+                            className="px-5 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50">
+                            {savingCycling ? 'Saving...' : 'Save Cycling Settings'}
+                        </button>
+                    </div>
                 </div>
             </div>
 
