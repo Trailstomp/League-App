@@ -30,8 +30,12 @@ async def _get_storage_config(team_id: str = None):
     """Get storage config for a team (falls back to league-level)"""
     if team_id:
         team_config = await db.team_storage_configs.find_one({"team_id": team_id}, {"_id": 0})
-        if team_config and team_config.get("provider"):
-            return team_config
+        if team_config:
+            # If team explicitly chose "use_league", skip to league config
+            if team_config.get("use_league"):
+                pass  # fall through to league config below
+            elif team_config.get("provider"):
+                return team_config
     
     # Fallback to league-level cloud_storage
     league_config = await db.cloud_storage.find_one({"id": "main_cloud_storage"}, {"_id": 0})
@@ -39,7 +43,8 @@ async def _get_storage_config(team_id: str = None):
         return {
             "provider": "google_drive",
             "google_drive": league_config["googleDrive"],
-            "team_id": None
+            "team_id": None,
+            "is_league_level": True
         }
     return None
 
