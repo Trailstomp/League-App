@@ -663,6 +663,11 @@ function App() {
         return <QuickRSVPForm />;
       case 'join-team':
         return <JoinTeamPage />;
+      case 'set-password':
+        const spToken = new URLSearchParams(window.location.search).get('token') || window.location.pathname.split('/set-password/')[1];
+        return <SetPasswordPage token={spToken} onComplete={() => setCurrentPage('home')} />;
+      case 'account-settings':
+        return <AccountSettings currentUser={currentUser} onUserUpdate={handleUserUpdate} />;
       case 'password-reset':
         return <PasswordResetPage onComplete={() => setCurrentPage('home')} />;
       case 'player-dashboard':
