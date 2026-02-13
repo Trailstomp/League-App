@@ -432,8 +432,31 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
             </div>
 
             {/* PLAYERS SECTION */}
-            {activeSection === 'players' && (
+            {activeSection === 'roster' && (
                 <div className="space-y-4">
+                    {/* Roster Sub-tabs */}
+                    <div className="flex border-b border-slate-200">
+                        {[
+                            { id: 'players', label: 'Players' },
+                            { id: 'payments', label: 'Payments' },
+                            { id: 'availability', label: 'Availability' },
+                            { id: 'roster-actions', label: 'Actions' }
+                        ].map(tab => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setRosterSubTab(tab.id)}
+                                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                                    rosterSubTab === tab.id ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'
+                                }`}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+                    
+                    {/* Players Sub-tab */}
+                    {rosterSubTab === 'players' && (
+                    <div className="space-y-4">
                     {/* Action Bar */}
                     <div className="flex justify-between items-center">
                         <p className="text-sm text-slate-600">Add, edit, or remove players from your team roster.</p>
