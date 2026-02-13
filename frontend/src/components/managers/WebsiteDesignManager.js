@@ -689,19 +689,55 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
             {showSaveTemplateModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-                        <h3 className="text-xl font-bold text-slate-800 mb-4">💾 Save Design Template</h3>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">Template Name</label>
-                                <input
-                                    type="text"
-                                    value={newTemplateName}
-                                    onChange={(e) => setNewTemplateName(e.target.value)}
-                                    placeholder="e.g., Dark Theme, Summer Season, Tournament Mode..."
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                    autoFocus
-                                />
+                        <h3 className="text-xl font-bold text-slate-800 mb-4">Save Design Template</h3>
+                        
+                        {/* Mode Selection */}
+                        {activeTemplateId && (
+                            <div className="flex gap-2 mb-4">
+                                <button
+                                    onClick={() => setSaveMode('update')}
+                                    className={`flex-1 px-3 py-2.5 rounded-lg text-sm font-medium border-2 transition-all ${
+                                        saveMode === 'update' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                                    }`}
+                                >
+                                    Update Active Template
+                                    <span className="block text-xs font-normal mt-0.5 opacity-75">
+                                        {savedTemplates.find(t => t.id === activeTemplateId)?.name || 'Current'}
+                                    </span>
+                                </button>
+                                <button
+                                    onClick={() => setSaveMode('new')}
+                                    className={`flex-1 px-3 py-2.5 rounded-lg text-sm font-medium border-2 transition-all ${
+                                        saveMode === 'new' ? 'border-green-500 bg-green-50 text-green-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                                    }`}
+                                >
+                                    Save as New Template
+                                </button>
                             </div>
+                        )}
+                        
+                        <div className="space-y-4">
+                            {/* Show name input for new templates (or always if no active) */}
+                            {(saveMode === 'new' || !activeTemplateId) && (
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">Template Name</label>
+                                    <input
+                                        type="text"
+                                        value={newTemplateName}
+                                        onChange={(e) => setNewTemplateName(e.target.value)}
+                                        placeholder="e.g., Dark Theme, Summer Season, Tournament Mode..."
+                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        autoFocus
+                                    />
+                                </div>
+                            )}
+                            
+                            {/* Update mode info */}
+                            {saveMode === 'update' && activeTemplateId && (
+                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                                    This will overwrite <strong>"{savedTemplates.find(t => t.id === activeTemplateId)?.name}"</strong> with your current design settings.
+                                </div>
+                            )}
                             
                             {/* Preview of what will be saved */}
                             <div className="bg-slate-50 rounded-lg p-3">
@@ -735,10 +771,13 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                                 </button>
                                 <button
                                     onClick={saveTemplate}
-                                    disabled={!newTemplateName.trim()}
-                                    className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+                                    disabled={saveMode === 'new' && !newTemplateName.trim()}
+                                    className={`flex-1 px-4 py-2 text-white rounded-lg disabled:opacity-50 ${
+                                        saveMode === 'update' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-indigo-600 hover:bg-indigo-700'
+                                    }`}
+                                    data-testid="template-save-confirm"
                                 >
-                                    Save Template
+                                    {saveMode === 'update' ? 'Update Template' : 'Save as New'}
                                 </button>
                             </div>
                         </div>
