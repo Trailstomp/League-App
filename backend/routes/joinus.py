@@ -967,20 +967,127 @@ async def get_all_team_registrations(status: str = None):
 
 @joinus_router.put("/registrations/{registration_id}")
 async def update_team_registration(registration_id: str, data: Dict[str, Any]):
-    """Update a team registration status (admin only)"""
+    """Update a team registration status (admin only). Auto-creates team on approval."""
     try:
+        new_status = data.get("status")
+        
+        # Fetch the registration first
+        registration = await db.team_registrations.find_one({"id": registration_id}, {"_id": 0})
+        if not registration:
+            raise HTTPException(status_code=404, detail="Registration not found")
+        
         update_fields = {k: v for k, v in data.items() if k not in ["id", "_id"]}
         update_fields["updated_at"] = datetime.now(timezone.utc).isoformat()
         
-        result = await db.team_registrations.update_one(
+        # If approving, auto-create the team in the league
+        if new_status == "approved" and registration.get("status") != "approved":
+            team_name = registration.get("team_name", "New Team")
+            team_id = team_name.lower().replace(" ", "_").replace("-", "_") + "_" + str(uuid.uuid4())[:6]
+            
+            # Determine division
+            division_map = {
+                "field": "Division 1",
+                "box": "Premier Division",
+                "both": "Division 1"
+            }
+            lacrosse_type = registration.get("lacrosse_type", "field")
+            division = registration.get("preferred_division") or division_map.get(lacrosse_type, "Division 1")
+            
+            # Create team in league_data.teams
+            new_team = {
+                "id": team_id,
+                "name": team_name,
+                "division": division,
+                "color": "#3b82f6",
+                "logo": "",
+                "active": True,
+                "style": {
+                    "primaryColor": "#3b82f6",
+                    "accentColor": "#60a5fa",
+                    "backgroundColor": "#ffffff",
+                    "textColor": "#1e293b",
+                    "headerTextColor": "#ffffff",
+                    "secondaryColor": "#94a3b8",
+                    "logoUrl": registration.get("logo_url", ""),
+                },
+                "wins": 0,
+                "losses": 0,
+                "ties": 0,
+                "pf": 0,
+                "pa": 0,
+            }
+            
+            # Add to league_data
+            await db.league_data.update_one(
+                {"id": "main_league"},
+                {"$push": {"teams": new_team}}
+            )
+            
+            # Also add to teams collection
+            team_doc = {
+                "id": team_id,
+                "name": team_name,
+                "league_id": "main_league",
+                "division": division,
+                "color": "#3b82f6",
+                "logo": registration.get("logo_url", ""),
+                "active": True,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.teams.insert_one(team_doc)
+            
+            # Create a user/coach account for the primary contact
+            contact_email = registration.get("primary_contact_email", "")
+            existing_user = await db.users.find_one({"email": contact_email})
+            
+            if existing_user:
+                # Add team assignment to existing user, promote to coach
+                new_assignment = {
+                    "teamId": team_id,
+                    "teamName": team_name,
+                    "position": "Coach",
+                    "isPrimary": True
+                }
+                roles = list(set(existing_user.get("roles", []) + ["coach"]))
+                await db.users.update_one(
+                    {"email": contact_email},
+                    {
+                        "$push": {"teamAssignments": new_assignment},
+                        "$set": {"roles": roles, "teamId": team_id, "teamName": team_name}
+                    }
+                )
+            else:
+                # Create new user as coach
+                new_user = {
+                    "id": str(uuid.uuid4()),
+                    "name": registration.get("primary_contact_name", "Team Admin"),
+                    "email": contact_email,
+                    "phone": registration.get("primary_contact_phone", ""),
+                    "role": "coach",
+                    "roles": ["coach"],
+                    "teamId": team_id,
+                    "teamName": team_name,
+                    "status": "active",
+                    "teamAssignments": [{
+                        "teamId": team_id,
+                        "teamName": team_name,
+                        "position": "Coach",
+                        "isPrimary": True
+                    }],
+                    "createdAt": datetime.now(timezone.utc).isoformat()
+                }
+                await db.users.insert_one(new_user)
+            
+            update_fields["created_team_id"] = team_id
+            logger.info(f"✅ Auto-created team '{team_name}' (ID: {team_id}) from registration approval")
+        
+        await db.team_registrations.update_one(
             {"id": registration_id},
             {"$set": update_fields}
         )
         
-        if result.matched_count == 0:
-            raise HTTPException(status_code=404, detail="Registration not found")
-        
-        return {"status": "success"}
+        return {"status": "success", "created_team_id": update_fields.get("created_team_id")}
         
     except HTTPException:
         raise
