@@ -65,6 +65,9 @@ const FileManager = ({ currentUser, teamId = null, teamName = null }) => {
             if (res.ok) {
                 const data = await res.json();
                 setConfig(data);
+                // Set settings state from config
+                if (data.use_league !== undefined) setUseLeague(data.use_league);
+                if (data.provider && !data.use_league) setSettingsProvider(data.provider);
             }
         } catch (e) { console.error(e); }
         setLoading(false);
