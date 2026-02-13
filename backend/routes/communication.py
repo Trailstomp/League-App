@@ -180,6 +180,270 @@ async def send_test_email(data: Dict[str, Any]):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# TEAM-LEVEL SMTP CONFIGURATION
+# ============================================================================
+
+@comms_router.get("/teams/{team_id}/smtp-config")
+async def get_team_smtp_config(team_id: str):
+    """Get team-specific SMTP config status"""
+    try:
+        team_smtp = await db.team_smtp_configs.find_one({"team_id": team_id}, {"_id": 0})
+        if not team_smtp:
+            return {"configured": False, "team_id": team_id}
+        return {
+            "configured": True,
+            "team_id": team_id,
+            "email": team_smtp.get("email", ""),
+            "sender_name": team_smtp.get("sender_name", ""),
+            "host": team_smtp.get("host", ""),
+            "port": team_smtp.get("port", 587)
+        }
+    except Exception as e:
+        logger.error(f"Error getting team SMTP config: {e}")
+        return {"configured": False, "team_id": team_id}
+
+
+@comms_router.post("/teams/{team_id}/smtp-config")
+async def save_team_smtp_config(team_id: str, config: Dict[str, Any]):
+    """Save team-specific SMTP configuration"""
+    try:
+        email = config.get("email", "").strip()
+        password = config.get("password", "").strip()
+        sender_name = config.get("sender_name", "").strip()
+        
+        if not email or not password:
+            raise HTTPException(status_code=400, detail="Email and password are required")
+        
+        email_domain = email.split('@')[1] if '@' in email else ''
+        smtp_configs = {
+            'gmail.com': {'host': 'smtp.gmail.com', 'port': 587},
+            'outlook.com': {'host': 'smtp-mail.outlook.com', 'port': 587},
+            'yahoo.com': {'host': 'smtp.mail.yahoo.com', 'port': 587}
+        }
+        auto_config = smtp_configs.get(email_domain, {'host': config.get('host', 'smtp.gmail.com'), 'port': 587})
+        
+        smtp_config = {
+            "team_id": team_id,
+            "email": email,
+            "password": password,
+            "sender_name": sender_name or "Team Admin",
+            "host": config.get("host") or auto_config['host'],
+            "port": config.get("port") or auto_config['port'],
+            "tls": True,
+            "configured_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.team_smtp_configs.update_one(
+            {"team_id": team_id},
+            {"$set": smtp_config},
+            upsert=True
+        )
+        
+        logger.info(f"✅ Team SMTP config saved for team {team_id}: {email}")
+        return {"status": "success", "message": "Team email configuration saved!"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error saving team SMTP config: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# EMAIL COMPOSE & SEND
+# ============================================================================
+
+async def _get_smtp_config_for_context(team_id: str = None):
+    """Get the best available SMTP config: team-level first, then league-level fallback"""
+    if team_id:
+        team_smtp = await db.team_smtp_configs.find_one({"team_id": team_id}, {"_id": 0})
+        if team_smtp and team_smtp.get("email") and team_smtp.get("password"):
+            return team_smtp
+    
+    # Fallback to league SMTP
+    league_data = await db.league_data.find_one({"id": "main_league"})
+    if league_data and league_data.get("smtpConfig"):
+        return league_data["smtpConfig"]
+    
+    return None
+
+
+@comms_router.get("/email/recipients")
+async def get_email_recipients(team_id: str = None):
+    """Get available email recipients, optionally filtered by team"""
+    try:
+        query = {}
+        if team_id:
+            query["$or"] = [
+                {"teamId": team_id},
+                {"teamAssignments.teamId": team_id}
+            ]
+        
+        users_cursor = db.users.find(query, {"_id": 0, "id": 1, "name": 1, "email": 1, "teamId": 1, "teamName": 1, "roles": 1, "role": 1, "teamAssignments": 1})
+        users = await users_cursor.to_list(500)
+        
+        # Build recipient groups
+        teams_map = {}
+        all_recipients = []
+        
+        for user in users:
+            if not user.get("email"):
+                continue
+            recipient = {
+                "id": user["id"],
+                "name": user.get("name", ""),
+                "email": user["email"],
+                "roles": user.get("roles", [user.get("role", "player")]),
+                "teamId": user.get("teamId"),
+                "teamName": user.get("teamName", "")
+            }
+            all_recipients.append(recipient)
+            
+            # Group by team
+            for assignment in user.get("teamAssignments", []):
+                tid = assignment.get("teamId")
+                if tid:
+                    if tid not in teams_map:
+                        teams_map[tid] = {"team_id": tid, "team_name": assignment.get("teamName", ""), "members": []}
+                    teams_map[tid]["members"].append(recipient)
+        
+        return {
+            "recipients": all_recipients,
+            "teams": list(teams_map.values()),
+            "total": len(all_recipients)
+        }
+    except Exception as e:
+        logger.error(f"Error getting recipients: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@comms_router.post("/email/compose")
+async def send_composed_email(data: Dict[str, Any]):
+    """Send a composed email to selected recipients"""
+    try:
+        to_emails = data.get("to_emails", [])
+        subject = data.get("subject", "").strip()
+        body = data.get("body", "").strip()
+        team_id = data.get("team_id")  # Optional: send from team email
+        sender_name = data.get("sender_name", "")
+        
+        if not to_emails:
+            raise HTTPException(status_code=400, detail="At least one recipient email is required")
+        if not subject:
+            raise HTTPException(status_code=400, detail="Subject is required")
+        if not body:
+            raise HTTPException(status_code=400, detail="Email body is required")
+        
+        # Get SMTP config (team-level or league-level)
+        smtp_config = await _get_smtp_config_for_context(team_id)
+        if not smtp_config:
+            raise HTTPException(status_code=400, detail="Email not configured. Please set up SMTP credentials in Email Settings.")
+        
+        if sender_name:
+            smtp_config = {**smtp_config, "sender_name": sender_name}
+        
+        # Send the email via SMTP
+        import smtplib
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+        
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From'] = f"{smtp_config.get('sender_name', 'League Admin')} <{smtp_config['email']}>"
+        msg['To'] = ', '.join(to_emails[:50])  # Limit to 50 recipients per send
+        
+        # Plain text version
+        msg.attach(MIMEText(body, 'plain'))
+        
+        # HTML version with styling
+        html_body = f"""
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #1e40af, #3b82f6); padding: 24px; border-radius: 12px 12px 0 0; text-align: center;">
+                <h1 style="color: white; margin: 0; font-size: 20px;">{subject}</h1>
+            </div>
+            <div style="background: #ffffff; padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px;">
+                <div style="color: #334155; font-size: 15px; line-height: 1.6;">
+                    {body.replace(chr(10), '<br>')}
+                </div>
+            </div>
+            <div style="text-align: center; padding: 16px; color: #94a3b8; font-size: 12px;">
+                Sent via League Management Portal
+            </div>
+        </div>
+        """
+        msg.attach(MIMEText(html_body, 'html'))
+        
+        # Send
+        host = smtp_config.get('host', 'smtp.gmail.com')
+        port = smtp_config.get('port', 587)
+        
+        sent_count = 0
+        failed_emails = []
+        
+        try:
+            with smtplib.SMTP(host, port) as server:
+                server.starttls()
+                server.login(smtp_config['email'], smtp_config['password'])
+                
+                # Send in batches of 10
+                for i in range(0, len(to_emails), 10):
+                    batch = to_emails[i:i+10]
+                    try:
+                        server.sendmail(smtp_config['email'], batch, msg.as_string())
+                        sent_count += len(batch)
+                    except Exception as batch_err:
+                        logger.error(f"Failed batch: {batch_err}")
+                        failed_emails.extend(batch)
+        except smtplib.SMTPAuthenticationError:
+            raise HTTPException(status_code=401, detail="Email authentication failed. Check your email credentials.")
+        except Exception as smtp_err:
+            raise HTTPException(status_code=500, detail=f"Failed to connect to email server: {str(smtp_err)}")
+        
+        # Log to email history
+        email_log = {
+            "id": str(uuid.uuid4()),
+            "subject": subject,
+            "body_preview": body[:200],
+            "to_emails": to_emails,
+            "sent_count": sent_count,
+            "failed_count": len(failed_emails),
+            "from_email": smtp_config['email'],
+            "team_id": team_id,
+            "sent_at": datetime.now(timezone.utc).isoformat(),
+            "status": "sent" if sent_count > 0 else "failed"
+        }
+        await db.email_history.insert_one(email_log)
+        
+        logger.info(f"✅ Email sent: '{subject}' to {sent_count}/{len(to_emails)} recipients")
+        
+        return {
+            "status": "success",
+            "message": f"Email sent to {sent_count} recipient(s)",
+            "sent_count": sent_count,
+            "failed_count": len(failed_emails),
+            "failed_emails": failed_emails
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error sending email: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@comms_router.get("/email/history")
+async def get_email_history(team_id: str = None, limit: int = 50):
+    """Get email send history"""
+    try:
+        query = {}
+        if team_id:
+            query["team_id"] = team_id
+        
+        history = await db.email_history.find(query, {"_id": 0}).sort("sent_at", -1).to_list(limit)
+        return {"history": history, "total": len(history)}
+    except Exception as e:
+        logger.error(f"Error getting email history: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @comms_router.get("/sms-config")
 async def get_sms_config():
