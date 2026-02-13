@@ -61,6 +61,35 @@ const Layout = ({
         };
     }, [isMobileMenuOpen]);
 
+    // Apply active cycling template on mount
+    useEffect(() => {
+        const applyCyclingTemplate = async () => {
+            try {
+                const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+                const userId = (() => {
+                    try { return JSON.parse(localStorage.getItem('mlbl_current_user') || '{}').id; } catch { return null; }
+                })();
+                
+                const url = userId 
+                    ? `${backendUrl}/api/design-templates/active?user_id=${userId}`
+                    : `${backendUrl}/api/design-templates/active`;
+                
+                const res = await fetch(url);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.template?.style && data.source !== 'none') {
+                        // Store which template is active for session
+                        sessionStorage.setItem('mlbl_cycling_template', JSON.stringify(data.template));
+                        console.log(`🎨 Cycling template applied: ${data.template.name} (${data.source})`);
+                    }
+                }
+            } catch (e) {
+                // Cycling is optional, don't break the app
+            }
+        };
+        applyCyclingTemplate();
+    }, []);
+
     // Apply global website styling
     useEffect(() => {
         const applyGlobalStyling = () => {
