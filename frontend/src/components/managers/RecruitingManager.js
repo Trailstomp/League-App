@@ -161,6 +161,14 @@ const RecruitingManager = ({ currentUser, teams = [] }) => {
     
     return (
         <div className="space-y-6" data-testid="recruiting-manager">
+            {/* Success Message */}
+            {successMsg && (
+                <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-center gap-2" data-testid="recruiting-success-msg">
+                    <Check className="w-5 h-5 text-green-600" />
+                    <span className="font-medium">{successMsg}</span>
+                </div>
+            )}
+            
             {/* Stats Cards */}
             <div className="grid grid-cols-3 gap-4">
                 <div 
