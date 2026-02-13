@@ -507,6 +507,8 @@ const FileManager = ({ currentUser, teamId = null, teamName = null }) => {
                                     </div>
                                 </div>
                             )}
+                            </>
+                            )}
                             
                             <div className="flex justify-end">
                                 <button onClick={handleSaveSettings} disabled={savingSettings} className="px-5 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50" data-testid="docs-save-settings">
