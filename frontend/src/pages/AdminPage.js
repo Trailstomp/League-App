@@ -593,6 +593,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 return <TeamCoachNotifier teams={teams} events={events} />;
             case 'email':
                 return <EmailComposer currentUser={currentUser} teams={teams} />;
+            case 'documents':
+                return <FileManager currentUser={currentUser} />;
             case 'communications':
                 return <CommunicationHub />;
             case 'sms':
