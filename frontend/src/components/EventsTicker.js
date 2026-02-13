@@ -492,6 +492,87 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         );
     };
 
+    // ─── COMPACT MOBILE TICKER ───
+    const renderCompactItem = (event, index) => {
+        const scores = getScores(event);
+        const hasScores = scores.home !== null || scores.away !== null;
+        const teamsArray = event.teams || [];
+        let homeTeamId = event.homeTeam || (typeof teamsArray[0] === 'string' ? teamsArray[0] : teamsArray[0]?.teamId) || event.scores?.home_team?.id;
+        let awayTeamId = event.awayTeam || (typeof teamsArray[1] === 'string' ? teamsArray[1] : teamsArray[1]?.teamId) || event.scores?.away_team?.id;
+        const isGame = event.type === 'game' || event.type === 'regular_game' || (hasScores && homeTeamId && awayTeamId);
+        const statusStyle = getEventStatusStyle(event);
+
+        if (isGame && (homeTeamId || awayTeamId)) {
+            return (
+                <div
+                    key={`${event.id}-${index}`}
+                    className="flex items-center gap-2 px-3 rounded cursor-pointer hover:bg-white/10 transition-colors flex-shrink-0"
+                    onClick={() => onEventClick && onEventClick(event)}
+                    style={{ height: '36px' }}
+                    data-testid={`ticker-compact-${event.id}`}
+                >
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${statusStyle.bg} ${statusStyle.text}`}>
+                        {statusStyle.label}
+                    </span>
+                    <span className="text-white text-xs font-medium">{getTeamName(homeTeamId)?.substring(0, 10)}</span>
+                    <span className="text-white font-bold text-sm">{hasScores ? scores.home ?? '-' : ''}</span>
+                    <span className="text-slate-500 text-[10px]">-</span>
+                    <span className="text-white font-bold text-sm">{hasScores ? scores.away ?? '-' : ''}</span>
+                    <span className="text-white text-xs font-medium">{getTeamName(awayTeamId)?.substring(0, 10)}</span>
+                </div>
+            );
+        }
+
+        const typeStyle = getEventTypeStyle(event);
+        return (
+            <div
+                key={`${event.id}-${index}`}
+                className="flex items-center gap-2 px-3 rounded cursor-pointer hover:bg-white/10 transition-colors flex-shrink-0"
+                onClick={() => onEventClick && onEventClick(event)}
+                style={{ height: '36px' }}
+                data-testid={`ticker-compact-${event.id}`}
+            >
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeStyle.bg} ${typeStyle.text}`}>
+                    {typeStyle.label}
+                </span>
+                <span className="text-white text-xs truncate" style={{ maxWidth: '140px' }}>
+                    {event.title || 'Event'}
+                </span>
+            </div>
+        );
+    };
+
+    // ─── COMPACT RENDER ───
+    if (compact) {
+        const bgColor = websiteStyle?.tickerColor || '#1e293b';
+        return (
+            <div
+                className="w-full overflow-hidden relative flex items-center"
+                style={{ backgroundColor: bgColor, height: '100%' }}
+                data-testid="events-ticker-compact"
+            >
+                <div
+                    className="absolute left-0 top-0 bottom-0 w-6 z-10 pointer-events-none"
+                    style={{ background: `linear-gradient(to right, ${bgColor}, transparent)` }}
+                />
+                <div
+                    className="absolute right-0 top-0 bottom-0 w-6 z-10 pointer-events-none"
+                    style={{ background: `linear-gradient(to left, ${bgColor}, transparent)` }}
+                />
+                <div
+                    ref={tickerRef}
+                    className="flex items-center gap-3 overflow-x-hidden"
+                    style={{ whiteSpace: 'nowrap', paddingLeft: '0.5rem', paddingRight: '0.5rem' }}
+                >
+                    {tickerEvents.map((e, i) => renderCompactItem(e, i))}
+                    <div className="flex-shrink-0" style={{ width: '200px' }} aria-hidden="true" />
+                    {tickerEvents.map((e, i) => renderCompactItem(e, `dup-${i}`))}
+                    <div className="flex-shrink-0" style={{ width: '200px' }} aria-hidden="true" />
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div 
             className="w-full py-2 overflow-hidden relative"
