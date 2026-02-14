@@ -54,11 +54,11 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
     
     // Properly initialize editingStyle with websiteStyle data
     const [editingStyle, setEditingStyle] = useState(() => ({
-        ...DEFAULT_STYLE,
-        // Override with saved websiteStyle
+        ...VISUAL_RESET,
+        // Override with ALL saved websiteStyle properties (preserves everything user has set)
         ...websiteStyle,
         // Ensure text fields have fallbacks
-        navLeagueName: websiteStyle.navLeagueName || websiteStyle.leagueName || DEFAULT_STYLE.navLeagueName,
+        navLeagueName: websiteStyle.navLeagueName || websiteStyle.leagueName || 'Your League Name',
         navLogoUrl: websiteStyle.navLogoUrl || websiteStyle.logoUrl || '',
     }));
     
