@@ -613,7 +613,15 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                 {/* Media Tab Content */}
                 {activeTab === 'media' && (
                     <div className="p-6 space-y-8">
-                        {/* League Media Gallery */}
+                        {/* Self-service Media Manager */}
+                        <MediaManager
+                            ownerType="league"
+                            ownerId="league"
+                            canEdit={currentUser?.role === 'admin' || currentUser?.roles?.includes('admin')}
+                            currentUser={currentUser}
+                        />
+
+                        {/* Legacy League Media Gallery */}
                         <TeamGalleryDisplay pageType="league" />
 
                         {/* YouTube Gallery */}
