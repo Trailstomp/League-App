@@ -262,4 +262,4 @@ PWA Manifest (auto-generated from league logo)
 
 ---
 
-*You're the backbone of this league. Thank you for your work!*
+*You're the backbone of this league. Thank you for your work! (v2.0)*

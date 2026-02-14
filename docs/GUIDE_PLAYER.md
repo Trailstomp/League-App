@@ -288,4 +288,4 @@ Check if your team has social media:
 
 ---
 
-*Get out there and play your best!*
+*Get out there and play your best! (v2.0)*
