@@ -162,6 +162,12 @@ const PlayerDashboardPage = ({ currentUser, onUserUpdate }) => {
                         team={teamData}
                     />
                 )}
+                {activeTab === 'settings' && (
+                    <AccountSettings 
+                        currentUser={currentUser}
+                        onUserUpdate={onUserUpdate}
+                    />
+                )}
             </div>
         </div>
     );
