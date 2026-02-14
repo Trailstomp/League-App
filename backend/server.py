@@ -5043,14 +5043,15 @@ async def delete_design_template(template_id: str):
 
 @api_router.put("/design-templates/{template_id}")
 async def update_design_template(template_id: str, template_data: Dict[str, Any]):
-    """Update an existing design template with new settings"""
+    """Update an existing design template - only updates fields present in request"""
     try:
         update_fields = {
-            "style": template_data.get("style", {}),
             "updatedAt": datetime.now(timezone.utc).isoformat()
         }
-        if "name" in template_data:
-            update_fields["name"] = template_data["name"]
+        # Only update fields that are explicitly provided in the request
+        for field in ["style", "name", "inRotation", "visibleToUsers"]:
+            if field in template_data:
+                update_fields[field] = template_data[field]
         
         result = await db.design_templates.update_one(
             {"id": template_id},
@@ -5059,7 +5060,8 @@ async def update_design_template(template_id: str, template_data: Dict[str, Any]
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Template not found")
         
-        return {"status": "success", "message": "Template updated"}
+        updated = await db.design_templates.find_one({"id": template_id}, {"_id": 0})
+        return {"status": "success", "message": "Template updated", "template": updated}
     except HTTPException:
         raise
     except Exception as e:
