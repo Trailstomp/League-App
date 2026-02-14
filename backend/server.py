@@ -1159,6 +1159,114 @@ async def upload_image(file: UploadFile = File(...), category: str = Form(defaul
 
 
 
+# ==================== MEDIA ITEMS (Simple Gallery) ====================
+
+@api_router.get("/media-items")
+async def get_media_items(owner_type: str = "league", owner_id: str = "league"):
+    """Get media items for a league or team"""
+    try:
+        query = {"ownerType": owner_type, "ownerId": owner_id}
+        items = await db.media_items.find(query, {"_id": 0}).sort("createdAt", -1).to_list(200)
+        return {"items": items}
+    except Exception as e:
+        logger.error(f"Error fetching media items: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/media-items")
+async def create_media_item(item_data: Dict[str, Any]):
+    """Create a media item (photo URL or video link)"""
+    try:
+        import uuid
+        item = {
+            "id": str(uuid.uuid4()),
+            "type": item_data.get("type", "photo"),
+            "url": item_data.get("url", ""),
+            "thumbnailUrl": item_data.get("thumbnailUrl", ""),
+            "title": item_data.get("title", ""),
+            "description": item_data.get("description", ""),
+            "ownerType": item_data.get("ownerType", "league"),
+            "ownerId": item_data.get("ownerId", "league"),
+            "uploadedBy": item_data.get("uploadedBy", ""),
+            "createdAt": datetime.now(timezone.utc).isoformat()
+        }
+        await db.media_items.insert_one(item)
+        item.pop("_id", None)
+        return {"status": "success", "item": item}
+    except Exception as e:
+        logger.error(f"Error creating media item: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/media-items/{item_id}")
+async def delete_media_item(item_id: str):
+    """Delete a media item"""
+    try:
+        result = await db.media_items.delete_one({"id": item_id})
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Media item not found")
+        return {"status": "success", "message": "Media item deleted"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting media item: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/media-items/upload")
+async def upload_media_item(
+    file: UploadFile = File(...),
+    owner_type: str = Form("league"),
+    owner_id: str = Form("league"),
+    title: str = Form(""),
+    uploaded_by: str = Form("")
+):
+    """Upload a photo and create a media item in one step"""
+    try:
+        if not file.content_type or not file.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="File must be an image")
+        
+        content = await file.read()
+        if len(content) > 10 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="File size must be less than 10MB")
+        
+        ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else 'jpg'
+        if ext not in ('jpg', 'jpeg', 'png', 'webp', 'gif'):
+            ext = 'jpg'
+        
+        timestamp = datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')
+        filename = f"media_{owner_type}_{timestamp}.{ext}"
+        filepath = UPLOADS_DIR / filename
+        
+        with open(filepath, 'wb') as f:
+            f.write(content)
+        
+        image_url = f"/api/uploads/{filename}"
+        
+        import uuid
+        item = {
+            "id": str(uuid.uuid4()),
+            "type": "photo",
+            "url": image_url,
+            "thumbnailUrl": image_url,
+            "title": title or file.filename,
+            "description": "",
+            "ownerType": owner_type,
+            "ownerId": owner_id,
+            "uploadedBy": uploaded_by,
+            "createdAt": datetime.now(timezone.utc).isoformat()
+        }
+        await db.media_items.insert_one(item)
+        item.pop("_id", None)
+        
+        logger.info(f"✅ Media item uploaded: {filename} for {owner_type}/{owner_id}")
+        return {"status": "success", "item": item}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error uploading media item: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
 # ==================== SPONSORS ====================
 
 @api_router.get("/sponsors")
