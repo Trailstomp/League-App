@@ -179,14 +179,14 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
     
     // Calculate statistics
     const stats = {
-        totalTeams: teams.filter(t => !t.isExternal).length,
+        totalTeams: teams.filter(t => !t.isExternal && t.division?.toLowerCase() !== 'external').length,
         activeEvents: events ? events.length : 0,
         totalPlayers: players.length
     };
 
     // Group teams by division (excluding external teams)
     const teamsByDivision = useMemo(() => {
-        const internalTeams = teams.filter(t => !t.isExternal);
+        const internalTeams = teams.filter(t => !t.isExternal && t.division?.toLowerCase() !== 'external');
         const grouped = {};
         
         internalTeams.forEach(team => {

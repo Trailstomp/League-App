@@ -11,7 +11,7 @@ const TeamsByDivision = ({ teams, websiteStyle, isCollapsed, onNavigate, onMobil
     // Filter out external teams and group by division
     const groupTeamsByDivision = () => {
         const grouped = {};
-        const internalTeams = teams.filter(t => !t.isExternal);
+        const internalTeams = teams.filter(t => !t.isExternal && t.division?.toLowerCase() !== 'external');
         internalTeams.forEach(team => {
             const division = team.division || 'Field';
             if (!grouped[division]) grouped[division] = [];
