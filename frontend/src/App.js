@@ -667,11 +667,13 @@ function App() {
         const spToken = new URLSearchParams(window.location.search).get('token') || window.location.pathname.split('/set-password/')[1];
         return <SetPasswordPage token={spToken} onComplete={() => setCurrentPage('home')} />;
       case 'account-settings':
-        return <AccountSettings currentUser={currentUser} onUserUpdate={handleUserUpdate} />;
+        // Redirect to player dashboard settings tab
+        setCurrentPage('player-dashboard');
+        return <PlayerDashboardPage currentUser={currentUser} onUserUpdate={handleUserUpdate} defaultTab="settings" />;
       case 'password-reset':
         return <PasswordResetPage onComplete={() => setCurrentPage('home')} />;
       case 'player-dashboard':
-        return <PlayerDashboardPage currentUser={currentUser} />;
+        return <PlayerDashboardPage currentUser={currentUser} onUserUpdate={handleUserUpdate} />;
       case 'payment-success':
         return <PaymentSuccess onNavigate={handleNavigate} />;
       case 'team':
