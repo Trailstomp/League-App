@@ -709,7 +709,7 @@ async def update_teams(teams_data: List[Dict[str, Any]]):
         league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # Save back to database
-        league_data.pop('_id', None)
+        league_doc.pop('_id', None)
         result = await db.league_data.replace_one(
             {"id": "main_league"},
             league_doc,
@@ -813,7 +813,7 @@ async def update_players(players_data: List[Dict[str, Any]]):
         league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # Save back to database
-        league_data.pop('_id', None)
+        league_doc.pop('_id', None)
         result = await db.league_data.replace_one(
             {"id": "main_league"},
             league_doc,
@@ -852,7 +852,7 @@ async def update_seasons(seasons_data: List[Dict[str, Any]]):
         league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # Save back to database
-        league_data.pop('_id', None)
+        league_doc.pop('_id', None)
         result = await db.league_data.replace_one(
             {"id": "main_league"},
             league_doc,
@@ -891,7 +891,7 @@ async def update_league_schedule(schedule_data: List[Dict[str, Any]]):
         league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # Save back to database
-        league_data.pop('_id', None)
+        league_doc.pop('_id', None)
         result = await db.league_data.replace_one(
             {"id": "main_league"},
             league_doc,
@@ -1022,7 +1022,7 @@ async def update_live_view_settings(settings_data: Dict[str, Any]):
         league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
         # Save back to database
-        league_data.pop('_id', None)
+        league_doc.pop('_id', None)
         result = await db.league_data.replace_one(
             {"id": "main_league"},
             league_doc,
