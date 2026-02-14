@@ -47,6 +47,82 @@ const VISUAL_RESET = {
     accentColor: '#3b82f6',
 };
 
+// Mini website preview component showing a template's colors in a realistic layout
+const TemplatePreview = ({ style = {}, size = 'sm' }) => {
+    const s = style;
+    const navBg = s.navBackgroundColor || '#ffffff';
+    const navText = s.navTextColor || '#374151';
+    const bannerBg = s.bannerBackgroundColor || '#1e40af';
+    const bannerText = s.bannerTextColor || '#ffffff';
+    const mainBg = s.mainBackgroundColor || '#f8fafc';
+    const mainText = s.mainTextColor || '#374151';
+    const contentBg = s.contentBackgroundColor || '#ffffff';
+    const menuBg = s.menuBackgroundColor || '#ffffff';
+    const primary = s.primaryColor || '#1e40af';
+    const accent = s.accentColor || '#3b82f6';
+    const bannerImg = s.bannerBackgroundImage || '';
+    const mainImg = s.mainBackgroundImage || '';
+    const isLarge = size === 'lg';
+    const w = isLarge ? 200 : 140;
+    const h = isLarge ? 120 : 80;
+
+    return (
+        <div
+            data-testid="template-preview"
+            className="rounded-md overflow-hidden border border-slate-200 shadow-sm flex-shrink-0"
+            style={{ width: w, height: h, fontSize: isLarge ? 6 : 5 }}
+        >
+            {/* Nav bar */}
+            <div style={{ background: navBg, color: navText, height: isLarge ? 14 : 10, display: 'flex', alignItems: 'center', padding: '0 4px', gap: 3, borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+                <div style={{ width: isLarge ? 8 : 6, height: isLarge ? 8 : 6, borderRadius: '50%', background: primary, flexShrink: 0 }} />
+                <div style={{ background: navText, opacity: 0.6, height: 2, width: '40%', borderRadius: 1 }} />
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: 2 }}>
+                    <div style={{ background: navText, opacity: 0.3, height: 2, width: 10, borderRadius: 1 }} />
+                    <div style={{ background: navText, opacity: 0.3, height: 2, width: 10, borderRadius: 1 }} />
+                </div>
+            </div>
+            {/* Banner */}
+            <div style={{
+                background: bannerImg ? `url(${bannerImg}) center/cover` : bannerBg,
+                color: bannerText,
+                height: isLarge ? 28 : 18,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 1
+            }}>
+                <div style={{ background: bannerText, opacity: 0.9, height: 3, width: '50%', borderRadius: 1 }} />
+                <div style={{ background: bannerText, opacity: 0.5, height: 2, width: '30%', borderRadius: 1 }} />
+            </div>
+            {/* Body: sidebar + content */}
+            <div style={{
+                background: mainImg ? `url(${mainImg}) center/cover` : mainBg,
+                display: 'flex',
+                flex: 1,
+                height: isLarge ? 78 : 52
+            }}>
+                {/* Sidebar */}
+                <div style={{ width: '25%', background: menuBg, borderRight: '1px solid rgba(0,0,0,0.06)', padding: isLarge ? 4 : 2, display: 'flex', flexDirection: 'column', gap: isLarge ? 3 : 2 }}>
+                    {[1,2,3].map(i => (
+                        <div key={i} style={{ background: primary, opacity: i === 1 ? 0.9 : 0.25, height: 2, borderRadius: 1, width: '85%' }} />
+                    ))}
+                </div>
+                {/* Content area */}
+                <div style={{ flex: 1, padding: isLarge ? 6 : 3, display: 'flex', flexDirection: 'column', gap: isLarge ? 4 : 2 }}>
+                    {/* Card */}
+                    <div style={{ background: contentBg, borderRadius: 2, padding: isLarge ? 4 : 2, boxShadow: '0 1px 2px rgba(0,0,0,0.06)', flex: 1 }}>
+                        <div style={{ background: mainText, opacity: 0.6, height: 2, width: '60%', borderRadius: 1, marginBottom: isLarge ? 3 : 2 }} />
+                        <div style={{ background: mainText, opacity: 0.2, height: 2, width: '90%', borderRadius: 1, marginBottom: 1 }} />
+                        <div style={{ background: mainText, opacity: 0.2, height: 2, width: '75%', borderRadius: 1, marginBottom: isLarge ? 4 : 2 }} />
+                        <div style={{ background: accent, height: isLarge ? 6 : 4, width: isLarge ? 28 : 20, borderRadius: 2, opacity: 0.9 }} />
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, teams = [], events = [] }) => {
     const [activeSection, setActiveSection] = useState('sport');
     const saveTimeoutRef = useRef(null); // Component-level timeout ref
