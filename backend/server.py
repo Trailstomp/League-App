@@ -1126,6 +1126,38 @@ async def delete_news_item(item_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@api_router.post("/upload-image")
+async def upload_image(file: UploadFile = File(...), category: str = Form(default="general")):
+    """Upload an image file and return its URL"""
+    try:
+        if not file.content_type or not file.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="File must be an image")
+        
+        content = await file.read()
+        if len(content) > 10 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="File size must be less than 10MB")
+        
+        ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else 'jpg'
+        if ext not in ('jpg', 'jpeg', 'png', 'webp', 'gif'):
+            ext = 'jpg'
+        
+        timestamp = datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')
+        filename = f"{category}_{timestamp}.{ext}"
+        filepath = UPLOADS_DIR / filename
+        
+        with open(filepath, 'wb') as f:
+            f.write(content)
+        
+        image_url = f"/api/uploads/{filename}"
+        logger.info(f"✅ Image uploaded: {filename} ({len(content)} bytes)")
+        return {"status": "success", "url": image_url, "filename": filename}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error uploading image: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 
 # ==================== SPONSORS ====================
 
