@@ -46,6 +46,12 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Made admin dashboard overview cards clickable (navigate to Teams, Users tabs)
 - [x] Made Quick Action buttons functional (Add Team → Teams, Add Player → Import Players, Export → Database Admin)
 
+### Navigation & UX (Feb 14, 2026)
+- [x] Added "My Team" button in navbar - navigates to user's assigned team
+- [x] Combined "My Dashboard" and "Account Settings" into one page (Account Settings is now a tab)
+- [x] Added `nav.league_chat` permission - League Chat only visible to admin/league_admin
+- [x] Role alias mapping: 'admin' → 'super_admin', 'coach' → 'team_coach' for permissions
+
 ### Documentation (Feb 14, 2026)
 - [x] Updated all 9 help docs from v1.0 (Jan 2025) to v2.0
 - [x] Added: Tournament brackets, PWA, File Manager, Email Composer, Recruiting, Dynamic Theming, Google OAuth, clickable admin dashboard, mobile ticker, news square images
