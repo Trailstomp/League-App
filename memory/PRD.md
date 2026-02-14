@@ -76,6 +76,12 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Load modal also shows color swatches below the preview for quick reference
 - [x] Supports background images in banner and main areas
 
+### Bug Fix: Image Upload Not Saving (Feb 2026)
+- [x] Root cause: `handleSave()` reads from `editingStyleRef.current` but is called synchronously after `setEditingStyle()`, before React re-renders to update the ref — so image data is excluded from save
+- [x] Fix: `handleSave()` now accepts optional `overrideFields` param, merged on top of ref state
+- [x] `handleCropComplete` and direct image upload now pass `{ [fieldName]: imageData }` to `handleSave()` so image data is always included
+- [x] Affects: nav background image, banner background image, main background image, logo uploads, all crop completions
+
 ### Documentation (Feb 14, 2026)
 - [x] Updated all 9 help docs from v1.0 (Jan 2025) to v2.0
 - [x] Added: Tournament brackets, PWA, File Manager, Email Composer, Recruiting, Dynamic Theming, Google OAuth, clickable admin dashboard, mobile ticker, news square images
