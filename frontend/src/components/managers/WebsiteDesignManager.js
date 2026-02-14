@@ -538,8 +538,8 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         setShowCropTool(false);
         setCropImageUrl('');
         
-        // Save immediately after crop
-        handleSave();
+        // Save immediately after crop — pass override since ref is stale before re-render
+        handleSave({ [fieldName]: croppedImageData });
     };
 
     // Fixed color extraction - use existing image data
