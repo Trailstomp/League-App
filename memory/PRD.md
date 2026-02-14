@@ -87,6 +87,14 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Filter checks both `isExternal` flag AND `division === 'External'` (case-insensitive)
 - [x] External teams remain in admin/scheduling contexts where they're needed
 
+### Media Manager — Self-Service Upload (Feb 2026)
+- [x] New `MediaManager` component with photo upload and video link management
+- [x] Added to league home "Media & Videos" tab — league admins can upload photos and add YouTube links
+- [x] Added to team "Photos & Vids" tab — team coaches/admins can manage their own media
+- [x] Backend: `/api/media-items` CRUD + `/api/media-items/upload` (photo upload with local storage fallback)
+- [x] Features: multi-file upload, YouTube embed preview, image lightbox, delete with confirmation
+- [x] Permission-based: Upload/Add buttons only visible to authorized users (admin, coach)
+
 ### Documentation (Feb 14, 2026)
 - [x] Updated all 9 help docs from v1.0 (Jan 2025) to v2.0
 - [x] Added: Tournament brackets, PWA, File Manager, Email Composer, Recruiting, Dynamic Theming, Google OAuth, clickable admin dashboard, mobile ticker, news square images
