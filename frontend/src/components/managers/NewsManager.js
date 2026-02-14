@@ -158,10 +158,35 @@ const NewsManager = ({ teams = [], currentUser }) => {
     // Handle crop tool functionality
     const [croppedResult, setCroppedResult] = useState(null);
     
-    const handleCropComplete = (croppedImageData) => {
+    const handleCropComplete = async (croppedImageData) => {
         if (cropTargetField) {
-            // Pass cropped data to the form via state
-            setCroppedResult({ field: cropTargetField, data: croppedImageData });
+            try {
+                // Convert base64 to blob and upload to server
+                const response = await fetch(croppedImageData);
+                const blob = await response.blob();
+                const formData = new FormData();
+                formData.append('file', blob, 'news_image.jpg');
+                formData.append('category', 'news');
+                
+                const uploadResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/upload-image`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (uploadResponse.ok) {
+                    const result = await uploadResponse.json();
+                    const imageUrl = `${process.env.REACT_APP_BACKEND_URL}${result.url}`;
+                    console.log('✅ News image uploaded:', imageUrl);
+                    setCroppedResult({ field: cropTargetField, data: imageUrl });
+                } else {
+                    // Fallback to base64 if upload fails
+                    console.warn('⚠️ Upload failed, using base64 fallback');
+                    setCroppedResult({ field: cropTargetField, data: croppedImageData });
+                }
+            } catch (err) {
+                console.warn('⚠️ Upload error, using base64 fallback:', err);
+                setCroppedResult({ field: cropTargetField, data: croppedImageData });
+            }
         }
         setShowCropTool(false);
         setCropImageUrl('');
