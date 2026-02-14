@@ -69,6 +69,13 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Verified: 11/11 backend tests passed - partial updates preserve style data, explicit style updates work correctly
 - [x] Existing templates verified intact: Clean Blue (15 props), Neon Test (15 props), Dark Theme (3 props)
 
+### Template Preview Feature (Feb 2026)
+- [x] Added `TemplatePreview` component that renders a mini website layout mockup using template's actual colors
+- [x] Preview shows realistic nav bar, banner, sidebar, and content card areas
+- [x] Small previews (140x80px) in the Saved Templates list, larger previews (200x120px) in the Load Template modal
+- [x] Load modal also shows color swatches below the preview for quick reference
+- [x] Supports background images in banner and main areas
+
 ### Documentation (Feb 14, 2026)
 - [x] Updated all 9 help docs from v1.0 (Jan 2025) to v2.0
 - [x] Added: Tournament brackets, PWA, File Manager, Email Composer, Recruiting, Dynamic Theming, Google OAuth, clickable admin dashboard, mobile ticker, news square images
