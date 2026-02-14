@@ -140,8 +140,10 @@ Scroll down on card back to see:
 The scrolling ticker shows:
 - **Scored games** - Shows final score (3-1, 2-0, etc.)
 - **Upcoming games** - Shows date and teams
+- **Tournaments** - Shows tournament badge and details
 - **Events** - Shows date and title
-- Hover to pause scrolling
+- Hover to pause scrolling (desktop)
+- Mobile ticker auto-scrolls horizontally in a compact strip
 
 ---
 
