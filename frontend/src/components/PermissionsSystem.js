@@ -111,8 +111,15 @@ export const getUserPermissions = (user) => {
     const userRoles = Array.isArray(user.roles) ? user.roles : [user.role];
     const permissions = new Set();
     
+    // Map common role aliases to system roles
+    const roleAliases = {
+        'admin': 'super_admin',
+        'coach': 'team_coach'
+    };
+    
     userRoles.forEach(role => {
-        const systemRole = SYSTEM_ROLES[role];
+        const mappedRole = roleAliases[role] || role;
+        const systemRole = SYSTEM_ROLES[mappedRole];
         if (systemRole) {
             systemRole.permissions.forEach(permission => permissions.add(permission));
         }
