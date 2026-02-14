@@ -16,18 +16,27 @@
 |---------|:-----:|:------------:|:-----:|:------:|:-----:|
 | View public content | ✅ | ✅ | ✅ | ✅ | ✅ |
 | View all rosters | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Join Us portal | ✅ | ✅ | ✅ | ✅ | ✅ |
 | RSVP to events | ✅ | ✅ | ✅ | ✅ | ❌ |
 | View own stats | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Edit own profile | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Account settings | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Manage team roster | ✅ | ✅ | ✅* | ❌ | ❌ |
 | Create team events | ✅ | ✅ | ✅* | ❌ | ❌ |
 | Live scoring | ✅ | ✅ | ✅* | ❌ | ❌ |
 | Team settings | ✅ | ✅ | ✅* | ❌ | ❌ |
+| Team documents | ✅ | ✅ | ✅* | ❌ | ❌ |
 | Create league events | ✅ | ✅ | ❌ | ❌ | ❌ |
 | Manage all teams | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Tournament brackets | ✅ | ✅ | ❌ | ❌ | ❌ |
+| News management | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Email composer | ✅ | ✅ | ⚠️ | ❌ | ❌ |
+| Recruiting mgmt | ✅ | ✅ | ❌ | ❌ | ❌ |
 | User management | ✅ | ⚠️ | ❌ | ❌ | ❌ |
 | System settings | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Website styling | ✅ | ❌ | ❌ | ❌ | ❌ |
+| File manager admin | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Finance dashboard | ✅ | ❌ | ❌ | ❌ | ❌ |
 
 *✅* = Own team only | ⚠️ = Limited
 
@@ -78,8 +87,11 @@
 | Home | `/` |
 | Team | `/team/{team-id}` |
 | Event | `/event/{event-id}` |
+| Tournament Bracket | `/tournament/{tournament-id}` |
 | Admin | `/admin` |
 | Live Score | `/live/{game-id}` |
+| Standings | `/standings` |
+| Account Settings | `/account` |
 | Password Reset | `/reset-password?token=xxx` |
 
 ---
@@ -102,7 +114,23 @@
 | Team Logo | 200x200 px | PNG, JPG |
 | Player Photo | 400x500 px | PNG, JPG |
 | Banner Image | 1200x300 px | PNG, JPG |
+| News Image | 800x800 px (square) | PNG, JPG |
 | Gallery Photo | 1920x1080 px | PNG, JPG |
+
+---
+
+## Admin Portal Navigation
+
+| Tab Group | Sections |
+|-----------|----------|
+| Overview | Dashboard (clickable cards) |
+| League Management | Events, Seasons, Divisions, Teams, Team Invites, Locations |
+| Recruiting | Recruiting applications |
+| People | Users, Import Players, Roles, Fees & Payments |
+| Finance | League Finance |
+| Communications | Email, Team Coaches, Email Config, SMS (Twilio), GroupMe |
+| Content | Documents, Welcome Message, News, Gallery, YouTube |
+| Settings | Website Design, API Keys, Cloud Storage, Database, Data Cleanup |
 
 ---
 
@@ -111,12 +139,24 @@
 | Action | Method | Endpoint |
 |--------|--------|----------|
 | Login | POST | `/api/users/login` |
+| Google Auth | GET | `/api/auth/google` |
+| Get Dashboard Data | GET | `/api/dashboard-data` |
 | Get Teams | GET | `/api/teams` |
-| Get Events | GET | `/api/league-schedule` |
+| Save Teams | POST | `/api/league-data/teams` |
+| Get Events | GET | `/api/unified-events` |
+| Get News | GET | `/api/league-data/newsItems` |
+| Save News | POST | `/api/league-data/newsItems` |
+| Delete News Item | DELETE | `/api/league-data/newsItems/{id}` |
+| Get Seasons | GET | `/api/league-data/seasons` |
+| Save Seasons | POST | `/api/league-data/seasons` |
+| Get Schedule | GET | `/api/league-schedule` |
+| Save Schedule | POST | `/api/league-data/leagueSchedule` |
 | Team Players | GET | `/api/team/{id}/players` |
-| Update Team | PUT | `/api/league-data/teams/{id}` |
-| Add Player | POST | `/api/team/{id}/add-player` |
+| Team News | GET | `/api/team/{id}/news` |
 | RSVP | POST | `/api/rsvp/{event-id}` |
+| Magic Link RSVP | GET | `/api/rsvp/{event-id}?response=yes&user={id}` |
+| Recruiting | GET/POST | `/api/recruiting/applications` |
+| File Manager | GET | `/api/files/{provider}` |
 
 ---
 
@@ -160,4 +200,4 @@
 
 ---
 
-*Keep this card handy!*
+*Keep this card handy! (v2.0)*
