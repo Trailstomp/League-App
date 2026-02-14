@@ -156,16 +156,12 @@ const NewsManager = ({ teams = [], currentUser }) => {
     };
 
     // Handle crop tool functionality
+    const [croppedResult, setCroppedResult] = useState(null);
+    
     const handleCropComplete = (croppedImageData) => {
-        if (cropTargetField && (editingItem || showAddForm)) {
-            // Update the appropriate image field
-            if (editingItem) {
-                setEditingItem(prev => ({
-                    ...prev,
-                    [cropTargetField]: croppedImageData
-                }));
-            }
-            // Note: For new items, we'll handle this in the form component
+        if (cropTargetField) {
+            // Pass cropped data to the form via state
+            setCroppedResult({ field: cropTargetField, data: croppedImageData });
         }
         setShowCropTool(false);
         setCropImageUrl('');
