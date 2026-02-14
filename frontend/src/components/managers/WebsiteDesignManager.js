@@ -294,9 +294,10 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
     const loadTemplate = (template) => {
         if (window.confirm(`Load "${template.name}" template? This will replace your current design settings.`)) {
-            // Compute merged style using current editingStyle from component scope
-            const mergedStyle = { ...editingStyle, ...template.style };
-            console.log('🎨 Loading template:', template.name, 'with', Object.keys(template.style).length, 'style keys');
+            // FULL REPLACE: Start from defaults, then apply template style on top
+            // This ensures properties from the previous template (e.g., background images) are cleared
+            const mergedStyle = { ...DEFAULT_STYLE, ...template.style };
+            console.log('🎨 Loading template:', template.name, 'with', Object.keys(template.style).length, 'style keys (full replace from defaults)');
             // Update both local editing state and parent websiteStyle simultaneously
             setEditingStyle(mergedStyle);
             setWebsiteStyle(mergedStyle);
