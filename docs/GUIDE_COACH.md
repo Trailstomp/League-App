@@ -14,6 +14,8 @@ As a **Coach** or **Team Admin**, you manage your team's roster, events, and set
 ✅ Manage team settings (social media, colors)
 ✅ View your players' stats and attendance
 ✅ Send team communications
+✅ Access team documents via File Manager
+✅ View recruiting applications for your team
 
 ## What Requires League Admin
 
@@ -182,9 +184,21 @@ Each player card shows:
 4. Send invitation
 5. Player receives link to join
 
+### Email Composer
+If league admin has granted access:
+1. Go to Email section
+2. Select your team's players as recipients
+3. Compose and send messages
+4. Team-level SMTP can be configured for your team
+
 ### Event Reminders
 - Automatic reminders based on RSVP settings
 - Manual: Open event → "Send Reminder"
+
+### Team Documents
+1. Access your team's file manager
+2. Upload game plans, schedules, or waivers
+3. Use the league's cloud connection or your own storage
 
 ---
 
@@ -252,4 +266,4 @@ If game is "Final" - contact League Admin to unlock and correct.
 
 ---
 
-*Great teams start with great coaches. Lead on!*
+*Great teams start with great coaches. Lead on! (v2.0)*
