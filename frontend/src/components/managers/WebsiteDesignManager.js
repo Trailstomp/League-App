@@ -1015,26 +1015,18 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                                             className="p-4 border border-slate-200 rounded-lg hover:border-indigo-400 hover:bg-indigo-50 cursor-pointer transition-all"
                                         >
                                             <div className="flex items-center gap-4">
-                                                <div className="flex -space-x-1">
-                                                    <div 
-                                                        className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
-                                                        style={{ backgroundColor: template.style?.primaryColor || '#3b82f6' }}
-                                                    />
-                                                    <div 
-                                                        className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
-                                                        style={{ backgroundColor: template.style?.accentColor || '#10b981' }}
-                                                    />
-                                                    <div 
-                                                        className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
-                                                        style={{ backgroundColor: template.style?.bannerBackgroundColor || '#1e40af' }}
-                                                    />
-                                                </div>
+                                                <TemplatePreview style={template.style} size="lg" />
                                                 <div className="flex-1">
                                                     <h4 className="font-semibold text-slate-800">{template.name}</h4>
                                                     <p className="text-sm text-slate-500">
                                                         {template.style?.sportType || 'lacrosse'} • 
                                                         {new Date(template.createdAt).toLocaleDateString()}
                                                     </p>
+                                                    <div className="flex gap-1 mt-2">
+                                                        {[template.style?.primaryColor, template.style?.accentColor, template.style?.bannerBackgroundColor, template.style?.navBackgroundColor, template.style?.mainBackgroundColor].filter(Boolean).map((c, i) => (
+                                                            <div key={i} className="w-4 h-4 rounded-full border border-white shadow-sm" style={{ backgroundColor: c }} />
+                                                        ))}
+                                                    </div>
                                                 </div>
                                                 <div className="text-indigo-600 font-medium">
                                                     Click to Load →
