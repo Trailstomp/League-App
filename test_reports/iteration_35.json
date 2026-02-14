@@ -1,0 +1,54 @@
+{
+  "summary": "Tested PUT /api/design-templates/{template_id} partial update fix. All 11 backend tests PASSED. The fix correctly preserves style data when only updating visibleToUsers, inRotation, or name fields.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Admin page", "issues": ["Admin page requires login to access - unable to test UI directly without credentials"]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_design_templates_partial_update.py",
+    "/app/test_reports/pytest/pytest_design_templates.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "PUT /api/design-templates/{template_id} endpoint correctly uses $set with only explicitly provided fields (line 5052-5054)",
+    "Frontend toggleTemplateVisibility and toggleTemplateInRotation functions correctly send minimal JSON payloads with only the toggled field",
+    "Backend fix prevents style data wipe by using 'if field in template_data' check instead of template_data.get('style', {})"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_design_templates_partial_update.py"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 tests passed)",
+    "frontend": "Unable to test UI directly - admin requires login"
+  },
+  "test_credentials": "None required for API testing",
+  "seed_data_creation": "Test templates created and cleaned up during test execution",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "The partial update fix is verified working. All 11 tests confirm that toggling visibleToUsers or inRotation does NOT wipe style data. The fix was in backend/server.py line 5051-5054 where the endpoint now only includes fields explicitly present in the request payload.",
+  "verified_tests": {
+    "test_get_templates_returns_templates": "PASSED - GET /api/design-templates returns templates list correctly",
+    "test_post_create_new_template": "PASSED - POST creates templates with all fields",
+    "test_partial_update_visibleToUsers_preserves_style": "PASSED - Critical fix verified: toggling visibility preserves style data",
+    "test_partial_update_inRotation_preserves_style": "PASSED - Critical fix verified: toggling rotation preserves style data",
+    "test_update_with_style_updates_style": "PASSED - Updating style field works correctly",
+    "test_update_name_preserves_style": "PASSED - Updating name preserves style data",
+    "test_update_nonexistent_template_returns_404": "PASSED - 404 returned for non-existent template",
+    "test_delete_template": "PASSED - DELETE removes template correctly",
+    "test_delete_nonexistent_template_returns_404": "PASSED - 404 returned for non-existent template delete",
+    "test_existing_templates_have_style_intact": "PASSED - Verified 3 existing templates (Clean Blue, Neon Test, Dark Theme) have style data intact",
+    "test_sequential_partial_updates_preserve_style": "PASSED - Multiple sequential partial updates all preserve style data"
+  },
+  "existing_templates_verified": {
+    "Clean Blue": "15 style properties preserved",
+    "Neon Test": "15 style properties with background images preserved",
+    "Dark Theme": "3 style properties preserved"
+  }
+}
