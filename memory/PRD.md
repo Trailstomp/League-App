@@ -82,6 +82,11 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] `handleCropComplete` and direct image upload now pass `{ [fieldName]: imageData }` to `handleSave()` so image data is always included
 - [x] Affects: nav background image, banner background image, main background image, logo uploads, all crop completions
 
+### Hide External Teams from Public Views (Feb 2026)
+- [x] Fixed: External teams now hidden from sidebar (Navigation.js) and Home Teams page (HomePage.js)
+- [x] Filter checks both `isExternal` flag AND `division === 'External'` (case-insensitive)
+- [x] External teams remain in admin/scheduling contexts where they're needed
+
 ### Documentation (Feb 14, 2026)
 - [x] Updated all 9 help docs from v1.0 (Jan 2025) to v2.0
 - [x] Added: Tournament brackets, PWA, File Manager, Email Composer, Recruiting, Dynamic Theming, Google OAuth, clickable admin dashboard, mobile ticker, news square images
