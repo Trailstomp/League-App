@@ -81,14 +81,30 @@ Guide for visitors who want to browse the league without an account.
 
 | Document | Last Updated | Version |
 |----------|--------------|---------|
-| Brochure | Jan 2025 | 1.0 |
-| Setup Guide | Jan 2025 | 1.0 |
-| Admin Guide | Jan 2025 | 1.0 |
-| League Admin Guide | Jan 2025 | 1.0 |
-| Coach Guide | Jan 2025 | 1.0 |
-| Player Guide | Jan 2025 | 1.0 |
-| Guest Guide | Jan 2025 | 1.0 |
-| Quick Reference | Jan 2025 | 1.0 |
+| Brochure | Feb 2026 | 2.0 |
+| Setup Guide | Feb 2026 | 2.0 |
+| Admin Guide | Feb 2026 | 2.0 |
+| League Admin Guide | Feb 2026 | 2.0 |
+| Coach Guide | Feb 2026 | 2.0 |
+| Player Guide | Feb 2026 | 2.0 |
+| Guest Guide | Feb 2026 | 2.0 |
+| Quick Reference | Feb 2026 | 2.0 |
+
+---
+
+## 📝 What's New in v2.0 (Feb 2026)
+
+- Tournament bracket system with visual connector lines and champion badges
+- Redesigned mobile experience with ESPN-style compact ticker
+- PWA support (Add to Home Screen on mobile devices)
+- File Manager with Google Drive and OneDrive support
+- Recruiting module with auto-approval team/player creation
+- Email composer with team-level SMTP configuration
+- Dynamic theming with design templates and color pickers
+- Clickable admin dashboard with quick navigation
+- News management with square image format
+- Notification bell for real-time alerts
+- Account settings page with password management
 
 ---
 
@@ -111,4 +127,4 @@ Guide for visitors who want to browse the league without an account.
 
 ---
 
-*League Management Portal - Documentation v1.0*
+*League Management Portal - Documentation v2.0 (Feb 2026)*
