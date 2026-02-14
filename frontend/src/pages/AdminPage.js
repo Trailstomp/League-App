@@ -699,63 +699,63 @@ const AdminDashboard = ({ teams, players, users = [] }) => {
             <h2 className="text-2xl font-bold text-slate-800">Dashboard Overview</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <button data-testid="dashboard-card-teams" onClick={() => onNavigate('teams')} className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left hover:shadow-md hover:border-blue-400 transition-all cursor-pointer group">
                     <div className="flex items-center">
                         <LacrosseIcon name="teams" className="text-blue-600 mr-3" style={{fontSize: '24px'}} />
                         <div>
                             <div className="text-2xl font-bold text-blue-900">{stats.totalTeams}</div>
-                            <div className="text-sm text-blue-700">Total Teams</div>
+                            <div className="text-sm text-blue-700 group-hover:underline">Total Teams</div>
                         </div>
                     </div>
-                </div>
+                </button>
 
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <button data-testid="dashboard-card-players" onClick={() => onNavigate('users')} className="bg-green-50 border border-green-200 rounded-lg p-4 text-left hover:shadow-md hover:border-green-400 transition-all cursor-pointer group">
                     <div className="flex items-center">
                         <LacrosseIcon name="players" className="text-green-600 mr-3" style={{fontSize: '24px'}} />
                         <div>
                             <div className="text-2xl font-bold text-green-900">{stats.totalPlayers}</div>
-                            <div className="text-sm text-green-700">Total Players</div>
+                            <div className="text-sm text-green-700 group-hover:underline">Total Players</div>
                         </div>
                     </div>
-                </div>
+                </button>
 
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                <button data-testid="dashboard-card-active-users" onClick={() => onNavigate('users')} className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-left hover:shadow-md hover:border-purple-400 transition-all cursor-pointer group">
                     <div className="flex items-center">
                         <LacrosseIcon name="admin" className="text-purple-600 mr-3" style={{fontSize: '24px'}} />
                         <div>
                             <div className="text-2xl font-bold text-purple-900">{stats.activeUsers}</div>
-                            <div className="text-sm text-purple-700">Active Users</div>
+                            <div className="text-sm text-purple-700 group-hover:underline">Active Users</div>
                         </div>
                     </div>
-                </div>
+                </button>
 
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <button data-testid="dashboard-card-pending-users" onClick={() => onNavigate('users')} className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-left hover:shadow-md hover:border-orange-400 transition-all cursor-pointer group">
                     <div className="flex items-center">
                         <LacrosseIcon name="time" className="text-orange-600 mr-3" style={{fontSize: '24px'}} />
                         <div>
                             <div className="text-2xl font-bold text-orange-900">{stats.pendingUsers}</div>
-                            <div className="text-sm text-orange-700">Pending Users</div>
+                            <div className="text-sm text-orange-700 group-hover:underline">Pending Users</div>
                         </div>
                     </div>
-                </div>
+                </button>
             </div>
 
             <div className="bg-slate-50 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">Quick Actions</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <button className="bg-white border rounded-lg p-4 text-left hover:shadow-sm transition-shadow">
+                    <button data-testid="quick-action-add-team" onClick={() => onNavigate('teams')} className="bg-white border rounded-lg p-4 text-left hover:shadow-md hover:border-blue-300 transition-all">
                         <LacrosseIcon name="add" className="text-blue-600 mb-2" style={{fontSize: '24px'}} />
                         <div className="font-medium text-slate-800">Add New Team</div>
                         <div className="text-sm text-slate-600">Create and configure a new team</div>
                     </button>
                     
-                    <button className="bg-white border rounded-lg p-4 text-left hover:shadow-sm transition-shadow">
+                    <button data-testid="quick-action-add-player" onClick={() => onNavigate('import-players')} className="bg-white border rounded-lg p-4 text-left hover:shadow-md hover:border-green-300 transition-all">
                         <LacrosseIcon name="add" className="text-green-600 mb-2" style={{fontSize: '24px'}} />
                         <div className="font-medium text-slate-800">Add New Player</div>
                         <div className="text-sm text-slate-600">Register a new player</div>
                     </button>
                     
-                    <button className="bg-white border rounded-lg p-4 text-left hover:shadow-sm transition-shadow">
+                    <button data-testid="quick-action-export" onClick={() => onNavigate('database-admin')} className="bg-white border rounded-lg p-4 text-left hover:shadow-md hover:border-purple-300 transition-all">
                         <LacrosseIcon name="backup" className="text-purple-600 mb-2" style={{fontSize: '24px'}} />
                         <div className="font-medium text-slate-800">Export Data</div>
                         <div className="text-sm text-slate-600">Backup league data</div>
