@@ -403,10 +403,27 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                         <NavItem icon={<LacrosseIcon name="venue" />} label="Home" pageName="home" />
                         <NavItem icon={<LacrosseIcon name="calendar" />} label="Events & Schedule" pageName="events" />
                         <NavItem icon={<LacrosseIcon name="trophy" />} label="Standings" pageName="standings" />
+                        {currentUser && (() => {
+                            const userTeamId = currentUser.teamAssignments?.[0]?.teamId || currentUser.teamId;
+                            if (userTeamId) {
+                                return (
+                                    <NavItem 
+                                        icon={<LacrosseIcon name="teams" />} 
+                                        label="My Team" 
+                                        pageName="team"
+                                        onClick={() => {
+                                            onNavigate('team', userTeamId);
+                                            if (onMobileClose) onMobileClose();
+                                        }}
+                                    />
+                                );
+                            }
+                            return null;
+                        })()}
                         {currentUser && (
                             <NavItem icon={<span>📊</span>} label="My Dashboard" pageName="player-dashboard" />
                         )}
-                        {currentUser && (isAdmin(currentUser) || isCoach(currentUser)) && (
+                        {currentUser && hasPermission(currentUser, 'nav.league_chat') && (
                             <NavItem icon={<span>💬</span>} label="League Chat" pageName="chat" />
                         )}
                         {currentUser && isAdmin(currentUser) && (
@@ -420,13 +437,6 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                     
                     {/* Authentication Actions */}
                     <div className="mt-4 pt-4 border-t border-slate-200">
-                        {currentUser && (
-                            <NavItem 
-                                icon={<span>⚙️</span>} 
-                                label="Account Settings" 
-                                pageName="account-settings"
-                            />
-                        )}
                         {currentUser ? (
                             <NavItem 
                                 icon={<LacrosseIcon name="logout" />} 
