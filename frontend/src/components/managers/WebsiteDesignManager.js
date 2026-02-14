@@ -501,9 +501,9 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         return newState;
                     });
                     
-                    // IMMEDIATE save after image upload
+                    // IMMEDIATE save after image upload — pass override since ref is stale before re-render
                     console.log('💾 Immediate save triggered for direct image upload');
-                    handleSave();
+                    handleSave({ [fieldName]: imageData });
                 }
                 
             } catch (error) {
