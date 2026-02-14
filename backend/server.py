@@ -4978,6 +4978,36 @@ async def get_design_templates():
         logger.error(f"Error fetching design templates: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/design-templates/debug")
+async def debug_design_templates():
+    """Debug endpoint to check template data integrity"""
+    try:
+        templates = await db.design_templates.find({}, {"_id": 0}).to_list(100)
+        league_data = await db.league_data.find_one({"id": "main_league"}, {"_id": 0, "websiteStyle": 1})
+        ws = league_data.get("websiteStyle", {}) if league_data else {}
+        
+        result = {
+            "template_count": len(templates),
+            "templates": [],
+            "websiteStyle_key_count": len(ws),
+            "websiteStyle_sample": {k: str(v)[:50] for k, v in list(ws.items())[:10]}
+        }
+        for t in templates:
+            style = t.get("style", {})
+            result["templates"].append({
+                "name": t.get("name"),
+                "id": t.get("id"),
+                "style_key_count": len(style),
+                "style_keys": list(style.keys()),
+                "has_colors": bool(style.get("primaryColor") or style.get("bannerBackgroundColor")),
+                "sample": {k: str(v)[:50] for k, v in list(style.items())[:5]}
+            })
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+
 @api_router.post("/design-templates")
 async def save_design_template(template_data: Dict[str, Any]):
     """Save a new design template"""
