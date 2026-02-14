@@ -35,7 +35,10 @@ export const PERMISSIONS = {
     'system.settings': { name: 'System Settings', category: 'System Administration', description: 'Manage website settings and configuration' },
     'system.roles': { name: 'Role Management', category: 'System Administration', description: 'Create and manage user roles and permissions' },
     'system.invitations': { name: 'Manage Invitations', category: 'System Administration', description: 'Send invitations and manage access requests' },
-    'system.admin_access': { name: 'Admin Access', category: 'System Administration', description: 'Access administrative functions' }
+    'system.admin_access': { name: 'Admin Access', category: 'System Administration', description: 'Access administrative functions' },
+    
+    // Navigation
+    'nav.league_chat': { name: 'League Chat', category: 'Navigation', description: 'Access the league-wide chat channel' }
 };
 
 // Define system roles with their permissions
