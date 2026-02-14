@@ -724,24 +724,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         {savedTemplates.map(template => (
                             <div key={template.id} className={`p-4 hover:bg-slate-50 flex items-center justify-between ${template.id === activeTemplateId ? 'bg-blue-50 border-l-4 border-blue-500' : ''}`}>
                                 <div className="flex items-center gap-4">
-                                    {/* Template Preview Colors */}
-                                    <div className="flex -space-x-1">
-                                        <div 
-                                            className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
-                                            style={{ backgroundColor: template.style?.primaryColor || '#3b82f6' }}
-                                            title="Primary Color"
-                                        />
-                                        <div 
-                                            className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
-                                            style={{ backgroundColor: template.style?.accentColor || '#10b981' }}
-                                            title="Accent Color"
-                                        />
-                                        <div 
-                                            className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
-                                            style={{ backgroundColor: template.style?.navBackgroundColor || '#ffffff' }}
-                                            title="Nav Background"
-                                        />
-                                    </div>
+                                    <TemplatePreview style={template.style} size="sm" />
                                     <div>
                                         <h5 className="font-medium text-slate-800">
                                             {template.name}
