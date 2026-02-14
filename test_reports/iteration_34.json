@@ -1,0 +1,60 @@
+{
+  "summary": "TEMPLATE SWITCHING BUG FIX VERIFIED - Critical test passed: Switching from 'Neon Test' (with background images) to 'Clean Blue' (without background images) correctly clears the previous template's properties. The loadTemplate function now uses DEFAULT_STYLE as base.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_34.json"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "WebsiteDesignManager.js line 236: loadTemplate now uses DEFAULT_STYLE spread as base: const mergedStyle = { ...DEFAULT_STYLE, ...template.style }",
+    "This ensures properties from previous templates (like bannerBackgroundImage) are properly cleared when loading a new template",
+    "editingStyleRef (line 68) is properly kept in sync with editingStyle state for reliable state access in handleSave"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend-only testing)",
+    "frontend": "100% (5/5 test scenarios passed)"
+  },
+  "test_credentials": "Admin: admin@league.com / Admin123!",
+  "seed_data_creation": "None - used existing templates: Neon Test, Clean Blue, Dark Theme",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Template switching bug fix has been verified. The key fix is in loadTemplate function using DEFAULT_STYLE as base instead of merging into existing editingStyle. Templates tested: Neon Test (ID: 34754279-4ec0-4e5a-97b7-c65c8557d72a) and Clean Blue (ID: ce2d509c-2bab-4ceb-b600-b7c7f03185d4).",
+  "verified_features": {
+    "admin_login": "PASS - admin@league.com / Admin123! works correctly",
+    "navigate_to_design_templates": "PASS - Admin Portal > Settings > Website Design > Design Templates accessible",
+    "load_neon_test_template": "PASS - Neon Test template loads successfully, shows 'Active' badge, dark/neon styling applied",
+    "load_clean_blue_template": "PASS - Clean Blue template loads successfully, shows 'Active' badge",
+    "template_switching_clears_previous_styles": "PASS - CRITICAL: After loading Clean Blue, the neon background image was GONE, navigation sidebar changed to white/light (not dark/neon)",
+    "banner_background_type_correct": "PASS - Clean Blue has bannerBackgroundType: 'color' (not 'image'), color picker shows #1e40af",
+    "change_banner_color_manually": "PASS - Changed banner color from #1e40af to #dc2626, visual update immediate"
+  },
+  "bug_fixes_verified": [
+    {
+      "bug": "Website design template stuck on 'Neon' regardless of template selection - previous template properties persisted",
+      "root_cause": "loadTemplate was merging new template into existing editingStyle instead of starting from defaults",
+      "fix_applied": "loadTemplate now uses: const mergedStyle = { ...DEFAULT_STYLE, ...template.style }",
+      "verification_steps": [
+        "1. Load Neon Test template (has bannerBackgroundType:'image' and bannerBackgroundImage set)",
+        "2. Verify neon/dark styling applied (dark sidebar, dark content background)",
+        "3. Load Clean Blue template (has bannerBackgroundType:'color' and empty bannerBackgroundImage)",
+        "4. Verify Clean Blue styling applied: white sidebar, blue banner, NO background image persisting"
+      ],
+      "status": "VERIFIED - Bug fix working correctly"
+    }
+  ],
+  "console_logs_summary": {
+    "neon_test_load": "🎨 Loading template: Neon Test with 15 style keys (full replace from defaults)",
+    "clean_blue_load": "🎨 Loading template: Clean Blue with 15 style keys (full replace from defaults)",
+    "content_background_after_neon": "{type: color, color: #0f0f0f, image: }",
+    "content_background_after_clean_blue": "{type: color, color: #ffffff, image: }"
+  }
+}
