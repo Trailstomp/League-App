@@ -1,0 +1,69 @@
+{
+  "summary": "Tested MediaManager feature for league and team media management. All 10 backend API tests PASSED. Frontend MediaManager component working correctly on both League Home Media tab and Team Photos & Vids tab. Upload Photos and Add Video Link buttons visible for admin users.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_media_items.py",
+    "/app/test_reports/pytest/pytest_media_items.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "MediaManager component correctly handles ownerType/ownerId to manage media per league or team",
+    "canEdit prop correctly shows/hides Upload Photos and Add Video Link buttons based on user permissions",
+    "Navigation.js properly filters external teams (line 14-15: isExternal || division='External')",
+    "HomePage.js Teams tab uses teamsByDivision which also filters external teams (line 189-209)",
+    "Video embedding supports YouTube URLs with proper embed URL extraction"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_media_items.py"
+  ],
+  "success_rate": {
+    "backend": "100% (10/10 tests passed)",
+    "frontend": "100% (all features verified)"
+  },
+  "test_credentials": "admin@league.com / admin123",
+  "seed_data_creation": "Test media items created and cleaned up during test execution",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "MediaManager feature fully tested. Backend media-items API at /api/media-items supports GET, POST, DELETE, and upload. Frontend MediaManager component works on both league (HomePage.js Media tab) and team (TeamMediaTab.js) pages. External teams are hidden from sidebar (Navigation.js) and Home page Teams tab.",
+  "verified_tests": {
+    "backend_api": {
+      "test_get_media_items_for_league": "PASSED - GET /api/media-items?owner_type=league&owner_id=league returns items list",
+      "test_get_media_items_for_team_empty": "PASSED - GET /api/media-items?owner_type=team&owner_id=test-team-1 returns empty list",
+      "test_create_video_media_item": "PASSED - POST /api/media-items creates video with correct fields",
+      "test_create_and_get_video_item_persistence": "PASSED - Created items persist and are retrievable",
+      "test_create_video_for_team": "PASSED - POST creates video for specific team owner",
+      "test_delete_media_item": "PASSED - DELETE /api/media-items/{id} removes item",
+      "test_delete_nonexistent_item_returns_404": "PASSED - DELETE returns 404 for non-existent item",
+      "test_upload_photo_media_item": "PASSED - POST /api/media-items/upload creates photo item",
+      "test_upload_photo_for_team": "PASSED - Upload creates photo for specific team",
+      "test_upload_rejects_non_image": "PASSED - Upload rejects non-image files with 400"
+    },
+    "frontend_ui": {
+      "league_media_tab": "PASSED - MediaManager visible on League Home Media & Videos tab",
+      "league_photos_videos_tabs": "PASSED - Photos and Videos sub-tabs functional",
+      "admin_upload_button": "PASSED - Upload Photos button visible for admin",
+      "admin_add_video_button": "PASSED - Add Video Link button visible for admin",
+      "add_video_modal": "PASSED - Video modal opens, accepts title/URL, saves correctly",
+      "team_media_tab": "PASSED - MediaManager visible on Team Photos & Vids tab",
+      "team_upload_button": "PASSED - Upload Photos button visible for admin on team page",
+      "team_add_video_button": "PASSED - Add Video Link button visible on team page",
+      "external_teams_sidebar_filter": "PASSED - External teams hidden from sidebar navigation",
+      "external_teams_homepage_filter": "PASSED - External teams hidden from Home page Teams tab"
+    }
+  },
+  "features_verified": {
+    "media_items_crud": "Full CRUD operations working",
+    "photo_upload": "Image upload with file validation",
+    "video_links": "YouTube URL embedding with preview",
+    "permission_based_ui": "canEdit prop controls edit buttons visibility",
+    "external_teams_hiding": "Navigation and HomePage filter external teams"
+  }
+}
