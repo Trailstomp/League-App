@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { PlayerFeeDashboard } from '../components/fees';
 import AccountSettings from '../components/AccountSettings';
 
-const PlayerDashboardPage = ({ currentUser, onUserUpdate }) => {
-    const [activeTab, setActiveTab] = useState('overview');
+const PlayerDashboardPage = ({ currentUser, onUserUpdate, defaultTab }) => {
+    const [activeTab, setActiveTab] = useState(defaultTab || 'overview');
     const [playerData, setPlayerData] = useState(null);
     const [teamData, setTeamData] = useState(null);
     const [upcomingEvents, setUpcomingEvents] = useState([]);
