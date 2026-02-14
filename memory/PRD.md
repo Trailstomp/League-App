@@ -46,7 +46,9 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Made admin dashboard overview cards clickable (navigate to Teams, Users tabs)
 - [x] Made Quick Action buttons functional (Add Team → Teams, Add Player → Import Players, Export → Database Admin)
 
-### User Account & Onboarding
+### Documentation (Feb 14, 2026)
+- [x] Updated all 9 help docs from v1.0 (Jan 2025) to v2.0
+- [x] Added: Tournament brackets, PWA, File Manager, Email Composer, Recruiting, Dynamic Theming, Google OAuth, clickable admin dashboard, mobile ticker, news square images
 - [x] User account settings page, set password flow
 - [x] NotificationBell for new message alerts
 
