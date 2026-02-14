@@ -218,8 +218,11 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         if (window.confirm(`Load "${template.name}" template? This will replace your current design settings.`)) {
             // FULL REPLACE: Start from defaults, then apply template style on top
             // This ensures properties from the previous template (e.g., background images) are cleared
-            const mergedStyle = { ...DEFAULT_STYLE, ...template.style };
-            console.log('🎨 Loading template:', template.name, 'with', Object.keys(template.style).length, 'style keys (full replace from defaults)');
+            // Start from current websiteStyle (preserves identity: league name, logo, titles, PWA settings)
+            // Reset visual/theme props to defaults (clears bg images, colors from previous template)
+            // Then apply the template's actual style on top
+            const mergedStyle = { ...websiteStyle, ...VISUAL_RESET, ...template.style };
+            console.log('🎨 Loading template:', template.name, 'with', Object.keys(template.style).length, 'style keys');
             // Update both local editing state and parent websiteStyle simultaneously
             setEditingStyle(mergedStyle);
             setWebsiteStyle(mergedStyle);
