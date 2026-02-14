@@ -1,42 +1,51 @@
-<analysis>**original_problem_statement**: The user has reported a new bug where they are unable to change the website's design template. Regardless of whether they select a specific template or set it to random in the admin panel, the visual theme remains stuck on one design. The user provided console logs indicating that the save operation appears to complete successfully on the backend, but the frontend UI does not reflect any changes.
+<analysis>**original_problem_statement**: The user initially reported a bug where the website's design template could not be changed from the admin panel. Subsequent fix attempts by the agent led to a more critical issue: all the user's saved design templates had their style data (colors, backgrounds, etc.) wiped clean from the database. The user confirmed this with a database screenshot showing an empty  object for a template that was updated.
 
 **User's preferred language**: English
 
-**what currently exists?**: A full-stack application with a React frontend, FastAPI backend, and MongoDB. The application includes a comprehensive admin panel with a  component for customizing the site's appearance. In the last session, the agent implemented several significant features and bug fixes, including:
-- A complete overhaul of the main navigation, adding a My Team button, combining the My Dashboard and Account Settings pages, and implementing role-based access for the League Chat link.
-- A critical fix for the news image upload functionality, which involved creating a new dedicated backend endpoint () to store images as files instead of embedding large base64 data in the database.
-- A global fix for a recurring  bug in the main  file.
-- A complete update of all 9 user-facing help documents.
+**what currently exists?**: A full-stack application (React, FastAPI, MongoDB) with an admin panel for site customization. The core feature for managing website design templates is currently broken and has caused data loss. The agent has identified a critical bug in the backend  endpoint, which incorrectly overwrites a template's  data with an empty object if the  field is not included in an update request (e.g., when just changing a template's visibility).
 
 **Last working item**:
--   **Last item agent was working**: The agent began investigating the new bug where the website design template is stuck. The initial step was to explore the relevant frontend files,  and , to understand how design templates are selected, saved, and applied.
--   **Status**: NOT STARTED
+-   **Last item agent was working**: The agent had just diagnosed the root cause of the template data loss. The problem lies in the  endpoint in . This endpoint defaults the  field to an empty dictionary  if it's not present in the request body, effectively deleting all style information when a user performs a partial update, like toggling a template's visibility. The agent was preparing to fix this endpoint.
+-   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: Frontend testing agent. After a fix is implemented, the agent must verify that both manually selecting a template and using the Random option correctly apply different visual themes to the application.
+-   **Which testing method agent to use?**: Backend testing agent. The fix must be validated by first sending a partial update (e.g., only ) to the  endpoint and confirming that the  object in the database remains untouched.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1 (P0)**: Website design template is stuck and cannot be changed.
+-   **Issue 1 (P0)**: User's design template  data was wiped from the database.
+-   **Issue 2 (P1)**: The original bug: Website design template is stuck and cannot be changed correctly.
 
 **Issues Detail**:
--   **Issue 1: Website design template is stuck and cannot be changed.**
-    -   **Attempted fixes**: None. Investigation has just started. The user's console logs show that the save API call reports success, which suggests the issue is likely on the frontend in how the new style is applied or fetched after saving, rather than an issue with the save mechanism itself.
+-   **Issue 1: User's design template  data was wiped from the database.**
+    -   **Attempted fixes**: None. The root cause was just identified.
     -   **Next debug checklist**:
-        1.  Examine  to trace how the  state is fetched on initial load and updated after a save operation.
-        2.  Inspect  to see how it consumes the  prop to render the site's theme.
-        3.  Check the network response from the  call to confirm the data being sent is correct.
-        4.  Verify that the  state in the React component tree is actually updated upon a successful save. The component might not be re-rendering correctly.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a core feature of the admin panel, allowing for customization of the site's branding and appearance. Fixing it will restore a key administrative function.
-    -   **Status**: NOT STARTED
+        1.  Modify the  endpoint in .
+        2.  The new logic must fetch the existing template from the database.
+        3.  It should then merge the fields from the incoming request payload onto the existing data.
+        4.  Crucially, if the  field is not in the request payload, the existing  data must be preserved, not replaced with an empty object.
+        5.  Save the updated document back to the database.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical data loss bug. Fixing it prevents any further template data from being destroyed. This is the mandatory first step before addressing the original UI bug or discussing data recovery with the user.
+    -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Frontend
-    -   **Blocked on other issue**: None
+    -   **Should Test frontend/backend/both after fix?**: Backend
+    -   **Blocked on other issue**: None. This issue blocks everything else.
+-   **Issue 2: The original bug: Website design template is stuck and cannot be changed correctly.**
+    -   **Attempted fixes**: Multiple frontend changes in  and  were attempted. These fixes became overly complex and introduced side-effects (like wiping the user's league name) because they were trying to solve symptoms of what is now understood to be a backend data integrity problem.
+    -   **Next debug checklist**:
+        1.  Wait for Issue 1 to be resolved.
+        2.  Review and simplify the state management in . With a reliable backend, the frontend logic for loading, editing, and saving templates can be made much cleaner.
+    -   **Why fix this issue and what will be achieved with the fix?**: This will restore a core administrative feature for site customization.
+    -   **Status**: BLOCKED
+    -   **Is recurring issue?**: Y
+    -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Blocked on other issue**: Issue 1: User's design template  data was wiped from the database.
 
 **In progress Task List**:
 -   None.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks**:
+    -   **(P0) Data Recovery Plan**: After fixing the data-wiping bug, the agent must inform the user that their previous template styles are gone and discuss options for recovery (e.g., assisting them in recreating the templates manually).
     -   **(P1)** Implement Add to Home Screen (PWA) functionality by creating a  file.
     -   **(P1)** Integrate Office 365 into the File Manager.
     -   **(P2)** Configure SMTP credentials for email notifications.
@@ -44,79 +53,63 @@
     -   **(P2)** Refactor the monolithic  into smaller, dedicated route files to improve maintainability.
 
 **Completed work in this session**
--   **Feature**: Redesigned main navigation: added a My Team button, combined My Dashboard and Account Settings pages (), and added role-based permission for the League Chat link (, ).
--   **BugFix**: Fixed news image uploads by creating a dedicated file upload endpoint ( in ) and updating the frontend (, ) to use it.
--   **BugFix**: Resolved a phantom news message issue by globally fixing a recurring  in  that blocked CRUD operations and adding a dedicated  endpoint.
--   **UI/UX**: Made the admin dashboard overview cards clickable ().
--   **Docs**: Updated all 9 help documents in  to version 2.0 with the latest feature information.
--   **Testing**: Utilized the testing agent to validate navigation changes, achieving a 100% pass rate.
+-   **Root Cause Analysis**: Diagnosed a critical data loss bug in the  endpoint in .
+-   **Bug Investigation**: Made several attempts to fix the frontend template switching logic, revealing complexities in the state management of .
 
 **Earlier issues found/mentioned but not fixed**
 -   **Issue 1**: The user's request to push a desktop icon (implement PWA functionality) has been noted but not yet implemented. It remains in the upcoming tasks.
 
 **Known issue recurrence from previous fork**
--   **Issue recurrence in previous fork**:  in .
--   **Recurrence count**: 2 (in previous fork), 5 more instances found and fixed in this session.
--   **Status**: RESOLVED
+-   None in this session.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Dedicated File Upload Endpoint**: To avoid storing large base64 data in MongoDB, a new API endpoint () was created to save images to the filesystem and store only the URL in the database.
--   **State Propagation in React**: A bug where a child component didn't update was fixed by passing data down as a prop and using a  hook in the child to react to the change, ensuring state synchronization.
--   **Role-Based Access Control (RBAC)**: Extended the existing permission system in  to conditionally render UI elements () based on user roles, providing more granular control over the UI.
+-   **Destructive PUT Operation**: The  endpoint was incorrectly implemented. Instead of performing a partial update (like a ), it was replacing the entire  sub-document, leading to data loss if  was not in the request.
+-   **Fragile Frontend State**: The previous attempts to fix the UI revealed a complex and fragile state management flow between  and , which is prone to race conditions and stale state if not handled carefully.
 
 **key DB schema**
--   The  items in the  collection now store  as a file path (e.g., ) instead of a large base64 data string.
+-    collection: Contains documents for design templates. The  field within these documents has been erroneously emptied by the backend bug.
 
 **All files of reference**
 -   **For Current Bug**:
-    -   
-    -   
-    -   
+    -    (The location of the critical data-wiping bug).
+    -    (Component containing all related frontend logic).
 -   **Recently Modified**:
     -   
     -   
-    -   
-    -   
-    -   
-    -   All files in 
 
 **Areas that need refactoring**:
--    is still a large, monolithic file. Breaking it down into separate route files remains a recommended future task to improve maintainability.
+-    should be simplified after the backend bug is fixed, removing the complex workarounds from previous attempts.
+-    is a monolithic file and is a candidate for being broken down into separate route files for better organization.
 
 **key api endpoints**
--   : **UNDER INVESTIGATION**. This endpoint is used to save design templates. It appears to be working, but the changes do not reflect on the frontend.
--   : **NEW & WORKING**. Endpoint for uploading images.
--   : **NEW & WORKING**. Endpoint for deleting a single news item.
+-   : **CRITICAL BUG**. This endpoint is the top priority to fix. It deletes template style data when receiving a partial update.
+-   : Fetches the list of all design templates.
+-   : Saves the currently active style for the website.
 
 **Critical Info for New Agent**
--   Your sole focus is to fix the bug preventing website design templates from being changed.
--   The problem is almost certainly on the frontend, as the save API call reports success. The issue lies in how the  state is managed and applied after a save.
--   Begin by tracing the data flow from the save action in  to the state management in  and finally to the style application in .
--   This could be a state management issue (state not updating) or a rendering issue (component not re-rendering with new props).
+-   Your first and only priority is to fix the critical data loss bug in the  file. The  endpoint must be changed to perform a safe, partial update, preserving any fields not present in the request payload.
+-   The user's template  data has been confirmed to be deleted. After you fix the bug, you must communicate this to the user and discuss a recovery plan. They will likely need to recreate their templates.
+-   Do not attempt to fix the frontend UI bug (Issue #2) until the backend data integrity issue (Issue #1) is resolved and tested. The previous frontend fixes were complex because the backend was unreliable.
 
 **documents and test reports created in this job**
 -   
 -    (Updated)
--   All 9 documents in  updated to v2.0.
 
 **Last 10 User Messages and any pending HUMAN messages**
--   **1.** User reports the website design template is stuck and cannot be changed, providing console logs. **Status: IN PROGRESS (Investigation Started)**.
--   **2.** Agent finished the navigation updates and related testing. **Status: Completed**.
--   **3.** User requested three navigation/UI changes: a My Team button, combining dashboard/settings, and a permission for the League Chat tab. **Status: Completed**.
--   **4.** Agent confirmed the news image upload fix is working. **Status: Completed**.
--   **5.** User reported that uploading an image for a news item doesn't work, providing console logs. **Status: Completed**.
--   **6.** Agent confirmed the help documents are updated. **Status: Completed**.
--   **7.** User asked the agent to update all help documents. **Status: Completed**.
--   **8.** Agent confirmed the dedicated  endpoint for news works. **Status: Completed**.
--   **9.** User reported that a phantom news message was still visible on their end. **Status: Completed** (The agent fixed the underlying bug blocking deletes).
--   **10.** Agent finished fixing a backend  and the clickable admin dashboard. **Status: Completed**.
+-   **1.** Agent identifies the root cause of data loss: the backend  endpoint for templates was wiping the  data. **Status: IN PROGRESS**.
+-   **2.** User provides a screenshot from their database showing the Neon template has an empty  object. **Status: Addressed**.
+-   **3.** User asks if their template settings were overwritten, as they appear empty. **Status: Addressed**.
+-   **4.** User confirms the templates are listed but appear empty. **Status: Addressed**.
+-   **5.** User is reporting the templates are still empty after a previous fix attempt. **Status: Addressed**.
+-   **6.** User deployed a fix and reported that all template settings are now blank. **Status: Addressed**.
+-   **7.** User reports still only seeing the 'neon' template regardless of selection. **Status: Addressed**.
 
 **Project Health Check:**
--   **Broken**: Core website customization via design templates is not functional.
--   **Mocked**: Email Composer and Document Manager (from previous sessions) remain partially implemented and require user credentials.
+-   **Broken**: The entire website design customization feature is non-functional and has caused **critical data loss** for the user's saved templates.
+-   **Mocked**: Email Composer, Document Manager.
 
 **3rd Party Integrations**
 -   Google Auth
@@ -127,13 +120,13 @@
 -   Office 365 API (Planned)
 
 **Testing status**
--   **Testing agent used after significant changes**: YES (for navigation features).
+-   **Testing agent used after significant changes**: YES
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None
--   **Known regressions**: The current bug affecting design templates might be an unintended regression from recent frontend changes.
+-   **Known regressions**: A previous attempt to fix a UI bug introduced a far more severe backend data loss regression.
 
 **Credentials to test flow:**
--   Admin access is required to use the Website Design Manager.
+-   Admin credentials are required to access the  and were successfully retrieved and used by the agent in this session.
 
 **What agent forgot to execute**
--   The request to implement a desktop icon (PWA functionality) has been postponed again and remains in the upcoming task list.</analysis>
+-   The agent did not properly test the  API for partial updates. It was assumed that the endpoint would handle partial updates safely (like a  request), but its  implementation was destructive, leading to data loss. Always verify backend API contracts, especially for update operations.</analysis>
