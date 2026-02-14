@@ -53,13 +53,14 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Role alias mapping: 'admin' → 'super_admin', 'coach' → 'team_coach' for permissions
 
 ### Bug Fix: Design Template Stuck (Feb 14, 2026)
-- [x] Root cause: loadTemplate was merging new template into existing editingStyle, causing previous template properties (background images, colors) to persist
-- [x] Fix: loadTemplate now resets to DEFAULT_STYLE before applying template: `{ ...DEFAULT_STYLE, ...template.style }`
+- [x] Root cause: loadTemplate merged new template INTO existing editingStyle, so Neon's bg images persisted
+- [x] First fix regression: using full DEFAULT_STYLE wiped identity data (league name, logo, titles)
+- [x] Final fix: separated VISUAL_RESET (colors/images) from identity props. Template load uses `{ ...websiteStyle, ...VISUAL_RESET, ...template.style }`
 - [x] Replaced setState-hack for reading state with ref-based approach (editingStyleRef)
 - [x] Fixed stale closure in `updateStyle` useCallback (empty deps → added `handleSave`)
-- [x] Moved cycling template logic from Layout.js (sessionStorage only) to App.js (updates websiteStyle state)
+- [x] Moved cycling template logic from Layout.js to App.js (can now update websiteStyle state)
 - [x] Wrapped `handleWebsiteStyleChange` in useCallback to prevent stale closures
-- [x] Verified: switching from Neon template (with bg images) to Clean Blue (without) correctly clears all neon properties
+- [x] Verified: template switching preserves identity while clearing previous visual properties
 
 ### Documentation (Feb 14, 2026)
 - [x] Updated all 9 help docs from v1.0 (Jan 2025) to v2.0
