@@ -177,7 +177,7 @@ const TeamsByDivision = ({ teams, websiteStyle, isCollapsed, onNavigate, onMobil
         </div>
     );
 };
-import { isAdmin, isCoach } from './PermissionsSystem';
+import { isAdmin, isCoach, hasPermission } from './PermissionsSystem';
 
 const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, teams = [], websiteStyle = {}, onMobileClose, onCollapseChange }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
