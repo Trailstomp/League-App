@@ -318,40 +318,26 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         }));
     }, [websiteStyle]);
 
-    // Fixed save with proper state capture
+    // Fixed save using ref for reliable state access
     const handleSave = useCallback(async () => {
         try {
-            console.log('🎨 handleSave called - capturing current state...');
-            
-            // Use functional setState to capture current state
-            let currentState = null;
-            await new Promise((resolve) => {
-                setEditingStyle(state => {
-                    currentState = state;
-                    console.log('🎨 Current complete state captured:', {
-                        navLogoUrl: state.navLogoUrl ? 'HAS_IMAGE' : 'EMPTY',
-                        navBackgroundImage: state.navBackgroundImage ? 'HAS_IMAGE' : 'EMPTY',
-                        bannerBackgroundImage: state.bannerBackgroundImage ? 'HAS_IMAGE' : 'EMPTY',
-                        navBackgroundColor: state.navBackgroundColor,
-                        bannerBackgroundColor: state.bannerBackgroundColor
-                    });
-                    resolve();
-                    return state; // Return unchanged
-                });
-            });
-            
-            if (!process.env.REACT_APP_BACKEND_URL) {
-                console.error('❌ REACT_APP_BACKEND_URL not configured');
-                alert('Error: Backend URL not configured. Cannot save website style.');
+            const currentState = editingStyleRef.current;
+            if (!currentState) {
+                console.error('❌ No editing state available');
                 return;
             }
             
-            console.log('🎨 Saving complete state to API:', Object.keys(currentState).length, 'fields');
+            console.log('🎨 handleSave called with', Object.keys(currentState).length, 'fields');
+            
+            if (!process.env.REACT_APP_BACKEND_URL) {
+                console.error('❌ REACT_APP_BACKEND_URL not configured');
+                return;
+            }
             
             const result = await setWebsiteStyle(currentState);
             
             if (result && result.success) {
-                console.log('✅ Save successful with complete state:', result.message);
+                console.log('✅ Save successful:', result.message);
                 
                 const saveButtons = document.querySelectorAll('[data-save-button]');
                 saveButtons.forEach(button => {
