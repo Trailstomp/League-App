@@ -6,24 +6,21 @@ import ColorExtractor from '../ColorExtractor';
 import SimpleCropTool from '../SimpleCropTool';
 import TickerManager from './TickerManager';
 
-const DEFAULT_STYLE = {
-    sportType: 'lacrosse',
+// Visual properties that should be reset when switching templates
+// (identity props like league name, logo, titles are preserved from current style)
+const VISUAL_RESET = {
     navBackgroundType: 'color',
     navBackgroundColor: '#ffffff',
     navBackgroundImage: '',
     navTextColor: '#374151',
     navFont: 'Inter, sans-serif',
     navFontSize: '16px',
-    navLeagueName: 'Your League Name',
-    navLogoUrl: '',
     bannerBackgroundType: 'color',
     bannerBackgroundColor: '#1e40af',
     bannerBackgroundImage: '',
     bannerTextColor: '#ffffff',
     bannerFont: 'Inter, sans-serif',
     bannerFontSize: '32px',
-    bannerTitle: 'Welcome to Our League',
-    bannerSubtitle: 'Professional Competition',
     mainBackgroundType: 'color',
     mainBackgroundColor: '#f8fafc',
     mainBackgroundImage: '',
@@ -48,18 +45,6 @@ const DEFAULT_STYLE = {
     liveViewUseTeamFonts: true,
     primaryColor: '#1e40af',
     accentColor: '#3b82f6',
-    pwaAppName: 'Midwest Lacrosse League',
-    pwaShortName: 'MLBL',
-    pwaDescription: 'League management portal for schedules, rosters, and stats',
-    pwaThemeColor: '#1e40af',
-    pwaBackgroundColor: '#f8fafc',
-    pwaIconUrl: '',
-    pwaInstallBannerTitle: 'Install Our App',
-    pwaInstallBannerText: 'Add to your home screen for quick access!',
-    pwaInstallBannerBgColor: '#1e40af',
-    pwaInstallBannerTextColor: '#ffffff',
-    pwaInstallBannerButtonColor: '#ffffff',
-    pwaInstallBannerButtonTextColor: '#1e40af',
 };
 
 const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, teams = [], events = [] }) => {
