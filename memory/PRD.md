@@ -52,6 +52,13 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Added `nav.league_chat` permission - League Chat only visible to admin/league_admin
 - [x] Role alias mapping: 'admin' → 'super_admin', 'coach' → 'team_coach' for permissions
 
+### Bug Fix: Design Template Stuck (Feb 14, 2026)
+- [x] Fixed stale closure in `updateStyle` useCallback (empty dependency array → added `handleSave`)
+- [x] Fixed `loadTemplate` using setTimeout + stale handleSave → now directly calls setWebsiteStyle via microtask
+- [x] Moved cycling template logic from Layout.js (sessionStorage only) to App.js (updates websiteStyle state)
+- [x] Wrapped `handleWebsiteStyleChange` in useCallback to prevent stale closures in child components
+- [x] Verified: admin can change colors, load templates, and visual updates are immediate + persist
+
 ### Documentation (Feb 14, 2026)
 - [x] Updated all 9 help docs from v1.0 (Jan 2025) to v2.0
 - [x] Added: Tournament brackets, PWA, File Manager, Email Composer, Recruiting, Dynamic Theming, Google OAuth, clickable admin dashboard, mobile ticker, news square images
