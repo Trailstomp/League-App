@@ -334,8 +334,11 @@ const NewsManager = ({ teams = [], currentUser }) => {
                     onCancel={() => {
                         setShowAddForm(false);
                         setEditingItem(null);
+                        setCroppedResult(null);
                     }}
                     saving={saving}
+                    croppedResult={croppedResult}
+                    onCroppedResultConsumed={() => setCroppedResult(null)}
                     onImageUpload={(imageData, field) => {
                         setCropImageUrl(imageData);
                         setCropTargetField(field);
