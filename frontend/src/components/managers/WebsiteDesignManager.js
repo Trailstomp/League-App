@@ -68,79 +68,12 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
     
     // Properly initialize editingStyle with websiteStyle data
     const [editingStyle, setEditingStyle] = useState(() => ({
-        // Sport Type Setting
-        sportType: websiteStyle.sportType || 'lacrosse',
-        
-        // Navigation Zone - with websiteStyle fallbacks
-        navBackgroundType: websiteStyle.navBackgroundType || 'color',
-        navBackgroundColor: websiteStyle.navBackgroundColor || '#ffffff',
-        navBackgroundImage: websiteStyle.navBackgroundImage || '',
-        navTextColor: websiteStyle.navTextColor || '#374151',
-        navFont: websiteStyle.navFont || 'Inter, sans-serif',
-        navFontSize: websiteStyle.navFontSize || '16px',
-        navLeagueName: websiteStyle.navLeagueName || websiteStyle.leagueName || 'Your League Name',
+        ...DEFAULT_STYLE,
+        // Override with saved websiteStyle
+        ...websiteStyle,
+        // Ensure text fields have fallbacks
+        navLeagueName: websiteStyle.navLeagueName || websiteStyle.leagueName || DEFAULT_STYLE.navLeagueName,
         navLogoUrl: websiteStyle.navLogoUrl || websiteStyle.logoUrl || '',
-        
-        // Banner Zone - with websiteStyle fallbacks
-        bannerBackgroundType: websiteStyle.bannerBackgroundType || 'color',
-        bannerBackgroundColor: websiteStyle.bannerBackgroundColor || '#1e40af',
-        bannerBackgroundImage: websiteStyle.bannerBackgroundImage || '',
-        bannerTextColor: websiteStyle.bannerTextColor || '#ffffff',
-        bannerFont: websiteStyle.bannerFont || 'Inter, sans-serif',
-        bannerFontSize: websiteStyle.bannerFontSize || '32px',
-        bannerTitle: websiteStyle.bannerTitle || 'Welcome to Our League',
-        bannerSubtitle: websiteStyle.bannerSubtitle || 'Professional Competition',
-        
-        // Main Content Zone - with websiteStyle fallbacks
-        mainBackgroundType: websiteStyle.mainBackgroundType || 'color',
-        mainBackgroundColor: websiteStyle.mainBackgroundColor || websiteStyle.backgroundColor || '#f8fafc',
-        mainBackgroundImage: websiteStyle.mainBackgroundImage || '',
-        mainTextColor: websiteStyle.mainTextColor || '#374151',
-        mainFont: websiteStyle.mainFont || 'Inter, sans-serif',
-        mainFontSize: websiteStyle.mainFontSize || '16px',
-        inputTextColor: websiteStyle.inputTextColor || '#1e293b',
-        secondaryTextColor: websiteStyle.secondaryTextColor || '#64748b',
-        accentTextColor: websiteStyle.accentTextColor || '#4f46e5',
-        
-        // Content Area Zone (the "white" area) - with websiteStyle fallbacks
-        contentBackgroundType: websiteStyle.contentBackgroundType || 'color',
-        contentBackgroundColor: websiteStyle.contentBackgroundColor || '#ffffff',
-        contentBackgroundImage: websiteStyle.contentBackgroundImage || '',
-        
-        // Menu Zone - with websiteStyle fallbacks
-        menuBackgroundType: websiteStyle.menuBackgroundType || 'color',
-        menuBackgroundColor: websiteStyle.menuBackgroundColor || '#ffffff',
-        menuBackgroundImage: websiteStyle.menuBackgroundImage || '',
-        menuTextColor: websiteStyle.menuTextColor || '#374151',
-        menuFont: websiteStyle.menuFont || 'Inter, sans-serif',
-        menuFontSize: websiteStyle.menuFontSize || '16px',
-        navButtonBorderColor: websiteStyle.navButtonBorderColor || websiteStyle.accentColor || '#3b82f6',
-        
-        // Live View Settings - with websiteStyle fallbacks
-        liveViewBackgroundType: websiteStyle.liveViewBackgroundType || 'banners',
-        liveViewBannerOpacity: websiteStyle.liveViewBannerOpacity || 0.3,
-        liveViewUseTeamFonts: websiteStyle.liveViewUseTeamFonts !== undefined ? websiteStyle.liveViewUseTeamFonts : true,
-        
-        // Theme colors - with websiteStyle fallbacks
-        primaryColor: websiteStyle.primaryColor || '#1e40af',
-        accentColor: websiteStyle.accentColor || '#3b82f6',
-        
-        // PWA / Mobile App Settings
-        pwaAppName: websiteStyle.pwaAppName || 'Midwest Lacrosse League',
-        pwaShortName: websiteStyle.pwaShortName || 'MLBL',
-        pwaDescription: websiteStyle.pwaDescription || 'League management portal for schedules, rosters, and stats',
-        pwaThemeColor: websiteStyle.pwaThemeColor || '#1e40af',
-        pwaBackgroundColor: websiteStyle.pwaBackgroundColor || '#f8fafc',
-        pwaIconUrl: websiteStyle.pwaIconUrl || '',
-        pwaInstallBannerTitle: websiteStyle.pwaInstallBannerTitle || 'Install Our App',
-        pwaInstallBannerText: websiteStyle.pwaInstallBannerText || 'Add to your home screen for quick access!',
-        pwaInstallBannerBgColor: websiteStyle.pwaInstallBannerBgColor || '#1e40af',
-        pwaInstallBannerTextColor: websiteStyle.pwaInstallBannerTextColor || '#ffffff',
-        pwaInstallBannerButtonColor: websiteStyle.pwaInstallBannerButtonColor || '#ffffff',
-        pwaInstallBannerButtonTextColor: websiteStyle.pwaInstallBannerButtonTextColor || '#1e40af',
-        
-        // Include all existing websiteStyle properties
-        ...websiteStyle
     }));
 
     const [showColorExtractor, setShowColorExtractor] = useState(false);
