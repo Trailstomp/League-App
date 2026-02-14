@@ -41,6 +41,11 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Added `square` aspect ratio option to SimpleCropTool
 - [x] Favicon cache busting to force latest logo
 
+### Bug Fixes & UI (Feb 14, 2026)
+- [x] Fixed recurring `league_data` → `league_doc` NameError across 5 endpoints: teams, players, seasons, leagueSchedule, liveViewSettings
+- [x] Made admin dashboard overview cards clickable (navigate to Teams, Users tabs)
+- [x] Made Quick Action buttons functional (Add Team → Teams, Add Player → Import Players, Export → Database Admin)
+
 ### User Account & Onboarding
 - [x] User account settings page, set password flow
 - [x] NotificationBell for new message alerts
@@ -98,5 +103,10 @@ Comprehensive league management portal for multiple sports with team management,
 
 ### Key API Endpoints
 - POST /api/league-data/newsItems - Create/update news items (BUG FIXED)
+- POST /api/league-data/teams - Save teams (BUG FIXED Feb 14)
+- POST /api/league-data/players - Save players (BUG FIXED Feb 14)
+- POST /api/league-data/seasons - Save seasons (BUG FIXED Feb 14)
+- POST /api/league-data/leagueSchedule - Save schedule (BUG FIXED Feb 14)
+- POST /api/league-data/liveViewSettings - Save live view settings (BUG FIXED Feb 14)
 - GET /api/league-data/newsItems - Get news items
 - GET /api/unified-events - Get all events
