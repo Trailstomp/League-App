@@ -1098,6 +1098,35 @@ async def get_news_items():
         logger.error(f"❌ Error fetching news items: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.delete("/league-data/newsItems/{item_id}")
+async def delete_news_item(item_id: str):
+    """Delete a single news item by ID"""
+    try:
+        league_doc = await db.league_data.find_one({"id": "main_league"})
+        if not league_doc or "newsItems" not in league_doc:
+            return {"status": "success", "message": "No news items to delete"}
+        
+        original_count = len(league_doc["newsItems"])
+        league_doc["newsItems"] = [item for item in league_doc["newsItems"] if item.get("id") != item_id]
+        new_count = len(league_doc["newsItems"])
+        
+        if original_count == new_count:
+            raise HTTPException(status_code=404, detail=f"News item '{item_id}' not found")
+        
+        league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
+        league_doc.pop('_id', None)
+        await db.league_data.replace_one({"id": "main_league"}, league_doc, upsert=True)
+        
+        logger.info(f"✅ Deleted news item '{item_id}', {new_count} items remaining")
+        return {"status": "success", "message": f"Deleted news item '{item_id}'", "remaining": new_count}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error deleting news item: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
 # ==================== SPONSORS ====================
 
 @api_router.get("/sponsors")
