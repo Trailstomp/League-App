@@ -70,24 +70,18 @@ const TeamGalleryDisplay = ({ teamId = null, pageType = 'league' }) => {
 
     const getFilteredGalleries = () => {
         return galleries.filter(gallery => {
-            // Filter based on page type and visibility settings
             switch (pageType) {
                 case 'league':
-                    // League page shows:
-                    // - League-wide galleries with all_pages or league_page visibility
-                    // - Team galleries with all_pages visibility
                     return (
                         (gallery.visibility === 'all_pages') ||
-                        (gallery.visibility === 'league_page' && !gallery.teamId)
+                        (gallery.visibility === 'league_page' && !gallery.teamId) ||
+                        (gallery.visibility === 'league_only' && !gallery.teamId)
                     );
                 
                 case 'team':
                     if (!teamId) return false;
-                    // Team page shows:
-                    // - Team-specific galleries with all_pages or team_page visibility
-                    // - League-wide galleries with all_pages visibility
                     return (
-                        (gallery.teamId === teamId && ['all_pages', 'team_page'].includes(gallery.visibility)) ||
+                        (gallery.teamId === teamId && ['all_pages', 'team_page', 'team_only'].includes(gallery.visibility)) ||
                         (!gallery.teamId && gallery.visibility === 'all_pages')
                     );
                 
@@ -113,7 +107,7 @@ const TeamGalleryDisplay = ({ teamId = null, pageType = 'league' }) => {
     }
 
     if (filteredGalleries.length === 0) {
-        return null; // Don't show anything if no galleries
+        return null;
     }
 
     return (
