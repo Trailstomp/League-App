@@ -102,26 +102,32 @@ const NewsManager = ({ teams = [], currentUser }) => {
         try {
             setSaving(true);
             
-            // Filter out the item to delete
-            const updatedItems = newsItems.filter(item => item.id !== itemId);
-            
-            // Save to API
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/league-data/newsItems`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(updatedItems)
+            // Use dedicated DELETE endpoint
+            const deleteResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/league-data/newsItems/${itemId}`, {
+                method: 'DELETE'
             });
             
-            if (response.ok) {
-                const result = await response.json();
-                console.log('✅ News items updated in API after deletion:', result);
-                setNewsItems(updatedItems);
+            if (deleteResponse.ok) {
+                const result = await deleteResponse.json();
+                console.log('✅ News item deleted via DELETE endpoint:', result);
+                setNewsItems(prev => prev.filter(item => item.id !== itemId));
             } else {
-                console.error('❌ Failed to update news items in API:', response.statusText);
-                alert('Failed to delete news item from server. Please try again.');
-                return;
+                // Fallback: send full updated list
+                const updatedItems = newsItems.filter(item => item.id !== itemId);
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/league-data/newsItems`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedItems)
+                });
+                
+                if (response.ok) {
+                    console.log('✅ News item deleted via POST fallback');
+                    setNewsItems(updatedItems);
+                } else {
+                    console.error('❌ Failed to delete news item');
+                    alert('Failed to delete news item. Please try again.');
+                    return;
+                }
             }
             
             console.log('✅ News item deleted successfully');
