@@ -62,6 +62,13 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Wrapped `handleWebsiteStyleChange` in useCallback to prevent stale closures
 - [x] Verified: template switching preserves identity while clearing previous visual properties
 
+### Critical Bug Fix: Template Data Loss (Feb 2026)
+- [x] Root cause: PUT /api/design-templates/{template_id} endpoint defaulted `style` to `{}` when not in request, wiping all style data on partial updates (e.g., toggling visibility)
+- [x] Fix: Changed endpoint to only update fields explicitly present in request payload using `if field in template_data` check
+- [x] Now returns updated template document in response for frontend verification
+- [x] Verified: 11/11 backend tests passed - partial updates preserve style data, explicit style updates work correctly
+- [x] Existing templates verified intact: Clean Blue (15 props), Neon Test (15 props), Dark Theme (3 props)
+
 ### Documentation (Feb 14, 2026)
 - [x] Updated all 9 help docs from v1.0 (Jan 2025) to v2.0
 - [x] Added: Tournament brackets, PWA, File Manager, Email Composer, Recruiting, Dynamic Theming, Google OAuth, clickable admin dashboard, mobile ticker, news square images
