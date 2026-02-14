@@ -238,16 +238,19 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
     const loadTemplate = (template) => {
         if (window.confirm(`Load "${template.name}" template? This will replace your current design settings.`)) {
-            // Merge template style into current editingStyle and apply immediately
+            // Merge template style into current editingStyle
+            let mergedStyle = null;
             setEditingStyle(prev => {
-                const mergedStyle = { ...prev, ...template.style };
-                // Directly apply to parent state to avoid stale closure issues
-                setWebsiteStyle(mergedStyle);
+                mergedStyle = { ...prev, ...template.style };
                 return mergedStyle;
             });
             setActiveTemplateId(template.id);
             setShowLoadTemplateModal(false);
             setTemplateMessage(`Loaded "${template.name}" — it is now the active template`);
+            // Apply to parent state after render to avoid React warning
+            Promise.resolve().then(() => {
+                if (mergedStyle) setWebsiteStyle(mergedStyle);
+            });
         }
         setTimeout(() => setTemplateMessage(''), 4000);
     };
