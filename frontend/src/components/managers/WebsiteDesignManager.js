@@ -382,14 +382,17 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         }));
     }, [websiteStyle]);
 
-    // Fixed save using ref for reliable state access
-    const handleSave = useCallback(async () => {
+    // Save with optional override fields (solves stale ref after setEditingStyle)
+    const handleSave = useCallback(async (overrideFields) => {
         try {
-            const currentState = editingStyleRef.current;
-            if (!currentState) {
+            const baseState = editingStyleRef.current;
+            if (!baseState) {
                 console.error('❌ No editing state available');
                 return;
             }
+            
+            // Merge any override fields on top of the current ref state
+            const currentState = overrideFields ? { ...baseState, ...overrideFields } : baseState;
             
             console.log('🎨 handleSave called with', Object.keys(currentState).length, 'fields');
             
