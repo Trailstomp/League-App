@@ -14,6 +14,10 @@ As a **League Admin**, you can manage all teams, events, and players across the 
 ✅ Create news and announcements
 ✅ Manage photo galleries
 ✅ View payment information
+✅ Create and manage tournaments with bracket builder
+✅ Review and approve recruiting applications
+✅ Send emails via the Email Composer
+✅ Manage league documents and files
 
 ## What Requires Full Admin
 
@@ -57,7 +61,13 @@ After games are scored:
 2. Enter tournament name and dates
 3. List participating teams
 4. Add venue information
-5. Optionally create individual game events within
+5. Use the **Tournament Bracket Builder** to set up matchups:
+   - Horizontal bracket layout shows all rounds visually
+   - Connector lines link matchups between rounds
+   - Assign seeds and teams to each position
+   - Enter scores as games are played
+   - Champion is highlighted with a trophy badge
+6. Toggle between **Bracket View** and **Games List** view
 
 ### Editing Events
 - Click on any event to edit
@@ -131,16 +141,30 @@ Access team Settings tab to update:
 
 ## Communication
 
-### Announcements
-1. Go to Admin Portal → News
-2. Click "Add Announcement"
+### News & Announcements
+1. Go to Admin Portal → Content → News
+2. Click "Add News Item"
 3. Enter title and content
-4. Select visibility (All, Division, Team)
-5. Publish
+4. Add an image (cropped to square 1:1 format)
+5. Set visibility and optional expiration date
+6. Publish - appears in the League News section and ticker
+7. Delete unwanted items using the trash icon
+
+### Email Composer
+1. Go to Admin Portal → Communications → Email
+2. Select recipients (individuals, teams, or league-wide)
+3. Compose message with rich text editor
+4. Send - emails go via configured SMTP
 
 ### Event Reminders
 - Automatic reminders go out based on RSVP settings
 - Manual reminders: Open event → "Send Reminder"
+
+### Recruiting Applications
+1. Go to Admin Portal → Recruiting
+2. Review incoming team, player, and volunteer applications
+3. Approve to automatically create the account
+4. Reject with an optional message
 
 ---
 
@@ -214,4 +238,4 @@ Access team Settings tab to update:
 
 ---
 
-*Great leagues run on great organization. You've got this!*
+*Great leagues run on great organization. You've got this! (v2.0)*
