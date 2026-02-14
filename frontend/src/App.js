@@ -134,10 +134,10 @@ function App() {
     contentLayout: 'wide'
   });
 
-  // Enhanced websiteStyle handler with API persistence
-  const handleWebsiteStyleChange = async (newStyle) => {
+  // Enhanced websiteStyle handler with API persistence - memoized to prevent stale closures
+  const handleWebsiteStyleChange = React.useCallback(async (newStyle) => {
     try {
-      console.log('🎨 Saving websiteStyle changes:', newStyle);
+      console.log('🎨 Saving websiteStyle changes:', Object.keys(newStyle).length, 'keys');
       
       // Update local state immediately
       setWebsiteStyle(newStyle);
@@ -164,7 +164,7 @@ function App() {
       console.error('❌ Error saving websiteStyle:', error);
       return { success: false, message: 'Network error occurred' };
     }
-  };
+  }, []);
 
   // Enhanced navigation handler - supports team navigation
   const handleNavigate = (page, teamId = null) => {
