@@ -177,13 +177,27 @@ The scrolling ticker shows:
 
 ## My Dashboard
 
-If your coach enabled it:
-1. Go to your team page
-2. Click **"My Dashboard"** tab
-3. See personalized view:
+Your personal dashboard shows:
+1. Click **"My Dashboard"** in the sidebar
+2. See personalized view:
    - Your upcoming events
    - Your recent stats
    - Team announcements
+
+---
+
+## Account Settings
+
+### Managing Your Account
+1. Click **"Account Settings"** in the sidebar
+2. Update your profile information
+3. Set or change your password
+4. Manage notification preferences
+
+### Notification Bell
+- The bell icon in the header shows unread notifications
+- Click to see new messages and alerts
+- Notifications include event reminders and league announcements
 
 ---
 
