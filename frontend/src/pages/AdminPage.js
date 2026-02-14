@@ -554,7 +554,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
     const renderTabContent = () => {
         switch (activeTab) {
             case 'dashboard':
-                return <AdminDashboard teams={teams} players={players} users={users} />;
+                return <AdminDashboard teams={teams} players={players} users={users} onNavigate={setActiveTab} />;
             case 'events':
                 return <AdminEventsView teams={teams} currentUser={currentUser} />;
             case 'divisions':
@@ -683,7 +683,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
 };
 
 // Admin Dashboard Component
-const AdminDashboard = ({ teams, players, users = [] }) => {
+const AdminDashboard = ({ teams, players, users = [], onNavigate }) => {
     const stats = {
         totalTeams: teams.length,
         totalPlayers: players.length,
