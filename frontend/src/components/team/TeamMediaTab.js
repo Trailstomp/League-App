@@ -1,16 +1,22 @@
 import React from 'react';
+import MediaManager from '../MediaManager';
 import TeamGalleryDisplay from '../TeamGalleryDisplay';
 
-const TeamMediaTab = ({ team }) => {
-    // Import YouTubeGallery dynamically
+const TeamMediaTab = ({ team, currentUser = null, canEdit = false }) => {
     const YouTubeGallery = React.lazy(() => import('../YouTubeGallery'));
 
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-slate-800">Photos & Videos</h2>
-            
+            {/* Self-service Media Manager */}
+            <MediaManager
+                ownerType="team"
+                ownerId={team.id}
+                canEdit={canEdit}
+                currentUser={currentUser}
+            />
+
             <React.Suspense fallback={<div className="bg-slate-50 p-8 rounded-lg text-center text-slate-500">Loading media...</div>}>
-                {/* Team-specific Media Gallery */}
+                {/* Legacy team galleries from Google Drive */}
                 <TeamGalleryDisplay 
                     teamId={team.id}
                     pageType="team"
