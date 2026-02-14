@@ -238,19 +238,15 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
     const loadTemplate = (template) => {
         if (window.confirm(`Load "${template.name}" template? This will replace your current design settings.`)) {
-            // Merge template style into current editingStyle
-            let mergedStyle = null;
-            setEditingStyle(prev => {
-                mergedStyle = { ...prev, ...template.style };
-                return mergedStyle;
-            });
+            // Compute merged style using current editingStyle from component scope
+            const mergedStyle = { ...editingStyle, ...template.style };
+            console.log('🎨 Loading template:', template.name, 'with', Object.keys(template.style).length, 'style keys');
+            // Update both local editing state and parent websiteStyle simultaneously
+            setEditingStyle(mergedStyle);
+            setWebsiteStyle(mergedStyle);
             setActiveTemplateId(template.id);
             setShowLoadTemplateModal(false);
             setTemplateMessage(`Loaded "${template.name}" — it is now the active template`);
-            // Apply to parent state after render to avoid React warning
-            Promise.resolve().then(() => {
-                if (mergedStyle) setWebsiteStyle(mergedStyle);
-            });
         }
         setTimeout(() => setTemplateMessage(''), 4000);
     };
