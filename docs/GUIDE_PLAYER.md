@@ -28,8 +28,8 @@ As a **Player**, you can view your stats, see your team's schedule, respond to e
 
 ### Logging In
 1. Go to your league's portal URL
-2. Click **"Login"** in the top right
-3. Enter your email and password
+2. Click **"Login"** in the sidebar
+3. **Sign in with Google** (one-click) or enter your email and password
 4. Click **"Sign In"**
 
 ### First Time Login
@@ -38,9 +38,19 @@ If you received a password reset link:
 2. Create a new password
 3. Log in with your new password
 
+If you signed up with Google, you can set a password later in Account Settings.
+
+### Install the App on Your Phone
+The portal is a **Progressive Web App (PWA)**:
+1. Visit the league portal in your mobile browser
+2. Tap the browser menu (three dots)
+3. Select **"Add to Home Screen"** (Android) or **"Add to Home Screen"** (iOS Safari share menu)
+4. The app icon will appear on your home screen with the league logo
+5. Opens full-screen like a native app
+
 ### Setting Your Default Page
 1. Navigate to your team's page
-2. Click the **⭐ star icon** on your preferred tab
+2. Click the **star icon** on your preferred tab
 3. Next time you log in, you'll land there automatically
 
 ---
@@ -104,8 +114,18 @@ Scroll down on card back to see:
 
 ### Viewing Upcoming Events
 1. Check the **ticker** at the top (shows next games)
+   - On mobile: compact ESPN-style strip below the header
+   - On desktop: full scrolling ticker with detailed scores
 2. Or go to your team's **Schedule** tab
 3. See all practices, games, meetings
+
+### Viewing Tournaments
+1. Find tournament events in the schedule
+2. Click to open the **Tournament Bracket**
+3. View the horizontal bracket layout with round progression
+4. Connector lines show matchup paths
+5. Champion is highlighted with a trophy badge
+6. Toggle between Bracket View and Games List
 
 ### Understanding Event Types
 | Icon | Type | What It Is |
@@ -191,9 +211,7 @@ If your coach enabled it:
 
 ## Tips for Players
 
-📱 **Bookmark the page** - Quick access on your phone
-
-⭐ **Set default landing** - Go straight to your team's roster
+📱 **Install the PWA** - Add to Home Screen for quick, app-like access
 
 📅 **Check schedule weekly** - Know when and where
 
@@ -201,17 +219,16 @@ If your coach enabled it:
 
 📸 **Update your photo** - Ask coach to add your headshot
 
-🔔 **Enable notifications** - Don't miss reminders
+🔔 **Watch the notification bell** - Don't miss reminders
 
 ---
 
 ## Common Questions
 
 ### "How do I change my password?"
-1. Click your name/profile area
-2. Look for "Change Password" or "Account Settings"
-3. Enter current and new password
-4. Save
+1. Click **"Account Settings"** in the sidebar
+2. Enter your new password
+3. Save
 
 ### "How do I update my email?"
 Contact your coach or league admin to update your account email.
@@ -225,8 +242,8 @@ You can switch between teams in the sidebar. Your stats are tracked separately p
 ### "I can't see some events"
 Some events may be team-specific or require RSVP access. Check with your coach.
 
-### "The app looks different on my phone"
-The site is responsive - layout adjusts for smaller screens. All features work on mobile.
+### "How do I install the app on my phone?"
+Visit the site in your mobile browser, tap the menu, and select "Add to Home Screen". It installs with the league logo as the app icon.
 
 ---
 
