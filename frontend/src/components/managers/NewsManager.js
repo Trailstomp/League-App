@@ -507,6 +507,15 @@ const NewsItemForm = ({ item, teams, onSave, onCancel, saving, onImageUpload, cr
         active: item?.active !== undefined ? item.active : true
     });
 
+    // When cropped image data arrives from the crop tool, update the form
+    useEffect(() => {
+        if (croppedResult) {
+            console.log('✅ Cropped image received for field:', croppedResult.field, 'size:', croppedResult.data?.length);
+            setFormData(prev => ({ ...prev, [croppedResult.field]: croppedResult.data }));
+            if (onCroppedResultConsumed) onCroppedResultConsumed();
+        }
+    }, [croppedResult]);
+
     const handleFileUpload = (e, field) => {
         const file = e.target.files[0];
         if (file) {
