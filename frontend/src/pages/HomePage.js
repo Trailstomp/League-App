@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
 import TeamGalleryDisplay from '../components/TeamGalleryDisplay';
 import YouTubeGallery from '../components/YouTubeGallery';
+import MediaManager from '../components/MediaManager';
 import EventDetailModal from '../scheduling/components/EventDetailModal';
 import TeamDetailModal from '../teams/components/TeamDetailModal';
 import SponsorsDisplay from '../components/SponsorsDisplay';
