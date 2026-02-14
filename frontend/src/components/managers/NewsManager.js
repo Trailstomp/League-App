@@ -493,7 +493,7 @@ const NewsItemCard = ({ item, teams, onEdit, onDelete, onClick, getTeamName, get
 };
 
 // News Item Form Component
-const NewsItemForm = ({ item, teams, onSave, onCancel, saving, onImageUpload }) => {
+const NewsItemForm = ({ item, teams, onSave, onCancel, saving, onImageUpload, croppedResult, onCroppedResultConsumed }) => {
     const [formData, setFormData] = useState({
         type: item?.type || 'text',
         heading: item?.heading || '',
