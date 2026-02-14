@@ -135,4 +135,4 @@ Comprehensive league management portal for multiple sports with team management,
 - POST /api/league-data/leagueSchedule - Save schedule (BUG FIXED Feb 14)
 - POST /api/league-data/liveViewSettings - Save live view settings (BUG FIXED Feb 14)
 - GET /api/league-data/newsItems - Get news items
-- GET /api/unified-events - Get all events
+- PUT /api/design-templates/{template_id} - Safe partial update (BUG FIXED Feb 2026 - was wiping style data)
