@@ -29,10 +29,11 @@ As a **Guest**, you can browse public information about the league, teams, and e
 
 ### Homepage
 When you first visit, you'll see:
-- **Event Ticker** - Scrolling display of games and events
+- **Event Ticker** - Scrolling display of games and events (compact on mobile)
 - **Team Cards** - Quick view of all teams
 - **Division Navigation** - Teams organized by division
-- **League Announcements** - News and updates
+- **League News & Announcements** - News feed with square images
+- **"Want to Get Involved? Join Us!"** - Quick access to registration forms
 
 ### The Ticker
 The ticker at the top shows:
@@ -155,9 +156,20 @@ Some galleries are public:
 
 ## Want to Join?
 
+### Join Us Portal
+The league offers a dedicated **Join Us** page accessible from the homepage:
+1. Click **"Want to Get Involved? Join Us!"** button
+2. Choose your path:
+   - **Register a Team** - Bring your team into the league
+   - **Apply as a Player** - Join as an individual player
+   - **Volunteer** - Help with league operations
+3. Fill out the application form
+4. A league admin will review and approve your application
+5. Once approved, your account is created automatically
+
 ### Creating an Account
 If you want to join the league:
-1. Click "Register" or "Sign Up"
+1. Click "Login" then "Register" or "Sign in with Google"
 2. Fill in your information
 3. Account may require admin approval
 4. Once approved, log in to access more features
@@ -173,16 +185,18 @@ Look for:
 ## Mobile Viewing
 
 ### On Your Phone
-The site works on mobile devices:
-- Sidebar becomes a menu (tap ☰)
-- Ticker scrolls horizontally
-- Cards stack vertically
-- All info is accessible
+The site is a **Progressive Web App (PWA)** - you can install it like a real app:
+1. Visit the league URL in your mobile browser
+2. Tap the browser menu
+3. Select **"Add to Home Screen"**
+4. The league icon appears on your home screen
 
-### Tips for Mobile
-- Rotate to landscape for schedule views
-- Pinch to zoom on photos
-- Tap ticker to interact with events
+### Mobile Experience
+- Compact ESPN-style ticker strip below the header
+- Sidebar becomes a menu (tap the hamburger icon)
+- Cards stack vertically for easy scrolling
+- All info is accessible
+- Bottom navigation bar for quick access to Home, Events, Standings, and Admin
 
 ---
 
@@ -222,4 +236,4 @@ Look for registration links, or contact the league admin through the site.
 
 ---
 
-*Enjoy following the league! Consider joining us on the field!*
+*Enjoy following the league! Consider joining us on the field! (v2.0)*
