@@ -57,7 +57,8 @@ const PlayerDashboardPage = ({ currentUser, onUserUpdate }) => {
         { id: 'overview', label: 'Overview', icon: '🏠' },
         { id: 'fees', label: 'My Fees', icon: '💰' },
         { id: 'schedule', label: 'Schedule', icon: '📅' },
-        { id: 'profile', label: 'My Profile', icon: '👤' }
+        { id: 'profile', label: 'My Profile', icon: '👤' },
+        { id: 'settings', label: 'Account Settings', icon: '⚙️' }
     ];
 
     if (!currentUser) {
