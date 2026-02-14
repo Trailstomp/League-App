@@ -65,6 +65,7 @@ const DEFAULT_STYLE = {
 const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, teams = [], events = [] }) => {
     const [activeSection, setActiveSection] = useState('sport');
     const saveTimeoutRef = useRef(null); // Component-level timeout ref
+    const editingStyleRef = useRef(null); // Ref to track latest editingStyle for handleSave
     
     // Properly initialize editingStyle with websiteStyle data
     const [editingStyle, setEditingStyle] = useState(() => ({
@@ -75,6 +76,9 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
         navLeagueName: websiteStyle.navLeagueName || websiteStyle.leagueName || DEFAULT_STYLE.navLeagueName,
         navLogoUrl: websiteStyle.navLogoUrl || websiteStyle.logoUrl || '',
     }));
+    
+    // Keep ref in sync with editingStyle state
+    editingStyleRef.current = editingStyle;
 
     const [showColorExtractor, setShowColorExtractor] = useState(false);
     const [extractImageUrl, setExtractImageUrl] = useState('');
