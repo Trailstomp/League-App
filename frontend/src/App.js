@@ -477,10 +477,29 @@ function App() {
           // Load websiteStyle from dashboard data
           if (dashboardData.websiteStyle && typeof dashboardData.websiteStyle === 'object') {
             console.log('🎨 Loading saved websiteStyle with keys:', Object.keys(dashboardData.websiteStyle));
-            const newStyle = {
+            let newStyle = {
               ...websiteStyle,
               ...dashboardData.websiteStyle
             };
+            
+            // Apply cycling template if enabled (overrides saved style)
+            try {
+              const userId = getCached(CACHE_KEYS.USER)?.id;
+              const cyclingUrl = userId 
+                ? `${process.env.REACT_APP_BACKEND_URL}/api/design-templates/active?user_id=${userId}`
+                : `${process.env.REACT_APP_BACKEND_URL}/api/design-templates/active`;
+              const cyclingRes = await fetch(cyclingUrl);
+              if (cyclingRes.ok) {
+                const cyclingData = await cyclingRes.json();
+                if (cyclingData.template?.style && cyclingData.source !== 'none') {
+                  console.log(`🎨 Cycling template active: ${cyclingData.template.name} (${cyclingData.source})`);
+                  newStyle = { ...newStyle, ...cyclingData.template.style };
+                }
+              }
+            } catch (cyclingErr) {
+              console.log('Cycling template check skipped:', cyclingErr.message);
+            }
+            
             setWebsiteStyle(newStyle);
             setCache(CACHE_KEYS.WEBSITE_STYLE, newStyle); // Cache website style
             console.log('✅ WebsiteStyle loaded and applied');
