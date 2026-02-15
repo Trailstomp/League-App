@@ -151,18 +151,26 @@ const StandingsTable = ({ teams = [], onTeamClick, sportType = 'lacrosse' }) => 
     // Handle data for display based on view mode
     const getDisplayData = () => {
         if (viewMode === 'divisions' && Object.keys(standingsByDivision).length > 0) {
-            return { byDivision: true, data: standingsByDivision };
+            // Filter out External division
+            const filtered = {};
+            for (const [key, teams] of Object.entries(standingsByDivision)) {
+                if (key.toLowerCase() !== 'external') {
+                    filtered[key] = teams.filter(t => !t.isExternal && t.division?.toLowerCase() !== 'external');
+                }
+            }
+            return { byDivision: true, data: filtered };
         } else if (standings.length > 0) {
+            const noExternal = standings.filter(t => !t.isExternal && t.division?.toLowerCase() !== 'external');
             const filtered = selectedDivision === 'all'
-                ? standings
-                : standings.filter(team => team.division_id === selectedDivision || team.division === selectedDivision);
+                ? noExternal
+                : noExternal.filter(team => team.division_id === selectedDivision || team.division === selectedDivision);
             return { byDivision: false, data: filtered };
         }
         return { byDivision: false, data: [] };
     };
 
     const displayData = getDisplayData();
-    const availableDivisions = ['all', ...divisions.map(d => d.id)];
+    const availableDivisions = ['all', ...divisions.filter(d => d.name?.toLowerCase() !== 'external').map(d => d.id)];
 
     if (loading) {
         return (
