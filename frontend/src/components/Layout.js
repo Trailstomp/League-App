@@ -305,16 +305,11 @@ const Layout = ({
                             display: 'block',
                             position: 'relative',
                             zIndex: 99,
-                            backgroundColor: websiteStyle.bannerBackgroundType === 'image' ? 'transparent' : (websiteStyle.bannerBackgroundColor || '#ffffff'),
-                            backgroundImage: websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage 
-                                ? `url(${websiteStyle.bannerBackgroundImage})` 
-                                : 'none',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
+                            ...getZoneBgStyle(websiteStyle, 'banner')
                         }}
                     >
-                        {/* Overlay for image banners */}
-                        {websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage && (
+                        {/* Overlay for image/texture banners */}
+                        {(websiteStyle.bannerBackgroundType === 'image' || websiteStyle.bannerBackgroundType === 'texture') && (websiteStyle.bannerBackgroundImage || websiteStyle.bannerBackgroundTexture) && (
                             <div className="absolute inset-0 bg-black bg-opacity-30 z-0"></div>
                         )}
                         
