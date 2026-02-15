@@ -1360,29 +1360,44 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
             {/* Navigation Background Image */}
             <div className="border-t pt-6">
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Background Image</h4>
-                <div className="flex space-x-4 mb-4">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Background Style</h4>
+                <div className="flex space-x-3 mb-4">
                     <button
                         onClick={() => toggleBackgroundType('nav', 'color')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            (editingStyle.navBackgroundType !== 'image') 
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            (editingStyle.navBackgroundType === 'color' || (!editingStyle.navBackgroundType)) 
                                 ? 'bg-blue-600 text-white' 
                                 : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                         }`}
                     >
-                        Color Background
+                        Color
                     </button>
                     <button
                         onClick={() => toggleBackgroundType('nav', 'image')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                             (editingStyle.navBackgroundType === 'image') 
                                 ? 'bg-blue-600 text-white' 
                                 : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                         }`}
                     >
-                        Image Background
+                        Image
+                    </button>
+                    <button
+                        onClick={() => toggleBackgroundType('nav', 'texture')}
+                        data-testid="nav-texture-btn"
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            (editingStyle.navBackgroundType === 'texture') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Texture
                     </button>
                 </div>
+
+                {editingStyle.navBackgroundType === 'texture' && (
+                    <TexturePicker zone="nav" currentTexture={editingStyle.navBackgroundTexture} onSelect={selectTexture} />
+                )}
 
                 {editingStyle.navBackgroundType === 'image' && (
                     <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
