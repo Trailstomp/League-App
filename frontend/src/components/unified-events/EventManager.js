@@ -364,15 +364,16 @@ const EventManager = ({ teams, currentUser, onEventUpdate, onEventClick, initial
                             console.log('📺 showSpectatorView set to true');
                         }}
                         onEventSelect={(event) => {
-                            setSelectedEvent(event);
-                            // Only go to edit mode for admins/coaches, otherwise just view
                             const canEdit = currentUser?.role === 'admin' || 
                                             currentUser?.roles?.includes('admin') || 
                                             currentUser?.roles?.includes('coach');
                             if (canEdit) {
+                                setSelectedEvent(event);
                                 setActiveView('edit');
+                            } else if (onEventClick) {
+                                onEventClick(event);
                             } else {
-                                // For non-admins, just show the live spectator view or a read-only detail
+                                setSelectedEvent(event);
                                 setShowSpectatorView(true);
                             }
                         }}
