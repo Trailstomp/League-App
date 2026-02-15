@@ -1633,27 +1633,16 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
                 {/* Nav Button Border Color */}
                 <div className="mb-6">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Navigation Button Border Color</label>
-                    <div className="flex items-center space-x-3">
-                        <input
-                            type="color"
-                            value={editingStyle.navButtonBorderColor || editingStyle.accentColor || '#3b82f6'}
-                            onChange={(e) => updateStyle({ navButtonBorderColor: e.target.value })}
-                            className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                        />
-                        <input
-                            type="text"
-                            value={editingStyle.navButtonBorderColor || editingStyle.accentColor || '#3b82f6'}
-                            onChange={(e) => {
-                                if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                    updateStyle({ navButtonBorderColor: e.target.value });
-                                }
-                            }}
-                            className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
-                            placeholder="#3b82f6"
-                        />
-                        <button
-                            onClick={() => {
+                    <ColorPickerWithTexture
+                        label="Navigation Button Border Color"
+                        colorValue={editingStyle.navButtonBorderColor || editingStyle.accentColor || '#3b82f6'}
+                        textureValue={editingStyle.navButtonBorderColorTexture}
+                        onColorChange={(val) => updateStyle({ navButtonBorderColor: val, navButtonBorderColorTexture: '' })}
+                        onTextureSelect={(id) => updateStyle({ navButtonBorderColorTexture: id || '' })}
+                        fieldName="navButtonBorder"
+                    />
+                    <button
+                        onClick={() => {
                                 if (editingStyle.navLogoUrl) {
                                     setExtractImageUrl(editingStyle.navLogoUrl);
                                     setShowColorExtractor(true);
