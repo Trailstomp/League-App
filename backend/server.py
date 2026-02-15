@@ -5086,6 +5086,21 @@ async def get_design_templates():
         logger.error(f"Error fetching design templates: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@api_router.get("/design-templates/public")
+async def get_public_design_templates():
+    """Get templates visible to public users (for theme selector)"""
+    try:
+        templates = await db.design_templates.find(
+            {"visibleToUsers": {"$ne": False}},
+            {"_id": 0}
+        ).sort("name", 1).to_list(100)
+        return {"templates": templates}
+    except Exception as e:
+        logger.error(f"Error fetching public templates: {e}")
+        return {"templates": []}
+
+
 @api_router.get("/design-templates/debug")
 async def debug_design_templates():
     """Debug endpoint to check template data integrity"""
