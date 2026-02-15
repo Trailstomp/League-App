@@ -691,13 +691,17 @@ League admins can invite teams to join the league:
    - **Name** (required)
    - **Email** (required)
    - **Phone**
+   - **Role** - Choose "Player" or "Coach"
+3. **If joining as a Player:**
    - **Preferred Position** (Attack, Midfield, Defense, Goalie, etc.)
    - **Desired Jersey Number**
-   - **Experience Level**
-   - **Personal Message**
-3. Click **Submit Request**
-4. You'll receive a confirmation email
-5. Wait for the team admin to review your request
+   - **Playing Experience Level**
+4. **If joining as a Coach:**
+   - **Coaching Experience** (New to Coaching, Assistant Coach, Head Coach, etc.)
+5. Add a **Personal Message** (optional)
+6. Click **Submit Request**
+7. You'll receive a confirmation email
+8. Wait for the team admin to review your request
 
 ### After Approval
 
