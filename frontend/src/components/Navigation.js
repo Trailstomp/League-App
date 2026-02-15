@@ -232,11 +232,14 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
             style={{
                 backgroundColor: websiteStyle.navBackgroundColor || '#ffffff',
                 backgroundImage: websiteStyle.navBackgroundType === 'image' && websiteStyle.navBackgroundImage 
-                    ? `url(${websiteStyle.navBackgroundImage})` 
+                    ? `url(${websiteStyle.navBackgroundImage})`
+                    : websiteStyle.navBackgroundType === 'texture' && websiteStyle.navBackgroundTexture
+                    ? `url(${process.env.REACT_APP_BACKEND_URL}/api/uploads/textures/${websiteStyle.navBackgroundTexture}.png)`
                     : 'none',
-                backgroundSize: 'cover',
+                backgroundSize: websiteStyle.navBackgroundType === 'texture' ? '256px 256px' : 'cover',
                 backgroundPosition: 'center',
-                height: '100%' // Fill parent container
+                backgroundRepeat: websiteStyle.navBackgroundType === 'texture' ? 'repeat' : 'no-repeat',
+                height: '100%'
             }}
         >
             {/* Mobile Close Button */}
