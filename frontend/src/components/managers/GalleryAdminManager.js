@@ -69,7 +69,7 @@ const GalleryAdminManager = ({ teams = [], currentUser }) => {
     const loadGalleries = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${BACKEND_URL}/api/galleries-new`);
+            const response = await fetch(`${BACKEND_URL}/api/galleries`);
             if (response.ok) {
                 const data = await response.json();
                 setGalleries(data.galleries || []);
