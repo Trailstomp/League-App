@@ -110,7 +110,7 @@ const GalleryAdminManager = ({ teams = [], currentUser }) => {
         }
 
         try {
-            const response = await fetch(`${BACKEND_URL}/api/galleries-new/${galleryId}`, {
+            const response = await fetch(`${BACKEND_URL}/api/galleries/${galleryId}`, {
                 method: 'DELETE'
             });
 
