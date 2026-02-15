@@ -2030,28 +2030,14 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         )}
                     </div>
                 ) : (
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
-                        <div className="flex items-center space-x-3">
-                            <input
-                                type="color"
-                                value={editingStyle.mainBackgroundColor || '#f8fafc'}
-                                onChange={(e) => updateStyle({ mainBackgroundColor: e.target.value })}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.mainBackgroundColor || '#f8fafc'}
-                                onChange={(e) => {
-                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                        updateStyle({ mainBackgroundColor: e.target.value });
-                                    }
-                                }}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                placeholder="#f8fafc"
-                            />
-                        </div>
-                    </div>
+                    <ColorPickerWithTexture
+                        label="Background Color"
+                        colorValue={editingStyle.mainBackgroundColor}
+                        textureValue={editingStyle.mainBackgroundColorTexture}
+                        onColorChange={(val) => updateStyle({ mainBackgroundColor: val, mainBackgroundColorTexture: '' })}
+                        onTextureSelect={(id) => updateStyle({ mainBackgroundColorTexture: id || '' })}
+                        fieldName="mainBg"
+                    />
                 )}
             </div>
 
