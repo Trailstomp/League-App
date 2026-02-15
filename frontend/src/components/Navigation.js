@@ -489,6 +489,24 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                             <NavItem icon={<span>🏆</span>} label="Team Admin" pageName="team-admin" />
                         )}
                         <NavItem icon={<span>📚</span>} label="Help & Docs" pageName="help" />
+                        
+                        {/* Install App Button - only show if not already installed */}
+                        {!isInstalled && canInstall && (
+                            <button
+                                onClick={handleInstallClick}
+                                data-testid="install-app-btn"
+                                className="w-full flex items-center px-4 py-3 text-sm font-medium rounded-full transition-all duration-200 hover:shadow-sm hover:transform hover:scale-102 mt-2"
+                                style={{
+                                    color: websiteStyle.menuTextColor || '#64748b',
+                                    backgroundColor: `${websiteStyle.primaryColor || '#3b82f6'}15`,
+                                    border: `2px solid ${websiteStyle.primaryColor || '#3b82f6'}`
+                                }}
+                                title={isCollapsed ? 'Install App' : ''}
+                            >
+                                <span className="flex-shrink-0" style={{fontSize: '20px'}}>📲</span>
+                                {!isCollapsed && <span className="ml-3 font-medium">Install App</span>}
+                            </button>
+                        )}
                     </div>
                     
                     {/* Authentication Actions */}
