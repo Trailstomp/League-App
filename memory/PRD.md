@@ -82,6 +82,17 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] `handleCropComplete` and direct image upload now pass `{ [fieldName]: imageData }` to `handleSave()` so image data is always included
 - [x] Affects: nav background image, banner background image, main background image, logo uploads, all crop completions
 
+### PWA "Add to Home Screen" Feature (Feb 2026)
+- [x] Dynamic manifest.json served from `/api/pwa/manifest.json` with league branding
+- [x] Service worker for offline caching and push notifications
+- [x] "Install App" button in navigation sidebar (shows on mobile and when installable)
+- [x] iOS Safari install instructions modal with step-by-step guide
+- [x] Android Chrome install instructions modal with step-by-step guide
+- [x] Native `beforeinstallprompt` integration for Chrome/Edge
+- [x] InstallPWA banner component with customizable colors in WebsiteDesignManager
+- [x] App icon from league logo or custom PWA icon
+- [x] Shortcuts in manifest for quick access to standings, schedule, etc.
+
 ### Hide External Teams from Public Views (Feb 2026)
 - [x] Fixed: External teams now hidden from sidebar (Navigation.js) and Home Teams page (HomePage.js)
 - [x] Fixed: External teams filtered from Standings page (StandingsTable.js) - both by division and by team flag
