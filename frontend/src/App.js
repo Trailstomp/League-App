@@ -137,11 +137,19 @@ function App() {
   // Enhanced websiteStyle handler with API persistence - memoized to prevent stale closures
   const handleWebsiteStyleChange = React.useCallback(async (newStyle) => {
     try {
-      console.log('🎨 Saving websiteStyle changes:', Object.keys(newStyle).length, 'keys');
+      // Sanitize: only keep string/number/boolean/null values (exclude DOM elements, functions)
+      const sanitized = {};
+      for (const [k, v] of Object.entries(newStyle)) {
+        if (v === null || v === undefined || typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') {
+          sanitized[k] = v;
+        }
+      }
+      
+      console.log('🎨 Saving websiteStyle changes:', Object.keys(sanitized).length, 'keys');
       
       // Update local state immediately
-      setWebsiteStyle(newStyle);
-      setCache(CACHE_KEYS.WEBSITE_STYLE, newStyle); // Update cache
+      setWebsiteStyle(sanitized);
+      setCache(CACHE_KEYS.WEBSITE_STYLE, sanitized);
       
       // Save to API
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/league-data/websiteStyle`, {
@@ -149,7 +157,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(newStyle)
+        body: JSON.stringify(sanitized)
       });
       
       if (response.ok) {
