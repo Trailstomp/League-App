@@ -2302,29 +2302,17 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
                 {editingStyle.cardBackgroundType !== 'transparent' && (
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Card Background Color</label>
-                        <div className="flex items-center space-x-3 mb-3">
-                            <input
-                                type="color"
-                                value={editingStyle.cardBackgroundColor || '#ffffff'}
-                                onChange={(e) => updateStyle({ cardBackgroundColor: e.target.value })}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.cardBackgroundColor || '#ffffff'}
-                                onChange={(e) => {
-                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                        updateStyle({ cardBackgroundColor: e.target.value });
-                                    }
-                                }}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
-                                placeholder="#ffffff"
-                            />
-                        </div>
+                        <ColorPickerWithTexture
+                            label="Card Background Color"
+                            colorValue={editingStyle.cardBackgroundColor || '#ffffff'}
+                            textureValue={editingStyle.cardBackgroundColorTexture}
+                            onColorChange={(val) => updateStyle({ cardBackgroundColor: val, cardBackgroundColorTexture: '' })}
+                            onTextureSelect={(id) => updateStyle({ cardBackgroundColorTexture: id || '' })}
+                            fieldName="cardBg"
+                        />
                         
                         {/* Card Opacity Slider */}
-                        <div className="mb-3">
+                        <div className="mb-3 mt-3">
                             <label className="block text-sm font-medium text-slate-700 mb-2">
                                 Card Opacity: {Math.round((editingStyle.cardBackgroundOpacity || 1) * 100)}%
                             </label>
