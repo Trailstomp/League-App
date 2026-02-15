@@ -392,6 +392,18 @@ function App() {
     
     const pageFromUrl = urlToPage[path] || 'home';
     
+    // Check user's default page preference (from floating prefs bubble)
+    if (pageFromUrl === 'home' && (path === '/' || path === '/home')) {
+      try {
+        const userPrefs = JSON.parse(localStorage.getItem('mlbl_user_prefs')) || {};
+        if (userPrefs.defaultPage && userPrefs.defaultPage !== 'home') {
+          console.log('🏠 Applying default page preference:', userPrefs.defaultPage);
+          setCurrentPage(userPrefs.defaultPage);
+          return;
+        }
+      } catch {}
+    }
+    
     if (pageFromUrl !== currentPage) {
       console.log('🔄 Syncing currentPage with URL:', pageFromUrl);
       setCurrentPage(pageFromUrl);
