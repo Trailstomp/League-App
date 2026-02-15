@@ -338,8 +338,8 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 <div className="h-full flex flex-col items-center justify-center p-2">
                     {!isCollapsed && (
                         <div className="flex flex-col items-center w-full h-full">
-                            {/* Large Logo - fills available space */}
-                            <div className="flex-1 flex items-center justify-center w-full">
+                            {/* Large Logo - fills available space - transparent background */}
+                            <div className="flex-1 flex items-center justify-center w-full" style={{ background: 'transparent' }}>
                                 {websiteStyle.navLogoUrl ? (
                                     <CachedImage 
                                         src={websiteStyle.navLogoUrl} 
@@ -350,7 +350,8 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                             maxHeight: websiteStyle.navLeagueName ? '150px' : '180px',
                                             width: 'auto',
                                             height: 'auto',
-                                            filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))'
+                                            filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))',
+                                            background: 'transparent' // Preserve transparent PNGs
                                         }}
                                         fallback={
                                             <div 
