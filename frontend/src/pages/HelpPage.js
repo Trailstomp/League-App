@@ -460,8 +460,9 @@ Your team's public join page is at \`/join/{your-team-id}\`. Share this link on 
 1. Go to your team page → **Admin** tab
 2. Open the **Recruiting** section
 3. Pending requests show with a badge count
-4. Review each request and click **Approve** or **Decline**
-5. Approved players are auto-added to your roster
+4. **Coach requests** display a purple "Coach" badge so you can distinguish them from player requests
+5. Review each request and click **Approve** or **Decline**
+6. Approved players/coaches are auto-added to your roster
 
 ### Sending Invites
 1. In the Recruiting section, enter a player's email
