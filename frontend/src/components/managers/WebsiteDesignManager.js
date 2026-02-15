@@ -1732,29 +1732,44 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
             {/* Banner Image Upload - NO CROP */}
             <div className="border-t pt-6">
-                <h4 className="text-md font-semibold text-slate-800 mb-4">Banner Background Image</h4>
-                <div className="flex space-x-4 mb-4">
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Banner Background Style</h4>
+                <div className="flex space-x-3 mb-4">
                     <button
                         onClick={() => toggleBackgroundType('banner', 'color')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            (editingStyle.bannerBackgroundType !== 'image') 
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            (editingStyle.bannerBackgroundType === 'color' || (!editingStyle.bannerBackgroundType)) 
                                 ? 'bg-blue-600 text-white' 
                                 : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                         }`}
                     >
-                        Color Background
+                        Color
                     </button>
                     <button
                         onClick={() => toggleBackgroundType('banner', 'image')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                             (editingStyle.bannerBackgroundType === 'image') 
                                 ? 'bg-blue-600 text-white' 
                                 : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                         }`}
                     >
-                        Image Background
+                        Image
+                    </button>
+                    <button
+                        onClick={() => toggleBackgroundType('banner', 'texture')}
+                        data-testid="banner-texture-btn"
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            (editingStyle.bannerBackgroundType === 'texture') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Texture
                     </button>
                 </div>
+
+                {editingStyle.bannerBackgroundType === 'texture' && (
+                    <TexturePicker zone="banner" currentTexture={editingStyle.bannerBackgroundTexture} onSelect={selectTexture} />
+                )}
 
                 {editingStyle.bannerBackgroundType === 'image' && (
                     <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
