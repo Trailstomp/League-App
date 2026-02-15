@@ -53,7 +53,7 @@ const TeamGalleryDisplay = ({ teamId = null, pageType = 'league' }) => {
             
             // Fallback to API call if no cached data
             console.log('📡 Loading galleries from API...');
-            const response = await fetch(`${BACKEND_URL}/api/galleries`);
+            const response = await fetch(`${BACKEND_URL}/api/galleries-new/active`);
             if (response.ok) {
                 const data = await response.json();
                 setGalleries(data.galleries || []);
