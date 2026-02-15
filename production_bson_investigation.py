@@ -6,7 +6,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from environment
-BACKEND_URL = "https://style-recovery.preview.emergentagent.com/api"
+BACKEND_URL = "https://gallery-media-hub.preview.emergentagent.com/api"
 
 def test_api_health():
     """Test if the API is responding"""
