@@ -83,11 +83,32 @@ const HelpPage = () => {
 - **Guest** - Public viewing access
 
 ### 🤝 Player Recruitment
-- **Public Join Pages** - Shareable links for prospective players
+- **Public Join Pages** - Shareable links for prospective players and coaches
 - **Join Request Forms** - Collect player info, position, experience
-- **Admin Approval Flow** - Review, approve, or decline requests
+- **Coach Applications** - Coaches can apply through the same join form with coaching-specific fields
+- **Admin Approval Flow** - Review, approve, or decline requests (Coach badge shown for coach requests)
 - **Email Notifications** - Automatic alerts to coaches and admins on new requests
 - **Player Invites** - Proactively invite players via email
+
+### 🎨 Design & Theming
+- **Background Textures** - 14 tileable textures (wood, metal, leather, turf, brick, stone, and more)
+- **Texture Picker** - Apply textures to any background or color setting throughout the site
+- **Design Templates** - Save, load, and cycle between multiple visual themes
+- **Template Preview** - Mini visual previews of each saved template
+- **Content Text Colors** - Admin-controlled text colors that affect all page content
+
+### ⚙️ User Preferences
+- **Floating Preferences Bubble** - Accessible to all visitors via a button in the bottom-right corner
+- **Theme Selector** - Browse and apply saved design templates instantly
+- **Auto-Rotate Themes** - Toggle between a fixed theme or rotating themes on each visit
+- **Default Landing Page** - Choose which page loads first (Home, Events, Standings, Help)
+- **Persistent Choices** - Preferences saved in browser and restored on return visits
+
+### 📱 Add to Home Screen (PWA)
+- **Install as App** - Add the site to your phone's home screen for a native app experience
+- **Install Button** - One-click install from the sidebar navigation
+- **iOS & Android Support** - Step-by-step instructions for Safari and Chrome
+- **Offline Access** - Basic pages cached for offline viewing
             `
         },
         setup: {
