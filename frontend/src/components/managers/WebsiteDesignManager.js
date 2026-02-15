@@ -2430,26 +2430,14 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
                     {/* Content Text Color */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Content Text Color</label>
-                        <div className="flex items-center space-x-3">
-                            <input
-                                type="color"
-                                value={editingStyle.contentTextColor || '#374151'}
-                                onChange={(e) => updateStyle({ contentTextColor: e.target.value })}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.contentTextColor || '#374151'}
-                                onChange={(e) => {
-                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                        updateStyle({ contentTextColor: e.target.value });
-                                    }
-                                }}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-violet-500"
-                                placeholder="#374151"
-                            />
-                        </div>
+                        <ColorPickerWithTexture
+                            label="Content Text Color"
+                            colorValue={editingStyle.contentTextColor || '#374151'}
+                            textureValue={editingStyle.contentTextColorTexture}
+                            onColorChange={(val) => updateStyle({ contentTextColor: val, contentTextColorTexture: '' })}
+                            onTextureSelect={(id) => updateStyle({ contentTextColorTexture: id || '' })}
+                            fieldName="contentText"
+                        />
                         {/* Quick Colors for Text */}
                         <div className="flex flex-wrap gap-2 mt-2">
                             <button
