@@ -2653,31 +2653,19 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
                 {/* Card Heading Color */}
                 <div className="mt-4">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Card Heading Color</label>
-                    <div className="flex items-center space-x-3">
-                        <input
-                            type="color"
-                            value={editingStyle.cardHeadingColor || '#1f2937'}
-                            onChange={(e) => updateStyle({ cardHeadingColor: e.target.value })}
-                            className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                        />
-                        <input
-                            type="text"
-                            value={editingStyle.cardHeadingColor || '#1f2937'}
-                            onChange={(e) => {
-                                if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                    updateStyle({ cardHeadingColor: e.target.value });
-                                }
-                            }}
-                            className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 max-w-xs"
-                            placeholder="#1f2937"
-                        />
-                        {/* Quick Colors */}
-                        <div className="flex gap-1">
-                            <button onClick={() => updateStyle({ cardHeadingColor: '#000000' })} className="w-6 h-6 rounded border" style={{ backgroundColor: '#000000' }} title="Black" />
-                            <button onClick={() => updateStyle({ cardHeadingColor: '#1f2937' })} className="w-6 h-6 rounded border" style={{ backgroundColor: '#1f2937' }} title="Slate 800" />
-                            <button onClick={() => updateStyle({ cardHeadingColor: '#ffffff' })} className="w-6 h-6 rounded border" style={{ backgroundColor: '#ffffff' }} title="White" />
-                        </div>
+                    <ColorPickerWithTexture
+                        label="Card Heading Color"
+                        colorValue={editingStyle.cardHeadingColor || '#1f2937'}
+                        textureValue={editingStyle.cardHeadingColorTexture}
+                        onColorChange={(val) => updateStyle({ cardHeadingColor: val, cardHeadingColorTexture: '' })}
+                        onTextureSelect={(id) => updateStyle({ cardHeadingColorTexture: id || '' })}
+                        fieldName="cardHeading"
+                    />
+                    {/* Quick Colors */}
+                    <div className="flex gap-1 mt-2">
+                        <button onClick={() => updateStyle({ cardHeadingColor: '#000000' })} className="w-6 h-6 rounded border" style={{ backgroundColor: '#000000' }} title="Black" />
+                        <button onClick={() => updateStyle({ cardHeadingColor: '#1f2937' })} className="w-6 h-6 rounded border" style={{ backgroundColor: '#1f2937' }} title="Slate 800" />
+                        <button onClick={() => updateStyle({ cardHeadingColor: '#ffffff' })} className="w-6 h-6 rounded border" style={{ backgroundColor: '#ffffff' }} title="White" />
                     </div>
                 </div>
             </div>
