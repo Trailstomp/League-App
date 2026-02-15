@@ -639,12 +639,13 @@ You can share this link on social media, flyers, or via email.
 
 ### Approving a Request
 
-1. In the Recruiting section, find the player's request
-2. Review their details (name, email, position, experience, message)
-3. Click **Approve**
-4. The player is automatically:
+1. In the Recruiting section, find the player's or coach's request
+2. Coach requests are marked with a purple **"Coach"** badge
+3. Review their details (name, email, position/experience, message)
+4. Click **Approve**
+5. The person is automatically:
    - Added to your team roster
-   - Given the "player" role
+   - Given the appropriate role ("player" or "coach")
    - Sent an approval email notification
 
 ### Declining a Request
