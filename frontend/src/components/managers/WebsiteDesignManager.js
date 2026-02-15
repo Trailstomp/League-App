@@ -1643,22 +1643,21 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                     />
                     <button
                         onClick={() => {
-                                if (editingStyle.navLogoUrl) {
-                                    setExtractImageUrl(editingStyle.navLogoUrl);
-                                    setShowColorExtractor(true);
-                                }
-                            }}
-                            disabled={!editingStyle.navLogoUrl}
-                            className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                                editingStyle.navLogoUrl 
-                                    ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' 
-                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            }`}
-                            title={editingStyle.navLogoUrl ? 'Extract colors from logo' : 'Upload a logo first'}
-                        >
-                            🎨 From Logo
-                        </button>
-                    </div>
+                            if (editingStyle.navLogoUrl) {
+                                setExtractImageUrl(editingStyle.navLogoUrl);
+                                setShowColorExtractor(true);
+                            }
+                        }}
+                        disabled={!editingStyle.navLogoUrl}
+                        className={`mt-2 px-3 py-2 rounded-lg text-sm font-medium ${
+                            editingStyle.navLogoUrl 
+                                ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' 
+                                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        }`}
+                        title={editingStyle.navLogoUrl ? 'Extract colors from logo' : 'Upload a logo first'}
+                    >
+                        🎨 From Logo
+                    </button>
                     <p className="text-xs text-slate-500 mt-1">Border color for navigation menu buttons. Click "From Logo" to extract accent colors.</p>
                 </div>
             </div>
