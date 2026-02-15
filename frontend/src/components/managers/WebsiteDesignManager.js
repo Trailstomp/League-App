@@ -2507,26 +2507,14 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
                     {/* Card Text Color */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Card Text Color</label>
-                        <div className="flex items-center space-x-3">
-                            <input
-                                type="color"
-                                value={editingStyle.cardTextColor || '#374151'}
-                                onChange={(e) => updateStyle({ cardTextColor: e.target.value })}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.cardTextColor || '#374151'}
-                                onChange={(e) => {
-                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                        updateStyle({ cardTextColor: e.target.value });
-                                    }
-                                }}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500"
-                                placeholder="#374151"
-                            />
-                        </div>
+                        <ColorPickerWithTexture
+                            label="Card Text Color"
+                            colorValue={editingStyle.cardTextColor || '#374151'}
+                            textureValue={editingStyle.cardTextColorTexture}
+                            onColorChange={(val) => updateStyle({ cardTextColor: val, cardTextColorTexture: '' })}
+                            onTextureSelect={(id) => updateStyle({ cardTextColorTexture: id || '' })}
+                            fieldName="cardText"
+                        />
                         {/* Quick Colors for Card Text */}
                         <div className="flex flex-wrap gap-2 mt-2">
                             <button
