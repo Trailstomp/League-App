@@ -2590,27 +2590,15 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
                 {/* Input Text Color */}
                 <div className="mt-4">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Input / Form Text Color</label>
-                    <p className="text-xs text-slate-500 mb-2">Controls the text color inside input fields, dropdowns, and text areas</p>
-                    <div className="flex items-center space-x-3">
-                        <input
-                            type="color"
-                            value={editingStyle.inputTextColor || '#1e293b'}
-                            onChange={(e) => updateStyle({ inputTextColor: e.target.value })}
-                            className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                        />
-                        <input
-                            type="text"
-                            value={editingStyle.inputTextColor || '#1e293b'}
-                            onChange={(e) => {
-                                if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                    updateStyle({ inputTextColor: e.target.value });
-                                }
-                            }}
-                            className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500"
-                            placeholder="#1e293b"
-                        />
-                    </div>
+                    <ColorPickerWithTexture
+                        label="Input / Form Text Color"
+                        colorValue={editingStyle.inputTextColor || '#1e293b'}
+                        textureValue={editingStyle.inputTextColorTexture}
+                        onColorChange={(val) => updateStyle({ inputTextColor: val, inputTextColorTexture: '' })}
+                        onTextureSelect={(id) => updateStyle({ inputTextColorTexture: id || '' })}
+                        fieldName="inputText"
+                    />
+                    <p className="text-xs text-slate-500 mt-1">Controls the text color inside input fields, dropdowns, and text areas</p>
                     <div className="flex flex-wrap gap-2 mt-2">
                         {['#000000', '#1e293b', '#374151', '#6b7280'].map(c => (
                             <button key={c} onClick={() => updateStyle({ inputTextColor: c })}
@@ -2623,27 +2611,15 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
                 {/* Secondary / Subtitle Text Color */}
                 <div className="mt-4">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Secondary / Subtitle Text Color</label>
-                    <p className="text-xs text-slate-500 mb-2">Controls grey labels, descriptions, dates, and other subtitle text</p>
-                    <div className="flex items-center space-x-3">
-                        <input
-                            type="color"
-                            value={editingStyle.secondaryTextColor || '#64748b'}
-                            onChange={(e) => updateStyle({ secondaryTextColor: e.target.value })}
-                            className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                        />
-                        <input
-                            type="text"
-                            value={editingStyle.secondaryTextColor || '#64748b'}
-                            onChange={(e) => {
-                                if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                    updateStyle({ secondaryTextColor: e.target.value });
-                                }
-                            }}
-                            className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500"
-                            placeholder="#64748b"
-                        />
-                    </div>
+                    <ColorPickerWithTexture
+                        label="Secondary / Subtitle Text Color"
+                        colorValue={editingStyle.secondaryTextColor || '#64748b'}
+                        textureValue={editingStyle.secondaryTextColorTexture}
+                        onColorChange={(val) => updateStyle({ secondaryTextColor: val, secondaryTextColorTexture: '' })}
+                        onTextureSelect={(id) => updateStyle({ secondaryTextColorTexture: id || '' })}
+                        fieldName="secondaryText"
+                    />
+                    <p className="text-xs text-slate-500 mt-1">Controls grey labels, descriptions, dates, and other subtitle text</p>
                     <div className="flex flex-wrap gap-2 mt-2">
                         {['#64748b', '#94a3b8', '#cbd5e1', '#e2e8f0', '#ffffff', '#000000'].map(c => (
                             <button key={c} onClick={() => updateStyle({ secondaryTextColor: c })}
@@ -2656,27 +2632,15 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
                 {/* Accent Text Color */}
                 <div className="mt-4">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Accent / Link Text Color</label>
-                    <p className="text-xs text-slate-500 mb-2">Controls colored labels, info text, and section accent text</p>
-                    <div className="flex items-center space-x-3">
-                        <input
-                            type="color"
-                            value={editingStyle.accentTextColor || '#4f46e5'}
-                            onChange={(e) => updateStyle({ accentTextColor: e.target.value })}
-                            className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                        />
-                        <input
-                            type="text"
-                            value={editingStyle.accentTextColor || '#4f46e5'}
-                            onChange={(e) => {
-                                if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                    updateStyle({ accentTextColor: e.target.value });
-                                }
-                            }}
-                            className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500"
-                            placeholder="#4f46e5"
-                        />
-                    </div>
+                    <ColorPickerWithTexture
+                        label="Accent / Link Text Color"
+                        colorValue={editingStyle.accentTextColor || '#4f46e5'}
+                        textureValue={editingStyle.accentTextColorTexture}
+                        onColorChange={(val) => updateStyle({ accentTextColor: val, accentTextColorTexture: '' })}
+                        onTextureSelect={(id) => updateStyle({ accentTextColorTexture: id || '' })}
+                        fieldName="accentText"
+                    />
+                    <p className="text-xs text-slate-500 mt-1">Controls colored labels, info text, and section accent text</p>
                     <div className="flex flex-wrap gap-2 mt-2">
                         {['#4f46e5', '#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ffffff'].map(c => (
                             <button key={c} onClick={() => updateStyle({ accentTextColor: c })}
