@@ -680,30 +680,28 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
     // Optimized toggle to prevent screen flashing
     const toggleBackgroundType = useCallback((zone, type) => {
-        console.log('🔄 Toggling background type for', zone, 'to', type);
-        
         setEditingStyle(prev => {
-            // Only update if actually changing to prevent unnecessary re-renders
             if (prev[`${zone}BackgroundType`] === type) {
-                console.log('🔄 Background type already set, no change needed');
-                return prev; // Return same object to prevent re-render
+                return prev;
             }
-            
             const newState = {
                 ...prev,
                 [`${zone}BackgroundType`]: type,
-                [`${zone}BackgroundImage`]: type === 'color' ? '' : prev[`${zone}BackgroundImage`]
+                [`${zone}BackgroundImage`]: (type === 'color' || type === 'texture') ? '' : prev[`${zone}BackgroundImage`]
             };
-            
-            console.log('🔄 Background type changed:', {
-                zone,
-                oldType: prev[`${zone}BackgroundType`],
-                newType: type
-            });
-            
             return newState;
         });
     }, []);
+
+    // Select texture for a zone
+    const selectTexture = useCallback((zone, textureId) => {
+        setEditingStyle(prev => ({
+            ...prev,
+            [`${zone}BackgroundType`]: 'texture',
+            [`${zone}BackgroundTexture`]: textureId
+        }));
+        setTimeout(() => handleSave(), 500);
+    }, [handleSave]);
 
     // Fixed debounced update - no global timeout interference
     const updateStyle = useCallback((updates) => {
