@@ -865,6 +865,16 @@ function App() {
         {renderPage()}
       </Layout>
       
+      {/* Event Card Popup */}
+      {selectedEventForPopup && (
+        <EventCardPopup
+          event={selectedEventForPopup}
+          onClose={() => setSelectedEventForPopup(null)}
+          teams={teams}
+          websiteStyle={websiteStyle}
+        />
+      )}
+
       {/* Authentication Modal */}
       <AuthModal
         isOpen={showLogin}
