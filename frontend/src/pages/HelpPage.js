@@ -182,6 +182,35 @@ const HelpPage = () => {
 1. Create Twilio account
 2. Get Account SID, Auth Token, Phone Number
 3. Enter in Admin Portal → SMS Settings
+
+### Step 7: Design Templates & Themes
+
+#### Creating Design Templates
+1. Customize your site appearance in **Admin Portal → Website Design**
+2. Click **"Save as Template"** to save the current look
+3. Name your template (e.g., "Game Day Theme", "Off-Season Look")
+4. Toggle **"Visible to Users"** so visitors can select it from the theme picker
+
+#### Background Textures
+1. In any background color setting, click the texture icon
+2. Choose from 14 textures: Leather, Wood, Metal, Carbon Fiber, Concrete, Turf, Brick, Stone, and more
+3. Textures tile seamlessly across the background area
+
+#### Content Text Colors
+1. In Website Design → Typography section
+2. Set **Content Text Color** for body text across all pages
+3. Set **Card Heading Color** for headings
+4. Changes apply immediately to all page content
+
+### Step 8: PWA Setup (Add to Home Screen)
+
+#### How It Works
+The site automatically serves as a Progressive Web App (PWA). Users can install it on their phone for a native app experience.
+
+#### For Users
+1. Look for the **"Install App"** button in the sidebar navigation
+2. On iOS Safari: tap Share → "Add to Home Screen"
+3. On Android Chrome: tap the install prompt or use the menu
             `
         },
         admin: {
