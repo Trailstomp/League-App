@@ -1709,58 +1709,22 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
             <div className="border-t pt-6">
                 <h4 className="text-md font-semibold text-slate-800 mb-4">Banner Colors</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
-                        <div className="flex items-center space-x-3">
-                            <input
-                                type="color"
-                                value={editingStyle.bannerBackgroundColor || '#1e40af'}
-                                onChange={(e) => {
-                                    console.log('🎨 Banner background color changed to:', e.target.value);
-                                    updateStyle({ bannerBackgroundColor: e.target.value });
-                                }}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.bannerBackgroundColor || '#1e40af'}
-                                onChange={(e) => {
-                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                        console.log('🎨 Banner background color (text) changed to:', e.target.value);
-                                        updateStyle({ bannerBackgroundColor: e.target.value });
-                                    }
-                                }}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                placeholder="#1e40af"
-                            />
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
-                        <div className="flex items-center space-x-3">
-                            <input
-                                type="color"
-                                value={editingStyle.bannerTextColor || '#ffffff'}
-                                onChange={(e) => {
-                                    console.log('🎨 Banner text color changed to:', e.target.value);
-                                    updateStyle({ bannerTextColor: e.target.value });
-                                }}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.bannerTextColor || '#ffffff'}
-                                onChange={(e) => {
-                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                        console.log('🎨 Banner text color (text) changed to:', e.target.value);
-                                        updateStyle({ bannerTextColor: e.target.value });
-                                    }
-                                }}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                placeholder="#ffffff"
-                            />
-                        </div>
-                    </div>
+                    <ColorPickerWithTexture
+                        label="Background Color"
+                        colorValue={editingStyle.bannerBackgroundColor}
+                        textureValue={editingStyle.bannerBackgroundColorTexture}
+                        onColorChange={(val) => updateStyle({ bannerBackgroundColor: val, bannerBackgroundColorTexture: '' })}
+                        onTextureSelect={(id) => updateStyle({ bannerBackgroundColorTexture: id || '' })}
+                        fieldName="bannerBg"
+                    />
+                    <ColorPickerWithTexture
+                        label="Text Color"
+                        colorValue={editingStyle.bannerTextColor}
+                        textureValue={editingStyle.bannerTextColorTexture}
+                        onColorChange={(val) => updateStyle({ bannerTextColor: val, bannerTextColorTexture: '' })}
+                        onTextureSelect={(id) => updateStyle({ bannerTextColorTexture: id || '' })}
+                        fieldName="bannerText"
+                    />
                 </div>
             </div>
 
