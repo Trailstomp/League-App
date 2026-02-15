@@ -6,6 +6,53 @@ import ColorExtractor from '../ColorExtractor';
 import SimpleCropTool from '../SimpleCropTool';
 import TickerManager from './TickerManager';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+// Available texture options
+const TEXTURES = [
+    { id: 'leather', name: 'Leather', file: 'leather.png' },
+    { id: 'wood', name: 'Wood', file: 'wood.png' },
+    { id: 'metal', name: 'Metal', file: 'metal.png' },
+    { id: 'carbon', name: 'Carbon Fiber', file: 'carbon.png' },
+    { id: 'concrete', name: 'Concrete', file: 'concrete.png' },
+    { id: 'diamond_plate', name: 'Diamond Plate', file: 'diamond_plate.png' },
+    { id: 'turf', name: 'Turf', file: 'turf.png' },
+    { id: 'brick', name: 'Brick', file: 'brick.png' },
+];
+
+const getTextureUrl = (textureId) => {
+    const t = TEXTURES.find(tx => tx.id === textureId);
+    return t ? `${BACKEND_URL}/api/uploads/textures/${t.file}` : '';
+};
+
+// Texture picker grid
+const TexturePicker = ({ zone, currentTexture, onSelect }) => (
+    <div className="grid grid-cols-4 gap-2 mt-3">
+        {TEXTURES.map(t => {
+            const url = `${BACKEND_URL}/api/uploads/textures/${t.file}`;
+            const isActive = currentTexture === t.id;
+            return (
+                <button
+                    key={t.id}
+                    onClick={() => onSelect(zone, t.id)}
+                    data-testid={`texture-${zone}-${t.id}`}
+                    className={`relative rounded-lg overflow-hidden border-2 transition-all ${
+                        isActive ? 'border-blue-500 ring-2 ring-blue-300 scale-105' : 'border-slate-200 hover:border-slate-400'
+                    }`}
+                    style={{ aspectRatio: '16/9' }}
+                >
+                    <img src={url} alt={t.name} className="w-full h-full object-cover" />
+                    <div className={`absolute inset-x-0 bottom-0 py-0.5 text-center text-xs font-medium ${
+                        isActive ? 'bg-blue-600 text-white' : 'bg-black/60 text-white'
+                    }`}>
+                        {t.name}
+                    </div>
+                </button>
+            );
+        })}
+    </div>
+);
+
 // Visual properties that should be reset when switching templates
 // (identity props like league name, logo, titles are preserved from current style)
 const VISUAL_RESET = {
