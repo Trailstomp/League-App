@@ -96,11 +96,28 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Permission-based: Upload/Add buttons only visible to authorized users (admin, coach)
 
 ### Background Textures Feature (Feb 2026)
-- [x] 8 tileable textures: Leather, Wood, Metal, Carbon Fiber, Concrete, Diamond Plate, Turf, Brick
+- [x] 14 tileable textures: Leather, Wood, Wood Vertical, Metal, Carbon Fiber, Concrete, Diamond Plate, Turf, Brick, Stone, Rock, Tree Bark, Dirt, Leaves
 - [x] Texture option added to Nav, Banner, and Main Content background selectors (Color | Image | Texture)
 - [x] TexturePicker grid component with visual preview thumbnails and active state highlighting
 - [x] Textures render as repeating tiled backgrounds at 256px tiles
 - [x] Supported in Layout.js (main bg, banner), Navigation.js (sidebar), and WebsiteDesignManager.js (admin UI)
+
+### ColorPickerWithTexture Integration (Feb 2026)
+- [x] Created unified `ColorPickerWithTexture` component - drop-in replacement for all color inputs
+- [x] Toggle between color picker and texture grid with one-click button
+- [x] Shows texture name when texture is selected, color hex when using color
+- [x] "Clear texture" (X) button to revert to color mode
+- [x] Integrated into 19+ color pickers across WebsiteDesignManager.js sections:
+  - Navigation: background color, text color
+  - Sidebar/Menu: background color, text color
+  - Banner: background color, text color
+  - Main Content: background color, text color
+  - Content Area: background color
+  - Cards: background color, text color, heading color
+  - Forms: input text, secondary text, accent text
+  - Nav buttons: border color
+  - PWA: theme color, background color, install banner colors
+- [x] All textures available in every color picker (backgrounds + text colors where applicable)
 
 ### Documentation (Feb 14, 2026)
 - [x] Updated all 9 help docs from v1.0 (Jan 2025) to v2.0
