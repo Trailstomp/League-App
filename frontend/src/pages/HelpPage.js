@@ -397,6 +397,8 @@ As a **Coach**, you manage your team's roster, events, and settings.
 ✅ Manage team settings
 ✅ Recruit new players via join requests
 ✅ Send player invites via email
+✅ Upload photos and manage team media
+✅ Review coach and player join requests
 
 ---
 
