@@ -3426,40 +3426,26 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Theme Color</label>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="color"
-                                value={editingStyle.pwaThemeColor || '#1e40af'}
-                                onChange={(e) => updateStyle({ pwaThemeColor: e.target.value })}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.pwaThemeColor || '#1e40af'}
-                                onChange={(e) => updateStyle({ pwaThemeColor: e.target.value })}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
-                            />
-                        </div>
+                        <ColorPickerWithTexture
+                            label="Theme Color"
+                            colorValue={editingStyle.pwaThemeColor || '#1e40af'}
+                            textureValue={editingStyle.pwaThemeColorTexture}
+                            onColorChange={(val) => updateStyle({ pwaThemeColor: val, pwaThemeColorTexture: '' })}
+                            onTextureSelect={(id) => updateStyle({ pwaThemeColorTexture: id || '' })}
+                            fieldName="pwaTheme"
+                        />
                         <p className="text-xs text-slate-500 mt-1">Status bar and title bar color</p>
                     </div>
                     
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Background Color</label>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="color"
-                                value={editingStyle.pwaBackgroundColor || '#f8fafc'}
-                                onChange={(e) => updateStyle({ pwaBackgroundColor: e.target.value })}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.pwaBackgroundColor || '#f8fafc'}
-                                onChange={(e) => updateStyle({ pwaBackgroundColor: e.target.value })}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
-                            />
-                        </div>
+                        <ColorPickerWithTexture
+                            label="Background Color"
+                            colorValue={editingStyle.pwaBackgroundColor || '#f8fafc'}
+                            textureValue={editingStyle.pwaBackgroundColorTexture}
+                            onColorChange={(val) => updateStyle({ pwaBackgroundColor: val, pwaBackgroundColorTexture: '' })}
+                            onTextureSelect={(id) => updateStyle({ pwaBackgroundColorTexture: id || '' })}
+                            fieldName="pwaBg"
+                        />
                         <p className="text-xs text-slate-500 mt-1">Splash screen background when app loads</p>
                     </div>
                 </div>
