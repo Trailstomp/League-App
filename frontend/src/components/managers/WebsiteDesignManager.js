@@ -3129,13 +3129,6 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                             onTextureSelect={(id) => updateStyle({ menuTextColorTexture2: id || '' })}
                             fieldName="menuText2"
                         />
-                                        updateStyle({ menuTextColor: e.target.value });
-                                    }
-                                }}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
-                                placeholder="#374151"
-                            />
-                        </div>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-2">Button Transparency</label>
