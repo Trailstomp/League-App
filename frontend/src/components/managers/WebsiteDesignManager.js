@@ -2141,25 +2141,15 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                     </div>
                 ) : (
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Content Area Background Color</label>
-                        <div className="flex items-center space-x-3 mb-3">
-                            <input
-                                type="color"
-                                value={editingStyle.contentBackgroundColor || '#ffffff'}
-                                onChange={(e) => updateStyle({ contentBackgroundColor: e.target.value })}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.contentBackgroundColor || '#ffffff'}
-                                onChange={(e) => {
-                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                        updateStyle({ contentBackgroundColor: e.target.value });
-                                    }
-                                }}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                                placeholder="#ffffff"
-                            />
+                        <ColorPickerWithTexture
+                            label="Content Area Background Color"
+                            colorValue={editingStyle.contentBackgroundColor || '#ffffff'}
+                            textureValue={editingStyle.contentBackgroundColorTexture}
+                            onColorChange={(val) => updateStyle({ contentBackgroundColor: val, contentBackgroundColorTexture: '' })}
+                            onTextureSelect={(id) => updateStyle({ contentBackgroundColorTexture: id || '' })}
+                            fieldName="contentBg"
+                        />
+                        <div className="flex items-center gap-2 mt-2">
                             {/* Extract colors from logo button */}
                             {editingStyle.navLogoUrl && (
                                 <button
@@ -2173,7 +2163,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         </div>
                         
                         {/* Quick Color Palette - Theme colors */}
-                        <div className="mb-3">
+                        <div className="mb-3 mt-3">
                             <label className="block text-xs font-medium text-slate-500 mb-2">Quick Colors (from theme)</label>
                             <div className="flex flex-wrap gap-2">
                                 {/* White - Default */}
