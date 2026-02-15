@@ -611,10 +611,10 @@ This guide covers the complete workflow for recruiting new players to your team 
 The recruitment flow has three steps:
 
 1. **Share** a public join link for your team
-2. **Prospective player** fills out the join request form
+2. **Prospective player or coach** fills out the join request form
 3. **Coach/Admin** reviews and approves or declines the request
 
-When a request is submitted, team admins and coaches receive an **email notification** automatically. When a decision is made, the player receives an email with the result.
+When a request is submitted, team admins and coaches receive an **email notification** automatically. When a decision is made, the player/coach receives an email with the result.
 
 ---
 
