@@ -3093,28 +3093,14 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         )}
                     </div>
                 ) : (
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
-                        <div className="flex items-center space-x-3">
-                            <input
-                                type="color"
-                                value={editingStyle.menuBackgroundColor || '#ffffff'}
-                                onChange={(e) => updateStyle({ menuBackgroundColor: e.target.value })}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.menuBackgroundColor || '#ffffff'}
-                                onChange={(e) => {
-                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                        updateStyle({ menuBackgroundColor: e.target.value });
-                                    }
-                                }}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                placeholder="#ffffff"
-                            />
-                        </div>
-                    </div>
+                    <ColorPickerWithTexture
+                        label="Background Color"
+                        colorValue={editingStyle.menuBackgroundColor || '#ffffff'}
+                        textureValue={editingStyle.menuBackgroundColorTexture2}
+                        onColorChange={(val) => updateStyle({ menuBackgroundColor: val, menuBackgroundColorTexture2: '' })}
+                        onTextureSelect={(id) => updateStyle({ menuBackgroundColorTexture2: id || '' })}
+                        fieldName="menuBg2"
+                    />
                 )}
             </div>
 
@@ -3135,19 +3121,14 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
-                        <div className="flex items-center space-x-3">
-                            <input
-                                type="color"
-                                value={editingStyle.menuTextColor || '#374151'}
-                                onChange={(e) => updateStyle({ menuTextColor: e.target.value })}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.menuTextColor || '#374151'}
-                                onChange={(e) => {
-                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+                        <ColorPickerWithTexture
+                            label="Text Color"
+                            colorValue={editingStyle.menuTextColor || '#374151'}
+                            textureValue={editingStyle.menuTextColorTexture2}
+                            onColorChange={(val) => updateStyle({ menuTextColor: val, menuTextColorTexture2: '' })}
+                            onTextureSelect={(id) => updateStyle({ menuTextColorTexture2: id || '' })}
+                            fieldName="menuText2"
+                        />
                                         updateStyle({ menuTextColor: e.target.value });
                                     }
                                 }}
