@@ -199,18 +199,24 @@ const Layout = ({
 
     // Get dynamic background style for the outer container
     const getBackgroundStyle = () => {
-        const style = {};
-        
-        if (websiteStyle.mainBackgroundType === 'image' && websiteStyle.mainBackgroundImage) {
-            style.backgroundImage = `url(${websiteStyle.mainBackgroundImage})`;
-            style.backgroundSize = 'cover';
-            style.backgroundPosition = 'center';
-            style.backgroundColor = 'rgba(248, 250, 252, 0.9)'; // Fallback with opacity
-        } else {
-            style.backgroundColor = websiteStyle.mainBackgroundColor || '#f8fafc';
+        if (websiteStyle.mainBackgroundType === 'texture' && websiteStyle.mainBackgroundTexture) {
+            return {
+                backgroundImage: `url(${BACKEND_URL}/api/uploads/textures/${websiteStyle.mainBackgroundTexture}.png)`,
+                backgroundSize: '256px 256px',
+                backgroundRepeat: 'repeat',
+                backgroundPosition: 'top left',
+                backgroundColor: websiteStyle.mainBackgroundColor || '#f8fafc'
+            };
         }
-        
-        return style;
+        if (websiteStyle.mainBackgroundType === 'image' && websiteStyle.mainBackgroundImage) {
+            return {
+                backgroundImage: `url(${websiteStyle.mainBackgroundImage})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundColor: 'rgba(248, 250, 252, 0.9)'
+            };
+        }
+        return { backgroundColor: websiteStyle.mainBackgroundColor || '#f8fafc' };
     };
 
     // Get content area background style (the "white" area user mentioned)
