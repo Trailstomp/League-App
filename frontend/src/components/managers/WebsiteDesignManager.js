@@ -53,6 +53,96 @@ const TexturePicker = ({ zone, currentTexture, onSelect }) => (
     </div>
 );
 
+// Unified color picker with texture option — drop-in replacement for all color inputs
+const ColorPickerWithTexture = ({ label, colorValue, textureValue, onColorChange, onTextureSelect, fieldName }) => {
+    const [showTextures, setShowTextures] = useState(false);
+    const isTexture = !!textureValue;
+    const textureObj = isTexture ? TEXTURES.find(t => t.id === textureValue) : null;
+
+    return (
+        <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">{label}</label>
+            <div className="flex items-center gap-2">
+                {isTexture ? (
+                    <div
+                        className="w-12 h-10 rounded border border-slate-300 cursor-pointer overflow-hidden"
+                        style={{ backgroundImage: `url(${BACKEND_URL}/api/uploads/textures/${textureValue}.png)`, backgroundSize: '48px' }}
+                        onClick={() => setShowTextures(!showTextures)}
+                        title={textureObj?.name || textureValue}
+                    />
+                ) : (
+                    <input
+                        type="color"
+                        value={colorValue || '#ffffff'}
+                        onChange={(e) => onColorChange(e.target.value)}
+                        className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
+                    />
+                )}
+                {isTexture ? (
+                    <div className="flex-1 px-3 py-2 border border-slate-300 rounded-lg bg-slate-50 text-sm text-slate-600 truncate">
+                        {textureObj?.name || textureValue}
+                    </div>
+                ) : (
+                    <input
+                        type="text"
+                        value={colorValue || '#ffffff'}
+                        onChange={(e) => {
+                            if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) onColorChange(e.target.value);
+                        }}
+                        className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        placeholder="#ffffff"
+                    />
+                )}
+                <button
+                    onClick={() => setShowTextures(!showTextures)}
+                    title="Toggle texture"
+                    className={`w-10 h-10 rounded border flex items-center justify-center transition-colors flex-shrink-0 ${
+                        showTextures ? 'bg-blue-100 border-blue-400 text-blue-600' : 'border-slate-300 text-slate-500 hover:bg-slate-100'
+                    }`}
+                >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                        <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
+                    </svg>
+                </button>
+                {isTexture && (
+                    <button
+                        onClick={() => onTextureSelect(null)}
+                        title="Clear texture, use color"
+                        className="w-10 h-10 rounded border border-slate-300 text-red-500 hover:bg-red-50 flex items-center justify-center flex-shrink-0 text-xs font-bold"
+                    >
+                        X
+                    </button>
+                )}
+            </div>
+            {showTextures && (
+                <div className="grid grid-cols-4 gap-1.5 mt-2">
+                    {TEXTURES.map(t => {
+                        const url = `${BACKEND_URL}/api/uploads/textures/${t.file}`;
+                        const isActive = textureValue === t.id;
+                        return (
+                            <button
+                                key={t.id}
+                                onClick={() => { onTextureSelect(t.id); setShowTextures(false); }}
+                                data-testid={`txpick-${fieldName}-${t.id}`}
+                                className={`relative rounded overflow-hidden border-2 transition-all ${
+                                    isActive ? 'border-blue-500 ring-1 ring-blue-300' : 'border-slate-200 hover:border-slate-400'
+                                }`}
+                                style={{ aspectRatio: '3/2' }}
+                            >
+                                <img src={url} alt={t.name} className="w-full h-full object-cover" />
+                                <div className="absolute inset-x-0 bottom-0 py-px text-center text-[9px] font-medium bg-black/60 text-white">
+                                    {t.name}
+                                </div>
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+};
+
 // Visual properties that should be reset when switching templates
 // (identity props like league name, logo, titles are preserved from current style)
 const VISUAL_RESET = {
