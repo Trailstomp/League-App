@@ -232,7 +232,8 @@ import { isAdmin, isCoach, hasPermission } from './PermissionsSystem';
 const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, teams = [], websiteStyle = {}, onMobileClose, onCollapseChange }) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [showIOSInstructions, setShowIOSInstructions] = useState(false);
-    const { canInstall, isInstalled, isIOS, promptInstall } = usePWAInstall();
+    const [showAndroidInstructions, setShowAndroidInstructions] = useState(false);
+    const { canInstall, isInstalled, isIOS, isMobile, hasPrompt, promptInstall } = usePWAInstall();
 
     // Notify parent when collapse state changes
     useEffect(() => {
@@ -242,10 +243,14 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
     }, [isCollapsed, onCollapseChange]);
 
     const handleInstallClick = () => {
-        if (isIOS) {
-            setShowIOSInstructions(true);
-        } else {
+        if (hasPrompt) {
+            // Chrome/Edge with beforeinstallprompt
             promptInstall();
+        } else if (isIOS) {
+            setShowIOSInstructions(true);
+        } else if (isMobile) {
+            // Android without prompt (show instructions)
+            setShowAndroidInstructions(true);
         }
     };
 
