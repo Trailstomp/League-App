@@ -538,6 +538,81 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
             </div>
 
             {/* Authentication moved above - this section removed */}
+            
+            {/* iOS Install Instructions Modal */}
+            {showIOSInstructions && (
+                <div 
+                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+                    onClick={() => setShowIOSInstructions(false)}
+                >
+                    <div 
+                        className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-bold text-slate-800">Add to Home Screen</h3>
+                            <button 
+                                onClick={() => setShowIOSInstructions(false)}
+                                className="text-slate-400 hover:text-slate-600"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center shadow">
+                                {websiteStyle.pwaIconUrl || websiteStyle.navLogoUrl ? (
+                                    <img 
+                                        src={websiteStyle.pwaIconUrl || websiteStyle.navLogoUrl} 
+                                        alt="App" 
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-3xl">📱</span>
+                                )}
+                            </div>
+                            <div>
+                                <div className="font-semibold text-slate-800">
+                                    {websiteStyle.pwaAppName || websiteStyle.navLeagueName || 'Install App'}
+                                </div>
+                                <div className="text-sm text-slate-500">
+                                    {websiteStyle.pwaShortName || 'App'}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="space-y-3 text-sm text-slate-700">
+                            <div className="flex items-start gap-3">
+                                <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 font-bold text-xs">1</div>
+                                <div>
+                                    Tap the <strong>Share</strong> button 
+                                    <span className="inline-flex items-center ml-1">
+                                        <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2L12 14M12 2L8 6M12 2L16 6M4 14V20H20V14" stroke="currentColor" strokeWidth="2" fill="none"/>
+                                        </svg>
+                                    </span>
+                                    at the bottom of Safari
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 font-bold text-xs">2</div>
+                                <div>Scroll down and tap <strong>"Add to Home Screen"</strong></div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 font-bold text-xs">3</div>
+                                <div>Tap <strong>"Add"</strong> in the top right corner</div>
+                            </div>
+                        </div>
+                        
+                        <button
+                            onClick={() => setShowIOSInstructions(false)}
+                            className="w-full mt-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
+                        >
+                            Got it!
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
