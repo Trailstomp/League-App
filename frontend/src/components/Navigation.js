@@ -625,6 +625,83 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                     </div>
                 </div>
             )}
+            
+            {/* Android Install Instructions Modal */}
+            {showAndroidInstructions && (
+                <div 
+                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+                    onClick={() => setShowAndroidInstructions(false)}
+                >
+                    <div 
+                        className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-bold text-slate-800">Add to Home Screen</h3>
+                            <button 
+                                onClick={() => setShowAndroidInstructions(false)}
+                                className="text-slate-400 hover:text-slate-600"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center shadow">
+                                {websiteStyle.pwaIconUrl || websiteStyle.navLogoUrl ? (
+                                    <img 
+                                        src={websiteStyle.pwaIconUrl || websiteStyle.navLogoUrl} 
+                                        alt="App" 
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-3xl">📱</span>
+                                )}
+                            </div>
+                            <div>
+                                <div className="font-semibold text-slate-800">
+                                    {websiteStyle.pwaAppName || websiteStyle.navLeagueName || 'Install App'}
+                                </div>
+                                <div className="text-sm text-slate-500">
+                                    {websiteStyle.pwaShortName || 'App'}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="space-y-3 text-sm text-slate-700">
+                            <div className="flex items-start gap-3">
+                                <div className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 font-bold text-xs">1</div>
+                                <div>
+                                    Tap the <strong>Menu</strong> button 
+                                    <span className="inline-flex items-center ml-1">
+                                        <svg className="w-5 h-5 text-slate-600" fill="currentColor" viewBox="0 0 24 24">
+                                            <circle cx="12" cy="5" r="2"/>
+                                            <circle cx="12" cy="12" r="2"/>
+                                            <circle cx="12" cy="19" r="2"/>
+                                        </svg>
+                                    </span>
+                                    in Chrome (top right)
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <div className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 font-bold text-xs">2</div>
+                                <div>Tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <div className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 font-bold text-xs">3</div>
+                                <div>Tap <strong>"Install"</strong> or <strong>"Add"</strong></div>
+                            </div>
+                        </div>
+                        
+                        <button
+                            onClick={() => setShowAndroidInstructions(false)}
+                            className="w-full mt-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors"
+                        >
+                            Got it!
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
