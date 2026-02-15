@@ -654,7 +654,12 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
                                 {pendingRequests.map(request => (
                                     <div key={request.id} className="p-4 flex items-center justify-between">
                                         <div>
-                                            <div className="font-medium text-slate-800">{request.name || request.email}</div>
+                                            <div className="font-medium text-slate-800">
+                                                {request.name || request.email}
+                                                {request.requestedRole === 'coach' && (
+                                                    <span className="ml-2 px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-medium" data-testid="coach-badge">Coach</span>
+                                                )}
+                                            </div>
                                             <div className="text-sm text-slate-500">{request.email}</div>
                                             {request.message && (
                                                 <div className="text-sm text-slate-600 mt-1 italic">&quot;{request.message}&quot;</div>
