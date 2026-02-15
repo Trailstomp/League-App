@@ -53,6 +53,7 @@ const UnifiedEventsPage = ({ teams, currentUser, onNavigate, onEventClick, sport
                 teams={teams}
                 currentUser={currentUser}
                 onEventUpdate={handleEventUpdate}
+                onEventClick={onEventClick}
                 initialEvents={events}
                 onNavigate={onNavigate}
                 sportType={sportType}
