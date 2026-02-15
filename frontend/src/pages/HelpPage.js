@@ -131,6 +131,9 @@ const HelpPage = () => {
 - **Ticker Settings** - Configure event ticker speed, colors, filters
 - **Logo** - Upload your league logo
 - **Primary Colors** - Set league-wide color scheme
+- **Background Textures** - Choose from 14 textures (wood, metal, leather, turf, brick, stone, etc.) for any background area
+- **Content Text Colors** - Set heading, body, and secondary text colors that apply across all pages
+- **Design Templates** - Save your style as a template, create multiple themes for users to choose from
 
 ### Step 3: Team Setup
 
