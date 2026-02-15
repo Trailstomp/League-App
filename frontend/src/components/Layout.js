@@ -350,15 +350,10 @@ const Layout = ({
                         className="flex items-center justify-between px-4 relative"
                         style={{
                             height: '56px',
-                            backgroundColor: websiteStyle.bannerBackgroundType === 'image' ? 'transparent' : (websiteStyle.bannerBackgroundColor || websiteStyle.primaryColor || '#1e40af'),
-                            backgroundImage: websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage 
-                                ? `url(${websiteStyle.bannerBackgroundImage})` 
-                                : 'none',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center'
+                            ...getZoneBgStyle(websiteStyle, 'banner')
                         }}
                     >
-                        {websiteStyle.bannerBackgroundType === 'image' && websiteStyle.bannerBackgroundImage && (
+                        {(websiteStyle.bannerBackgroundType === 'image' || websiteStyle.bannerBackgroundType === 'texture') && (websiteStyle.bannerBackgroundImage || websiteStyle.bannerBackgroundTexture) && (
                             <div className="absolute inset-0 bg-black bg-opacity-40 z-0"></div>
                         )}
                         <div className="flex items-center space-x-3 relative z-10">
