@@ -95,6 +95,13 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Features: multi-file upload, YouTube embed preview, image lightbox, delete with confirmation
 - [x] Permission-based: Upload/Add buttons only visible to authorized users (admin, coach)
 
+### Background Textures Feature (Feb 2026)
+- [x] 8 tileable textures: Leather, Wood, Metal, Carbon Fiber, Concrete, Diamond Plate, Turf, Brick
+- [x] Texture option added to Nav, Banner, and Main Content background selectors (Color | Image | Texture)
+- [x] TexturePicker grid component with visual preview thumbnails and active state highlighting
+- [x] Textures render as repeating tiled backgrounds at 256px tiles
+- [x] Supported in Layout.js (main bg, banner), Navigation.js (sidebar), and WebsiteDesignManager.js (admin UI)
+
 ### Documentation (Feb 14, 2026)
 - [x] Updated all 9 help docs from v1.0 (Jan 2025) to v2.0
 - [x] Added: Tournament brackets, PWA, File Manager, Email Composer, Recruiting, Dynamic Theming, Google OAuth, clickable admin dashboard, mobile ticker, news square images
