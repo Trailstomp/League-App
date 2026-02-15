@@ -789,12 +789,16 @@ Once approved, you'll:
 | Feature | Admin | League Admin | Coach | Player | Guest |
 |---------|:-----:|:------------:|:-----:|:------:|:-----:|
 | View public content | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Change site theme (prefs) | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Install as app (PWA) | ✅ | ✅ | ✅ | ✅ | ✅ |
 | RSVP to events | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Manage team roster | ✅ | ✅ | ✅* | ❌ | ❌ |
 | Create events | ✅ | ✅ | ✅* | ❌ | ❌ |
 | Live scoring | ✅ | ✅ | ✅* | ❌ | ❌ |
 | Approve join requests | ✅ | ✅ | ✅* | ❌ | ❌ |
 | Send player invites | ✅ | ✅ | ✅* | ❌ | ❌ |
+| Upload team media | ✅ | ✅ | ✅* | ❌ | ❌ |
+| Design templates/textures | ✅ | ❌ | ❌ | ❌ | ❌ |
 | User management | ✅ | ⚠️ | ❌ | ❌ | ❌ |
 | System settings | ✅ | ❌ | ❌ | ❌ | ❌ |
 
