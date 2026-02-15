@@ -534,6 +534,36 @@ On your player card back:
 
 ### Career Stats by Year
 Scroll down on card to see year-by-year breakdown
+
+---
+
+## Site Preferences
+
+### Changing the Theme
+1. Click the **floating settings button** in the bottom-right corner of any page
+2. Browse available themes in the **Themes** tab
+3. Click a theme to apply it instantly
+4. Toggle **"Auto-Rotate Themes"** to get a fresh look on each visit
+
+### Setting Your Default Page
+1. Open the preferences bubble (bottom-right button)
+2. Go to the **Default Page** tab
+3. Choose which page loads first when you visit the site (Home, Events, Standings, or Help)
+
+Your preferences are saved automatically and persist across visits.
+
+---
+
+## Add to Home Screen
+
+### Install as App
+You can install this site as an app on your phone for quick access:
+
+1. Look for the **"Install App"** button in the navigation sidebar
+2. **iPhone (Safari):** Tap the Share button → "Add to Home Screen"
+3. **Android (Chrome):** Tap the install banner or use Menu → "Add to Home Screen"
+
+The app icon will appear on your home screen for easy one-tap access.
             `
         },
         guest: {
