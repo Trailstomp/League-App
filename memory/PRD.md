@@ -12,16 +12,17 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Recruiting module (auto-creates teams/players on approval)
 - [x] Email module (compose, recipients, history, team-level SMTP)
 
-### Documents / File Manager
-- [x] Dual provider: Google Drive + OneDrive/Office 365
-- [x] File browser: folders, upload, download, create, delete
-
-### Design & Theming System
-- [x] CSS variables for dynamic theming
-- [x] Design template cycling (random, daily)
-- [x] Background Textures (14 textures) + ColorPickerWithTexture
-- [x] Dynamic favicon, PWA manifest
-- [x] Content Text Color CSS fix (admin settings affect all page text)
+### Event Card Popup (Feb 15, 2026)
+- [x] Clicking any event (ticker or Events page) opens a polished popup modal
+- [x] Shows: event type badge, title, date, scores (for games), time, location, status, description
+- [x] Embedded Google Maps iframe for the event location
+- [x] "Open in Google Maps" direct link
+- [x] Add to Calendar: Google Calendar button + iCal/Outlook (.ics download)
+- [x] Print button opens print-friendly version in new window
+- [x] Download button saves event card as HTML file
+- [x] Close via X button or clicking backdrop
+- [x] Non-admin users see popup; admins see edit view
+- [x] All 8 backend + frontend tests passed
 
 ### Floating User Preferences Bubble (Feb 15, 2026)
 - [x] FAB button, theme selector, auto-rotate toggle, default landing page
@@ -31,20 +32,23 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Coach role on Join Team page, backend saves requestedRole
 - [x] Logo transparent background, team sorting
 
+### CSS Text Color Fix (Feb 15, 2026)
+- [x] Admin Content Text Color and Card Heading Color settings now affect page text
+
 ### User Guide Updates (Feb 15, 2026)
-- [x] Feature Brochure: Added Design & Theming, User Preferences, PWA, Coach Applications sections
-- [x] Setup Guide: Added Design Templates, Background Textures, Content Text Colors, PWA Setup steps
-- [x] Admin Guide: Added Design & Theming section (textures, text colors, templates, user preferences bubble)
-- [x] Coach Guide: Updated What You Can Do list, updated join request review (Coach badge)
-- [x] Player Guide: Added Site Preferences and Add to Home Screen sections
-- [x] Guest Guide: Updated What You Can See list, added Personalizing Your Experience section
-- [x] Recruitment Guide: Updated to include Coach role throughout (form, approval, flow overview)
-- [x] Quick Reference: Added 4 new rows to permissions table (theme, PWA, media, design templates)
-- [x] Quick Reference: Added User Preferences and Background Textures reference tables
-- [x] Documentation Index: Updated "By Task" quick links
+- [x] All 9 help docs updated with latest features
+
+### Design & Theming System
+- [x] CSS variables, template cycling, 14 background textures
+- [x] ColorPickerWithTexture, template preview, dynamic favicon/manifest
+
+### Media Gallery
+- [x] Gallery API endpoints verified: GET /api/galleries-new, GET /api/galleries-new/active
+- [x] GalleryAdminManager and TeamGalleryDisplay use correct API URLs
+- [x] Note: galleries_new collection is currently empty (no user gallery data exists)
 
 ## Pending
-- Media gallery visibility — user verification pending
+- Media gallery data is empty - user may need to re-create galleries
 - Google Drive needs OAuth refresh token
 - Email sending requires valid SMTP credentials
 
@@ -53,7 +57,6 @@ Comprehensive league management portal for multiple sports with team management,
 - P1: Office 365 integration for File Manager
 - P2: SMTP credential configuration
 - P2: Refactor server.py into route files
-- P2: Break down EnhancedLiveStatsEntry.js
 
 ## Architecture
 - Frontend: React, Tailwind CSS, Shadcn UI, lucide-react
@@ -61,3 +64,12 @@ Comprehensive league management portal for multiple sports with team management,
 - Database: MongoDB
 - Auth: Emergent-managed Google Auth
 - 3rd Party: Google Auth, Google Maps, MongoDB, GroupMe, Google Drive API
+
+## Key Files
+- `frontend/src/components/EventCardPopup.js` - Event detail popup modal
+- `frontend/src/components/UserPreferences.js` - Floating preferences bubble
+- `frontend/src/components/Layout.js` - Main layout
+- `frontend/src/App.js` - State management, event click handling
+- `frontend/src/index.css` - CSS text color variable overrides
+- `backend/server.py` - API endpoints
+- `backend/routes/media.py` - Gallery and media API routes
