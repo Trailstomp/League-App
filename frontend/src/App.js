@@ -493,15 +493,34 @@ function App() {
             // Apply cycling template if enabled (overrides saved style)
             try {
               const userId = getCached(CACHE_KEYS.USER)?.id;
-              const cyclingUrl = userId 
-                ? `${process.env.REACT_APP_BACKEND_URL}/api/design-templates/active?user_id=${userId}`
-                : `${process.env.REACT_APP_BACKEND_URL}/api/design-templates/active`;
-              const cyclingRes = await fetch(cyclingUrl);
-              if (cyclingRes.ok) {
-                const cyclingData = await cyclingRes.json();
-                if (cyclingData.template?.style && cyclingData.source !== 'none') {
-                  console.log(`🎨 Cycling template active: ${cyclingData.template.name} (${cyclingData.source})`);
-                  newStyle = { ...newStyle, ...cyclingData.template.style };
+              
+              // Check user's local preferences first (from floating prefs bubble)
+              let userPrefs = {};
+              try { userPrefs = JSON.parse(localStorage.getItem('mlbl_user_prefs')) || {}; } catch {}
+              
+              if (userPrefs.pinnedTemplateId && !userPrefs.useRotating) {
+                // User has a pinned theme — fetch it
+                const tmplRes = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/design-templates/public`);
+                if (tmplRes.ok) {
+                  const tmplData = await tmplRes.json();
+                  const pinned = (tmplData.templates || []).find(t => t.id === userPrefs.pinnedTemplateId);
+                  if (pinned?.style) {
+                    console.log(`🎨 User pinned theme: ${pinned.name}`);
+                    newStyle = { ...newStyle, ...pinned.style };
+                  }
+                }
+              } else {
+                // Fall back to server-side cycling
+                const cyclingUrl = userId 
+                  ? `${process.env.REACT_APP_BACKEND_URL}/api/design-templates/active?user_id=${userId}`
+                  : `${process.env.REACT_APP_BACKEND_URL}/api/design-templates/active`;
+                const cyclingRes = await fetch(cyclingUrl);
+                if (cyclingRes.ok) {
+                  const cyclingData = await cyclingRes.json();
+                  if (cyclingData.template?.style && cyclingData.source !== 'none') {
+                    console.log(`🎨 Cycling template active: ${cyclingData.template.name} (${cyclingData.source})`);
+                    newStyle = { ...newStyle, ...cyclingData.template.style };
+                  }
                 }
               }
             } catch (cyclingErr) {
