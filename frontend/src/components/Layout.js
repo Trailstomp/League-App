@@ -517,6 +517,15 @@ const Layout = ({
                     onLogin={onLogin}
                 />
             )}
+
+            {/* Floating Preferences Button */}
+            <UserPreferences
+                websiteStyle={websiteStyle}
+                onStyleChange={onStyleChange}
+                currentUser={currentUser}
+                currentPage={currentPage}
+                onNavigate={onNavigate}
+            />
         </div>
     );
 };
