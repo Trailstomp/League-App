@@ -1401,58 +1401,22 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
             <div className="border-t pt-6">
                 <h4 className="text-md font-semibold text-slate-800 mb-4">Colors & Typography</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
-                        <div className="flex items-center space-x-3">
-                            <input
-                                type="color"
-                                value={editingStyle.navBackgroundColor || '#ffffff'}
-                                onChange={(e) => {
-                                    console.log('🎨 Navigation background color changed to:', e.target.value);
-                                    updateStyle({ navBackgroundColor: e.target.value });
-                                }}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.navBackgroundColor || '#ffffff'}
-                                onChange={(e) => {
-                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                        console.log('🎨 Navigation background color (text) changed to:', e.target.value);
-                                        updateStyle({ navBackgroundColor: e.target.value });
-                                    }
-                                }}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                placeholder="#ffffff"
-                            />
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
-                        <div className="flex items-center space-x-3">
-                            <input
-                                type="color"
-                                value={editingStyle.navTextColor || '#374151'}
-                                onChange={(e) => {
-                                    console.log('🎨 Navigation text color changed to:', e.target.value);
-                                    updateStyle({ navTextColor: e.target.value });
-                                }}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.navTextColor || '#374151'}
-                                onChange={(e) => {
-                                    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-                                        console.log('🎨 Navigation text color (text) changed to:', e.target.value);
-                                        updateStyle({ navTextColor: e.target.value });
-                                    }
-                                }}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                placeholder="#374151"
-                            />
-                        </div>
-                    </div>
+                    <ColorPickerWithTexture
+                        label="Background Color"
+                        colorValue={editingStyle.navBackgroundColor}
+                        textureValue={editingStyle.navBackgroundColorTexture}
+                        onColorChange={(val) => updateStyle({ navBackgroundColor: val, navBackgroundColorTexture: '' })}
+                        onTextureSelect={(id) => updateStyle({ navBackgroundColorTexture: id || '' })}
+                        fieldName="navBg"
+                    />
+                    <ColorPickerWithTexture
+                        label="Text Color"
+                        colorValue={editingStyle.navTextColor}
+                        textureValue={editingStyle.navTextColorTexture}
+                        onColorChange={(val) => updateStyle({ navTextColor: val, navTextColorTexture: '' })}
+                        onTextureSelect={(id) => updateStyle({ navTextColorTexture: id || '' })}
+                        fieldName="navText"
+                    />
                 </div>
             </div>
 
