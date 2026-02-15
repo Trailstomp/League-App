@@ -13,6 +13,7 @@ import HelpPage from './pages/HelpPage';
 import JoinTeamPage from './pages/JoinTeamPage';
 import SetPasswordPage from './components/SetPasswordPage';
 import AccountSettings from './components/AccountSettings';
+import EventCardPopup from './components/EventCardPopup';
 import AuthModal, { initialMockUsers } from './components/AuthSystem';
 import OAuthCallback from './components/OAuthCallback';
 import SetupWizard from './components/SetupWizard';
