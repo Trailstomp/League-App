@@ -284,49 +284,124 @@ const JoinTeamPage = () => {
                         
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Preferred Position
+                                I want to join as <span className="text-red-500">*</span>
                             </label>
-                            <input
-                                type="text"
-                                value={formData.position}
-                                onChange={(e) => handleInputChange('position', e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-                                placeholder="e.g., Attack, Midfield, Defense, Goalie"
-                                data-testid="input-position"
-                            />
+                            <div className="flex gap-4">
+                                <label className={`flex-1 flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                                    formData.requestedRole === 'player' 
+                                        ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                                        : 'border-gray-300 hover:border-gray-400'
+                                }`}>
+                                    <input
+                                        type="radio"
+                                        name="requestedRole"
+                                        value="player"
+                                        checked={formData.requestedRole === 'player'}
+                                        onChange={(e) => handleInputChange('requestedRole', e.target.value)}
+                                        className="sr-only"
+                                    />
+                                    <span className="text-xl">🏃</span>
+                                    <span className="font-medium">Player</span>
+                                </label>
+                                <label className={`flex-1 flex items-center justify-center gap-2 p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                                    formData.requestedRole === 'coach' 
+                                        ? 'border-green-500 bg-green-50 text-green-700' 
+                                        : 'border-gray-300 hover:border-gray-400'
+                                }`}>
+                                    <input
+                                        type="radio"
+                                        name="requestedRole"
+                                        value="coach"
+                                        checked={formData.requestedRole === 'coach'}
+                                        onChange={(e) => handleInputChange('requestedRole', e.target.value)}
+                                        className="sr-only"
+                                    />
+                                    <span className="text-xl">📋</span>
+                                    <span className="font-medium">Coach</span>
+                                </label>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">
+                                {formData.requestedRole === 'coach' 
+                                    ? 'As a coach, you\'ll help manage the team roster, run practices, and coordinate with players.'
+                                    : 'As a player, you\'ll be added to the team roster and receive game schedules.'}
+                            </p>
                         </div>
                         
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Desired Jersey Number
-                            </label>
-                            <input
-                                type="text"
-                                value={formData.desiredNumber}
-                                onChange={(e) => handleInputChange('desiredNumber', e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-                                placeholder="e.g., 7, 23, 99"
-                                data-testid="input-desired-number"
-                            />
-                        </div>
+                        {/* Player-specific fields - only show when player is selected */}
+                        {formData.requestedRole === 'player' && (
+                            <>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Preferred Position
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.position}
+                                        onChange={(e) => handleInputChange('position', e.target.value)}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                                        placeholder="e.g., Attack, Midfield, Defense, Goalie"
+                                        data-testid="input-position"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Desired Jersey Number
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.desiredNumber}
+                                        onChange={(e) => handleInputChange('desiredNumber', e.target.value)}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                                        placeholder="e.g., 7, 23, 99"
+                                        data-testid="input-desired-number"
+                                    />
+                                </div>
+                            </>
+                        )}
                         
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Experience Level
-                            </label>
-                            <select
-                                value={formData.experience}
-                                onChange={(e) => handleInputChange('experience', e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-                                data-testid="input-experience"
-                            >
-                                <option value="">Select your experience...</option>
-                                <option value="beginner">Beginner (New to the sport)</option>
-                                <option value="intermediate">Intermediate (1-3 years)</option>
-                                <option value="advanced">Advanced (3-5 years)</option>
-                                <option value="expert">Expert (5+ years)</option>
-                            </select>
-                        </div>
+                        {/* Coaching experience for coaches */}
+                        {formData.requestedRole === 'coach' && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Coaching Experience
+                                </label>
+                                <select
+                                    value={formData.experience}
+                                    onChange={(e) => handleInputChange('experience', e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                                    data-testid="input-coaching-experience"
+                                >
+                                    <option value="">Select your coaching experience...</option>
+                                    <option value="none">No prior coaching experience</option>
+                                    <option value="assistant">Assistant coach (1-2 seasons)</option>
+                                    <option value="head_coach">Head coach (1-3 years)</option>
+                                    <option value="experienced">Experienced coach (3+ years)</option>
+                                    <option value="certified">Certified/Licensed coach</option>
+                                </select>
+                            </div>
+                        )}
+                        
+                        {/* Player experience - only for players */}
+                        {formData.requestedRole === 'player' && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Playing Experience
+                                </label>
+                                <select
+                                    value={formData.experience}
+                                    onChange={(e) => handleInputChange('experience', e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                                    data-testid="input-experience"
+                                >
+                                    <option value="">Select your experience...</option>
+                                    <option value="beginner">Beginner (New to the sport)</option>
+                                    <option value="intermediate">Intermediate (1-3 years)</option>
+                                    <option value="advanced">Advanced (3-5 years)</option>
+                                    <option value="expert">Expert (5+ years)</option>
+                                </select>
+                            </div>
+                        )}
                         
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
