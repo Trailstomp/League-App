@@ -208,11 +208,10 @@ function App() {
     }
   };
 
-  // Handle event click from ticker (navigate to events page and highlight event)
+  // Handle event click from ticker or events page (show popup)
   const handleEventClick = (event) => {
-    console.log('📅 Event clicked from ticker:', event);
-    // Navigate to events page - the events page can handle highlighting the specific event
-    setCurrentPage('events');
+    console.log('📅 Event clicked:', event);
+    setSelectedEventForPopup(event);
   };
 
   // Handle team click from ticker (navigate to team page)
