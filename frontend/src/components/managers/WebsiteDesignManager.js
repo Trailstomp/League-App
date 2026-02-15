@@ -1910,28 +1910,43 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
             <div>
                 <h4 className="text-md font-semibold text-slate-800 mb-4">Page Background</h4>
-                <div className="flex space-x-4 mb-4">
+                <div className="flex space-x-3 mb-4">
                     <button
                         onClick={() => toggleBackgroundType('main', 'color')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            (editingStyle.mainBackgroundType !== 'image') 
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            (editingStyle.mainBackgroundType === 'color' || (!editingStyle.mainBackgroundType)) 
                                 ? 'bg-blue-600 text-white' 
                                 : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                         }`}
                     >
-                        Color Background
+                        Color
                     </button>
                     <button
                         onClick={() => toggleBackgroundType('main', 'image')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                             (editingStyle.mainBackgroundType === 'image') 
                                 ? 'bg-blue-600 text-white' 
                                 : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                         }`}
                     >
-                        Image Background
+                        Image
+                    </button>
+                    <button
+                        onClick={() => toggleBackgroundType('main', 'texture')}
+                        data-testid="main-texture-btn"
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            (editingStyle.mainBackgroundType === 'texture') 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                        }`}
+                    >
+                        Texture
                     </button>
                 </div>
+
+                {editingStyle.mainBackgroundType === 'texture' && (
+                    <TexturePicker zone="main" currentTexture={editingStyle.mainBackgroundTexture} onSelect={selectTexture} />
+                )}
 
                 {editingStyle.mainBackgroundType === 'image' ? (
                     <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
