@@ -84,6 +84,7 @@ Comprehensive league management portal for multiple sports with team management,
 
 ### Hide External Teams from Public Views (Feb 2026)
 - [x] Fixed: External teams now hidden from sidebar (Navigation.js) and Home Teams page (HomePage.js)
+- [x] Fixed: External teams filtered from Standings page (StandingsTable.js) - both by division and by team flag
 - [x] Filter checks both `isExternal` flag AND `division === 'External'` (case-insensitive)
 - [x] External teams remain in admin/scheduling contexts where they're needed
 
