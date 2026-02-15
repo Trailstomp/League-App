@@ -825,6 +825,7 @@ function App() {
         onLogout={handleLogout}
         teams={teams}
         websiteStyle={websiteStyle}
+        onStyleChange={setWebsiteStyle}
         events={events}
         onEventClick={handleEventClick}
         onTeamClick={handleTeamClick}
