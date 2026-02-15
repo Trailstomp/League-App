@@ -3,6 +3,7 @@ import Navigation from './Navigation';
 import EventsTicker from './EventsTicker';
 import BottomNavbar from './BottomNavbar';
 import CachedImage from './CachedImage';
+import UserPreferences from './UserPreferences';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
