@@ -133,7 +133,7 @@ const GalleryAdminManager = ({ teams = [], currentUser }) => {
 
     const handleSaveEdit = async (updatedGallery) => {
         try {
-            const response = await fetch(`${BACKEND_URL}/api/galleries-new/${updatedGallery.id}`, {
+            const response = await fetch(`${BACKEND_URL}/api/galleries/${updatedGallery.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedGallery)
