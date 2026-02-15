@@ -4,6 +4,39 @@ import EventsTicker from './EventsTicker';
 import BottomNavbar from './BottomNavbar';
 import CachedImage from './CachedImage';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+// Helper to generate background styles for zones that support color/image/texture
+const getZoneBgStyle = (ws, zone) => {
+    const bgType = ws[`${zone}BackgroundType`];
+    const bgColor = ws[`${zone}BackgroundColor`];
+    const bgImage = ws[`${zone}BackgroundImage`];
+    const bgTexture = ws[`${zone}BackgroundTexture`];
+    
+    if (bgType === 'texture' && bgTexture) {
+        return {
+            backgroundColor: bgColor || 'transparent',
+            backgroundImage: `url(${BACKEND_URL}/api/uploads/textures/${bgTexture}.png)`,
+            backgroundSize: '256px 256px',
+            backgroundRepeat: 'repeat',
+            backgroundPosition: 'top left'
+        };
+    }
+    if (bgType === 'image' && bgImage) {
+        return {
+            backgroundColor: 'transparent',
+            backgroundImage: `url(${bgImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+        };
+    }
+    return {
+        backgroundColor: bgColor || '#ffffff',
+        backgroundImage: 'none'
+    };
+};
+
 const Layout = ({ 
     children, 
     currentPage, 
