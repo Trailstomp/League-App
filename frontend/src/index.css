@@ -128,3 +128,40 @@ input, textarea, select, [contenteditable],
 main input, main textarea, main select, main [contenteditable] {
     color: var(--input-text-color, #1e293b) !important;
 }
+
+/* ===== Theme-aware text colors for content area ===== */
+/* These override Tailwind's hardcoded dark text classes so admin color settings actually work */
+.main-content-area h1, .main-content-area h2, .main-content-area h3,
+.main-content-area h4, .main-content-area h5, .main-content-area h6 {
+    color: var(--card-heading-color, #1f2937);
+}
+
+.main-content-area p,
+.main-content-area span:not([class*="bg-"]):not([class*="text-white"]):not([class*="text-red"]):not([class*="text-green"]):not([class*="text-blue"]):not([class*="text-yellow"]):not([class*="text-orange"]):not([class*="text-purple"]):not([class*="text-pink"]):not([class*="text-emerald"]):not([class*="text-teal"]):not([class*="text-violet"]):not([class*="text-amber"]):not([class*="text-indigo"]),
+.main-content-area li,
+.main-content-area td,
+.main-content-area th,
+.main-content-area label,
+.main-content-area .text-slate-800,
+.main-content-area .text-slate-700,
+.main-content-area .text-gray-800,
+.main-content-area .text-gray-700 {
+    color: var(--content-text-color, #374151);
+}
+
+.main-content-area .text-slate-600,
+.main-content-area .text-slate-500,
+.main-content-area .text-gray-600,
+.main-content-area .text-gray-500 {
+    color: color-mix(in srgb, var(--content-text-color, #374151) 75%, transparent);
+}
+
+/* Preserve white text, colored text, and button text */
+.main-content-area [class*="text-white"],
+.main-content-area button,
+.main-content-area a[class*="bg-"],
+.main-content-area [role="button"],
+.main-content-area [class*="badge"],
+.main-content-area .tab-active {
+    color: revert-layer;
+}
