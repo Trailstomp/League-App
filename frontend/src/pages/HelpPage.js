@@ -584,6 +584,8 @@ As a **Guest**, you can browse public information without logging in.
 ✅ Live ticker with scores
 ✅ Team rosters
 ✅ Photo galleries
+✅ Change site theme via preferences bubble
+✅ Install as app on your phone
 
 ## What Requires an Account
 ❌ RSVP to events
