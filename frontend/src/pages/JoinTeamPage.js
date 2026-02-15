@@ -16,6 +16,7 @@ const JoinTeamPage = () => {
         name: '',
         email: '',
         phone: '',
+        requestedRole: 'player', // Default to player, can also be 'coach'
         position: '',
         desiredNumber: '',
         experience: '',
