@@ -12,12 +12,18 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 const TEXTURES = [
     { id: 'leather', name: 'Leather', file: 'leather.png' },
     { id: 'wood', name: 'Wood', file: 'wood.png' },
+    { id: 'wood_vertical', name: 'Wood Vertical', file: 'wood_vertical.png' },
     { id: 'metal', name: 'Metal', file: 'metal.png' },
     { id: 'carbon', name: 'Carbon Fiber', file: 'carbon.png' },
     { id: 'concrete', name: 'Concrete', file: 'concrete.png' },
     { id: 'diamond_plate', name: 'Diamond Plate', file: 'diamond_plate.png' },
     { id: 'turf', name: 'Turf', file: 'turf.png' },
     { id: 'brick', name: 'Brick', file: 'brick.png' },
+    { id: 'stone', name: 'Stone', file: 'stone.png' },
+    { id: 'rock', name: 'Rock', file: 'rock.png' },
+    { id: 'bark', name: 'Tree Bark', file: 'bark.png' },
+    { id: 'dirt', name: 'Dirt', file: 'dirt.png' },
+    { id: 'leaves', name: 'Leaves', file: 'leaves.png' },
 ];
 
 const getTextureUrl = (textureId) => {
