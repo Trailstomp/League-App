@@ -4,6 +4,49 @@ import CachedImage from './CachedImage';
 import { fixGoogleDriveUrl } from '../utils/imageUtils';
 import NotificationBell from './NotificationBell';
 
+// Custom hook for PWA install functionality
+const usePWAInstall = () => {
+    const [installPrompt, setInstallPrompt] = useState(null);
+    const [isInstalled, setIsInstalled] = useState(false);
+    const [isIOS, setIsIOS] = useState(false);
+
+    useEffect(() => {
+        // Check if already installed
+        const standalone = window.matchMedia('(display-mode: standalone)').matches 
+            || window.navigator.standalone;
+        setIsInstalled(standalone);
+
+        // Check if iOS
+        const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        setIsIOS(ios);
+
+        // Listen for install prompt
+        const handleBeforeInstallPrompt = (e) => {
+            e.preventDefault();
+            setInstallPrompt(e);
+        };
+
+        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        window.addEventListener('appinstalled', () => setIsInstalled(true));
+
+        return () => {
+            window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        };
+    }, []);
+
+    const promptInstall = async () => {
+        if (installPrompt) {
+            installPrompt.prompt();
+            const { outcome } = await installPrompt.userChoice;
+            if (outcome === 'accepted') {
+                setInstallPrompt(null);
+            }
+        }
+    };
+
+    return { canInstall: !!installPrompt || isIOS, isInstalled, isIOS, promptInstall };
+};
+
 // Teams grouped by division component
 const TeamsByDivision = ({ teams, websiteStyle, isCollapsed, onNavigate, onMobileClose }) => {
     const [collapsedDivisions, setCollapsedDivisions] = useState(new Set());
