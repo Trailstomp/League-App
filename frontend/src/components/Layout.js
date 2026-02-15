@@ -48,6 +48,7 @@ const Layout = ({
     onLogout,
     teams = [],
     websiteStyle = {},
+    onStyleChange,
     events = [],
     onEventClick,
     onTeamClick
