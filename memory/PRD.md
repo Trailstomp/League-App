@@ -27,88 +27,60 @@ Comprehensive league management portal for multiple sports with team management,
 ### Tournament Scoring UI (Feb 13, 2026)
 - [x] Horizontal bracket layout with CSS connector lines between rounds
 - [x] Redesigned compact match cards with team logos, seed numbers, scores
-- [x] Champion trophy badge, floating action toolbar, Games List view
-- [x] Dark tournament-themed background, proper round naming
 
 ### Mobile Experience (Feb 13, 2026)
 - [x] Compact mobile ticker strip (48px) below mobile header
 - [x] Single-line scrolling game scores (ESPN-style)
-- [x] Proper content padding (56px header + 48px ticker = 104px)
 
-### Bug Fixes (Feb 13, 2026)
-- [x] Fixed news creation/deletion bug: `league_data` → `league_doc` typo in POST /api/league-data/newsItems
-- [x] Changed news image format from banner (16:9) to square (1:1) crop + display
-- [x] Added `square` aspect ratio option to SimpleCropTool
-- [x] Favicon cache busting to force latest logo
-
-### Bug Fixes & UI (Feb 14, 2026)
-- [x] Fixed recurring `league_data` → `league_doc` NameError across 5 endpoints: teams, players, seasons, leagueSchedule, liveViewSettings
-- [x] Made admin dashboard overview cards clickable (navigate to Teams, Users tabs)
-- [x] Made Quick Action buttons functional (Add Team → Teams, Add Player → Import Players, Export → Database Admin)
-
-### Navigation & UX (Feb 14, 2026)
-- [x] Added "My Team" button in navbar - navigates to user's assigned team
-- [x] Combined "My Dashboard" and "Account Settings" into one page (Account Settings is now a tab)
-- [x] Added `nav.league_chat` permission - League Chat only visible to admin/league_admin
-- [x] Role alias mapping: 'admin' → 'super_admin', 'coach' → 'team_coach' for permissions
-
-### Bug Fix: Design Template Stuck (Feb 14, 2026)
-- [x] Root cause: loadTemplate merged new template INTO existing editingStyle, so Neon's bg images persisted
-- [x] Final fix: separated VISUAL_RESET from identity props
-- [x] Replaced setState-hack for reading state with ref-based approach (editingStyleRef)
-
-### Critical Bug Fix: Template Data Loss (Feb 2026)
-- [x] Root cause: PUT /api/design-templates/{template_id} defaulted `style` to `{}` when not in request
-- [x] Fix: Only update fields explicitly present in request payload
-- [x] Verified: 11/11 backend tests passed
+### Bug Fixes (Feb 13-14, 2026)
+- [x] Fixed news creation/deletion bug, square image crop
+- [x] Fixed recurring NameError across 5 endpoints
+- [x] Made admin dashboard cards/buttons clickable
+- [x] Navigation UX: "My Team" button, combined dashboard/settings
+- [x] Design template switching, data loss, image upload fixes
 
 ### Template Preview Feature (Feb 2026)
-- [x] Added `TemplatePreview` component with mini website layout mockup
-- [x] Small previews in Saved Templates list, larger in Load Template modal
-
-### Bug Fix: Image Upload Not Saving (Feb 2026)
-- [x] `handleSave()` now accepts optional `overrideFields` param
+- [x] Mini website layout mockup using template's actual colors
 
 ### PWA "Add to Home Screen" Feature (Feb 2026)
-- [x] Dynamic manifest.json served from `/api/pwa/manifest.json`
-- [x] Service worker for offline caching and push notifications
-- [x] "Install App" button in navigation sidebar
-- [x] iOS/Android install instructions modals
-- [x] InstallPWA banner component with customizable colors
+- [x] Dynamic manifest, service worker, install button, iOS/Android modals
 
 ### Hide External Teams from Public Views (Feb 2026)
-- [x] External teams hidden from sidebar, Home Teams page, Standings
-- [x] Filter checks both `isExternal` flag AND `division === 'External'`
+- [x] External teams hidden from sidebar, Home, Standings
 
 ### Media Manager — Self-Service Upload (Feb 2026)
-- [x] New `MediaManager` component with photo upload and video link management
-- [x] Backend: `/api/media-items` CRUD + upload
+- [x] Photo upload and video link management for league and team pages
 
 ### Background Textures Feature (Feb 2026)
-- [x] 14 tileable textures for Nav, Banner, Main Content backgrounds
-- [x] TexturePicker grid component
-
-### ColorPickerWithTexture Integration (Feb 2026)
-- [x] Unified `ColorPickerWithTexture` component for all 19+ color inputs
-- [x] Toggle between color picker and texture grid
+- [x] 14 tileable textures + ColorPickerWithTexture for all 19+ color inputs
 
 ### Coach Role & UI Fixes (Feb 15, 2026)
 - [x] Added "Coach" role option to Join Team page (/join/{team_id})
 - [x] Player/Coach radio buttons with conditional form fields
-- [x] Coach-specific: Coaching Experience dropdown (5 levels)
-- [x] Player-specific: Position, Jersey Number, Playing Experience
-- [x] Backend saves `requestedRole` and `coachingExperience` fields in join_requests
-- [x] Admin join request view shows "Coach" badge for coach requests
-- [x] Logo container in Navigation.js uses `background: transparent` to preserve PNG transparency
-- [x] Teams sorted alphabetically by name within each division group using localeCompare
-- [x] Testing: 100% pass rate - all backend API tests and frontend verification passed
+- [x] Backend saves `requestedRole` and `coachingExperience` in join_requests
+- [x] Admin join request view shows "Coach" badge
+- [x] Logo container transparent background in Navigation.js
+- [x] Teams sorted alphabetically by name within division groups
 
-### Documentation (Feb 14, 2026)
-- [x] Updated all 9 help docs from v1.0 to v2.0
+### Floating User Preferences Bubble (Feb 15, 2026)
+- [x] Floating action button (FAB) at bottom-right corner with gradient styling
+- [x] Opens preferences panel with two tabs: "Themes" and "Default Page"
+- [x] **Themes tab**: Auto-Rotate toggle, Next Theme cycle button, template grid with mini previews
+- [x] **Default Page tab**: Choose landing page (Home, Events, Standings, Help & Docs)
+- [x] Theme selection applies immediately and persists in localStorage
+- [x] On page reload, pinned theme fetched from API and applied before render
+- [x] Default page preference redirects on initial visit
+- [x] Available to all visitors (no login required)
+- [x] Backend: `GET /api/design-templates/public` endpoint for visible templates
+- [x] App.js integration: checks `mlbl_user_prefs` localStorage during initial load
 
-### Recruitment System
-- [x] Automated recruitment: approve → auto-create team/player
-- [x] Proactive "Recruit & Invite" form
+### CSS Text Color Fix (Feb 15, 2026)
+- [x] Added CSS rules in index.css that make `.main-content-area` text respect CSS variables
+- [x] Headings (h1-h6) use `var(--card-heading-color)` 
+- [x] Body text, spans, labels use `var(--content-text-color)`
+- [x] Secondary text (.text-slate-500/600) uses blended version of content color
+- [x] Admin's Content Text Color and Card Heading Color settings now actually affect page text
+- [x] Preserves white text, button text, colored badges via CSS exclusions
 
 ## Pending
 - Google Drive needs OAuth refresh token
@@ -134,8 +106,9 @@ Comprehensive league management portal for multiple sports with team management,
 ### 3rd Party Integrations
 - Google Auth, Google Maps, MongoDB, GroupMe, Google Drive API
 
-### Key API Endpoints
-- POST /api/teams/{team_id}/join-requests - Submit join request (now saves requestedRole)
-- GET /api/teams/{team_id}/public - Public team info for join page
-- PUT /api/design-templates/{template_id} - Safe partial update
-- All league-data endpoints (teams, players, seasons, schedule, news, etc.)
+### Key Files
+- `frontend/src/components/UserPreferences.js` - Floating preferences bubble
+- `frontend/src/components/Layout.js` - Main layout with UserPreferences integration
+- `frontend/src/App.js` - Initial style/page loading with localStorage preferences
+- `frontend/src/index.css` - CSS text color variable overrides
+- `backend/server.py` - All API endpoints including `/api/design-templates/public`
