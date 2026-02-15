@@ -9,6 +9,7 @@ const usePWAInstall = () => {
     const [installPrompt, setInstallPrompt] = useState(null);
     const [isInstalled, setIsInstalled] = useState(false);
     const [isIOS, setIsIOS] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         // Check if already installed
@@ -19,6 +20,11 @@ const usePWAInstall = () => {
         // Check if iOS
         const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         setIsIOS(ios);
+
+        // Check if mobile device
+        const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+            || window.innerWidth < 768;
+        setIsMobile(mobile);
 
         // Listen for install prompt
         const handleBeforeInstallPrompt = (e) => {
@@ -44,7 +50,8 @@ const usePWAInstall = () => {
         }
     };
 
-    return { canInstall: !!installPrompt || isIOS, isInstalled, isIOS, promptInstall };
+    // Show button if: has install prompt, is iOS, or is mobile (for Android Chrome guidance)
+    return { canInstall: !!installPrompt || isIOS || isMobile, isInstalled, isIOS, isMobile, hasPrompt: !!installPrompt, promptInstall };
 };
 
 // Teams grouped by division component
