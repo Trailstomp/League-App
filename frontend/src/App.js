@@ -116,6 +116,7 @@ function App() {
   // Stats entry state
   const [showStatsEntry, setShowStatsEntry] = useState(false);
   const [selectedEventForStats, setSelectedEventForStats] = useState(null);
+  const [selectedEventForPopup, setSelectedEventForPopup] = useState(null);
   
   // Initialize data from cache for faster initial load
   const [teams, setTeams] = useState(() => getCached(CACHE_KEYS.TEAMS) || []);
