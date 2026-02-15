@@ -750,7 +750,10 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
             {/* Action Buttons */}
             <div className="flex gap-4">
                 <button
-                    onClick={() => setShowSaveTemplateModal(true)}
+                    onClick={() => {
+                        setSaveMode(activeTemplateId ? 'update' : 'new');
+                        setShowSaveTemplateModal(true);
+                    }}
                     className="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
                 >
                     💾 Save Current Design as Template
