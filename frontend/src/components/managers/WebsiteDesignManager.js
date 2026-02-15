@@ -3513,75 +3513,47 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                     </div>
                     
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Banner Background</label>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="color"
-                                value={editingStyle.pwaInstallBannerBgColor || '#1e40af'}
-                                onChange={(e) => updateStyle({ pwaInstallBannerBgColor: e.target.value })}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.pwaInstallBannerBgColor || '#1e40af'}
-                                onChange={(e) => updateStyle({ pwaInstallBannerBgColor: e.target.value })}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
-                            />
-                        </div>
+                        <ColorPickerWithTexture
+                            label="Banner Background"
+                            colorValue={editingStyle.pwaInstallBannerBgColor || '#1e40af'}
+                            textureValue={editingStyle.pwaInstallBannerBgColorTexture}
+                            onColorChange={(val) => updateStyle({ pwaInstallBannerBgColor: val, pwaInstallBannerBgColorTexture: '' })}
+                            onTextureSelect={(id) => updateStyle({ pwaInstallBannerBgColorTexture: id || '' })}
+                            fieldName="pwaBannerBg"
+                        />
                     </div>
                     
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Banner Text Color</label>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="color"
-                                value={editingStyle.pwaInstallBannerTextColor || '#ffffff'}
-                                onChange={(e) => updateStyle({ pwaInstallBannerTextColor: e.target.value })}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.pwaInstallBannerTextColor || '#ffffff'}
-                                onChange={(e) => updateStyle({ pwaInstallBannerTextColor: e.target.value })}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
-                            />
-                        </div>
+                        <ColorPickerWithTexture
+                            label="Banner Text Color"
+                            colorValue={editingStyle.pwaInstallBannerTextColor || '#ffffff'}
+                            textureValue={editingStyle.pwaInstallBannerTextColorTexture}
+                            onColorChange={(val) => updateStyle({ pwaInstallBannerTextColor: val, pwaInstallBannerTextColorTexture: '' })}
+                            onTextureSelect={(id) => updateStyle({ pwaInstallBannerTextColorTexture: id || '' })}
+                            fieldName="pwaBannerText"
+                        />
                     </div>
                     
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Button Background</label>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="color"
-                                value={editingStyle.pwaInstallBannerButtonColor || '#ffffff'}
-                                onChange={(e) => updateStyle({ pwaInstallBannerButtonColor: e.target.value })}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.pwaInstallBannerButtonColor || '#ffffff'}
-                                onChange={(e) => updateStyle({ pwaInstallBannerButtonColor: e.target.value })}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
-                            />
-                        </div>
+                        <ColorPickerWithTexture
+                            label="Button Background"
+                            colorValue={editingStyle.pwaInstallBannerButtonColor || '#ffffff'}
+                            textureValue={editingStyle.pwaInstallBannerButtonColorTexture}
+                            onColorChange={(val) => updateStyle({ pwaInstallBannerButtonColor: val, pwaInstallBannerButtonColorTexture: '' })}
+                            onTextureSelect={(id) => updateStyle({ pwaInstallBannerButtonColorTexture: id || '' })}
+                            fieldName="pwaBannerBtn"
+                        />
                     </div>
                     
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Button Text Color</label>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="color"
-                                value={editingStyle.pwaInstallBannerButtonTextColor || '#1e40af'}
-                                onChange={(e) => updateStyle({ pwaInstallBannerButtonTextColor: e.target.value })}
-                                className="w-12 h-10 border border-slate-300 rounded cursor-pointer"
-                            />
-                            <input
-                                type="text"
-                                value={editingStyle.pwaInstallBannerButtonTextColor || '#1e40af'}
-                                onChange={(e) => updateStyle({ pwaInstallBannerButtonTextColor: e.target.value })}
-                                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg"
-                            />
-                        </div>
+                        <ColorPickerWithTexture
+                            label="Button Text Color"
+                            colorValue={editingStyle.pwaInstallBannerButtonTextColor || '#1e40af'}
+                            textureValue={editingStyle.pwaInstallBannerButtonTextColorTexture}
+                            onColorChange={(val) => updateStyle({ pwaInstallBannerButtonTextColor: val, pwaInstallBannerButtonTextColorTexture: '' })}
+                            onTextureSelect={(id) => updateStyle({ pwaInstallBannerButtonTextColorTexture: id || '' })}
+                            fieldName="pwaBannerBtnText"
+                        />
                     </div>
                 </div>
                 
