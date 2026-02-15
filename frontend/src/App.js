@@ -692,6 +692,7 @@ function App() {
             teams={teams}
             currentUser={currentUser}
             onNavigate={handleNavigate}
+            onEventClick={handleEventClick}
             sportType={websiteStyle?.sportType || 'lacrosse'}
           />
         );
