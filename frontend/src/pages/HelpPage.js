@@ -1099,8 +1099,9 @@ Once approved, you'll:
                                     <ul>
                                         <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('setup')}>Setting up the league</button> — Setup Guide</li>
                                         <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('coach')}>Managing rosters</button> — Coach Guide</li>
-                                        <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('recruitment')}>Recruiting new players</button> — Player Recruitment Guide</li>
-                                        <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('player')}>Viewing stats</button> — Player Guide</li>
+                                        <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('recruitment')}>Recruiting players & coaches</button> — Player Recruitment Guide</li>
+                                        <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('player')}>Viewing stats & preferences</button> — Player Guide</li>
+                                        <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('guest')}>Themes, PWA & visitor features</button> — Guest Guide</li>
                                         <li><button className="text-blue-600 hover:text-blue-800 underline font-semibold bg-transparent border-0 cursor-pointer p-0" onClick={() => setActiveDoc('brochure')}>Understanding features</button> — Feature Brochure</li>
                                     </ul>
 
