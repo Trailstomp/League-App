@@ -253,17 +253,45 @@ As an **Admin**, you have complete control over the league management system.
 ## Player Recruitment
 
 ### Reviewing Join Requests
-When a prospective player submits a join request, you'll receive an email notification.
+When a prospective player or coach submits a join request, you'll receive an email notification.
 
 1. Navigate to the team's page → **Admin** tab → **Recruiting** section
 2. Review the pending request (name, email, position, experience)
-3. Click **Approve** to add them to the roster, or **Decline**
-4. The player gets an email with the result
+3. **Coach requests** are marked with a purple "Coach" badge
+4. Click **Approve** to add them to the roster, or **Decline**
+5. The player/coach gets an email with the result
 
 ### Team Join Links
-Each team has a public join page at \`/join/{team-id}\`. Share this link to collect player applications.
+Each team has a public join page at \`/join/{team-id}\`. Share this link to collect player and coach applications.
 
 See the **Player Recruitment** guide for the full workflow.
+
+---
+
+## Design & Theming
+
+### Background Textures
+1. In **Admin Portal → Website Design**, find any background color setting
+2. Click the texture icon next to the color picker
+3. Choose from 14 tileable textures (wood, metal, leather, turf, brick, stone, etc.)
+4. Textures can be applied to navigation, banner, main content, cards, and more
+
+### Content Text Colors
+The **Content Text Color** and **Card Heading Color** settings in Website Design now control text colors across all pages. When you change these, headings, body text, and labels throughout the site will update.
+
+### Design Templates
+1. Customize the site's look in Website Design
+2. Click **"Save as Template"** to save your design
+3. Toggle **"Visible to Users"** so visitors can select the theme
+4. Create multiple templates (e.g., "Game Day", "Off-Season", "Dark Mode")
+5. Users see these in the **floating preferences bubble** at the bottom-right corner
+
+### User Preferences Bubble
+A floating button appears at the bottom-right corner for all visitors. It lets users:
+- **Choose a theme** from your saved templates
+- **Toggle auto-rotate** to get a different look on each visit
+- **Set a default landing page** (Home, Events, Standings, Help)
+- Preferences persist in the browser across sessions
 
 ---
 
