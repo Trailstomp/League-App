@@ -626,6 +626,28 @@ The scrolling ticker shows:
 1. Click "Register" or "Sign Up"
 2. Fill in your information
 3. Wait for admin approval
+
+---
+
+## Personalizing Your Experience
+
+### Preferences Bubble
+Look for the **settings button** in the bottom-right corner of any page. No login required!
+
+- **Themes tab** - Browse and apply different visual themes for the site
+- **Auto-Rotate** - Turn on to see a new theme each time you visit
+- **Default Page tab** - Choose which page loads first (Home, Events, Standings, or Help)
+
+Your preferences are saved in your browser automatically.
+
+### Add to Home Screen
+Install the site as an app on your phone:
+
+1. **iPhone (Safari):** Tap Share → "Add to Home Screen"
+2. **Android (Chrome):** Tap the install banner or Menu → "Add to Home Screen"
+3. Or use the **"Install App"** button in the sidebar
+
+The site appears as an app icon on your home screen for quick access.
             `
         },
         recruitment: {
