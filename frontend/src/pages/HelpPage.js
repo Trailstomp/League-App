@@ -850,6 +850,38 @@ Once approved, you'll:
 | Look Back Days | 365 | Past events shown |
 | Look Forward Days | 365 | Future events shown |
 | Show Cancelled | Off | Include cancelled |
+
+---
+
+## User Preferences (Floating Bubble)
+
+| Feature | Description |
+|---------|-------------|
+| Theme Selector | Browse and apply saved design templates |
+| Auto-Rotate | New theme on each visit |
+| Default Page | Choose Home, Events, Standings, or Help as landing page |
+| Persistence | Saved in browser, restored on return |
+
+---
+
+## Background Textures
+
+| Texture | Description |
+|---------|-------------|
+| Leather | Classic leather texture |
+| Wood Horizontal | Light wood grain |
+| Metal | Brushed metal surface |
+| Carbon Fiber | Woven carbon pattern |
+| Concrete | Industrial concrete |
+| Turf | Green field turf |
+| Brick | Red brick wall |
+| Vertical Wood | Dark wood planks |
+| Stone | Natural stone surface |
+| Bark | Tree bark texture |
+| Sand | Beach sand surface |
+| Marble | Polished marble |
+| Fabric | Woven fabric |
+| Paper | Textured paper |
             `
         }
     };
