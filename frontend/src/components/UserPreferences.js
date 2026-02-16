@@ -156,49 +156,20 @@ const UserPreferences = ({ websiteStyle, onStyleChange, currentUser, currentPage
 
     return (
         <>
-            {/* Floating Action Button */}
-            <button
-                ref={buttonRef}
-                onClick={() => setIsOpen(!isOpen)}
-                data-testid="preferences-fab"
-                className="fixed z-[9999] rounded-full shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center"
-                style={{
-                    bottom: '24px',
-                    right: '24px',
-                    width: '52px',
-                    height: '52px',
-                    background: `linear-gradient(135deg, ${primaryColor}, ${websiteStyle?.accentColor || '#6366f1'})`,
-                    color: '#fff',
-                    border: 'none',
-                    cursor: 'pointer',
-                    boxShadow: `0 4px 20px ${primaryColor}44`
-                }}
-                title="Site Preferences"
-            >
-                {isOpen ? (
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                ) : (
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                    </svg>
-                )}
-            </button>
-
-            {/* Preferences Panel */}
+            {/* Preferences Panel - anchored near sidebar */}
             {isOpen && (
                 <div
                     ref={panelRef}
                     data-testid="preferences-panel"
-                    className="fixed z-[9998] rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300"
+                    className="fixed z-[9998] rounded-2xl shadow-2xl overflow-hidden"
                     style={{
-                        bottom: '88px',
-                        right: '24px',
+                        top: '120px',
+                        left: '220px',
                         width: '320px',
-                        maxHeight: '480px',
+                        maxHeight: '520px',
                         backgroundColor: '#fff',
                         border: '1px solid #e2e8f0',
+                        animation: 'fadeSlideIn 0.2s ease-out',
                     }}
                 >
                     {/* Header */}
