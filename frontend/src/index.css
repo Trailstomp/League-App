@@ -129,6 +129,12 @@ main input, main textarea, main select, main [contenteditable] {
     color: var(--input-text-color, #1e293b) !important;
 }
 
+/* Site Style panel animation */
+@keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateX(-12px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
 /* ===== Theme-aware text colors for content area ===== */
 /* These override Tailwind's hardcoded dark text classes so admin color settings actually work */
 .main-content-area h1, .main-content-area h2, .main-content-area h3,
