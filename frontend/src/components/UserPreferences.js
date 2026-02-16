@@ -45,8 +45,13 @@ const UserPreferences = ({ websiteStyle, onStyleChange, currentUser, currentPage
     const [activeTab, setActiveTab] = useState('theme');
     const [prefs, setPrefs] = useState(getLocalPrefs);
     const panelRef = useRef(null);
-    const buttonRef = useRef(null);
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+
+    // Register global toggle so the nav button can open/close the panel
+    useEffect(() => {
+        window.__togglePreferences = () => setIsOpen(prev => !prev);
+        return () => { delete window.__togglePreferences; };
+    }, []);
 
     // Load templates
     useEffect(() => {
@@ -71,7 +76,9 @@ const UserPreferences = ({ websiteStyle, onStyleChange, currentUser, currentPage
     // Close on outside click
     useEffect(() => {
         const handler = (e) => {
-            if (isOpen && panelRef.current && !panelRef.current.contains(e.target) && !buttonRef.current?.contains(e.target)) {
+            if (isOpen && panelRef.current && !panelRef.current.contains(e.target)) {
+                // Don't close if clicking the nav button
+                if (e.target.closest('[data-testid="site-style-btn"]')) return;
                 setIsOpen(false);
             }
         };
