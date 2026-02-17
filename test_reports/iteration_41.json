@@ -1,0 +1,68 @@
+{
+  "summary": "Tested independent clock toggle switches on Live Stats Entry page. All features working correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_41.json"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (skipped per request)",
+    "frontend": "100%"
+  },
+  "test_credentials": "email=testadmin2@test.com, password=admin123",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Clock toggles feature fully implemented and tested. localStorage key for user auth is 'mlbl_current_user'. Admin login required to see Score button on events.",
+  "features_tested": {
+    "clock_toggles_in_header": {
+      "status": "PASSED",
+      "details": "Clock and Shot toggles appear in sticky header next to game title with data-testid attributes"
+    },
+    "game_clock_toggle_off": {
+      "status": "PASSED",
+      "details": "When OFF: scoreboard shows '--:--', Start/Pause/Next Quarter/Edit Time buttons hidden, only Save visible"
+    },
+    "game_clock_toggle_on": {
+      "status": "PASSED",
+      "details": "When ON: clock shows time normally, all controls visible (Start, Next Quarter, Edit Time, Save)"
+    },
+    "shot_clock_toggle_off": {
+      "status": "PASSED",
+      "details": "When OFF: center shot clock panel hidden, replaced with 'VS' divider"
+    },
+    "shot_clock_toggle_on": {
+      "status": "PASSED",
+      "details": "When ON: shot clock panel shows with reset button and Stop-on-Goal checkbox"
+    },
+    "independent_toggles": {
+      "status": "PASSED",
+      "details": "Both toggles can be toggled independently without affecting each other"
+    },
+    "compact_layout": {
+      "status": "PASSED",
+      "details": "Layout uses smaller buttons, tighter spacing, paddingTop reduced to 260px"
+    },
+    "data_testid_attributes": {
+      "status": "PASSED",
+      "details": "All data-testid attributes present: game-clock-toggle-btn, shot-clock-toggle-btn, shot-clock-panel, timer-toggle-btn, next-period-btn, home-shot-btn, away-shot-btn"
+    }
+  },
+  "screenshots_taken": [
+    ".screenshots/50_toggles_both_on.png - Initial state with both toggles ON",
+    ".screenshots/51_game_clock_off.png - Game clock OFF, timer buttons hidden",
+    ".screenshots/52_shot_clock_off.png - Shot clock OFF, VS divider shown",
+    ".screenshots/53_shot_clock_on.png - Shot clock back ON",
+    ".screenshots/54_both_off.png - Both toggles OFF"
+  ]
+}
