@@ -276,43 +276,20 @@ const Layout = ({
 
     return (
         <div className="min-h-screen" style={{...getBackgroundStyle()}}>
-            {/* Desktop Header - ticker and banner */}
+            {/* Desktop Header - banner full height with ticker overlay */}
             {!isMobileView && (
                 <div 
                     className="fixed top-0 right-0 z-50 transition-all duration-300"
                     style={{
                         left: isNavCollapsed ? '80px' : '320px',
-                        height: '200px' // Ticker (120px) + Banner (80px)
+                        height: '200px'
                     }}
                 >
-                    {/* Event Ticker */}
+                    {/* Banner - extends full height behind ticker */}
                     <div 
-                        className="w-full bg-slate-800 text-white shadow-sm" 
-                        style={{ 
-                            height: '120px',
-                            display: 'block',
-                            position: 'relative',
-                            zIndex: 100,
-                            overflow: 'hidden'
-                        }}
-                    >
-                        <EventsTicker 
-                            events={events}
-                            teams={teams}
-                            websiteStyle={websiteStyle}
-                            onEventClick={onEventClick}
-                            onTeamClick={onTeamClick}
-                        />
-                    </div>
-                    
-                    {/* League Banner */}
-                    <div 
-                        className="w-full px-4 py-3 border-b shadow-sm flex items-center"
+                        className="absolute inset-0 w-full flex items-end px-4 py-3 border-b shadow-sm"
                         style={{
-                            height: '80px',
-                            display: 'block',
-                            position: 'relative',
-                            zIndex: 99,
+                            zIndex: 98,
                             ...getZoneBgStyle(websiteStyle, 'banner')
                         }}
                     >
@@ -346,6 +323,29 @@ const Layout = ({
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Event Ticker - overlays top of banner */}
+                    <div 
+                        className="w-full text-white shadow-sm relative" 
+                        style={{ 
+                            height: '120px',
+                            display: 'block',
+                            position: 'relative',
+                            zIndex: 100,
+                            overflow: 'hidden',
+                            backgroundColor: websiteStyle.tickerTransparent 
+                                ? 'transparent' 
+                                : (websiteStyle.tickerColor || '#1e293b')
+                        }}
+                    >
+                        <EventsTicker 
+                            events={events}
+                            teams={teams}
+                            websiteStyle={websiteStyle}
+                            onEventClick={onEventClick}
+                            onTeamClick={onTeamClick}
+                        />
                     </div>
                 </div>
             )}
