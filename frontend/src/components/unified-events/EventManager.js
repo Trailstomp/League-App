@@ -257,6 +257,12 @@ const EventManager = ({ teams, currentUser, onEventUpdate, onEventClick, initial
                         teams={teams}
                         onLiveStats={(event) => {
                             setSelectedEvent(event);
+                            setStatsOnlyMode(false);
+                            setActiveView('live-stats');
+                        }}
+                        onStatsOnly={(event) => {
+                            setSelectedEvent(event);
+                            setStatsOnlyMode(true);
                             setActiveView('live-stats');
                         }}
                         onQuickScore={(event) => {
