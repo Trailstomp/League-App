@@ -330,7 +330,7 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
                     console.error('Failed to create blob from cropped canvas');
                     alert('Crop failed. Please try again.');
                 }
-            }, 'image/jpeg', 0.9);
+            }, 'image/jpeg', 0.95);
 
         } catch (error) {
             console.error('Error during crop:', error);
