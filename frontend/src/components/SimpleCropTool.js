@@ -144,15 +144,31 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
 
     }, [cropArea, imageDisplaySize, isLoading, cropScale]);
 
-    // Handle mouse events for dragging crop area AND resizing with handles
-    const handleMouseDown = (e) => {
-        const canvas = canvasRef.current;
+    // Helper to get coords from mouse or touch event
+    const getEventCoords = (e, canvas) => {
         const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        if (e.touches && e.touches.length > 0) {
+            return {
+                x: (e.touches[0].clientX - rect.left) * scaleX,
+                y: (e.touches[0].clientY - rect.top) * scaleY
+            };
+        }
+        return {
+            x: (e.clientX - rect.left) * scaleX,
+            y: (e.clientY - rect.top) * scaleY
+        };
+    };
+
+    // Handle mouse/touch events for dragging crop area AND resizing with handles
+    const handlePointerDown = (e) => {
+        e.preventDefault();
+        const canvas = canvasRef.current;
+        const { x, y } = getEventCoords(e, canvas);
         
         // Check if click is on resize handles (corners)
-        const handleSize = 12;
+        const handleSize = 20; // Larger hit area for touch
         const handles = [
             { x: cropArea.x - handleSize/2, y: cropArea.y - handleSize/2, type: 'nw' },
             { x: cropArea.x + cropArea.width - handleSize/2, y: cropArea.y - handleSize/2, type: 'ne' },
@@ -181,16 +197,14 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
         }
     };
 
-    const handleMouseMove = (e) => {
+    const handlePointerMove = (e) => {
         if (!isDragging) return;
+        e.preventDefault();
         
         const canvas = canvasRef.current;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const { x, y } = getEventCoords(e, canvas);
         
         if (isDragging === 'move') {
-            // Move the crop area
             const newX = Math.max(0, Math.min(x - dragStart.x, imageDisplaySize.width - cropArea.width));
             const newY = Math.max(0, Math.min(y - dragStart.y, imageDisplaySize.height - cropArea.height));
             
@@ -200,7 +214,6 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
                 y: newY
             }));
         } else {
-            // Resize the crop area with handles
             const deltaX = x - dragStart.x;
             const deltaY = y - dragStart.y;
             
@@ -224,7 +237,6 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
                     newArea.height = newHeight;
                 }
                 
-                // Maintain aspect ratio if specified
                 if (targetAspect.ratio) {
                     if (newArea.width !== prev.width) {
                         newArea.height = newArea.width / targetAspect.ratio;
@@ -233,7 +245,6 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
                     }
                 }
                 
-                // Keep within bounds
                 newArea.x = Math.max(0, Math.min(newArea.x, imageDisplaySize.width - newArea.width));
                 newArea.y = Math.max(0, Math.min(newArea.y, imageDisplaySize.height - newArea.height));
                 
@@ -244,7 +255,7 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
         }
     };
 
-    const handleMouseUp = () => {
+    const handlePointerUp = () => {
         setIsDragging(false);
     };
 
