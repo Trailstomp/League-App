@@ -341,20 +341,31 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 <div className="h-full flex flex-col items-center justify-center p-2">
                     {!isCollapsed && (
                         <div className="flex flex-col items-center w-full h-full">
-                            {/* Large Logo - fills available space - transparent background */}
-                            <div className="flex-1 flex items-center justify-center w-full" style={{ background: 'transparent' }}>
+                            {/* Large Logo - respects fit and background settings */}
+                            <div 
+                                className="flex-1 flex items-center justify-center w-full"
+                                style={{ 
+                                    backgroundColor: websiteStyle.navLogoBgTransparent !== false 
+                                        ? 'transparent' 
+                                        : (websiteStyle.navLogoBgColor || 'transparent')
+                                }}
+                            >
                                 {websiteStyle.navLogoUrl ? (
                                     <CachedImage 
                                         src={websiteStyle.navLogoUrl} 
                                         alt="League Logo" 
-                                        className="object-contain drop-shadow-lg"
+                                        className={`drop-shadow-lg ${
+                                            websiteStyle.navLogoFit === 'fill' ? 'w-full h-full' :
+                                            websiteStyle.navLogoFit === 'cover' ? '' : ''
+                                        }`}
                                         style={{
-                                            maxWidth: '100%',
-                                            maxHeight: websiteStyle.navLeagueName ? '150px' : '180px',
-                                            width: 'auto',
-                                            height: 'auto',
+                                            maxWidth: websiteStyle.navLogoFit === 'fill' ? '100%' : '100%',
+                                            maxHeight: websiteStyle.navLogoFit === 'fill' ? '100%' : (websiteStyle.navLeagueName ? '150px' : '180px'),
+                                            width: websiteStyle.navLogoFit === 'fill' ? '100%' : 'auto',
+                                            height: websiteStyle.navLogoFit === 'fill' ? '100%' : 'auto',
+                                            objectFit: websiteStyle.navLogoFit || 'contain',
                                             filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))',
-                                            background: 'transparent' // Preserve transparent PNGs
+                                            background: 'transparent'
                                         }}
                                         fallback={
                                             <div 
