@@ -3542,60 +3542,65 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
             {renderStickyHeader()}
 
             {/* Main Content with padding for fixed header */}
-            <div style={{ paddingTop: '320px' }}>
+            <div style={{ paddingTop: '260px' }}>
             {/* Tab Navigation - positioned below fixed header */}
-            <div className="bg-white border-b sticky" style={{ top: '320px', zIndex: 40 }}>
-                <div className="max-w-7xl mx-auto px-4">
-                    <div className="flex space-x-8">
+            <div className="bg-white border-b sticky" style={{ top: '260px', zIndex: 40 }}>
+                <div className="max-w-7xl mx-auto px-2 md:px-4">
+                    <div className="flex overflow-x-auto no-scrollbar">
                         <button
                             onClick={() => setActiveTab('home_stats')}
-                            className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                            className={`whitespace-nowrap py-2 px-2 md:px-3 border-b-2 font-medium text-xs md:text-sm ${
                                 activeTab === 'home_stats'
                                     ? 'border-blue-500 text-blue-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
+                            data-testid="tab-home-stats"
                         >
-                            🏠 {gameState.home_team.name} Stats
+                            {gameState.home_team.name}
                         </button>
                         <button
                             onClick={() => setActiveTab('away_stats')}
-                            className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                            className={`whitespace-nowrap py-2 px-2 md:px-3 border-b-2 font-medium text-xs md:text-sm ${
                                 activeTab === 'away_stats'
                                     ? 'border-red-500 text-red-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
+                            data-testid="tab-away-stats"
                         >
-                            ✈️ {gameState.away_team.name} Stats
+                            {gameState.away_team.name}
                         </button>
                         <button
                             onClick={() => setActiveTab('game_events')}
-                            className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                            className={`whitespace-nowrap py-2 px-2 md:px-3 border-b-2 font-medium text-xs md:text-sm ${
                                 activeTab === 'game_events'
                                     ? 'border-purple-500 text-purple-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
+                            data-testid="tab-game-events"
                         >
-                            📋 Game Events ({gameEvents.length})
+                            Events ({gameEvents.length})
                         </button>
                         <button
                             onClick={() => setActiveTab('live_chat')}
-                            className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                            className={`whitespace-nowrap py-2 px-2 md:px-3 border-b-2 font-medium text-xs md:text-sm ${
                                 activeTab === 'live_chat'
                                     ? 'border-green-500 text-green-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
+                            data-testid="tab-live-chat"
                         >
-                            💬 Live Chat
+                            Chat
                         </button>
                         <button
                             onClick={() => setActiveTab('broadcast')}
-                            className={`py-4 px-2 border-b-2 font-medium text-sm ${
+                            className={`whitespace-nowrap py-2 px-2 md:px-3 border-b-2 font-medium text-xs md:text-sm ${
                                 activeTab === 'broadcast'
                                     ? 'border-red-500 text-red-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
+                            data-testid="tab-broadcast"
                         >
-                            📺 Broadcast
+                            Broadcast
                         </button>
                     </div>
                 </div>
