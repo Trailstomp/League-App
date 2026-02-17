@@ -2255,7 +2255,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
     // Fixed sticky header with split team banners, clock, scores, and goalies
     const renderStickyHeader = () => (
         <div className="fixed top-0 left-0 right-0 z-50 shadow-md bg-black">
-            {/* Analog Scoreboard - Compact for Scorer */}
+            {/* Analog Scoreboard - Compact for Scorer - conditionally show clock */}
             <AnalogScoreboard
                 homeTeam={{
                     name: gameState.home_team.name,
@@ -2269,248 +2269,267 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                     logo: gameState.away_team.logo,
                     color: gameState.away_team.color || '#ef4444'
                 }}
-                timeRemaining={formatTime(gameState.time_remaining)}
+                timeRemaining={showGameClock ? formatTime(gameState.time_remaining) : '--:--'}
                 currentPeriod={gameState.current_period}
                 periodName={gameState.game_settings.periodName}
+                shotClock={showShotClock ? { time: shotClock.timeRemaining, isRunning: shotClock.isRunning } : null}
                 isLive={gameStarted}
                 isPaused={!gameState.is_running && gameStarted}
                 compact={true}
-                onTimeClick={() => {
+                onTimeClick={showGameClock ? () => {
                     setManualTimeInputs({
                         minutes: Math.floor(gameState.time_remaining / 60).toString(),
                         seconds: (gameState.time_remaining % 60).toString(),
                         period: gameState.current_period.toString()
                     });
                     setShowTimeEditor(true);
-                }}
+                } : null}
             />
 
-            {/* Event Title Bar */}
-            <div className="bg-gray-900 px-2 md:px-4 py-1 md:py-2 border-b border-gray-700">
-                <div className="text-center flex items-center justify-center gap-2">
-                    <span className="text-lg md:text-2xl">{sportConfig.icon}</span>
-                    <h2 className="text-sm md:text-lg font-bold text-white">{event?.title || 'Live Game Scoring'}</h2>
-                    <span className="text-xs md:text-sm text-gray-400">({sportConfig.name})</span>
+            {/* Event Title + Clock Toggles */}
+            <div className="bg-gray-900 px-2 md:px-4 py-1 border-b border-gray-700">
+                <div className="flex items-center justify-between max-w-7xl mx-auto">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                        <span className="text-base md:text-lg">{sportConfig.icon}</span>
+                        <h2 className="text-xs md:text-sm font-bold text-white truncate">{event?.title || 'Live Game'}</h2>
+                    </div>
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                        <label className="flex items-center gap-1 cursor-pointer" data-testid="game-clock-toggle">
+                            <span className="text-[10px] md:text-xs text-gray-400">Clock</span>
+                            <button
+                                onClick={() => setShowGameClock(!showGameClock)}
+                                className={`relative w-8 h-4 rounded-full transition-colors ${showGameClock ? 'bg-green-500' : 'bg-gray-600'}`}
+                                data-testid="game-clock-toggle-btn"
+                            >
+                                <span className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform ${showGameClock ? 'translate-x-4' : ''}`} />
+                            </button>
+                        </label>
+                        <label className="flex items-center gap-1 cursor-pointer" data-testid="shot-clock-toggle">
+                            <span className="text-[10px] md:text-xs text-gray-400">Shot</span>
+                            <button
+                                onClick={() => setShowShotClock(!showShotClock)}
+                                className={`relative w-8 h-4 rounded-full transition-colors ${showShotClock ? 'bg-green-500' : 'bg-gray-600'}`}
+                                data-testid="shot-clock-toggle-btn"
+                            >
+                                <span className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform ${showShotClock ? 'translate-x-4' : ''}`} />
+                            </button>
+                        </label>
+                    </div>
                 </div>
             </div>
 
-            {/* Control Buttons Bar - Split into Team Sections */}
+            {/* Control Buttons Bar */}
             <div className="bg-gray-50 border-b border-gray-200">
-                {/* Global Controls Row */}
-                <div className="flex items-center justify-center gap-1 md:gap-3 px-2 md:px-4 py-2 border-b border-gray-300">
-                    <button
-                        onClick={toggleTimer}
-                        className={`px-3 md:px-6 py-1.5 md:py-2 rounded-lg font-bold text-white text-xs md:text-base ${
-                            gameState.is_running 
-                                ? 'bg-red-600 hover:bg-red-700' 
-                                : 'bg-green-600 hover:bg-green-700'
-                        }`}
-                    >
-                        {gameState.is_running ? '⏸️ Pause' : '▶️ Start'}
-                    </button>
+                {/* Global Controls Row - more compact */}
+                <div className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1.5 border-b border-gray-300">
+                    {showGameClock && (
+                        <button
+                            onClick={toggleTimer}
+                            className={`px-2 md:px-4 py-1 md:py-1.5 rounded-lg font-bold text-white text-xs md:text-sm ${
+                                gameState.is_running 
+                                    ? 'bg-red-600 hover:bg-red-700' 
+                                    : 'bg-green-600 hover:bg-green-700'
+                            }`}
+                            data-testid="timer-toggle-btn"
+                        >
+                            {gameState.is_running ? '⏸ Pause' : '▶ Start'}
+                        </button>
+                    )}
+                    
+                    {showGameClock && (
+                        <button
+                            onClick={() => {
+                                setGameState(prev => ({
+                                    ...prev,
+                                    current_period: Math.min(prev.current_period + 1, prev.game_settings.periods),
+                                    time_remaining: prev.period_length * 60,
+                                    is_running: false
+                                }));
+                                
+                                const newPeriod = Math.min(gameState.current_period + 1, gameState.game_settings.periods);
+                                addGameEvent(`🔔 ${gameState.game_settings.periodName} ${gameState.current_period} ended. Starting ${gameState.game_settings.periodName} ${newPeriod}`, 'period_change');
+                            }}
+                            disabled={gameState.current_period >= gameState.game_settings.periods}
+                            className="px-2 md:px-3 py-1 md:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-xs md:text-sm disabled:opacity-50"
+                            data-testid="next-period-btn"
+                        >
+                            Next {gameState.game_settings.periodName}
+                        </button>
+                    )}
+                    
+                    {showGameClock && (
+                        <button
+                            onClick={() => {
+                                setManualTimeInputs({
+                                    minutes: Math.floor(gameState.time_remaining / 60).toString(),
+                                    seconds: (gameState.time_remaining % 60).toString(),
+                                    period: gameState.current_period.toString()
+                                });
+                                setShowTimeEditor(true);
+                            }}
+                            className="hidden md:block px-3 py-1.5 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium text-xs"
+                            data-testid="edit-time-btn"
+                        >
+                            Edit Time
+                        </button>
+                    )}
                     
                     <button
                         onClick={() => {
-                            setGameState(prev => ({
-                                ...prev,
-                                current_period: Math.min(prev.current_period + 1, prev.game_settings.periods),
-                                time_remaining: prev.period_length * 60,
-                                is_running: false
-                            }));
-                            
-                            const newPeriod = Math.min(gameState.current_period + 1, gameState.game_settings.periods);
-                            addGameEvent(`🔔 ${gameState.game_settings.periodName} ${gameState.current_period} ended. Starting ${gameState.game_settings.periodName} ${newPeriod}`, 'period_change');
-                        }}
-                        disabled={gameState.current_period >= gameState.game_settings.periods}
-                        className="px-2 md:px-4 py-1.5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-xs md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        ⏭️ Next {gameState.game_settings.periodName}
-                    </button>
-                    
-                    <button
-                        onClick={() => {
-                            setManualTimeInputs({
-                                minutes: Math.floor(gameState.time_remaining / 60).toString(),
-                                seconds: (gameState.time_remaining % 60).toString(),
-                                period: gameState.current_period.toString()
-                            });
-                            setShowTimeEditor(true);
-                        }}
-                        className="hidden md:block px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium"
-                    >
-                        🕒 Edit Time
-                    </button>
-                    
-                    <button
-                        onClick={() => {
-                            console.log('🔘 Manual save button clicked');
+                            console.log('Manual save button clicked');
                             autoSaveGameStats();
                         }}
-                        className="px-3 md:px-4 py-1.5 md:py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium text-xs md:text-base"
+                        className="px-2 md:px-3 py-1 md:py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium text-xs md:text-sm"
+                        data-testid="manual-save-btn"
                     >
-                        💾 Save
+                        Save
                     </button>
                     
                     {lastSaved && (
-                        <span className="hidden md:inline text-xs text-gray-600">
-                            Last saved: {Math.round((new Date() - lastSaved) / 1000)}s ago
+                        <span className="hidden md:inline text-[10px] text-gray-500">
+                            Saved {Math.round((new Date() - lastSaved) / 1000)}s ago
                         </span>
                     )}
                 </div>
 
-                {/* Redesigned Layout: Score | Buttons | Shot Clock | Buttons | Score */}
-                <div className="px-4 py-4 bg-gray-50 mt-2">
-                    <div className="flex items-stretch justify-between gap-4 max-w-7xl mx-auto">
-                        {/* Home Team: Score (Left) */}
+                {/* Score + Buttons Row - More compact */}
+                <div className="px-2 md:px-4 py-2 bg-gray-50">
+                    <div className="flex items-stretch justify-between gap-1 md:gap-3 max-w-7xl mx-auto">
+                        {/* Home Team: Score */}
                         <div 
-                            className="flex-1 flex items-center justify-center rounded-xl p-4 min-w-[120px]"
+                            className="flex items-center justify-center rounded-lg px-2 py-2 md:px-4 md:py-3 min-w-[70px] md:min-w-[100px]"
                             style={{ backgroundColor: `${gameState.home_team.color || '#3b82f6'}15` }}
+                            data-testid="home-score-display"
                         >
                             <div className="text-center">
                                 {gameState.home_team.logo && (
                                     <img 
                                         src={gameState.home_team.logo.startsWith('http') ? gameState.home_team.logo : `${backendUrl}${gameState.home_team.logo}`}
                                         alt={gameState.home_team.name}
-                                        className="w-12 h-12 mx-auto mb-2 rounded-full object-cover bg-white p-1 shadow"
+                                        className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-1 rounded-full object-cover bg-white p-0.5 shadow"
                                     />
                                 )}
-                                <div 
-                                    className="text-sm font-bold truncate"
-                                    style={{ color: gameState.home_team.color || '#1e40af' }}
-                                >
+                                <div className="text-[10px] md:text-xs font-bold truncate max-w-[70px]" style={{ color: gameState.home_team.color || '#1e40af' }}>
                                     {gameState.home_team.name}
                                 </div>
-                                <div 
-                                    className="text-5xl md:text-6xl font-bold"
-                                    style={{ color: gameState.home_team.color || '#3b82f6' }}
-                                >
+                                <div className="text-3xl md:text-5xl font-bold" style={{ color: gameState.home_team.color || '#3b82f6' }}>
                                     {gameState.home_team.score}
                                 </div>
                             </div>
                         </div>
 
-                        {/* Home Team: Action Buttons - Single Shot Button + Penalty */}
-                        <div className="flex flex-col gap-2">
-                            <div className="text-xs font-bold text-center text-gray-600 uppercase">{gameState.home_team.name}</div>
-                            <div className="flex gap-2 justify-center">
-                                <button
-                                    onClick={() => openTeamShotModal('home_team')}
-                                    className="w-20 h-20 md:w-24 md:h-24 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105"
-                                    title="Record Shot"
-                                    data-testid="home-shot-btn"
-                                >
-                                    <span className="text-3xl md:text-4xl">🏒</span>
-                                    <span className="text-sm md:text-base font-bold">SHOT</span>
-                                </button>
-                            </div>
-                            <div className="flex gap-2 justify-center">
+                        {/* Home Team: Action Buttons */}
+                        <div className="flex flex-col gap-1">
+                            <div className="text-[10px] font-bold text-center text-gray-500 uppercase truncate max-w-[100px]">{gameState.home_team.name}</div>
+                            <button
+                                onClick={() => openTeamShotModal('home_team')}
+                                className="w-14 h-14 md:w-20 md:h-20 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold flex flex-col items-center justify-center shadow transition-transform hover:scale-105"
+                                title="Record Shot"
+                                data-testid="home-shot-btn"
+                            >
+                                <span className="text-xl md:text-3xl">🏒</span>
+                                <span className="text-[10px] md:text-xs font-bold">SHOT</span>
+                            </button>
+                            <div className="flex gap-1">
                                 <button
                                     onClick={() => openTeamPenaltyModal('home_team')}
-                                    className="flex-1 h-10 bg-red-500 hover:bg-red-600 text-white rounded-lg font-bold flex items-center justify-center gap-1 shadow transition-transform hover:scale-105"
-                                    title="Record Penalty"
+                                    className="flex-1 h-7 md:h-8 bg-red-500 hover:bg-red-600 text-white rounded text-[10px] md:text-xs font-bold flex items-center justify-center gap-0.5 shadow"
                                     data-testid="home-penalty-btn"
                                 >
-                                    <span>⚠️</span>
-                                    <span className="text-sm">Penalty</span>
+                                    Pen
                                 </button>
                                 <button
                                     onClick={() => callTimeout('home')}
-                                    className="flex-1 h-10 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold flex items-center justify-center gap-1 shadow transition-transform hover:scale-105"
-                                    title={`Timeout (${timeouts.home} remaining)`}
+                                    className="flex-1 h-7 md:h-8 bg-orange-500 hover:bg-orange-600 text-white rounded text-[10px] md:text-xs font-bold flex items-center justify-center gap-0.5 shadow"
                                     data-testid="home-timeout-btn"
                                 >
-                                    <span>⏸️</span>
-                                    <span className="text-sm">TO ({timeouts.home})</span>
+                                    TO
                                 </button>
                             </div>
                         </div>
 
-                        {/* Center: Shot Clock */}
-                        <div className="flex flex-col items-center justify-center px-4 bg-gray-100 rounded-xl min-w-[100px]">
-                            <div className="text-xs font-bold text-gray-600 mb-1 uppercase">Shot Clock</div>
-                            <button
-                                onClick={resetShotClock}
-                                className={`text-4xl md:text-5xl font-bold font-mono px-4 py-2 rounded-xl border-2 cursor-pointer transition-all ${
-                                    shotClock.timeRemaining === 0
-                                        ? 'bg-red-600 text-white border-red-700 animate-pulse'
-                                        : shotClock.timeRemaining <= 10
-                                        ? 'bg-yellow-400 text-gray-900 border-yellow-500 animate-pulse'
-                                        : 'bg-white text-gray-800 border-gray-300 hover:border-blue-500'
-                                }`}
-                                title="Click to reset shot clock"
-                            >
-                                {shotClock.timeRemaining}
-                            </button>
-                            <label className="flex items-center gap-2 mt-2 cursor-pointer text-xs text-gray-700">
-                                <input
-                                    type="checkbox"
-                                    checked={stopClockOnGoal}
-                                    onChange={(e) => setStopClockOnGoal(e.target.checked)}
-                                    className="rounded w-4 h-4"
-                                />
-                                <span>⏸️ Stop on Goal</span>
-                            </label>
-                        </div>
-
-                        {/* Away Team: Action Buttons - Single Shot Button + Penalty */}
-                        <div className="flex flex-col gap-2">
-                            <div className="text-xs font-bold text-center text-gray-600 uppercase">{gameState.away_team.name}</div>
-                            <div className="flex gap-2 justify-center">
+                        {/* Center: Shot Clock (conditional) */}
+                        {showShotClock ? (
+                            <div className="flex flex-col items-center justify-center px-2 md:px-3 bg-gray-100 rounded-lg min-w-[60px] md:min-w-[80px]" data-testid="shot-clock-panel">
+                                <div className="text-[10px] font-bold text-gray-500 uppercase">Shot</div>
                                 <button
-                                    onClick={() => openTeamShotModal('away_team')}
-                                    className="w-20 h-20 md:w-24 md:h-24 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold flex flex-col items-center justify-center shadow-lg transition-transform hover:scale-105"
-                                    title="Record Shot"
-                                    data-testid="away-shot-btn"
+                                    onClick={resetShotClock}
+                                    className={`text-2xl md:text-4xl font-bold font-mono px-2 py-1 md:px-3 md:py-2 rounded-lg border-2 cursor-pointer transition-all ${
+                                        shotClock.timeRemaining === 0
+                                            ? 'bg-red-600 text-white border-red-700 animate-pulse'
+                                            : shotClock.timeRemaining <= 10
+                                            ? 'bg-yellow-400 text-gray-900 border-yellow-500 animate-pulse'
+                                            : 'bg-white text-gray-800 border-gray-300 hover:border-blue-500'
+                                    }`}
+                                    title="Click to reset shot clock"
+                                    data-testid="shot-clock-reset-btn"
                                 >
-                                    <span className="text-3xl md:text-4xl">🏒</span>
-                                    <span className="text-sm md:text-base font-bold">SHOT</span>
+                                    {shotClock.timeRemaining}
                                 </button>
+                                <label className="flex items-center gap-1 mt-1 cursor-pointer text-[10px] text-gray-600">
+                                    <input
+                                        type="checkbox"
+                                        checked={stopClockOnGoal}
+                                        onChange={(e) => setStopClockOnGoal(e.target.checked)}
+                                        className="rounded w-3 h-3"
+                                    />
+                                    <span>Stop on Goal</span>
+                                </label>
                             </div>
-                            <div className="flex gap-2 justify-center">
+                        ) : (
+                            <div className="flex items-center justify-center px-2 text-gray-300 text-xl font-bold">
+                                VS
+                            </div>
+                        )}
+
+                        {/* Away Team: Action Buttons */}
+                        <div className="flex flex-col gap-1">
+                            <div className="text-[10px] font-bold text-center text-gray-500 uppercase truncate max-w-[100px]">{gameState.away_team.name}</div>
+                            <button
+                                onClick={() => openTeamShotModal('away_team')}
+                                className="w-14 h-14 md:w-20 md:h-20 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold flex flex-col items-center justify-center shadow transition-transform hover:scale-105"
+                                title="Record Shot"
+                                data-testid="away-shot-btn"
+                            >
+                                <span className="text-xl md:text-3xl">🏒</span>
+                                <span className="text-[10px] md:text-xs font-bold">SHOT</span>
+                            </button>
+                            <div className="flex gap-1">
                                 <button
                                     onClick={() => openTeamPenaltyModal('away_team')}
-                                    className="flex-1 h-10 bg-red-500 hover:bg-red-600 text-white rounded-lg font-bold flex items-center justify-center gap-1 shadow transition-transform hover:scale-105"
-                                    title="Record Penalty"
+                                    className="flex-1 h-7 md:h-8 bg-red-500 hover:bg-red-600 text-white rounded text-[10px] md:text-xs font-bold flex items-center justify-center gap-0.5 shadow"
                                     data-testid="away-penalty-btn"
                                 >
-                                    <span>⚠️</span>
-                                    <span className="text-sm">Penalty</span>
+                                    Pen
                                 </button>
                                 <button
                                     onClick={() => callTimeout('away')}
-                                    className="flex-1 h-10 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold flex items-center justify-center gap-1 shadow transition-transform hover:scale-105"
-                                    title={`Timeout (${timeouts.away} remaining)`}
+                                    className="flex-1 h-7 md:h-8 bg-orange-500 hover:bg-orange-600 text-white rounded text-[10px] md:text-xs font-bold flex items-center justify-center gap-0.5 shadow"
                                     data-testid="away-timeout-btn"
                                 >
-                                    <span>⏸️</span>
-                                    <span className="text-sm">TO ({timeouts.away})</span>
+                                    TO
                                 </button>
                             </div>
                         </div>
 
-                        {/* Away Team: Score (Right) */}
+                        {/* Away Team: Score */}
                         <div 
-                            className="flex-1 flex items-center justify-center rounded-xl p-4 min-w-[120px]"
+                            className="flex items-center justify-center rounded-lg px-2 py-2 md:px-4 md:py-3 min-w-[70px] md:min-w-[100px]"
                             style={{ backgroundColor: `${gameState.away_team.color || '#ef4444'}15` }}
+                            data-testid="away-score-display"
                         >
                             <div className="text-center">
                                 {gameState.away_team.logo && (
                                     <img 
                                         src={gameState.away_team.logo.startsWith('http') ? gameState.away_team.logo : `${backendUrl}${gameState.away_team.logo}`}
                                         alt={gameState.away_team.name}
-                                        className="w-12 h-12 mx-auto mb-2 rounded-full object-cover bg-white p-1 shadow"
+                                        className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-1 rounded-full object-cover bg-white p-0.5 shadow"
                                     />
                                 )}
-                                <div 
-                                    className="text-sm font-bold truncate"
-                                    style={{ color: gameState.away_team.color || '#991b1b' }}
-                                >
+                                <div className="text-[10px] md:text-xs font-bold truncate max-w-[70px]" style={{ color: gameState.away_team.color || '#991b1b' }}>
                                     {gameState.away_team.name}
                                 </div>
-                                <div 
-                                    className="text-5xl md:text-6xl font-bold"
-                                    style={{ color: gameState.away_team.color || '#ef4444' }}
-                                >
+                                <div className="text-3xl md:text-5xl font-bold" style={{ color: gameState.away_team.color || '#ef4444' }}>
                                     {gameState.away_team.score}
                                 </div>
                             </div>
@@ -2518,7 +2537,6 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                     </div>
                 </div>
             </div>
-
         </div>
     );
 
