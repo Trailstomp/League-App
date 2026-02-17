@@ -348,16 +348,22 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
                     <div className="mb-4 border rounded overflow-hidden bg-slate-100">
                         <canvas
                             ref={canvasRef}
-                            className="cursor-move"
+                            className="cursor-move touch-none"
                             style={{ 
-                                width: imageDisplaySize.width, 
-                                height: imageDisplaySize.height,
+                                width: '100%', 
+                                maxWidth: imageDisplaySize.width,
+                                height: 'auto',
+                                aspectRatio: `${imageDisplaySize.width} / ${imageDisplaySize.height}`,
                                 display: 'block'
                             }}
-                            onMouseDown={handleMouseDown}
-                            onMouseMove={handleMouseMove}
-                            onMouseUp={handleMouseUp}
-                            onMouseLeave={handleMouseUp}
+                            onMouseDown={handlePointerDown}
+                            onMouseMove={handlePointerMove}
+                            onMouseUp={handlePointerUp}
+                            onMouseLeave={handlePointerUp}
+                            onTouchStart={handlePointerDown}
+                            onTouchMove={handlePointerMove}
+                            onTouchEnd={handlePointerUp}
+                            onTouchCancel={handlePointerUp}
                         />
                     </div>
 
