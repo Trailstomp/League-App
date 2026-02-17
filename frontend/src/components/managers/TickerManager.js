@@ -10,6 +10,9 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
         // Show cancelled events
         tickerShowCancelled: websiteStyle?.tickerShowCancelled || false,
         
+        // Transparent background
+        tickerTransparent: websiteStyle?.tickerTransparent || false,
+        
         // Event type filters
         tickerFilters: websiteStyle?.tickerFilters || {
             games: true,
