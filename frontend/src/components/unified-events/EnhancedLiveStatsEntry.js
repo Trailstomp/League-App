@@ -3621,11 +3621,12 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
             </div>
 
             {/* Bottom Actions */}
-            <div className="bg-white border-t px-6 py-4 sticky bottom-0">
+            <div className="bg-white border-t px-3 md:px-6 py-2 md:py-3 sticky bottom-0">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
                     <button
                         onClick={onCancel}
-                        className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                        className="px-3 md:px-6 py-1.5 md:py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-xs md:text-sm"
+                        data-testid="cancel-scoring-btn"
                     >
                         ← Cancel
                     </button>
