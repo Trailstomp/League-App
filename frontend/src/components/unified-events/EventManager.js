@@ -281,6 +281,7 @@ const EventManager = ({ teams, currentUser, onEventUpdate, onEventClick, initial
                         teams={teams}
                         currentUser={currentUser}
                         sportType={sportType}
+                        statsOnly={statsOnlyMode}
                         onSubmit={(statsData) => handleScoreSubmit(selectedEvent.id, statsData)}
                         onCancel={() => setActiveView('list')}
                     />
