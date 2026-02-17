@@ -296,14 +296,6 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
             `}
             style={{
                 backgroundColor: websiteStyle.navBackgroundColor || '#ffffff',
-                backgroundImage: websiteStyle.navBackgroundType === 'image' && websiteStyle.navBackgroundImage 
-                    ? `url(${websiteStyle.navBackgroundImage})`
-                    : websiteStyle.navBackgroundType === 'texture' && websiteStyle.navBackgroundTexture
-                    ? `url(${process.env.REACT_APP_BACKEND_URL}/api/uploads/textures/${websiteStyle.navBackgroundTexture}.png)`
-                    : 'none',
-                backgroundSize: websiteStyle.navBackgroundType === 'texture' ? '256px 256px' : 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: websiteStyle.navBackgroundType === 'texture' ? 'repeat' : 'no-repeat',
                 height: '100%'
             }}
         >
@@ -327,12 +319,23 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 </div>
             )}
             
-            {/* Header with Large Logo - SAME HEIGHT AS TICKER + BANNER (200px) */}
+            {/* Header with Large Logo - background only on this section */}
             <div 
                 className="flex-shrink-0 relative border-b" 
                 style={{
-                    height: '200px', // Match ticker (120px) + banner (80px)
-                    borderColor: websiteStyle.navBorderColor || '#e2e8f0'
+                    height: '200px',
+                    borderColor: websiteStyle.navBorderColor || '#e2e8f0',
+                    backgroundImage: websiteStyle.navBackgroundType === 'image' && websiteStyle.navBackgroundImage 
+                        ? `url(${websiteStyle.navBackgroundImage})`
+                        : websiteStyle.navBackgroundType === 'texture' && websiteStyle.navBackgroundTexture
+                        ? `url(${process.env.REACT_APP_BACKEND_URL}/api/uploads/textures/${websiteStyle.navBackgroundTexture}.png)`
+                        : 'none',
+                    backgroundSize: websiteStyle.navBackgroundType === 'texture' ? '256px 256px' : 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: websiteStyle.navBackgroundType === 'texture' ? 'repeat' : 'no-repeat',
+                    backgroundColor: websiteStyle.navBackgroundType === 'color' 
+                        ? (websiteStyle.navBackgroundColor || '#ffffff')
+                        : undefined
                 }}
             >
                 <div className="h-full flex flex-col items-center justify-center p-2">
