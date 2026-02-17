@@ -579,11 +579,15 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
         );
     }
 
+    const isTransparentMain = websiteStyle?.tickerTransparent;
+    const mainBgColor = isTransparentMain ? 'transparent' : (websiteStyle?.tickerColor || '#1e293b');
+    const mainFadeColor = isTransparentMain ? 'rgba(0,0,0,0)' : (websiteStyle?.tickerColor || '#1e293b');
+
     return (
         <div 
             className="w-full py-2 overflow-hidden relative"
             style={{ 
-                backgroundColor: websiteStyle?.tickerColor || '#1e293b',
+                backgroundColor: mainBgColor,
                 minHeight: '90px'
             }}
             onMouseEnter={() => setIsHovering(true)}
@@ -591,14 +595,18 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
             data-testid="events-ticker"
         >
             {/* Gradient overlays for smooth edges */}
-            <div 
-                className="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none"
-                style={{ background: `linear-gradient(to right, ${websiteStyle?.tickerColor || '#1e293b'}, transparent)` }}
-            />
-            <div 
-                className="absolute right-0 top-0 bottom-0 w-8 z-10 pointer-events-none"
-                style={{ background: `linear-gradient(to left, ${websiteStyle?.tickerColor || '#1e293b'}, transparent)` }}
-            />
+            {!isTransparentMain && (
+                <>
+                    <div 
+                        className="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none"
+                        style={{ background: `linear-gradient(to right, ${mainFadeColor}, transparent)` }}
+                    />
+                    <div 
+                        className="absolute right-0 top-0 bottom-0 w-8 z-10 pointer-events-none"
+                        style={{ background: `linear-gradient(to left, ${mainFadeColor}, transparent)` }}
+                    />
+                </>
+            )}
             
             <div 
                 ref={tickerRef}
