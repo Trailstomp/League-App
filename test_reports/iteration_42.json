@@ -1,0 +1,66 @@
+{
+  "summary": "Tested 'Stats Only' mode feature for live scoring. All 7 features verified and working correctly: 3-column ScoringSelector grid, Stats Only mode entry with clocks OFF, header Stats Only button toggle, amber/gray highlighting, and independent clock toggle compatibility.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_42.json"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (skipped per request)",
+    "frontend": "100%"
+  },
+  "test_credentials": "email=testadmin2@test.com, password=admin123",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Stats Only mode feature fully tested. ScoringSelector shows 3 options in 3-column grid. Stats Only button in header toggles both clocks and uses amber color when active. Login via API, store user object from response.data.user in localStorage as 'mlbl_current_user'. To access ScoringSelector: Events & Schedule -> click button[title='Enter Scores'] on a game event row.",
+  "features_tested": {
+    "scoring_selector_3_options": {
+      "status": "PASSED",
+      "details": "ScoringSelector shows 3 options: Live Stats Entry, Stats Only, Quick Score Entry in a 3-column grid (md:grid-cols-3)"
+    },
+    "stats_only_from_selector": {
+      "status": "PASSED",
+      "details": "Clicking Stats Only card + Start opens EnhancedLiveStatsEntry with both clocks OFF (game clock shows '--:--', no Start/Pause/Next Quarter buttons)"
+    },
+    "stats_only_button_in_header": {
+      "status": "PASSED",
+      "details": "Stats Only button exists in sticky header next to Clock/Shot toggles with data-testid='stats-only-btn'"
+    },
+    "stats_only_button_toggle_on": {
+      "status": "PASSED",
+      "details": "Clicking Stats Only in header disables both toggles and switches tab to home stats"
+    },
+    "stats_only_button_toggle_off": {
+      "status": "PASSED",
+      "details": "Clicking Stats Only again re-enables both clocks (acts as a toggle)"
+    },
+    "stats_only_button_highlighting": {
+      "status": "PASSED",
+      "details": "When Stats Only active: bg-amber-500 text-white (amber). When inactive: bg-gray-700 text-gray-300 (gray)"
+    },
+    "independent_clock_toggles": {
+      "status": "PASSED",
+      "details": "Game clock and shot clock toggles still work independently. Stats Only button reflects state (amber only when BOTH clocks off)"
+    }
+  },
+  "screenshots_taken": [
+    ".screenshots/70_events_list_admin.png - Events list as admin with Enter Scores button visible",
+    ".screenshots/71_scoring_selector.png - ScoringSelector with 3 mode cards in row",
+    ".screenshots/72_stats_only_selected.png - Stats Only card selected in ScoringSelector",
+    ".screenshots/73_stats_only_mode.png - Live Stats Entry in Stats Only mode (clocks OFF)",
+    ".screenshots/74_stats_only_toggled_off.png - After clicking Stats Only to turn clocks ON",
+    ".screenshots/75_stats_only_toggled_back_on.png - After clicking Stats Only again (clocks OFF)",
+    ".screenshots/76_independent_toggles.png - Independent clock toggle test (game clock OFF, shot clock ON)"
+  ]
+}
