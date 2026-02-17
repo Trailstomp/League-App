@@ -208,10 +208,46 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                {/* Event Type Filters */}
+                        
+                        <div className="pt-2 border-t">
+                            <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50">
+                                <div className="flex items-center space-x-3">
+                                    <button
+                                        onClick={() => {
+                                            const newConfig = {
+                                                ...tickerConfig,
+                                                tickerTransparent: !tickerConfig.tickerTransparent
+                                            };
+                                            setTickerConfig(newConfig);
+                                            saveConfig(newConfig);
+                                        }}
+                                        className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${
+                                            tickerConfig.tickerTransparent 
+                                                ? 'bg-blue-600 text-white' 
+                                                : 'bg-slate-300 text-slate-600'
+                                        }`}
+                                        data-testid="ticker-transparent-toggle"
+                                    >
+                                        {tickerConfig.tickerTransparent ? '✓' : ''}
+                                    </button>
+                                    <div>
+                                        <div className="font-medium text-slate-800">
+                                            Transparent Ticker
+                                        </div>
+                                        <div className="text-xs text-slate-500">
+                                            Let the banner show through behind the ticker
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={`px-2 py-1 rounded text-xs font-medium ${
+                                    tickerConfig.tickerTransparent 
+                                        ? 'bg-blue-100 text-blue-800' 
+                                        : 'bg-slate-200 text-slate-600'
+                                }`}>
+                                    {tickerConfig.tickerTransparent ? 'Transparent' : 'Solid'}
+                                </div>
+                            </div>
+                        </div>
                 <div className="bg-white rounded-lg shadow-sm border p-6">
                     <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
                         🔽 Event Type Filters
