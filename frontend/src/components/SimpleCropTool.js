@@ -268,13 +268,7 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
         }
 
         try {
-            // Create output canvas with target dimensions
-            const outputCanvas = document.createElement('canvas');
-            outputCanvas.width = cropArea.width;
-            outputCanvas.height = cropArea.height;
-            const ctx = outputCanvas.getContext('2d');
-
-            // Calculate source coordinates on original image (simplified)
+            // Calculate source coordinates on original image
             const scaleX = originalImage.width / imageDisplaySize.width;
             const scaleY = originalImage.height / imageDisplaySize.height;
             
@@ -282,28 +276,53 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
             const sourceY = cropArea.y * scaleY;
             const sourceWidth = cropArea.width * scaleX;
             const sourceHeight = cropArea.height * scaleY;
-            
-            console.log('🎯 Crop coordinates:', {
-                cropArea: cropArea,
-                sourceX: sourceX,
-                sourceY: sourceY,
-                sourceWidth: sourceWidth,
-                sourceHeight: sourceHeight
-            });
 
-            // Draw cropped portion
+            // Minimum output resolutions per target type for crisp results
+            const minOutputWidths = {
+                banner: 1920,
+                wide_banner: 1920,
+                background: 1920,
+                navigation: 800,
+                sidebar: 800,
+                logo: 512,
+                square: 512
+            };
+            const minWidth = minOutputWidths[targetType] || 1200;
+
+            // Use source (original) dimensions for output — this preserves full resolution
+            // If the source crop is smaller than our minimum, scale up to minimum
+            let outputWidth = Math.round(sourceWidth);
+            let outputHeight = Math.round(sourceHeight);
+            
+            if (outputWidth < minWidth) {
+                const upscale = minWidth / outputWidth;
+                outputWidth = minWidth;
+                outputHeight = Math.round(outputHeight * upscale);
+            }
+
+            // Create output canvas at full resolution
+            const outputCanvas = document.createElement('canvas');
+            outputCanvas.width = outputWidth;
+            outputCanvas.height = outputHeight;
+            const ctx = outputCanvas.getContext('2d');
+
+            // Use high-quality image smoothing
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            // Draw cropped portion at full resolution
             ctx.drawImage(
                 originalImage,
                 sourceX, sourceY, sourceWidth, sourceHeight,
-                0, 0, cropArea.width, cropArea.height
+                0, 0, outputWidth, outputHeight
             );
 
-            // Convert to data URL
+            // Convert to data URL at high quality
             outputCanvas.toBlob((blob) => {
                 if (blob) {
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                        console.log('✅ Crop completed successfully');
+                        console.log('Crop completed:', outputWidth, 'x', outputHeight, 'px');
                         onCrop(e.target.result);
                     };
                     reader.readAsDataURL(blob);
