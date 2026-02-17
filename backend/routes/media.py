@@ -2229,7 +2229,8 @@ async def add_images_to_gallery(
         else:
             # Local upload fallback when Google Drive is not configured
             import os
-            gallery_dir = os.path.join(UPLOADS_DIR, "galleries", gallery_id)
+            uploads_base = "/app/uploads"
+            gallery_dir = os.path.join(uploads_base, "galleries", gallery_id)
             os.makedirs(gallery_dir, exist_ok=True)
             
             for i, file in enumerate(files):
