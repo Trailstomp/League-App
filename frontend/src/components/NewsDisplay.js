@@ -36,7 +36,7 @@ const NewsDisplay = ({ teamId = null, maxItems = 5, showTeamFilter = false }) =>
                 // Filter active and non-expired items
                 const activeItems = (items || [])
                     .filter(item => {
-                        if (!item.active) return false;
+                        if (item.active === false) return false;
                         if (!item.expirationDate) return true;
                         return new Date(item.expirationDate) > new Date();
                     })
