@@ -6,7 +6,7 @@ import sys
 from datetime import datetime
 
 # Backend URL from environment
-BACKEND_URL = "https://game-time-controls.preview.emergentagent.com/api"
+BACKEND_URL = "https://standings-fix.preview.emergentagent.com/api"
 
 def test_api_health():
     """Test if the API is responding"""
