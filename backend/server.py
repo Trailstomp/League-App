@@ -1060,15 +1060,17 @@ async def update_news_items(news_data: List[Dict[str, Any]]):
         league_doc["newsItems"] = news_data
         league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
         
-        # Save back to database
-        league_doc.pop('_id', None)
-        result = await db.league_data.replace_one(
+        # Save using $set to avoid overwriting other fields
+        result = await db.league_data.update_one(
             {"id": "main_league"},
-            league_doc,
+            {"$set": {
+                "newsItems": news_data,
+                "lastUpdated": datetime.now(timezone.utc).isoformat()
+            }},
             upsert=True
         )
         
-        logger.info(f"✅ News items updated - {len(news_data)} items, modified: {result.modified_count}")
+        logger.info(f"News items updated - {len(news_data)} items")
         
         return {
             "status": "success", 
