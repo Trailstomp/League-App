@@ -65,13 +65,15 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
     const handleSave = () => saveConfig(tickerConfig);
 
     const handleFilterChange = (filterType) => {
-        setTickerConfig(prev => ({
-            ...prev,
+        const newConfig = {
+            ...tickerConfig,
             tickerFilters: {
-                ...prev.tickerFilters,
-                [filterType]: !prev.tickerFilters[filterType]
+                ...tickerConfig.tickerFilters,
+                [filterType]: !tickerConfig.tickerFilters[filterType]
             }
-        }));
+        };
+        setTickerConfig(newConfig);
+        saveConfig(newConfig);
     };
 
     const getEventCount = (eventType) => {
