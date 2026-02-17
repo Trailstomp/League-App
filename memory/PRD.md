@@ -31,8 +31,19 @@ Comprehensive league management portal for multiple sports with team management,
 ### User Guide Updates (Feb 15, 2026)
 - [x] All 9 help docs updated with latest features
 
-## Pending
-- Media gallery data is empty - user may need to re-create galleries
+### Live Scoring Clock Toggles (Feb 17, 2026)
+- [x] Independent toggle switches for Game Clock and Shot Clock in the sticky header
+- [x] Game Clock OFF: scoreboard shows '--:--', Start/Pause/Next Period/Edit Time buttons hidden
+- [x] Shot Clock OFF: center panel hidden, replaced with VS divider
+- [x] Both toggles work independently
+- [x] Layout rearranged for compactness: smaller buttons, tighter spacing, reduced header height (320px -> 260px)
+- [x] Tabs use compact text without emojis, horizontally scrollable on mobile
+- [x] Shot/Penalty/Timeout buttons are smaller on mobile
+- [x] Score displays use smaller logos and fonts on mobile
+
+## Pending Issues
+- P1: Media gallery data is empty - user may need to re-create galleries
+- P2: Ticker "Show Practice" setting persistence unverified
 - Google Drive needs OAuth refresh token
 - Email sending requires valid SMTP credentials
 
@@ -41,9 +52,12 @@ Comprehensive league management portal for multiple sports with team management,
 - P1: Office 365 integration for File Manager
 - P2: SMTP credential configuration
 - P2: Refactor server.py into route files
+- P2: Refactor WebsiteDesignManager.js (large component)
 
 ## Key Files
-- `frontend/src/components/UserPreferences.js` - Site Style panel (no FAB, triggered from nav)
+- `frontend/src/components/unified-events/EnhancedLiveStatsEntry.js` - Main live scoring component (clock toggles, compact layout)
+- `frontend/src/components/AnalogScoreboard.js` - Scoreboard display (supports shotClock prop)
+- `frontend/src/components/UserPreferences.js` - Site Style panel
 - `frontend/src/components/Navigation.js` - Added "Site Style" gear button
 - `frontend/src/components/EventCardPopup.js` - Event detail popup modal
 - `frontend/src/App.js` - State management, event click handling, theme persistence
