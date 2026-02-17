@@ -3607,7 +3607,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
             </div>
 
             {/* Main Content */}
-            <div className="p-6" style={{ paddingTop: '20px' }}>
+            <div className="p-3 md:p-6" style={{ paddingTop: '12px' }}>
                 <div className="max-w-7xl mx-auto">
                     {/* Active Penalties Display */}
                     {renderActivePenalties()}
