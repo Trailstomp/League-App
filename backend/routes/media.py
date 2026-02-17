@@ -783,155 +783,106 @@ async def upload_and_create_gallery(
         if not gallery_name or not gallery_name.strip():
             raise HTTPException(status_code=400, detail="Gallery name is required")
         
-        # Get Google Drive configuration
-        logger.info("🔍 Looking for Google Drive configuration...")
+        # Check for Google Drive configuration
         config = await db.cloud_storage.find_one({"id": "main_cloud_storage"})
-        logger.info(f"🔍 Config found: {config is not None}")
+        use_google_drive = config and config.get("googleDrive", {}).get("refreshToken")
         
-        if not config:
-            logger.error("❌ No cloud storage config found in database")
-            raise HTTPException(status_code=400, detail="Google Drive not configured - no config found")
-            
-        google_drive_config = config.get("googleDrive", {})
-        logger.info(f"🔍 Google Drive config exists: {bool(google_drive_config)}")
-        logger.info(f"🔍 Refresh token exists: {bool(google_drive_config.get('refreshToken'))}")
-        
-        if not google_drive_config.get("refreshToken"):
-            logger.error("❌ No refresh token found in Google Drive config")
-            raise HTTPException(status_code=400, detail="Google Drive not authorized - no refresh token")
-        
-        google_drive_config = config["googleDrive"]
-        refresh_token = google_drive_config["refreshToken"]
-        folder_id = google_drive_config.get("folderId")
-        folder_name = google_drive_config.get("folderName", "MLBLGallery2")
-        
-        logger.info(f"🔧 Drive config - Folder ID: {folder_id}")
-        logger.info(f"🔧 Drive config - Refresh token length: {len(refresh_token) if refresh_token else 0}")
-        
-        # If no folder ID, create/find the main folder
-        if not folder_id:
-            logger.warning("⚠️ No folder ID found - creating main folder")
-        
-        # Get or refresh access token
-        access_token = await get_fresh_access_token(google_drive_config, refresh_token)
-        
-        # If no folder ID, create/find the main folder now with fresh access token
-        if not folder_id:
-            folder_id = await create_main_folder(access_token, folder_name)
-            
-            # Update the configuration with the folder ID
-            config["googleDrive"]["folderId"] = folder_id
-            await db.cloud_storage.replace_one(
-                {"id": "main_cloud_storage"},
-                config,
-                upsert=True
-            )
-            logging.info(f"✅ Folder ID saved to database: {folder_id}")
-        
-        # Create gallery-specific folder
-        gallery_folder_id = await create_gallery_folder(access_token, folder_id, gallery_name)
-        logger.info(f"📁 Gallery folder created: {gallery_folder_id}")
-        
-        # Create credentials with the fresh access token
-        creds = Credentials(
-            token=access_token,
-            refresh_token=refresh_token,
-            token_uri="https://oauth2.googleapis.com/token",
-            client_id=google_drive_config["clientId"],
-            client_secret=google_drive_config["clientSecret"]
-        )
-        
-        # Upload files to Google Drive with retry on token expiration
         uploaded_media_items = []
-        import requests
+        gallery_folder_id = None
         
-        for i, file in enumerate(files):
-            try:
-                logger.info(f"📁 Uploading file {i+1}/{len(files)}: {file.filename}")
-                
-                # Read file content
-                file_content = await file.read()
-                logger.info(f"📁 File content read - Size: {len(file_content)} bytes")
-                
-                # Upload to Google Drive with retry logic
-                upload_success = False
-                retry_count = 0
-                max_retries = 2
-                
-                while not upload_success and retry_count <= max_retries:
-                    upload_response = requests.post(
-                        'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
-                        headers={'Authorization': f'Bearer {access_token}'},
-                        files={
-                            'metadata': (None, json.dumps({
-                                'name': file.filename,
-                                'parents': [gallery_folder_id]  # Use gallery-specific folder
-                            }), 'application/json'),
-                            'data': (file.filename, file_content, file.content_type)
-                        },
-                        timeout=30
-                    )
+        if use_google_drive:
+            google_drive_config = config["googleDrive"]
+            refresh_token = google_drive_config["refreshToken"]
+            folder_id = google_drive_config.get("folderId")
+            folder_name = google_drive_config.get("folderName", "MLBLGallery2")
+            
+            access_token = await get_fresh_access_token(google_drive_config, refresh_token)
+            
+            if not folder_id:
+                folder_id = await create_main_folder(access_token, folder_name)
+                config["googleDrive"]["folderId"] = folder_id
+                await db.cloud_storage.replace_one({"id": "main_cloud_storage"}, config, upsert=True)
+            
+            gallery_folder_id = await create_gallery_folder(access_token, folder_id, gallery_name)
+            
+            import requests as http_requests
+            
+            for i, file in enumerate(files):
+                try:
+                    file_content = await file.read()
+                    upload_success = False
+                    retry_count = 0
                     
-                    logger.info(f"📁 Google Drive upload response: {upload_response.status_code} (attempt {retry_count + 1})")
+                    while not upload_success and retry_count <= 2:
+                        upload_response = http_requests.post(
+                            'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+                            headers={'Authorization': f'Bearer {access_token}'},
+                            files={
+                                'metadata': (None, json.dumps({'name': file.filename, 'parents': [gallery_folder_id]}), 'application/json'),
+                                'data': (file.filename, file_content, file.content_type)
+                            },
+                            timeout=30
+                        )
+                        if upload_response.status_code == 200:
+                            upload_success = True
+                        elif upload_response.status_code == 401 and retry_count < 2:
+                            access_token = await get_fresh_access_token(google_drive_config, refresh_token)
+                            retry_count += 1
+                        else:
+                            break
                     
                     if upload_response.status_code == 200:
-                        upload_success = True
-                    elif upload_response.status_code == 401 and retry_count < max_retries:
-                        # Token expired, refresh and retry
-                        logger.warning(f"🔄 Token expired during upload, refreshing... (retry {retry_count + 1})")
-                        access_token = await get_fresh_access_token(google_drive_config, refresh_token)
-                        retry_count += 1
-                    else:
-                        # Other error or max retries reached
-                        break
-                
-                if upload_response.status_code == 200:
-                    file_data = upload_response.json()
-                    drive_file_id = file_data['id']
-                    
-                    # Make the file publicly accessible
-                    try:
-                        make_file_public_response = requests.post(
-                            f'https://www.googleapis.com/drive/v3/files/{drive_file_id}/permissions',
-                            headers={'Authorization': f'Bearer {access_token}'},
-                            json={
-                                'role': 'reader',
-                                'type': 'anyone'
-                            },
-                            timeout=15
-                        )
+                        file_data = upload_response.json()
+                        drive_file_id = file_data['id']
+                        try:
+                            http_requests.post(
+                                f'https://www.googleapis.com/drive/v3/files/{drive_file_id}/permissions',
+                                headers={'Authorization': f'Bearer {access_token}'},
+                                json={'role': 'reader', 'type': 'anyone'}, timeout=15
+                            )
+                        except Exception:
+                            pass
                         
-                        if make_file_public_response.status_code == 200:
-                            logger.info(f"✅ File made public: {drive_file_id}")
-                        else:
-                            logger.warning(f"⚠️ Could not make file public: {make_file_public_response.status_code}")
-                    except Exception as perm_error:
-                        logger.warning(f"⚠️ Error making file public: {perm_error}")
+                        uploaded_media_items.append({
+                            "id": str(uuid.uuid4()),
+                            "filename": file.filename,
+                            "url": f"https://drive.google.com/thumbnail?id={drive_file_id}&sz=w1000",
+                            "thumbnailUrl": f"https://drive.google.com/thumbnail?id={drive_file_id}&sz=w400",
+                            "googleDriveId": drive_file_id,
+                            "type": "image" if file.content_type.startswith("image/") else "video" if file.content_type.startswith("video/") else "file",
+                            "size": len(file_content),
+                            "uploadedAt": datetime.now(timezone.utc).isoformat()
+                        })
+                except Exception as file_error:
+                    logger.error(f"Error uploading {file.filename}: {file_error}")
+                    continue
+        else:
+            # Local upload fallback
+            import os
+            gallery_id_temp = str(uuid.uuid4())
+            gallery_dir = os.path.join("/app/uploads", "galleries", gallery_id_temp)
+            os.makedirs(gallery_dir, exist_ok=True)
+            
+            for i, file in enumerate(files):
+                try:
+                    file_content = await file.read()
+                    ext = os.path.splitext(file.filename)[1] if file.filename else '.jpg'
+                    safe_name = f"img_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{i}{ext}"
+                    with open(os.path.join(gallery_dir, safe_name), 'wb') as f:
+                        f.write(file_content)
                     
-                    # Create media item dictionary with proper public URLs
-                    media_item = {
+                    uploaded_media_items.append({
                         "id": str(uuid.uuid4()),
                         "filename": file.filename,
-                        "url": f"https://drive.google.com/thumbnail?id={drive_file_id}&sz=w1000",  # Thumbnail format for better loading
-                        "thumbnailUrl": f"https://drive.google.com/thumbnail?id={drive_file_id}&sz=w400",  # Smaller thumbnail
-                        "googleDriveId": drive_file_id,
-                        "type": "image" if file.content_type.startswith("image/") else "video" if file.content_type.startswith("video/") else "file",
+                        "url": f"/api/uploads/galleries/{gallery_id_temp}/{safe_name}",
+                        "thumbnailUrl": f"/api/uploads/galleries/{gallery_id_temp}/{safe_name}",
+                        "type": "image" if file.content_type and file.content_type.startswith("image/") else "file",
                         "size": len(file_content),
                         "uploadedAt": datetime.now(timezone.utc).isoformat()
-                    }
-                    
-                    uploaded_media_items.append(media_item)
-                    logger.info(f"✅ File uploaded: {file.filename} -> {drive_file_id}")
-                else:
-                    error_msg = await handle_drive_error(upload_response, "file upload")
-                    logger.error(f"❌ Upload failed for {file.filename}: {error_msg}")
-                    # Continue with other files rather than failing completely
-                    
-            except Exception as file_error:
-                logger.error(f"❌ Error uploading file {file.filename}: {file_error}")
-                import traceback
-                logger.error(f"❌ File upload traceback: {traceback.format_exc()}")
-                continue
+                    })
+                except Exception as file_error:
+                    logger.error(f"Error saving {file.filename}: {file_error}")
+                    continue
         
         if not uploaded_media_items:
             raise HTTPException(status_code=400, detail="No files were successfully uploaded to Google Drive")
