@@ -139,14 +139,15 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [showShotMenu]);
 
-    // Shot Clock - Sync with game clock
+    // Shot Clock - Sync with game clock (only when shot clock is visible)
     useEffect(() => {
+        if (!showShotClock) return;
         if (gameState.is_running && !shotClock.isRunning) {
             setShotClock(prev => ({ ...prev, isRunning: true }));
         } else if (!gameState.is_running && shotClock.isRunning) {
             setShotClock(prev => ({ ...prev, isRunning: false }));
         }
-    }, [gameState.is_running]);
+    }, [gameState.is_running, showShotClock]);
 
     // Shot Clock - Countdown
     useEffect(() => {
