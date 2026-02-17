@@ -2294,7 +2294,33 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                         <span className="text-base md:text-lg">{sportConfig.icon}</span>
                         <h2 className="text-xs md:text-sm font-bold text-white truncate">{event?.title || 'Live Game'}</h2>
                     </div>
-                    <div className="flex items-center gap-3 flex-shrink-0">
+                    <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+                        <button
+                            onClick={() => {
+                                const isStatsOnly = !showGameClock && !showShotClock;
+                                if (isStatsOnly) {
+                                    // Turn clocks back on
+                                    setShowGameClock(true);
+                                    setShowShotClock(true);
+                                } else {
+                                    // Enter stats-only mode
+                                    setShowGameClock(false);
+                                    setShowShotClock(false);
+                                    if (gameState.is_running) {
+                                        setGameState(prev => ({ ...prev, is_running: false }));
+                                    }
+                                    setActiveTab('home_stats');
+                                }
+                            }}
+                            className={`px-2 py-0.5 rounded text-[10px] md:text-xs font-bold transition-colors ${
+                                !showGameClock && !showShotClock
+                                    ? 'bg-amber-500 text-white'
+                                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                            }`}
+                            data-testid="stats-only-btn"
+                        >
+                            Stats Only
+                        </button>
                         <label className="flex items-center gap-1 cursor-pointer" data-testid="game-clock-toggle">
                             <span className="text-[10px] md:text-xs text-gray-400">Clock</span>
                             <button
