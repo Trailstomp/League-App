@@ -1,32 +1,44 @@
 import React, { useState } from 'react';
 
-const ScoringSelector = ({ event, teams, onLiveStats, onQuickScore, onCancel }) => {
+const ScoringSelector = ({ event, teams, onLiveStats, onStatsOnly, onQuickScore, onCancel }) => {
     const [selectedMode, setSelectedMode] = useState(null);
     
     const scoringModes = [
         {
             id: 'live',
-            title: '📊 Live Stats Entry',
+            title: 'Live Stats Entry',
             description: 'Full game tracking with timer, player stats, and real-time updates',
             features: [
-                '⏱️ Game timer with periods',
-                '👥 Individual player statistics',
-                '📈 Live spectator view',
-                '💬 Social chat integration',
-                '📸 Photo/video uploads'
+                'Game timer with periods',
+                'Individual player statistics',
+                'Live spectator view',
+                'Social chat integration'
             ],
             color: 'bg-green-50 border-green-200 text-green-900',
             buttonColor: 'bg-green-600 hover:bg-green-700'
         },
         {
+            id: 'stats_only',
+            title: 'Stats Only',
+            description: 'Track player stats without clocks — perfect for casual or untimed games',
+            features: [
+                'No game clock or shot clock',
+                'Full player stat tracking',
+                'Quick goal/assist/shot entry',
+                'Live spectator view'
+            ],
+            color: 'bg-amber-50 border-amber-200 text-amber-900',
+            buttonColor: 'bg-amber-600 hover:bg-amber-700'
+        },
+        {
             id: 'quick',
-            title: '⚡ Quick Score Entry',
+            title: 'Quick Score Entry',
             description: 'Simple final score entry for completed games',
             features: [
-                '🎯 Fast score input',
-                '🏆 Winner determination',
-                '📊 Basic game statistics',
-                '💾 Instant standings update'
+                'Fast score input',
+                'Winner determination',
+                'Basic game statistics',
+                'Instant standings update'
             ],
             color: 'bg-blue-50 border-blue-200 text-blue-900',
             buttonColor: 'bg-blue-600 hover:bg-blue-700'
