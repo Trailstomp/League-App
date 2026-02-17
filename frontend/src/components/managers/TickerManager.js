@@ -29,15 +29,16 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
     });
 
     const [saved, setSaved] = useState(false);
+    const [saving, setSaving] = useState(false);
 
-    const handleSave = async () => {
+    const saveConfig = async (configToSave) => {
         try {
+            setSaving(true);
             const updatedWebsiteStyle = {
                 ...websiteStyle,
-                ...tickerConfig
+                ...configToSave
             };
 
-            // Save to backend
             const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
             const response = await fetch(`${backendUrl}/api/league-data/websiteStyle`, {
                 method: 'POST',
@@ -50,14 +51,18 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
             if (response.ok) {
                 setWebsiteStyle(updatedWebsiteStyle);
                 setSaved(true);
-                setTimeout(() => setSaved(false), 3000);
+                setTimeout(() => setSaved(false), 2000);
             } else {
                 console.error('Failed to save ticker configuration');
             }
         } catch (error) {
             console.error('Error saving ticker configuration:', error);
+        } finally {
+            setSaving(false);
         }
     };
+
+    const handleSave = () => saveConfig(tickerConfig);
 
     const handleFilterChange = (filterType) => {
         setTickerConfig(prev => ({
