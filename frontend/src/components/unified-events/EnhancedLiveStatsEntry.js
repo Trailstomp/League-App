@@ -43,6 +43,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
     });
     const [showShotClockSettings, setShowShotClockSettings] = useState(false);
     
+    // Clock visibility toggles - allow scoring without clocks
+    const [showGameClock, setShowGameClock] = useState(true);
+    const [showShotClock, setShowShotClock] = useState(true);
+    
     const [manualTimeInputs, setManualTimeInputs] = useState({
         minutes: '',
         seconds: '',
