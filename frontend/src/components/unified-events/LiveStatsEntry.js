@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getSportConfig, SPORTS } from '../../config/sportsConfig';
 
 const LiveStatsEntry = ({ event, teams, onSubmit, onCancel, sportType = 'lacrosse' }) => {
-    // Get sport-specific configuration
     const sportConfig = getSportConfig(sportType);
     
     const [gameState, setGameState] = useState({
@@ -10,13 +9,17 @@ const LiveStatsEntry = ({ event, teams, onSubmit, onCancel, sportType = 'lacross
         away_team: { id: '', name: '', score: 0, players: [] },
         current_period: 1,
         time_remaining: '15:00',
+        shot_clock: 30,
         is_running: false
     });
 
-    const [activeTab, setActiveTab] = useState('scoreboard'); // scoreboard, home_stats, away_stats
+    const [activeTab, setActiveTab] = useState('scoreboard');
     const [selectedPlayer, setSelectedPlayer] = useState(null);
     const [statEntry, setStatEntry] = useState({ type: 'goal', player: null });
     const [loading, setLoading] = useState(false);
+    const [showGameClock, setShowGameClock] = useState(true);
+    const [showShotClock, setShowShotClock] = useState(false);
+    const timerRef = useRef(null);
 
     // Get sport-specific stat types with colors
     const getStatTypes = () => {
