@@ -48,6 +48,12 @@ const ScoringSelector = ({ event, teams, onLiveStats, onStatsOnly, onQuickScore,
     const handleModeSelect = (mode) => {
         if (mode === 'live') {
             onLiveStats(event);
+        } else if (mode === 'stats_only') {
+            if (onStatsOnly) {
+                onStatsOnly(event);
+            } else {
+                onLiveStats(event, { statsOnly: true });
+            }
         } else if (mode === 'quick') {
             onQuickScore(event);
         }
