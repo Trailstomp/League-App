@@ -184,28 +184,29 @@ const EnhancedColorPicker = ({ color = '#1e40af', onChange, label = 'Color' }) =
 
             {/* Color Picker Dropdown */}
             {isOpen && (
-                <div className="absolute top-12 left-0 z-50 bg-white border border-slate-300 rounded-lg shadow-lg p-4 w-80">
+                <div className="absolute top-12 left-0 z-50 bg-white border border-slate-300 rounded-lg shadow-lg p-3 sm:p-4 w-[calc(100vw-2rem)] sm:w-80 max-w-80">
                     {/* Color Canvas */}
-                    <div className="mb-4">
+                    <div className="mb-3">
                         <canvas
                             ref={canvasRef}
                             width={272}
                             height={150}
-                            className="border border-slate-200 rounded cursor-crosshair"
+                            className="border border-slate-200 rounded cursor-crosshair w-full"
+                            style={{ height: '120px' }}
                             onClick={handleCanvasClick}
                         />
                     </div>
 
                     {/* Hue Slider */}
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Hue</label>
+                    <div className="mb-3">
+                        <label className="block text-xs font-medium text-slate-700 mb-1">Hue</label>
                         <input
                             type="range"
                             min="0"
                             max="360"
                             value={hsv.h}
                             onChange={handleHueChange}
-                            className="w-full h-6 rounded-lg appearance-none cursor-pointer"
+                            className="w-full h-5 rounded-lg appearance-none cursor-pointer"
                             style={{
                                 background: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)'
                             }}
@@ -213,34 +214,31 @@ const EnhancedColorPicker = ({ color = '#1e40af', onChange, label = 'Color' }) =
                     </div>
 
                     {/* Hex Input and Eyedropper */}
-                    <div className="flex items-center space-x-2 mb-4">
+                    <div className="flex items-end gap-2 mb-3">
                         <div className="flex-1">
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Hex Color</label>
+                            <label className="block text-xs font-medium text-slate-700 mb-1">Hex</label>
                             <input
                                 type="text"
                                 value={pickerColor}
                                 onChange={handleHexChange}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="#000000"
                             />
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Eyedropper</label>
-                            <button
-                                onClick={handleEyedropper}
-                                className="p-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
-                                title="Pick color from screen"
-                            >
-                                <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM7 3v18M15 3v18a4 4 0 004-4V5a2 2 0 00-2-2h-4a2 2 0 00-2 2z" />
-                                </svg>
-                            </button>
-                        </div>
+                        <button
+                            onClick={handleEyedropper}
+                            className="p-1.5 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors flex-shrink-0"
+                            title="Pick color from screen"
+                        >
+                            <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM7 3v18M15 3v18a4 4 0 004-4V5a2 2 0 00-2-2h-4a2 2 0 00-2 2z" />
+                            </svg>
+                        </button>
                     </div>
 
                     {/* Preset Colors */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Preset Colors</label>
+                        <label className="block text-xs font-medium text-slate-700 mb-1">Presets</label>
                         <div className="grid grid-cols-9 gap-1">
                             {presetColors.map((presetColor) => (
                                 <button
@@ -250,7 +248,7 @@ const EnhancedColorPicker = ({ color = '#1e40af', onChange, label = 'Color' }) =
                                         setHsv(hexToHsv(presetColor));
                                         onChange(presetColor);
                                     }}
-                                    className="w-7 h-7 rounded border-2 border-slate-200 hover:border-slate-400 transition-colors"
+                                    className="w-6 h-6 sm:w-7 sm:h-7 rounded border-2 border-slate-200 hover:border-slate-400 transition-colors"
                                     style={{ backgroundColor: presetColor }}
                                     title={presetColor}
                                 />
@@ -259,12 +257,12 @@ const EnhancedColorPicker = ({ color = '#1e40af', onChange, label = 'Color' }) =
                     </div>
 
                     {/* Apply Button */}
-                    <div className="flex justify-end mt-4 pt-4 border-t">
+                    <div className="flex justify-end mt-3 pt-3 border-t">
                         <button
                             onClick={() => setIsOpen(false)}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                            className="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                         >
-                            Apply Color
+                            Apply
                         </button>
                     </div>
                 </div>
