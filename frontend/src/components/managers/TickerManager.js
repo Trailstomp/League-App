@@ -171,10 +171,14 @@ const TickerManager = ({ websiteStyle, setWebsiteStyle, teams, events }) => {
                             <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50">
                                 <div className="flex items-center space-x-3">
                                     <button
-                                        onClick={() => setTickerConfig(prev => ({
-                                            ...prev,
-                                            tickerShowCancelled: !prev.tickerShowCancelled
-                                        }))}
+                                        onClick={() => {
+                                            const newConfig = {
+                                                ...tickerConfig,
+                                                tickerShowCancelled: !tickerConfig.tickerShowCancelled
+                                            };
+                                            setTickerConfig(newConfig);
+                                            saveConfig(newConfig);
+                                        }}
                                         className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${
                                             tickerConfig.tickerShowCancelled 
                                                 ? 'bg-red-600 text-white' 
