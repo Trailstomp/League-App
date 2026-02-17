@@ -388,11 +388,11 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
 
                     <div className="text-center mb-4">
                         <p className="text-sm text-slate-600">
-                            Crop area: {Math.round(cropArea.width)} × {Math.round(cropArea.height)} pixels 
-                            (aspect ratio: {targetAspect.ratio ? targetAspect.ratio.toFixed(1) : 'free'}:1)
+                            Output: {Math.round(cropArea.width * (imageRef.current ? imageRef.current.width / imageDisplaySize.width : 1))} × {Math.round(cropArea.height * (imageRef.current ? imageRef.current.height / imageDisplaySize.height : 1))}px
+                            {targetAspect.ratio ? ` (${targetAspect.ratio > 1 ? targetAspect.ratio.toFixed(0) : '1'}:${targetAspect.ratio > 1 ? '1' : (1/targetAspect.ratio).toFixed(0)})` : ''}
                         </p>
                         <p className="text-xs text-slate-500 mt-1">
-                            💡 Drag center to move • Drag corner handles to resize
+                            Drag center to move &bull; Drag corner handles to resize
                         </p>
                     </div>
 
