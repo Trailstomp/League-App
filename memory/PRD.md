@@ -22,7 +22,13 @@ Comprehensive league management portal for multiple sports with team management,
 ### Coach Role & UI Fixes (Feb 15, 2026)
 - [x] Coach role on Join Team page, logo transparency, team sorting
 
-### CSS Text Color Fix (Feb 15, 2026)
+### Navigation & Logo Controls, Mobile Fixes (Feb 17, 2026)
+- [x] Nav bar background (image/texture/color) now only applies to the logo header section, not the entire sidebar
+- [x] Logo display controls: Contain / Cover / Stretch fit modes
+- [x] Logo transparent background toggle + background color picker when transparent is off
+- [x] Color pickers (Enhanced + Advanced) responsive on mobile — no longer overflow screen
+- [x] Crop tool now works on mobile with touch events (drag, resize handles)
+- [x] Crop tool canvas responsive sizing for mobile screens
 - [x] Admin Content Text Color and Card Heading Color settings affect page text
 
 ### Design & Theming System
