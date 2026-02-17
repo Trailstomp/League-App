@@ -72,7 +72,7 @@ const ScoringSelector = ({ event, teams, onLiveStats, onStatsOnly, onQuickScore,
                 </div>
 
                 {/* Scoring Mode Options */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                     {scoringModes.map(mode => (
                         <div
                             key={mode.id}
