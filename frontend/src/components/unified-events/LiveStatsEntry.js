@@ -438,12 +438,18 @@ const LiveStatsEntry = ({ event, teams, onSubmit, onCancel, sportType = 'lacross
                 entry_type: 'live_stats',
                 entry_time: new Date().toISOString(),
                 game_duration: gameState.current_period,
-                detailed_stats: true
+                detailed_stats: true,
+                clock_settings: {
+                    game_clock_enabled: showGameClock,
+                    shot_clock_enabled: showShotClock,
+                    time_remaining: showGameClock ? gameState.time_remaining : null,
+                    shot_clock: showShotClock ? gameState.shot_clock : null
+                }
             };
 
             await onSubmit(gameData);
         } catch (error) {
-            console.error('❌ Error submitting live stats:', error);
+            console.error('Error submitting live stats:', error);
         } finally {
             setLoading(false);
         }
