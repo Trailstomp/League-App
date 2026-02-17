@@ -1116,8 +1116,13 @@ async def delete_news_item(item_id: str):
             raise HTTPException(status_code=404, detail=f"News item '{item_id}' not found")
         
         league_doc["lastUpdated"] = datetime.now(timezone.utc).isoformat()
-        league_doc.pop('_id', None)
-        await db.league_data.replace_one({"id": "main_league"}, league_doc, upsert=True)
+        await db.league_data.update_one(
+            {"id": "main_league"},
+            {"$set": {
+                "newsItems": league_doc["newsItems"],
+                "lastUpdated": league_doc["lastUpdated"]
+            }}
+        )
         
         logger.info(f"✅ Deleted news item '{item_id}', {new_count} items remaining")
         return {"status": "success", "message": f"Deleted news item '{item_id}'", "remaining": new_count}
