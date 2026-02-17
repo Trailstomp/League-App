@@ -15,12 +15,12 @@ const SimpleCropTool = ({ imageUrl, onCrop, onCancel, targetType = 'banner' }) =
 
     // Target-specific aspect ratios
     const aspectRatios = {
-        logo: { ratio: 1, label: 'Square Logo' },
+        logo: { ratio: 256/170, label: 'Logo (Nav Area)' },
         square: { ratio: 1, label: 'Square (1:1)' },
         banner: { ratio: 3, label: 'Banner (3:1)' },
         background: { ratio: 16/9, label: 'Background (16:9)' },
         wide_banner: { ratio: 5, label: 'Wide Banner (5:1)' },
-        navigation: { ratio: 9/16, label: 'Navigation (9:16 Vertical)' }, // Fixed: nav should be vertical
+        navigation: { ratio: 9/16, label: 'Navigation (9:16 Vertical)' },
         sidebar: { ratio: 9/16, label: 'Sidebar (9:16 Vertical)' }
     };
 
