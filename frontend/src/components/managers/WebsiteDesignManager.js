@@ -1400,10 +1400,72 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                             )}
                         </div>
                     </div>
+
+                    {/* Logo Display Options */}
+                    {editingStyle.navLogoUrl && (
+                        <div className="mt-4 space-y-3">
+                            <label className="block text-sm font-medium text-slate-700">Logo Fit</label>
+                            <div className="flex gap-2">
+                                {[
+                                    { value: 'contain', label: 'Contain' },
+                                    { value: 'cover', label: 'Cover' },
+                                    { value: 'fill', label: 'Stretch' }
+                                ].map(opt => (
+                                    <button
+                                        key={opt.value}
+                                        onClick={() => updateStyle({ navLogoFit: opt.value })}
+                                        className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                                            (editingStyle.navLogoFit || 'contain') === opt.value
+                                                ? 'bg-blue-600 text-white'
+                                                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                        }`}
+                                        data-testid={`logo-fit-${opt.value}`}
+                                    >
+                                        {opt.label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm font-medium text-slate-700">Transparent Background</label>
+                                <button
+                                    onClick={() => updateStyle({ navLogoBgTransparent: !(editingStyle.navLogoBgTransparent !== false) })}
+                                    className={`relative w-10 h-5 rounded-full transition-colors ${
+                                        editingStyle.navLogoBgTransparent !== false ? 'bg-green-500' : 'bg-gray-300'
+                                    }`}
+                                    data-testid="logo-bg-transparent-toggle"
+                                >
+                                    <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+                                        editingStyle.navLogoBgTransparent !== false ? 'translate-x-5' : ''
+                                    }`} />
+                                </button>
+                            </div>
+
+                            {editingStyle.navLogoBgTransparent === false && (
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1">Logo Background Color</label>
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="color"
+                                            value={editingStyle.navLogoBgColor || '#ffffff'}
+                                            onChange={(e) => updateStyle({ navLogoBgColor: e.target.value })}
+                                            className="w-10 h-8 rounded border cursor-pointer"
+                                            data-testid="logo-bg-color-input"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={editingStyle.navLogoBgColor || '#ffffff'}
+                                            onChange={(e) => updateStyle({ navLogoBgColor: e.target.value })}
+                                            className="flex-1 px-2 py-1 border border-slate-300 rounded text-xs font-mono"
+                                            placeholder="#ffffff"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
-
-            {/* Navigation Colors */}
             <div className="border-t pt-6">
                 <h4 className="text-md font-semibold text-slate-800 mb-4">Colors & Typography</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
