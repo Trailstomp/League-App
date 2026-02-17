@@ -3631,7 +3631,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                         ← Cancel
                     </button>
 
-                    <div className="flex gap-3">
+                    <div className="flex gap-2">
                         <button
                             onClick={() => {
                                 // Reset game but keep player active/inactive states
