@@ -338,12 +338,12 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                         : undefined
                 }}
             >
-                <div className="h-full flex flex-col items-center justify-center p-2">
+                <div className="h-full flex flex-col items-center justify-center p-2 overflow-hidden">
                     {!isCollapsed && (
-                        <div className="flex flex-col items-center w-full h-full">
+                        <div className="flex flex-col items-center w-full h-full overflow-hidden">
                             {/* Large Logo - respects fit and background settings */}
                             <div 
-                                className="flex-1 flex items-center justify-center w-full"
+                                className="flex-1 flex items-center justify-center w-full overflow-hidden min-h-0"
                                 style={{ 
                                     backgroundColor: websiteStyle.navLogoBgTransparent !== false 
                                         ? 'transparent' 
@@ -354,13 +354,10 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                     <CachedImage 
                                         src={websiteStyle.navLogoUrl} 
                                         alt="League Logo" 
-                                        className={`drop-shadow-lg ${
-                                            websiteStyle.navLogoFit === 'fill' ? 'w-full h-full' :
-                                            websiteStyle.navLogoFit === 'cover' ? '' : ''
-                                        }`}
+                                        className="drop-shadow-lg"
                                         style={{
-                                            maxWidth: websiteStyle.navLogoFit === 'fill' ? '100%' : '100%',
-                                            maxHeight: websiteStyle.navLogoFit === 'fill' ? '100%' : (websiteStyle.navLeagueName ? '150px' : '180px'),
+                                            maxWidth: '100%',
+                                            maxHeight: '100%',
                                             width: websiteStyle.navLogoFit === 'fill' ? '100%' : 'auto',
                                             height: websiteStyle.navLogoFit === 'fill' ? '100%' : 'auto',
                                             objectFit: websiteStyle.navLogoFit || 'contain',
