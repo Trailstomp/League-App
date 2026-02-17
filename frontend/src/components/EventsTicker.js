@@ -544,21 +544,27 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
 
     // ─── COMPACT RENDER ───
     if (compact) {
-        const bgColor = websiteStyle?.tickerColor || '#1e293b';
+        const isTransparent = websiteStyle?.tickerTransparent;
+        const bgColor = isTransparent ? 'transparent' : (websiteStyle?.tickerColor || '#1e293b');
+        const fadeColor = isTransparent ? 'rgba(0,0,0,0)' : (websiteStyle?.tickerColor || '#1e293b');
         return (
             <div
                 className="w-full overflow-hidden relative flex items-center"
                 style={{ backgroundColor: bgColor, height: '100%' }}
                 data-testid="events-ticker-compact"
             >
-                <div
-                    className="absolute left-0 top-0 bottom-0 w-6 z-10 pointer-events-none"
-                    style={{ background: `linear-gradient(to right, ${bgColor}, transparent)` }}
-                />
-                <div
-                    className="absolute right-0 top-0 bottom-0 w-6 z-10 pointer-events-none"
-                    style={{ background: `linear-gradient(to left, ${bgColor}, transparent)` }}
-                />
+                {!isTransparent && (
+                    <>
+                        <div
+                            className="absolute left-0 top-0 bottom-0 w-6 z-10 pointer-events-none"
+                            style={{ background: `linear-gradient(to right, ${fadeColor}, transparent)` }}
+                        />
+                        <div
+                            className="absolute right-0 top-0 bottom-0 w-6 z-10 pointer-events-none"
+                            style={{ background: `linear-gradient(to left, ${fadeColor}, transparent)` }}
+                        />
+                    </>
+                )}
                 <div
                     ref={tickerRef}
                     className="flex items-center gap-3 overflow-x-hidden"
