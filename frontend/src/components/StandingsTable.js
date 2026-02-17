@@ -153,9 +153,14 @@ const StandingsTable = ({ teams = [], onTeamClick, sportType = 'lacrosse' }) => 
         if (viewMode === 'divisions' && Object.keys(standingsByDivision).length > 0) {
             // Filter out External division
             const filtered = {};
-            for (const [key, teams] of Object.entries(standingsByDivision)) {
+            for (const [key, divData] of Object.entries(standingsByDivision)) {
                 if (key.toLowerCase() !== 'external') {
-                    filtered[key] = teams.filter(t => !t.isExternal && t.division?.toLowerCase() !== 'external');
+                    // divData is an object { teams, division_name, level, ... }
+                    const teamsList = Array.isArray(divData) ? divData : (divData.teams || []);
+                    filtered[key] = {
+                        ...(Array.isArray(divData) ? {} : divData),
+                        teams: teamsList.filter(t => !t.isExternal && t.division?.toLowerCase() !== 'external')
+                    };
                 }
             }
             return { byDivision: true, data: filtered };
