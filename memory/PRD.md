@@ -48,9 +48,14 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Layout rearranged for compactness: smaller buttons, tighter spacing, reduced header height (320px -> 260px)
 - [x] Tabs use compact text, horizontally scrollable on mobile
 
+### Standings Page Bug Fix (Feb 17, 2026)
+- [x] Fixed critical `TypeError: a.filter is not a function` crash on `/standings` page
+- [x] Root cause: `getDisplayData()` in `StandingsTable.js` called `.filter()` on division data objects instead of their `.teams` array
+- [x] Fix: Properly destructure division data objects and filter the `.teams` array within
+
 ## Pending Issues
-- P1: Media gallery data is empty - user may need to re-create galleries
-- P2: Ticker "Show Practice" setting persistence unverified
+- P1: News & Gallery data loss fix — verification pending (backend $set updates + local upload fallback implemented)
+- P2: Ticker "Show Practice" setting persistence — verification pending (auto-save implemented)
 - Google Drive needs OAuth refresh token
 - Email sending requires valid SMTP credentials
 
