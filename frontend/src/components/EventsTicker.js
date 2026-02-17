@@ -300,7 +300,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, onEventClick
             <div 
                 className="w-full py-3 text-center"
                 style={{ 
-                    backgroundColor: websiteStyle?.tickerColor || '#1e293b',
+                    backgroundColor: websiteStyle?.tickerTransparent ? 'transparent' : (websiteStyle?.tickerColor || '#1e293b'),
                     minHeight: '60px'
                 }}
             >
