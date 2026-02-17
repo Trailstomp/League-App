@@ -450,88 +450,79 @@ const LiveStatsEntry = ({ event, teams, onSubmit, onCancel, sportType = 'lacross
     };
 
     return (
-        <div className="flex-1 flex flex-col">
-            {/* Header */}
-            <div className="bg-white border-b px-6 py-4">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h2 className="text-xl font-bold text-gray-900">{event.title}</h2>
-                        <div className="text-sm text-gray-600">
-                            📅 {event.date} • 🕒 {event.time} • 📍 {event.location}
+        <div className="flex-1 flex flex-col" data-testid="live-stats-entry">
+            {/* Header - Compact */}
+            <div className="bg-white border-b px-3 py-2 sm:px-4 sm:py-3">
+                <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                        <h2 className="text-sm sm:text-base font-bold text-gray-900 truncate">{event.title}</h2>
+                        <div className="text-xs text-gray-500 truncate">
+                            {event.date} | {event.time} | {event.location}
                         </div>
                     </div>
                     
-                    {/* Tab Navigation */}
-                    <div className="flex bg-gray-100 rounded-lg p-1">
-                        <button
-                            onClick={() => setActiveTab('scoreboard')}
-                            className={`px-4 py-2 rounded text-sm font-medium ${
-                                activeTab === 'scoreboard' 
-                                    ? 'bg-white text-gray-900 shadow-sm' 
-                                    : 'text-gray-600 hover:text-gray-900'
-                            }`}
-                        >
-                            📊 Scoreboard
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('home_stats')}
-                            className={`px-4 py-2 rounded text-sm font-medium ${
-                                activeTab === 'home_stats' 
-                                    ? 'bg-white text-gray-900 shadow-sm' 
-                                    : 'text-gray-600 hover:text-gray-900'
-                            }`}
-                        >
-                            🏠 {gameState.home_team.name}
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('away_stats')}
-                            className={`px-4 py-2 rounded text-sm font-medium ${
-                                activeTab === 'away_stats' 
-                                    ? 'bg-white text-gray-900 shadow-sm' 
-                                    : 'text-gray-600 hover:text-gray-900'
-                            }`}
-                        >
-                            ✈️ {gameState.away_team.name}
-                        </button>
+                    {/* Tab Navigation - Compact pills */}
+                    <div className="flex bg-gray-100 rounded-lg p-0.5 flex-shrink-0" data-testid="stats-tab-nav">
+                        {[
+                            { id: 'scoreboard', label: 'Board', icon: '📊' },
+                            { id: 'home_stats', label: gameState.home_team.name?.substring(0, 6) || 'Home', icon: '🏠' },
+                            { id: 'away_stats', label: gameState.away_team.name?.substring(0, 6) || 'Away', icon: '✈️' }
+                        ].map(tab => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`px-2 sm:px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                                    activeTab === tab.id 
+                                        ? 'bg-white text-gray-900 shadow-sm' 
+                                        : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                                data-testid={`tab-${tab.id}`}
+                            >
+                                <span className="hidden sm:inline">{tab.icon} </span>{tab.label}
+                            </button>
+                        ))}
                     </div>
                 </div>
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-4">
                 {activeTab === 'scoreboard' && renderScoreboard()}
                 {activeTab === 'home_stats' && renderPlayerStats('home_team', gameState.home_team)}
                 {activeTab === 'away_stats' && renderPlayerStats('away_team', gameState.away_team)}
             </div>
 
-            {/* Actions */}
-            <div className="bg-white border-t px-6 py-4">
+            {/* Actions - Compact footer */}
+            <div className="bg-white border-t px-3 py-2 sm:px-4 sm:py-3">
                 <div className="flex justify-between items-center">
                     <button
                         onClick={onCancel}
-                        className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                        className="px-3 py-1.5 text-xs sm:text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                        data-testid="cancel-btn"
                     >
                         Cancel
                     </button>
 
-                    <div className="flex gap-3">
+                    <div className="flex gap-2">
                         <button
                             onClick={() => setGameState(prev => ({
                                 ...prev,
                                 home_team: { ...prev.home_team, score: 0, players: prev.home_team.players.map(p => ({ ...p, stats: { goals: 0, assists: 0, shots: 0, saves: 0, penalties: 0 } })) },
                                 away_team: { ...prev.away_team, score: 0, players: prev.away_team.players.map(p => ({ ...p, stats: { goals: 0, assists: 0, shots: 0, saves: 0, penalties: 0 } })) }
                             }))}
-                            className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
+                            className="px-3 py-1.5 text-xs sm:text-sm bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
+                            data-testid="reset-game-btn"
                         >
-                            🔄 Reset Game
+                            Reset
                         </button>
                         
                         <button
                             onClick={handleSubmit}
                             disabled={loading}
-                            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                            className="px-4 py-1.5 text-xs sm:text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                            data-testid="save-game-btn"
                         >
-                            {loading ? 'Saving...' : '✅ Save Game Stats'}
+                            {loading ? 'Saving...' : 'Save Stats'}
                         </button>
                     </div>
                 </div>
