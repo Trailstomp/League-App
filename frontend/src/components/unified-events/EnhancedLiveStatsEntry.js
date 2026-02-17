@@ -3738,9 +3738,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                                     alert('❌ Error saving game stats');
                                 }
                             }}
-                            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-bold"
+                            className="px-4 md:px-6 py-1.5 md:py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-bold text-xs md:text-sm"
+                            data-testid="end-game-btn"
                         >
-                            🏁 End Game (Final)
+                            End Game
                         </button>
                     </div>
                 </div>
