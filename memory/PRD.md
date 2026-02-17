@@ -31,15 +31,16 @@ Comprehensive league management portal for multiple sports with team management,
 ### User Guide Updates (Feb 15, 2026)
 - [x] All 9 help docs updated with latest features
 
-### Live Scoring Clock Toggles (Feb 17, 2026)
+### Live Scoring Clock Toggles & Stats Only Mode (Feb 17, 2026)
 - [x] Independent toggle switches for Game Clock and Shot Clock in the sticky header
 - [x] Game Clock OFF: scoreboard shows '--:--', Start/Pause/Next Period/Edit Time buttons hidden
 - [x] Shot Clock OFF: center panel hidden, replaced with VS divider
 - [x] Both toggles work independently
+- [x] **Stats Only Mode**: One-tap button in header to disable both clocks and jump to player stats
+- [x] Stats Only option added to ScoringSelector (3-column mode picker: Live Stats, Stats Only, Quick Score)
+- [x] Stats Only button toggles amber/gray and acts as a reversible preset
 - [x] Layout rearranged for compactness: smaller buttons, tighter spacing, reduced header height (320px -> 260px)
-- [x] Tabs use compact text without emojis, horizontally scrollable on mobile
-- [x] Shot/Penalty/Timeout buttons are smaller on mobile
-- [x] Score displays use smaller logos and fonts on mobile
+- [x] Tabs use compact text, horizontally scrollable on mobile
 
 ## Pending Issues
 - P1: Media gallery data is empty - user may need to re-create galleries
