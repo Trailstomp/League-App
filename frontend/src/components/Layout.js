@@ -350,12 +350,12 @@ const Layout = ({
                 </div>
             )}
 
-            {/* Mobile Header - Simplified with logo and league name */}
+            {/* Mobile Header - Logo, league name, and ticker (no hamburger) */}
             {isMobileView && (
                 <div className="fixed top-0 left-0 right-0 z-50 shadow-md">
                     {/* Mobile banner bar */}
                     <div
-                        className="flex items-center justify-between px-4 relative"
+                        className="flex items-center px-4 relative"
                         style={{
                             height: '56px',
                             ...getZoneBgStyle(websiteStyle, 'banner')
@@ -364,46 +364,37 @@ const Layout = ({
                         {(websiteStyle.bannerBackgroundType === 'image' || websiteStyle.bannerBackgroundType === 'texture') && (websiteStyle.bannerBackgroundImage || websiteStyle.bannerBackgroundTexture) && (
                             <div className="absolute inset-0 bg-black bg-opacity-40 z-0"></div>
                         )}
-                        <div className="flex items-center space-x-3 relative z-10">
+                        <div className="flex items-center space-x-3 relative z-10 w-full">
                             {websiteStyle.navLogoUrl ? (
                                 <CachedImage 
                                     src={websiteStyle.navLogoUrl} 
                                     alt="Logo" 
-                                    className="w-9 h-9 object-contain rounded-lg"
+                                    className="w-9 h-9 object-contain rounded-lg flex-shrink-0"
                                     fallback={<span className="text-xl">🥍</span>}
                                 />
                             ) : (
-                                <span className="text-xl">🥍</span>
+                                <span className="text-xl flex-shrink-0">🥍</span>
                             )}
                             <h1 
-                                className="text-base font-bold truncate max-w-[180px]"
+                                className="text-base font-bold leading-tight"
                                 style={{
                                     fontFamily: websiteStyle.bannerFont || 'Inter, sans-serif',
-                                    color: websiteStyle.bannerTextColor || '#ffffff'
+                                    color: websiteStyle.bannerTextColor || '#ffffff',
+                                    overflow: 'hidden',
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical'
                                 }}
                             >
                                 {websiteStyle.navLeagueName || websiteStyle.bannerTitle || 'League'}
                             </h1>
                         </div>
-                        <button
-                            onClick={() => setIsMobileMenuOpen(true)}
-                            className="p-2 rounded-lg transition-colors relative z-10"
-                            style={{
-                                backgroundColor: 'rgba(255,255,255,0.2)',
-                                color: websiteStyle.bannerTextColor || '#ffffff'
-                            }}
-                            aria-label="Open menu"
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                        </button>
                     </div>
 
-                    {/* Mobile Ticker - compact scrolling strip */}
+                    {/* Mobile Ticker - uses full card rendering like desktop */}
                     <div
                         className="w-full overflow-hidden"
-                        style={{ height: '48px', backgroundColor: websiteStyle?.tickerColor || '#1e293b' }}
+                        style={{ height: '100px', backgroundColor: websiteStyle?.tickerTransparent ? 'transparent' : (websiteStyle?.tickerColor || '#1e293b') }}
                     >
                         <EventsTicker 
                             events={events}
@@ -411,7 +402,7 @@ const Layout = ({
                             websiteStyle={websiteStyle}
                             onEventClick={onEventClick}
                             onTeamClick={onTeamClick}
-                            compact={true}
+                            compact={false}
                         />
                     </div>
                 </div>
@@ -483,7 +474,7 @@ const Layout = ({
                 className="main-content-area transition-all duration-300" 
                 style={{
                     marginLeft: isMobileView ? '0' : (isNavCollapsed ? '80px' : '320px'), // Use actual nav maxWidth
-                    paddingTop: isMobileView ? '112px' : '200px', // 56px header + 48px ticker + 8px gap
+                    paddingTop: isMobileView ? '164px' : '200px', // 56px header + 100px ticker + 8px gap
                     paddingBottom: isMobileView ? '80px' : '0', // Space for bottom navbar on mobile
                     minHeight: '100vh',
                     width: isMobileView ? '100vw' : (isNavCollapsed ? 'calc(100vw - 80px)' : 'calc(100vw - 320px)')
@@ -497,7 +488,7 @@ const Layout = ({
                             fontFamily: websiteStyle.mainFont || 'Inter, sans-serif',
                             fontSize: websiteStyle.mainFontSize || '16px',
                             color: websiteStyle.mainTextColor || '#374151',
-                            minHeight: isMobileView ? 'calc(100vh - 160px)' : 'calc(100vh - 200px)',
+                            minHeight: isMobileView ? 'calc(100vh - 220px)' : 'calc(100vh - 200px)',
                             padding: '1rem',
                             ...getContentBackgroundStyle()
                         }}
