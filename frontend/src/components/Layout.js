@@ -408,15 +408,7 @@ const Layout = ({
                 </div>
             )}
 
-            {/* Mobile Navigation Overlay */}
-            {isMobileView && isMobileMenuOpen && (
-                <div 
-                    className="fixed inset-0 bg-black bg-opacity-50 z-40"
-                    style={{top: '0'}} // Cover full screen
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    onTouchStart={(e) => e.stopPropagation()}
-                />
-            )}
+            {/* Mobile Navigation Overlay - no longer needed, nav is in bottom bar */}
             
             {/* Navigation - Fixed position from TOP, full height */}
             {!isMobileView && (
@@ -441,33 +433,7 @@ const Layout = ({
                 </div>
             )}
             
-            {/* Mobile Navigation - Full height from top */}
-            {isMobileView && (
-                <div className={`
-                    ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
-                    fixed left-0 top-0 z-50 bg-white shadow-lg
-                    transition-transform duration-300 ease-in-out
-                    overflow-y-auto
-                `}
-            style={{
-                height: '100vh',
-                width: '75vw',
-                maxWidth: '320px'
-            }}
-            onTouchStart={(e) => e.stopPropagation()}
-            onTouchMove={(e) => e.stopPropagation()}>
-                <Navigation 
-                    currentPage={currentPage}
-                    onNavigate={handleNavigate}
-                    currentUser={currentUser}
-                    onLogin={onLogin}
-                    onLogout={onLogout}
-                    teams={teams}
-                    websiteStyle={websiteStyle}
-                    onMobileClose={() => setIsMobileMenuOpen(false)}
-                />
-                </div>
-            )}
+            {/* Mobile Navigation handled by BottomNavbar */}
             
             {/* Main Content Area - starts at top with padding to account for fixed header */}
             <div 
