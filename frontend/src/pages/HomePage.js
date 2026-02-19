@@ -290,58 +290,63 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                     <div className="flex overflow-x-auto">
                         <button
                             onClick={() => setActiveTab('welcome')}
-                            className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
+                            className={`flex flex-col items-center px-4 py-2 text-xs font-medium transition-colors whitespace-nowrap min-w-0 flex-shrink-0 ${
                                 activeTab === 'welcome' 
                                     ? 'border-b-2 border-blue-500 text-blue-600 bg-blue-50/50' 
                                     : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
                             }`}
                             data-testid="welcome-tab"
                         >
-                            🏠 Welcome
+                            <span className="text-lg leading-none mb-0.5">🏠</span>
+                            <span>Welcome</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('join')}
-                            className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
+                            className={`flex flex-col items-center px-4 py-2 text-xs font-medium transition-colors whitespace-nowrap min-w-0 flex-shrink-0 ${
                                 activeTab === 'join' 
                                     ? 'border-b-2 border-blue-500 text-blue-600 bg-blue-50/50' 
                                     : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
                             }`}
                             data-testid="join-tab"
                         >
-                            🤝 Join Us
+                            <span className="text-lg leading-none mb-0.5">🤝</span>
+                            <span>Join Us</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('teams')}
-                            className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
+                            className={`flex flex-col items-center px-4 py-2 text-xs font-medium transition-colors whitespace-nowrap min-w-0 flex-shrink-0 ${
                                 activeTab === 'teams' 
                                     ? 'border-b-2 border-blue-500 text-blue-600 bg-blue-50/50' 
                                     : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
                             }`}
                             data-testid="teams-tab"
                         >
-                            🏆 Teams ({stats.totalTeams})
+                            <span className="text-lg leading-none mb-0.5">🏆</span>
+                            <span>Teams ({stats.totalTeams})</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('media')}
-                            className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
+                            className={`flex flex-col items-center px-4 py-2 text-xs font-medium transition-colors whitespace-nowrap min-w-0 flex-shrink-0 ${
                                 activeTab === 'media' 
                                     ? 'border-b-2 border-blue-500 text-blue-600 bg-blue-50/50' 
                                     : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
                             }`}
                             data-testid="media-tab"
                         >
-                            📸 Media & Videos
+                            <span className="text-lg leading-none mb-0.5">📸</span>
+                            <span>Media</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('sponsors')}
-                            className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
+                            className={`flex flex-col items-center px-4 py-2 text-xs font-medium transition-colors whitespace-nowrap min-w-0 flex-shrink-0 ${
                                 activeTab === 'sponsors' 
                                     ? 'border-b-2 border-blue-500 text-blue-600 bg-blue-50/50' 
                                     : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
                             }`}
                             data-testid="sponsors-tab"
                         >
-                            🤝 Friends & Sponsors
+                            <span className="text-lg leading-none mb-0.5">🤝</span>
+                            <span>Sponsors</span>
                         </button>
                     </div>
                 </div>
