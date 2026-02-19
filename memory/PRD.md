@@ -53,6 +53,13 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Root cause: `getDisplayData()` in `StandingsTable.js` called `.filter()` on division data objects instead of their `.teams` array
 - [x] Fix: Properly destructure division data objects and filter the `.teams` array within
 
+### Mobile Navigation Overhaul (Feb 18, 2026)
+- [x] Removed hamburger menu from mobile header - all navigation now in bottom bar
+- [x] Fixed banner title text truncation - now wraps up to 2 lines instead of cutting off
+- [x] Enhanced bottom nav bar: Home, Events, Standings, My Team, Dashboard, Site Style, Admin (context-aware)
+- [x] Mobile ticker now uses full card-style events (same as desktop) with borders, status badges, team names, dates
+- [x] Removed mobile slide-out navigation overlay (no longer needed)
+
 ## Pending Issues
 - P1: News & Gallery data loss fix — verification pending (backend $set updates + local upload fallback implemented)
 - P2: Ticker "Show Practice" setting persistence — verification pending (auto-save implemented)
