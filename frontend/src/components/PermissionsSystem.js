@@ -63,7 +63,8 @@ export const SYSTEM_ROLES = {
             'events.view', 'events.create', 'events.edit', 'events.delete',
             'media.view', 'media.upload', 'media.edit', 'media.delete',
             'system.settings', 'system.invitations',
-            'nav.league_chat'
+            'nav.league_chat',
+            'nav.email'
         ]
     },
     'team_coach': {
