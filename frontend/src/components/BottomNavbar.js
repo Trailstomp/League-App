@@ -27,6 +27,12 @@ const BottomNavbar = ({
             show: !!currentUser
         },
         { 
+            id: 'email', 
+            label: 'Email', 
+            icon: '📧',
+            show: !!(currentUser && hasPermission(currentUser, 'nav.email'))
+        },
+        { 
             id: 'site-style', 
             label: 'Style', 
             icon: '⚙️',
