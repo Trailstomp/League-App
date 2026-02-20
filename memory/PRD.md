@@ -26,9 +26,8 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Nav bar background (image/texture/color) now only applies to the logo header section, not the entire sidebar
 - [x] Logo display controls: Contain / Cover / Stretch fit modes
 - [x] Logo transparent background toggle + background color picker when transparent is off
-- [x] Color pickers (Enhanced + Advanced) responsive on mobile — no longer overflow screen
-- [x] Crop tool now works on mobile with touch events (drag, resize handles)
-- [x] Crop tool canvas responsive sizing for mobile screens
+- [x] Color pickers (Enhanced + Advanced) responsive on mobile
+- [x] Crop tool now works on mobile with touch events
 - [x] Admin Content Text Color and Card Heading Color settings affect page text
 
 ### Design & Theming System
@@ -38,67 +37,58 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] All 9 help docs updated with latest features
 
 ### Live Scoring Clock Toggles & Stats Only Mode (Feb 17, 2026)
-- [x] Independent toggle switches for Game Clock and Shot Clock in the sticky header
-- [x] Game Clock OFF: scoreboard shows '--:--', Start/Pause/Next Period/Edit Time buttons hidden
-- [x] Shot Clock OFF: center panel hidden, replaced with VS divider
-- [x] Both toggles work independently
-- [x] **Stats Only Mode**: One-tap button in header to disable both clocks and jump to player stats
-- [x] Stats Only option added to ScoringSelector (3-column mode picker: Live Stats, Stats Only, Quick Score)
-- [x] Stats Only button toggles amber/gray and acts as a reversible preset
-- [x] Layout rearranged for compactness: smaller buttons, tighter spacing, reduced header height (320px -> 260px)
-- [x] Tabs use compact text, horizontally scrollable on mobile
+- [x] Independent toggle switches for Game Clock and Shot Clock
+- [x] Stats Only Mode: One-tap button to disable both clocks
 
 ### Standings Page Bug Fix (Feb 17, 2026)
-- [x] Fixed critical `TypeError: a.filter is not a function` crash on `/standings` page
-- [x] Root cause: `getDisplayData()` in `StandingsTable.js` called `.filter()` on division data objects instead of their `.teams` array
-- [x] Fix: Properly destructure division data objects and filter the `.teams` array within
+- [x] Fixed critical `TypeError: a.filter is not a function` crash
 
 ### Mobile Navigation Overhaul (Feb 18, 2026)
-- [x] Removed hamburger menu from mobile header - all navigation now in bottom bar
-- [x] Fixed banner title text truncation - now wraps up to 2 lines instead of cutting off
-- [x] Enhanced bottom nav bar: Home, Events, Standings, My Team, Dashboard, Site Style, Admin (context-aware)
-- [x] Mobile ticker now uses full card-style events (same as desktop) with borders, status badges, team names, dates
-- [x] Removed mobile slide-out navigation overlay (no longer needed)
+- [x] Removed hamburger menu, enhanced bottom nav bar
+- [x] Fixed banner title text truncation
 
 ### Email Client Feature (Feb 19, 2026)
 - [x] Full email client with inbox, compose, reply, forward, trash, search, attachments
 - [x] Supports Gmail, Office 365, and Custom SMTP/IMAP providers
-- [x] User-managed email account credentials with encrypted password storage
-- [x] Permission-controlled access via `nav.email` (league_admin, team_coach by default)
-- [x] Provider setup instructions with direct links to App Password pages
-- [x] Email client documentation added to Help & Docs page
-- [x] Backend routes: /api/email-client/* (accounts CRUD, folders, messages, send, trash, attachments)
-- [x] Frontend: EmailClient, EmailSettings, ComposeEmail components
 - [x] Testing: 100% pass rate (10/10 backend, all frontend flows verified)
 
 ### Visit Tracker Feature (Feb 20, 2026)
 - [x] Backend analytics API: track visits, summary aggregation, daily trends
-- [x] Automatic page visit tracking on frontend navigation (fire-and-forget)
-- [x] Tracks: Home, Events, Live View, Standings, Team pages, Email, Chat, Help, Dashboard
-- [x] Separate rows for each team page with team name
-- [x] Guest vs Logged-in breakdown + role columns (Admin, Coach, Player, etc.)
-- [x] Time-based trend chart with stacked bars (guest vs logged-in)
-- [x] Period selector: 7/14/30/90 days
-- [x] Admin dashboard tab: Overview > Visit Tracker
+- [x] Admin dashboard tab with Visit Tracker
 - [x] Testing: 100% pass rate (18/18 backend tests)
 
+### Live Spectator View UI/UX Overhaul (Feb 20, 2026)
+- [x] Replaced tabbed layout with simultaneous stream + events/stats view
+- [x] Side-by-side layout on desktop (stream left, events/stats right), stacked on mobile
+- [x] Custom compact scoreboard with large team logos (64px mobile, 80px desktop)
+- [x] Combined Events and Stats into single panel with toggle tabs
+- [x] High-contrast tab buttons (white text, blue accent on dark background)
+- [x] Compact mobile layout with reduced padding and margins
+- [x] Replaced full AnalogScoreboard with inline compact scoreboard
+- [x] Stats panel includes comparison bars (Goals, Shots, Assists, Faceoffs, Ground Balls)
+- [x] Testing: 100% pass rate (10/10 frontend tests, iteration_46)
+
 ## Pending Issues
-- P1: News & Gallery data loss fix — verification pending (backend $set updates + local upload fallback implemented)
-- P2: Ticker "Show Practice" setting persistence — verification pending (auto-save implemented)
+- P1: Ticker "Show Practice" setting persistence — user confirmed NOT fixed
+- P1: Gallery data loss fix — user confirmed FIXED
 - Google Drive needs OAuth refresh token
 - Email sending requires valid SMTP credentials
 
 ## Upcoming Tasks
+- P1: Fix Ticker "Show Practice" setting persistence
 - P1: Data Recovery Plan for wiped template styles
 - P1: Office 365 integration for File Manager
 - P2: SMTP credential configuration
 - P2: Refactor server.py into route files
-- P2: Refactor WebsiteDesignManager.js (large component)
+- P2: Refactor EnhancedLiveStatsEntry.js (3800+ lines)
 
 ## Key Files
-- `frontend/src/components/unified-events/EnhancedLiveStatsEntry.js` - Main live scoring component (clock toggles, compact layout)
-- `frontend/src/components/AnalogScoreboard.js` - Scoreboard display (supports shotClock prop)
+- `frontend/src/pages/LiveSpectatorView.js` - Overhauled live spectator view (compact scoreboard, dual-panel layout)
+- `frontend/src/components/unified-events/EnhancedLiveStatsEntry.js` - Main live scoring component
+- `frontend/src/components/AnalogScoreboard.js` - Scoreboard display (still used in admin scoring)
 - `frontend/src/components/UserPreferences.js` - Site Style panel
-- `frontend/src/components/Navigation.js` - Added "Site Style" gear button
+- `frontend/src/components/Navigation.js` - Sidebar navigation
 - `frontend/src/components/EventCardPopup.js` - Event detail popup modal
-- `frontend/src/App.js` - State management, event click handling, theme persistence
+- `frontend/src/App.js` - State management, routing, theme persistence
+- `backend/routes/email.py` - Email client backend
+- `backend/routes/analytics.py` - Visit tracker backend
