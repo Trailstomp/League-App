@@ -97,6 +97,7 @@ set_groupme_db(db)
 set_comms_db(db)
 set_joinus_db(db)
 set_docs_db(db)
+set_email_client_db(db)
 
 # Create the main app without a prefix
 app = FastAPI()
