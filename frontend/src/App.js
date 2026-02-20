@@ -789,6 +789,8 @@ function App() {
         );
       case 'help':
         return <HelpPage />;
+      case 'email':
+        return <EmailClient currentUser={currentUser} />;
       default:
         console.log('🔄 Rendering default (HomePage)');
         return <HomePage teams={teams} currentUser={currentUser} />;
