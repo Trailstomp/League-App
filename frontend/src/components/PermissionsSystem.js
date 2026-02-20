@@ -38,7 +38,8 @@ export const PERMISSIONS = {
     'system.admin_access': { name: 'Admin Access', category: 'System Administration', description: 'Access administrative functions' },
     
     // Navigation
-    'nav.league_chat': { name: 'League Chat', category: 'Navigation', description: 'Access the league-wide chat channel' }
+    'nav.league_chat': { name: 'League Chat', category: 'Navigation', description: 'Access the league-wide chat channel' },
+    'nav.email': { name: 'Email Access', category: 'Navigation', description: 'Access the email client feature' }
 };
 
 // Define system roles with their permissions
