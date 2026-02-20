@@ -503,6 +503,9 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                         {currentUser && hasPermission(currentUser, 'nav.league_chat') && (
                             <NavItem icon={<span>💬</span>} label="League Chat" pageName="chat" />
                         )}
+                        {currentUser && hasPermission(currentUser, 'nav.email') && (
+                            <NavItem icon={<span>📧</span>} label="Email" pageName="email" />
+                        )}
                         {currentUser && isAdmin(currentUser) && (
                             <NavItem icon={<LacrosseIcon name="admin" />} label="Admin Portal" pageName="admin" />
                         )}
