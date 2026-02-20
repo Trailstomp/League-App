@@ -557,6 +557,8 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
         switch (activeTab) {
             case 'dashboard':
                 return <AdminDashboard teams={teams} players={players} users={users} onNavigate={setActiveTab} />;
+            case 'visit-tracker':
+                return <VisitTracker />;
             case 'events':
                 return <AdminEventsView teams={teams} currentUser={currentUser} />;
             case 'divisions':
