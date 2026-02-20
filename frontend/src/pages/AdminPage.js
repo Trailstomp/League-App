@@ -483,6 +483,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
             groupName: '📊 Overview',
             tabs: [
                 { id: 'dashboard', label: 'Dashboard', icon: 'venue' },
+                { id: 'visit-tracker', label: 'Visit Tracker', icon: '👁️' },
             ]
         },
         {
