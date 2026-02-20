@@ -35,6 +35,7 @@ from routes.groupme import groupme_router, set_db as set_groupme_db, set_groupme
 from routes.communication import comms_router, set_db as set_comms_db
 from routes.joinus import joinus_router, set_db as set_joinus_db
 from routes.documents import docs_router, set_db as set_docs_db
+from routes.email_client import email_router, set_db as set_email_client_db
 
 
 ROOT_DIR = Path(__file__).parent
