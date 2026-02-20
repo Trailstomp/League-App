@@ -301,18 +301,6 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             <span>Welcome</span>
                         </button>
                         <button
-                            onClick={() => setActiveTab('join')}
-                            className={`flex flex-col items-center px-4 py-2 text-xs font-medium transition-colors whitespace-nowrap min-w-0 flex-shrink-0 ${
-                                activeTab === 'join' 
-                                    ? 'border-b-2 border-blue-500 text-blue-600 bg-blue-50/50' 
-                                    : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
-                            }`}
-                            data-testid="join-tab"
-                        >
-                            <span className="text-lg leading-none mb-0.5">🤝</span>
-                            <span>Join Us</span>
-                        </button>
-                        <button
                             onClick={() => setActiveTab('teams')}
                             className={`flex flex-col items-center px-4 py-2 text-xs font-medium transition-colors whitespace-nowrap min-w-0 flex-shrink-0 ${
                                 activeTab === 'teams' 
@@ -347,6 +335,18 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                         >
                             <span className="text-lg leading-none mb-0.5">🤝</span>
                             <span>Sponsors</span>
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('join')}
+                            className={`flex flex-col items-center px-4 py-2 text-xs font-medium transition-colors whitespace-nowrap min-w-0 flex-shrink-0 ${
+                                activeTab === 'join' 
+                                    ? 'border-b-2 border-blue-500 text-blue-600 bg-blue-50/50' 
+                                    : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
+                            }`}
+                            data-testid="join-tab"
+                        >
+                            <span className="text-lg leading-none mb-0.5">🤝</span>
+                            <span>Join Us</span>
                         </button>
                     </div>
                 </div>
