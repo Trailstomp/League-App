@@ -164,7 +164,7 @@ const AnalogScoreboard = ({
                 {/* Team Logo */}
                 {team.logo ? (
                     <div 
-                        className="w-16 h-16 rounded-full overflow-hidden border-4 shadow-lg"
+                        className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-4 shadow-lg"
                         style={{ 
                             borderColor: team.color,
                             boxShadow: `0 0 20px ${team.color}50`
@@ -178,7 +178,7 @@ const AnalogScoreboard = ({
                     </div>
                 ) : (
                     <div 
-                        className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white border-4"
+                        className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center text-3xl font-bold text-white border-4"
                         style={{ 
                             backgroundColor: team.color,
                             borderColor: `${team.color}80`,
