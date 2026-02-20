@@ -177,6 +177,30 @@ function App() {
     }
   }, []);
 
+  // ─── PAGE VISIT TRACKING ───
+  useEffect(() => {
+    const trackVisit = async () => {
+      // Only track user-facing pages
+      const trackedPages = ['home', 'events', 'standings', 'live-game', 'team', 'email', 'chat', 'help', 'player-dashboard'];
+      if (!trackedPages.includes(currentPage)) return;
+      try {
+        const payload = {
+          page: currentPage,
+          team_id: currentPage === 'team' ? selectedTeam?.id : null,
+          team_name: currentPage === 'team' ? selectedTeam?.name : null,
+          user_id: currentUser?.id || null,
+          user_role: currentUser?.role || 'guest'
+        };
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/api/analytics/track`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }).catch(() => {}); // Fire and forget
+      } catch (e) { /* ignore tracking errors */ }
+    };
+    trackVisit();
+  }, [currentPage, selectedTeam?.id]);
+
   // Enhanced navigation handler - supports team navigation
   const handleNavigate = (page, teamId = null) => {
     console.log('🧭 Navigation requested to:', page, teamId ? `with teamId: ${teamId}` : '');
