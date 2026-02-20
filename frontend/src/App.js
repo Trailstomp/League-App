@@ -385,6 +385,7 @@ function App() {
       '/events': 'events',
       '/standings': 'standings',
       '/chat': 'chat',
+      '/email': 'email',
       '/league_contact': 'league_contact',
       '/player-dashboard': 'player-dashboard',
       '/my-dashboard': 'player-dashboard',
