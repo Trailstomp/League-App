@@ -71,6 +71,17 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Frontend: EmailClient, EmailSettings, ComposeEmail components
 - [x] Testing: 100% pass rate (10/10 backend, all frontend flows verified)
 
+### Visit Tracker Feature (Feb 20, 2026)
+- [x] Backend analytics API: track visits, summary aggregation, daily trends
+- [x] Automatic page visit tracking on frontend navigation (fire-and-forget)
+- [x] Tracks: Home, Events, Live View, Standings, Team pages, Email, Chat, Help, Dashboard
+- [x] Separate rows for each team page with team name
+- [x] Guest vs Logged-in breakdown + role columns (Admin, Coach, Player, etc.)
+- [x] Time-based trend chart with stacked bars (guest vs logged-in)
+- [x] Period selector: 7/14/30/90 days
+- [x] Admin dashboard tab: Overview > Visit Tracker
+- [x] Testing: 100% pass rate (18/18 backend tests)
+
 ## Pending Issues
 - P1: News & Gallery data loss fix — verification pending (backend $set updates + local upload fallback implemented)
 - P2: Ticker "Show Practice" setting persistence — verification pending (auto-save implemented)
