@@ -36,6 +36,7 @@ from routes.communication import comms_router, set_db as set_comms_db
 from routes.joinus import joinus_router, set_db as set_joinus_db
 from routes.documents import docs_router, set_db as set_docs_db
 from routes.email_client import email_router, set_db as set_email_client_db
+from routes.analytics import analytics_router, set_db as set_analytics_db
 
 
 ROOT_DIR = Path(__file__).parent
@@ -98,6 +99,7 @@ set_comms_db(db)
 set_joinus_db(db)
 set_docs_db(db)
 set_email_client_db(db)
+set_analytics_db(db)
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -9011,6 +9013,7 @@ api_router.include_router(cleanup_router)
 api_router.include_router(joinus_router)
 api_router.include_router(docs_router)
 api_router.include_router(email_router)
+api_router.include_router(analytics_router)
 
 # Setup router - for first-time setup wizard
 app.include_router(setup_router)
