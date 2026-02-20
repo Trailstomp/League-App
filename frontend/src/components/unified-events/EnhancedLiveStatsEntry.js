@@ -2433,10 +2433,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                                     <img 
                                         src={gameState.home_team.logo.startsWith('http') ? gameState.home_team.logo : `${backendUrl}${gameState.home_team.logo}`}
                                         alt={gameState.home_team.name}
-                                        className="w-8 h-8 md:w-10 md:h-10 mx-auto mb-1 rounded-full object-cover bg-white p-0.5 shadow"
+                                        className="w-14 h-14 md:w-20 md:h-20 mx-auto mb-1 rounded-full object-cover bg-white p-0.5 shadow"
                                     />
                                 )}
-                                <div className="text-[10px] md:text-xs font-bold truncate max-w-[70px]" style={{ color: gameState.home_team.color || '#1e40af' }}>
+                                <div className="text-[10px] md:text-xs font-bold truncate max-w-[80px]" style={{ color: gameState.home_team.color || '#1e40af' }}>
                                     {gameState.home_team.name}
                                 </div>
                                 <div className="text-3xl md:text-5xl font-bold" style={{ color: gameState.home_team.color || '#3b82f6' }}>
