@@ -9010,6 +9010,7 @@ api_router.include_router(drive_router)
 api_router.include_router(cleanup_router)
 api_router.include_router(joinus_router)
 api_router.include_router(docs_router)
+api_router.include_router(email_router)
 
 # Setup router - for first-time setup wizard
 app.include_router(setup_router)
