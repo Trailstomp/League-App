@@ -60,6 +60,17 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Mobile ticker now uses full card-style events (same as desktop) with borders, status badges, team names, dates
 - [x] Removed mobile slide-out navigation overlay (no longer needed)
 
+### Email Client Feature (Feb 19, 2026)
+- [x] Full email client with inbox, compose, reply, forward, trash, search, attachments
+- [x] Supports Gmail, Office 365, and Custom SMTP/IMAP providers
+- [x] User-managed email account credentials with encrypted password storage
+- [x] Permission-controlled access via `nav.email` (league_admin, team_coach by default)
+- [x] Provider setup instructions with direct links to App Password pages
+- [x] Email client documentation added to Help & Docs page
+- [x] Backend routes: /api/email-client/* (accounts CRUD, folders, messages, send, trash, attachments)
+- [x] Frontend: EmailClient, EmailSettings, ComposeEmail components
+- [x] Testing: 100% pass rate (10/10 backend, all frontend flows verified)
+
 ## Pending Issues
 - P1: News & Gallery data loss fix — verification pending (backend $set updates + local upload fallback implemented)
 - P2: Ticker "Show Practice" setting persistence — verification pending (auto-save implemented)
