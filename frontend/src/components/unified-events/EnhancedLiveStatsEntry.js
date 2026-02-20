@@ -2346,9 +2346,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
             </div>
 
             {/* Control Buttons Bar */}
-            <div className="bg-gray-50 border-b border-gray-200">
+            <div className="bg-white border-b border-gray-200">
                 {/* Global Controls Row - more compact */}
-                <div className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1.5 border-b border-gray-300">
+                <div className="flex items-center justify-center gap-1 md:gap-2 px-2 py-1.5 border-b border-gray-200 bg-gray-100">
                     {showGameClock && (
                         <button
                             onClick={toggleTimer}
@@ -2419,8 +2419,8 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                     )}
                 </div>
 
-                {/* Score + Buttons Row - More compact */}
-                <div className="px-2 md:px-4 py-2 bg-gray-50">
+                {/* Score + Buttons Row - Use team colors for action buttons */}
+                <div className="px-2 md:px-4 py-2 bg-white">
                     <div className="flex items-stretch justify-between gap-1 md:gap-3 max-w-7xl mx-auto">
                         {/* Home Team: Score */}
                         <div 
