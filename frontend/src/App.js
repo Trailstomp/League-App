@@ -24,6 +24,7 @@ import "./App.css";
 import GroupMeChatUnified from './components/GroupMeChatUnified';
 import QuickRSVPForm from './components/QuickRSVPForm';
 import StandingsTable from './components/StandingsTable';
+import EmailClient from './components/email/EmailClient';
 import LiveGamePage from './pages/LiveGamePage';
 import GameStatsEntry from './components/GameStatsEntry';
 import { PlayerFeeDashboard, PaymentSuccess } from './components/fees';
