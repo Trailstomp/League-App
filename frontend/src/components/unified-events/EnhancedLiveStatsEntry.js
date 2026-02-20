@@ -2447,10 +2447,11 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
 
                         {/* Home Team: Action Buttons */}
                         <div className="flex flex-col gap-1">
-                            <div className="text-[10px] font-bold text-center text-gray-500 uppercase truncate max-w-[100px]">{gameState.home_team.name}</div>
+                            <div className="text-[10px] font-bold text-center text-gray-600 uppercase truncate max-w-[100px]">{gameState.home_team.name}</div>
                             <button
                                 onClick={() => openTeamShotModal('home_team')}
-                                className="w-14 h-14 md:w-20 md:h-20 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold flex flex-col items-center justify-center shadow transition-transform hover:scale-105"
+                                className="w-14 h-14 md:w-20 md:h-20 rounded-lg font-bold flex flex-col items-center justify-center shadow transition-transform hover:scale-105 hover:brightness-110"
+                                style={{ backgroundColor: gameState.home_team.color || '#3b82f6', color: '#ffffff' }}
                                 title="Record Shot"
                                 data-testid="home-shot-btn"
                             >
@@ -2460,14 +2461,14 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                             <div className="flex gap-1">
                                 <button
                                     onClick={() => openTeamPenaltyModal('home_team')}
-                                    className="flex-1 h-7 md:h-8 bg-red-500 hover:bg-red-600 text-white rounded text-[10px] md:text-xs font-bold flex items-center justify-center gap-0.5 shadow"
+                                    className="flex-1 h-7 md:h-8 bg-red-600 hover:bg-red-700 text-white rounded text-[10px] md:text-xs font-bold flex items-center justify-center gap-0.5 shadow"
                                     data-testid="home-penalty-btn"
                                 >
                                     Pen
                                 </button>
                                 <button
                                     onClick={() => callTimeout('home')}
-                                    className="flex-1 h-7 md:h-8 bg-orange-500 hover:bg-orange-600 text-white rounded text-[10px] md:text-xs font-bold flex items-center justify-center gap-0.5 shadow"
+                                    className="flex-1 h-7 md:h-8 bg-amber-600 hover:bg-amber-700 text-white rounded text-[10px] md:text-xs font-bold flex items-center justify-center gap-0.5 shadow"
                                     data-testid="home-timeout-btn"
                                 >
                                     TO
