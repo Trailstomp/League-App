@@ -267,243 +267,154 @@ const LiveSpectatorView = ({ event, gameData, onClose }) => {
                 <div className="flex-1 flex overflow-hidden">
                     {/* Left: Main View Area */}
                     <div className="flex-1 flex flex-col overflow-hidden">
-                        {/* Scoreboard */}
-                        <div className="p-4 bg-gray-800">
+                        {/* Scoreboard - Compact */}
+                        <div className="p-3 md:p-4 bg-gray-800">
                             <div className="max-w-4xl mx-auto">
-                                <div className="grid grid-cols-3 gap-4 items-center">
+                                <div className="flex items-center justify-between gap-2">
                                     {/* Home Team */}
-                                    <div 
-                                        className="flex items-center gap-4 p-4 rounded-xl"
-                                        style={{ backgroundColor: `${homeColor}20` }}
-                                    >
+                                    <div className="flex items-center gap-2 md:gap-4 flex-1 justify-end">
+                                        <div className="text-right hidden md:block">
+                                            <div className="text-white font-bold text-lg">{gameData?.home_team?.name || 'Home'}</div>
+                                            <div className="text-gray-400 text-xs">Home</div>
+                                        </div>
                                         {gameData?.home_team?.logo ? (
                                             <img 
                                                 src={getImageUrl(gameData.home_team.logo)}
                                                 alt={gameData?.home_team?.name}
-                                                className="w-16 h-16 rounded-full object-cover bg-white p-1 shadow-lg"
+                                                className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover bg-white p-0.5 shadow-lg border-3"
+                                                style={{ borderColor: homeColor }}
                                             />
                                         ) : (
                                             <div 
-                                                className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white"
-                                                style={{ backgroundColor: homeColor }}
+                                                className="w-16 h-16 md:w-24 md:h-24 rounded-full flex items-center justify-center text-2xl md:text-3xl font-bold text-white border-3"
+                                                style={{ backgroundColor: homeColor, borderColor: `${homeColor}80` }}
                                             >
                                                 {gameData?.home_team?.name?.[0] || 'H'}
                                             </div>
                                         )}
-                                        <div className="flex-1">
-                                            <div className="text-white font-bold text-lg">
-                                                {gameData?.home_team?.name || 'Home'}
-                                            </div>
-                                            <div className="text-gray-400 text-sm">Home</div>
-                                        </div>
                                         <div 
-                                            className="text-5xl font-bold"
-                                            style={{ color: homeColor }}
+                                            className="text-4xl md:text-6xl font-black"
+                                            style={{ color: homeColor, textShadow: `0 0 20px ${homeColor}60` }}
                                         >
                                             {gameData?.home_team?.score || 0}
                                         </div>
                                     </div>
 
                                     {/* Game Clock */}
-                                    <div className="text-center">
-                                        <div className="text-4xl font-mono font-bold text-white mb-1">
+                                    <div className="text-center px-2 md:px-6 flex-shrink-0">
+                                        <div className="text-2xl md:text-4xl font-mono font-bold text-white">
                                             {formatTime(gameData?.time_remaining)}
                                         </div>
-                                        <div className="text-gray-400 text-sm">
+                                        <div className="text-gray-400 text-xs">
                                             {gameData?.game_settings?.periodName || 'Period'} {gameData?.current_period || 1}
                                         </div>
                                         {gameData?.is_running && (
-                                            <span className="inline-block mt-1 px-2 py-0.5 bg-green-600 text-white text-xs rounded-full">
+                                            <span className="inline-block mt-1 px-2 py-0.5 bg-green-600 text-white text-[10px] rounded-full">
                                                 In Progress
                                             </span>
                                         )}
                                     </div>
 
                                     {/* Away Team */}
-                                    <div 
-                                        className="flex items-center gap-4 p-4 rounded-xl flex-row-reverse"
-                                        style={{ backgroundColor: `${awayColor}20` }}
-                                    >
+                                    <div className="flex items-center gap-2 md:gap-4 flex-1">
+                                        <div 
+                                            className="text-4xl md:text-6xl font-black"
+                                            style={{ color: awayColor, textShadow: `0 0 20px ${awayColor}60` }}
+                                        >
+                                            {gameData?.away_team?.score || 0}
+                                        </div>
                                         {gameData?.away_team?.logo ? (
                                             <img 
                                                 src={getImageUrl(gameData.away_team.logo)}
                                                 alt={gameData?.away_team?.name}
-                                                className="w-16 h-16 rounded-full object-cover bg-white p-1 shadow-lg"
+                                                className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover bg-white p-0.5 shadow-lg border-3"
+                                                style={{ borderColor: awayColor }}
                                             />
                                         ) : (
                                             <div 
-                                                className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white"
-                                                style={{ backgroundColor: awayColor }}
+                                                className="w-16 h-16 md:w-24 md:h-24 rounded-full flex items-center justify-center text-2xl md:text-3xl font-bold text-white border-3"
+                                                style={{ backgroundColor: awayColor, borderColor: `${awayColor}80` }}
                                             >
                                                 {gameData?.away_team?.name?.[0] || 'A'}
                                             </div>
                                         )}
-                                        <div className="flex-1 text-right">
-                                            <div className="text-white font-bold text-lg">
-                                                {gameData?.away_team?.name || 'Away'}
-                                            </div>
-                                            <div className="text-gray-400 text-sm">Away</div>
-                                        </div>
-                                        <div 
-                                            className="text-5xl font-bold"
-                                            style={{ color: awayColor }}
-                                        >
-                                            {gameData?.away_team?.score || 0}
+                                        <div className="text-left hidden md:block">
+                                            <div className="text-white font-bold text-lg">{gameData?.away_team?.name || 'Away'}</div>
+                                            <div className="text-gray-400 text-xs">Away</div>
                                         </div>
                                     </div>
+                                </div>
+                                {/* Mobile team names */}
+                                <div className="flex justify-between mt-1 md:hidden text-xs">
+                                    <span className="text-white/80 font-medium">{gameData?.home_team?.name}</span>
+                                    <span className="text-white/80 font-medium">{gameData?.away_team?.name}</span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Tab Navigation */}
-                        <div className="bg-gray-800 border-t border-gray-700">
-                            <div className="max-w-4xl mx-auto flex">
-                                {[
-                                    { id: 'stream', label: '📺 Stream', icon: '📺' },
-                                    { id: 'events', label: '📋 Events', icon: '📋' },
-                                    { id: 'stats', label: '📊 Stats', icon: '📊' },
-                                    { id: 'roster', label: '👥 Rosters', icon: '👥' }
-                                ].map(tab => (
-                                    <button
-                                        key={tab.id}
-                                        onClick={() => setActiveTab(tab.id)}
-                                        className={`flex-1 px-4 py-3 text-sm font-medium transition-all ${
-                                            activeTab === tab.id
-                                                ? 'text-white border-b-2 border-blue-500 bg-gray-700/50'
-                                                : 'text-gray-400 hover:text-white hover:bg-gray-700/30'
-                                        }`}
-                                    >
-                                        {tab.label}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Tab Content */}
-                        <div className="flex-1 overflow-y-auto p-4 bg-gray-900">
-                            <div className="max-w-4xl mx-auto">
-                                {/* Stream Tab */}
-                                {activeTab === 'stream' && (
-                                    <div className="space-y-4">
-                                        {/* Livestream Embed Area */}
-                                        <div className="bg-black rounded-xl overflow-hidden aspect-video relative">
-                                            {gameData?.youtubeUrl || event.youtubeUrl ? (
-                                                <iframe
-                                                    src={`https://www.youtube.com/embed/${(gameData?.youtubeUrl || event.youtubeUrl).includes('watch?v=') 
-                                                        ? (gameData?.youtubeUrl || event.youtubeUrl).split('watch?v=')[1].split('&')[0]
-                                                        : (gameData?.youtubeUrl || event.youtubeUrl).split('/').pop()
-                                                    }?autoplay=1`}
-                                                    title="Live Stream"
-                                                    className="w-full h-full"
-                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                    allowFullScreen
-                                                />
-                                            ) : (
-                                                <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
-                                                    <span className="text-6xl mb-4">📺</span>
-                                                    <p className="text-lg font-medium">No Livestream Available</p>
-                                                    <p className="text-sm">Check back later for live video</p>
-                                                </div>
-                                            )}
+                        {/* Stream + Events/Stats side-by-side on desktop, stacked on mobile */}
+                        <div className="flex-1 overflow-y-auto bg-gray-900 p-2 md:p-4">
+                            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {/* Stream Panel - always visible */}
+                                <div className="bg-black rounded-xl overflow-hidden aspect-video relative">
+                                    {gameData?.youtubeUrl || event.youtubeUrl ? (
+                                        <iframe
+                                            src={`https://www.youtube.com/embed/${(gameData?.youtubeUrl || event.youtubeUrl).includes('watch?v=') 
+                                                ? (gameData?.youtubeUrl || event.youtubeUrl).split('watch?v=')[1].split('&')[0]
+                                                : (gameData?.youtubeUrl || event.youtubeUrl).split('/').pop()
+                                            }?autoplay=1`}
+                                            title="Live Stream"
+                                            className="w-full h-full"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        />
+                                    ) : (
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
+                                            <span className="text-4xl mb-2">📺</span>
+                                            <p className="text-sm font-medium">No Livestream Available</p>
+                                            <p className="text-xs text-gray-600">Check back later</p>
                                         </div>
+                                    )}
+                                </div>
 
-                                        {/* Quick Stats Below Stream */}
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div 
-                                                className="p-4 rounded-xl"
-                                                style={{ backgroundColor: `${homeColor}15` }}
-                                            >
-                                                <div className="flex items-center gap-3 mb-3">
-                                                    {gameData?.home_team?.logo && (
-                                                        <img 
-                                                            src={getImageUrl(gameData.home_team.logo)}
-                                                            alt=""
-                                                            className="w-8 h-8 rounded-full object-cover"
-                                                        />
-                                                    )}
-                                                    <span className="text-white font-bold">{gameData?.home_team?.name}</span>
-                                                </div>
-                                                <div className="grid grid-cols-3 gap-2 text-center text-sm">
-                                                    <div className="bg-black/20 rounded p-2">
-                                                        <div className="text-white font-bold">{gameData?.home_team?.shots || 0}</div>
-                                                        <div className="text-gray-400 text-xs">Shots</div>
-                                                    </div>
-                                                    <div className="bg-black/20 rounded p-2">
-                                                        <div className="text-white font-bold">{gameData?.home_team?.score || 0}</div>
-                                                        <div className="text-gray-400 text-xs">Goals</div>
-                                                    </div>
-                                                    <div className="bg-black/20 rounded p-2">
-                                                        <div className="text-white font-bold">{gameData?.home_team?.assists || 0}</div>
-                                                        <div className="text-gray-400 text-xs">Assists</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div 
-                                                className="p-4 rounded-xl"
-                                                style={{ backgroundColor: `${awayColor}15` }}
-                                            >
-                                                <div className="flex items-center gap-3 mb-3 justify-end">
-                                                    <span className="text-white font-bold">{gameData?.away_team?.name}</span>
-                                                    {gameData?.away_team?.logo && (
-                                                        <img 
-                                                            src={getImageUrl(gameData.away_team.logo)}
-                                                            alt=""
-                                                            className="w-8 h-8 rounded-full object-cover"
-                                                        />
-                                                    )}
-                                                </div>
-                                                <div className="grid grid-cols-3 gap-2 text-center text-sm">
-                                                    <div className="bg-black/20 rounded p-2">
-                                                        <div className="text-white font-bold">{gameData?.away_team?.shots || 0}</div>
-                                                        <div className="text-gray-400 text-xs">Shots</div>
-                                                    </div>
-                                                    <div className="bg-black/20 rounded p-2">
-                                                        <div className="text-white font-bold">{gameData?.away_team?.score || 0}</div>
-                                                        <div className="text-gray-400 text-xs">Goals</div>
-                                                    </div>
-                                                    <div className="bg-black/20 rounded p-2">
-                                                        <div className="text-white font-bold">{gameData?.away_team?.assists || 0}</div>
-                                                        <div className="text-gray-400 text-xs">Assists</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                {/* Events/Stats Panel with toggle */}
+                                <div className="bg-gray-800 rounded-xl overflow-hidden flex flex-col" style={{ minHeight: '250px', maxHeight: '450px' }}>
+                                    {/* Toggle: Events / Stats */}
+                                    <div className="flex bg-gray-700">
+                                        <button
+                                            onClick={() => setActiveTab('events')}
+                                            className={`flex-1 py-2.5 text-sm font-bold transition-all ${
+                                                activeTab === 'events'
+                                                    ? 'text-white bg-gray-800 border-b-2 border-blue-500'
+                                                    : 'text-gray-300 hover:text-white hover:bg-gray-600'
+                                            }`}
+                                        >
+                                            Events ({(gameData?.game_events || []).length})
+                                        </button>
+                                        <button
+                                            onClick={() => setActiveTab('stats')}
+                                            className={`flex-1 py-2.5 text-sm font-bold transition-all ${
+                                                activeTab === 'stats'
+                                                    ? 'text-white bg-gray-800 border-b-2 border-blue-500'
+                                                    : 'text-gray-300 hover:text-white hover:bg-gray-600'
+                                            }`}
+                                        >
+                                            Stats
+                                        </button>
+                                        <button
+                                            onClick={() => setActiveTab('roster')}
+                                            className={`flex-1 py-2.5 text-sm font-bold transition-all ${
+                                                activeTab === 'roster'
+                                                    ? 'text-white bg-gray-800 border-b-2 border-blue-500'
+                                                    : 'text-gray-300 hover:text-white hover:bg-gray-600'
+                                            }`}
+                                        >
+                                            Rosters
+                                        </button>
                                     </div>
-                                )}
 
-                                {/* Events Tab - Most Recent First */}
-                                {activeTab === 'events' && (
-                                    <div className="space-y-3">
-                                        <h3 className="text-white font-bold text-lg flex items-center gap-2">
-                                            <span>📋 Live Event Tracker</span>
-                                            <span className="text-xs text-gray-400 font-normal">(Most Recent First)</span>
-                                        </h3>
-                                        
-                                        {getRecentEvents().length > 0 ? (
-                                            getRecentEvents().map((eventItem, index) => (
-                                                <div 
-                                                    key={eventItem.id || index}
-                                                    className={`p-4 rounded-xl ${
-                                                        index === 0 ? 'bg-blue-900/30 border border-blue-500/50' : 'bg-gray-800'
-                                                    }`}
-                                                >
-                                                    {renderEventWithPhotos(eventItem)}
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className="text-center py-12 text-gray-500">
-                                                <span className="text-4xl mb-2 block">📋</span>
-                                                <p>No events recorded yet</p>
-                                                <p className="text-sm">Events will appear here as the game progresses</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {/* Stats Tab */}
-                                {activeTab === 'stats' && (
-                                    <div className="space-y-6">
-                                        <h3 className="text-white font-bold text-lg">📊 Top Performers</h3>
+                                    {/* Scrollable content */}
+                                    <div className="flex-1 overflow-y-auto p-3">
                                         
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             {/* Home Team Stats */}
