@@ -174,7 +174,35 @@ const HelpPage = () => {
 
 ### Step 6: Communication Setup
 
-#### Email (SMTP)
+#### Email Client
+The built-in Email Client lets you read, send, and manage emails from within the app. It supports Gmail, Office 365, and custom IMAP/SMTP servers.
+
+**Setting Up Gmail:**
+1. Go to your [Google Account Security](https://myaccount.google.com/security)
+2. Enable **2-Step Verification** if not already enabled
+3. Go to [App Passwords](https://myaccount.google.com/apppasswords)
+4. Generate an App Password for "Mail"
+5. In the Email Client, click Settings → Add Gmail → enter your email and the App Password
+
+**Setting Up Office 365:**
+1. Use your Office 365 email and password
+2. If MFA is enabled, create an [App Password](https://account.live.com/proofs/AppPassword)
+3. In the Email Client, click Settings → Add Office 365 → enter credentials
+
+**Setting Up Custom SMTP/IMAP:**
+1. Get your IMAP and SMTP server details from your email provider
+2. In the Email Client, click Settings → Add Custom SMTP/IMAP
+3. Enter server hosts, ports, and credentials
+4. Test the connection before saving
+
+**Using the Email Client:**
+- **Inbox**: View received emails, search, and navigate folders
+- **Compose**: Write new emails with formatting and attachments
+- **Reply/Forward**: Use the reply and forward buttons in any email
+- **Trash**: Delete emails by clicking the trash icon
+- **Search**: Use the search bar to find emails by subject, sender, or content
+
+#### Email (SMTP - Legacy Notifications)
 - Gmail: Use App Password (not regular password)
 - Generate App Password in Google Security settings
 
