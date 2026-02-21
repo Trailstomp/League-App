@@ -458,7 +458,7 @@ const Layout = ({
                             fontSize: websiteStyle.mainFontSize || '16px',
                             color: websiteStyle.mainTextColor || '#374151',
                             minHeight: isMobileView ? 'calc(100vh - 220px)' : 'calc(100vh - 200px)',
-                            padding: '1rem',
+                            padding: isMobileView ? '0.5rem' : '1rem',
                             ...getContentBackgroundStyle()
                         }}
                     >
