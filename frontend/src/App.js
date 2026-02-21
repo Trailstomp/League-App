@@ -582,6 +582,19 @@ function App() {
             console.log('📝 No saved websiteStyle found, keeping current defaults');
           }
           
+          // Load ticker config separately (not template-dependent)
+          try {
+            const tickerRes = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/league-data/tickerConfig`);
+            if (tickerRes.ok) {
+              const tc = await tickerRes.json();
+              if (tc && Object.keys(tc).length > 0) {
+                setTickerConfig(prev => ({ ...prev, ...tc }));
+              }
+            }
+          } catch (tickerErr) {
+            console.log('Ticker config load skipped:', tickerErr.message);
+          }
+          
         } else {
           console.error('❌ Failed to load dashboard data, status:', dashboardResponse.status);
           // Fallback to individual API calls
