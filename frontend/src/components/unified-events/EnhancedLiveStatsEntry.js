@@ -2329,25 +2329,25 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                 </div>
             </div>
 
-            {/* Row 2: Controls + Action Buttons - single compact row */}
+            {/* Row 2: Controls + Action Buttons - centered compact row */}
             <div className="bg-white border-b border-gray-200 px-2 md:px-4 py-1.5">
-                <div className="flex items-center justify-between gap-1 max-w-7xl mx-auto">
+                <div className="flex items-center justify-center gap-2 md:gap-4 max-w-xl mx-auto">
                     {/* Home Team Actions */}
-                    <div className="flex items-center gap-1" data-testid="home-score-display">
-                        <button onClick={() => openTeamShotModal('home_team')} className="h-10 w-10 md:h-11 md:w-11 rounded-lg font-bold flex flex-col items-center justify-center shadow-sm text-white" style={{ backgroundColor: homeColor }} title="Record Shot" data-testid="home-shot-btn">
-                            <span className="text-sm md:text-base">{sportConfig.icon}</span>
-                            <span className="text-[8px] md:text-[9px] font-bold leading-none">SHOT</span>
+                    <div className="flex items-center gap-1 md:gap-1.5" data-testid="home-score-display">
+                        <button onClick={() => openTeamShotModal('home_team')} className="h-10 w-10 md:h-14 md:w-14 rounded-lg font-bold flex flex-col items-center justify-center shadow-sm text-white hover:brightness-110 transition-all" style={{ backgroundColor: homeColor }} title="Record Shot" data-testid="home-shot-btn">
+                            <span className="text-sm md:text-xl">{sportConfig.icon}</span>
+                            <span className="text-[8px] md:text-[10px] font-bold leading-none">SHOT</span>
                         </button>
                         <div className="flex flex-col gap-0.5">
-                            <button onClick={() => openTeamPenaltyModal('home_team')} className="h-5 px-2 bg-red-600 hover:bg-red-700 text-white rounded text-[9px] font-bold flex items-center justify-center shadow-sm" data-testid="home-penalty-btn">Pen</button>
-                            <button onClick={() => callTimeout('home')} className="h-5 px-2 bg-amber-600 hover:bg-amber-700 text-white rounded text-[9px] font-bold flex items-center justify-center shadow-sm" data-testid="home-timeout-btn">TO</button>
+                            <button onClick={() => openTeamPenaltyModal('home_team')} className="h-5 md:h-6 px-2 md:px-3 bg-red-600 hover:bg-red-700 text-white rounded text-[9px] md:text-[11px] font-bold flex items-center justify-center shadow-sm" data-testid="home-penalty-btn">Pen</button>
+                            <button onClick={() => callTimeout('home')} className="h-5 md:h-6 px-2 md:px-3 bg-amber-600 hover:bg-amber-700 text-white rounded text-[9px] md:text-[11px] font-bold flex items-center justify-center shadow-sm" data-testid="home-timeout-btn">TO</button>
                         </div>
                     </div>
 
                     {/* Center: Game Controls + Shot Clock */}
-                    <div className="flex items-center gap-1 md:gap-1.5 flex-shrink-0">
+                    <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
                         {showGameClock && (
-                            <button onClick={toggleTimer} className={`px-2 md:px-3 py-1 rounded font-bold text-white text-[10px] md:text-xs ${gameState.is_running ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`} data-testid="timer-toggle-btn">
+                            <button onClick={toggleTimer} className={`px-2 md:px-4 py-1 md:py-1.5 rounded font-bold text-white text-[10px] md:text-sm ${gameState.is_running ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`} data-testid="timer-toggle-btn">
                                 {gameState.is_running ? 'Pause' : 'Start'}
                             </button>
                         )}
@@ -2355,28 +2355,28 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                             <button
                                 onClick={() => { setGameState(prev => ({ ...prev, current_period: Math.min(prev.current_period + 1, prev.game_settings.periods), time_remaining: prev.period_length * 60, is_running: false })); const newPeriod = Math.min(gameState.current_period + 1, gameState.game_settings.periods); addGameEvent(`${gameState.game_settings.periodName} ${gameState.current_period} ended. Starting ${gameState.game_settings.periodName} ${newPeriod}`, 'period_change'); }}
                                 disabled={gameState.current_period >= gameState.game_settings.periods}
-                                className="px-1.5 md:px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium text-[10px] md:text-xs disabled:opacity-50"
+                                className="px-1.5 md:px-3 py-1 md:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium text-[10px] md:text-sm disabled:opacity-50"
                                 data-testid="next-period-btn"
                             >Next</button>
                         )}
                         {showShotClock ? (
-                            <button onClick={resetShotClock} className={`text-lg md:text-xl font-bold font-mono px-2 py-0.5 rounded border-2 cursor-pointer transition-all ${shotClock.timeRemaining === 0 ? 'bg-red-600 text-white border-red-700 animate-pulse' : shotClock.timeRemaining <= 10 ? 'bg-yellow-400 text-gray-900 border-yellow-500 animate-pulse' : 'bg-white text-gray-800 border-gray-300 hover:border-blue-500'}`} title="Click to reset shot clock" data-testid="shot-clock-reset-btn">
+                            <button onClick={resetShotClock} className={`text-lg md:text-2xl font-bold font-mono px-2 md:px-3 py-0.5 md:py-1 rounded border-2 cursor-pointer transition-all ${shotClock.timeRemaining === 0 ? 'bg-red-600 text-white border-red-700 animate-pulse' : shotClock.timeRemaining <= 10 ? 'bg-yellow-400 text-gray-900 border-yellow-500 animate-pulse' : 'bg-white text-gray-800 border-gray-300 hover:border-blue-500'}`} title="Click to reset shot clock" data-testid="shot-clock-reset-btn">
                                 {shotClock.timeRemaining}
                             </button>
                         ) : null}
-                        <button onClick={() => { console.log('Manual save button clicked'); autoSaveGameStats(); }} className="px-2 md:px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded font-medium text-[10px] md:text-xs" data-testid="manual-save-btn">Save</button>
+                        <button onClick={() => { console.log('Manual save button clicked'); autoSaveGameStats(); }} className="px-2 md:px-3 py-1 md:py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded font-medium text-[10px] md:text-sm" data-testid="manual-save-btn">Save</button>
                         {lastSaved && <span className="hidden md:inline text-[9px] text-gray-400">Saved {Math.round((new Date() - lastSaved) / 1000)}s</span>}
                     </div>
 
                     {/* Away Team Actions */}
-                    <div className="flex items-center gap-1" data-testid="away-score-display">
+                    <div className="flex items-center gap-1 md:gap-1.5" data-testid="away-score-display">
                         <div className="flex flex-col gap-0.5">
-                            <button onClick={() => openTeamPenaltyModal('away_team')} className="h-5 px-2 bg-red-600 hover:bg-red-700 text-white rounded text-[9px] font-bold flex items-center justify-center shadow-sm" data-testid="away-penalty-btn">Pen</button>
-                            <button onClick={() => callTimeout('away')} className="h-5 px-2 bg-amber-600 hover:bg-amber-700 text-white rounded text-[9px] font-bold flex items-center justify-center shadow-sm" data-testid="away-timeout-btn">TO</button>
+                            <button onClick={() => openTeamPenaltyModal('away_team')} className="h-5 md:h-6 px-2 md:px-3 bg-red-600 hover:bg-red-700 text-white rounded text-[9px] md:text-[11px] font-bold flex items-center justify-center shadow-sm" data-testid="away-penalty-btn">Pen</button>
+                            <button onClick={() => callTimeout('away')} className="h-5 md:h-6 px-2 md:px-3 bg-amber-600 hover:bg-amber-700 text-white rounded text-[9px] md:text-[11px] font-bold flex items-center justify-center shadow-sm" data-testid="away-timeout-btn">TO</button>
                         </div>
-                        <button onClick={() => openTeamShotModal('away_team')} className="h-10 w-10 md:h-11 md:w-11 rounded-lg font-bold flex flex-col items-center justify-center shadow-sm text-white" style={{ backgroundColor: awayColor }} title="Record Shot" data-testid="away-shot-btn">
-                            <span className="text-sm md:text-base">{sportConfig.icon}</span>
-                            <span className="text-[8px] md:text-[9px] font-bold leading-none">SHOT</span>
+                        <button onClick={() => openTeamShotModal('away_team')} className="h-10 w-10 md:h-14 md:w-14 rounded-lg font-bold flex flex-col items-center justify-center shadow-sm text-white hover:brightness-110 transition-all" style={{ backgroundColor: awayColor }} title="Record Shot" data-testid="away-shot-btn">
+                            <span className="text-sm md:text-xl">{sportConfig.icon}</span>
+                            <span className="text-[8px] md:text-[10px] font-bold leading-none">SHOT</span>
                         </button>
                     </div>
                 </div>
