@@ -137,6 +137,15 @@ function App() {
     contentLayout: 'wide'
   });
 
+  // Ticker functional config - stored separately from templates
+  const [tickerConfig, setTickerConfig] = useState({
+    tickerLookBack: 7,
+    tickerLookForward: 120,
+    tickerShowCancelled: false,
+    tickerFilters: { games: true, tournaments: true, practices: true, meetings: true, social: true, other: true }
+  });
+
+
   // Enhanced websiteStyle handler with API persistence - memoized to prevent stale closures
   const handleWebsiteStyleChange = React.useCallback(async (newStyle) => {
     try {
