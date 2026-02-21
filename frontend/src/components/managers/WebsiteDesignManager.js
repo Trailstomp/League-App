@@ -1046,8 +1046,8 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
             {/* Save Template Modal */}
             {showSaveTemplateModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 md:p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-4 md:p-6">
                         <h3 className="text-xl font-bold text-slate-800 mb-4">Save Design Template</h3>
                         
                         {/* Mode Selection */}
