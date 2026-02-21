@@ -941,6 +941,35 @@ async def update_website_style(style_data: Dict[str, Any]):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
+@api_router.get("/league-data/tickerConfig")
+async def get_ticker_config():
+    """Get ticker functional config (filters, date range) stored separately from templates"""
+    try:
+        league_doc = await db.league_data.find_one({"id": "main_league"}, {"_id": 0, "tickerConfig": 1})
+        config = league_doc.get("tickerConfig", {}) if league_doc else {}
+        return config
+    except Exception as e:
+        logger.error(f"Error fetching ticker config: {e}")
+        return {}
+
+@api_router.post("/league-data/tickerConfig")
+async def update_ticker_config(config: Dict[str, Any]):
+    """Update ticker functional config separately from websiteStyle/templates"""
+    try:
+        result = await db.league_data.update_one(
+            {"id": "main_league"},
+            {"$set": {"tickerConfig": config, "lastUpdated": datetime.now(timezone.utc).isoformat()}},
+            upsert=True
+        )
+        logger.info(f"Ticker config updated: {len(config)} settings")
+        return {"status": "success", "message": "Ticker config saved"}
+    except Exception as e:
+        logger.error(f"Error updating ticker config: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
 @api_router.get("/pwa/manifest.json")
 async def get_pwa_manifest():
     """Generate dynamic PWA manifest based on websiteStyle settings"""
