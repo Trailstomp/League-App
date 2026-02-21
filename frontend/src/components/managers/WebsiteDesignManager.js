@@ -874,8 +874,8 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                 {savedTemplates.length > 0 ? (
                     <div className="divide-y divide-slate-100">
                         {savedTemplates.map(template => (
-                            <div key={template.id} className={`p-4 hover:bg-slate-50 flex items-center justify-between ${template.id === activeTemplateId ? 'bg-blue-50 border-l-4 border-blue-500' : ''}`}>
-                                <div className="flex items-center gap-4">
+                            <div key={template.id} className={`p-3 md:p-4 hover:bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${template.id === activeTemplateId ? 'bg-blue-50 border-l-4 border-blue-500' : ''}`}>
+                                <div className="flex items-center gap-3 md:gap-4 min-w-0">
                                     <TemplatePreview style={template.style} size="sm" />
                                     <div>
                                         <h5 className="font-medium text-slate-800">
