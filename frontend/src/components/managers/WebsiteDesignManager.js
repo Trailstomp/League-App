@@ -122,7 +122,7 @@ const ColorPickerWithTexture = ({ label, colorValue, textureValue, onColorChange
                 )}
             </div>
             {showTextures && (
-                <div className="grid grid-cols-4 gap-1.5 mt-2">
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5 mt-2">
                     {TEXTURES.map(t => {
                         const url = `${BACKEND_URL}/api/uploads/textures/${t.file}`;
                         const isActive = textureValue === t.id;
