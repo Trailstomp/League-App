@@ -3827,7 +3827,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                             <button
                                 key={section.id}
                                 onClick={() => setActiveSection(section.id)}
-                                className={`flex items-center px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                                className={`flex items-center px-3 md:px-6 py-3 md:py-4 text-xs md:text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                                     activeSection === section.id
                                         ? 'border-blue-500 text-blue-600 bg-blue-50'
                                         : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
