@@ -51,7 +51,8 @@ const Layout = ({
     onStyleChange,
     events = [],
     onEventClick,
-    onTeamClick
+    onTeamClick,
+    tickerConfig = {}
 }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
