@@ -731,6 +731,8 @@ function App() {
             setWebsiteStyle={handleWebsiteStyleChange}
             events={events}
             setEvents={setEvents}
+            tickerConfig={tickerConfig}
+            onTickerConfigChange={setTickerConfig}
           />
         );
       case 'events':
