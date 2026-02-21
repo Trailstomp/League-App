@@ -175,7 +175,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, tickerConfig
         });
 
         return filteredEvents;
-    }, [websiteStyle?.tickerLookBack, websiteStyle?.tickerLookForward, websiteStyle?.tickerFilters, websiteStyle?.tickerShowCancelled]);
+    }, [tickerConfig?.tickerLookBack, tickerConfig?.tickerLookForward, tickerConfig?.tickerFilters, tickerConfig?.tickerShowCancelled]);
     
     const tickerEvents = applyTickerFilters(events);
 
