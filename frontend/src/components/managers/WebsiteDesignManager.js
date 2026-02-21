@@ -2947,7 +2947,9 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                 websiteStyle={websiteStyle} 
                 setWebsiteStyle={setWebsiteStyle} 
                 teams={teams} 
-                events={events} 
+                events={events}
+                tickerConfig={tickerConfig}
+                onTickerConfigChange={onTickerConfigChange}
             />
         </div>
     );
