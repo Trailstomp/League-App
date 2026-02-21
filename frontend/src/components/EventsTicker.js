@@ -58,11 +58,11 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, tickerConfig
             return unique;
         }, []);
 
-        // Get admin filter settings - much longer lookback for better visibility
-        const lookBackDays = websiteStyle?.tickerLookBack || 365; // Default 1 year lookback
-        const lookForwardDays = websiteStyle?.tickerLookForward || 365; // Default 1 year forward
-        const showCancelled = websiteStyle?.tickerShowCancelled ?? false; // Default hide cancelled
-        const eventFilters = websiteStyle?.tickerFilters || {
+        // Get admin filter settings from separate tickerConfig (not template-dependent)
+        const lookBackDays = tickerConfig?.tickerLookBack || 365;
+        const lookForwardDays = tickerConfig?.tickerLookForward || 365;
+        const showCancelled = tickerConfig?.tickerShowCancelled ?? false;
+        const eventFilters = tickerConfig?.tickerFilters || {
             games: true,
             tournaments: true,
             practices: true,
