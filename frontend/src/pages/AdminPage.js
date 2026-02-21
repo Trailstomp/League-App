@@ -610,7 +610,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
             case 'league-finance':
                 return <LeagueFinanceManager teams={teams} currentUser={currentUser} />;
             case 'website':
-                return <WebsiteDesignManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} teams={teams} events={events} />;
+                return <WebsiteDesignManager websiteStyle={websiteStyle} setWebsiteStyle={setWebsiteStyle} teams={teams} events={events} tickerConfig={tickerConfig} onTickerConfigChange={onTickerConfigChange} />;
             case 'seasons':
                 return <SeasonManager teams={teams} events={events} websiteStyle={websiteStyle} currentUser={currentUser} />;
             default:
