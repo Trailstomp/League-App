@@ -78,7 +78,6 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Testing: 100% pass rate (18/18 features verified, iteration_47)
 
 ## Pending Issues
-- P1: Ticker "Show Practice" setting persistence — user confirmed NOT fixed
 - P1: Gallery data loss fix — user confirmed FIXED
 - Google Drive needs OAuth refresh token
 - Email sending requires valid SMTP credentials
