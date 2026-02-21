@@ -266,7 +266,7 @@ const TemplatePreview = ({ style = {}, size = 'sm' }) => {
     );
 };
 
-const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, teams = [], events = [] }) => {
+const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, teams = [], events = [], tickerConfig = {}, onTickerConfigChange }) => {
     const [activeSection, setActiveSection] = useState('sport');
     const saveTimeoutRef = useRef(null); // Component-level timeout ref
     const editingStyleRef = useRef(null); // Ref to track latest editingStyle for handleSave
