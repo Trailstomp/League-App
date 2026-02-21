@@ -92,7 +92,6 @@ Comprehensive league management portal for multiple sports with team management,
 - Email sending requires valid SMTP credentials
 
 ## Upcoming Tasks
-- P1: Fix Ticker "Show Practice" setting persistence
 - P1: Data Recovery Plan for wiped template styles
 - P1: Office 365 integration for File Manager
 - P2: SMTP credential configuration
