@@ -1,0 +1,85 @@
+{
+  "summary": "Completed testing of the ticker config fix - practices filter now works correctly. The bug was fixed by moving tickerFilters storage to a separate /api/league-data/tickerConfig endpoint instead of websiteStyle (which was stripping object values). Both backend API tests and frontend UI tests pass.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_ticker_config.py",
+    "/app/test_reports/pytest/pytest_ticker_config.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "The fix correctly separates tickerConfig from websiteStyle - tickerConfig is now stored independently at /api/league-data/tickerConfig",
+    "TickerManager.js correctly loads config from the new endpoint and auto-saves on filter change",
+    "EventsTicker.js reads tickerConfig prop and applies filters correctly",
+    "App.js loads tickerConfig as separate state and passes it to Layout and AdminPage"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_ticker_config.py"
+  ],
+  "success_rate": {
+    "backend": "100% - 7/7 tests passed",
+    "frontend": "100% - All filter toggles and ticker display verified"
+  },
+  "test_credentials": "admin@league.com / test123",
+  "seed_data_creation": "Used existing practice events including 'Test Team Practice'",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Ticker config is now stored separately at /api/league-data/tickerConfig. The TickerManager admin UI is accessed via Admin Portal > Settings > Website Design > Event Ticker tab. Practice events appear/disappear correctly based on the practices filter setting.",
+  "features_tested": {
+    "GET_tickerConfig": {
+      "status": "PASSED",
+      "details": "Returns stored config with tickerFilters object containing all filter keys (games, tournaments, practices, meetings, social, other)"
+    },
+    "POST_tickerConfig": {
+      "status": "PASSED",
+      "details": "Saves config correctly including tickerFilters object - no longer stripped by sanitizer"
+    },
+    "practices_filter_false": {
+      "status": "PASSED",
+      "details": "When practices=false, practice events disappear from ticker. Ticker shows filtered:4 instead of filtered:5"
+    },
+    "practices_filter_true": {
+      "status": "PASSED",
+      "details": "When practices=true, practice events appear in ticker with 'PRACTICE' label"
+    },
+    "TickerManager_UI_loads": {
+      "status": "PASSED",
+      "details": "TickerManager at Admin Portal > Settings > Event Ticker loads with correct filter states from API"
+    },
+    "TickerManager_auto_save": {
+      "status": "PASSED",
+      "details": "Clicking filter toggle immediately saves to /api/league-data/tickerConfig endpoint"
+    },
+    "lookback_lookforward": {
+      "status": "PASSED",
+      "details": "tickerLookBack=7 and tickerLookForward=120 settings persist correctly"
+    },
+    "ticker_display": {
+      "status": "PASSED",
+      "details": "Homepage ticker displays correct events based on filter settings"
+    },
+    "data_testids": {
+      "status": "PASSED",
+      "verified": [
+        "ticker-filter-practices",
+        "ticker-filter-games",
+        "ticker-lookback-input",
+        "ticker-lookforward-input",
+        "ticker-show-cancelled-toggle"
+      ]
+    }
+  },
+  "screenshots_taken": [
+    ".screenshots/ticker_homepage.png - Homepage with ticker showing PRACTICE event",
+    ".screenshots/ticker_practices_hidden.png - Homepage ticker without PRACTICE (filter=false)",
+    ".screenshots/ticker_manager.png - TickerManager UI with filters",
+    ".screenshots/ticker_practices_toggled.png - TickerManager after toggling practices filter"
+  ]
+}
