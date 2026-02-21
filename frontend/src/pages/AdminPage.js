@@ -678,7 +678,7 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
                 </div>
 
                 {/* Main Content */}
-                <div className="p-6">
+                <div className="p-2 md:p-6">
                     {renderTabContent()}
                 </div>
             </div>
