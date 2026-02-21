@@ -33,7 +33,7 @@ const getTextureUrl = (textureId) => {
 
 // Texture picker grid
 const TexturePicker = ({ zone, currentTexture, onSelect }) => (
-    <div className="grid grid-cols-4 gap-2 mt-3">
+    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-3">
         {TEXTURES.map(t => {
             const url = `${BACKEND_URL}/api/uploads/textures/${t.file}`;
             const isActive = currentTexture === t.id;
