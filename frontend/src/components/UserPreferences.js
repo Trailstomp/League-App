@@ -208,7 +208,7 @@ const UserPreferences = ({ websiteStyle, onStyleChange, currentUser, currentPage
                     </div>
 
                     {/* Content */}
-                    <div className="overflow-y-auto flex-1" style={{ maxHeight: 'calc(100vh - 130px)' }}>
+                    <div className="overflow-y-auto" style={{ maxHeight: 'calc(70vh - 100px)' }}>
                         {activeTab === 'theme' && (
                             <div className="p-3 md:p-3">
                                 {/* Rotation toggle */}
