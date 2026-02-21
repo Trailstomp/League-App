@@ -3396,9 +3396,9 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
             {renderStickyHeader()}
 
             {/* Main Content with padding for fixed header */}
-            <div style={{ paddingTop: '260px' }}>
+            <div style={{ paddingTop: '90px' }}>
             {/* Tab Navigation - positioned below fixed header */}
-            <div className="bg-white border-b sticky" style={{ top: '260px', zIndex: 40 }}>
+            <div className="bg-white border-b sticky" style={{ top: '90px', zIndex: 40 }}>
                 <div className="max-w-7xl mx-auto px-2 md:px-4">
                     <div className="flex overflow-x-auto no-scrollbar">
                         <button
