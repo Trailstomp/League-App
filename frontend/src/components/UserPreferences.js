@@ -156,14 +156,14 @@ const UserPreferences = ({ websiteStyle, onStyleChange, currentUser, currentPage
 
     return (
         <>
-            {/* Preferences Panel - full-screen on mobile, positioned on desktop */}
+            {/* Preferences Panel - compact popup on mobile, positioned on desktop */}
             {isOpen && (
                 <div
                     ref={panelRef}
                     data-testid="preferences-panel"
-                    className="fixed z-[9998] shadow-2xl overflow-hidden
-                        inset-x-0 top-0 bottom-0 rounded-none
-                        md:inset-auto md:rounded-2xl md:top-[120px] md:left-[220px] md:w-[320px] md:max-h-[520px] md:bottom-auto"
+                    className="fixed z-[9998] shadow-2xl overflow-hidden rounded-2xl
+                        left-3 right-3 top-[100px] max-h-[70vh]
+                        md:inset-auto md:top-[120px] md:left-[220px] md:right-auto md:w-[320px] md:max-h-[520px]"
                     style={{
                         backgroundColor: '#fff',
                         border: '1px solid #e2e8f0',
@@ -178,7 +178,7 @@ const UserPreferences = ({ websiteStyle, onStyleChange, currentUser, currentPage
                         </div>
                         <button
                             onClick={() => setIsOpen(false)}
-                            className="md:hidden w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500"
+                            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500"
                             data-testid="prefs-close-btn"
                         >
                             &#x2715;
