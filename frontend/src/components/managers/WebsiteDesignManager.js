@@ -844,7 +844,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
             )}
 
             {/* Action Buttons */}
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                 <button
                     onClick={() => {
                         setSaveMode(activeTemplateId ? 'update' : 'new');
