@@ -912,6 +912,7 @@ function App() {
         events={events}
         onEventClick={handleEventClick}
         onTeamClick={handleTeamClick}
+        tickerConfig={tickerConfig}
       >
         {renderPage()}
       </Layout>
