@@ -402,6 +402,7 @@ const Layout = ({
                             events={events}
                             teams={teams}
                             websiteStyle={websiteStyle}
+                            tickerConfig={tickerConfig}
                             onEventClick={onEventClick}
                             onTeamClick={onTeamClick}
                             compact={false}
