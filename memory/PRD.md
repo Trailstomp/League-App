@@ -77,6 +77,15 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] All 14 data-testids present and functional
 - [x] Testing: 100% pass rate (18/18 features verified, iteration_47)
 
+### Ticker "Show Practice" Fix + Config Separation (Feb 21, 2026)
+- [x] Root cause: websiteStyle sanitizer stripped all object values (tickerFilters was an object)
+- [x] Created separate `/api/league-data/tickerConfig` backend endpoint (GET/POST)
+- [x] Moved ticker functional settings (filters, lookback, lookforward) out of template system
+- [x] TickerManager now auto-saves filters to independent endpoint
+- [x] EventsTicker reads from `tickerConfig` prop instead of `websiteStyle`
+- [x] Admin UI shows "Admin Setting" badge on functional settings vs visual template settings
+- [x] Testing: 100% pass rate (7/7 backend + all frontend flows, iteration_48)
+
 ## Pending Issues
 - P1: Gallery data loss fix — user confirmed FIXED
 - Google Drive needs OAuth refresh token
