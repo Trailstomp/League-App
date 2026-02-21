@@ -68,6 +68,15 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Stats panel includes comparison bars (Goals, Shots, Assists, Faceoffs, Ground Balls)
 - [x] Testing: 100% pass rate (10/10 frontend tests, iteration_46)
 
+### Live Scoring Admin Header Compaction (Feb 21, 2026)
+- [x] Replaced full AnalogScoreboard + 4 stacked rows with compact 2-row header
+- [x] Row 1: Dark bar with inline title + score + clock + team logos + Stats Only/Clock/Shot toggles
+- [x] Row 2: White bar with Home SHOT/Pen/TO + game controls (Start/Next/Shot Clock/Save) + Away SHOT/Pen/TO
+- [x] Reduced paddingTop from 260px to 90px — player roster now visible immediately
+- [x] Removed AnalogScoreboard import from EnhancedLiveStatsEntry.js
+- [x] All 14 data-testids present and functional
+- [x] Testing: 100% pass rate (18/18 features verified, iteration_47)
+
 ## Pending Issues
 - P1: Ticker "Show Practice" setting persistence — user confirmed NOT fixed
 - P1: Gallery data loss fix — user confirmed FIXED
