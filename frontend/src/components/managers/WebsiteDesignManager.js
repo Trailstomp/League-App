@@ -1146,10 +1146,10 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
 
             {/* Load Template Modal */}
             {showLoadTemplateModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 md:p-4">
                     <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
-                        <div className="p-4 border-b flex justify-between items-center">
-                            <h3 className="text-xl font-bold text-slate-800">📂 Load Design Template</h3>
+                        <div className="p-3 md:p-4 border-b flex justify-between items-center">
+                            <h3 className="text-lg md:text-xl font-bold text-slate-800">Load Design Template</h3>
                             <button
                                 onClick={() => setShowLoadTemplateModal(false)}
                                 className="text-slate-500 hover:text-slate-700 text-2xl"
