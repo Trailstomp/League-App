@@ -352,7 +352,7 @@ const TeamInvitesManager = ({ currentUser }) => {
     );
 };
 
-const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, currentUser, websiteStyle, setWebsiteStyle, events, setEvents }) => {
+const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, currentUser, websiteStyle, setWebsiteStyle, events, setEvents, tickerConfig, onTickerConfigChange }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [seasons, setSeasons] = useState([]);
     const [loadingSeasons, setLoadingSeasons] = useState(true);
