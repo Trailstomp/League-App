@@ -345,7 +345,7 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                                     data-testid="stream-iframe"
                                 />
                             ) : (
-                                <div className="w-full h-full flex flex-col items-center justify-center text-gray-600 bg-[#0d1221]">
+                                <div className="w-full h-full flex flex-col items-center justify-center" style={{ backgroundColor: liveStyle.panelBgColor, color: `${liveStyle.textColor}60` }}>
                                     <svg className="w-12 h-12 mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
                                     <p className="text-sm">No Stream Available</p>
                                 </div>
