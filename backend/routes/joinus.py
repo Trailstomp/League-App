@@ -881,12 +881,11 @@ async def get_unread_notification_count(user_id: str):
             "user_id": user_id,
             "read": False
         })
-        
         return {"unread_count": count}
-        
     except Exception as e:
-        logger.error(f"❌ Error getting notification count: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error getting notification count for {user_id}: {e}")
+        # Return 0 instead of 500 - notification count is not critical
+        return {"unread_count": 0}
 
 
 @joinus_router.put("/notifications/{notification_id}/read")
