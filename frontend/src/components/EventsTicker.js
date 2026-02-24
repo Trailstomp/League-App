@@ -124,8 +124,8 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, tickerConfig
 
         // Sort events: Scored/Final games first (most recent), then upcoming by date
         filteredEvents.sort((a, b) => {
-            const dateA = a.date ? new Date(a.date) : new Date('2099-12-31');
-            const dateB = b.date ? new Date(b.date) : new Date('2099-12-31');
+            const dateA = a.date ? new Date(a.date + 'T00:00:00') : new Date('2099-12-31');
+            const dateB = b.date ? new Date(b.date + 'T00:00:00') : new Date('2099-12-31');
             const now = new Date();
             
             // Check if events have scores (completed games)
