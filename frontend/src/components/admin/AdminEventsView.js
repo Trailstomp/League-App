@@ -213,7 +213,7 @@ const AdminEventsView = ({ teams = [], currentUser, onEditEvent, onViewLive }) =
                 id: undefined,
                 title: `${event.title} (Copy)`,
                 status: 'scheduled',
-                date: new Date(new Date(event.date).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                date: new Date(new Date(event.date + 'T00:00:00').getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
                 rsvps: [],
                 google_event_id: null,
                 google_calendar_link: null
