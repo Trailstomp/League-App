@@ -22,6 +22,7 @@ const getEventTypeLabel = (type) => {
         regular_game: 'Game',
         tournament: 'Tournament',
         practice: 'Practice',
+        hold: 'Hold',
         external: 'Event',
         social: 'Social Event',
         meeting: 'Meeting'
@@ -36,6 +37,7 @@ const getEventTypeColor = (type) => {
         practice: { bg: '#d1fae5', text: '#065f46', border: '#6ee7b7' },
         external: { bg: '#e0e7ff', text: '#3730a3', border: '#a5b4fc' },
         social: { bg: '#fce7f3', text: '#9d174d', border: '#f9a8d4' },
+        hold: { bg: '#f1f5f9', text: '#475569', border: '#94a3b8' },
         meeting: { bg: '#f3e8ff', text: '#6b21a8', border: '#c4b5fd' },
     };
     return colors[type] || colors.external;

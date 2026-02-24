@@ -238,6 +238,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, tickerConfig
             'regular_game': { label: 'GAME', bg: 'bg-green-500', text: 'text-white' },
             'tournament': { label: 'TOURNAMENT', bg: 'bg-purple-500', text: 'text-white' },
             'practice': { label: 'PRACTICE', bg: 'bg-blue-500', text: 'text-white' },
+            'hold': { label: 'HOLD', bg: 'bg-gray-500', text: 'text-white' },
             'meeting': { label: 'MEETING', bg: 'bg-yellow-500', text: 'text-black' },
             'social': { label: 'SOCIAL', bg: 'bg-pink-500', text: 'text-white' },
             'external': { label: 'EXTERNAL', bg: 'bg-orange-500', text: 'text-white' },

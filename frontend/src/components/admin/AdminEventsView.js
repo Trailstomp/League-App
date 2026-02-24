@@ -266,6 +266,7 @@ const AdminEventsView = ({ teams = [], currentUser, onEditEvent, onViewLive }) =
             tournament: 'bg-amber-100 text-amber-700',
             meeting: 'bg-indigo-100 text-indigo-700',
             social: 'bg-pink-100 text-pink-700',
+            hold: 'bg-slate-200 text-slate-700',
             other: 'bg-slate-100 text-slate-600'
         };
         return styles[type] || 'bg-slate-100 text-slate-600';
