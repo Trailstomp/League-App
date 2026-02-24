@@ -268,15 +268,20 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                         onClick={() => setShowChat(!showChat)}
                         data-testid="spectator-chat-toggle"
                         className={`px-3 py-1.5 rounded text-xs font-semibold transition-all ${
-                            showChat ? 'bg-blue-500 text-white' : 'bg-white/10 text-white/80 hover:bg-white/20'
+                            showChat ? 'text-white' : 'hover:opacity-80'
                         }`}
+                        style={{
+                            backgroundColor: showChat ? liveStyle.accentColor : `${liveStyle.textColor}1a`,
+                            color: showChat ? '#ffffff' : `${liveStyle.textColor}cc`
+                        }}
                     >
                         Chat
                     </button>
                     <button
                         onClick={onClose}
                         data-testid="spectator-close-btn"
-                        className="w-7 h-7 rounded bg-white/10 hover:bg-white/20 text-white/80 flex items-center justify-center text-sm"
+                        className="w-7 h-7 rounded flex items-center justify-center text-sm hover:opacity-80"
+                        style={{ backgroundColor: `${liveStyle.textColor}1a`, color: `${liveStyle.textColor}cc` }}
                     >
                         &#x2715;
                     </button>
