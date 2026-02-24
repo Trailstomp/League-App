@@ -119,6 +119,11 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Frontend serializes IMAP requests (loadFolders then loadMessages) to avoid concurrent connections
 - [x] Frontend gracefully handles folder/message load failures with fallbacks
 
+### Player Photo Upload Fix (Feb 24, 2026)
+- [x] /upload/image: Relaxed content-type validation - now falls back to file extension check (fixes 400 when browser sends wrong MIME type)
+- [x] /player-photo-upload: Added local storage fallback when Google Drive is unavailable or fails (fixes 500 when Drive auth expires)
+- [x] Both endpoints now handle HEIC, HEIF, WebP and other modern image formats
+
 ## Key Files
 - `frontend/src/pages/LiveSpectatorView.js` - Overhauled live spectator view (compact scoreboard, dual-panel layout)
 - `frontend/src/components/unified-events/EnhancedLiveStatsEntry.js` - Main live scoring component
