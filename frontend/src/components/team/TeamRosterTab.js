@@ -652,15 +652,6 @@ const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse'
                             </svg>
                             <p className="text-slate-600 font-medium">No players on this team yet</p>
                             <p className="text-sm text-slate-500 mt-1">Players will appear here once assigned to this team</p>
-                            {isTeamAdmin && (
-                                <button
-                                    onClick={() => setShowAddModal(true)}
-                                    data-testid="add-first-player-btn"
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors mt-4"
-                                >
-                                    Add First Player
-                                </button>
-                            )}
                         </div>
                     )}
                 </>
