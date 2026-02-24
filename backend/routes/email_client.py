@@ -496,7 +496,10 @@ async def get_email_message(account_id: str, uid: str, folder: str = "INBOX"):
     
     try:
         conn = _connect_imap(account)
-        conn.select(folder)
+        resolved_folder = _resolve_folder(conn, folder)
+        if not resolved_folder:
+            conn.logout()
+            raise HTTPException(status_code=404, detail=f"Folder '{folder}' not found")
         
         # Fetch full message
         status, data = conn.fetch(uid.encode(), "(FLAGS RFC822)")
