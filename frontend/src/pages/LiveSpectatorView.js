@@ -254,14 +254,14 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-[#0a0e17] z-50 flex flex-col" data-testid="live-spectator-view">
+        <div className="fixed inset-0 z-50 flex flex-col" style={{ backgroundColor: liveStyle.bgColor }} data-testid="live-spectator-view">
             {/* Compact Top Bar */}
-            <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 bg-[#0d1221] border-b border-white/10">
+            <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 border-b" style={{ backgroundColor: liveStyle.panelBgColor, borderColor: `${liveStyle.textColor}1a` }}>
                 <div className="flex items-center gap-2 min-w-0">
                     <span className="flex items-center gap-1.5 bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-bold tracking-wide animate-pulse flex-shrink-0">
                         <span className="w-1.5 h-1.5 bg-white rounded-full" /> LIVE
                     </span>
-                    <span className="text-white/70 text-xs truncate">{event.title}</span>
+                    <span className="text-xs truncate" style={{ color: `${liveStyle.textColor}b3` }}>{event.title}</span>
                 </div>
                 <div className="flex items-center gap-1.5 flex-shrink-0">
                     <button
