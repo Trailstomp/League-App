@@ -289,12 +289,12 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
             </div>
 
             {/* Scoreboard Header - Compact with big logos */}
-            <div className="flex-shrink-0 bg-gradient-to-b from-[#111827] to-[#0a0e17] px-3 py-3 md:py-4">
+            <div className="flex-shrink-0 px-3 py-3 md:py-4" style={{ background: `linear-gradient(to bottom, ${liveStyle.panelBgColor}, ${liveStyle.bgColor})` }}>
                 <div className="flex items-center justify-center gap-3 md:gap-6 max-w-xl mx-auto">
                     {/* Home Team */}
                     <div className="flex flex-col items-center gap-1 flex-1">
                         <TeamLogo team={liveData.home_team} size="lg" />
-                        <span className="text-white/90 text-[11px] md:text-sm font-semibold text-center leading-tight truncate max-w-[90px] md:max-w-[140px]">{liveData.home_team.name}</span>
+                        <span className="text-[11px] md:text-sm font-semibold text-center leading-tight truncate max-w-[90px] md:max-w-[140px]" style={{ color: `${liveStyle.textColor}e6` }}>{liveData.home_team.name}</span>
                     </div>
 
                     {/* Score + Clock */}
