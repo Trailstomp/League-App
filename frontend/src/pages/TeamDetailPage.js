@@ -233,9 +233,12 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
                                     onClick={() => setActiveTab(tab.id)}
                                     className={`flex items-center px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                                         activeTab === tab.id
-                                            ? 'border-blue-500 text-blue-600 bg-blue-50'
-                                            : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                                            ? 'border-blue-500 bg-blue-50'
+                                            : 'border-transparent hover:bg-slate-50'
                                     }`}
+                                    style={{
+                                        color: activeTab === tab.id ? '#2563eb' : '#475569'
+                                    }}
                                 >
                                     <LacrosseIcon name={tab.icon} className="mr-1 sm:mr-2" style={{fontSize: '14px'}} />
                                     <span className="hidden sm:inline">{tab.label}</span>
