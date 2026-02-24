@@ -111,7 +111,7 @@ const NewsDisplay = ({ teamId = null, maxItems = 5, showTeamFilter = false }) =>
         return (
             <div className="bg-white rounded-lg shadow-sm border p-6">
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">
-                    📰 {teamId ? 'Team' : 'League'} News
+                    {teamId ? 'Team' : 'League'} News
                 </h3>
                 <div className="text-center py-8">
                     <LacrosseIcon name="news" style={{ fontSize: '48px' }} className="text-slate-400 mb-4" />
