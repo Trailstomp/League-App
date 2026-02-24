@@ -40,7 +40,7 @@ const NewsDisplay = ({ teamId = null, maxItems = 5, showTeamFilter = false }) =>
                         if (!item.expirationDate) return true;
                         return new Date(item.expirationDate) > new Date();
                     })
-                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .sort((a, b) => new Date(b.date + 'T00:00:00') - new Date(a.date + 'T00:00:00'))
                     .slice(0, maxItems);
                 
                 console.log('✅ Active news items loaded:', activeItems.length);
