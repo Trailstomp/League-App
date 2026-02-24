@@ -695,46 +695,138 @@ const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse'
             {/* Add Player Modal */}
             {showAddModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowAddModal(false)}>
-                    <div className="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[85vh] overflow-hidden" onClick={e => e.stopPropagation()}>
                         <div className="p-4 border-b bg-slate-50 flex justify-between items-center">
                             <h3 className="font-bold text-lg text-slate-800">Add Player to Team</h3>
-                            <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
+                            <button onClick={() => { setShowAddModal(false); setAddPlayerMode('search'); }} className="text-slate-400 hover:text-slate-600">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
                         
+                        {/* Tab Selection */}
+                        <div className="flex border-b">
+                            <button
+                                onClick={() => setAddPlayerMode('search')}
+                                data-testid="add-player-search-tab"
+                                className={`flex-1 px-4 py-3 text-sm font-medium ${addPlayerMode === 'search' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+                            >
+                                Search Existing
+                            </button>
+                            <button
+                                onClick={() => setAddPlayerMode('create')}
+                                data-testid="add-player-create-tab"
+                                className={`flex-1 px-4 py-3 text-sm font-medium ${addPlayerMode === 'create' ? 'border-b-2 border-green-600 text-green-600' : 'text-slate-500 hover:text-slate-700'}`}
+                            >
+                                Create New Player
+                            </button>
+                        </div>
+                        
                         <div className="p-4">
-                            <input
-                                type="text"
-                                placeholder="Search by name or email..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-lg mb-3"
-                            />
-                            
-                            <div className="max-h-60 overflow-y-auto space-y-2">
-                                {filteredUsers.length > 0 ? (
-                                    filteredUsers.map(user => (
-                                        <div key={user.id} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg hover:bg-slate-100">
-                                            <div>
-                                                <div className="font-medium text-slate-800">{user.name}</div>
-                                                <div className="text-xs text-slate-500">{user.email}</div>
-                                            </div>
-                                            <button
-                                                onClick={() => handleAddPlayer(user.id)}
-                                                disabled={actionLoading}
-                                                className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50"
-                                            >
-                                                Add
-                                            </button>
+                            {addPlayerMode === 'search' ? (
+                                <>
+                                    <input
+                                        type="text"
+                                        placeholder="Search by name or email..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg mb-3"
+                                        data-testid="search-player-input"
+                                    />
+                                    <div className="max-h-60 overflow-y-auto space-y-2">
+                                        {filteredUsers.length > 0 ? (
+                                            filteredUsers.map(user => (
+                                                <div key={user.id} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg hover:bg-slate-100">
+                                                    <div>
+                                                        <div className="font-medium text-slate-800">{user.name}</div>
+                                                        <div className="text-xs text-slate-500">{user.email}</div>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => handleAddPlayer(user.id)}
+                                                        disabled={actionLoading}
+                                                        className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50"
+                                                    >
+                                                        Add
+                                                    </button>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-center text-slate-500 py-4">No available users found</p>
+                                        )}
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Full Name <span className="text-red-500">*</span></label>
+                                        <input
+                                            type="text"
+                                            value={newPlayerData.name}
+                                            onChange={(e) => setNewPlayerData({...newPlayerData, name: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                            placeholder="Player's full name"
+                                            data-testid="create-player-name"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                                            <input
+                                                type="email"
+                                                value={newPlayerData.email}
+                                                onChange={(e) => setNewPlayerData({...newPlayerData, email: e.target.value})}
+                                                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                                placeholder="player@email.com"
+                                                data-testid="create-player-email"
+                                            />
                                         </div>
-                                    ))
-                                ) : (
-                                    <p className="text-center text-slate-500 py-4">No available users found</p>
-                                )}
-                            </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+                                            <input
+                                                type="tel"
+                                                value={newPlayerData.phone}
+                                                onChange={(e) => setNewPlayerData({...newPlayerData, phone: e.target.value})}
+                                                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                                placeholder="(555) 123-4567"
+                                                data-testid="create-player-phone"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Jersey Number</label>
+                                            <input
+                                                type="text"
+                                                value={newPlayerData.jerseyNumber}
+                                                onChange={(e) => setNewPlayerData({...newPlayerData, jerseyNumber: e.target.value})}
+                                                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                                placeholder="e.g., 7"
+                                                data-testid="create-player-jersey"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Position</label>
+                                            <input
+                                                type="text"
+                                                value={newPlayerData.position}
+                                                onChange={(e) => setNewPlayerData({...newPlayerData, position: e.target.value})}
+                                                className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+                                                placeholder="e.g., Attack"
+                                                data-testid="create-player-position"
+                                            />
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={handleCreateNewPlayer}
+                                        disabled={actionLoading || !newPlayerData.name.trim()}
+                                        data-testid="create-player-submit"
+                                        className="w-full py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {actionLoading ? 'Creating...' : 'Create & Add Player'}
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
