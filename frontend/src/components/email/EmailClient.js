@@ -41,10 +41,17 @@ const EmailClient = ({ currentUser }) => {
 
     useEffect(() => {
         if (selectedAccount) {
-            loadFolders();
+            // Serialize: load folders first, then messages (avoid concurrent IMAP connections)
+            loadFolders().then(() => loadMessages());
+        }
+    }, [selectedAccount]);
+
+    // Load messages when folder or page changes (but not on initial account select)
+    useEffect(() => {
+        if (selectedAccount && folders.length > 0) {
             loadMessages();
         }
-    }, [selectedAccount, currentFolder, page]);
+    }, [currentFolder, page]);
 
     const loadFolders = async () => {
         if (!selectedAccount) return;
