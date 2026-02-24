@@ -413,16 +413,19 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
 
             {/* Section Tabs */}
             <div className="border-b border-slate-200">
-                <div className="flex gap-1">
+                <div className="flex gap-1 overflow-x-auto">
                     {sections.map(section => (
                         <button
                             key={section.id}
                             onClick={() => setActiveSection(section.id)}
-                            className={`px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors ${
+                            className={`px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
                                 activeSection === section.id
-                                    ? 'bg-white border border-b-white border-slate-200 text-blue-600 -mb-px'
-                                    : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                                    ? 'bg-white border border-b-white border-slate-200 -mb-px'
+                                    : 'hover:bg-slate-50'
                             }`}
+                            style={{
+                                color: activeSection === section.id ? '#2563eb' : '#475569'
+                            }}
                         >
                             <span className="mr-1.5">{section.icon}</span>
                             {section.label}
