@@ -224,12 +224,18 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
         setImporting(true);
         setError('');
         setSuccess('');
+        setImportResults(null);
+        setImportProgress({ current: 0, total: validRows.length });
 
         let imported = 0;
         let failed = 0;
         const failedRows = [];
+        const successfulPlayers = [];
 
-        for (const player of validRows) {
+        for (let i = 0; i < validRows.length; i++) {
+            const player = validRows[i];
+            setImportProgress({ current: i + 1, total: validRows.length });
+            
             try {
                 // Build emergency contact object
                 const emergencyContact = {};
@@ -305,6 +311,7 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
 
                 if (response.ok) {
                     imported++;
+                    successfulPlayers.push(player.name);
                 } else {
                     const errorData = await response.json();
                     failed++;
@@ -317,20 +324,24 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
         }
 
         setImporting(false);
+        
+        // Store results for display
+        setImportResults({
+            imported,
+            failed,
+            failedRows,
+            successfulPlayers
+        });
 
         if (imported > 0) {
             setSuccess(`Successfully imported ${imported} player(s)${failed > 0 ? `. ${failed} failed.` : '.'}`);
-            if (onImportComplete) {
-                onImportComplete();
-            }
         }
 
         if (failedRows.length > 0) {
-            setError(`Failed to import ${failed} player(s). Common issues: duplicate email, invalid data.`);
-            console.log('Failed imports:', failedRows);
+            setError(`Failed to import ${failed} player(s): ${failedRows.map(r => `${r.player.name || r.player.email} (${r.error})`).join(', ')}`);
         }
 
-        // Reset form
+        // Reset file input but keep results visible
         setFile(null);
         setParsedData([]);
         setShowPreview(false);
