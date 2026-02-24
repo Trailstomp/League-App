@@ -112,6 +112,13 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] NewsDisplay: added scrollable container (max-h-[500px] overflow-y-auto)
 - [x] Removed duplicate "League News & Announcements" heading from HomePage
 
+### Email Client IMAP Fixes (Feb 24, 2026)
+- [x] Added _resolve_folder() to try alternative IMAP folder names (Gmail, Office365, etc.)
+- [x] get_email_messages returns empty list for missing folders instead of 400/500 error
+- [x] _connect_imap returns distinct errors: decryption failure (re-enter password), auth failure, connection failure
+- [x] Frontend serializes IMAP requests (loadFolders then loadMessages) to avoid concurrent connections
+- [x] Frontend gracefully handles folder/message load failures with fallbacks
+
 ## Key Files
 - `frontend/src/pages/LiveSpectatorView.js` - Overhauled live spectator view (compact scoreboard, dual-panel layout)
 - `frontend/src/components/unified-events/EnhancedLiveStatsEntry.js` - Main live scoring component
