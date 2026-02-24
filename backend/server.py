@@ -6374,7 +6374,7 @@ async def update_unified_event(event_id: str, updates: EventUpdate):
             logger.warning(f"Failed to update event in leagueSchedule: {schedule_err}")
         
         # Send email notifications if enabled (and email was just enabled in this update)
-        if update_data.get("email_notifications", False):
+        if update_data.get("email_notifications") is True:
             try:
                 logger.info(f"📧 Email notifications enabled for updated event {event_id}, sending...")
                 await send_email_event_notifications(event_id, {})
