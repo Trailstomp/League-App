@@ -219,7 +219,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, tickerConfig
     const formatEventDate = (dateStr) => {
         if (!dateStr) return 'TBD';
         try {
-            const date = new Date(dateStr);
+            const date = new Date(dateStr + 'T00:00:00');
             if (isNaN(date.getTime())) return 'TBD';
             return date.toLocaleDateString('en-US', { 
                 month: 'short', 
