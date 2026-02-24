@@ -21,8 +21,8 @@ const MyDashboardTab = ({ team, currentUser }) => {
                 const events = await response.json();
                 const now = new Date();
                 const upcoming = (events || [])
-                    .filter(e => new Date(e.date) >= now && e.status !== 'canceled')
-                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .filter(e => new Date(e.date + 'T00:00:00') >= now && e.status !== 'canceled')
+                    .sort((a, b) => new Date(a.date + 'T00:00:00') - new Date(b.date + 'T00:00:00'))
                     .slice(0, 5);
                 setUpcomingEvents(upcoming);
             }
