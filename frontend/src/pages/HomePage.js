@@ -445,10 +445,6 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
 
                         {/* League News Section */}
                         <div>
-                            <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
-                                <span className="mr-3">📰</span>
-                                League News & Announcements
-                            </h2>
                             <NewsDisplay maxItems={5} showTeamFilter={true} />
                         </div>
                     </div>
