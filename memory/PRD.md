@@ -50,41 +50,57 @@ Comprehensive league management portal for multiple sports with team management,
 ### Email Client Feature (Feb 19, 2026)
 - [x] Full email client with inbox, compose, reply, forward, trash, search, attachments
 - [x] Supports Gmail, Office 365, and Custom SMTP/IMAP providers
-- [x] Testing: 100% pass rate (10/10 backend, all frontend flows verified)
 
 ### Visit Tracker Feature (Feb 20, 2026)
 - [x] Backend analytics API: track visits, summary aggregation, daily trends
 - [x] Admin dashboard tab with Visit Tracker
-- [x] Testing: 100% pass rate (18/18 backend tests)
 
 ### Live Spectator View UI/UX Overhaul (Feb 20, 2026)
 - [x] Replaced tabbed layout with simultaneous stream + events/stats view
-- [x] Side-by-side layout on desktop (stream left, events/stats right), stacked on mobile
-- [x] Custom compact scoreboard with large team logos (64px mobile, 80px desktop)
-- [x] Combined Events and Stats into single panel with toggle tabs
-- [x] High-contrast tab buttons (white text, blue accent on dark background)
-- [x] Compact mobile layout with reduced padding and margins
-- [x] Replaced full AnalogScoreboard with inline compact scoreboard
-- [x] Stats panel includes comparison bars (Goals, Shots, Assists, Faceoffs, Ground Balls)
-- [x] Testing: 100% pass rate (10/10 frontend tests, iteration_46)
+- [x] Side-by-side layout on desktop, stacked on mobile
 
 ### Live Scoring Admin Header Compaction (Feb 21, 2026)
-- [x] Replaced full AnalogScoreboard + 4 stacked rows with compact 2-row header
-- [x] Row 1: Dark bar with inline title + score + clock + team logos + Stats Only/Clock/Shot toggles
-- [x] Row 2: White bar with Home SHOT/Pen/TO + game controls (Start/Next/Shot Clock/Save) + Away SHOT/Pen/TO
-- [x] Reduced paddingTop from 260px to 90px — player roster now visible immediately
-- [x] Removed AnalogScoreboard import from EnhancedLiveStatsEntry.js
-- [x] All 14 data-testids present and functional
-- [x] Testing: 100% pass rate (18/18 features verified, iteration_47)
+- [x] Compact 2-row header replacing full scoreboard + stacked rows
 
 ### Ticker "Show Practice" Fix + Config Separation (Feb 21, 2026)
-- [x] Root cause: websiteStyle sanitizer stripped all object values (tickerFilters was an object)
-- [x] Created separate `/api/league-data/tickerConfig` backend endpoint (GET/POST)
-- [x] Moved ticker functional settings (filters, lookback, lookforward) out of template system
-- [x] TickerManager now auto-saves filters to independent endpoint
-- [x] EventsTicker reads from `tickerConfig` prop instead of `websiteStyle`
-- [x] Admin UI shows "Admin Setting" badge on functional settings vs visual template settings
-- [x] Testing: 100% pass rate (7/7 backend + all frontend flows, iteration_48)
+- [x] Separate tickerConfig endpoint, moved out of template system
+
+### Mobile UI & Live View Styling (Feb 24, 2026)
+- [x] Bottom navbar text truncation fix
+- [x] Site Style preferences panel narrowed on mobile
+- [x] Live Spectator View color controls
+
+### Roster & News Fixes (Feb 24, 2026)
+- [x] TeamRosterTab Add Player modal with "Create New Player" tab
+- [x] NewsDisplay: fixed oversized image and scrolling
+
+### Email Client IMAP Fixes (Feb 24, 2026)
+- [x] Robust IMAP folder resolution, graceful error handling
+
+### Player Photo Upload Fix (Feb 24, 2026)
+- [x] Relaxed content-type validation, local storage fallback
+
+### Player Import & Notifications Fix (Feb 24, 2026)
+- [x] Progress bar, results panel, drag-and-drop, fixed 520 error
+
+### Calendar Hold Feature (Feb 24, 2026)
+- [x] New "hold" event type for reserving dates
+
+### Date/Timezone Fix (Feb 24, 2026)
+- [x] Appended 'T00:00:00' to date strings to fix off-by-one-day errors
+
+### Event Notifications Fix (Feb 24, 2026)
+- [x] Fixed events with no teams emailing the entire league
+
+### Admin Events Page UI/UX Redesign (Feb 24, 2026)
+- [x] Replaced table-only layout with responsive card-based (mobile) + table (desktop) design
+- [x] Mobile: Color-coded event cards with left border, type/status badges, compact info layout
+- [x] Desktop: Clean table with colored type dots, status badges, location info
+- [x] Collapsible filter panel (search, status, type, team, sort)
+- [x] Three-dot action dropdown menus (Edit, Duplicate, Status change, Delete)
+- [x] Bulk actions (Complete, Cancel, Delete) with select-all
+- [x] Replaced all emoji icons with lucide-react icons
+- [x] Testing: 100% pass rate (10/10 features verified, iteration_52)
 
 ## Pending Issues
 - P1: Gallery data loss fix — user confirmed FIXED
@@ -92,51 +108,18 @@ Comprehensive league management portal for multiple sports with team management,
 - Email sending requires valid SMTP credentials
 
 ## Upcoming Tasks
-- P1: Data Recovery Plan for wiped template styles
 - P1: Office 365 integration for File Manager
 - P2: SMTP credential configuration
 - P2: Refactor server.py into route files
 - P2: Refactor EnhancedLiveStatsEntry.js (3800+ lines)
-
-### Mobile UI & Live View Styling (Feb 24, 2026)
-- [x] Bottom navbar text truncation fix: replaced `truncate` with `break-words` in BottomNavbar.js
-- [x] Site Style preferences panel narrowed on mobile: centered at 240px width instead of full-width
-- [x] Live Spectator View color controls: 4 new color pickers (Background, Text, Panel, Accent) in WebsiteDesignManager
-- [x] LiveSpectatorView fetches and applies custom colors from websiteStyle API instead of hardcoded dark theme
-- [x] VISUAL_RESET defaults include: liveViewBgColor, liveViewTextColor, liveViewPanelBgColor, liveViewAccentColor
-
-### Roster & News Fixes (Feb 24, 2026)
-- [x] TeamRosterTab Add Player modal: added "Create New Player" tab alongside "Search Existing" (matching TeamAdminTab)
-- [x] Manual player creation form with name, email, phone, jersey number, position fields
-- [x] NewsDisplay: fixed oversized image (removed aspect-square, using max-h-48 object-contain)
-- [x] NewsDisplay: added scrollable container (max-h-[500px] overflow-y-auto)
-- [x] Removed duplicate "League News & Announcements" heading from HomePage
-
-### Email Client IMAP Fixes (Feb 24, 2026)
-- [x] Added _resolve_folder() to try alternative IMAP folder names (Gmail, Office365, etc.)
-- [x] get_email_messages returns empty list for missing folders instead of 400/500 error
-- [x] _connect_imap returns distinct errors: decryption failure (re-enter password), auth failure, connection failure
-- [x] Frontend serializes IMAP requests (loadFolders then loadMessages) to avoid concurrent connections
-- [x] Frontend gracefully handles folder/message load failures with fallbacks
-
-### Player Photo Upload Fix (Feb 24, 2026)
-- [x] /upload/image: Relaxed content-type validation - now falls back to file extension check (fixes 400 when browser sends wrong MIME type)
-- [x] /player-photo-upload: Added local storage fallback when Google Drive is unavailable or fails (fixes 500 when Drive auth expires)
-- [x] Both endpoints now handle HEIC, HEIF, WebP and other modern image formats
-
-### Player Import & Notifications Fix (Feb 24, 2026)
-- [x] PlayerImporter: Added progress indicator (X of Y) with progress bar during import
-- [x] PlayerImporter: Added results panel showing count of imported/failed with player names and specific error messages
-- [x] PlayerImporter: Import no longer auto-reloads page - shows results first, user clicks "Refresh & View Players"
-- [x] Join-us notifications count endpoint: Returns {unread_count: 0} on error instead of 500 (prevents Cloudflare 520)
+- P2: Cleanup dead code in TeamRosterTab.js
 
 ## Key Files
-- `frontend/src/pages/LiveSpectatorView.js` - Overhauled live spectator view (compact scoreboard, dual-panel layout)
-- `frontend/src/components/unified-events/EnhancedLiveStatsEntry.js` - Main live scoring component
-- `frontend/src/components/AnalogScoreboard.js` - Scoreboard display (still used in admin scoring)
+- `frontend/src/components/admin/AdminEventsView.js` - Redesigned events management UI
+- `frontend/src/pages/LiveSpectatorView.js` - Live spectator view
+- `frontend/src/components/unified-events/EnhancedLiveStatsEntry.js` - Live scoring
 - `frontend/src/components/UserPreferences.js` - Site Style panel
 - `frontend/src/components/Navigation.js` - Sidebar navigation
-- `frontend/src/components/EventCardPopup.js` - Event detail popup modal
 - `frontend/src/App.js` - State management, routing, theme persistence
 - `backend/routes/email.py` - Email client backend
 - `backend/routes/analytics.py` - Visit tracker backend
