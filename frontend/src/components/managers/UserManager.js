@@ -741,6 +741,7 @@ const UserManager = ({ teams = [] }) => {
             funFacts: user.funFacts || '',
             socialMedia
         });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     if (loading) {
