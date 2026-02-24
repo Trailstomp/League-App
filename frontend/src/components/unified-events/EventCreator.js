@@ -110,11 +110,12 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onEventCreated, onCan
     };
 
     const eventTypes = [
-        { value: 'regular_game', label: '🏆 Regular Game', desc: 'League game between two teams' },
-        { value: 'tournament', label: '🏅 Tournament', desc: 'Multi-team bracket competition' },
-        { value: 'practice', label: '🏃 Practice', desc: 'Team practice session' },
-        { value: 'social', label: '🎉 Social Event', desc: 'Team social gathering or meeting' },
-        { value: 'external', label: '🌐 External Event', desc: 'Tournament or event outside our league' }
+        { value: 'regular_game', label: 'Regular Game', desc: 'League game between two teams' },
+        { value: 'tournament', label: 'Tournament', desc: 'Multi-team bracket competition' },
+        { value: 'practice', label: 'Practice', desc: 'Team practice session' },
+        { value: 'hold', label: 'Calendar Hold', desc: 'Reserve a date/time — update details later' },
+        { value: 'social', label: 'Social Event', desc: 'Team social gathering or meeting' },
+        { value: 'external', label: 'External Event', desc: 'Tournament or event outside our league' }
     ];
 
     const tournamentFormats = [
