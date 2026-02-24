@@ -17,7 +17,7 @@ const EventCreator = ({ teams, currentUser, onEventCreate, onEventCreated, onCan
         teams: defaultTeamId ? [defaultTeamId] : [], // Pre-select default team if provided
         rsvp_enabled: true,
         groupme_integration: true,
-        email_notifications: true,
+        email_notifications: false,
         auto_create_polls: false,
         // Recurring event fields
         is_recurring: false,
