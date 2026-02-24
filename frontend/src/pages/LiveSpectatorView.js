@@ -487,36 +487,42 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
 
                 {/* Chat Panel */}
                 {showChat && (
-                    <div className="w-72 md:w-80 bg-[#0d1221] border-l border-white/10 flex flex-col flex-shrink-0">
-                        <div className="px-3 py-2.5 border-b border-white/10 flex items-center justify-between">
-                            <span className="text-white text-xs font-bold">Live Chat</span>
-                            <button onClick={() => setShowChat(false)} className="text-white/40 hover:text-white/70 text-sm">&times;</button>
+                    <div className="w-72 md:w-80 flex flex-col flex-shrink-0" style={{ backgroundColor: liveStyle.panelBgColor, borderLeft: `1px solid ${liveStyle.textColor}1a` }}>
+                        <div className="px-3 py-2.5 flex items-center justify-between" style={{ borderBottom: `1px solid ${liveStyle.textColor}1a` }}>
+                            <span className="text-xs font-bold" style={{ color: liveStyle.textColor }}>Live Chat</span>
+                            <button onClick={() => setShowChat(false)} className="text-sm" style={{ color: `${liveStyle.textColor}66` }}>&times;</button>
                         </div>
                         <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
                             {chat.messages.map(msg => (
                                 <div key={msg.id} className={msg.type === 'system' ? 'text-center' : ''}>
-                                    <div className={`text-xs ${
-                                        msg.type === 'system' ? 'text-white/30 px-2 py-0.5' : 'bg-white/5 text-white/80 p-2 rounded'
-                                    }`}>
-                                        {msg.type !== 'system' && <div className="text-[10px] text-white/40 mb-0.5">{msg.user_name}</div>}
+                                    <div className="text-xs p-2 rounded" style={{
+                                        color: msg.type === 'system' ? `${liveStyle.textColor}4d` : `${liveStyle.textColor}cc`,
+                                        backgroundColor: msg.type === 'system' ? 'transparent' : `${liveStyle.textColor}0d`
+                                    }}>
+                                        {msg.type !== 'system' && <div className="text-[10px] mb-0.5" style={{ color: `${liveStyle.textColor}66` }}>{msg.user_name}</div>}
                                         <p>{msg.message}</p>
                                     </div>
                                 </div>
                             ))}
                             <div ref={chatEndRef} />
                         </div>
-                        <div className="p-2 border-t border-white/10">
+                        <div className="p-2" style={{ borderTop: `1px solid ${liveStyle.textColor}1a` }}>
                             <div className="flex gap-1.5">
                                 <input
                                     type="text"
                                     value={chat.newMessage}
                                     onChange={(e) => setChat(prev => ({ ...prev, newMessage: e.target.value }))}
                                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                                    className="flex-1 px-2.5 py-1.5 bg-white/5 text-white rounded text-xs border border-white/10 focus:border-blue-500/50 focus:outline-none"
+                                    className="flex-1 px-2.5 py-1.5 rounded text-xs focus:outline-none"
+                                    style={{
+                                        backgroundColor: `${liveStyle.textColor}0d`,
+                                        color: liveStyle.textColor,
+                                        border: `1px solid ${liveStyle.textColor}1a`
+                                    }}
                                     placeholder="Type a message..."
                                     data-testid="chat-input"
                                 />
-                                <button onClick={handleSendMessage} className="px-3 py-1.5 bg-blue-500 text-white rounded text-xs font-semibold hover:bg-blue-600 transition-colors" data-testid="chat-send-btn">
+                                <button onClick={handleSendMessage} className="px-3 py-1.5 text-white rounded text-xs font-semibold hover:opacity-90 transition-colors" style={{ backgroundColor: liveStyle.accentColor }} data-testid="chat-send-btn">
                                     Send
                                 </button>
                             </div>
