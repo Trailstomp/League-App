@@ -343,23 +343,28 @@ async def get_email_folders(account_id: str):
             for item in folder_list:
                 if isinstance(item, bytes):
                     decoded = item.decode("utf-8", errors="replace")
-                    # Parse folder name from IMAP response
+                    # Parse folder name from IMAP response - handle both "/" and "." delimiters
                     parts = decoded.split(' "/" ')
                     if len(parts) < 2:
                         parts = decoded.split(' "." ')
                     if len(parts) >= 2:
                         folder_name = parts[-1].strip().strip('"')
+                        # Skip IMAP internal folders
+                        if folder_name.startswith("[Gmail]") and folder_name == "[Gmail]":
+                            continue
                         folders.append(folder_name)
         
         conn.logout()
         
-        # Ensure standard folders are present
-        standard = ["INBOX", "Sent", "Drafts", "Trash", "Spam"]
-        for s in standard:
-            if not any(s.lower() in f.lower() for f in folders):
-                pass  # Don't add if not available on server
+        # Ensure INBOX is always first
+        if "INBOX" in folders:
+            folders.remove("INBOX")
+        folders.insert(0, "INBOX")
         
         return {"folders": folders}
+    except imaplib.IMAP4.error as e:
+        logger.error(f"IMAP error listing folders: {e}")
+        raise HTTPException(status_code=500, detail=f"IMAP connection error: {str(e)}")
     except Exception as e:
         logger.error(f"Error listing folders: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to list folders: {str(e)}")
