@@ -386,14 +386,14 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                         {/* Panel Content */}
                         <div className="flex-1 overflow-y-auto">
                             {infoTab === 'events' ? (
-                                <div className="divide-y divide-white/5">
+                                <div style={{ borderColor: `${liveStyle.textColor}0d` }}>
                                     {getSortedEvents().length > 0 ? getSortedEvents().map((evt, idx) => {
                                         const { player, teamKey } = parsePlayerFromEvent(evt);
                                         const teamColor = teamKey === 'home_team' ? homeColor : awayColor;
                                         const assistPlayer = evt.data?.assistPlayerId ? findPlayer(evt.data.assistPlayerId, teamKey) : null;
                                         const isGoal = evt.type === 'goal';
                                         return (
-                                            <div key={evt.id || idx} className={`px-3 py-2.5 ${idx === 0 ? 'bg-blue-500/10' : 'hover:bg-white/[0.03]'}`}>
+                                            <div key={evt.id || idx} className="px-3 py-2.5" style={{ backgroundColor: idx === 0 ? `${liveStyle.accentColor}1a` : 'transparent', borderBottom: `1px solid ${liveStyle.textColor}0d` }}>
                                                 <div className="flex items-start gap-2">
                                                     <span className="text-base flex-shrink-0 mt-0.5">
                                                         {isGoal ? '\u{1F6A8}' : evt.type === 'shot' || evt.type === 'shot_saved' ? '\u{1F9E4}' : evt.type === 'shot_miss' ? '\u{274C}' : evt.type?.includes('penalty') ? '\u{26A0}\u{FE0F}' : '\u{1F4CB}'}
@@ -403,27 +403,27 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                                                             {player && (
                                                                 <>
                                                                     <PlayerAvatar player={player} teamColor={teamColor} size="sm" />
-                                                                    <span className="text-white text-xs font-medium">#{player.number} {player.name}</span>
+                                                                    <span className="text-xs font-medium" style={{ color: liveStyle.textColor }}>{`#${player.number} ${player.name}`}</span>
                                                                 </>
                                                             )}
                                                             {isGoal && <span className="px-1.5 py-0.5 bg-green-600 text-white text-[10px] font-bold rounded">GOAL</span>}
                                                         </div>
                                                         {assistPlayer && (
-                                                            <span className="text-gray-500 text-[10px] flex items-center gap-1 mt-0.5">
+                                                            <span className="text-[10px] flex items-center gap-1 mt-0.5" style={{ color: `${liveStyle.textColor}60` }}>
                                                                 Assist: <PlayerAvatar player={assistPlayer} teamColor={teamColor} size="sm" /> #{assistPlayer.number} {assistPlayer.name?.split(' ').pop()}
                                                             </span>
                                                         )}
-                                                        {!player && <span className="text-white/80 text-xs">{evt.text}</span>}
-                                                        <div className="text-white/30 text-[10px] mt-0.5">{evt.time} &middot; P{evt.period}</div>
+                                                        {!player && <span className="text-xs" style={{ color: `${liveStyle.textColor}cc` }}>{evt.text}</span>}
+                                                        <div className="text-[10px] mt-0.5" style={{ color: `${liveStyle.textColor}4d` }}>{evt.time} &middot; P{evt.period}</div>
                                                     </div>
                                                 </div>
                                             </div>
                                         );
                                     }) : (
-                                        <div className="text-center py-10 text-gray-600">
+                                        <div className="text-center py-10" style={{ color: `${liveStyle.textColor}60` }}>
                                             <svg className="w-10 h-10 mx-auto mb-2 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
                                             <p className="text-xs">No events yet</p>
-                                            <p className="text-[10px] text-gray-700 mt-1">Events appear as the game progresses</p>
+                                            <p className="text-[10px] mt-1" style={{ color: `${liveStyle.textColor}40` }}>Events appear as the game progresses</p>
                                         </div>
                                     )}
                                 </div>
