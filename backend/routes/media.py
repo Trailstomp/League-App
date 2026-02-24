@@ -193,8 +193,16 @@ async def upload_general_image(
             raise HTTPException(status_code=400, detail="File too large. Maximum size is 5MB")
         
         # Validate image type
-        content_type = file.content_type
-        if not content_type or not content_type.startswith("image/"):
+        content_type = file.content_type or ""
+        valid_image = content_type.startswith("image/")
+        # Also accept common image extensions even if content_type is wrong
+        if not valid_image and file.filename:
+            ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else ''
+            valid_image = ext in ('jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif', 'bmp', 'svg', 'tiff')
+            if valid_image:
+                content_type = f"image/{ext}"
+        
+        if not valid_image:
             raise HTTPException(status_code=400, detail="Invalid file type. Only images are allowed")
         
         # Resolve storage config: team-level first, then league-level
