@@ -430,15 +430,15 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                             ) : (
                                 <div className="p-3 space-y-4">
                                     {/* Comparison Bars */}
-                                    <div className="bg-white/5 rounded-lg p-3">
+                                    <div className="rounded-lg p-3" style={{ backgroundColor: `${liveStyle.textColor}0d` }}>
                                         <div className="flex items-center justify-between mb-3">
                                             <div className="flex items-center gap-1.5">
                                                 <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: homeColor }} />
-                                                <span className="text-white/80 text-[10px] font-medium truncate max-w-[80px]">{liveData.home_team.name}</span>
+                                                <span className="text-[10px] font-medium truncate max-w-[80px]" style={{ color: `${liveStyle.textColor}cc` }}>{liveData.home_team.name}</span>
                                             </div>
-                                            <span className="text-white/30 text-[10px]">vs</span>
+                                            <span className="text-[10px]" style={{ color: `${liveStyle.textColor}4d` }}>vs</span>
                                             <div className="flex items-center gap-1.5">
-                                                <span className="text-white/80 text-[10px] font-medium truncate max-w-[80px]">{liveData.away_team.name}</span>
+                                                <span className="text-[10px] font-medium truncate max-w-[80px]" style={{ color: `${liveStyle.textColor}cc` }}>{liveData.away_team.name}</span>
                                                 <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: awayColor }} />
                                             </div>
                                         </div>
