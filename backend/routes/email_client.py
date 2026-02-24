@@ -158,6 +158,50 @@ def _connect_imap(account: dict):
     conn.login(account["email"], password)
     return conn
 
+
+# Standard folder name alternatives for different mail servers
+FOLDER_ALTERNATIVES = {
+    "sent": ["Sent", "Sent Items", "Sent Messages", "[Gmail]/Sent Mail", "INBOX.Sent"],
+    "drafts": ["Drafts", "[Gmail]/Drafts", "INBOX.Drafts", "Draft"],
+    "trash": ["Trash", "Deleted Items", "Deleted Messages", "[Gmail]/Trash", "INBOX.Trash"],
+    "spam": ["Spam", "Junk", "Junk E-mail", "[Gmail]/Spam", "INBOX.Spam", "Bulk Mail"],
+    "inbox": ["INBOX"],
+    "notes": ["Notes", "INBOX.Notes"],
+}
+
+
+def _resolve_folder(conn, folder_name: str) -> str:
+    """Try to resolve a folder name to the actual IMAP folder, trying alternatives if needed"""
+    # First try the exact folder name
+    status, _ = conn.select(f'"{folder_name}"', readonly=True)
+    if status == "OK":
+        return folder_name
+    
+    # Try without quotes
+    status, _ = conn.select(folder_name, readonly=True)
+    if status == "OK":
+        return folder_name
+    
+    # Try standard alternatives
+    key = folder_name.lower().replace(" ", "")
+    alternatives = FOLDER_ALTERNATIVES.get(key, [])
+    
+    for alt in alternatives:
+        try:
+            status, _ = conn.select(f'"{alt}"', readonly=True)
+            if status == "OK":
+                return alt
+        except Exception:
+            continue
+        try:
+            status, _ = conn.select(alt, readonly=True)
+            if status == "OK":
+                return alt
+        except Exception:
+            continue
+    
+    return None
+
 def _connect_smtp(account: dict):
     """Create an SMTP connection"""
     password = decrypt_password(account["password_encrypted"])
