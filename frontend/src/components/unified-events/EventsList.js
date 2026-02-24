@@ -509,14 +509,15 @@ const EventsList = ({
                 <div className="flex">
                     <button
                         onClick={() => setTimeFilter('upcoming')}
-                        className={`flex-1 py-4 px-6 text-center font-medium transition-all ${
+                        className={`flex-1 py-2 px-3 sm:py-3 sm:px-6 text-center font-medium transition-all ${
                             timeFilter === 'upcoming'
-                                ? 'bg-green-50 text-green-700 border-b-3 border-green-500'
+                                ? 'bg-green-50 text-green-700 border-b-2 border-green-500'
                                 : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                         }`}
+                        data-testid="upcoming-events-tab"
                     >
-                        <span className="text-base sm:text-lg">🗓️ Upcoming Events</span>
-                        <span className={`ml-2 px-2.5 py-1 rounded-full text-sm font-semibold ${
+                        <span className="text-xs sm:text-sm">Upcoming</span>
+                        <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-xs font-semibold ${
                             timeFilter === 'upcoming' 
                                 ? 'bg-green-100 text-green-800' 
                                 : 'bg-gray-100 text-gray-600'
@@ -526,14 +527,15 @@ const EventsList = ({
                     </button>
                     <button
                         onClick={() => setTimeFilter('past')}
-                        className={`flex-1 py-4 px-6 text-center font-medium transition-all ${
+                        className={`flex-1 py-2 px-3 sm:py-3 sm:px-6 text-center font-medium transition-all ${
                             timeFilter === 'past'
-                                ? 'bg-slate-100 text-slate-700 border-b-3 border-slate-500'
+                                ? 'bg-slate-100 text-slate-700 border-b-2 border-slate-500'
                                 : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                         }`}
+                        data-testid="past-events-tab"
                     >
-                        <span className="text-base sm:text-lg">📜 Past Events</span>
-                        <span className={`ml-2 px-2.5 py-1 rounded-full text-sm font-semibold ${
+                        <span className="text-xs sm:text-sm">Past</span>
+                        <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-xs font-semibold ${
                             timeFilter === 'past' 
                                 ? 'bg-slate-200 text-slate-800' 
                                 : 'bg-gray-100 text-gray-600'

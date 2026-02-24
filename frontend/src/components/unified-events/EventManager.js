@@ -394,41 +394,44 @@ const EventManager = ({ teams, currentUser, onEventUpdate, onEventClick, initial
     return (
         <div className="h-full flex flex-col" style={{ backgroundColor: 'transparent' }}>
             {/* Header */}
-            <div className="bg-white/90 backdrop-blur-sm shadow-sm border-b px-6 py-4 flex-shrink-0">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-800">
-                            {activeView === 'list' && 'Events Management'}
-                            {activeView === 'create' && 'Create New Event'}
+            <div className="bg-white/90 backdrop-blur-sm shadow-sm border-b px-3 py-2 sm:px-6 sm:py-4 flex-shrink-0">
+                <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                        <h1 className="text-base sm:text-2xl font-bold text-gray-800 truncate">
+                            {activeView === 'list' && 'Events'}
+                            {activeView === 'create' && 'Create Event'}
                             {activeView === 'edit' && 'Edit Event'}
                             {activeView === 'tournament' && 'Tournament Bracket'}
-                            {activeView === 'scoring-selector' && 'Choose Scoring Method'}
+                            {activeView === 'scoring-selector' && 'Scoring Method'}
                             {activeView === 'live-stats' && 'Live Stats Entry'}
-                            {activeView === 'quick-score' && 'Quick Score Entry'}
-                            {activeView === 'tournament-match-scoring' && `Match Scoring: ${selectedMatch?.event?.title || ''}`}
+                            {activeView === 'quick-score' && 'Quick Score'}
+                            {activeView === 'tournament-match-scoring' && `Match: ${selectedMatch?.event?.title || ''}`}
                         </h1>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-xs sm:text-sm text-gray-600 mt-0.5 hidden sm:block">
                             Unified event management with scoring, tournaments, and RSVP integration
                         </p>
                     </div>
                     
                     {activeView === 'list' && (
-                        <div className="flex gap-3">
+                        <div className="flex gap-1.5 sm:gap-3 flex-shrink-0">
                             {(currentUser?.role === 'admin' || currentUser?.roles?.includes('admin') || currentUser?.roles?.includes('coach')) && (
                                 <button
                                     onClick={() => setActiveView('create')}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                                    className="px-2.5 py-1.5 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-xs sm:text-sm"
                                     data-testid="create-event-btn"
                                 >
-                                    ➕ Create Event
+                                    <span className="sm:hidden">+ New</span>
+                                    <span className="hidden sm:inline">+ Create Event</span>
                                 </button>
                             )}
                             <button
                                 onClick={loadEvents}
-                                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium"
+                                className="px-2.5 py-1.5 sm:px-4 sm:py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium text-xs sm:text-sm border border-gray-200"
                                 disabled={loading}
+                                data-testid="refresh-events-btn"
                             >
-                                🔄 Refresh
+                                <span className="sm:hidden">Refresh</span>
+                                <span className="hidden sm:inline">Refresh</span>
                             </button>
                         </div>
                     )}
