@@ -98,6 +98,13 @@ Comprehensive league management portal for multiple sports with team management,
 - P2: Refactor server.py into route files
 - P2: Refactor EnhancedLiveStatsEntry.js (3800+ lines)
 
+### Mobile UI & Live View Styling (Feb 24, 2026)
+- [x] Bottom navbar text truncation fix: replaced `truncate` with `break-words` in BottomNavbar.js
+- [x] Site Style preferences panel narrowed on mobile: centered at 240px width instead of full-width
+- [x] Live Spectator View color controls: 4 new color pickers (Background, Text, Panel, Accent) in WebsiteDesignManager
+- [x] LiveSpectatorView fetches and applies custom colors from websiteStyle API instead of hardcoded dark theme
+- [x] VISUAL_RESET defaults include: liveViewBgColor, liveViewTextColor, liveViewPanelBgColor, liveViewAccentColor
+
 ## Key Files
 - `frontend/src/pages/LiveSpectatorView.js` - Overhauled live spectator view (compact scoreboard, dual-panel layout)
 - `frontend/src/components/unified-events/EnhancedLiveStatsEntry.js` - Main live scoring component
