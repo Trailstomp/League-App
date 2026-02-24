@@ -547,82 +547,76 @@ const EventsList = ({
             </div>
 
             {/* Filters and Controls - Mobile Optimized */}
-            <div className="bg-white/90 backdrop-blur-sm border-b px-4 py-3 sm:px-6 sm:py-4">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 sm:justify-between">
-                    <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
-                        {/* View Mode Toggle */}
-                        <div className="flex bg-slate-100 rounded-lg p-1">
-                            <button
-                                onClick={() => setViewMode('compact')}
-                                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                                    viewMode === 'compact'
-                                        ? 'bg-white text-blue-600 shadow-sm'
-                                        : 'text-slate-600 hover:text-slate-800'
-                                }`}
-                                data-testid="compact-view-btn"
-                            >
-                                ☰ Compact
-                            </button>
-                            <button
-                                onClick={() => setViewMode('detailed')}
-                                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                                    viewMode === 'detailed'
-                                        ? 'bg-white text-blue-600 shadow-sm'
-                                        : 'text-slate-600 hover:text-slate-800'
-                                }`}
-                                data-testid="detailed-view-btn"
-                            >
-                                ▦ Detailed
-                            </button>
-                            <button
-                                onClick={() => setViewMode('calendar')}
-                                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                                    viewMode === 'calendar'
-                                        ? 'bg-white text-blue-600 shadow-sm'
-                                        : 'text-slate-600 hover:text-slate-800'
-                                }`}
-                                data-testid="calendar-view-btn"
-                            >
-                                📅 Calendar
-                            </button>
-                        </div>
-
-                        {/* Status Filter */}
-                        <div className="flex items-center gap-2">
-                            <label className="text-xs sm:text-sm font-medium text-gray-700">Status:</label>
-                            <select
-                                value={filter}
-                                onChange={(e) => setFilter(e.target.value)}
-                                className="px-2 py-1 sm:px-3 border border-gray-300 rounded text-xs sm:text-sm"
-                            >
-                                <option value="active">Active (default)</option>
-                                <option value="all">All Events</option>
-                                <option value="scheduled">Scheduled</option>
-                                <option value="in_progress">In Progress</option>
-                                <option value="completed">Completed</option>
-                                <option value="canceled">Canceled</option>
-                                <option value="archived">Archived</option>
-                            </select>
-                        </div>
-
-                        {/* Sort By */}
-                        <div className="flex items-center gap-2">
-                            <label className="text-xs sm:text-sm font-medium text-gray-700">Sort:</label>
-                            <select
-                                value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value)}
-                                className="px-2 py-1 sm:px-3 border border-gray-300 rounded text-xs sm:text-sm"
-                            >
-                                <option value="date">Date</option>
-                                <option value="title">Title</option>
-                                <option value="type">Type</option>
-                            </select>
-                        </div>
+            <div className="bg-white/90 backdrop-blur-sm border-b px-3 py-2 sm:px-6 sm:py-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                    {/* View Mode Toggle */}
+                    <div className="flex bg-slate-100 rounded-md p-0.5">
+                        <button
+                            onClick={() => setViewMode('compact')}
+                            className={`px-2 py-1 rounded text-[10px] sm:text-xs font-medium transition-colors ${
+                                viewMode === 'compact'
+                                    ? 'bg-white text-blue-600 shadow-sm'
+                                    : 'text-slate-600 hover:text-slate-800'
+                            }`}
+                            data-testid="compact-view-btn"
+                        >
+                            List
+                        </button>
+                        <button
+                            onClick={() => setViewMode('detailed')}
+                            className={`px-2 py-1 rounded text-[10px] sm:text-xs font-medium transition-colors ${
+                                viewMode === 'detailed'
+                                    ? 'bg-white text-blue-600 shadow-sm'
+                                    : 'text-slate-600 hover:text-slate-800'
+                            }`}
+                            data-testid="detailed-view-btn"
+                        >
+                            Detail
+                        </button>
+                        <button
+                            onClick={() => setViewMode('calendar')}
+                            className={`px-2 py-1 rounded text-[10px] sm:text-xs font-medium transition-colors ${
+                                viewMode === 'calendar'
+                                    ? 'bg-white text-blue-600 shadow-sm'
+                                    : 'text-slate-600 hover:text-slate-800'
+                            }`}
+                            data-testid="calendar-view-btn"
+                        >
+                            Cal
+                        </button>
                     </div>
 
-                    <div className="text-xs sm:text-sm text-gray-600">
-                        {displayedEvents.length} {timeFilter === 'upcoming' ? 'upcoming' : 'past'} events
-                    </div>
+                    {/* Status Filter */}
+                    <select
+                        value={filter}
+                        onChange={(e) => setFilter(e.target.value)}
+                        className="px-2 py-1 border border-gray-200 rounded-md text-[10px] sm:text-xs bg-white"
+                        data-testid="status-filter-select"
+                    >
+                        <option value="active">Active</option>
+                        <option value="all">All</option>
+                        <option value="scheduled">Scheduled</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="canceled">Canceled</option>
+                        <option value="archived">Archived</option>
+                    </select>
+
+                    {/* Sort By */}
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="px-2 py-1 border border-gray-200 rounded-md text-[10px] sm:text-xs bg-white"
+                        data-testid="sort-by-select"
+                    >
+                        <option value="date">Date</option>
+                        <option value="title">Title</option>
+                        <option value="type">Type</option>
+                    </select>
+
+                    <span className="text-[10px] sm:text-xs text-gray-500 ml-auto">
+                        {displayedEvents.length} events
+                    </span>
                 </div>
             </div>
 
