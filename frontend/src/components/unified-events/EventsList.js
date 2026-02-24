@@ -51,7 +51,7 @@ const CompactEventRow = ({
     };
 
     const eventTeams = getEventTeams();
-    const eventDate = new Date(event.start_datetime || event.date);
+    const eventDate = new Date((event.start_datetime || event.date) + (event.start_datetime ? '' : 'T00:00:00'));
     const isPast = eventDate < new Date();
     const isAdmin = currentUser?.role === 'admin' || currentUser?.roles?.includes('admin');
     const isCoach = currentUser?.role === 'coach' || currentUser?.roles?.includes('coach');
