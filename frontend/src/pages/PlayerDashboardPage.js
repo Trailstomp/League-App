@@ -37,7 +37,7 @@ const PlayerDashboardPage = ({ currentUser, onUserUpdate, defaultTab }) => {
                 const now = new Date();
                 const upcoming = (data.leagueSchedule || [])
                     .filter(e => {
-                        const eventDate = new Date(e.date);
+                        const eventDate = new Date(e.date + 'T00:00:00');
                         return eventDate >= now;
                     })
                     .sort((a, b) => new Date(a.date) - new Date(b.date))
