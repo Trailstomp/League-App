@@ -105,6 +105,13 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] LiveSpectatorView fetches and applies custom colors from websiteStyle API instead of hardcoded dark theme
 - [x] VISUAL_RESET defaults include: liveViewBgColor, liveViewTextColor, liveViewPanelBgColor, liveViewAccentColor
 
+### Roster & News Fixes (Feb 24, 2026)
+- [x] TeamRosterTab Add Player modal: added "Create New Player" tab alongside "Search Existing" (matching TeamAdminTab)
+- [x] Manual player creation form with name, email, phone, jersey number, position fields
+- [x] NewsDisplay: fixed oversized image (removed aspect-square, using max-h-48 object-contain)
+- [x] NewsDisplay: added scrollable container (max-h-[500px] overflow-y-auto)
+- [x] Removed duplicate "League News & Announcements" heading from HomePage
+
 ## Key Files
 - `frontend/src/pages/LiveSpectatorView.js` - Overhauled live spectator view (compact scoreboard, dual-panel layout)
 - `frontend/src/components/unified-events/EnhancedLiveStatsEntry.js` - Main live scoring component
