@@ -76,7 +76,7 @@ const AdminEventsView = ({ teams = [], currentUser, onEditEvent, onViewLive }) =
     
     // First filter by past/upcoming tab
     const tabFilteredEvents = events.filter(event => {
-        const eventDate = event.date ? new Date(event.date) : null;
+        const eventDate = event.date ? new Date(event.date + 'T00:00:00') : null;
         const isPast = eventDate && eventDate < now;
         const isCompleted = event.status === 'completed' || event.status === 'canceled' || event.status === 'cancelled';
         
