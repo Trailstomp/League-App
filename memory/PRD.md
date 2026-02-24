@@ -124,6 +124,12 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] /player-photo-upload: Added local storage fallback when Google Drive is unavailable or fails (fixes 500 when Drive auth expires)
 - [x] Both endpoints now handle HEIC, HEIF, WebP and other modern image formats
 
+### Player Import & Notifications Fix (Feb 24, 2026)
+- [x] PlayerImporter: Added progress indicator (X of Y) with progress bar during import
+- [x] PlayerImporter: Added results panel showing count of imported/failed with player names and specific error messages
+- [x] PlayerImporter: Import no longer auto-reloads page - shows results first, user clicks "Refresh & View Players"
+- [x] Join-us notifications count endpoint: Returns {unread_count: 0} on error instead of 500 (prevents Cloudflare 520)
+
 ## Key Files
 - `frontend/src/pages/LiveSpectatorView.js` - Overhauled live spectator view (compact scoreboard, dual-panel layout)
 - `frontend/src/components/unified-events/EnhancedLiveStatsEntry.js` - Main live scoring component
