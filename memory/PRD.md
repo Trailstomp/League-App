@@ -102,6 +102,14 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Replaced all emoji icons with lucide-react icons
 - [x] Testing: 100% pass rate (10/10 features verified, iteration_52)
 
+### Events Page Mobile UI Cleanup (Feb 24, 2026)
+- [x] EventManager.js header: compact title (text-base on mobile, text-2xl on desktop), subtitle hidden on mobile
+- [x] EventManager.js buttons: "+ New" on mobile, "+ Create Event" on desktop; Refresh button compact with outline style
+- [x] EventsList.js tabs: reduced padding (py-2 px-3 on mobile), removed emoji icons, smaller text
+- [x] EventsList.js view toggle: "List/Detail/Cal" with text-[10px] on mobile instead of emoji + full word
+- [x] EventsList.js filters: compact dropdowns without labels, all controls fit in one row on mobile
+- [x] Testing: 100% pass rate (10/10 responsive features verified, iteration_53)
+
 ## Pending Issues
 - P1: Gallery data loss fix — user confirmed FIXED
 - Google Drive needs OAuth refresh token
