@@ -93,7 +93,7 @@ const BottomNavbar = ({
                             <span className={`text-lg leading-none ${isActive ? 'transform scale-110' : ''} transition-transform duration-200`}>
                                 {item.icon}
                             </span>
-                            <span className={`text-[10px] mt-0.5 leading-tight ${isActive ? 'font-bold' : 'font-medium'} truncate w-full text-center`}>
+                            <span className={`text-[9px] mt-0.5 leading-tight ${isActive ? 'font-bold' : 'font-medium'} w-full text-center break-words`}>
                                 {item.label}
                             </span>
                             {isActive && (

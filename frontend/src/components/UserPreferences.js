@@ -162,8 +162,8 @@ const UserPreferences = ({ websiteStyle, onStyleChange, currentUser, currentPage
                     ref={panelRef}
                     data-testid="preferences-panel"
                     className="fixed z-[9998] shadow-2xl overflow-hidden rounded-2xl
-                        left-3 right-3 top-[100px] max-h-[70vh]
-                        md:inset-auto md:top-[120px] md:left-[220px] md:right-auto md:w-[320px] md:max-h-[520px]"
+                        left-1/2 -translate-x-1/2 top-[100px] w-[240px] max-h-[70vh]
+                        md:inset-auto md:translate-x-0 md:top-[120px] md:left-[220px] md:right-auto md:w-[320px] md:max-h-[520px]"
                     style={{
                         backgroundColor: '#fff',
                         border: '1px solid #e2e8f0',
