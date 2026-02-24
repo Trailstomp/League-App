@@ -53,6 +53,26 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
         }
     }, [event, teams]);
 
+    // Fetch live view styles from websiteStyle
+    useEffect(() => {
+        const fetchLiveStyles = async () => {
+            try {
+                const res = await fetch(`${backendUrl}/api/league-data`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const ws = data.websiteStyle || {};
+                    setLiveStyle({
+                        bgColor: ws.liveViewBgColor || '#0a0e17',
+                        textColor: ws.liveViewTextColor || '#ffffff',
+                        panelBgColor: ws.liveViewPanelBgColor || '#0d1221',
+                        accentColor: ws.liveViewAccentColor || '#3b82f6'
+                    });
+                }
+            } catch (e) { /* use defaults */ }
+        };
+        fetchLiveStyles();
+    }, [backendUrl]);
+
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [chat.messages]);
