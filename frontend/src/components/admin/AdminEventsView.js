@@ -121,7 +121,7 @@ const AdminEventsView = ({ teams = [], currentUser, onEditEvent, onViewLive }) =
             let comparison = 0;
             switch (sortBy) {
                 case 'date':
-                    comparison = new Date(a.date) - new Date(b.date);
+                    comparison = new Date(a.date + 'T00:00:00') - new Date(b.date + 'T00:00:00');
                     break;
                 case 'title':
                     comparison = (a.title || '').localeCompare(b.title || '');
