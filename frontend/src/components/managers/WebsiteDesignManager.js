@@ -186,6 +186,10 @@ const VISUAL_RESET = {
     liveViewBackgroundType: 'banners',
     liveViewBannerOpacity: 0.3,
     liveViewUseTeamFonts: true,
+    liveViewBgColor: '#0a0e17',
+    liveViewTextColor: '#ffffff',
+    liveViewPanelBgColor: '#0d1221',
+    liveViewAccentColor: '#3b82f6',
     primaryColor: '#1e40af',
     accentColor: '#3b82f6',
 };
