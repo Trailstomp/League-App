@@ -7606,7 +7606,8 @@ async def send_email_event_notifications(event_id: str, options: Dict[str, Any] 
             logger.info(f"📧 Found {len(user_emails)} users to notify for teams: {event['teams']}")
         
         # If no users found from teams, try getting all active users (for league-wide events)
-        if not user_emails and not event.get("teams"):
+        # Only send league-wide if teams is genuinely not set (None), not just empty list
+        if not user_emails and event.get("teams") is None:
             users_cursor = db.users.find({
                 "status": {"$in": ["active", "guest"]},
                 "notificationPreferences.email": True
