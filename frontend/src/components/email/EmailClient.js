@@ -81,12 +81,21 @@ const EmailClient = ({ currentUser }) => {
                 ...(searchQuery && { search: searchQuery })
             });
             const res = await fetch(`${BACKEND_URL}/api/email-client/accounts/${selectedAccount.id}/messages?${params}`);
-            const data = await res.json();
-            setMessages(data.messages || []);
-            setTotalPages(data.total_pages || 1);
-            setTotal(data.total || 0);
+            if (res.ok) {
+                const data = await res.json();
+                setMessages(data.messages || []);
+                setTotalPages(data.total_pages || 1);
+                setTotal(data.total || 0);
+            } else {
+                // Folder may not exist on this server - show empty
+                console.warn(`Folder "${currentFolder}" returned ${res.status}`);
+                setMessages([]);
+                setTotalPages(1);
+                setTotal(0);
+            }
         } catch (e) {
             console.error('Error loading messages:', e);
+            setMessages([]);
         } finally {
             setLoading(false);
         }
