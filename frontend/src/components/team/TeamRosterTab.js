@@ -358,15 +358,52 @@ const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse'
             });
             
             if (response.ok) {
-                setMessage('✅ Player added to team!');
+                setMessage('Player added to team!');
                 setShowAddModal(false);
                 fetchTeamPlayers();
             } else {
                 const data = await response.json();
-                setMessage(`❌ ${data.detail || 'Failed to add player'}`);
+                setMessage(`Failed: ${data.detail || 'Failed to add player'}`);
             }
         } catch (error) {
-            setMessage('❌ Error adding player');
+            setMessage('Error adding player');
+        } finally {
+            setActionLoading(false);
+            setTimeout(() => setMessage(''), 3000);
+        }
+    };
+
+    // Create new player and add to team
+    const handleCreateNewPlayer = async () => {
+        if (!newPlayerData.name.trim()) {
+            setMessage('Player name is required');
+            return;
+        }
+        setActionLoading(true);
+        try {
+            const response = await fetch(`${backendUrl}/api/team/${team.id}/create-player`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: newPlayerData.name.trim(),
+                    email: newPlayerData.email.trim(),
+                    phone: newPlayerData.phone.trim(),
+                    jerseyNumber: newPlayerData.jerseyNumber.trim(),
+                    position: newPlayerData.position.trim()
+                })
+            });
+            if (response.ok) {
+                setMessage('New player created and added to team!');
+                setShowAddModal(false);
+                setNewPlayerData({ name: '', email: '', phone: '', jerseyNumber: '', position: '' });
+                setAddPlayerMode('search');
+                fetchTeamPlayers();
+            } else {
+                const data = await response.json();
+                setMessage(`Failed: ${data.detail || 'Failed to create player'}`);
+            }
+        } catch (error) {
+            setMessage('Error creating player');
         } finally {
             setActionLoading(false);
             setTimeout(() => setMessage(''), 3000);
