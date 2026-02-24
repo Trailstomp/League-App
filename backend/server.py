@@ -6087,8 +6087,8 @@ async def create_unified_event(event: UnifiedEvent):
             except Exception as e:
                 logger.warning(f"Failed to create GroupMe poll: {e}")
         
-        # Send email notifications if enabled
-        if event_data.get("email_notifications", False):
+        # Send email notifications if explicitly enabled
+        if event_data.get("email_notifications") is True:
             try:
                 logger.info(f"📧 Email notifications enabled for event {event.id}, sending...")
                 # Send emails immediately (not as background task to avoid silent failures)
