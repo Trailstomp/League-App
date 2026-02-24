@@ -392,6 +392,7 @@ const TeamAdminTab = ({ team, currentUser, onTeamUpdate, sportType = 'lacrosse' 
             emergencyContactRelationship: player.emergencyContactRelationship || player.emergencyContact?.relationship || ''
         });
         setShowEditModal(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (
