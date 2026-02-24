@@ -631,6 +631,15 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
                             `Import ${parsedData.length - validationErrors.length} Player(s)`
                         )}
                     </button>
+                    {importing && (
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div
+                                className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${importProgress.total > 0 ? (importProgress.current / importProgress.total) * 100 : 0}%` }}
+                            />
+                        </div>
+                    )}
+                    </button>
                     <button
                         onClick={() => {
                             setFile(null);
