@@ -57,10 +57,16 @@ const EmailClient = ({ currentUser }) => {
         if (!selectedAccount) return;
         try {
             const res = await fetch(`${BACKEND_URL}/api/email-client/accounts/${selectedAccount.id}/folders`);
-            const data = await res.json();
-            setFolders(data.folders || []);
+            if (res.ok) {
+                const data = await res.json();
+                setFolders(data.folders || []);
+            } else {
+                console.error('Failed to load folders:', res.status);
+                setFolders(['INBOX']); // Fallback
+            }
         } catch (e) {
             console.error('Error loading folders:', e);
+            setFolders(['INBOX']); // Fallback
         }
     };
 
