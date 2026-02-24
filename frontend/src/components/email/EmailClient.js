@@ -46,12 +46,12 @@ const EmailClient = ({ currentUser }) => {
         }
     }, [selectedAccount]);
 
-    // Load messages when folder or page changes (but not on initial account select)
+    // Load messages when folder, page, or search changes
     useEffect(() => {
         if (selectedAccount && folders.length > 0) {
             loadMessages();
         }
-    }, [currentFolder, page]);
+    }, [currentFolder, page, searchQuery]);
 
     const loadFolders = async () => {
         if (!selectedAccount) return;
