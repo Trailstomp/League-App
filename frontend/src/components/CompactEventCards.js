@@ -42,7 +42,7 @@ export const CompactEventRow = ({ event, currentUser, onEventClick, onEnterStats
     };
 
     const styles = getEventTypeStyles(event.type);
-    const eventDate = new Date(event.start_datetime || event.date);
+    const eventDate = new Date((event.start_datetime || event.date) + (event.start_datetime ? '' : 'T00:00:00'));
     const isPast = eventDate < new Date();
 
     return (
@@ -132,7 +132,7 @@ export const CompactEventCard = ({ event, currentUser, onEventClick, onEnterStat
     };
 
     const styles = getEventTypeStyles(event.type);
-    const eventDate = new Date(event.start_datetime || event.date);
+    const eventDate = new Date((event.start_datetime || event.date) + (event.start_datetime ? '' : 'T00:00:00'));
     const isPast = eventDate < new Date();
 
     return (
