@@ -566,7 +566,10 @@ async def get_email_attachment(account_id: str, uid: str, index: int, folder: st
     
     try:
         conn = _connect_imap(account)
-        conn.select(folder, readonly=True)
+        resolved_folder = _resolve_folder(conn, folder)
+        if not resolved_folder:
+            conn.logout()
+            raise HTTPException(status_code=404, detail=f"Folder '{folder}' not found")
         
         status, data = conn.fetch(uid.encode(), "(RFC822)")
         conn.logout()
