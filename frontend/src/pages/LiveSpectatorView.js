@@ -17,6 +17,12 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
     const [infoTab, setInfoTab] = useState('events');
     const [showChat, setShowChat] = useState(false);
     const [chat, setChat] = useState({ messages: [], newMessage: '' });
+    const [liveStyle, setLiveStyle] = useState({
+        bgColor: '#0a0e17',
+        textColor: '#ffffff',
+        panelBgColor: '#0d1221',
+        accentColor: '#3b82f6'
+    });
     const chatEndRef = useRef(null);
     const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
