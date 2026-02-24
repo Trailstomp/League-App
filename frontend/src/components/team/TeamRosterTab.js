@@ -483,18 +483,6 @@ const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse'
                     <div className="text-sm text-slate-500">
                         {loading ? 'Loading...' : `${teamPlayers.length} player${teamPlayers.length !== 1 ? 's' : ''}`}
                     </div>
-                    {isTeamAdmin && (
-                        <button
-                            onClick={() => setShowAddModal(true)}
-                            className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium flex items-center gap-1"
-                            data-testid="add-player-btn"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                            Add Player
-                        </button>
-                    )}
                 </div>
             </div>
             
