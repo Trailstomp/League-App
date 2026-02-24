@@ -464,7 +464,19 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
             </div>
 
             {/* File Upload */}
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+            <div
+                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors"
+                onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-blue-500', 'bg-blue-50'); }}
+                onDragLeave={(e) => { e.preventDefault(); e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50'); }}
+                onDrop={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
+                    const droppedFile = e.dataTransfer.files[0];
+                    if (droppedFile) {
+                        handleFileSelect({ target: { files: [droppedFile] } });
+                    }
+                }}
+            >
                 <input
                     ref={fileInputRef}
                     type="file"
