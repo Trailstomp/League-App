@@ -354,28 +354,30 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                     </div>
 
                     {/* Right: Events / Stats Panel */}
-                    <div className="flex-1 md:w-[380px] md:max-w-[420px] md:flex-none flex flex-col bg-[#0d1221] border-t md:border-t-0 md:border-l border-white/10">
+                    <div className="flex-1 md:w-[380px] md:max-w-[420px] md:flex-none flex flex-col border-t md:border-t-0 md:border-l" style={{ backgroundColor: liveStyle.panelBgColor, borderColor: `${liveStyle.textColor}1a` }}>
                         {/* Events / Stats Toggle */}
-                        <div className="flex flex-shrink-0 border-b border-white/10">
+                        <div className="flex flex-shrink-0 border-b" style={{ borderColor: `${liveStyle.textColor}1a` }}>
                             <button
                                 onClick={() => setInfoTab('events')}
                                 data-testid="spectator-events-tab"
-                                className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider transition-all ${
-                                    infoTab === 'events'
-                                        ? 'text-white bg-white/10 border-b-2 border-blue-400'
-                                        : 'text-white/50 hover:text-white/80 hover:bg-white/5'
-                                }`}
+                                className="flex-1 py-2.5 text-xs font-bold uppercase tracking-wider transition-all"
+                                style={{
+                                    color: infoTab === 'events' ? liveStyle.textColor : `${liveStyle.textColor}80`,
+                                    backgroundColor: infoTab === 'events' ? `${liveStyle.textColor}1a` : 'transparent',
+                                    borderBottom: infoTab === 'events' ? `2px solid ${liveStyle.accentColor}` : '2px solid transparent'
+                                }}
                             >
                                 Events
                             </button>
                             <button
                                 onClick={() => setInfoTab('stats')}
                                 data-testid="spectator-stats-tab"
-                                className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider transition-all ${
-                                    infoTab === 'stats'
-                                        ? 'text-white bg-white/10 border-b-2 border-blue-400'
-                                        : 'text-white/50 hover:text-white/80 hover:bg-white/5'
-                                }`}
+                                className="flex-1 py-2.5 text-xs font-bold uppercase tracking-wider transition-all"
+                                style={{
+                                    color: infoTab === 'stats' ? liveStyle.textColor : `${liveStyle.textColor}80`,
+                                    backgroundColor: infoTab === 'stats' ? `${liveStyle.textColor}1a` : 'transparent',
+                                    borderBottom: infoTab === 'stats' ? `2px solid ${liveStyle.accentColor}` : '2px solid transparent'
+                                }}
                             >
                                 Stats
                             </button>
