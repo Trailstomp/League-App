@@ -407,113 +407,118 @@ async def upload_league_background(file: UploadFile = File(...)):
 
 @media_router.post("/player-photo-upload")
 async def upload_player_photo(file: UploadFile = File(...)):
-    """Upload a player photo to Google Drive with organized folder structure"""
+    """Upload a player photo to Google Drive with organized folder structure, with local fallback"""
     try:
-        logger.info(f"📸 Player photo upload started - File: {file.filename}")
+        logger.info(f"Player photo upload started - File: {file.filename}")
         
         # Validate file type
-        if not file.content_type.startswith('image/'):
+        content_type = file.content_type or ""
+        valid_image = content_type.startswith('image/')
+        if not valid_image and file.filename:
+            ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else ''
+            valid_image = ext in ('jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif', 'bmp')
+            if valid_image:
+                content_type = f"image/{ext}"
+        
+        if not valid_image:
             raise HTTPException(status_code=400, detail="File must be an image")
         
         # Check file size (5MB limit)
         content = await file.read()
         file_size = len(content)
         
-        if file_size > 5 * 1024 * 1024:  # 5MB
+        if file_size > 5 * 1024 * 1024:
             raise HTTPException(status_code=400, detail="File size must be less than 5MB")
         
-        # Get Google Drive configuration
-        config = await db.cloud_storage.find_one({"id": "main_cloud_storage"})
-        
-        if not config:
-            raise HTTPException(status_code=400, detail="Google Drive not configured")
+        # Try Google Drive upload first
+        try:
+            config = await db.cloud_storage.find_one({"id": "main_cloud_storage"})
             
-        google_drive_config = config.get("googleDrive", {})
+            if config:
+                google_drive_config = config.get("googleDrive", {})
+                
+                if google_drive_config.get("refreshToken"):
+                    refresh_token = google_drive_config["refreshToken"]
+                    main_folder_id = google_drive_config.get("folderId")
+                    
+                    access_token = await get_fresh_access_token(google_drive_config, refresh_token)
+                    
+                    player_folder_id = await create_organized_folder(access_token, main_folder_id, "Player Images")
+                    
+                    file_extension = os.path.splitext(file.filename)[1] if file.filename else '.jpg'
+                    unique_filename = f"player_photo_{uuid.uuid4()}{file_extension}"
+                    
+                    upload_url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
+                    
+                    metadata = {
+                        'name': unique_filename,
+                        'parents': [player_folder_id]
+                    }
+                    
+                    files_data = {
+                        'metadata': (None, json.dumps(metadata), 'application/json'),
+                        'file': (file.filename, content, content_type)
+                    }
+                    
+                    headers = {
+                        'Authorization': f'Bearer {access_token}'
+                    }
+                    
+                    async with httpx.AsyncClient() as client:
+                        upload_response = await client.post(upload_url, headers=headers, files=files_data)
+                    
+                    if upload_response.status_code not in [200, 201]:
+                        logger.error(f"Google Drive upload failed: {upload_response.status_code} - {upload_response.text}")
+                        raise Exception("Drive upload failed")
+                    
+                    upload_data = upload_response.json()
+                    file_id = upload_data.get('id')
+                    
+                    permissions_url = f"https://www.googleapis.com/drive/v3/files/{file_id}/permissions"
+                    permission_data = {'role': 'reader', 'type': 'anyone'}
+                    
+                    async with httpx.AsyncClient() as client:
+                        await client.post(permissions_url, headers=headers, json=permission_data)
+                    
+                    photo_url = f"https://drive.google.com/thumbnail?id={file_id}&sz=w1000"
+                    
+                    logger.info(f"Player photo uploaded to Drive - ID: {file_id}")
+                    
+                    return {
+                        "success": True,
+                        "photo_url": photo_url,
+                        "filename": unique_filename,
+                        "file_size": file_size,
+                        "google_drive_id": file_id
+                    }
+        except Exception as drive_error:
+            logger.warning(f"Google Drive upload failed for player photo, falling back to local: {drive_error}")
         
-        if not google_drive_config.get("refreshToken"):
-            raise HTTPException(status_code=400, detail="Google Drive not authorized")
+        # Fallback: Save locally
+        upload_dir = "/app/uploads"
+        os.makedirs(upload_dir, exist_ok=True)
         
-        refresh_token = google_drive_config["refreshToken"]
-        main_folder_id = google_drive_config.get("folderId")
-        
-        # Get fresh access token
-        access_token = await get_fresh_access_token(google_drive_config, refresh_token)
-        
-        # Create or get "Player Images" folder
-        player_folder_id = await create_organized_folder(access_token, main_folder_id, "Player Images")
-        logger.info(f"📁 Player Images folder ID: {player_folder_id}")
-        
-        # Generate unique filename
         file_extension = os.path.splitext(file.filename)[1] if file.filename else '.jpg'
         unique_filename = f"player_photo_{uuid.uuid4()}{file_extension}"
+        filepath = os.path.join(upload_dir, unique_filename)
         
-        # Upload to Google Drive in Player Images folder
-        upload_url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"
+        with open(filepath, 'wb') as f:
+            f.write(content)
         
-        # Create metadata - upload to Player Images folder
-        metadata = {
-            'name': unique_filename,
-            'parents': [player_folder_id]  # Upload to Player Images folder
-        }
-        
-        # Create multipart data
-        files_data = {
-            'metadata': (None, json.dumps(metadata), 'application/json'),
-            'file': (file.filename, content, file.content_type)
-        }
-        
-        headers = {
-            'Authorization': f'Bearer {access_token}'
-        }
-        
-        async with httpx.AsyncClient() as client:
-            upload_response = await client.post(upload_url, headers=headers, files=files_data)
-        
-        if upload_response.status_code != 200:
-            logger.error(f"❌ Google Drive upload failed: {upload_response.status_code} - {upload_response.text}")
-            raise HTTPException(status_code=500, detail="Failed to upload photo to Google Drive")
-        
-        upload_data = upload_response.json()
-        file_id = upload_data.get('id')
-        
-        # Make file publicly viewable
-        permissions_url = f"https://www.googleapis.com/drive/v3/files/{file_id}/permissions"
-        permission_data = {
-            'role': 'reader',
-            'type': 'anyone'
-        }
-        
-        async with httpx.AsyncClient() as client:
-            permissions_response = await client.post(
-                permissions_url,
-                headers=headers,
-                json=permission_data
-            )
-        
-        if permissions_response.status_code != 200:
-            logger.error(f"⚠️ Failed to set public permissions on file {file_id}: {permissions_response.status_code} - {permissions_response.text}")
-            # Continue anyway - file is uploaded, just may not be publicly accessible
-        else:
-            logger.info(f"✅ File {file_id} set to public access")
-        
-        # Generate public URL - use thumbnail format for better image loading
-        photo_url = f"https://drive.google.com/thumbnail?id={file_id}&sz=w1000"
-        
-        logger.info(f"✅ Player photo uploaded successfully - ID: {file_id}")
-        logger.info(f"📸 Thumbnail URL: {photo_url}")
+        photo_url = f"/api/uploads/{unique_filename}"
+        logger.info(f"Player photo saved locally: {filepath}")
         
         return {
             "success": True,
             "photo_url": photo_url,
             "filename": unique_filename,
-            "file_size": file_size,
-            "google_drive_id": file_id
+            "file_size": file_size
         }
             
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"❌ Error uploading player photo: {str(e)}")
+        logger.error(f"Error uploading player photo: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @media_router.get("/league-data/teams/{team_id}")
