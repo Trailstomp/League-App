@@ -765,7 +765,11 @@ async def delete_message(account_id: str, uid: str, folder: str = "Trash"):
     
     try:
         conn = _connect_imap(account)
-        conn.select(folder)
+        resolved_folder = _resolve_folder(conn, folder)
+        if not resolved_folder:
+            conn.logout()
+            raise HTTPException(status_code=404, detail=f"Folder '{folder}' not found")
+        
         conn.store(uid.encode(), "+FLAGS", "\\Deleted")
         conn.expunge()
         conn.logout()
