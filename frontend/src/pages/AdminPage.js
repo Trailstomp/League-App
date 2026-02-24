@@ -498,15 +498,10 @@ const AdminPage = ({ teams, setTeams, players, setPlayers, users, setUsers, curr
             ]
         },
         {
-            groupName: '📥 Recruiting',
-            tabs: [
-                { id: 'recruiting', label: 'Recruiting', icon: '📬' },
-            ]
-        },
-        {
             groupName: '👥 People',
             tabs: [
                 { id: 'users', label: 'Users', icon: 'admin' },
+                { id: 'recruiting', label: 'Recruiting', icon: '📬' },
                 { id: 'import-players', label: 'Import Players', icon: '📥' },
                 { id: 'roles', label: 'Roles', icon: 'settings' },
                 { id: 'fees', label: 'Fees & Payments', icon: '💰' },
