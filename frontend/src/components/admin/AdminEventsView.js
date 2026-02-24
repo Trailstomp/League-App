@@ -30,7 +30,7 @@ const AdminEventsView = ({ teams = [], currentUser, onEditEvent, onViewLive }) =
                 const now = new Date();
                 setStats({
                     total: eventList.length,
-                    upcoming: eventList.filter(e => e.status === 'scheduled' && new Date(e.date) > now).length,
+                    upcoming: eventList.filter(e => e.status === 'scheduled' && new Date(e.date + 'T00:00:00') > now).length,
                     inProgress: eventList.filter(e => e.status === 'in_progress').length,
                     completed: eventList.filter(e => e.status === 'completed').length,
                     canceled: eventList.filter(e => e.status === 'canceled' || e.status === 'cancelled').length
@@ -55,7 +55,7 @@ const AdminEventsView = ({ teams = [], currentUser, onEditEvent, onViewLive }) =
                     const now = new Date();
                     setStats({
                         total: eventList.length,
-                        upcoming: eventList.filter(e => e.status === 'scheduled' && new Date(e.date) > now).length,
+                        upcoming: eventList.filter(e => e.status === 'scheduled' && new Date(e.date + 'T00:00:00') > now).length,
                         inProgress: eventList.filter(e => e.status === 'in_progress').length,
                         completed: eventList.filter(e => e.status === 'completed').length,
                         canceled: eventList.filter(e => e.status === 'canceled' || e.status === 'cancelled').length
