@@ -2803,6 +2803,42 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                 </div>
             </div>
 
+            {/* Live View Color Controls */}
+            <div>
+                <h4 className="text-md font-semibold text-slate-800 mb-4">Live View Colors</h4>
+                <p className="text-sm text-slate-600 mb-3">Control the colors used in the spectator live view overlay</p>
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
+                        <div className="flex items-center gap-2">
+                            <input type="color" value={editingStyle.liveViewBgColor || '#0a0e17'} onChange={(e) => updateStyle({ liveViewBgColor: e.target.value })} className="w-10 h-8 border border-slate-300 rounded cursor-pointer" />
+                            <input type="text" value={editingStyle.liveViewBgColor || '#0a0e17'} onChange={(e) => { if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) updateStyle({ liveViewBgColor: e.target.value }); }} className="flex-1 px-3 py-1.5 border border-slate-300 rounded-lg text-sm" placeholder="#0a0e17" />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Text Color</label>
+                        <div className="flex items-center gap-2">
+                            <input type="color" value={editingStyle.liveViewTextColor || '#ffffff'} onChange={(e) => updateStyle({ liveViewTextColor: e.target.value })} className="w-10 h-8 border border-slate-300 rounded cursor-pointer" />
+                            <input type="text" value={editingStyle.liveViewTextColor || '#ffffff'} onChange={(e) => { if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) updateStyle({ liveViewTextColor: e.target.value }); }} className="flex-1 px-3 py-1.5 border border-slate-300 rounded-lg text-sm" placeholder="#ffffff" />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Panel Background</label>
+                        <div className="flex items-center gap-2">
+                            <input type="color" value={editingStyle.liveViewPanelBgColor || '#0d1221'} onChange={(e) => updateStyle({ liveViewPanelBgColor: e.target.value })} className="w-10 h-8 border border-slate-300 rounded cursor-pointer" />
+                            <input type="text" value={editingStyle.liveViewPanelBgColor || '#0d1221'} onChange={(e) => { if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) updateStyle({ liveViewPanelBgColor: e.target.value }); }} className="flex-1 px-3 py-1.5 border border-slate-300 rounded-lg text-sm" placeholder="#0d1221" />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Accent Color</label>
+                        <div className="flex items-center gap-2">
+                            <input type="color" value={editingStyle.liveViewAccentColor || '#3b82f6'} onChange={(e) => updateStyle({ liveViewAccentColor: e.target.value })} className="w-10 h-8 border border-slate-300 rounded cursor-pointer" />
+                            <input type="text" value={editingStyle.liveViewAccentColor || '#3b82f6'} onChange={(e) => { if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) updateStyle({ liveViewAccentColor: e.target.value }); }} className="flex-1 px-3 py-1.5 border border-slate-300 rounded-lg text-sm" placeholder="#3b82f6" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* Preview Examples */}
             <div>
                 <h4 className="text-md font-semibold text-slate-800 mb-4">Preview</h4>
