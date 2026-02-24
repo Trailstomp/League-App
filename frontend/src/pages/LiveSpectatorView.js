@@ -300,18 +300,18 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                     {/* Score + Clock */}
                     <div className="flex flex-col items-center gap-1">
                         <div className="flex items-center gap-2">
-                            <span className="text-4xl md:text-5xl font-black text-white tabular-nums" style={{ textShadow: `0 0 16px ${homeColor}60` }}>
+                            <span className="text-4xl md:text-5xl font-black tabular-nums" style={{ color: liveStyle.textColor, textShadow: `0 0 16px ${homeColor}60` }}>
                                 {liveData.home_team.score}
                             </span>
-                            <span className="text-white/30 text-xl md:text-2xl font-light">-</span>
-                            <span className="text-4xl md:text-5xl font-black text-white tabular-nums" style={{ textShadow: `0 0 16px ${awayColor}60` }}>
+                            <span className="text-xl md:text-2xl font-light" style={{ color: `${liveStyle.textColor}4d` }}>-</span>
+                            <span className="text-4xl md:text-5xl font-black tabular-nums" style={{ color: liveStyle.textColor, textShadow: `0 0 16px ${awayColor}60` }}>
                                 {liveData.away_team.score}
                             </span>
                         </div>
                         <div className="flex items-center gap-2 text-[11px]">
-                            <span className="text-amber-400 font-mono font-bold tracking-wide">{liveData.time_remaining}</span>
-                            <span className="text-white/40">|</span>
-                            <span className="text-white/50">P{liveData.current_period}</span>
+                            <span className="font-mono font-bold tracking-wide" style={{ color: '#fbbf24' }}>{liveData.time_remaining}</span>
+                            <span style={{ color: `${liveStyle.textColor}66` }}>|</span>
+                            <span style={{ color: `${liveStyle.textColor}80` }}>P{liveData.current_period}</span>
                         </div>
                     </div>
 
