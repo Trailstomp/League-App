@@ -639,7 +639,6 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
                             />
                         </div>
                     )}
-                    </button>
                     <button
                         onClick={() => {
                             setFile(null);
