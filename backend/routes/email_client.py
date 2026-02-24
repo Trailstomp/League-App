@@ -150,13 +150,28 @@ def _get_attachments_info(msg):
 
 def _connect_imap(account: dict):
     """Create an IMAP connection"""
-    password = decrypt_password(account["password_encrypted"])
-    if account.get("use_ssl", True):
-        conn = imaplib.IMAP4_SSL(account["imap_host"], account.get("imap_port", 993))
-    else:
-        conn = imaplib.IMAP4(account["imap_host"], account.get("imap_port", 143))
-    conn.login(account["email"], password)
-    return conn
+    try:
+        password = decrypt_password(account["password_encrypted"])
+    except Exception as e:
+        logger.error(f"Password decryption failed for {account.get('email', 'unknown')}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to decrypt email credentials. The encryption key may have changed. Please re-enter your email password in settings.")
+    
+    try:
+        if account.get("use_ssl", True):
+            conn = imaplib.IMAP4_SSL(account["imap_host"], account.get("imap_port", 993))
+        else:
+            conn = imaplib.IMAP4(account["imap_host"], account.get("imap_port", 143))
+        conn.login(account["email"], password)
+        return conn
+    except imaplib.IMAP4.error as e:
+        error_msg = str(e)
+        logger.error(f"IMAP login failed for {account.get('email')}: {error_msg}")
+        if "AUTHENTICATIONFAILED" in error_msg.upper() or "LOGIN" in error_msg.upper():
+            raise HTTPException(status_code=401, detail="IMAP authentication failed. Please check your email credentials.")
+        raise HTTPException(status_code=500, detail=f"IMAP connection error: {error_msg}")
+    except Exception as e:
+        logger.error(f"IMAP connection failed for {account.get('email')}: {e}")
+        raise HTTPException(status_code=500, detail=f"Cannot connect to mail server: {str(e)}")
 
 
 # Standard folder name alternatives for different mail servers
