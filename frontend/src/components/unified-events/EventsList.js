@@ -621,7 +621,7 @@ const EventsList = ({
             </div>
 
             {/* Events Display Area */}
-            <div className="flex-1 overflow-y-auto p-3 sm:p-6">
+            <div className="flex-1 overflow-y-auto p-2 sm:p-6">
                 {/* Calendar View */}
                 {viewMode === 'calendar' && (
                     <AdvancedEventCalendar 
