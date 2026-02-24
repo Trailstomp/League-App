@@ -387,11 +387,14 @@ async def get_email_messages(
     
     try:
         conn = _connect_imap(account)
-        status, _ = conn.select(folder, readonly=True)
         
-        if status != "OK":
+        # Resolve the folder name (handles alternative folder names)
+        resolved_folder = _resolve_folder(conn, folder)
+        
+        if not resolved_folder:
             conn.logout()
-            raise HTTPException(status_code=400, detail=f"Cannot open folder: {folder}")
+            # Folder doesn't exist - return empty instead of error
+            return {"messages": [], "total": 0, "page": page, "per_page": per_page, "total_pages": 0, "folder_missing": True}
         
         # Search
         if search:
