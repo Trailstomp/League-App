@@ -102,7 +102,7 @@ const MyDashboardTab = ({ team, currentUser }) => {
                                     <div>
                                         <h4 className="font-medium text-slate-800">{event.title || event.name}</h4>
                                         <p className="text-sm text-slate-500">
-                                            {new Date(event.date).toLocaleDateString('en-US', {
+                                            {new Date(event.date + 'T00:00:00').toLocaleDateString('en-US', {
                                                 weekday: 'short',
                                                 month: 'short',
                                                 day: 'numeric'
