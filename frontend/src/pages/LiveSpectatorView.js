@@ -318,7 +318,7 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                     {/* Away Team */}
                     <div className="flex flex-col items-center gap-1 flex-1">
                         <TeamLogo team={liveData.away_team} size="lg" />
-                        <span className="text-white/90 text-[11px] md:text-sm font-semibold text-center leading-tight truncate max-w-[90px] md:max-w-[140px]">{liveData.away_team.name}</span>
+                        <span className="text-[11px] md:text-sm font-semibold text-center leading-tight truncate max-w-[90px] md:max-w-[140px]" style={{ color: `${liveStyle.textColor}e6` }}>{liveData.away_team.name}</span>
                     </div>
                 </div>
             </div>
