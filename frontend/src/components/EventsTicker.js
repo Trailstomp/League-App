@@ -86,7 +86,7 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, tickerConfig
             }
             
             // Include events without dates (placeholder events)
-            const eventDate = event.date ? new Date(event.date) : null;
+            const eventDate = event.date ? new Date(event.date + 'T00:00:00') : null;
             let inDateRange = true;
             
             if (eventDate && !isNaN(eventDate.getTime())) {
