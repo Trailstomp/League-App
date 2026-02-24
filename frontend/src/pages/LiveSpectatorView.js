@@ -458,24 +458,24 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
                                         { label: liveData.home_team.name, players: liveData.home_players, color: homeColor },
                                         { label: liveData.away_team.name, players: liveData.away_players, color: awayColor }
                                     ].map(({ label, players, color }) => (
-                                        <div key={label} className="bg-white/5 rounded-lg p-3">
-                                            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/5">
+                                        <div key={label} className="rounded-lg p-3" style={{ backgroundColor: `${liveStyle.textColor}0d` }}>
+                                            <div className="flex items-center gap-2 mb-2 pb-2" style={{ borderBottom: `1px solid ${liveStyle.textColor}0d` }}>
                                                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-                                                <span className="text-white/80 text-xs font-semibold">{label}</span>
+                                                <span className="text-xs font-semibold" style={{ color: `${liveStyle.textColor}cc` }}>{label}</span>
                                             </div>
                                             {players.length > 0 ? players.map(player => (
                                                 <div key={player.id} className="flex items-center gap-2 py-1.5">
                                                     <PlayerAvatar player={player} teamColor={color} />
                                                     <div className="flex-1 min-w-0">
-                                                        <div className="text-white text-xs font-medium truncate">#{player.number} {player.name}</div>
-                                                        <div className="text-white/40 text-[10px]">{player.position || ''}</div>
+                                                        <div className="text-xs font-medium truncate" style={{ color: liveStyle.textColor }}>#{player.number} {player.name}</div>
+                                                        <div className="text-[10px]" style={{ color: `${liveStyle.textColor}66` }}>{player.position || ''}</div>
                                                     </div>
                                                     <div className="text-right flex-shrink-0">
-                                                        <span className="text-white text-xs font-bold">{player.stats?.goals || 0}G {player.stats?.assists || 0}A</span>
+                                                        <span className="text-xs font-bold" style={{ color: liveStyle.textColor }}>{player.stats?.goals || 0}G {player.stats?.assists || 0}A</span>
                                                     </div>
                                                 </div>
                                             )) : (
-                                                <p className="text-gray-600 text-xs text-center py-3">No scoring yet</p>
+                                                <p className="text-xs text-center py-3" style={{ color: `${liveStyle.textColor}60` }}>No scoring yet</p>
                                             )}
                                         </div>
                                     ))}
