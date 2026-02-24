@@ -40,7 +40,7 @@ const PlayerDashboardPage = ({ currentUser, onUserUpdate, defaultTab }) => {
                         const eventDate = new Date(e.date + 'T00:00:00');
                         return eventDate >= now;
                     })
-                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .sort((a, b) => new Date(a.date + 'T00:00:00') - new Date(b.date + 'T00:00:00'))
                     .slice(0, 5);
                 setUpcomingEvents(upcoming);
             }
