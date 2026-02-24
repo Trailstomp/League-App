@@ -20,6 +20,14 @@ const TeamRosterTab = ({ team, players = [], currentUser, sportType = 'lacrosse'
     const [searchTerm, setSearchTerm] = useState('');
     const [message, setMessage] = useState('');
     const [actionLoading, setActionLoading] = useState(false);
+    const [addPlayerMode, setAddPlayerMode] = useState('search');
+    const [newPlayerData, setNewPlayerData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        jerseyNumber: '',
+        position: ''
+    });
     const cardRef = useRef(null);
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
     
