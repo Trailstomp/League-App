@@ -122,12 +122,12 @@ const NewsDisplay = ({ teamId = null, maxItems = 5, showTeamFilter = false }) =>
     }
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border p-6">
+        <div className="bg-white rounded-lg shadow-sm border p-6" data-testid="news-display">
             <h3 className="text-lg font-semibold text-slate-800 mb-4">
-                📰 {teamId ? 'Team' : 'League'} News
+                {teamId ? 'Team' : 'League'} News & Announcements
             </h3>
             
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
                 {newsItems.map((item) => (
                     <article 
                         key={item.id} 
@@ -135,11 +135,11 @@ const NewsDisplay = ({ teamId = null, maxItems = 5, showTeamFilter = false }) =>
                     >
                         {/* Article Header */}
                         <div className="flex items-start justify-between mb-2">
-                            <div className="flex items-center space-x-2">
-                                <span className="text-lg">{getNewsIcon(item.type)}</span>
-                                <h4 className="font-semibold text-slate-800">{item.heading}</h4>
+                            <div className="flex items-center space-x-2 min-w-0">
+                                <span className="text-lg flex-shrink-0">{getNewsIcon(item.type)}</span>
+                                <h4 className="font-semibold text-slate-800 truncate">{item.heading}</h4>
                             </div>
-                            <span className="text-sm text-slate-500 whitespace-nowrap ml-4">
+                            <span className="text-sm text-slate-500 whitespace-nowrap ml-4 flex-shrink-0">
                                 {formatDate(item.date)}
                             </span>
                         </div>
@@ -152,8 +152,7 @@ const NewsDisplay = ({ teamId = null, maxItems = 5, showTeamFilter = false }) =>
                                     <CachedImage 
                                         src={item.imageUrl} 
                                         alt={item.heading}
-                                        className="w-full aspect-square object-cover rounded-lg hover:opacity-90 transition-opacity"
-                                        style={{ maxHeight: '300px' }}
+                                        className="max-w-full h-auto max-h-48 object-contain rounded-lg hover:opacity-90 transition-opacity"
                                     />
                                 </div>
                             )}
