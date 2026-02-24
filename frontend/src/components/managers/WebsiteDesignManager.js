@@ -862,6 +862,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                     onClick={() => {
                         loadTemplates();
                         setShowLoadTemplateModal(true);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     className="flex-1 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
                 >
