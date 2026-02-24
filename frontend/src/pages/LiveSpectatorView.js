@@ -240,12 +240,12 @@ const LiveSpectatorView = ({ event, teams, onClose, tournamentMatch }) => {
         const homePct = total > 0 ? ((homeVal / total) * 100) : 50;
         return (
             <div className="py-1.5">
-                <div className="flex justify-between text-xs text-gray-300 mb-1">
+                <div className="flex justify-between text-xs mb-1" style={{ color: `${liveStyle.textColor}b3` }}>
                     <span className="font-semibold">{homeVal}</span>
-                    <span className="text-gray-500 uppercase text-[10px] tracking-wider">{label}</span>
+                    <span className="uppercase text-[10px] tracking-wider" style={{ color: `${liveStyle.textColor}60` }}>{label}</span>
                     <span className="font-semibold">{awayVal}</span>
                 </div>
-                <div className="flex h-1.5 rounded-full overflow-hidden bg-gray-700">
+                <div className="flex h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: `${liveStyle.textColor}20` }}>
                     <div className="rounded-l-full transition-all" style={{ width: `${homePct}%`, backgroundColor: homeColor }} />
                     <div className="rounded-r-full transition-all" style={{ width: `${100 - homePct}%`, backgroundColor: awayColor }} />
                 </div>
