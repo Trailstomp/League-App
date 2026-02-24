@@ -11,6 +11,8 @@ const PlayerImporter = ({ teams = [], onImportComplete }) => {
     const [validationErrors, setValidationErrors] = useState([]);
     const [defaultPassword, setDefaultPassword] = useState('Welcome123!');
     const [sendWelcomeEmail, setSendWelcomeEmail] = useState(true);
+    const [importProgress, setImportProgress] = useState({ current: 0, total: 0 });
+    const [importResults, setImportResults] = useState(null);
     const fileInputRef = useRef(null);
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
