@@ -406,6 +406,7 @@ const Layout = ({
                             tickerConfig={tickerConfig}
                             onEventClick={onEventClick}
                             onTeamClick={onTeamClick}
+                            onNavigate={onNavigate}
                             compact={false}
                         />
                     </div>
