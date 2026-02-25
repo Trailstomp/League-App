@@ -742,6 +742,7 @@ const EventsList = ({
                                         onEnterScoring={onEnterScoring}
                                         onViewLive={onViewLive}
                                         onManageTournament={onManageTournament}
+                                        onNavigate={onNavigate}
                                         getEventTypeIcon={getEventTypeIcon}
                                         getStatusColor={getStatusColor}
                                     />
