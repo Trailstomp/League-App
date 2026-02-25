@@ -2328,6 +2328,21 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                     </div>
                     {/* Right: Toggles */}
                     <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
+                        {/* GO LIVE Toggle */}
+                        <label className="flex items-center gap-0.5 cursor-pointer" data-testid="go-live-toggle">
+                            <button
+                                onClick={toggleLive}
+                                className={`px-2 py-0.5 rounded text-[9px] md:text-[10px] font-bold transition-all ${
+                                    isLive
+                                        ? 'bg-red-600 text-white animate-pulse shadow-lg shadow-red-500/30'
+                                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                }`}
+                                data-testid="go-live-btn"
+                            >
+                                {isLive ? '● LIVE' : 'GO LIVE'}
+                            </button>
+                        </label>
+                        <div className="w-px h-4 bg-gray-600" />
                         <button
                             onClick={() => {
                                 const isStatsOnly = !showGameClock && !showShotClock;
