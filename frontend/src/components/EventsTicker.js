@@ -447,9 +447,13 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, tickerConfig
                             {getVenueName(event)}
                         </span>
                         {statusStyle.pulse && (
-                            <span className="px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded animate-pulse ml-2 flex-shrink-0">
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onNavigate && onNavigate('live-game', event.id); }}
+                                className="px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded animate-pulse ml-2 flex-shrink-0 hover:bg-red-600"
+                                data-testid={`ticker-watch-${event.id}`}
+                            >
                                 WATCH
-                            </span>
+                            </button>
                         )}
                     </div>
                 </div>
