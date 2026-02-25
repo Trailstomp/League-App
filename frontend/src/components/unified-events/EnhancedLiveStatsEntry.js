@@ -73,14 +73,13 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
     const [lastSaved, setLastSaved] = useState(null);
     const [isLive, setIsLive] = useState(event?.status === 'in_progress');
 
-    const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
-
     const toggleLive = async () => {
+        const bUrl = process.env.REACT_APP_BACKEND_URL || '';
         const newLive = !isLive;
         setIsLive(newLive);
         try {
             const newStatus = newLive ? 'in_progress' : 'scheduled';
-            await fetch(`${backendUrl}/api/unified-events/${event?.id}`, {
+            await fetch(`${bUrl}/api/unified-events/${event?.id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus })
