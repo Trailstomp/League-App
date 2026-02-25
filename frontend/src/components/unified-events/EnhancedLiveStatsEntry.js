@@ -71,6 +71,7 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
 
     const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
     const [lastSaved, setLastSaved] = useState(null);
+    const [isLive, setIsLive] = useState(event?.status === 'in_progress');
 
     // Live Chat State
     const [chat, setChat] = useState({
