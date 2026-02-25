@@ -193,13 +193,13 @@ const GameStatsView = ({ eventId, teams = [], compact = false }) => {
                         <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5 px-1" style={{ color: homeInfo.style?.primaryColor }}>
                             {homeTeam.name || homeInfo.name || 'Home Team'}
                         </h4>
-                        <PlayerStatsTable players={homePlayers} teamName="home" teamColor={homeInfo.style?.primaryColor} />
+                        <PlayerStatsTable players={homePlayers} teamName="home" teamColor={homeInfo.style?.primaryColor} isHome={true} />
                     </div>
                     <div>
                         <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5 px-1" style={{ color: awayInfo.style?.primaryColor }}>
                             {awayTeam.name || awayInfo.name || 'Away Team'}
                         </h4>
-                        <PlayerStatsTable players={awayPlayers} teamName="away" teamColor={awayInfo.style?.primaryColor} />
+                        <PlayerStatsTable players={awayPlayers} teamName="away" teamColor={awayInfo.style?.primaryColor} isHome={false} />
                     </div>
                 </div>
             )}
