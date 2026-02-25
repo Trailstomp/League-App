@@ -2528,338 +2528,237 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
         const sortedPlayers = sortPlayers(teamData.players, sortConfig);
         const activePlayers = sortedPlayers.filter(p => p.active);
         const inactivePlayers = sortedPlayers.filter(p => !p.active);
+        const teamColor = teamData.color || (isHome ? '#3b82f6' : '#ef4444');
 
-        const SortableHeader = ({ column, children }) => (
-            <th 
-                className="px-3 py-2 text-left text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-100 select-none"
-                onClick={() => handleColumnSort(teamKey, column)}
-            >
+        // ─── Shared: Shot dropdown logic ───
+        const ShotDropdown = ({ player }) => (
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white border border-gray-300 rounded-lg shadow-xl z-50 min-w-[160px]">
+                <button
+                    onClick={() => {
+                        setGameState(prev => ({ ...prev, is_running: false }));
+                        setShotClock(prev => ({ ...prev, isRunning: false }));
+                        setTeamShotModalTeam(teamKey);
+                        setTeamShotInput({ playerId: player.id, shotType: 'goal', timestamp: formatTime(gameState.time_remaining), assistPlayerId: null });
+                        setShowTeamShotModal(true);
+                        setShowShotMenu(null);
+                    }}
+                    className="w-full px-4 py-3 text-left hover:bg-green-50 border-b flex items-center gap-2 rounded-t-lg"
+                >
+                    <span className="text-lg">🥅</span>
+                    <div><div className="font-bold text-green-700">Goal</div><div className="text-xs text-gray-500">Stop clocks</div></div>
+                </button>
+                <button
+                    onClick={() => {
+                        setShotClock(prev => ({ ...prev, timeRemaining: prev.duration, isRunning: gameState.is_running }));
+                        addShotStat(teamKey, player.id, 'saved');
+                        setShowShotMenu(null);
+                    }}
+                    className="w-full px-4 py-3 text-left hover:bg-purple-50 border-b flex items-center gap-2"
+                >
+                    <span className="text-lg">🧤</span>
+                    <div><div className="font-bold text-purple-700">Save</div><div className="text-xs text-gray-500">Reset shot clock</div></div>
+                </button>
+                <button
+                    onClick={() => {
+                        const playerObj = gameState[teamKey].players.find(p => p.id === player.id);
+                        const playerName = playerObj ? formatPlayerName(playerObj.name) : 'Unknown';
+                        addGameEvent(`${playerName} - Shot missed`, 'miss', { teamKey, playerId: player.id, shotType: 'miss', timestamp: formatTime(gameState.time_remaining) });
+                        setShowShotMenu(null);
+                    }}
+                    className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center gap-2 rounded-b-lg"
+                >
+                    <span className="text-lg">❌</span>
+                    <div><div className="font-bold text-gray-700">Miss</div><div className="text-xs text-gray-500">No stat change</div></div>
+                </button>
+            </div>
+        );
+
+        // ─── Shared: +/- stat control ───
+        const StatControl = ({ value, label, color, onIncrement, onDecrement }) => (
+            <div className="flex flex-col items-center">
+                <span className="text-[10px] text-gray-500 leading-none mb-0.5">{label}</span>
+                <div className="flex items-center gap-0.5">
+                    <button onClick={onDecrement} disabled={value <= 0}
+                        className="w-7 h-7 md:w-8 md:h-8 bg-red-100 text-red-600 rounded text-sm font-bold hover:bg-red-200 disabled:opacity-30 flex items-center justify-center">−</button>
+                    <span className={`w-7 text-center font-bold text-sm ${color}`}>{value}</span>
+                    <button onClick={onIncrement}
+                        className={`w-7 h-7 md:w-8 md:h-8 rounded text-sm font-bold hover:opacity-80 flex items-center justify-center`}
+                        style={{ backgroundColor: `${color === 'text-blue-600' ? '#dbeafe' : color === 'text-orange-600' ? '#ffedd5' : '#ccfbf1'}`, color: `${color === 'text-blue-600' ? '#2563eb' : color === 'text-orange-600' ? '#ea580c' : '#0d9488'}` }}>+</button>
+                </div>
+            </div>
+        );
+
+        // Helper to decrement a stat
+        const decrementStat = (playerId, statKey) => {
+            setGameState(prev => ({
+                ...prev,
+                [teamKey]: {
+                    ...prev[teamKey],
+                    players: prev[teamKey].players.map(p =>
+                        p.id === playerId ? { ...p, stats: { ...p.stats, [statKey]: Math.max(0, (p.stats[statKey] || 0) - 1) } } : p
+                    )
+                }
+            }));
+        };
+
+        // ─── Mobile Card Layout (visible < md) ───
+        const MobilePlayerCard = ({ player }) => (
+            <div className="bg-white rounded-lg border border-gray-200 p-2.5 shadow-sm" data-testid={`player-card-${player.id}`}>
+                {/* Row 1: Player info + Shot button */}
+                <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                        <input type="checkbox" checked={player.active} onChange={() => togglePlayerActive(teamKey, player.id)} className="rounded w-4 h-4 flex-shrink-0" />
+                        <span className="font-mono font-bold text-sm text-gray-800">#{player.number}</span>
+                        <span className="text-sm font-medium truncate">{formatPlayerName(player.name)}</span>
+                    </div>
+                    <div className="shot-button-container relative flex-shrink-0">
+                        <button
+                            onClick={() => setShowShotMenu(showShotMenu === player.id ? null : player.id)}
+                            className="h-10 px-5 bg-yellow-500 text-white rounded-lg font-bold text-sm hover:bg-yellow-600 shadow-sm"
+                            data-testid={`shot-btn-${player.id}`}
+                        >
+                            SHOT
+                        </button>
+                        {showShotMenu === player.id && <ShotDropdown player={player} />}
+                    </div>
+                </div>
+                {/* Row 2: Read-only stats */}
+                <div className="flex items-center gap-3 mb-2 px-1">
+                    <div className="flex items-center gap-1"><span className="text-[10px] text-gray-400">S</span><span className="font-bold text-sm text-yellow-600">{player.stats.shots}</span></div>
+                    <div className="flex items-center gap-1"><span className="text-[10px] text-gray-400">G</span><span className="font-bold text-sm text-green-600">{player.stats.goals}</span></div>
+                    <div className="flex items-center gap-1"><span className="text-[10px] text-gray-400">Pts</span><span className="font-bold text-sm text-indigo-600">{((player.stats.goals || 0) * 2) + (player.stats.assists || 0)}</span></div>
+                    <div className="flex items-center gap-1"><span className="text-[10px] text-gray-400">PIM</span><span className="font-bold text-sm text-red-600">{player.stats.penalties}</span></div>
+                </div>
+                {/* Row 3: Adjustable stats with +/- */}
+                <div className="flex items-center justify-between gap-1 border-t border-gray-100 pt-2">
+                    <StatControl label="Ast" value={player.stats.assists} color="text-blue-600"
+                        onIncrement={() => addStat(teamKey, player.id, 'assists')}
+                        onDecrement={() => decrementStat(player.id, 'assists')} />
+                    <StatControl label="FO" value={player.stats.faceoffs || 0} color="text-orange-600"
+                        onIncrement={() => addStat(teamKey, player.id, 'faceoffs')}
+                        onDecrement={() => decrementStat(player.id, 'faceoffs')} />
+                    <StatControl label="GB" value={player.stats.groundBalls || 0} color="text-teal-600"
+                        onIncrement={() => addStat(teamKey, player.id, 'groundBalls')}
+                        onDecrement={() => decrementStat(player.id, 'groundBalls')} />
+                </div>
+            </div>
+        );
+
+        // ─── Desktop Table (visible >= md) ───
+        const SortableHeader = ({ column, children, className: cls = '' }) => (
+            <th className={`px-2 py-1.5 text-left text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-100 select-none ${cls}`}
+                onClick={() => handleColumnSort(teamKey, column)}>
                 <div className="flex items-center gap-1">
                     {children}
-                    {sortConfig.column === column && (
-                        <span className="text-xs">
-                            {sortConfig.direction === 'asc' ? '↑' : '↓'}
-                        </span>
-                    )}
+                    {sortConfig.column === column && <span className="text-[10px]">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>}
                 </div>
             </th>
         );
 
-        const PlayerRow = ({ player, isInactive = false }) => (
-            <tr key={player.id} className={`${isInactive ? 'bg-gray-50 opacity-60' : 'hover:bg-blue-50'}`}>
-                <td className="px-2 py-1">
-                    <input
-                        type="checkbox"
-                        checked={player.active}
-                        onChange={() => togglePlayerActive(teamKey, player.id)}
-                        className="rounded"
-                    />
-                </td>
-                <td className="px-2 py-1 text-sm font-mono font-bold">{player.number}</td>
-                
-                {/* Player Name with Photo */}
-                <td className="px-2 py-1">
-                    <div className="flex items-center gap-2">
+        const DesktopPlayerRow = ({ player, isInactive = false }) => (
+            <tr className={`${isInactive ? 'bg-gray-50 opacity-60' : 'hover:bg-blue-50/50'} border-b border-gray-100`}>
+                <td className="px-1.5 py-1"><input type="checkbox" checked={player.active} onChange={() => togglePlayerActive(teamKey, player.id)} className="rounded" /></td>
+                <td className="px-1.5 py-1 text-sm font-mono font-bold">{player.number}</td>
+                <td className="px-1.5 py-1">
+                    <div className="flex items-center gap-1.5">
                         {player.photo ? (
-                            <img 
-                                src={player.photo} 
-                                alt={player.name}
-                                className="w-8 h-8 object-cover rounded-full border border-gray-300"
-                            />
+                            <img src={player.photo} alt={player.name} className="w-7 h-7 object-cover rounded-full border border-gray-300" />
                         ) : (
-                            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center border border-gray-300">
-                                <span className="text-xs font-bold text-gray-500">
-                                    {player.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
-                                </span>
+                            <div className="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center border border-gray-300">
+                                <span className="text-[10px] font-bold text-gray-500">{player.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}</span>
                             </div>
                         )}
                         <span className="text-sm font-medium">{formatPlayerName(player.name)}</span>
                     </div>
                 </td>
-                
-                <td className="hidden md:table-cell px-2 py-1 text-xs text-gray-600">{player.position}</td>
-                
-                {/* Only show stat buttons for ACTIVE players */}
+                <td className="px-1.5 py-1 text-xs text-gray-500">{player.position}</td>
                 {!isInactive ? (
                     <>
-                        {/* Shot Button with Dropdown Menu */}
-                        <td className="px-1 md:px-2 py-1 text-center shot-button-container relative">
-                            <button
-                                onClick={() => setShowShotMenu(showShotMenu === player.id ? null : player.id)}
-                                className="px-3 py-2 bg-yellow-500 text-white rounded font-bold text-sm hover:bg-yellow-600 shadow-sm"
-                            >
-                                Shot
-                            </button>
-                            
-                            {/* Shot Type Dropdown Menu */}
-                            {showShotMenu === player.id && (
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white border border-gray-300 rounded-lg shadow-xl z-50 min-w-[140px]">
-                                    {/* Goal - Stops clocks, opens team shot modal with player pre-selected */}
-                                    <button
-                                        onClick={() => {
-                                            // Stop both clocks
-                                            setGameState(prev => ({ ...prev, is_running: false }));
-                                            setShotClock(prev => ({ ...prev, isRunning: false }));
-                                            // Open team shot modal pre-configured with this player and goal type
-                                            setTeamShotModalTeam(teamKey);
-                                            setTeamShotInput({
-                                                playerId: player.id,
-                                                shotType: 'goal',
-                                                timestamp: formatTime(gameState.time_remaining),
-                                                assistPlayerId: null
-                                            });
-                                            setShowTeamShotModal(true);
-                                            setShowShotMenu(null);
-                                        }}
-                                        className="w-full px-4 py-3 text-left hover:bg-green-50 border-b flex items-center gap-2 rounded-t-lg"
-                                    >
-                                        <span className="text-lg">🥅</span>
-                                        <div>
-                                            <div className="font-bold text-green-700">Goal</div>
-                                            <div className="text-xs text-gray-500">Stop clocks</div>
-                                        </div>
-                                    </button>
-                                    
-                                    {/* Save - Restart shot clock, keeps main clock, counts shot and save */}
-                                    <button
-                                        onClick={() => {
-                                            // Reset shot clock only
-                                            setShotClock(prev => ({ 
-                                                ...prev, 
-                                                timeRemaining: prev.duration,
-                                                isRunning: gameState.is_running 
-                                            }));
-                                            // Record the shot as a save
-                                            addShotStat(teamKey, player.id, 'saved');
-                                            setShowShotMenu(null);
-                                        }}
-                                        className="w-full px-4 py-3 text-left hover:bg-purple-50 border-b flex items-center gap-2"
-                                    >
-                                        <span className="text-lg">🧤</span>
-                                        <div>
-                                            <div className="font-bold text-purple-700">Save</div>
-                                            <div className="text-xs text-gray-500">Reset shot clock</div>
-                                        </div>
-                                    </button>
-                                    
-                                    {/* Miss - No clock changes, no stats recorded */}
-                                    <button
-                                        onClick={() => {
-                                            // No clock changes, no shot recorded
-                                            // Just log it as an event
-                                            const playerObj = gameState[teamKey].players.find(p => p.id === player.id);
-                                            const playerName = playerObj ? formatPlayerName(playerObj.name) : 'Unknown';
-                                            addGameEvent(`${playerName} - Shot missed`, 'miss', { teamKey, playerId: player.id, shotType: 'miss', timestamp: formatTime(gameState.time_remaining) });
-                                            setShowShotMenu(null);
-                                        }}
-                                        className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center gap-2 rounded-b-lg"
-                                    >
-                                        <span className="text-lg">❌</span>
-                                        <div>
-                                            <div className="font-bold text-gray-700">Miss</div>
-                                            <div className="text-xs text-gray-500">No stat change</div>
-                                        </div>
-                                    </button>
-                                </div>
-                            )}
+                        <td className="px-1 py-1 text-center shot-button-container relative">
+                            <button onClick={() => setShowShotMenu(showShotMenu === player.id ? null : player.id)}
+                                className="px-4 py-2 bg-yellow-500 text-white rounded-md font-bold text-sm hover:bg-yellow-600 shadow-sm">Shot</button>
+                            {showShotMenu === player.id && <ShotDropdown player={player} />}
                         </td>
-                        
-                        {/* Shots Display */}
-                        <td className="px-1 md:px-2 py-1 text-center">
-                            <span className="font-bold text-base text-yellow-600">
-                                {player.stats.shots}
-                            </span>
-                        </td>
-                        
-                        {/* Goals Display */}
-                        <td className="px-1 md:px-2 py-1 text-center">
-                            <span className="font-bold text-base text-green-600">
-                                {player.stats.goals}
-                            </span>
-                        </td>
-                        
-                        {/* Assists with +/- buttons */}
-                        <td className="px-1 md:px-2 py-1 text-center">
-                            <div className="flex items-center justify-center gap-1">
-                                <button
-                                    onClick={() => {
-                                        if (player.stats.assists > 0) {
-                                            setGameState(prev => ({
-                                                ...prev,
-                                                [teamKey]: {
-                                                    ...prev[teamKey],
-                                                    players: prev[teamKey].players.map(p => 
-                                                        p.id === player.id 
-                                                            ? { ...p, stats: { ...p.stats, assists: p.stats.assists - 1 } }
-                                                            : p
-                                                    )
-                                                }
-                                            }));
-                                        }
-                                    }}
-                                    className="w-6 h-6 md:w-8 md:h-8 bg-red-100 text-red-600 rounded text-xs md:text-sm font-bold hover:bg-red-200"
-                                    disabled={player.stats.assists <= 0}
-                                >
-                                    −
-                                </button>
-                                <span className="w-6 md:w-10 text-center font-bold text-base text-blue-600">
-                                    {player.stats.assists}
-                                </span>
-                                <button
-                                    onClick={() => addStat(teamKey, player.id, 'assists')}
-                                    className="w-6 h-6 md:w-8 md:h-8 bg-blue-100 text-blue-600 rounded text-xs md:text-sm font-bold hover:opacity-80"
-                                >
-                                    +
-                                </button>
+                        <td className="px-1.5 py-1 text-center"><span className="font-bold text-sm text-yellow-600">{player.stats.shots}</span></td>
+                        <td className="px-1.5 py-1 text-center"><span className="font-bold text-sm text-green-600">{player.stats.goals}</span></td>
+                        <td className="px-1 py-1 text-center">
+                            <div className="flex items-center justify-center gap-0.5">
+                                <button onClick={() => decrementStat(player.id, 'assists')} disabled={player.stats.assists <= 0}
+                                    className="w-7 h-7 bg-red-100 text-red-600 rounded text-xs font-bold hover:bg-red-200 disabled:opacity-30">−</button>
+                                <span className="w-7 text-center font-bold text-sm text-blue-600">{player.stats.assists}</span>
+                                <button onClick={() => addStat(teamKey, player.id, 'assists')}
+                                    className="w-7 h-7 bg-blue-100 text-blue-600 rounded text-xs font-bold hover:opacity-80">+</button>
                             </div>
                         </td>
-
-                        {/* Points (calculated: 2*goals + 1*assists) */}
-                        <td className="px-1 md:px-2 py-1 text-center">
-                            <span className="font-bold text-base text-indigo-600">
-                                {((player.stats.goals || 0) * 2) + (player.stats.assists || 0)}
-                            </span>
-                        </td>
-                        
-                        {/* Face-off Wins with +/- buttons */}
-                        <td className="px-1 md:px-2 py-1 text-center">
-                            <div className="flex items-center justify-center gap-1">
-                                <button
-                                    onClick={() => {
-                                        if ((player.stats.faceoffs || 0) > 0) {
-                                            setGameState(prev => ({
-                                                ...prev,
-                                                [teamKey]: {
-                                                    ...prev[teamKey],
-                                                    players: prev[teamKey].players.map(p => 
-                                                        p.id === player.id 
-                                                            ? { ...p, stats: { ...p.stats, faceoffs: (p.stats.faceoffs || 0) - 1 } }
-                                                            : p
-                                                    )
-                                                }
-                                            }));
-                                        }
-                                    }}
-                                    className="w-6 h-6 bg-red-100 text-red-600 rounded text-xs font-bold hover:bg-red-200"
-                                    disabled={(player.stats.faceoffs || 0) <= 0}
-                                >
-                                    −
-                                </button>
-                                <span className="w-6 text-center font-bold text-base text-orange-600">
-                                    {player.stats.faceoffs || 0}
-                                </span>
-                                <button
-                                    onClick={() => addStat(teamKey, player.id, 'faceoffs')}
-                                    className="w-6 h-6 bg-orange-100 text-orange-600 rounded text-xs font-bold hover:opacity-80"
-                                >
-                                    +
-                                </button>
+                        <td className="px-1.5 py-1 text-center"><span className="font-bold text-sm text-indigo-600">{((player.stats.goals || 0) * 2) + (player.stats.assists || 0)}</span></td>
+                        <td className="px-1 py-1 text-center">
+                            <div className="flex items-center justify-center gap-0.5">
+                                <button onClick={() => decrementStat(player.id, 'faceoffs')} disabled={(player.stats.faceoffs || 0) <= 0}
+                                    className="w-7 h-7 bg-red-100 text-red-600 rounded text-xs font-bold hover:bg-red-200 disabled:opacity-30">−</button>
+                                <span className="w-7 text-center font-bold text-sm text-orange-600">{player.stats.faceoffs || 0}</span>
+                                <button onClick={() => addStat(teamKey, player.id, 'faceoffs')}
+                                    className="w-7 h-7 bg-orange-100 text-orange-600 rounded text-xs font-bold hover:opacity-80">+</button>
                             </div>
                         </td>
-                        
-                        {/* Ground Balls with +/- buttons */}
-                        <td className="px-1 md:px-2 py-1 text-center">
-                            <div className="flex items-center justify-center gap-1">
-                                <button
-                                    onClick={() => {
-                                        if ((player.stats.groundBalls || 0) > 0) {
-                                            setGameState(prev => ({
-                                                ...prev,
-                                                [teamKey]: {
-                                                    ...prev[teamKey],
-                                                    players: prev[teamKey].players.map(p => 
-                                                        p.id === player.id 
-                                                            ? { ...p, stats: { ...p.stats, groundBalls: (p.stats.groundBalls || 0) - 1 } }
-                                                            : p
-                                                    )
-                                                }
-                                            }));
-                                        }
-                                    }}
-                                    className="w-6 h-6 bg-red-100 text-red-600 rounded text-xs font-bold hover:bg-red-200"
-                                    disabled={(player.stats.groundBalls || 0) <= 0}
-                                >
-                                    −
-                                </button>
-                                <span className="w-6 text-center font-bold text-base text-teal-600">
-                                    {player.stats.groundBalls || 0}
-                                </span>
-                                <button
-                                    onClick={() => addStat(teamKey, player.id, 'groundBalls')}
-                                    className="w-6 h-6 bg-teal-100 text-teal-600 rounded text-xs font-bold hover:opacity-80"
-                                >
-                                    +
-                                </button>
+                        <td className="px-1 py-1 text-center">
+                            <div className="flex items-center justify-center gap-0.5">
+                                <button onClick={() => decrementStat(player.id, 'groundBalls')} disabled={(player.stats.groundBalls || 0) <= 0}
+                                    className="w-7 h-7 bg-red-100 text-red-600 rounded text-xs font-bold hover:bg-red-200 disabled:opacity-30">−</button>
+                                <span className="w-7 text-center font-bold text-sm text-teal-600">{player.stats.groundBalls || 0}</span>
+                                <button onClick={() => addStat(teamKey, player.id, 'groundBalls')}
+                                    className="w-7 h-7 bg-teal-100 text-teal-600 rounded text-xs font-bold hover:opacity-80">+</button>
                             </div>
                         </td>
-                        
-                        {/* Penalty Minutes Display */}
-                        <td className="px-1 md:px-2 py-1 text-center">
-                            <span className="font-bold text-base text-red-600">
-                                {player.stats.penalties}
-                            </span>
-                        </td>
+                        <td className="px-1.5 py-1 text-center"><span className="font-bold text-sm text-red-600">{player.stats.penalties}</span></td>
                     </>
                 ) : (
-                    /* Inactive players - just show stats, no buttons */
                     <>
-                        <td className="px-2 py-1 text-center text-sm text-gray-400">-</td>
-                        <td className="px-2 py-1 text-center text-sm">{player.stats.shots || 0}</td>
-                        <td className="px-2 py-1 text-center text-sm">{player.stats.goals || 0}</td>
-                        <td className="px-2 py-1 text-center text-sm">{player.stats.assists || 0}</td>
-                        <td className="px-2 py-1 text-center text-sm font-semibold text-indigo-600">{((player.stats.goals || 0) * 2) + (player.stats.assists || 0)}</td>
-                        <td className="px-2 py-1 text-center text-sm">{player.stats.faceoffs || 0}</td>
-                        <td className="px-2 py-1 text-center text-sm">{player.stats.groundBalls || 0}</td>
-                        <td className="px-2 py-1 text-center text-sm">{player.stats.penalties || 0}</td>
+                        <td className="px-1.5 py-1 text-center text-xs text-gray-400">-</td>
+                        <td className="px-1.5 py-1 text-center text-xs">{player.stats.shots || 0}</td>
+                        <td className="px-1.5 py-1 text-center text-xs">{player.stats.goals || 0}</td>
+                        <td className="px-1.5 py-1 text-center text-xs">{player.stats.assists || 0}</td>
+                        <td className="px-1.5 py-1 text-center text-xs font-semibold text-indigo-600">{((player.stats.goals || 0) * 2) + (player.stats.assists || 0)}</td>
+                        <td className="px-1.5 py-1 text-center text-xs">{player.stats.faceoffs || 0}</td>
+                        <td className="px-1.5 py-1 text-center text-xs">{player.stats.groundBalls || 0}</td>
+                        <td className="px-1.5 py-1 text-center text-xs">{player.stats.penalties || 0}</td>
                     </>
                 )}
             </tr>
         );
 
         return (
-            <div className="space-y-6">
-                {/* Goalies Section - MOVED TO TOP */}
+            <div className="space-y-4">
+                {/* Goalies Section */}
                 <div>
-                    <h4 className="text-md font-semibold text-gray-700 mb-3">🥅 Goalies</h4>
+                    <h4 className="text-sm font-semibold text-gray-700 mb-2">Goalies</h4>
                     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                         <div className="divide-y divide-gray-200">
                             {gameState.goalies[isHome ? 'home' : 'away'].map(goalie => (
-                                <div key={goalie.id} className={`flex items-center justify-between p-3 ${
+                                <div key={goalie.id} className={`flex items-center justify-between p-2.5 gap-2 ${
                                     goalie.active ? (isHome ? 'bg-blue-50' : 'bg-red-50') : 'bg-gray-50'
                                 }`}>
-                                    <div className="flex items-center gap-3">
-                                        <input
-                                            type="checkbox"
-                                            checked={goalie.active}
-                                            onChange={() => toggleGoalieActive(isHome ? 'home' : 'away', goalie.id)}
-                                            className="rounded"
-                                        />
+                                    <div className="flex items-center gap-2 min-w-0">
+                                        <input type="checkbox" checked={goalie.active} onChange={() => toggleGoalieActive(isHome ? 'home' : 'away', goalie.id)} className="rounded w-4 h-4" />
                                         <span className="font-mono font-bold text-sm">#{goalie.number}</span>
-                                        <span className="font-medium">{goalie.name}</span>
+                                        <span className="font-medium text-sm truncate">{goalie.name}</span>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <div className="text-sm">
-                                            <span className="font-semibold">Saves:</span> {goalie.stats.saves}
-                                        </div>
-                                        <div className="text-sm">
-                                            <span className="font-semibold">GA:</span> {goalie.stats.goals_against}
-                                        </div>
-                                        <div className="text-sm">
-                                            <span className="font-semibold">SF:</span> {goalie.stats.shots_faced}
-                                        </div>
+                                    <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+                                        <div className="text-xs"><span className="font-semibold">SV:</span> {goalie.stats.saves}</div>
+                                        <div className="text-xs"><span className="font-semibold">GA:</span> {goalie.stats.goals_against}</div>
+                                        <div className="text-xs hidden sm:block"><span className="font-semibold">SF:</span> {goalie.stats.shots_faced}</div>
                                         <button
                                             onClick={() => {
                                                 setGameState(prev => ({
                                                     ...prev,
                                                     goalies: {
                                                         ...prev.goalies,
-                                                        [isHome ? 'home' : 'away']: prev.goalies[isHome ? 'home' : 'away'].map(g => 
+                                                        [isHome ? 'home' : 'away']: prev.goalies[isHome ? 'home' : 'away'].map(g =>
                                                             g.id === goalie.id ? { ...g, stats: { ...g.stats, saves: g.stats.saves + 1, shots_faced: g.stats.shots_faced + 1 } } : g
                                                         )
                                                     }
                                                 }));
                                             }}
-                                            className="px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 font-medium text-sm"
+                                            className="h-8 px-3 bg-purple-500 text-white rounded-md hover:bg-purple-600 font-bold text-xs"
                                         >
                                             +Save
                                         </button>
@@ -2869,93 +2768,94 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                         </div>
                     </div>
                 </div>
-                
-                {/* Active Players */}
-                <div>
-                    <div 
-                        className="flex items-center justify-between mb-4 p-3 rounded-lg"
-                        style={{ backgroundColor: `${teamData.color || '#3b82f6'}15` }}
-                    >
-                        <h3 className="text-lg font-semibold flex items-center gap-3">
-                            {teamData.logo && (
-                                <img 
-                                    src={teamData.logo.startsWith('http') ? teamData.logo : `${backendUrl}${teamData.logo}`} 
-                                    alt={teamData.name}
-                                    className="w-8 h-8 object-cover rounded-full bg-white p-0.5 shadow"
-                                />
-                            )}
-                            <span style={{ color: teamData.color || '#1e40af' }}>
-                                {teamData.name}
-                            </span>
-                            <span className="text-gray-500 font-normal text-sm">
-                                ({activePlayers.length} active)
-                            </span>
-                        </h3>
-                        <button
-                            onClick={() => {
-                                setAddPlayerTeam(teamKey);
-                                setShowAddPlayerModal(true);
-                            }}
-                            className="px-4 py-2 text-white rounded-lg font-medium text-sm hover:opacity-90"
-                            style={{ backgroundColor: teamData.color || '#3b82f6' }}
-                        >
-                            ➕ Add Player
-                        </button>
-                    </div>
-                    
-                    <div className="overflow-x-auto -mx-2 md:mx-0">
-                        <table className="min-w-full bg-white border rounded-lg text-xs md:text-sm">
-                            <thead style={{ backgroundColor: `${teamData.color || '#3b82f6'}15` }}>
-                                <tr>
-                                    <th className="px-1 md:px-2 py-1 text-left text-xs font-medium text-gray-700">✓</th>
-                                    <SortableHeader column="number">#</SortableHeader>
-                                    <SortableHeader column="name">Player</SortableHeader>
-                                    <th className="hidden md:table-cell px-2 py-1 text-center text-xs font-medium text-gray-700">Pos</th>
-                                    <th className="px-1 md:px-2 py-1 text-center text-xs font-medium text-gray-700">Shot</th>
-                                    <SortableHeader column="shots">Shots</SortableHeader>
-                                    <SortableHeader column="goals">Goals</SortableHeader>
-                                    <SortableHeader column="assists">Assists</SortableHeader>
-                                    <SortableHeader column="points">Pts</SortableHeader>
-                                    <SortableHeader column="faceoffs">Faceoffs</SortableHeader>
-                                    <SortableHeader column="groundBalls">Ground Balls</SortableHeader>
-                                    <SortableHeader column="penalties">Pen Min</SortableHeader>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {activePlayers.map(player => <PlayerRow key={player.id} player={player} />)}
-                            </tbody>
-                        </table>
-                        {/* Buffer space at bottom to prevent dropdown cutoff */}
-                        <div className="h-32"></div>
-                    </div>
+
+                {/* Team Header */}
+                <div className="flex items-center justify-between p-2.5 rounded-lg" style={{ backgroundColor: `${teamColor}15` }}>
+                    <h3 className="text-base font-semibold flex items-center gap-2">
+                        {teamData.logo && (
+                            <img src={teamData.logo.startsWith('http') ? teamData.logo : `${backendUrl}${teamData.logo}`}
+                                alt={teamData.name} className="w-7 h-7 object-cover rounded-full bg-white p-0.5 shadow" />
+                        )}
+                        <span style={{ color: teamColor }}>{teamData.name}</span>
+                        <span className="text-gray-500 font-normal text-xs">({activePlayers.length})</span>
+                    </h3>
+                    <button onClick={() => { setAddPlayerTeam(teamKey); setShowAddPlayerModal(true); }}
+                        className="px-3 py-1.5 text-white rounded-lg font-medium text-xs hover:opacity-90"
+                        style={{ backgroundColor: teamColor }}>+ Add</button>
+                </div>
+
+                {/* ─── MOBILE: Card Layout (< md) ─── */}
+                <div className="md:hidden space-y-2" data-testid={`mobile-player-cards-${teamKey}`}>
+                    {activePlayers.map(player => <MobilePlayerCard key={player.id} player={player} />)}
+                </div>
+
+                {/* ─── DESKTOP: Table Layout (>= md) ─── */}
+                <div className="hidden md:block overflow-x-auto">
+                    <table className="min-w-full bg-white border rounded-lg text-sm">
+                        <thead style={{ backgroundColor: `${teamColor}15` }}>
+                            <tr>
+                                <th className="px-1.5 py-1.5 text-left text-xs font-medium text-gray-700 w-8">Act</th>
+                                <SortableHeader column="number">#</SortableHeader>
+                                <SortableHeader column="name">Player</SortableHeader>
+                                <th className="px-1.5 py-1.5 text-xs font-medium text-gray-700 w-12">Pos</th>
+                                <th className="px-1 py-1.5 text-center text-xs font-medium text-gray-700">Shot</th>
+                                <SortableHeader column="shots">Shots</SortableHeader>
+                                <SortableHeader column="goals">Goals</SortableHeader>
+                                <SortableHeader column="assists">Assists</SortableHeader>
+                                <SortableHeader column="points">Pts</SortableHeader>
+                                <SortableHeader column="faceoffs">Faceoffs</SortableHeader>
+                                <SortableHeader column="groundBalls">GBalls</SortableHeader>
+                                <SortableHeader column="penalties">PIM</SortableHeader>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {activePlayers.map(player => <DesktopPlayerRow key={player.id} player={player} />)}
+                        </tbody>
+                    </table>
+                    <div className="h-32"></div>
                 </div>
 
                 {/* Inactive Players */}
                 {inactivePlayers.length > 0 && (
-                    <div className="mt-6">
-                        <h4 className="text-md font-medium text-gray-600 mb-3">
-                            📋 Inactive Players / Didn't RSVP ({inactivePlayers.length})
+                    <div>
+                        <h4 className="text-xs font-medium text-gray-500 mb-2">
+                            Inactive / Didn't RSVP ({inactivePlayers.length})
                         </h4>
-                        <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
-                            <table className="w-full">
+                        {/* Mobile inactive */}
+                        <div className="md:hidden space-y-1">
+                            {inactivePlayers.map(player => (
+                                <div key={player.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100 opacity-60">
+                                    <input type="checkbox" checked={player.active} onChange={() => togglePlayerActive(teamKey, player.id)} className="rounded w-4 h-4" />
+                                    <span className="font-mono font-bold text-xs">#{player.number}</span>
+                                    <span className="text-xs truncate">{formatPlayerName(player.name)}</span>
+                                    <div className="ml-auto flex gap-2 text-[10px] text-gray-400">
+                                        <span>G:{player.stats.goals||0}</span>
+                                        <span>A:{player.stats.assists||0}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        {/* Desktop inactive */}
+                        <div className="hidden md:block bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+                            <table className="w-full text-sm">
                                 <thead className="bg-gray-100">
                                     <tr>
-                                        <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">Activate</th>
-                                        <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">#</th>
-                                        <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">Player</th>
-                                        <th className="px-3 py-2 text-left text-sm font-medium text-gray-600">Position</th>
-                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Shots</th>
-                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Goals</th>
-                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Assists</th>
-                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Pts</th>
-                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Faceoffs</th>
-                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Ground Balls</th>
-                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Pen</th>
-                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Pen Min</th>
+                                        <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-600 w-8">Act</th>
+                                        <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-600">#</th>
+                                        <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-600">Player</th>
+                                        <th className="px-2 py-1.5 text-left text-xs font-medium text-gray-600">Pos</th>
+                                        <th className="px-2 py-1.5 text-center text-xs font-medium text-gray-600">Shot</th>
+                                        <th className="px-2 py-1.5 text-center text-xs font-medium text-gray-600">Shots</th>
+                                        <th className="px-2 py-1.5 text-center text-xs font-medium text-gray-600">Goals</th>
+                                        <th className="px-2 py-1.5 text-center text-xs font-medium text-gray-600">Assists</th>
+                                        <th className="px-2 py-1.5 text-center text-xs font-medium text-gray-600">Pts</th>
+                                        <th className="px-2 py-1.5 text-center text-xs font-medium text-gray-600">FO</th>
+                                        <th className="px-2 py-1.5 text-center text-xs font-medium text-gray-600">GB</th>
+                                        <th className="px-2 py-1.5 text-center text-xs font-medium text-gray-600">PIM</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {inactivePlayers.map(player => <PlayerRow key={player.id} player={player} isInactive={true} />)}
+                                    {inactivePlayers.map(player => <DesktopPlayerRow key={player.id} player={player} isInactive={true} />)}
                                 </tbody>
                             </table>
                         </div>
