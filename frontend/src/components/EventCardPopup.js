@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import GameStatsView from './unified-events/GameStatsView';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
