@@ -178,6 +178,10 @@ const EventDetailModal = ({
                         />
                     )}
 
+                    {activeTab === 'game-stats' && (
+                        <GameStatsView eventId={event.id} teams={teams} />
+                    )}
+
                     {activeTab === 'brackets' && (
                         <TournamentBracketsTab 
                             event={event}
