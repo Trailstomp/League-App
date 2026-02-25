@@ -367,10 +367,14 @@ const EventManager = ({ teams, currentUser, onEventUpdate, onEventClick, initial
                         }}
                         onViewLive={(event) => {
                             console.log('📺 Live View clicked for event:', event.title, event.id);
-                            setSelectedEvent(event);
-                            setShowSpectatorView(true);
-                            console.log('📺 showSpectatorView set to true');
+                            if (onNavigate) {
+                                onNavigate('live-game', event.id);
+                            } else {
+                                setSelectedEvent(event);
+                                setShowSpectatorView(true);
+                            }
                         }}
+                        onNavigate={onNavigate}
                         onEventSelect={(event) => {
                             const canEdit = currentUser?.role === 'admin' || 
                                             currentUser?.roles?.includes('admin') || 
