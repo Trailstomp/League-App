@@ -89,11 +89,11 @@ const LiveGamePage = ({ eventId, onNavigate }) => {
         );
     }
 
-    const { event, stats, is_live } = gameData;
-    const homeTeam = stats.home_team;
-    const awayTeam = stats.away_team;
+    const { event, stats = {}, is_live } = gameData;
+    const homeTeam = stats.home_team || { team_name: 'Home', goals_for: 0, players: [], goalies: [] };
+    const awayTeam = stats.away_team || { team_name: 'Away', goals_for: 0, players: [], goalies: [] };
     const homeColor = homeTeam.color || '#1e40af';
-    const awayColor = awayTeam?.color || '#dc2626';
+    const awayColor = awayTeam.color || '#dc2626';
     const streamUrl = event?.streaming_url || event?.stream_url;
     const gameEvents = stats.game_events || stats.events || [];
 
