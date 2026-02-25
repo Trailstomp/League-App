@@ -212,15 +212,16 @@ function App() {
 
   // Enhanced navigation handler - supports team navigation
   const handleNavigate = (page, teamId = null) => {
-    console.log('🧭 Navigation requested to:', page, teamId ? `with teamId: ${teamId}` : '');
+    console.log('🧭 Navigation requested to:', page, teamId ? `with ID: ${teamId}` : '');
     
     if (page === 'team' && teamId) {
-      // Use team navigation handler for team pages
       handleTeamNavigate(teamId);
+    } else if (page === 'live-game' && teamId) {
+      // teamId is actually eventId for live-game navigation
+      setSelectedTeam(teamId);
+      setCurrentPage('live-game');
     } else {
-      // Regular page navigation
       setCurrentPage(page);
-      console.log('🧭 Current page set to:', page);
     }
   };
 
