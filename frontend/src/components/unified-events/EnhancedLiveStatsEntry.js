@@ -73,6 +73,25 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
     const [lastSaved, setLastSaved] = useState(null);
     const [isLive, setIsLive] = useState(event?.status === 'in_progress');
 
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+
+    const toggleLive = async () => {
+        const newLive = !isLive;
+        setIsLive(newLive);
+        try {
+            const newStatus = newLive ? 'in_progress' : 'scheduled';
+            await fetch(`${backendUrl}/api/unified-events/${event?.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+            console.log(`📡 Game ${newLive ? 'LIVE' : 'OFF AIR'} — status set to ${newStatus}`);
+        } catch (e) {
+            console.error('Failed to toggle live status:', e);
+            setIsLive(!newLive); // revert on error
+        }
+    };
+
     // Live Chat State
     const [chat, setChat] = useState({
         messages: [],
