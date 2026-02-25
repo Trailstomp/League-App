@@ -297,6 +297,80 @@ const TeamStatsDisplay = ({ teamId, teams = [] }) => {
                     </div>
                 </div>
             )}
+
+            {/* Game Log Tab */}
+            {activeTab === 'gamelog' && (
+                <TeamGameLog teamId={teamId} teams={teams} />
+            )}
+        </div>
+    );
+};
+
+const TeamGameLog = ({ teamId, teams }) => {
+    const [games, setGames] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [expandedGame, setExpandedGame] = useState(null);
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+    useEffect(() => {
+        const load = async () => {
+            try {
+                const r = await fetch(`${BACKEND_URL}/api/teams/${teamId}/game-log`);
+                if (r.ok) {
+                    const data = await r.json();
+                    setGames(data.games || []);
+                }
+            } catch (e) { console.error('Error loading game log:', e); }
+            setLoading(false);
+        };
+        load();
+    }, [teamId, BACKEND_URL]);
+
+    if (loading) return <div className="text-center py-8 text-sm text-slate-400">Loading game log...</div>;
+    if (games.length === 0) return <div className="text-center py-8 text-sm text-slate-400">No games played yet</div>;
+
+    return (
+        <div className="space-y-2" data-testid="team-game-log">
+            {games.map((game, i) => {
+                const homeTeam = game.home_team || {};
+                const awayTeam = game.away_team || {};
+                const isHome = game.is_home;
+                const ourTeam = isHome ? homeTeam : awayTeam;
+                const oppTeam = isHome ? awayTeam : homeTeam;
+                const ourScore = ourTeam.score ?? ourTeam.goals_for ?? '-';
+                const oppScore = oppTeam.score ?? oppTeam.goals_for ?? '-';
+                const won = ourScore > oppScore;
+                const lost = ourScore < oppScore;
+                const eventId = game.event_id;
+                const gameDate = game.game_date ? new Date(game.game_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+
+                return (
+                    <div key={eventId || i} className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+                        <div
+                            className="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-slate-50 transition-colors"
+                            onClick={() => setExpandedGame(expandedGame === eventId ? null : eventId)}
+                            data-testid={`game-log-item-${eventId}`}
+                        >
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                                won ? 'bg-green-100 text-green-700' : lost ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
+                            }`}>
+                                {won ? 'W' : lost ? 'L' : 'T'}
+                            </span>
+                            <span className="text-xs text-slate-500 w-16 flex-shrink-0">{gameDate}</span>
+                            <span className="text-sm font-medium text-slate-800 flex-1 truncate">
+                                {isHome ? 'vs' : '@'} {oppTeam.name || 'Opponent'}
+                            </span>
+                            <span className="text-sm font-bold text-slate-800">{ourScore} - {oppScore}</span>
+                            <span className="text-xs text-slate-400">{game.status === 'final' ? 'F' : game.status || ''}</span>
+                        </div>
+                        {expandedGame === eventId && eventId && (
+                            <div className="border-t border-slate-200 p-3 bg-slate-50">
+                                <GameStatsView eventId={eventId} teams={teams} compact />
+                            </div>
+                        )}
+                    </div>
+                );
+            })}
         </div>
     );
 };
