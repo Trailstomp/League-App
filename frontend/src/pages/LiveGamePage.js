@@ -21,13 +21,45 @@ const LiveGamePage = ({ eventId, onNavigate }) => {
     const loadLiveGame = async (silent = false) => {
         if (!silent) setLoading(true);
         try {
-            const response = await fetch(`${BACKEND_URL}/api/events/${eventId}/live-stats`);
-            const data = await response.json();
-            setGameData(data);
-            setError(null);
+            // Try live-stats endpoint first
+            let response = await fetch(`${BACKEND_URL}/api/events/${eventId}/live-stats`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.stats) { setGameData(data); setError(null); if (!silent) setLoading(false); return; }
+            }
+            
+            // Fallback: load from game-stats
+            response = await fetch(`${BACKEND_URL}/api/events/${eventId}/game-stats`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.stats) {
+                    setGameData({ event: data.stats, stats: data.stats, is_live: false });
+                    setError(null); if (!silent) setLoading(false); return;
+                }
+            }
+
+            // Fallback: load from unified-events
+            response = await fetch(`${BACKEND_URL}/api/unified-events/${eventId}`);
+            if (response.ok) {
+                const event = await response.json();
+                const scores = event.scores || {};
+                setGameData({
+                    event,
+                    stats: {
+                        home_team: scores.home_team || { team_name: 'Home', goals_for: 0, players: [], goalies: [] },
+                        away_team: scores.away_team || { team_name: 'Away', goals_for: 0, players: [], goalies: [] },
+                        game_events: scores.game_events || [],
+                        status: event.status === 'in_progress' ? 'in_progress' : (event.status === 'completed' ? 'final' : event.status)
+                    },
+                    is_live: event.status === 'in_progress'
+                });
+                setError(null);
+            } else {
+                setError('Game not found');
+            }
         } catch (err) {
             console.error('Error loading live game:', err);
-            setError('Unable to load game data');
+            if (!silent) setError('Unable to load game data');
         } finally {
             if (!silent) setLoading(false);
         }
