@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { fixGoogleDriveUrl } from '../utils/imageUtils';
 
-const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, tickerConfig = {}, onEventClick, onTeamClick, compact = false }) => {
+const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, tickerConfig = {}, onEventClick, onTeamClick, onNavigate, compact = false }) => {
     const tickerRef = useRef(null);
     const [isHovering, setIsHovering] = useState(false);
     const animationRef = useRef(null);
