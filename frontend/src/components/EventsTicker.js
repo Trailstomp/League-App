@@ -441,11 +441,16 @@ const EventsTicker = ({ events = [], teams = [], websiteStyle = {}, tickerConfig
                     </div>
                     
                     {/* Venue/Time footer */}
-                    <div className="px-3 pb-2 flex items-center text-slate-400 text-xs">
+                    <div className="px-3 pb-2 flex items-center justify-between text-slate-400 text-xs">
                         <span className="truncate">
                             {event.time && `${event.time} • `}
                             {getVenueName(event)}
                         </span>
+                        {statusStyle.pulse && (
+                            <span className="px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded animate-pulse ml-2 flex-shrink-0">
+                                WATCH
+                            </span>
+                        )}
                     </div>
                 </div>
             );
