@@ -343,6 +343,33 @@ function App() {
     }
   };
 
+  // Poll for live event status changes every 15 seconds
+  useEffect(() => {
+    const pollLiveStatus = async () => {
+      try {
+        const r = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/unified-events`);
+        if (r.ok) {
+          const data = await r.json();
+          const freshEvents = data.events || [];
+          setEvents(prev => {
+            // Only update if any status changed
+            const changed = freshEvents.some(fe => {
+              const old = prev.find(p => p.id === fe.id);
+              return old && old.status !== fe.status;
+            });
+            if (changed) {
+              console.log('📡 Live status change detected, updating events');
+              return freshEvents;
+            }
+            return prev;
+          });
+        }
+      } catch (e) { /* silent */ }
+    };
+    const interval = setInterval(pollLiveStatus, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleLogout = () => {
     console.log('🔐 User logged out');
     setCurrentUser(null);
