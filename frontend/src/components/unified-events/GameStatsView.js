@@ -45,9 +45,53 @@ const GameStatsView = ({ eventId, teams = [], compact = false }) => {
     const calcPoints = (p) => ((p.goals || p.stats?.goals || 0) * 2) + (p.assists || p.stats?.assists || 0);
     const getStat = (p, key) => p[key] ?? p.stats?.[key] ?? 0;
 
-    const PlayerStatsTable = ({ players, teamName, teamColor }) => {
+    // Calculate "on field when scored" / "on field when scored on" from game events
+    const calcOnFieldStats = (players, teamKey, isHome) => {
+        const onFieldMap = {};
+        players.forEach(p => {
+            const pid = p.player_id || p.id;
+            onFieldMap[pid] = { forGoals: 0, againstGoals: 0 };
+        });
+
+        const scoringKey = isHome ? 'home_team' : 'away_team';
+        const defendingKey = isHome ? 'away_team' : 'home_team';
+
+        gameEvents.forEach(evt => {
+            if (evt.type !== 'goal' || !evt.metadata?.playersOnField) return;
+            const pof = evt.metadata.playersOnField;
+            // If this team was the scoring team
+            if (pof.scoringTeamKey === scoringKey && pof.scoring) {
+                pof.scoring.forEach(pid => {
+                    if (onFieldMap[pid]) onFieldMap[pid].forGoals += 1;
+                });
+            }
+            // If this team was the defending team (scored on)
+            if (pof.defendingTeamKey === scoringKey && pof.defending) {
+                pof.defending.forEach(pid => {
+                    if (onFieldMap[pid]) onFieldMap[pid].againstGoals += 1;
+                });
+            }
+            // Also check the reverse: if this team is the defending side
+            if (pof.scoringTeamKey === defendingKey && pof.defending) {
+                pof.defending.forEach(pid => {
+                    if (onFieldMap[pid]) onFieldMap[pid].againstGoals += 1;
+                });
+            }
+            if (pof.defendingTeamKey === defendingKey && pof.scoring) {
+                pof.scoring.forEach(pid => {
+                    if (onFieldMap[pid]) onFieldMap[pid].forGoals += 1;
+                });
+            }
+        });
+        return onFieldMap;
+    };
+
+    const hasOnFieldData = gameEvents.some(e => e.type === 'goal' && e.metadata?.playersOnField);
+
+    const PlayerStatsTable = ({ players, teamName, teamColor, isHome }) => {
         if (!players.length) return <div className="text-xs text-slate-400 py-2">No player stats</div>;
         const sorted = [...players].sort((a, b) => calcPoints(b) - calcPoints(a));
+        const onFieldMap = hasOnFieldData ? calcOnFieldStats(players, teamName, isHome) : null;
         return (
             <div className="overflow-x-auto">
                 <table className="w-full text-xs" data-testid={`stats-table-${teamName}`}>
@@ -59,25 +103,41 @@ const GameStatsView = ({ eventId, teams = [], compact = false }) => {
                             <th className="text-center px-1.5 py-1.5 font-semibold text-slate-700">Assists</th>
                             <th className="text-center px-1.5 py-1.5 font-semibold text-indigo-600">Pts</th>
                             <th className="text-center px-1.5 py-1.5 font-semibold text-slate-700">Shots</th>
+                            {hasOnFieldData && (
+                                <>
+                                    <th className="text-center px-1.5 py-1.5 font-semibold text-green-700" title="On field when team scored">OF+</th>
+                                    <th className="text-center px-1.5 py-1.5 font-semibold text-red-700" title="On field when scored on">OF-</th>
+                                </>
+                            )}
                             <th className="text-center px-1.5 py-1.5 font-semibold text-slate-700 hidden sm:table-cell">Faceoffs</th>
                             <th className="text-center px-1.5 py-1.5 font-semibold text-slate-700 hidden sm:table-cell">Ground Balls</th>
                             <th className="text-center px-1.5 py-1.5 font-semibold text-slate-700">Pen Min</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {sorted.map((p, i) => (
-                            <tr key={p.player_id || p.id || i} className="hover:bg-slate-50">
-                                <td className="px-2 py-1.5 text-slate-500">{p.jersey_number || p.number || '-'}</td>
-                                <td className="px-2 py-1.5 font-medium text-slate-800">{p.player_name || p.name || 'Unknown'}</td>
-                                <td className="text-center px-1.5 py-1.5 font-semibold text-green-700">{getStat(p, 'goals')}</td>
-                                <td className="text-center px-1.5 py-1.5 text-blue-600">{getStat(p, 'assists')}</td>
-                                <td className="text-center px-1.5 py-1.5 font-bold text-indigo-600">{calcPoints(p)}</td>
-                                <td className="text-center px-1.5 py-1.5 text-slate-600">{getStat(p, 'shots')}</td>
-                                <td className="text-center px-1.5 py-1.5 text-slate-600 hidden sm:table-cell">{getStat(p, 'faceoffs')}</td>
-                                <td className="text-center px-1.5 py-1.5 text-slate-600 hidden sm:table-cell">{getStat(p, 'groundBalls') || getStat(p, 'ground_balls')}</td>
-                                <td className="text-center px-1.5 py-1.5 text-red-600">{getStat(p, 'penalties')}</td>
-                            </tr>
-                        ))}
+                        {sorted.map((p, i) => {
+                            const pid = p.player_id || p.id;
+                            const ofStats = onFieldMap?.[pid];
+                            return (
+                                <tr key={pid || i} className="hover:bg-slate-50">
+                                    <td className="px-2 py-1.5 text-slate-500">{p.jersey_number || p.number || '-'}</td>
+                                    <td className="px-2 py-1.5 font-medium text-slate-800">{p.player_name || p.name || 'Unknown'}</td>
+                                    <td className="text-center px-1.5 py-1.5 font-semibold text-green-700">{getStat(p, 'goals')}</td>
+                                    <td className="text-center px-1.5 py-1.5 text-blue-600">{getStat(p, 'assists')}</td>
+                                    <td className="text-center px-1.5 py-1.5 font-bold text-indigo-600">{calcPoints(p)}</td>
+                                    <td className="text-center px-1.5 py-1.5 text-slate-600">{getStat(p, 'shots')}</td>
+                                    {hasOnFieldData && (
+                                        <>
+                                            <td className="text-center px-1.5 py-1.5 font-semibold text-green-700">{ofStats?.forGoals || 0}</td>
+                                            <td className="text-center px-1.5 py-1.5 font-semibold text-red-700">{ofStats?.againstGoals || 0}</td>
+                                        </>
+                                    )}
+                                    <td className="text-center px-1.5 py-1.5 text-slate-600 hidden sm:table-cell">{getStat(p, 'faceoffs')}</td>
+                                    <td className="text-center px-1.5 py-1.5 text-slate-600 hidden sm:table-cell">{getStat(p, 'groundBalls') || getStat(p, 'ground_balls')}</td>
+                                    <td className="text-center px-1.5 py-1.5 text-red-600">{getStat(p, 'penalties')}</td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
