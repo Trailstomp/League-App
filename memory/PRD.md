@@ -149,7 +149,7 @@ Comprehensive league management portal for multiple sports with team management,
 - P1: Office 365 integration for File Manager
 - P2: SMTP credential configuration
 - P2: Refactor server.py into route files
-- P2: Refactor EnhancedLiveStatsEntry.js (3800+ lines)
+- P2: Refactor EnhancedLiveStatsEntry.js (3800+ lines) into smaller components
 - P2: Cleanup dead code in TeamRosterTab.js
 
 ## Key Files
