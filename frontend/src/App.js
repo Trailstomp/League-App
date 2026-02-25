@@ -954,6 +954,7 @@ function App() {
           onClose={() => setSelectedEventForPopup(null)}
           teams={teams}
           websiteStyle={websiteStyle}
+          onNavigate={handleNavigate}
         />
       )}
 
