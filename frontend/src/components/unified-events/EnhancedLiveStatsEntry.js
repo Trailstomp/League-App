@@ -2372,13 +2372,13 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                 <div className="flex items-center justify-center gap-2 md:gap-4 max-w-xl mx-auto">
                     {/* Home Team Actions */}
                     <div className="flex items-center gap-1 md:gap-1.5" data-testid="home-score-display">
-                        <button onClick={() => openTeamShotModal('home_team')} className="h-10 w-10 md:h-14 md:w-14 rounded-lg font-bold flex flex-col items-center justify-center shadow-sm text-white hover:brightness-110 transition-all" style={{ backgroundColor: homeColor }} title="Record Shot" data-testid="home-shot-btn">
-                            <span className="text-sm md:text-xl">{sportConfig.icon}</span>
-                            <span className="text-[8px] md:text-[10px] font-bold leading-none">SHOT</span>
+                        <button onClick={() => openTeamShotModal('home_team')} className="h-12 w-12 md:h-14 md:w-14 rounded-lg font-bold flex flex-col items-center justify-center shadow-sm text-white hover:brightness-110 transition-all" style={{ backgroundColor: homeColor }} title="Record Shot" data-testid="home-shot-btn">
+                            <span className="text-base md:text-xl">{sportConfig.icon}</span>
+                            <span className="text-[9px] md:text-[10px] font-bold leading-none">SHOT</span>
                         </button>
                         <div className="flex flex-col gap-0.5">
-                            <button onClick={() => openTeamPenaltyModal('home_team')} className="h-5 md:h-6 px-2 md:px-3 bg-red-600 hover:bg-red-700 text-white rounded text-[9px] md:text-[11px] font-bold flex items-center justify-center shadow-sm" data-testid="home-penalty-btn">Pen</button>
-                            <button onClick={() => callTimeout('home')} className="h-5 md:h-6 px-2 md:px-3 bg-amber-600 hover:bg-amber-700 text-white rounded text-[9px] md:text-[11px] font-bold flex items-center justify-center shadow-sm" data-testid="home-timeout-btn">TO</button>
+                            <button onClick={() => openTeamPenaltyModal('home_team')} className="h-6 md:h-6 px-2.5 md:px-3 bg-red-600 hover:bg-red-700 text-white rounded text-[10px] md:text-[11px] font-bold flex items-center justify-center shadow-sm" data-testid="home-penalty-btn">Pen</button>
+                            <button onClick={() => callTimeout('home')} className="h-6 md:h-6 px-2.5 md:px-3 bg-amber-600 hover:bg-amber-700 text-white rounded text-[10px] md:text-[11px] font-bold flex items-center justify-center shadow-sm" data-testid="home-timeout-btn">TO</button>
                         </div>
                     </div>
 
