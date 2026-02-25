@@ -653,6 +653,42 @@ const EventsList = ({
 
             {/* Events Display Area */}
             <div className="flex-1 overflow-y-auto p-2 sm:p-6">
+                {/* Live Now Banner */}
+                {(() => {
+                    const liveEvents = events.filter(e => e.status === 'in_progress' && (e.type === 'game' || e.type === 'regular_game' || e.type === 'tournament'));
+                    if (liveEvents.length === 0) return null;
+                    return (
+                        <div className="mb-3 bg-gradient-to-r from-red-600 to-red-700 rounded-lg p-3 text-white shadow-lg" data-testid="live-now-banner">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                                <span className="text-xs font-bold uppercase tracking-wider">Live Now</span>
+                            </div>
+                            <div className="space-y-2">
+                                {liveEvents.map(event => {
+                                    const homeTeam = teams.find(t => t.id === event.homeTeam);
+                                    const awayTeam = teams.find(t => t.id === event.awayTeam);
+                                    return (
+                                        <div
+                                            key={event.id}
+                                            className="flex items-center justify-between bg-white/10 rounded-md px-3 py-2 cursor-pointer hover:bg-white/20 transition-colors"
+                                            onClick={() => onViewLive && onViewLive(event)}
+                                            data-testid={`live-banner-event-${event.id}`}
+                                        >
+                                            <div className="flex items-center gap-2 text-sm font-medium">
+                                                <span>{homeTeam?.name || 'Home'}</span>
+                                                <span className="text-white/60">vs</span>
+                                                <span>{awayTeam?.name || 'Away'}</span>
+                                            </div>
+                                            <button className="px-2.5 py-1 bg-white text-red-600 text-xs font-bold rounded-md hover:bg-red-50">
+                                                Watch
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    );
+                })()}
                 {/* Calendar View */}
                 {viewMode === 'calendar' && (
                     <AdvancedEventCalendar 
