@@ -28,9 +28,11 @@ const EventDetailModal = ({
     // Set default tab based on event type when modal opens
     React.useEffect(() => {
         if (isOpen && event) {
-            setActiveTab(event.type === 'tournament' ? 'brackets' : 'details');
+            if (event.type === 'tournament') setActiveTab('brackets');
+            else if ((event.type === 'game' || event.type === 'regular_game') && (event.status === 'completed' || event.status === 'final')) setActiveTab('game-stats');
+            else setActiveTab('details');
         }
-    }, [isOpen, event?.type, event?.id]);
+    }, [isOpen, event?.type, event?.id, event?.status]);
 
     if (!isOpen || !event) return null;
 
