@@ -57,10 +57,11 @@ const CompactEventRow = ({
     const isCoach = currentUser?.role === 'coach' || currentUser?.roles?.includes('coach');
     const canManage = isAdmin || isCoach;
     const isGame = event.type === 'regular_game' || event.type === 'game' || event.type === 'tournament';
+    const isLive = event.status === 'in_progress';
 
     return (
         <div 
-            className={`flex items-center gap-3 p-3 hover:bg-slate-50 cursor-pointer transition-colors ${isPast ? 'opacity-60' : ''}`}
+            className={`flex items-center gap-3 p-3 hover:bg-slate-50 cursor-pointer transition-colors ${isPast ? 'opacity-60' : ''} ${isLive ? 'bg-green-50/50 border-l-2 border-l-green-500' : ''}`}
             onClick={() => onEventSelect && onEventSelect(event)}
             data-testid={`compact-event-${event.id}`}
         >
@@ -107,9 +108,13 @@ const CompactEventRow = ({
             {/* Event Info */}
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(event.status)}`}>
-                        {event.status?.replace('_', ' ') || 'scheduled'}
-                    </span>
+                    {isLive ? (
+                        <span className="px-2 py-0.5 rounded text-xs font-bold bg-red-600 text-white animate-pulse">LIVE</span>
+                    ) : (
+                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${getStatusColor(event.status)}`}>
+                            {event.status?.replace('_', ' ') || 'scheduled'}
+                        </span>
+                    )}
                     <h4 className="font-medium text-slate-800 truncate">{event.title}</h4>
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
@@ -119,46 +124,72 @@ const CompactEventRow = ({
                         </span>
                     )}
                     {event.location && (
-                        <span className="text-xs text-slate-500 truncate">📍 {event.location}</span>
+                        <span className="text-xs text-slate-500 truncate">
+                            {event.location}
+                        </span>
                     )}
                 </div>
             </div>
 
-            {/* Quick Actions - Only for admins/coaches */}
-            {canManage && (
-                <div className="flex items-center gap-1 flex-shrink-0">
-                    {/* Live View Button */}
-                    {isGame && (event.status === 'in_progress' || event.status === 'scheduled') && onViewLive && (
-                        <button
-                            onClick={(e) => { e.stopPropagation(); onViewLive(event); }}
-                            className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
-                            title="Live View"
-                        >
-                            📺
-                        </button>
-                    )}
-                    {/* Enter Scoring */}
-                    {isGame && onEnterScoring && (
-                        <button
-                            onClick={(e) => { e.stopPropagation(); onEnterScoring(event); }}
-                            className="px-2 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700"
-                            title="Enter Scores"
-                        >
-                            📊
-                        </button>
-                    )}
-                    {/* Tournament Bracket */}
-                    {event.type === 'tournament' && onManageTournament && (
-                        <button
-                            onClick={(e) => { e.stopPropagation(); onManageTournament(event); }}
-                            className="px-2 py-1 text-xs bg-orange-600 text-white rounded hover:bg-orange-700"
-                            title="Manage Bracket"
-                        >
-                            🏅
-                        </button>
-                    )}
-                </div>
-            )}
+            {/* Actions */}
+            <div className="flex items-center gap-1 flex-shrink-0">
+                {/* Watch Live - visible to EVERYONE for live games */}
+                {isGame && isLive && onViewLive && (
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onViewLive(event); }}
+                        className="px-2.5 py-1 text-xs bg-red-600 text-white rounded-md hover:bg-red-700 font-semibold flex items-center gap-1 animate-pulse"
+                        title="Watch Live"
+                        data-testid={`watch-live-btn-${event.id}`}
+                    >
+                        <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                        Watch
+                    </button>
+                )}
+                {/* View Stats - for completed games (everyone) */}
+                {isGame && event.status === 'completed' && onViewLive && (
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onViewLive(event); }}
+                        className="px-2 py-1 text-xs bg-slate-600 text-white rounded-md hover:bg-slate-700"
+                        title="View Game Stats"
+                        data-testid={`view-stats-btn-${event.id}`}
+                    >
+                        Stats
+                    </button>
+                )}
+                {/* Admin-only actions */}
+                {canManage && (
+                    <>
+                        {isGame && !isLive && event.status !== 'completed' && onViewLive && (
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onViewLive(event); }}
+                                className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
+                                title="Live View"
+                                data-testid={`live-view-btn-${event.id}`}
+                            >
+                                Live
+                            </button>
+                        )}
+                        {isGame && onEnterScoring && (
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onEnterScoring(event); }}
+                                className="px-2 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700"
+                                title="Enter Scores"
+                            >
+                                Score
+                            </button>
+                        )}
+                        {event.type === 'tournament' && onManageTournament && (
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onManageTournament(event); }}
+                                className="px-2 py-1 text-xs bg-orange-600 text-white rounded hover:bg-orange-700"
+                                title="Manage Bracket"
+                            >
+                                Bracket
+                            </button>
+                        )}
+                    </>
+                )}
+            </div>
         </div>
     );
 };
