@@ -76,11 +76,15 @@ const EventDetailModal = ({
         window.open(`https://maps.google.com/maps?q=${encodeURIComponent(location)}&t=k`, '_blank');
     };
 
+    const isGame = event.type === 'game' || event.type === 'regular_game' || event.type === 'tournament';
+    const isCompleted = event.status === 'completed' || event.status === 'final';
+
     const tabs = [
-        { id: 'details', label: '📋 Details' },
-        { id: 'rsvp', label: '👥 RSVP' },
-        { id: 'scores', label: '🏆 Scores' },
-        { id: 'brackets', label: '🏁 Brackets' }
+        { id: 'details', label: 'Details' },
+        { id: 'rsvp', label: 'RSVP' },
+        ...(isGame && isCompleted ? [{ id: 'game-stats', label: 'Game Stats' }] : []),
+        { id: 'scores', label: 'Scores' },
+        { id: 'brackets', label: 'Brackets' }
     ];
 
     const userCanEdit = canEdit();
