@@ -2901,10 +2901,11 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                                         <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Shots</th>
                                         <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Goals</th>
                                         <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Assists</th>
-                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">FO</th>
-                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">GB</th>
+                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Pts</th>
+                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Faceoffs</th>
+                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Ground Balls</th>
                                         <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Pen</th>
-                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">PIM</th>
+                                        <th className="px-3 py-2 text-center text-sm font-medium text-gray-600">Pen Min</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
