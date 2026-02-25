@@ -2866,12 +2866,13 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                                     <SortableHeader column="name">Player</SortableHeader>
                                     <th className="hidden md:table-cell px-2 py-1 text-center text-xs font-medium text-gray-700">Pos</th>
                                     <th className="px-1 md:px-2 py-1 text-center text-xs font-medium text-gray-700">Shot</th>
-                                    <SortableHeader column="shots">S</SortableHeader>
-                                    <SortableHeader column="goals">G</SortableHeader>
-                                    <SortableHeader column="assists">A</SortableHeader>
-                                    <SortableHeader column="faceoffs">FO</SortableHeader>
-                                    <SortableHeader column="groundBalls">GB</SortableHeader>
-                                    <SortableHeader column="penalties">PIM</SortableHeader>
+                                    <SortableHeader column="shots">Shots</SortableHeader>
+                                    <SortableHeader column="goals">Goals</SortableHeader>
+                                    <SortableHeader column="assists">Assists</SortableHeader>
+                                    <SortableHeader column="points">Pts</SortableHeader>
+                                    <SortableHeader column="faceoffs">Faceoffs</SortableHeader>
+                                    <SortableHeader column="groundBalls">Ground Balls</SortableHeader>
+                                    <SortableHeader column="penalties">Pen Min</SortableHeader>
                                 </tr>
                             </thead>
                             <tbody>
