@@ -11,6 +11,7 @@ const CompactEventRow = ({
     onEnterScoring, 
     onViewLive, 
     onManageTournament,
+    onNavigate,
     getEventTypeIcon,
     getStatusColor 
 }) => {
