@@ -267,6 +267,60 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
 
     return (
         <div className="space-y-6 p-4" style={{ backgroundColor: 'transparent', minHeight: '100%' }}>
+            {/* Live Now Banner - visible to everyone */}
+            {(() => {
+                const liveGames = events.filter(e => e.status === 'in_progress' && (e.type === 'game' || e.type === 'regular_game' || e.type === 'tournament'));
+                if (liveGames.length === 0) return null;
+                return (
+                    <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-xl p-3 sm:p-4 text-white shadow-lg" data-testid="home-live-banner">
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                            <span className="text-xs font-bold uppercase tracking-wider">Live Now</span>
+                        </div>
+                        <div className="space-y-2">
+                            {liveGames.map(game => {
+                                const homeTeam = teams.find(t => t.id === game.homeTeam);
+                                const awayTeam = teams.find(t => t.id === game.awayTeam);
+                                const scores = game.scores?.home_team?.score !== undefined
+                                    ? { home: game.scores.home_team.score, away: game.scores.away_team?.score }
+                                    : { home: game.homeScore ?? '-', away: game.awayScore ?? '-' };
+                                return (
+                                    <div
+                                        key={game.id}
+                                        className="flex items-center justify-between bg-white/10 rounded-lg px-3 py-2 cursor-pointer hover:bg-white/20 transition-colors"
+                                        onClick={() => onNavigate && onNavigate('live-game', game.id)}
+                                        data-testid={`home-live-event-${game.id}`}
+                                    >
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <div className="flex items-center gap-1.5">
+                                                {homeTeam?.style?.logoUrl ? (
+                                                    <img src={homeTeam.style.logoUrl} alt="" className="w-6 h-6 rounded-full object-contain bg-white" />
+                                                ) : (
+                                                    <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-bold">{homeTeam?.name?.charAt(0) || '?'}</div>
+                                                )}
+                                                <span className="text-sm font-semibold truncate">{homeTeam?.name || 'Home'}</span>
+                                            </div>
+                                            <span className="text-lg font-bold">{scores.home} - {scores.away}</span>
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="text-sm font-semibold truncate">{awayTeam?.name || 'Away'}</span>
+                                                {awayTeam?.style?.logoUrl ? (
+                                                    <img src={awayTeam.style.logoUrl} alt="" className="w-6 h-6 rounded-full object-contain bg-white" />
+                                                ) : (
+                                                    <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-bold">{awayTeam?.name?.charAt(0) || '?'}</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <button className="px-3 py-1 bg-white text-red-600 text-xs font-bold rounded-md hover:bg-red-50 flex-shrink-0 ml-2">
+                                            Watch
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                );
+            })()}
+
             {/* Quick Stats - always single row, compact on mobile */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                 <div className="bg-white/90 rounded-lg shadow-sm border backdrop-blur-sm" style={{ padding: '8px 10px' }}>
