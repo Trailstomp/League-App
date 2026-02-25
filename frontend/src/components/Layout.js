@@ -347,6 +347,7 @@ const Layout = ({
                             tickerConfig={tickerConfig}
                             onEventClick={onEventClick}
                             onTeamClick={onTeamClick}
+                            onNavigate={onNavigate}
                         />
                     </div>
                 </div>
