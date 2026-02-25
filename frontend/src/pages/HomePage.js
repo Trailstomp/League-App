@@ -279,8 +279,10 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                         </div>
                         <div className="space-y-2">
                             {liveGames.map(game => {
-                                const homeTeam = teams.find(t => t.id === game.homeTeam);
-                                const awayTeam = teams.find(t => t.id === game.awayTeam);
+                                const teamIds = [game.homeTeam, game.awayTeam].filter(Boolean);
+                                const fallbackIds = teamIds.length ? teamIds : (game.teams || []).slice(0, 2);
+                                const homeTeam = teams.find(t => t.id === fallbackIds[0]);
+                                const awayTeam = teams.find(t => t.id === fallbackIds[1]);
                                 const scores = game.scores?.home_team?.score !== undefined
                                     ? { home: game.scores.home_team.score, away: game.scores.away_team?.score }
                                     : { home: game.homeScore ?? '-', away: game.awayScore ?? '-' };
