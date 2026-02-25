@@ -110,6 +110,20 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] EventsList.js filters: compact dropdowns without labels, all controls fit in one row on mobile
 - [x] Testing: 100% pass rate (10/10 responsive features verified, iteration_53)
 
+### Live Events Visibility & Game Stats (Feb 25, 2026)
+- [x] "Watch Live" button visible to ALL users (including non-logged-in) on live event rows
+- [x] "LIVE NOW" red gradient banner at top of Events page with team names and Watch button
+- [x] "LIVE NOW" red gradient banner on Home page with team logos, score, and Watch button
+- [x] Ticker: "WATCH" badge on live event cards in footer
+- [x] "Stats" button on past completed games for all users
+- [x] GameStatsView component: box score with Points column (2*goals + assists), game log tab
+- [x] EventCardPopup: shows GameStatsView for completed/live games
+- [x] Full column headers in live scoring: Shots, Goals, Assists, Pts, Faceoffs, Ground Balls, Pen Min
+- [x] Points column in live scoring: calculated as 2*goals + 1*assists (indigo color)
+- [x] Team Stats page: new "Game Log" tab with W/L indicator, expandable game stats
+- [x] Backend: GET /api/teams/{team_id}/game-log endpoint
+- [x] Testing: 100% backend (13/13), 90% frontend (iteration_54)
+
 ## Pending Issues
 - P1: Gallery data loss fix — user confirmed FIXED
 - Google Drive needs OAuth refresh token
