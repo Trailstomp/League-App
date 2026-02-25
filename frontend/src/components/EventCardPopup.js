@@ -268,6 +268,14 @@ const EventCardPopup = ({ event, onClose, teams = [], websiteStyle = {} }) => {
                         </div>
                     )}
 
+                    {/* Game Stats for completed games */}
+                    {(event.type === 'regular_game' || event.type === 'game' || event.type === 'tournament') && 
+                     (event.status === 'completed' || event.status === 'in_progress') && (
+                        <div className="px-4 pb-4" data-testid="popup-game-stats">
+                            <GameStatsView eventId={event.id} teams={teams} compact={false} />
+                        </div>
+                    )}
+
                     {/* Map */}
                     {event.location && showMap && (
                         <div className="px-6 pb-4">
