@@ -70,7 +70,7 @@ const generateICS = (event, teams) => {
     ].join('\r\n');
 };
 
-const EventCardPopup = ({ event, onClose, teams = [], websiteStyle = {} }) => {
+const EventCardPopup = ({ event, onClose, teams = [], websiteStyle = {}, onNavigate }) => {
     const [showMap, setShowMap] = useState(true);
     const cardRef = useRef(null);
 
