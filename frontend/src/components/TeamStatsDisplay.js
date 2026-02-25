@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import GameStatsView from './unified-events/GameStatsView';
 
-const TeamStatsDisplay = ({ teamId }) => {
+const TeamStatsDisplay = ({ teamId, teams = [] }) => {
     const [stats, setStats] = useState(null);
     const [playerStats, setPlayerStats] = useState(null);
     const [loading, setLoading] = useState(true);
