@@ -206,6 +206,7 @@ const EventsList = ({
     onManageTournament,
     onEnterScoring,
     onViewLive,
+    onNavigate,
     onRefresh 
 }) => {
     const [filter, setFilter] = useState('active'); // active (excludes canceled/archived), all, scheduled, in_progress, completed, canceled, archived
