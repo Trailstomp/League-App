@@ -307,6 +307,29 @@ const EventCardPopup = ({ event, onClose, teams = [], websiteStyle = {}, onNavig
 
                 {/* Action Buttons */}
                 <div className="px-6 pb-5 space-y-2">
+                    {/* Watch Live / View Stats Button */}
+                    {(event.type === 'regular_game' || event.type === 'game' || event.type === 'tournament') && 
+                     (event.status === 'in_progress' || event.status === 'completed') && onNavigate && (
+                        <button
+                            onClick={() => { onNavigate('live-game', event.id); onClose(); }}
+                            data-testid="popup-watch-live-btn"
+                            className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-bold transition-all ${
+                                event.status === 'in_progress'
+                                    ? 'bg-red-600 text-white hover:bg-red-700 animate-pulse'
+                                    : 'bg-slate-700 text-white hover:bg-slate-800'
+                            }`}
+                        >
+                            {event.status === 'in_progress' ? (
+                                <>
+                                    <span className="w-2 h-2 rounded-full bg-white" />
+                                    Watch Live
+                                </>
+                            ) : (
+                                'View Game Stats'
+                            )}
+                        </button>
+                    )}
+
                     {/* Calendar buttons */}
                     <div className="flex gap-2">
                         <button
