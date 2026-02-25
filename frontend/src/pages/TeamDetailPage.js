@@ -285,7 +285,7 @@ const TeamDetailPage = ({ team, teams, events, players, currentUser, onNavigate,
                 {activeTab === 'home' && <TeamHomeTab team={team} teams={teams} events={events} onNavigate={onNavigate} />}
                 {activeTab === 'schedule' && <TeamScheduleTab team={team} events={events} teams={teams} currentUser={currentUser} onEventsUpdate={onEventsUpdate} />}
                 {activeTab === 'roster' && <TeamRosterTab team={team} players={players} currentUser={currentUser} sportType={sportType} />}
-                {activeTab === 'stats' && <TeamStatsTab team={team} events={events} />}
+                {activeTab === 'stats' && <TeamStatsTab team={team} events={events} teams={teams} />}
                 {activeTab === 'chat' && <TeamChatTab team={team} currentUser={currentUser} />}
                 {activeTab === 'media' && <TeamMediaTab team={team} currentUser={currentUser} canEdit={isTeamCoachOrAdmin} />}
                 {activeTab === 'sponsors' && (
