@@ -130,6 +130,16 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Separated by vertical divider from other toggles (Stats Only, Clk, Sht)
 - [x] PATCH /api/unified-events/{id} updates status — triggers live banners on Home, Events, Ticker
 
+### Live Scoring Screen Redesign & On-Field Stats (Feb 25, 2026)
+- [x] Mobile card-based layout (<768px) replacing 12-column table for touch-friendly scoring
+- [x] Each player card: checkbox + #/name, large SHOT button, read-only stats (S/G/Pts/PIM), adjustable +/- (Ast/FO/GB)
+- [x] Desktop table layout (>=768px) with tighter spacing and larger buttons (7x7 +/- controls)
+- [x] Header SHOT buttons enlarged: h-12 w-12 on mobile (was h-10), h-14 w-14 on desktop
+- [x] Pen/TO buttons enlarged: h-6 (was h-5) on mobile
+- [x] GameStatsView: "OF+" (on field when scored) and "OF-" (on field when scored on) columns in box score
+- [x] OF+/OF- columns conditional — only appear when goal events have playersOnField metadata
+- [x] Testing: 100% pass rate (iteration_55)
+
 ## Pending Issues
 - P1: Gallery data loss fix — user confirmed FIXED
 - Google Drive needs OAuth refresh token
