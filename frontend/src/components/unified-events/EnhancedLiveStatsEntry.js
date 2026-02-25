@@ -1587,6 +1587,10 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                     aValue = a.position.toLowerCase();
                     bValue = b.position.toLowerCase();
                     break;
+                case 'points':
+                    aValue = ((a.stats.goals || 0) * 2) + (a.stats.assists || 0);
+                    bValue = ((b.stats.goals || 0) * 2) + (b.stats.assists || 0);
+                    break;
                 case 'goals':
                 case 'assists':
                 case 'shots':
