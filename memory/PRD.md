@@ -124,6 +124,12 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] Backend: GET /api/teams/{team_id}/game-log endpoint
 - [x] Testing: 100% backend (13/13), 90% frontend (iteration_54)
 
+### Go Live Toggle on Live Scoring (Feb 25, 2026)
+- [x] "GO LIVE" toggle button in live scoring header — toggles event status between `scheduled` and `in_progress`
+- [x] Red pulsing "● LIVE" state when active, gray "GO LIVE" when inactive
+- [x] Separated by vertical divider from other toggles (Stats Only, Clk, Sht)
+- [x] PATCH /api/unified-events/{id} updates status — triggers live banners on Home, Events, Ticker
+
 ## Pending Issues
 - P1: Gallery data loss fix — user confirmed FIXED
 - Google Drive needs OAuth refresh token
