@@ -4455,6 +4455,53 @@ async def get_team_player_stats(team_id: str, season_id: Optional[str] = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@api_router.get("/teams/{team_id}/game-log")
+async def get_team_game_log(team_id: str):
+    """Get full game log (all games with stats) for a team"""
+    try:
+        games_home = await db.game_stats.find({"home_team.team_id": team_id}).to_list(500)
+        games_away = await db.game_stats.find({"away_team.team_id": team_id}).to_list(500)
+        
+        all_games = []
+        for g in games_home:
+            g.pop('_id', None)
+            g['is_home'] = True
+            all_games.append(g)
+        for g in games_away:
+            g.pop('_id', None)
+            g['is_home'] = False
+            all_games.append(g)
+        
+        # Also check unified-events for games with inline scores
+        events_home = await db.unified_events.find({"homeTeam": team_id, "type": {"$in": ["game", "regular_game"]}}).to_list(500)
+        events_away = await db.unified_events.find({"awayTeam": team_id, "type": {"$in": ["game", "regular_game"]}}).to_list(500)
+        
+        existing_event_ids = {g.get('event_id') for g in all_games}
+        
+        for e in events_home + events_away:
+            e.pop('_id', None)
+            if e.get('id') not in existing_event_ids and e.get('scores'):
+                all_games.append({
+                    'event_id': e['id'],
+                    'is_home': e.get('homeTeam') == team_id,
+                    'home_team': e.get('scores', {}).get('home_team', {}),
+                    'away_team': e.get('scores', {}).get('away_team', {}),
+                    'game_date': e.get('date', ''),
+                    'status': 'final' if e.get('status') == 'completed' else e.get('status', ''),
+                    'event_title': e.get('title', ''),
+                    'from_event': True
+                })
+        
+        # Sort by game_date descending
+        all_games.sort(key=lambda x: str(x.get('game_date', '')), reverse=True)
+        
+        return {"status": "success", "games": all_games, "total": len(all_games)}
+    except Exception as e:
+        logger.error(f"Error getting team game log: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
 @api_router.get("/players/{player_id}/stats-by-year")
 async def get_player_stats_by_year(player_id: str):
     """Get a player's stats grouped by year/season"""
