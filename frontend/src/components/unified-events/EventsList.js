@@ -135,9 +135,9 @@ const CompactEventRow = ({
             {/* Actions */}
             <div className="flex items-center gap-1 flex-shrink-0">
                 {/* Watch Live - visible to EVERYONE for live games */}
-                {isGame && isLive && onViewLive && (
+                {isGame && isLive && (
                     <button
-                        onClick={(e) => { e.stopPropagation(); onViewLive(event); }}
+                        onClick={(e) => { e.stopPropagation(); onNavigate ? onNavigate('live-game', event.id) : onViewLive?.(event); }}
                         className="px-2.5 py-1 text-xs bg-red-600 text-white rounded-md hover:bg-red-700 font-semibold flex items-center gap-1 animate-pulse"
                         title="Watch Live"
                         data-testid={`watch-live-btn-${event.id}`}
@@ -147,9 +147,9 @@ const CompactEventRow = ({
                     </button>
                 )}
                 {/* View Stats - for completed games (everyone) */}
-                {isGame && event.status === 'completed' && onViewLive && (
+                {isGame && event.status === 'completed' && (
                     <button
-                        onClick={(e) => { e.stopPropagation(); onViewLive(event); }}
+                        onClick={(e) => { e.stopPropagation(); onNavigate ? onNavigate('live-game', event.id) : onViewLive?.(event); }}
                         className="px-2 py-1 text-xs bg-slate-600 text-white rounded-md hover:bg-slate-700"
                         title="View Game Stats"
                         data-testid={`view-stats-btn-${event.id}`}
@@ -162,7 +162,7 @@ const CompactEventRow = ({
                     <>
                         {isGame && !isLive && event.status !== 'completed' && onViewLive && (
                             <button
-                                onClick={(e) => { e.stopPropagation(); onViewLive(event); }}
+                                onClick={(e) => { e.stopPropagation(); onNavigate ? onNavigate('live-game', event.id) : onViewLive(event); }}
                                 className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
                                 title="Live View"
                                 data-testid={`live-view-btn-${event.id}`}
