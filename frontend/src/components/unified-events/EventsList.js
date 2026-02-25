@@ -665,8 +665,10 @@ const EventsList = ({
                             </div>
                             <div className="space-y-2">
                                 {liveEvents.map(event => {
-                                    const homeTeam = teams.find(t => t.id === event.homeTeam);
-                                    const awayTeam = teams.find(t => t.id === event.awayTeam);
+                                    const teamIds = [event.homeTeam, event.awayTeam].filter(Boolean);
+                                    const fallbackIds = teamIds.length ? teamIds : (event.teams || []).slice(0, 2);
+                                    const homeTeam = teams.find(t => t.id === fallbackIds[0]);
+                                    const awayTeam = teams.find(t => t.id === fallbackIds[1]);
                                     return (
                                         <div
                                             key={event.id}
@@ -674,12 +676,14 @@ const EventsList = ({
                                             onClick={() => onViewLive && onViewLive(event)}
                                             data-testid={`live-banner-event-${event.id}`}
                                         >
-                                            <div className="flex items-center gap-2 text-sm font-medium">
-                                                <span>{homeTeam?.name || 'Home'}</span>
-                                                <span className="text-white/60">vs</span>
-                                                <span>{awayTeam?.name || 'Away'}</span>
+                                            <div className="flex items-center gap-2 text-sm font-medium min-w-0">
+                                                {homeTeam?.style?.logoUrl && <img src={homeTeam.style.logoUrl} alt="" className="w-5 h-5 rounded-full object-contain bg-white flex-shrink-0" />}
+                                                <span className="truncate">{homeTeam?.name || 'Home'}</span>
+                                                <span className="text-white/60 flex-shrink-0">vs</span>
+                                                <span className="truncate">{awayTeam?.name || 'Away'}</span>
+                                                {awayTeam?.style?.logoUrl && <img src={awayTeam.style.logoUrl} alt="" className="w-5 h-5 rounded-full object-contain bg-white flex-shrink-0" />}
                                             </div>
-                                            <button className="px-2.5 py-1 bg-white text-red-600 text-xs font-bold rounded-md hover:bg-red-50">
+                                            <button className="px-2.5 py-1 bg-white text-red-600 text-xs font-bold rounded-md hover:bg-red-50 flex-shrink-0 ml-2">
                                                 Watch
                                             </button>
                                         </div>
