@@ -2675,6 +2675,13 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                                 </button>
                             </div>
                         </td>
+
+                        {/* Points (calculated: 2*goals + 1*assists) */}
+                        <td className="px-1 md:px-2 py-1 text-center">
+                            <span className="font-bold text-base text-indigo-600">
+                                {((player.stats.goals || 0) * 2) + (player.stats.assists || 0)}
+                            </span>
+                        </td>
                         
                         {/* Face-off Wins with +/- buttons */}
                         <td className="px-1 md:px-2 py-1 text-center">
