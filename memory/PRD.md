@@ -140,6 +140,12 @@ Comprehensive league management portal for multiple sports with team management,
 - [x] OF+/OF- columns conditional — only appear when goal events have playersOnField metadata
 - [x] Testing: 100% pass rate (iteration_55)
 
+### Full-Width Content Layout Fix (Feb 26, 2026)
+- [x] Moved content background from `<main>` to wrapper `main-content-area` div
+- [x] Eliminated stone texture gap and white vertical lines between sidebar and content
+- [x] Content now extends edge-to-edge from sidebar to right viewport edge
+- [x] Individual pages handle their own internal padding (no regression)
+
 ## Pending Issues
 - P1: Gallery data loss fix — user confirmed FIXED
 - Google Drive needs OAuth refresh token
