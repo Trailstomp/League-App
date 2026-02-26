@@ -288,7 +288,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
     return (
         <div 
             className={`
-                ${isCollapsed ? 'w-16' : 'w-64'} 
+                w-full 
                 shadow-sm border-r flex flex-col 
                 transition-all duration-300
                 max-w-full overflow-hidden
