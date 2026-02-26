@@ -74,6 +74,7 @@ const isCacheValid = () => {
 function App() {
   // Initialize user from localStorage for persistence
   const [currentPage, setCurrentPage] = useState('home');
+  const [homeTab, setHomeTab] = useState(null);
   const [currentUser, setCurrentUser] = useState(() => {
     // Try to restore user session from localStorage
     const savedUser = getCached(CACHE_KEYS.USER);
