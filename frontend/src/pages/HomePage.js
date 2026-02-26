@@ -145,6 +145,15 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
     const [adminEmail, setAdminEmail] = useState('');
     
     const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+
+    // Switch tab when homeTab prop changes
+    useEffect(() => {
+        if (homeTab) {
+            setActiveTab(homeTab);
+            if (onHomeTabUsed) onHomeTabUsed();
+        }
+    }, [homeTab, onHomeTabUsed]);
+
     
     // Load welcome message
     useEffect(() => {
