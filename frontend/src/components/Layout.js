@@ -448,20 +448,19 @@ const Layout = ({
                     paddingTop: isMobileView ? '164px' : '200px', // 56px header + 100px ticker + 8px gap
                     paddingBottom: isMobileView ? '80px' : '0', // Space for bottom navbar on mobile
                     minHeight: '100vh',
-                    width: isMobileView ? '100vw' : (isNavCollapsed ? 'calc(100vw - 80px)' : 'calc(100vw - 320px)')
+                    width: isMobileView ? '100vw' : (isNavCollapsed ? 'calc(100vw - 80px)' : 'calc(100vw - 320px)'),
+                    ...getContentBackgroundStyle()
                 }}
             >
                 <div className="flex flex-col h-full">
-                    {/* Main Content Container with customizable background */}
+                    {/* Main Content Container */}
                     <main 
                         className="flex-1 overflow-x-hidden w-full"
                         style={{
                             fontFamily: websiteStyle.mainFont || 'Inter, sans-serif',
                             fontSize: websiteStyle.mainFontSize || '16px',
                             color: websiteStyle.mainTextColor || '#374151',
-                            minHeight: isMobileView ? 'calc(100vh - 220px)' : 'calc(100vh - 200px)',
-                            padding: isMobileView ? '0.5rem' : '1rem',
-                            ...getContentBackgroundStyle()
+                            minHeight: isMobileView ? 'calc(100vh - 220px)' : 'calc(100vh - 200px)'
                         }}
                     >
                         {children}
