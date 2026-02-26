@@ -508,11 +508,31 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                     {/* Authentication Actions */}
                     <div className="mt-4 pt-4 border-t border-slate-200">
                         {currentUser ? (
-                            <NavItem 
-                                icon={<LacrosseIcon name="logout" />} 
-                                label="Logout" 
-                                onClick={onLogout}
-                            />
+                            <>
+                                <div 
+                                    className="flex items-center gap-3 px-4 py-2 mb-1 rounded-full"
+                                    style={{ backgroundColor: `${websiteStyle.primaryColor || '#3b82f6'}10` }}
+                                >
+                                    {!isCollapsed && (
+                                        <>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium truncate" style={{ color: websiteStyle.menuTextColor || '#1f2937' }}>
+                                                    {currentUser.name}
+                                                </p>
+                                                <p className="text-[11px] truncate" style={{ color: websiteStyle.primaryColor || '#3b82f6' }}>
+                                                    {(currentUser.roles || [currentUser.role]).filter(Boolean).join(', ')}
+                                                </p>
+                                            </div>
+                                            <NotificationBell currentUser={currentUser} onNavigate={onNavigate} />
+                                        </>
+                                    )}
+                                </div>
+                                <NavItem 
+                                    icon={<LacrosseIcon name="logout" />} 
+                                    label="Logout" 
+                                    onClick={onLogout}
+                                />
+                            </>
                         ) : (
                             <NavItem 
                                 icon={<LacrosseIcon name="login" />} 
@@ -523,14 +543,11 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                     </div>
                 </nav>
 
-                {/* Teams Section - Grouped by Division */}
-                <TeamsByDivision 
-                    teams={teams}
-                    websiteStyle={websiteStyle}
-                    isCollapsed={isCollapsed}
-                    onNavigate={onNavigate}
-                    onMobileClose={onMobileClose}
-                />
+                {/* Teams Button - navigates to teams page */}
+                <nav className="px-4 py-2">
+                    <NavItem icon={<LacrosseIcon name="teams" />} label="Teams" pageName="teams-page" 
+                        onClick={() => { onNavigate('home'); if (onMobileClose) onMobileClose(); }} />
+                </nav>
             </div>
 
             {/* Authentication moved above - this section removed */}
