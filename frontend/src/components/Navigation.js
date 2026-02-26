@@ -327,20 +327,19 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 </div>
             )}
             
-            {/* Header with Large Logo */}
+            {/* Header with Full Logo */}
             <div 
-                className="flex-shrink-0 relative border-b" 
+                className="flex-shrink-0 relative" 
                 style={{
-                    height: '200px',
-                    borderColor: websiteStyle.navBorderColor || '#e2e8f0'
+                    height: '200px'
                 }}
             >
-                <div className="h-full flex flex-col items-center justify-center p-2 overflow-hidden">
+                <div className="h-full w-full overflow-hidden">
                     {!isCollapsed && (
-                        <div className="flex flex-col items-center w-full h-full overflow-hidden">
-                            {/* Large Logo - respects fit and background settings */}
+                        <div className="w-full h-full overflow-hidden">
+                            {/* Logo fills entire header area */}
                             <div 
-                                className="flex-1 flex items-center justify-center w-full overflow-hidden min-h-0"
+                                className="w-full h-full flex items-center justify-center"
                                 style={{ 
                                     backgroundColor: websiteStyle.navLogoBgTransparent !== false 
                                         ? 'transparent' 
@@ -363,12 +362,9 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                         }}
                                         fallback={
                                             <div 
-                                                className="flex items-center justify-center rounded-2xl"
+                                                className="flex items-center justify-center w-full h-full"
                                                 style={{
-                                                    width: '160px',
-                                                    height: '160px',
-                                                    background: `linear-gradient(135deg, ${websiteStyle.primaryColor || '#2563eb'} 0%, ${websiteStyle.accentColor || '#3b82f6'} 100%)`,
-                                                    boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
+                                                    background: `linear-gradient(135deg, ${websiteStyle.primaryColor || '#2563eb'} 0%, ${websiteStyle.accentColor || '#3b82f6'} 100%)`
                                                 }}
                                             >
                                                 <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '5rem' }}>
@@ -379,12 +375,9 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                     />
                                 ) : (
                                     <div 
-                                        className="flex items-center justify-center rounded-2xl"
+                                        className="flex items-center justify-center w-full h-full"
                                         style={{
-                                            width: '160px',
-                                            height: '160px',
-                                            background: `linear-gradient(135deg, ${websiteStyle.primaryColor || '#2563eb'} 0%, ${websiteStyle.accentColor || '#3b82f6'} 100%)`,
-                                            boxShadow: '0 8px 32px rgba(0,0,0,0.2)'
+                                            background: `linear-gradient(135deg, ${websiteStyle.primaryColor || '#2563eb'} 0%, ${websiteStyle.accentColor || '#3b82f6'} 100%)`
                                         }}
                                     >
                                         <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '5rem' }}>
@@ -393,27 +386,12 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                                     </div>
                                 )}
                             </div>
-                            
-                            {/* League Name - only if set */}
-                            {websiteStyle.navLeagueName && (
-                                <h1 
-                                    className="text-center font-bold leading-tight mt-1 px-2"
-                                    style={{
-                                        fontFamily: websiteStyle.navFont || 'Inter, sans-serif',
-                                        fontSize: '16px',
-                                        color: websiteStyle.navTextColor || '#1f2937',
-                                        wordWrap: 'break-word'
-                                    }}
-                                >
-                                    {websiteStyle.navLeagueName}
-                                </h1>
-                            )}
                         </div>
                     )}
                     
                     {/* Collapsed state - small logo */}
                     {isCollapsed && (
-                        <div className="flex items-center justify-center w-full">
+                        <div className="flex items-center justify-center w-full h-full">
                             {websiteStyle.navLogoUrl ? (
                                 <CachedImage 
                                     src={websiteStyle.navLogoUrl} 
@@ -429,11 +407,11 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                     )}
                 </div>
                 
-                {/* Toggle Button - positioned at bottom right of header */}
-                <div className="absolute bottom-4 right-4">
+                {/* Toggle Button */}
+                <div className="absolute bottom-2 right-2">
                     <button
                         onClick={() => setIsCollapsed(!isCollapsed)}
-                        className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-black/10 transition-colors"
                         title={isCollapsed ? "Expand navigation" : "Collapse navigation"}
                         style={{
                             color: websiteStyle.navTextColor || '#374151'
@@ -449,25 +427,6 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                         </svg>
                     </button>
                 </div>
-                
-                {!isCollapsed && currentUser && (
-                    <div className="absolute bottom-4 left-4 right-14 flex items-center gap-2">
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm text-slate-600 truncate">
-                                Welcome, {currentUser.name}
-                            </p>
-                            <p className="text-xs text-blue-600 truncate">
-                                {(currentUser.roles || [currentUser.role]).filter(Boolean).join(', ')}
-                            </p>
-                        </div>
-                        <NotificationBell currentUser={currentUser} onNavigate={onNavigate} />
-                    </div>
-                )}
-                {!isCollapsed && !currentUser && (
-                    <p className="absolute bottom-4 left-4 text-sm text-slate-500 truncate">
-                        Browsing as guest
-                    </p>
-                )}
             </div>
 
             {/* Scrollable Content Area - Only scrolls when hovering over navigation */}
