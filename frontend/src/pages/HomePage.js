@@ -132,12 +132,12 @@ const JoinUsCard = ({ type, icon, title, description, onClick }) => (
     </div>
 );
 
-const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvents, websiteStyle = {}, onNavigate }) => {
+const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvents, websiteStyle = {}, onNavigate, homeTab, onHomeTabUsed }) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [showEventModal, setShowEventModal] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [showTeamModal, setShowTeamModal] = useState(false);
-    const [activeTab, setActiveTab] = useState('welcome'); // 'welcome', 'join', 'teams', 'media', 'sponsors'
+    const [activeTab, setActiveTab] = useState(homeTab || 'welcome'); // 'welcome', 'join', 'teams', 'media', 'sponsors'
     const [activeJoinForm, setActiveJoinForm] = useState(null); // 'team', 'player', 'volunteer', or null for landing
     const [activeTeamTab, setActiveTeamTab] = useState('all');
     const [welcomeMessage, setWelcomeMessage] = useState(null);
