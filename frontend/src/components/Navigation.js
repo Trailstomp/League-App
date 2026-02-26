@@ -289,7 +289,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
         <div 
             className={`
                 w-full 
-                shadow-sm border-r flex flex-col 
+                shadow-sm flex flex-col 
                 transition-all duration-300
                 max-w-full overflow-hidden
                 h-full
