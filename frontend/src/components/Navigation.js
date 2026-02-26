@@ -545,7 +545,7 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
 
                 {/* Teams Button - navigates to teams page */}
                 <nav className="px-4 py-2">
-                    <NavItem icon={<LacrosseIcon name="teams" />} label="Teams" pageName="teams-page" 
+                    <NavItem icon={<LacrosseIcon name="teams" />} label="Teams" 
                         onClick={() => { onNavigate('home'); if (onMobileClose) onMobileClose(); }} />
                 </nav>
             </div>
