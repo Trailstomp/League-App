@@ -221,7 +221,11 @@ function App() {
       // teamId is actually eventId for live-game navigation
       setSelectedTeam(teamId);
       setCurrentPage('live-game');
+    } else if (page === 'home-teams') {
+      setHomeTab('teams');
+      setCurrentPage('home');
     } else {
+      if (page === 'home') setHomeTab(null);
       setCurrentPage(page);
     }
   };
