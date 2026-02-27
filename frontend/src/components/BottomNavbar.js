@@ -65,7 +65,7 @@ const BottomNavbar = ({
                 borderTopColor: websiteStyle.primaryColor || '#e2e8f0'
             }}
         >
-            <div className="flex justify-around items-center px-1 overflow-x-auto" style={{ height: '60px' }}>
+            <div className="flex items-center px-0.5 overflow-x-auto no-scrollbar" style={{ height: '52px' }}>
                 {visibleItems.map(item => {
                     const isActive = currentPage === item.id;
                     
@@ -82,23 +82,23 @@ const BottomNavbar = ({
                                     onNavigate(item.id);
                                 }
                             }}
-                            className="flex flex-col items-center justify-center py-1 px-1 min-w-0 flex-1 transition-all duration-200 relative"
+                            className="flex flex-col items-center justify-center py-1 px-0.5 min-w-0 flex-shrink-0 transition-all duration-200 relative"
                             style={{
                                 color: isActive 
                                     ? (websiteStyle.primaryColor || '#3b82f6')
                                     : (websiteStyle.menuTextColor || '#6b7280'),
-                                maxWidth: `${100 / visibleItems.length}%`
+                                width: `${Math.max(100 / visibleItems.length, 14)}%`
                             }}
                         >
-                            <span className={`text-lg leading-none ${isActive ? 'transform scale-110' : ''} transition-transform duration-200`}>
+                            <span className={`text-base leading-none ${isActive ? 'transform scale-110' : ''} transition-transform duration-200`}>
                                 {item.icon}
                             </span>
-                            <span className={`text-[9px] mt-0.5 leading-tight ${isActive ? 'font-bold' : 'font-medium'} w-full text-center break-words`}>
+                            <span className={`text-[8px] mt-0.5 leading-none ${isActive ? 'font-bold' : 'font-medium'} truncate w-full text-center`}>
                                 {item.label}
                             </span>
                             {isActive && (
                                 <div 
-                                    className="absolute bottom-0 w-8 h-0.5 rounded-t-full"
+                                    className="absolute bottom-0 w-6 h-0.5 rounded-t-full"
                                     style={{ backgroundColor: websiteStyle.primaryColor || '#3b82f6' }}
                                 />
                             )}
