@@ -65,7 +65,7 @@ const BottomNavbar = ({
                 borderTopColor: websiteStyle.primaryColor || '#e2e8f0'
             }}
         >
-            <div className="flex items-center px-0.5 overflow-x-auto no-scrollbar" style={{ height: '52px' }}>
+            <div className="flex items-center px-0.5 overflow-x-auto no-scrollbar" style={{ height: '48px' }}>
                 {visibleItems.map(item => {
                     const isActive = currentPage === item.id;
                     
@@ -93,7 +93,7 @@ const BottomNavbar = ({
                             <span className={`text-base leading-none ${isActive ? 'transform scale-110' : ''} transition-transform duration-200`}>
                                 {item.icon}
                             </span>
-                            <span className={`text-[8px] mt-0.5 leading-none ${isActive ? 'font-bold' : 'font-medium'} truncate w-full text-center`}>
+                            <span className={`text-[7px] mt-0.5 leading-none ${isActive ? 'font-bold' : 'font-medium'} whitespace-nowrap overflow-hidden text-center`} style={{ maxWidth: '100%' }}>
                                 {item.label}
                             </span>
                             {isActive && (
