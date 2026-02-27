@@ -660,12 +660,8 @@ const EventsList = ({
                     const liveEvents = events.filter(e => e.status === 'in_progress' && (e.type === 'game' || e.type === 'regular_game' || e.type === 'tournament'));
                     if (liveEvents.length === 0) return null;
                     return (
-                        <div className="mb-2 bg-gradient-to-r from-red-600 to-red-700 rounded-md p-2 text-white shadow-md" data-testid="live-now-banner">
-                            <div className="flex items-center gap-1.5 mb-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                                <span className="text-[10px] font-bold uppercase tracking-wider">Live Now</span>
-                            </div>
-                            <div className="space-y-1">
+                        <div className="mb-2 bg-gradient-to-r from-red-600 to-red-700 rounded p-1.5 text-white shadow-md" data-testid="live-now-banner">
+                            <div className="space-y-0.5">
                                 {liveEvents.map(event => {
                                     const teamIds = [event.homeTeam, event.awayTeam].filter(Boolean);
                                     const fallbackIds = teamIds.length ? teamIds : (event.teams || []).slice(0, 2);
@@ -674,16 +670,17 @@ const EventsList = ({
                                     return (
                                         <div
                                             key={event.id}
-                                            className="flex items-center justify-between bg-white/10 rounded px-2 py-1 cursor-pointer hover:bg-white/20 transition-colors"
+                                            className="flex items-center justify-between bg-white/10 rounded px-2 py-0.5 cursor-pointer hover:bg-white/20 transition-colors"
                                             onClick={() => onViewLive && onViewLive(event)}
                                             data-testid={`live-banner-event-${event.id}`}
                                         >
                                             <div className="flex items-center gap-1.5 text-xs font-medium min-w-0">
-                                                {homeTeam?.style?.logoUrl && <img src={homeTeam.style.logoUrl} alt="" className="w-4 h-4 rounded-full object-contain bg-white flex-shrink-0" />}
+                                                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse flex-shrink-0" />
+                                                {homeTeam?.style?.logoUrl && <img src={homeTeam.style.logoUrl} alt="" className="w-6 h-6 rounded-full object-contain bg-white flex-shrink-0" />}
                                                 <span className="truncate">{homeTeam?.name || 'Home'}</span>
                                                 <span className="text-white/60 flex-shrink-0">vs</span>
                                                 <span className="truncate">{awayTeam?.name || 'Away'}</span>
-                                                {awayTeam?.style?.logoUrl && <img src={awayTeam.style.logoUrl} alt="" className="w-4 h-4 rounded-full object-contain bg-white flex-shrink-0" />}
+                                                {awayTeam?.style?.logoUrl && <img src={awayTeam.style.logoUrl} alt="" className="w-6 h-6 rounded-full object-contain bg-white flex-shrink-0" />}
                                             </div>
                                             <button className="px-2 py-0.5 bg-white text-red-600 text-[10px] font-bold rounded hover:bg-red-50 flex-shrink-0 ml-2">
                                                 Watch
