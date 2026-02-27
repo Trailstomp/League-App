@@ -441,6 +441,7 @@ const EventManager = ({ teams, currentUser, onEventUpdate, onEventClick, initial
                     )}
                 </div>
             </div>
+            )}
 
             {/* Main Content */}
             <div className="flex-1 overflow-hidden">
