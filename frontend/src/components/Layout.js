@@ -444,7 +444,7 @@ const Layout = ({
                 style={{
                     marginLeft: isMobileView ? '0' : (isNavCollapsed ? '80px' : '320px'), // Use actual nav maxWidth
                     paddingTop: isMobileView ? '108px' : '200px', // 100px ticker on mobile, 200px on desktop
-                    paddingBottom: isMobileView ? '80px' : '0', // Space for bottom navbar on mobile
+                    paddingBottom: isMobileView ? '60px' : '0', // Space for bottom navbar on mobile
                     minHeight: '100vh',
                     width: isMobileView ? '100vw' : (isNavCollapsed ? 'calc(100vw - 80px)' : 'calc(100vw - 320px)'),
                     ...getContentBackgroundStyle()
