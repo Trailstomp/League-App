@@ -281,12 +281,12 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                 const liveGames = events.filter(e => e.status === 'in_progress' && (e.type === 'game' || e.type === 'regular_game' || e.type === 'tournament'));
                 if (liveGames.length === 0) return null;
                 return (
-                    <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-xl p-3 sm:p-4 text-white shadow-lg" data-testid="home-live-banner">
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                            <span className="text-xs font-bold uppercase tracking-wider">Live Now</span>
+                    <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-lg p-2 sm:p-2.5 text-white shadow-md" data-testid="home-live-banner">
+                        <div className="flex items-center gap-1.5 mb-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                            <span className="text-[10px] font-bold uppercase tracking-wider">Live Now</span>
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                             {liveGames.map(game => {
                                 const teamIds = [game.homeTeam, game.awayTeam].filter(Boolean);
                                 const fallbackIds = teamIds.length ? teamIds : (game.teams || []).slice(0, 2);
@@ -298,30 +298,30 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                                 return (
                                     <div
                                         key={game.id}
-                                        className="flex items-center justify-between bg-white/10 rounded-lg px-3 py-2 cursor-pointer hover:bg-white/20 transition-colors"
+                                        className="flex items-center justify-between bg-white/10 rounded-md px-2 py-1 cursor-pointer hover:bg-white/20 transition-colors"
                                         onClick={() => onNavigate && onNavigate('live-game', game.id)}
                                         data-testid={`home-live-event-${game.id}`}
                                     >
-                                        <div className="flex items-center gap-3 min-w-0">
-                                            <div className="flex items-center gap-1.5">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <div className="flex items-center gap-1">
                                                 {homeTeam?.style?.logoUrl ? (
-                                                    <img src={homeTeam.style.logoUrl} alt="" className="w-6 h-6 rounded-full object-contain bg-white" />
+                                                    <img src={homeTeam.style.logoUrl} alt="" className="w-5 h-5 rounded-full object-contain bg-white" />
                                                 ) : (
-                                                    <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-bold">{homeTeam?.name?.charAt(0) || '?'}</div>
+                                                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[9px] font-bold">{homeTeam?.name?.charAt(0) || '?'}</div>
                                                 )}
-                                                <span className="text-sm font-semibold truncate">{homeTeam?.name || 'Home'}</span>
+                                                <span className="text-xs font-semibold truncate">{homeTeam?.name || 'Home'}</span>
                                             </div>
-                                            <span className="text-lg font-bold">{scores.home} - {scores.away}</span>
-                                            <div className="flex items-center gap-1.5">
-                                                <span className="text-sm font-semibold truncate">{awayTeam?.name || 'Away'}</span>
+                                            <span className="text-sm font-bold">{scores.home} - {scores.away}</span>
+                                            <div className="flex items-center gap-1">
+                                                <span className="text-xs font-semibold truncate">{awayTeam?.name || 'Away'}</span>
                                                 {awayTeam?.style?.logoUrl ? (
-                                                    <img src={awayTeam.style.logoUrl} alt="" className="w-6 h-6 rounded-full object-contain bg-white" />
+                                                    <img src={awayTeam.style.logoUrl} alt="" className="w-5 h-5 rounded-full object-contain bg-white" />
                                                 ) : (
-                                                    <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-bold">{awayTeam?.name?.charAt(0) || '?'}</div>
+                                                    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[9px] font-bold">{awayTeam?.name?.charAt(0) || '?'}</div>
                                                 )}
                                             </div>
                                         </div>
-                                        <button className="px-3 py-1 bg-white text-red-600 text-xs font-bold rounded-md hover:bg-red-50 flex-shrink-0 ml-2">
+                                        <button className="px-2 py-0.5 bg-white text-red-600 text-[10px] font-bold rounded hover:bg-red-50 flex-shrink-0 ml-2">
                                             Watch
                                         </button>
                                     </div>
