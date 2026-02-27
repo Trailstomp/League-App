@@ -2699,27 +2699,27 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                                     className="w-6 h-6 bg-orange-100 text-orange-600 rounded text-xs font-bold hover:opacity-80">+</button>
                             </div>
                         </td>
-                        <td className="px-1 py-1 text-center">
+                        <td className="px-0.5 py-0.5 text-center">
                             <div className="flex items-center justify-center gap-0.5">
                                 <button onClick={() => decrementStat(player.id, 'groundBalls')} disabled={(player.stats.groundBalls || 0) <= 0}
-                                    className="w-7 h-7 bg-red-100 text-red-600 rounded text-xs font-bold hover:bg-red-200 disabled:opacity-30">−</button>
-                                <span className="w-7 text-center font-bold text-sm text-teal-600">{player.stats.groundBalls || 0}</span>
+                                    className="w-6 h-6 bg-red-100 text-red-600 rounded text-xs font-bold hover:bg-red-200 disabled:opacity-30">−</button>
+                                <span className="w-6 text-center font-bold text-sm text-teal-600">{player.stats.groundBalls || 0}</span>
                                 <button onClick={() => addStat(teamKey, player.id, 'groundBalls')}
-                                    className="w-7 h-7 bg-teal-100 text-teal-600 rounded text-xs font-bold hover:opacity-80">+</button>
+                                    className="w-6 h-6 bg-teal-100 text-teal-600 rounded text-xs font-bold hover:opacity-80">+</button>
                             </div>
                         </td>
-                        <td className="px-1.5 py-1 text-center"><span className="font-bold text-sm text-red-600">{player.stats.penalties}</span></td>
+                        <td className="px-1 py-0.5 text-center"><span className="font-bold text-sm text-red-600">{player.stats.penalties}</span></td>
                     </>
                 ) : (
                     <>
-                        <td className="px-1.5 py-1 text-center text-xs text-gray-400">-</td>
-                        <td className="px-1.5 py-1 text-center text-xs">{player.stats.shots || 0}</td>
-                        <td className="px-1.5 py-1 text-center text-xs">{player.stats.goals || 0}</td>
-                        <td className="px-1.5 py-1 text-center text-xs">{player.stats.assists || 0}</td>
-                        <td className="px-1.5 py-1 text-center text-xs font-semibold text-indigo-600">{((player.stats.goals || 0) * 2) + (player.stats.assists || 0)}</td>
-                        <td className="px-1.5 py-1 text-center text-xs">{player.stats.faceoffs || 0}</td>
-                        <td className="px-1.5 py-1 text-center text-xs">{player.stats.groundBalls || 0}</td>
-                        <td className="px-1.5 py-1 text-center text-xs">{player.stats.penalties || 0}</td>
+                        <td className="px-1 py-0.5 text-center text-xs text-gray-400">-</td>
+                        <td className="px-1 py-0.5 text-center text-xs">{player.stats.shots || 0}</td>
+                        <td className="px-1 py-0.5 text-center text-xs">{player.stats.goals || 0}</td>
+                        <td className="px-1 py-0.5 text-center text-xs">{player.stats.assists || 0}</td>
+                        <td className="px-1 py-0.5 text-center text-xs font-semibold text-indigo-600">{((player.stats.goals || 0) * 2) + (player.stats.assists || 0)}</td>
+                        <td className="px-1 py-0.5 text-center text-xs">{player.stats.faceoffs || 0}</td>
+                        <td className="px-1 py-0.5 text-center text-xs">{player.stats.groundBalls || 0}</td>
+                        <td className="px-1 py-0.5 text-center text-xs">{player.stats.penalties || 0}</td>
                     </>
                 )}
             </tr>
