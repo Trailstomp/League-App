@@ -2408,12 +2408,12 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                     {/* Away Team Actions */}
                     <div className="flex items-center gap-1 md:gap-1.5" data-testid="away-score-display">
                         <div className="flex flex-col gap-0.5">
-                            <button onClick={() => openTeamPenaltyModal('away_team')} className="h-6 md:h-6 px-2.5 md:px-3 bg-red-600 hover:bg-red-700 text-white rounded text-[10px] md:text-[11px] font-bold flex items-center justify-center shadow-sm" data-testid="away-penalty-btn">Pen</button>
-                            <button onClick={() => callTimeout('away')} className="h-6 md:h-6 px-2.5 md:px-3 bg-amber-600 hover:bg-amber-700 text-white rounded text-[10px] md:text-[11px] font-bold flex items-center justify-center shadow-sm" data-testid="away-timeout-btn">TO</button>
+                            <button onClick={() => openTeamPenaltyModal('away_team')} className="h-6 md:h-7 px-2.5 md:px-3 bg-red-600 hover:bg-red-700 text-white rounded text-[10px] md:text-[11px] font-bold flex items-center justify-center shadow-sm" data-testid="away-penalty-btn">Pen</button>
+                            <button onClick={() => callTimeout('away')} className="h-6 md:h-7 px-2.5 md:px-3 bg-amber-600 hover:bg-amber-700 text-white rounded text-[10px] md:text-[11px] font-bold flex items-center justify-center shadow-sm" data-testid="away-timeout-btn">TO</button>
                         </div>
-                        <button onClick={() => openTeamShotModal('away_team')} className="h-12 w-12 md:h-14 md:w-14 rounded-lg font-bold flex flex-col items-center justify-center shadow-sm text-white hover:brightness-110 transition-all" style={{ backgroundColor: awayColor }} title="Record Shot" data-testid="away-shot-btn">
-                            <span className="text-base md:text-xl">{sportConfig.icon}</span>
-                            <span className="text-[9px] md:text-[10px] font-bold leading-none">SHOT</span>
+                        <button onClick={() => openTeamShotModal('away_team')} className="h-14 w-14 md:h-16 md:w-16 rounded-lg font-bold flex flex-col items-center justify-center shadow-sm text-white hover:brightness-110 transition-all" style={{ backgroundColor: awayColor }} title="Record Shot" data-testid="away-shot-btn">
+                            <span className="text-lg md:text-2xl">{sportConfig.icon}</span>
+                            <span className="text-[9px] md:text-[11px] font-bold leading-none">SHOT</span>
                         </button>
                     </div>
                 </div>
