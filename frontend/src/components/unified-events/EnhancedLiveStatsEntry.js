@@ -2673,30 +2673,30 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
                 <td className="px-1 py-0.5 text-xs text-gray-500">{player.position}</td>
                 {!isInactive ? (
                     <>
-                        <td className="px-1 py-1 text-center shot-button-container relative">
+                        <td className="px-0.5 py-0.5 text-center shot-button-container relative">
                             <button onClick={() => setShowShotMenu(showShotMenu === player.id ? null : player.id)}
-                                className="px-4 py-2 bg-yellow-500 text-white rounded-md font-bold text-sm hover:bg-yellow-600 shadow-sm">Shot</button>
+                                className="px-4 py-1.5 bg-yellow-500 text-white rounded-md font-bold text-sm hover:bg-yellow-600 shadow-sm">Shot</button>
                             {showShotMenu === player.id && <ShotDropdown player={player} />}
                         </td>
-                        <td className="px-1.5 py-1 text-center"><span className="font-bold text-sm text-yellow-600">{player.stats.shots}</span></td>
-                        <td className="px-1.5 py-1 text-center"><span className="font-bold text-sm text-green-600">{player.stats.goals}</span></td>
-                        <td className="px-1 py-1 text-center">
+                        <td className="px-1 py-0.5 text-center"><span className="font-bold text-sm text-yellow-600">{player.stats.shots}</span></td>
+                        <td className="px-1 py-0.5 text-center"><span className="font-bold text-sm text-green-600">{player.stats.goals}</span></td>
+                        <td className="px-0.5 py-0.5 text-center">
                             <div className="flex items-center justify-center gap-0.5">
                                 <button onClick={() => decrementStat(player.id, 'assists')} disabled={player.stats.assists <= 0}
-                                    className="w-7 h-7 bg-red-100 text-red-600 rounded text-xs font-bold hover:bg-red-200 disabled:opacity-30">−</button>
-                                <span className="w-7 text-center font-bold text-sm text-blue-600">{player.stats.assists}</span>
+                                    className="w-6 h-6 bg-red-100 text-red-600 rounded text-xs font-bold hover:bg-red-200 disabled:opacity-30">−</button>
+                                <span className="w-6 text-center font-bold text-sm text-blue-600">{player.stats.assists}</span>
                                 <button onClick={() => addStat(teamKey, player.id, 'assists')}
-                                    className="w-7 h-7 bg-blue-100 text-blue-600 rounded text-xs font-bold hover:opacity-80">+</button>
+                                    className="w-6 h-6 bg-blue-100 text-blue-600 rounded text-xs font-bold hover:opacity-80">+</button>
                             </div>
                         </td>
-                        <td className="px-1.5 py-1 text-center"><span className="font-bold text-sm text-indigo-600">{((player.stats.goals || 0) * 2) + (player.stats.assists || 0)}</span></td>
-                        <td className="px-1 py-1 text-center">
+                        <td className="px-1 py-0.5 text-center"><span className="font-bold text-sm text-indigo-600">{((player.stats.goals || 0) * 2) + (player.stats.assists || 0)}</span></td>
+                        <td className="px-0.5 py-0.5 text-center">
                             <div className="flex items-center justify-center gap-0.5">
                                 <button onClick={() => decrementStat(player.id, 'faceoffs')} disabled={(player.stats.faceoffs || 0) <= 0}
-                                    className="w-7 h-7 bg-red-100 text-red-600 rounded text-xs font-bold hover:bg-red-200 disabled:opacity-30">−</button>
-                                <span className="w-7 text-center font-bold text-sm text-orange-600">{player.stats.faceoffs || 0}</span>
+                                    className="w-6 h-6 bg-red-100 text-red-600 rounded text-xs font-bold hover:bg-red-200 disabled:opacity-30">−</button>
+                                <span className="w-6 text-center font-bold text-sm text-orange-600">{player.stats.faceoffs || 0}</span>
                                 <button onClick={() => addStat(teamKey, player.id, 'faceoffs')}
-                                    className="w-7 h-7 bg-orange-100 text-orange-600 rounded text-xs font-bold hover:opacity-80">+</button>
+                                    className="w-6 h-6 bg-orange-100 text-orange-600 rounded text-xs font-bold hover:opacity-80">+</button>
                             </div>
                         </td>
                         <td className="px-1 py-1 text-center">
