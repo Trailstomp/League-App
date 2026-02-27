@@ -2489,6 +2489,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         </div>
                     </div>
                 </div>
+                </div>
             </div>
 
             {/* ── Card Typography ── */}
