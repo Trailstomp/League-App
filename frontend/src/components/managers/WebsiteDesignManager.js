@@ -2409,12 +2409,14 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                 </p>
             </div>
 
-            {/* Content Area Typography Section */}
-            <div className="border-t pt-6">
-                <div className="bg-violet-50 p-4 rounded-lg border border-violet-200 mb-4">
-                    <h4 className="text-md font-semibold text-violet-800 mb-2">🔤 Content Area Typography</h4>
-                    <p className="text-violet-600 text-sm">Set the default font and text color for the main content area.</p>
+            {/* ── Typography ── */}
+            <div className="border rounded-lg overflow-hidden">
+                <div className="bg-violet-50 px-3 py-2 border-b flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-violet-500" />
+                    <h4 className="text-sm font-semibold text-violet-800">Typography</h4>
+                    <span className="text-[10px] text-violet-500 ml-auto">Fonts & text colors</span>
                 </div>
+                <div className="p-3">
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Content Font Family */}
