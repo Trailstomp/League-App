@@ -2283,16 +2283,15 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
 
         return (
         <div className="fixed top-0 left-0 right-0 z-50 shadow-lg">
-            {/* Row 1: Compact Scoreboard + Title + Toggles */}
-            <div className="bg-gray-900 px-2 md:px-4 py-1.5">
+            {/* Match Title Bar */}
+            <div className="bg-gray-950 px-2 py-0.5 text-center">
+                <span className="text-[10px] md:text-xs text-white/60 truncate">{event?.title || 'Live Game'}</span>
+            </div>
+            {/* Scoreboard + Toggles */}
+            <div className="bg-gray-900 px-2 md:px-4 py-1">
                 <div className="flex items-center justify-between max-w-7xl mx-auto gap-2">
-                    {/* Left: Title + Live badge */}
-                    <div className="flex items-center gap-1.5 min-w-0 flex-shrink">
-                        {gameStarted && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse flex-shrink-0" />}
-                        <span className="text-[10px] md:text-xs text-white/70 truncate">{event?.title || 'Live Game'}</span>
-                    </div>
                     {/* Center: Score display */}
-                    <div className="flex items-center gap-1.5 md:gap-3 flex-shrink-0">
+                    <div className="flex items-center gap-1.5 md:gap-3 flex-1 justify-center">
                         {/* Home logo + name */}
                         <div className="flex items-center gap-1">
                             {getLogoUrl(gameState.home_team.logo) && (
