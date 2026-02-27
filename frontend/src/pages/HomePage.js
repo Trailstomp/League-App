@@ -358,7 +358,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             }`}
                             data-testid="welcome-tab"
                         >
-                            <Home className="w-5 h-5" />
+                            <span className="text-lg leading-none mb-0.5">🏠</span>
                             <span>Welcome</span>
                         </button>
                         <button
@@ -370,7 +370,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             }`}
                             data-testid="teams-tab"
                         >
-                            <Users className="w-5 h-5" />
+                            <span className="text-lg leading-none mb-0.5">🏆</span>
                             <span>Teams ({stats.totalTeams})</span>
                         </button>
                         <button
@@ -382,7 +382,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             }`}
                             data-testid="media-tab"
                         >
-                            <Camera className="w-5 h-5" />
+                            <span className="text-lg leading-none mb-0.5">📸</span>
                             <span>Media</span>
                         </button>
                         <button
@@ -394,7 +394,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             }`}
                             data-testid="sponsors-tab"
                         >
-                            <Star className="w-5 h-5" />
+                            <span className="text-lg leading-none mb-0.5">⭐</span>
                             <span className="text-center leading-tight">Sponsors<br/>& Friends</span>
                         </button>
                         <button
@@ -406,7 +406,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             }`}
                             data-testid="join-tab"
                         >
-                            <UserPlus className="w-5 h-5" />
+                            <span className="text-lg leading-none mb-0.5">✋</span>
                             <span>Join Us</span>
                         </button>
                     </div>
