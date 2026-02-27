@@ -11,6 +11,7 @@ const BottomNavbar = ({
     // Build navigation items based on user state
     const navItems = [
         { id: 'home', label: 'Home', icon: '🏠', show: true },
+        { id: 'home-teams', label: 'Teams', icon: '🥍', show: true, action: () => onNavigate('home-teams') },
         { id: 'events', label: 'Events', icon: '📅', show: true },
         { id: 'standings', label: 'Standings', icon: '🏆', show: true },
         { 
