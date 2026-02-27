@@ -65,7 +65,7 @@ const TeamCard = ({ team, onNavigate }) => {
                             }}
                             fallback={
                                 <div 
-                                    className="rounded-2xl flex items-center justify-center transition-transform duration-300"
+                                    className="rounded-xl sm:rounded-2xl flex items-center justify-center transition-transform duration-300"
                                     style={{ 
                                         width: '80%', 
                                         height: '80%',
@@ -74,7 +74,7 @@ const TeamCard = ({ team, onNavigate }) => {
                                         transform: isHovered ? 'scale(1.05)' : 'scale(1)'
                                     }}
                                 >
-                                    <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '4rem' }}>
+                                    <span className="text-white font-bold drop-shadow-lg text-2xl sm:text-5xl">
                                         {team.name.charAt(0)}
                                     </span>
                                 </div>
@@ -82,7 +82,7 @@ const TeamCard = ({ team, onNavigate }) => {
                         />
                     ) : (
                         <div 
-                            className="rounded-2xl flex items-center justify-center transition-transform duration-300"
+                            className="rounded-xl sm:rounded-2xl flex items-center justify-center transition-transform duration-300"
                             style={{ 
                                 width: '80%', 
                                 height: '80%',
@@ -91,7 +91,7 @@ const TeamCard = ({ team, onNavigate }) => {
                                 transform: isHovered ? 'scale(1.05)' : 'scale(1)'
                             }}
                         >
-                            <span className="text-white font-bold drop-shadow-lg" style={{ fontSize: '4rem' }}>
+                            <span className="text-white font-bold drop-shadow-lg text-2xl sm:text-5xl">
                                 {team.name.charAt(0)}
                             </span>
                         </div>
@@ -99,17 +99,17 @@ const TeamCard = ({ team, onNavigate }) => {
                 </div>
             </div>
 
-            {/* Team Name Bar */}
+            {/* Team Name Bar - compact on mobile */}
             <div 
-                className="py-3 px-4 text-center"
+                className="py-1.5 px-2 sm:py-3 sm:px-4 text-center"
                 style={{ 
                     backgroundColor: team.style?.primaryColor || '#2563eb',
                     color: team.style?.textColor || '#ffffff'
                 }}
             >
-                <h3 className="font-bold text-sm truncate drop-shadow-sm">{team.name}</h3>
+                <h3 className="font-bold text-xs sm:text-sm truncate drop-shadow-sm">{team.name}</h3>
                 {team.division && (
-                    <p className="text-xs opacity-80">{team.division}</p>
+                    <p className="text-[10px] sm:text-xs opacity-80">{team.division}</p>
                 )}
             </div>
         </div>
