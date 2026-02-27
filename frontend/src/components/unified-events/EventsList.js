@@ -890,10 +890,10 @@ const EventsList = ({
                                                 <button
                                                     onClick={() => setNotifyMenuOpen(notifyMenuOpen === event.id ? null : event.id)}
                                                     disabled={sendingNotifications[event.id]}
-                                                    className="px-2 py-1.5 text-xs sm:px-3 sm:text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 flex items-center gap-1"
+                                                    className="px-1.5 py-1 text-[10px] sm:px-3 sm:py-1.5 sm:text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 flex items-center gap-0.5"
                                                 >
-                                                    {sendingNotifications[event.id] ? '⏳...' : '📢 Notify'} 
-                                                    <span className="text-xs">▼</span>
+                                                    {sendingNotifications[event.id] ? '...' : 'Notify'} 
+                                                    <span className="text-[10px] sm:text-xs">▼</span>
                                                 </button>
                                                 
                                                 {notifyMenuOpen === event.id && (
