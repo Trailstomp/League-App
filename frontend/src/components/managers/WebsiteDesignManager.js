@@ -2407,8 +2407,9 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                 )}
                 
                 <p className="text-xs text-slate-500">
-                    💡 Use "Transparent" to let the content area background show through, or set a custom card color with adjustable opacity.
+                    Use "Transparent" to let the content area background show through.
                 </p>
+                </div>
             </div>
 
             {/* ── Typography ── */}
