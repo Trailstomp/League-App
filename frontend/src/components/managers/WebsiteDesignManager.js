@@ -2651,6 +2651,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         <button onClick={() => updateStyle({ cardHeadingColor: '#ffffff' })} className="w-6 h-6 rounded border" style={{ backgroundColor: '#ffffff' }} title="White" />
                     </div>
                 </div>
+                </div>
             </div>
 
             {/* ── Interactive Colors (NEW) ── */}
