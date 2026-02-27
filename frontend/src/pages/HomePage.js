@@ -395,7 +395,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             data-testid="sponsors-tab"
                         >
                             <span className="text-lg leading-none mb-0.5">⭐</span>
-                            <span>Sponsors</span>
+                            <span>Sponsors & Friends</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('join')}
