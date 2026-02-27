@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { LacrosseIcon } from '../components/LacrosseIcons';
+import { Home, Users, Camera, Star, UserPlus } from 'lucide-react';
 import TeamGalleryDisplay from '../components/TeamGalleryDisplay';
 import YouTubeGallery from '../components/YouTubeGallery';
 import MediaManager from '../components/MediaManager';
