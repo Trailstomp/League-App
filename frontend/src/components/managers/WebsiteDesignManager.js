@@ -2489,12 +2489,14 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                 </div>
             </div>
 
-            {/* Card Typography Section */}
-            <div className="border-t pt-6">
-                <div className="bg-teal-50 p-4 rounded-lg border border-teal-200 mb-4">
-                    <h4 className="text-md font-semibold text-teal-800 mb-2">📝 Card & Form Typography</h4>
-                    <p className="text-teal-600 text-sm">Set the font and text color specifically for cards and forms.</p>
+            {/* ── Card Typography ── */}
+            <div className="border rounded-lg overflow-hidden">
+                <div className="bg-teal-50 px-3 py-2 border-b flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-teal-500" />
+                    <h4 className="text-sm font-semibold text-teal-800">Card Typography</h4>
+                    <span className="text-[10px] text-teal-500 ml-auto">Text in cards & forms</span>
                 </div>
+                <div className="p-3">
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Card Font Family */}
