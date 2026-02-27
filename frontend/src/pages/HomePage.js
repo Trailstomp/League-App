@@ -33,10 +33,8 @@ const TeamCard = ({ team, onNavigate }) => {
         >
             {/* Logo Area - tiny on mobile, normal on desktop */}
             <div 
-                className="relative w-full flex items-center justify-center p-1.5 sm:p-6"
+                className="relative w-full flex items-center justify-center p-1 sm:p-6 h-[70px] sm:h-auto sm:aspect-square"
                 style={{ 
-                    height: window.innerWidth < 640 ? '70px' : undefined,
-                    aspectRatio: window.innerWidth < 640 ? undefined : '1/1',
                     background: team.style?.cardBackgroundImage 
                         ? `url(${fixGoogleDriveUrl(team.style.cardBackgroundImage)})`
                         : `linear-gradient(145deg, ${team.style?.backgroundColor || '#f8fafc'} 0%, white 50%, ${team.style?.accentColor || '#e2e8f0'}30 100%)`,
