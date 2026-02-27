@@ -856,22 +856,22 @@ const EventsList = ({
                                         </div>
                                     )}
 
-                                    {/* Admin Actions - Grid on Mobile */}
+                                    {/* Admin Actions - Compact on Mobile */}
                                     {canManageEvent(event) && (
-                                        <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 pt-3 border-t">
+                                        <div className="flex flex-wrap gap-1 sm:gap-2 pt-2 sm:pt-3 border-t">
                                             <button
                                                 onClick={() => onEventSelect ? onEventSelect(event) : null}
-                                                className="px-2 py-1.5 text-xs sm:px-3 sm:text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+                                                className="px-1.5 py-1 text-[10px] sm:px-3 sm:py-1.5 sm:text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
                                             >
-                                                ✏️ Edit
+                                                Edit
                                             </button>
 
                                             {event.type === 'tournament' && (
                                                 <button
                                                     onClick={() => onManageTournament(event)}
-                                                    className="px-2 py-1.5 text-xs sm:px-3 sm:text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
+                                                    className="px-1.5 py-1 text-[10px] sm:px-3 sm:py-1.5 sm:text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
                                                 >
-                                                    🏅 Bracket
+                                                    Bracket
                                                 </button>
                                             )}
 
@@ -880,9 +880,9 @@ const EventsList = ({
                                                     onClick={() => {
                                                         if (onEnterScoring) onEnterScoring(event);
                                                     }}
-                                                    className="px-2 py-1.5 text-xs sm:px-3 sm:text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                                                    className="px-1.5 py-1 text-[10px] sm:px-3 sm:py-1.5 sm:text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
                                                 >
-                                                    🎯 Score
+                                                    Score
                                                 </button>
                                             )}
                                             
