@@ -2296,6 +2296,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         </p>
                     </div>
                 )}
+                </div>
             </div>
 
             {/* ── Card & Form Background ── */}
