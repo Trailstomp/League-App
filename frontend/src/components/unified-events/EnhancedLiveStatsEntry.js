@@ -2656,21 +2656,21 @@ const EnhancedLiveStatsEntry = ({ event, teams, currentUser, onSubmit, onCancel,
 
         const DesktopPlayerRow = ({ player, isInactive = false }) => (
             <tr className={`${isInactive ? 'bg-gray-50 opacity-60' : 'hover:bg-blue-50/50'} border-b border-gray-100`}>
-                <td className="px-1.5 py-1"><input type="checkbox" checked={player.active} onChange={() => togglePlayerActive(teamKey, player.id)} className="rounded" /></td>
-                <td className="px-1.5 py-1 text-sm font-mono font-bold">{player.number}</td>
-                <td className="px-1.5 py-1">
-                    <div className="flex items-center gap-1.5">
+                <td className="px-1 py-0.5"><input type="checkbox" checked={player.active} onChange={() => togglePlayerActive(teamKey, player.id)} className="rounded" /></td>
+                <td className="px-1 py-0.5 text-sm font-mono font-bold">{player.number}</td>
+                <td className="px-1 py-0.5">
+                    <div className="flex items-center gap-1">
                         {player.photo ? (
-                            <img src={player.photo} alt={player.name} className="w-7 h-7 object-cover rounded-full border border-gray-300" />
+                            <img src={player.photo} alt={player.name} className="w-6 h-6 object-cover rounded-full border border-gray-300" />
                         ) : (
-                            <div className="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center border border-gray-300">
-                                <span className="text-[10px] font-bold text-gray-500">{player.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}</span>
+                            <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center border border-gray-300">
+                                <span className="text-[9px] font-bold text-gray-500">{player.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}</span>
                             </div>
                         )}
                         <span className="text-sm font-medium">{formatPlayerName(player.name)}</span>
                     </div>
                 </td>
-                <td className="px-1.5 py-1 text-xs text-gray-500">{player.position}</td>
+                <td className="px-1 py-0.5 text-xs text-gray-500">{player.position}</td>
                 {!isInactive ? (
                     <>
                         <td className="px-1 py-1 text-center shot-button-container relative">
