@@ -2077,35 +2077,20 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                 )}
             </div>
 
-            {/* Content Area Background - NEW SECTION */}
-            <div className="border-t pt-6">
-                <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-200 mb-4">
-                    <h4 className="text-md font-semibold text-indigo-800 mb-2">📄 Content Area Background</h4>
-                    <p className="text-indigo-600 text-sm">This is the white area where page content appears. Customize it with a color or image background.</p>
+            {/* ── Content Area Background ── */}
+            <div className="border rounded-lg overflow-hidden">
+                <div className="bg-indigo-50 px-3 py-2 border-b flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-indigo-500" />
+                    <h4 className="text-sm font-semibold text-indigo-800">Content Area</h4>
+                    <span className="text-[10px] text-indigo-500 ml-auto">White area where pages render</span>
                 </div>
-                
-                <div className="flex space-x-4 mb-4">
-                    <button
-                        onClick={() => toggleBackgroundType('content', 'color')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            (editingStyle.contentBackgroundType !== 'image') 
-                                ? 'bg-indigo-600 text-white' 
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                        }`}
-                    >
-                        Color Background
-                    </button>
-                    <button
-                        onClick={() => toggleBackgroundType('content', 'image')}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            (editingStyle.contentBackgroundType === 'image') 
-                                ? 'bg-indigo-600 text-white' 
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                        }`}
-                    >
-                        Image Background
-                    </button>
-                </div>
+                <div className="p-3">
+                    <div className="flex gap-2 mb-3">
+                        <button onClick={() => toggleBackgroundType('content', 'color')}
+                            className={`px-3 py-1.5 rounded text-xs font-medium ${editingStyle.contentBackgroundType !== 'image' ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}>Color</button>
+                        <button onClick={() => toggleBackgroundType('content', 'image')}
+                            className={`px-3 py-1.5 rounded text-xs font-medium ${editingStyle.contentBackgroundType === 'image' ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}>Image</button>
+                    </div>
 
                 {editingStyle.contentBackgroundType === 'image' ? (
                     <div className="border-2 border-dashed border-indigo-300 rounded-lg p-6 text-center">
