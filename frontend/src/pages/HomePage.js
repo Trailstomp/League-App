@@ -387,7 +387,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                         </button>
                         <button
                             onClick={() => setActiveTab('sponsors')}
-                            className={`flex flex-col items-center px-4 py-2 text-xs font-medium transition-colors whitespace-nowrap min-w-0 flex-shrink-0 ${
+                            className={`flex flex-col items-center px-4 py-2 text-xs font-medium transition-colors min-w-0 flex-shrink-0 ${
                                 activeTab === 'sponsors' 
                                     ? 'border-b-2 border-blue-500 text-blue-600 bg-blue-50/50' 
                                     : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
@@ -395,7 +395,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             data-testid="sponsors-tab"
                         >
                             <span className="text-lg leading-none mb-0.5">⭐</span>
-                            <span>Sponsors & Friends</span>
+                            <span className="text-center leading-tight">Sponsors<br/>& Friends</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('join')}
