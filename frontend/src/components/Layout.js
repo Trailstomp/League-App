@@ -353,62 +353,60 @@ const Layout = ({
                 </div>
             )}
 
-            {/* Mobile Header - Logo, league name, and ticker (no hamburger) */}
+            {/* Mobile Header - Logo + ticker overlaid to save vertical space */}
             {isMobileView && (
                 <div className="fixed top-0 left-0 right-0 z-50 shadow-md">
-                    {/* Mobile banner bar */}
-                    <div
-                        className="flex items-center px-4 relative"
-                        style={{
-                            height: '56px',
-                            ...getZoneBgStyle(websiteStyle, 'banner')
-                        }}
-                    >
-                        {(websiteStyle.bannerBackgroundType === 'image' || websiteStyle.bannerBackgroundType === 'texture') && (websiteStyle.bannerBackgroundImage || websiteStyle.bannerBackgroundTexture) && (
-                            <div className="absolute inset-0 bg-black bg-opacity-40 z-0"></div>
-                        )}
-                        <div className="flex items-center space-x-3 relative z-10 w-full">
-                            {websiteStyle.navLogoUrl ? (
-                                <CachedImage 
-                                    src={websiteStyle.navLogoUrl} 
-                                    alt="Logo" 
-                                    className="w-9 h-9 object-contain rounded-lg flex-shrink-0"
-                                    fallback={<span className="text-xl">🥍</span>}
-                                />
-                            ) : (
-                                <span className="text-xl flex-shrink-0">🥍</span>
+                    {/* Ticker overlays the logo area - single combined header */}
+                    <div className="relative" style={{ height: '100px' }}>
+                        {/* Logo sits behind ticker as background */}
+                        <div
+                            className="absolute inset-0 flex items-center px-3"
+                            style={{
+                                ...getZoneBgStyle(websiteStyle, 'banner')
+                            }}
+                        >
+                            {(websiteStyle.bannerBackgroundType === 'image' || websiteStyle.bannerBackgroundType === 'texture') && (websiteStyle.bannerBackgroundImage || websiteStyle.bannerBackgroundTexture) && (
+                                <div className="absolute inset-0 bg-black bg-opacity-40 z-0"></div>
                             )}
-                            <h1 
-                                className="text-base font-bold leading-tight"
-                                style={{
-                                    fontFamily: websiteStyle.bannerFont || 'Inter, sans-serif',
-                                    color: websiteStyle.bannerTextColor || '#ffffff',
-                                    overflow: 'hidden',
-                                    display: '-webkit-box',
-                                    WebkitLineClamp: 2,
-                                    WebkitBoxOrient: 'vertical'
-                                }}
-                            >
-                                {websiteStyle.navLeagueName || websiteStyle.bannerTitle || 'League'}
-                            </h1>
+                            <div className="flex items-center space-x-2 relative z-10">
+                                {websiteStyle.navLogoUrl ? (
+                                    <CachedImage 
+                                        src={websiteStyle.navLogoUrl} 
+                                        alt="Logo" 
+                                        className="w-8 h-8 object-contain rounded flex-shrink-0"
+                                        fallback={<span className="text-lg">🥍</span>}
+                                    />
+                                ) : (
+                                    <span className="text-lg flex-shrink-0">🥍</span>
+                                )}
+                                <h1 
+                                    className="text-sm font-bold leading-tight truncate"
+                                    style={{
+                                        fontFamily: websiteStyle.bannerFont || 'Inter, sans-serif',
+                                        color: websiteStyle.bannerTextColor || '#ffffff'
+                                    }}
+                                >
+                                    {websiteStyle.navLeagueName || websiteStyle.bannerTitle || 'League'}
+                                </h1>
+                            </div>
                         </div>
-                    </div>
-
-                    {/* Mobile Ticker - uses full card rendering like desktop */}
-                    <div
-                        className="w-full overflow-hidden"
-                        style={{ height: '100px', backgroundColor: websiteStyle?.tickerTransparent ? 'transparent' : (websiteStyle?.tickerColor || '#1e293b') }}
-                    >
-                        <EventsTicker 
-                            events={events}
-                            teams={teams}
-                            websiteStyle={websiteStyle}
-                            tickerConfig={tickerConfig}
-                            onEventClick={onEventClick}
-                            onTeamClick={onTeamClick}
-                            onNavigate={onNavigate}
-                            compact={false}
-                        />
+                        
+                        {/* Ticker overlays on top */}
+                        <div
+                            className="absolute inset-0 w-full overflow-hidden"
+                            style={{ backgroundColor: websiteStyle?.tickerTransparent ? 'transparent' : (websiteStyle?.tickerColor || '#1e293b') }}
+                        >
+                            <EventsTicker 
+                                events={events}
+                                teams={teams}
+                                websiteStyle={websiteStyle}
+                                tickerConfig={tickerConfig}
+                                onEventClick={onEventClick}
+                                onTeamClick={onTeamClick}
+                                onNavigate={onNavigate}
+                                compact={false}
+                            />
+                        </div>
                     </div>
                 </div>
             )}
