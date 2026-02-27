@@ -437,6 +437,8 @@ const Navigation = ({ currentPage, onNavigate, currentUser, onLogin, onLogout, t
                 <nav className="p-4 border-b flex-shrink-0">
                     <div className="space-y-1">
                         <NavItem icon={<LacrosseIcon name="venue" />} label="Home" pageName="home" />
+                        <NavItem icon={<LacrosseIcon name="teams" />} label="Teams" 
+                            onClick={() => { onNavigate('home-teams'); if (onMobileClose) onMobileClose(); }} />
                         <NavItem icon={<LacrosseIcon name="calendar" />} label="Events & Schedule" pageName="events" />
                         <NavItem icon={<LacrosseIcon name="trophy" />} label="Standings" pageName="standings" />
                         {currentUser && (() => {
