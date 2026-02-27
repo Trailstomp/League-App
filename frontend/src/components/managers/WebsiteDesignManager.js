@@ -2297,35 +2297,20 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                 )}
             </div>
 
-            {/* Card/Form Background Section */}
-            <div className="border-t pt-6">
-                <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200 mb-4">
-                    <h4 className="text-md font-semibold text-emerald-800 mb-2">📋 Card & Form Background</h4>
-                    <p className="text-emerald-600 text-sm">Control the background color of cards and forms. Use "Transparent" to show the content area background through.</p>
+            {/* ── Card & Form Background ── */}
+            <div className="border rounded-lg overflow-hidden">
+                <div className="bg-emerald-50 px-3 py-2 border-b flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                    <h4 className="text-sm font-semibold text-emerald-800">Cards & Forms</h4>
+                    <span className="text-[10px] text-emerald-500 ml-auto">Panels, modals, form containers</span>
                 </div>
-                
-                <div className="flex flex-wrap gap-3 mb-4">
-                    <button
-                        onClick={() => updateStyle({ cardBackgroundType: 'solid' })}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            editingStyle.cardBackgroundType !== 'transparent'
-                                ? 'bg-emerald-600 text-white' 
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                        }`}
-                    >
-                        Solid Color
-                    </button>
-                    <button
-                        onClick={() => updateStyle({ cardBackgroundType: 'transparent' })}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                            editingStyle.cardBackgroundType === 'transparent'
-                                ? 'bg-emerald-600 text-white' 
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                        }`}
-                    >
-                        Transparent
-                    </button>
-                </div>
+                <div className="p-3">
+                    <div className="flex gap-2 mb-3">
+                        <button onClick={() => updateStyle({ cardBackgroundType: 'solid' })}
+                            className={`px-3 py-1.5 rounded text-xs font-medium ${editingStyle.cardBackgroundType !== 'transparent' ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}>Solid</button>
+                        <button onClick={() => updateStyle({ cardBackgroundType: 'transparent' })}
+                            className={`px-3 py-1.5 rounded text-xs font-medium ${editingStyle.cardBackgroundType === 'transparent' ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}>Transparent</button>
+                    </div>
 
                 {editingStyle.cardBackgroundType !== 'transparent' && (
                     <div>
