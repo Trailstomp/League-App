@@ -359,7 +359,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             }`}
                             data-testid="welcome-tab"
                         >
-                            <img src="/icons/tab-welcome.png" alt="" className="w-6 h-6 object-contain" />
+                            <Home className="w-5 h-5" />
                             <span>Welcome</span>
                         </button>
                         <button
@@ -371,7 +371,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             }`}
                             data-testid="teams-tab"
                         >
-                            <img src="/icons/tab-teams.png" alt="" className="w-6 h-6 object-contain" />
+                            <Users className="w-5 h-5" />
                             <span>Teams ({stats.totalTeams})</span>
                         </button>
                         <button
@@ -383,7 +383,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             }`}
                             data-testid="media-tab"
                         >
-                            <img src="/icons/tab-media.png" alt="" className="w-6 h-6 object-contain" />
+                            <Camera className="w-5 h-5" />
                             <span>Media</span>
                         </button>
                         <button
@@ -395,7 +395,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             }`}
                             data-testid="sponsors-tab"
                         >
-                            <img src="/icons/tab-sponsors.png" alt="" className="w-6 h-6 object-contain" />
+                            <Star className="w-5 h-5" />
                             <span className="text-center leading-tight">Sponsors<br/>& Friends</span>
                         </button>
                         <button
@@ -407,7 +407,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             }`}
                             data-testid="join-tab"
                         >
-                            <img src="/icons/tab-joinus.png" alt="" className="w-6 h-6 object-contain" />
+                            <UserPlus className="w-5 h-5" />
                             <span>Join Us</span>
                         </button>
                     </div>
