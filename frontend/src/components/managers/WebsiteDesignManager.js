@@ -2075,6 +2075,7 @@ const WebsiteDesignManager = React.memo(({ websiteStyle = {}, setWebsiteStyle, t
                         fieldName="mainBg"
                     />
                 )}
+                </div>
             </div>
 
             {/* ── Content Area Background ── */}
