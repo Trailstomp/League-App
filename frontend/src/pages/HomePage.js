@@ -394,7 +394,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             }`}
                             data-testid="sponsors-tab"
                         >
-                            <span className="text-lg leading-none mb-0.5">🤝</span>
+                            <span className="text-lg leading-none mb-0.5">⭐</span>
                             <span>Sponsors</span>
                         </button>
                         <button
@@ -406,7 +406,7 @@ const HomePage = ({ teams = [], players = [], currentUser, events = [], setEvent
                             }`}
                             data-testid="join-tab"
                         >
-                            <span className="text-lg leading-none mb-0.5">🤝</span>
+                            <span className="text-lg leading-none mb-0.5">✋</span>
                             <span>Join Us</span>
                         </button>
                     </div>
