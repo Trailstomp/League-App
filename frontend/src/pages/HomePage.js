@@ -19,10 +19,10 @@ const TeamCard = ({ team, onNavigate }) => {
     
     return (
         <div 
-            className="relative bg-white rounded-2xl shadow-xl overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+            className="relative bg-white rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
             style={{ 
                 borderColor: team.style?.primaryColor || '#2563eb',
-                borderWidth: '3px',
+                borderWidth: '2px',
                 borderStyle: 'solid'
             }}
             onClick={() => onNavigate && onNavigate('team', team.id)}
@@ -31,9 +31,9 @@ const TeamCard = ({ team, onNavigate }) => {
             title="Click for team details"
             data-testid={`team-card-${team.id}`}
         >
-            {/* Large Logo Area */}
+            {/* Logo Area - compact on mobile */}
             <div 
-                className="relative w-full flex items-center justify-center p-6"
+                className="relative w-full flex items-center justify-center p-3 sm:p-6"
                 style={{ 
                     aspectRatio: '1/1',
                     background: team.style?.cardBackgroundImage 
