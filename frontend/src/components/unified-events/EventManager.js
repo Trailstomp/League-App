@@ -397,7 +397,8 @@ const EventManager = ({ teams, currentUser, onEventUpdate, onEventClick, initial
 
     return (
         <div className="h-full flex flex-col" style={{ backgroundColor: 'transparent' }}>
-            {/* Header */}
+            {/* Header - hidden when in live-stats view (has its own header) */}
+            {activeView !== 'live-stats' && (
             <div className="bg-white/90 backdrop-blur-sm shadow-sm border-b px-3 py-2 sm:px-6 sm:py-4 flex-shrink-0">
                 <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0">
@@ -407,7 +408,6 @@ const EventManager = ({ teams, currentUser, onEventUpdate, onEventClick, initial
                             {activeView === 'edit' && 'Edit Event'}
                             {activeView === 'tournament' && 'Tournament Bracket'}
                             {activeView === 'scoring-selector' && 'Scoring Method'}
-                            {activeView === 'live-stats' && 'Live Stats Entry'}
                             {activeView === 'quick-score' && 'Quick Score'}
                             {activeView === 'tournament-match-scoring' && `Match: ${selectedMatch?.event?.title || ''}`}
                         </h1>
